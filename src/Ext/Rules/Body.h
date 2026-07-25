@@ -96,6 +96,8 @@ public:
 
 		Valueable<bool> ExtendedAircraftMissions;
 		Valueable<int> ExtendedAircraftMissions_UnlandDamage;
+		Valueable<EdgeType> AircraftSpawnFromEdge;
+		Valueable<EdgeType> AircraftRetreatToEdge;
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
@@ -103,6 +105,12 @@ public:
 		Valueable<bool> NoQueueUpToUnload;
 		Nullable<bool> NoQueueUpToEnter_Buildings;
 		Nullable<bool> NoQueueUpToUnload_Buildings;
+
+		Valueable<bool> JumpjetTilt;
+		Valueable<double> JumpjetTilt_ForwardAccelFactor;
+		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
+		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
+		Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -144,6 +152,18 @@ public:
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
+
+		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<bool> Strafing_UseAmmoPerShot;
+		Valueable<bool> Strafing_TargetCell;
+		Valueable<bool> OmniFire_TurnToTarget;
+		Valueable<bool> AmbientDamage_IgnoreTarget;
+		Valueable<bool> KeepRange_AllowAI;
+		Valueable<bool> KeepRange_AllowPlayer;
+		Valueable<int> KeepRange_EarlyStopFrame;
+		Valueable<bool> AircraftWeapon_KickOutPassengers;
+		Valueable<double> CrushSlowdownMultiplier;
+		Valueable<bool> SkipCrushSlowdown;
 
 		Valueable<bool> LaserPositionUpdate_StopOnFirerConvert;
 		Valueable<int> LaserZAdjust;
@@ -454,6 +474,8 @@ public:
 
 		Valueable<bool> AllowChatBoxInSinglePlayer;
 
+		Valueable<bool> NotHuman_RandomDeathSequence;
+		Valueable<bool> OnlyUseLandSequences;
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
@@ -529,6 +551,8 @@ public:
 
 			, ExtendedAircraftMissions { false }
 			, ExtendedAircraftMissions_UnlandDamage { -1 }
+			, AircraftSpawnFromEdge { EdgeType::Owner }
+			, AircraftRetreatToEdge { EdgeType::Owner }
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
@@ -536,6 +560,12 @@ public:
 			, NoQueueUpToUnload { false }
 			, NoQueueUpToEnter_Buildings {}
 			, NoQueueUpToUnload_Buildings {}
+
+			, JumpjetTilt { false }
+			, JumpjetTilt_ForwardAccelFactor { 1.0 }
+			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
+			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
+			, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
 
 			, BuildingProductionQueue { false }
 
@@ -565,6 +595,17 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, Strafing_SimulateBurst { false }
+			, Strafing_UseAmmoPerShot { false }
+			, Strafing_TargetCell { false }
+			, OmniFire_TurnToTarget { false }
+			, AmbientDamage_IgnoreTarget { false }
+			, KeepRange_AllowAI { false }
+			, KeepRange_AllowPlayer { false }
+			, KeepRange_EarlyStopFrame { 0 }
+			, AircraftWeapon_KickOutPassengers { true }
+			, CrushSlowdownMultiplier { 0.2 }
+			, SkipCrushSlowdown { false }
 			, LaserPositionUpdate_StopOnFirerConvert { false }
 			, LaserZAdjust { 0 }
 			, EBoltZAdjust { 0 }
@@ -848,6 +889,8 @@ public:
 				
 			, AllowChatBoxInSinglePlayer { false }
 
+			, NotHuman_RandomDeathSequence { false }
+			, OnlyUseLandSequences { false }
 			, SecondaryFireSequenceLandOnly { true }
 
 			, AutoRemoveEarliestBeacon { false }

@@ -215,7 +215,8 @@ static inline int GetDelay(AircraftClass* pThis, bool isLastShot)
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	int delay = pWeapon->ROF;
 
-	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5) || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
+	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5)
+		|| (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot) && !pThis->Ammo))
 	{
 		pExt->Strafe_TargetCell = nullptr;
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
@@ -231,7 +232,7 @@ DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 
 	auto const pExt = AircraftExt::Fetch(pThis);
 
-	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell)
+	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell.Get(RulesExt::Global()->Strafing_TargetCell))
 		pExt->Strafe_TargetCell = MapClass::Instance.GetCellAt(pThis->Target->GetCoords());
 
 	pThis->IsLocked = true;
@@ -466,7 +467,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
-	if (pWeaponExt->KickOutPassengers)
+	if (pWeaponExt->KickOutPassengers.Get(RulesExt::Global()->AircraftWeapon_KickOutPassengers))
 		return 0;
 
 	return SkipKickOutPassengers;

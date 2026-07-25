@@ -449,15 +449,15 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 		const auto pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(linked))->GetTypeExtData();
 
 		if (linked->WhatAmI() == AbstractType::Unit
-			&& pTypeExt->JumpjetTilt
+			&& pTypeExt->JumpjetTilt.Get(RulesExt::Global()->JumpjetTilt)
 			&& !onGround
 			&& pThis->CurrentSpeed > 0.0
 			&& linked->IsAlive
 			&& linked->Health > 0
 			&& !linked->IsAttackedByLocomotor)
 		{
-			const float forwardSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor);
-			const float forwardAccelFactor = static_cast<float>(pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor);
+			const float forwardSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor.Get(RulesExt::Global()->JumpjetTilt_ForwardSpeedFactor));
+			const float forwardAccelFactor = static_cast<float>(pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor.Get(RulesExt::Global()->JumpjetTilt_ForwardAccelFactor));
 
 			arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
 				* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -466,9 +466,9 @@ static Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco
 
 			if (locoFace.IsRotating())
 			{
-				const float sidewaysSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+				const float sidewaysSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor.Get(RulesExt::Global()->JumpjetTilt_SidewaysSpeedFactor));
 				const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
-					* pTypeExt->JumpjetTilt_SidewaysRotationFactor);
+					* pTypeExt->JumpjetTilt_SidewaysRotationFactor.Get(RulesExt::Global()->JumpjetTilt_SidewaysRotationFactor));
 
 				ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -742,15 +742,15 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadowMatrix.RotateX(ars);
 	}
 	else if (jjloco
-		&& pDrawTypeExt->JumpjetTilt
+		&& pDrawTypeExt->JumpjetTilt.Get(RulesExt::Global()->JumpjetTilt)
 		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
 		&& jjloco->CurrentSpeed > 0.0
 		&& pThis->IsAlive
 		&& pThis->Health > 0
 		&& !pThis->IsAttackedByLocomotor)
 	{
-		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_ForwardSpeedFactor);
-		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * pDrawTypeExt->JumpjetTilt_ForwardAccelFactor);
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_ForwardSpeedFactor.Get(RulesExt::Global()->JumpjetTilt_ForwardSpeedFactor));
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * pDrawTypeExt->JumpjetTilt_ForwardAccelFactor.Get(RulesExt::Global()->JumpjetTilt_ForwardAccelFactor));
 
 		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
 			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -759,9 +759,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		if (locoFace.IsRotating())
 		{
-			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_SidewaysSpeedFactor.Get(RulesExt::Global()->JumpjetTilt_SidewaysSpeedFactor));
 			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
-				* pDrawTypeExt->JumpjetTilt_SidewaysRotationFactor);
+				* pDrawTypeExt->JumpjetTilt_SidewaysRotationFactor.Get(RulesExt::Global()->JumpjetTilt_SidewaysRotationFactor));
 
 			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);

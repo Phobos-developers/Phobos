@@ -76,7 +76,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 
 	if (pWpn->OmniFire)
 	{
-		if (WeaponTypeExt::Fetch(pWpn)->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
+		if (WeaponTypeExt::Fetch(pWpn)->OmniFire_TurnToTarget.Get(RulesExt::Global()->OmniFire_TurnToTarget) && !pThis->Locomotor->Is_Moving_Now())
 		{
 			CoordStruct& source = pThis->Location;
 			const CoordStruct target = pThis->Target->GetCoords();

@@ -292,7 +292,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	int resultSequence = Die(1);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
+	if (pTypeExt->NotHuman_RandomDeathSequence.Get(RulesExt::Global()->NotHuman_RandomDeathSequence))
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
 
 	if (receiveDamageArgs.WH)

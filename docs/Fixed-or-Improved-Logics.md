@@ -885,11 +885,15 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]            ; AircraftType
-SpawnFromEdge=owner       ; Edge type enumeration (owner|closest|random)
-RetreatToEdge=owner       ; Edge type enumeration (owner|closest|random)
-SpawnDistanceFromTarget=  ; floating point value, distance in cells
-SpawnHeight=              ; integer, height in leptons
+[General]
+AircraftSpawnFromEdge=owner ; Edge type enumeration (owner|closest|random)
+AircraftRetreatToEdge=owner ; Edge type enumeration (owner|closest|random)
+
+[SOMEAIRCRAFT]              ; AircraftType
+SpawnFromEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
+RetreatToEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
+SpawnDistanceFromTarget=    ; floating point value, distance in cells
+SpawnHeight=                ; integer, height in leptons
 ```
 
 ## Animations
@@ -2515,13 +2519,17 @@ TypeSelectUseIFVMode=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+CrushSlowdownMultiplier=0.2        ; floating point value
+SkipCrushSlowdown=false            ; boolean
+
 [SOMEVEHICLE]                      ; VehicleType
 TiltsWhenCrushes.Vehicles=         ; boolean
 TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
-CrushSlowdownMultiplier=0.2        ; floating point value
-SkipCrushSlowdown=false            ; boolean
+CrushSlowdownMultiplier=           ; floating point value, default to [General] -> CrushSlowdownMultiplier
+SkipCrushSlowdown=                 ; boolean, default to [General] -> SkipCrushSlowdown
 ```
 
 ### Deployment Enhancement
@@ -3012,9 +3020,12 @@ ShakeIsLocal=       ; boolean, default to [General] -> ShakeIsLocal
 
 In `rulesmd.ini`:
 ```ini
+[General]
+AmbientDamage.IgnoreTarget=false  ; boolean
+
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
-AmbientDamage.IgnoreTarget=false  ; boolean
+AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDamage.IgnoreTarget
 ```
 
 ### Can attack allies
@@ -3070,8 +3081,11 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), defau
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]            ; WeaponType
-KickOutPassengers=true  ; boolean
+[General]
+AircraftWeapon.KickOutPassengers=true  ; boolean
+
+[SOMEWEAPON]                           ; WeaponType
+KickOutPassengers=                     ; boolean, default to [General] -> AircraftWeapon.KickOutPassengers
 ```
 
 ### Disable FireOnce resetting infantry sequence

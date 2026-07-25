@@ -13,10 +13,10 @@ public:
 
 	Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 	NullableIdx<VocClass> SlavesFreeSound;
-	Valueable<bool> NotHuman_RandomDeathSequence;
+	Nullable<bool> NotHuman_RandomDeathSequence;
 	Valueable<InfantryTypeClass*> DefaultDisguise;
 	Nullable<double> ProneSpeed;
-	Valueable<bool> OnlyUseLandSequences;
+	Nullable<bool> OnlyUseLandSequences;
 	Nullable<bool> SecondaryFireSequenceLandOnly;
 	Nullable<CoordStruct> PronePrimaryFireFLH;
 	Nullable<CoordStruct> ProneSecondaryFireFLH;
@@ -31,10 +31,10 @@ public:
 	explicit InfantryTypeExt(InfantryTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 		, SlavesFreeSound {}
-		, NotHuman_RandomDeathSequence { false }
+		, NotHuman_RandomDeathSequence {}
 		, DefaultDisguise {}
 		, ProneSpeed {}
-		, OnlyUseLandSequences { false }
+		, OnlyUseLandSequences {}
 		, SecondaryFireSequenceLandOnly {}
 		, PronePrimaryFireFLH {}
 		, ProneSecondaryFireFLH {}

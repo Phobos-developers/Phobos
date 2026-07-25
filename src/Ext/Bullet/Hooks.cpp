@@ -609,7 +609,7 @@ DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
 DEFINE_HOOK(0x4683F2, BulletClass_Draw_ZAdjust, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
-	GET(int, height, ECX);
+	GET(const int, height, ECX);
 
 	auto const pTypeExt = BulletTypeExt::Fetch(pThis->Type);
 

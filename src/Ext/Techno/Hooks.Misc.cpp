@@ -845,7 +845,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	R->EBP(0); // Restore overridden instructions.
 
 	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
-	if (pTypeExt->OnlyUseLandSequences)
+	if (pTypeExt->OnlyUseLandSequences.Get(RulesExt::Global()->OnlyUseLandSequences))
 		return SkipWaterSequences;
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.

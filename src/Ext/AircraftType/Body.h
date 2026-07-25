@@ -12,8 +12,8 @@ public:
 	static constexpr DWORD Canary = 0xA5A6A7A8;
 
 	NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
-	Valueable<EdgeType> SpawnFromEdge;
-	Valueable<EdgeType> RetreatToEdge;
+	Nullable<EdgeType> SpawnFromEdge;
+	Nullable<EdgeType> RetreatToEdge;
 	Nullable<Leptons> SpawnDistanceFromTarget;
 	Nullable<int> SpawnHeight;
 	Nullable<int> LandingDir;
@@ -35,8 +35,8 @@ public:
 
 	explicit AircraftTypeExt(AircraftTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, VoicePickup {}
-		, SpawnFromEdge { EdgeType::Owner }
-		, RetreatToEdge { EdgeType::Owner }
+		, SpawnFromEdge {}
+		, RetreatToEdge {}
 		, SpawnDistanceFromTarget {}
 		, SpawnHeight {}
 		, LandingDir {}

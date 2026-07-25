@@ -786,8 +786,11 @@ DefaultDisguise=    ; InfantryType
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                    ; InfantryType
+[General]
 NotHuman.RandomDeathSequence=yes  ; boolean
+
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=     ; boolean, default to [General] -> NotHuman.RandomDeathSequence
 ```
 
 ### Slaves' house decision customization when owner is killed
@@ -808,10 +811,16 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 
 - Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
 
+In `rulesmd.ini`:
+```ini
+[General]
+OnlyUseLandSequences=false  ; boolean
+```
+
 In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
-OnlyUseLandSequences=false  ; boolean
+OnlyUseLandSequences=       ; boolean, default to [General] -> OnlyUseLandSequences
 ```
 
 ## Projectiles
@@ -2485,12 +2494,19 @@ DefaultMirageDisguises=    ; List of TerrainTypes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+[JumpjetControls]
 JumpjetTilt=false                       ; boolean
 JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
 JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
+
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=                            ; boolean, default to [JumpjetControls] -> JumpjetTilt
+JumpjetTilt.ForwardAccelFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardAccelFactor
+JumpjetTilt.ForwardSpeedFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardSpeedFactor
+JumpjetTilt.SidewaysRotationFactor=     ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysRotationFactor
+JumpjetTilt.SidewaysSpeedFactor=        ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysSpeedFactor
 ```
 
 ### RA1-Style Multi-Turret and Multi-Barrel
@@ -3379,11 +3395,16 @@ That is to say, the total duration of executing KeepRange equals the value of we
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-KeepRange=0                   ; floating point value
+[General]
 KeepRange.AllowAI=false       ; boolean
 KeepRange.AllowPlayer=false   ; boolean
 KeepRange.EarlyStopFrame=0    ; integer
+
+[SOMEWEAPON]                  ; WeaponType
+KeepRange=0                   ; floating point value
+KeepRange.AllowAI=            ; boolean, default to [General] -> KeepRange.AllowAI
+KeepRange.AllowPlayer=        ; boolean, default to [General] -> KeepRange.AllowPlayer
+KeepRange.EarlyStopFrame=     ; integer, default to [General] -> KeepRange.EarlyStopFrame
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`
@@ -3393,8 +3414,11 @@ KeepRange.EarlyStopFrame=0    ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType, with OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
+[General]
+OmniFire.TurnToTarget=false  ; boolean
+
+[SOMEWEAPON]                 ; WeaponType, with OmniFire=yes
+OmniFire.TurnToTarget=       ; boolean, default to [General] -> OmniFire.TurnToTarget
 ```
 
 ### Radiation enhancements
@@ -3432,12 +3456,17 @@ CylinderRangefinding=             ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                   ; WeaponType
-Strafing=                      ; boolean
-Strafing.Shots=                ; integer
+[General]
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.TargetCell=false      ; boolean
+
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=                ; integer
+Strafing.SimulateBurst=        ; boolean, default to [General] -> Strafing.SimulateBurst
+Strafing.UseAmmoPerShot=       ; boolean, default to [General] -> Strafing.UseAmmoPerShot
+Strafing.TargetCell=           ; boolean, default to [General] -> Strafing.TargetCell
 Strafing.EndDelay=             ; integer, game frames
 ```
 

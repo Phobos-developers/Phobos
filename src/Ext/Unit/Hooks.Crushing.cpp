@@ -45,9 +45,10 @@ DEFINE_HOOK(0x4B1150, DriveLocomotionClass_WhileMoving_CrushSlowdown, 0x9)
 
 	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pThis->LinkedTo))->GetTypeExtData();
 	auto slowdownCoefficient = pThis->movementspeed_50;
+	const double mult = pTypeExt->CrushSlowdownMultiplier.Get(RulesExt::Global()->CrushSlowdownMultiplier);
 
-	if (slowdownCoefficient > pTypeExt->CrushSlowdownMultiplier)
-		slowdownCoefficient = pTypeExt->CrushSlowdownMultiplier;
+	if (slowdownCoefficient > mult)
+		slowdownCoefficient = mult;
 
 	__asm { fld slowdownCoefficient };
 
@@ -77,9 +78,10 @@ DEFINE_HOOK(0x6A0813, ShipLocomotionClass_WhileMoving_CrushSlowdown, 0xB)
 
 	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pThis->LinkedTo))->GetTypeExtData();
 	auto slowdownCoefficient = pThis->movementspeed_50;
+	const double mult = pTypeExt->CrushSlowdownMultiplier.Get(RulesExt::Global()->CrushSlowdownMultiplier);
 
-	if (slowdownCoefficient > pTypeExt->CrushSlowdownMultiplier)
-		slowdownCoefficient = pTypeExt->CrushSlowdownMultiplier;
+	if (slowdownCoefficient > mult)
+		slowdownCoefficient = mult;
 
 	__asm { fld slowdownCoefficient };
 
@@ -103,5 +105,5 @@ DEFINE_HOOK_AGAIN(0x6A0809, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0
 DEFINE_HOOK(0x4B1146, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0x6) // Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	return static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData()->SkipCrushSlowdown ? R->Origin() + 0x3C : 0;
+	return static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData()->SkipCrushSlowdown.Get(RulesExt::Global()->SkipCrushSlowdown) ? R->Origin() + 0x3C : 0;
 }

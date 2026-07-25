@@ -162,6 +162,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
 	this->ExtendedAircraftMissions_UnlandDamage.Read(exINI, GameStrings::General, "ExtendedAircraftMissions.UnlandDamage");
+	this->AircraftSpawnFromEdge.Read(exINI, GameStrings::General, "AircraftSpawnFromEdge");
+	this->AircraftRetreatToEdge.Read(exINI, GameStrings::General, "AircraftRetreatToEdge");
 	this->AmphibiousEnter.Read(exINI, GameStrings::General, "AmphibiousEnter");
 	this->AmphibiousUnload.Read(exINI, GameStrings::General, "AmphibiousUnload");
 	this->NoQueueUpToEnter.Read(exINI, GameStrings::General, "NoQueueUpToEnter");
@@ -169,6 +171,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoQueueUpToUnload.Read(exINI, GameStrings::General, "NoQueueUpToUnload");
 	this->NoQueueUpToEnter_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToEnter.Buildings");
 	this->NoQueueUpToUnload_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToUnload.Buildings");
+
+	this->JumpjetTilt.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt");
+	this->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.ForwardAccelFactor");
+	this->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.ForwardSpeedFactor");
+	this->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.SidewaysRotationFactor");
+	this->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.SidewaysSpeedFactor");
 
 	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
@@ -199,6 +207,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ColorAddUse8BitRGB.Read(exINI, GameStrings::AudioVisual, "ColorAddUse8BitRGB");
 	this->AirstrikeLineColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineColor");
 	this->AirstrikeLineZAdjust.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineZAdjust");
+
+	this->Strafing_SimulateBurst.Read(exINI, GameStrings::General, "Strafing.SimulateBurst");
+	this->Strafing_UseAmmoPerShot.Read(exINI, GameStrings::General, "Strafing.UseAmmoPerShot");
+	this->Strafing_TargetCell.Read(exINI, GameStrings::General, "Strafing.TargetCell");
+	this->OmniFire_TurnToTarget.Read(exINI, GameStrings::General, "OmniFire.TurnToTarget");
+	this->AmbientDamage_IgnoreTarget.Read(exINI, GameStrings::General, "AmbientDamage.IgnoreTarget");
+	this->KeepRange_AllowAI.Read(exINI, GameStrings::General, "KeepRange.AllowAI");
+	this->KeepRange_AllowPlayer.Read(exINI, GameStrings::General, "KeepRange.AllowPlayer");
+	this->KeepRange_EarlyStopFrame.Read(exINI, GameStrings::General, "KeepRange.EarlyStopFrame");
+	this->AircraftWeapon_KickOutPassengers.Read(exINI, GameStrings::General, "AircraftWeapon.KickOutPassengers");
+	this->CrushSlowdownMultiplier.Read(exINI, GameStrings::General, "CrushSlowdownMultiplier");
+	this->SkipCrushSlowdown.Read(exINI, GameStrings::General, "SkipCrushSlowdown");
 
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, GameStrings::AudioVisual, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, GameStrings::AudioVisual, "LaserZAdjust");
@@ -522,6 +542,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
 
+	this->NotHuman_RandomDeathSequence.Read(exINI, GameStrings::General, "NotHuman.RandomDeathSequence");
+	this->OnlyUseLandSequences.Read(exINI, GameStrings::General, "OnlyUseLandSequences");
 	this->SecondaryFireSequenceLandOnly.Read(exINI, GameStrings::General, "SecondaryFireSequenceLandOnly");
 	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
 	this->AllowBeaconHotKeyInSinglePlayer.Read(exINI, GameStrings::General, "AllowBeaconHotKeyInSinglePlayer");
@@ -664,6 +686,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HeightShadowScaling_MinScale)
 		.Process(this->ExtendedAircraftMissions)
 		.Process(this->ExtendedAircraftMissions_UnlandDamage)
+		.Process(this->AircraftSpawnFromEdge)
+		.Process(this->AircraftRetreatToEdge)
 		.Process(this->AmphibiousEnter)
 		.Process(this->AmphibiousUnload)
 		.Process(this->NoQueueUpToEnter)
@@ -671,6 +695,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoQueueUpToUnload)
 		.Process(this->NoQueueUpToEnter_Buildings)
 		.Process(this->NoQueueUpToUnload_Buildings)
+		.Process(this->JumpjetTilt)
+		.Process(this->JumpjetTilt_ForwardAccelFactor)
+		.Process(this->JumpjetTilt_ForwardSpeedFactor)
+		.Process(this->JumpjetTilt_SidewaysRotationFactor)
+		.Process(this->JumpjetTilt_SidewaysSpeedFactor)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
@@ -694,6 +723,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->AirstrikeLineZAdjust)
+		.Process(this->Strafing_SimulateBurst)
+		.Process(this->Strafing_UseAmmoPerShot)
+		.Process(this->Strafing_TargetCell)
+		.Process(this->OmniFire_TurnToTarget)
+		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->KeepRange_AllowAI)
+		.Process(this->KeepRange_AllowPlayer)
+		.Process(this->KeepRange_EarlyStopFrame)
+		.Process(this->AircraftWeapon_KickOutPassengers)
+		.Process(this->CrushSlowdownMultiplier)
+		.Process(this->SkipCrushSlowdown)
 		.Process(this->LaserPositionUpdate_StopOnFirerConvert)
 		.Process(this->LaserZAdjust)
 		.Process(this->EBoltZAdjust)
@@ -934,6 +974,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->BerzerkMission)
 		.Process(this->BunkerStateUpdateDelay)
 		.Process(this->AllowChatBoxInSinglePlayer)
+		.Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->OnlyUseLandSequences)
 		.Process(this->SecondaryFireSequenceLandOnly)
 		.Process(this->AutoRemoveEarliestBeacon)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)

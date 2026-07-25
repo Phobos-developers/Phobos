@@ -47,18 +47,18 @@ public:
 	Valueable<bool> DeployingAnim_ReverseForUndeploy;
 	Valueable<bool> DeployingAnim_UseUnitDrawer;
 
-	Valueable<bool> JumpjetTilt;
-	Valueable<double> JumpjetTilt_ForwardAccelFactor;
-	Valueable<double> JumpjetTilt_ForwardSpeedFactor;
-	Valueable<double> JumpjetTilt_SidewaysRotationFactor;
-	Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
+	Nullable<bool> JumpjetTilt;
+	Nullable<double> JumpjetTilt_ForwardAccelFactor;
+	Nullable<double> JumpjetTilt_ForwardSpeedFactor;
+	Nullable<double> JumpjetTilt_SidewaysRotationFactor;
+	Nullable<double> JumpjetTilt_SidewaysSpeedFactor;
 
 	Nullable<bool> TiltsWhenCrushes_Vehicles;
 	Nullable<bool> TiltsWhenCrushes_Overlays;
 	Nullable<double> CrushForwardTiltPerFrame;
 	Valueable<double> CrushOverlayExtraForwardTilt;
-	Valueable<double> CrushSlowdownMultiplier;
-	Valueable<bool> SkipCrushSlowdown;
+	Nullable<double> CrushSlowdownMultiplier;
+	Nullable<bool> SkipCrushSlowdown;
 
 	Valueable<double> CrateGoodie_RerollChance;
 	Nullable<bool> NoTurret_TrackTarget;
@@ -113,17 +113,17 @@ public:
 		, DeployingAnim_KeepUnitVisible { false }
 		, DeployingAnim_ReverseForUndeploy { true }
 		, DeployingAnim_UseUnitDrawer { true }
-		, JumpjetTilt { false }
-		, JumpjetTilt_ForwardAccelFactor { 1.0 }
-		, JumpjetTilt_ForwardSpeedFactor { 1.0 }
-		, JumpjetTilt_SidewaysRotationFactor { 1.0 }
-		, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
+		, JumpjetTilt {}
+		, JumpjetTilt_ForwardAccelFactor {}
+		, JumpjetTilt_ForwardSpeedFactor {}
+		, JumpjetTilt_SidewaysRotationFactor {}
+		, JumpjetTilt_SidewaysSpeedFactor {}
 		, TiltsWhenCrushes_Vehicles {}
 		, TiltsWhenCrushes_Overlays {}
 		, CrushForwardTiltPerFrame {}
 		, CrushOverlayExtraForwardTilt { 0.02 }
-		, CrushSlowdownMultiplier { 0.2 }
-		, SkipCrushSlowdown { false }
+		, CrushSlowdownMultiplier {}
+		, SkipCrushSlowdown {}
 		, CrateGoodie_RerollChance { 0.0 }
 		, NoTurret_TrackTarget {}
 		, WaterImage_ConditionYellow {}
