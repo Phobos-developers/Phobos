@@ -10,7 +10,6 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
-#include <Ext/ParticleType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
@@ -18,6 +17,7 @@
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/Tiberium/Body.h>
 #include <Ext/VoxelAnim/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -255,6 +255,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CellExt,
 	EBoltExt,
+	FootExt,
 	HouseExt,
 	HouseTypeExt,
 	InfantryExt,
@@ -273,6 +274,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TEventExt,
 	TiberiumExt,
 	UnitExt,
 	UnitTypeExt,
