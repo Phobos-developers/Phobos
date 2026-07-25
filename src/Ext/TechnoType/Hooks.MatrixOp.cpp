@@ -1033,7 +1033,6 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	return FinishDrawing;
 }
 
-DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);// Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
 DEFINE_JUMP(LJMP, 0x706BDD, 0x706C01); // I checked it a priori
 
 /*

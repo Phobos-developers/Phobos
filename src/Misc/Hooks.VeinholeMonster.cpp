@@ -193,7 +193,7 @@ DEFINE_HOOK(0x73D2A6, UnitClass_DrawAt_Weeder_UnloadingClass, 0x6)
 */
 
 // Enables the weeder to harvest veins
-DEFINE_HOOK(0x73D49E, UnitClass_Harvesting_Weeder, 0x7)
+DEFINE_HOOK(0x73D49E, UnitClass_Harvesting_Weeder, 0x0)
 {
 	enum
 	{
@@ -255,7 +255,7 @@ DEFINE_HOOK(0x43C788, BuildingClass_ReceivedRadioCommand_Weeder_CompleteEnter, 0
 
 // This assigns the weeder to the "Harvest" mission when it is granted as a free unit
 // Ares made the weeder receive the "Guard" command instead
-DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x6)
+DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x0)
 {
 	GET(UnitClass*, pUnit, EDI);
 

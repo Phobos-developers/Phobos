@@ -204,7 +204,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 DEFINE_JUMP(LJMP, 0x4DA554, 0x4DA56E);
 
 // Hook Adjusted to support Ares RadImmune Ability check
-DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
+DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x0)
 {
 	enum { Continue = 0x4DA63B, ReturnFromFunction = 0x4DAF00 };
 

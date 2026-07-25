@@ -37,7 +37,7 @@ DEFINE_HOOK(0x68BD60, ScenarioClass_Clear_All_Waypoints, 0x6)
 	return 0x68BD79;
 }
 
-DEFINE_HOOK(0x68BD80, ScenarioClass_Is_Waypoint_Valid, 0x5)
+DEFINE_HOOK(0x68BD80, ScenarioClass_Is_Waypoint_Valid, 0x0)
 {
 	GET_STACK(const int, nWaypoint, 0x4);
 	auto& waypoints = ScenarioExt::Global()->Waypoints;
@@ -235,7 +235,7 @@ DEFINE_HOOK(0x6855E4, Scen_Waypoint_Call_2, 0x5)
 	return 0x6855FC;
 }
 
-DEFINE_HOOK(0x68AFE7, Scen_Waypoint_Call_3, 0x5)
+DEFINE_HOOK(0x68AFE7, Scen_Waypoint_Call_3, 0x0)
 {
 	GET(const int, nWaypoint, EDI);
 
