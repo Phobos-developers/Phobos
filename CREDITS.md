@@ -463,6 +463,18 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
+- **Noble Fish**:
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
+  - Established Community Chinese docs
+  - Took over and completely rewrite the Official Chinese docs during Release v0.4
+  - Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC`
+  - Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that was erroneously introduced by Phobos
+  - Fix a read bug when setting the SHP file name in INI
+  - Fix an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement
+  - Fix a bug where a unit's turrets would also get locked when the unit became deactivated for reasons other than being under EMP
+  - Fix the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list
+  - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -501,7 +513,6 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
-- **Noble Fish** - some minor improvements and fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation

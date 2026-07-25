@@ -1491,6 +1491,60 @@ msgid ""
 " buffer"
 msgstr "修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃问题"
 
+msgid "**Noble Fish**:"
+msgstr "**Noble Fish**："
+
+msgid "Documentation maintenance"
+msgstr "文档维护工作"
+
+msgid "Chinese documentation maintenance and translation"
+msgstr "中文文档维护和翻译"
+
+msgid "Established Community Chinese docs"
+msgstr "创建了社区中文文档"
+
+msgid "Took over and completely rewrite the Official Chinese docs during Release v0.4"
+msgstr "在 Release v0.4 接管并完全重写了官方中文文档"
+
+msgid ""
+"Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` "
+"instead of `TXT_DISPLAY_DAMAGE_DESC`"
+msgstr ""
+"修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
+"`TXT_FRAME_BY_FRAME_DESC` 的问题"
+
+msgid ""
+"Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that "
+"was erroneously introduced by Phobos"
+msgstr "移除 Phobos 错误引入的 `NoSecondaryWeaponFallback` 与墙交互硬编码"
+
+msgid "Fix a read bug when setting the SHP file name in INI"
+msgstr "修复了一个在 INI 中设置 SHP 文件名的读取 Bug"
+
+msgid ""
+"Fix an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement"
+msgstr "修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题"
+
+msgid ""
+"Fix a bug where a unit's turrets would also get locked when the unit "
+"became deactivated for reasons other than being under EMP"
+msgstr "修复了由于非 EMP 原因而进入瘫痪状态的单位其炮塔也同样会被锁死的 Bug"
+
+msgid ""
+"Fix the bug where `WeaponRange.AllowWeapons` and "
+"`WeaponRange.DisallowWeapons` only support weapons listed in the "
+"`[WeaponTypes]` list"
+msgstr ""
+"修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 "
+"`[WeaponTypes]` 注册的武器这一 Bug"
+
+msgid ""
+"Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
+" immediately when attacking"
+msgstr ""
+"修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -1618,14 +1672,6 @@ msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
-
-msgid ""
-"**Noble Fish** - some minor improvements and fixes, established Community"
-" Chinese docs, took over and completely rewrite the Official Chinese docs"
-" during Build#46"
-msgstr ""
-"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）"
 
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"

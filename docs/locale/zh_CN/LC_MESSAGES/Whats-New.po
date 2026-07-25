@@ -614,6 +614,12 @@ msgid ""
 "Starkku)"
 msgstr "修复了 v0.4.0.1 引入的一个导致某些浮点值使用百分比形式时被错误额外乘 0.01 的 Bug（by Starkku）"
 
+msgid ""
+"Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to "
+"crash immediately when attacking (by Noble_Fish)"
+msgstr ""
+"修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug（by Noble_Fish）"
+
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
 
@@ -930,10 +936,10 @@ msgstr "自定义 EBolt 电弧（by Fryone 与 Kerbiter）"
 
 msgid ""
 "Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, "
-"JunJacobYoung, based on knowledge of DeathFish)"
+"JunJacobYoung, based on knowledge of Noble_Fish)"
 msgstr ""
 "数字化显示生命值和护盾值（by ststl、FlyStar、NaotoYuuki、Saigyouji、JunJacobYoung，基于 "
-"DeathFish 的知识）"
+"Noble_Fish 的知识）"
 
 msgid ""
 "PipScale pip customizations (size, ammo / spawn / tiberium frames or "
@@ -2327,10 +2333,10 @@ msgstr "修复了 `Shield.Respawn.Amount` 在未设置时未正确使用护盾�
 msgid ""
 "Fixed an issue where the hotkey message text in frame-by-frame mode "
 "incorrectly referenced `TXT_DISPLAY_DAMAGE_DESC` instead of "
-"`TXT_FRAME_BY_FRAME_DESC`. (by DeathFishAtEase)"
+"`TXT_FRAME_BY_FRAME_DESC`. (by Noble_Fish)"
 msgstr ""
 "修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
-"`TXT_FRAME_BY_FRAME_DESC` 的问题（by DeathFish）"
+"`TXT_FRAME_BY_FRAME_DESC` 的问题（by Noble_Fish）"
 
 msgid ""
 "Buildings considered vehicles (`ConsideredVehicle=true` or not set in "
