@@ -2864,11 +2864,6 @@ msgid ""
 "tokens when entered transport (by NetsuNegi)"
 msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题（by NetsuNegi）"
 
-msgid ""
-"Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to "
-"crash immediately when attacking (by Noble_Fish)"
-msgstr "修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug（by Noble_Fish）"
-
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
@@ -3145,6 +3140,11 @@ msgid ""
 " percentage form were incorrectly multiplied by an additional 0.01 (by "
 "Starkku)"
 msgstr "修复了 v0.4.0.1 引入的一个导致某些浮点值使用百分比形式时被错误额外乘 0.01 的 Bug（by Starkku）"
+
+msgid ""
+"Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to "
+"crash immediately when attacking (by Noble_Fish)"
+msgstr "修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug（by Noble_Fish）"
 
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
