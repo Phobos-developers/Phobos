@@ -333,6 +333,7 @@ msgid ""
 "package (also available separately on the [SyringeEx releases "
 "page](https://github.com/Phobos-developers/SyringeEx/releases))."
 msgstr ""
+"Phobos 现在需要 [SyringeEx](https://github.com/Phobos-developers/SyringeEx)（v0.1.0.2 及以上版本）才能运行——旧版本 Syringe 下启动游戏将会显示错误并退出。请将游戏目录中的 `Syringe.exe` 替换为 Phobos 软件包中附带的那个（也可以从 [SyringeEx 发布页面](https://github.com/Phobos-developers/SyringeEx/releases) 单独下载）。"
 
 msgid ""
 "If it is detected that you are using the old INI flags, a warning will be"

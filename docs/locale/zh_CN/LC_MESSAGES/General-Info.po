@@ -111,6 +111,7 @@ msgid ""
 "versions do not provide, and will show an error and exit on startup "
 "without them."
 msgstr ""
+"Phobos 需要 [SyringeEx](https://github.com/Phobos-developers/SyringeEx)（v0.1.0.2 及以上版本）作为启动器——它依赖于旧版 Syringe 所不具备的功能（通过 SyringeEx 特性标志发出信号），如果没有这些功能，它将在启动时显示错误并退出。"
 
 msgid ""
 "While Phobos is standalone, it is designed to be used alongside "
