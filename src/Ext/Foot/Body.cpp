@@ -493,7 +493,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Rebuild a CaptureManager
 			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
 		}
-		else if (pOldTypeExt->Convert_ResetMindControl)
+		else if (pOldTypeExt->Convert_ResetMindControl.Get(RulesExt::Global()->Convert_ResetMindControl))
 		{
 			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
@@ -509,7 +509,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pCaptureManager->InfiniteMindControl = infiniteCapture;
 		}
 	}
-	else if (pCaptureManager && pOldTypeExt->Convert_ResetMindControl)
+	else if (pCaptureManager && pOldTypeExt->Convert_ResetMindControl.Get(RulesExt::Global()->Convert_ResetMindControl))
 	{
 		// Remove CaptureManager completely
 		pCaptureManager->FreeAll();

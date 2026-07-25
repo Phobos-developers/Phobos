@@ -1704,9 +1704,13 @@ TeamMember.ConsideredAs=          ; List of TechnoTypes
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
+[General]
 AlternateFLH.OnTurret=true       ; boolean
 AlternateFLH.ApplyVehicle=false  ; boolean
+
+[SOMETECHNO]                     ; TechnoType
+AlternateFLH.OnTurret=           ; boolean, default to [General] -> AlternateFLH.OnTurret
+AlternateFLH.ApplyVehicle=       ; boolean, default to [General] -> AlternateFLH.ApplyVehicle
 ```
 
 ### Building-provided self-healing customization
@@ -1928,10 +1932,14 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                        ; TechnoType
-FallingDownDamage=                  ; integer / percentage
-FallingDownDamage.Water=            ; integer / percentage
+[CombatDamage]
+FallingDownDamage=1.0               ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
+FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
 ```
 
 ### Customize the landing animation of technos that have `Locomotor=Fly`
@@ -2554,9 +2562,12 @@ Deploy.NoTiberium=false             ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+DestroyAnim.Random=true                ; boolean
+
 [SOMEVEHICLE]                          ; VehicleType
 DestroyAnim=                           ; List of AnimationTypes
-DestroyAnim.Random=true                ; boolean
+DestroyAnim.Random=                    ; boolean, default to [General] -> DestroyAnim.Random
 ```
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy

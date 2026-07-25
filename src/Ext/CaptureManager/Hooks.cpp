@@ -36,7 +36,7 @@ static int __fastcall _GetControlledCount(CaptureManagerClass* pThis)
 {
 	const auto pOwnerTypeExt = TechnoExt::Fetch(pThis->Owner)->TypeExtData;
 
-	if (!pOwnerTypeExt->MindControl_IgnoreSize)
+	if (!pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 		return CaptureManagerExt::GetControlledTotalSize(pThis);
 
 	return pThis->ControlNodes.Count;
@@ -172,7 +172,7 @@ static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThi
 				{
 					auto& random = ScenarioClass::Instance->Random;
 
-					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
+					for (int i = pOwnerTypeExt->Overload_ParticleSysCount.Get(RulesExt::Global()->Overload_ParticleSysCount); i > 0; --i)
 					{
 						auto const nRandomY = random.RandomRanged(-200, 200);
 						auto const nRamdomX = random.RandomRanged(-200, 200);

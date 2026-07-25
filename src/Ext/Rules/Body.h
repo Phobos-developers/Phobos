@@ -54,6 +54,7 @@ public:
 		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
+		Valueable<bool> JumpjetRotateOnCrash;
 
 		Nullable<WarheadTypeClass*> VeinholeWarhead;
 
@@ -111,6 +112,34 @@ public:
 		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
 		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
 		Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
+
+		Valueable<bool> Spawner_AttackImmediately;
+		Valueable<bool> Spawner_UseTurretFacing;
+		Valueable<Leptons> Spawner_RecycleRange;
+		Valueable<bool> Spawner_RecycleOnTurret;
+		Valueable<bool> Promote_IncludeSpawns;
+		Valueable<AffectedHouse> RadarJamHouses;
+		Valueable<int> RadarJamDelay;
+		Valueable<bool> MindControl_IgnoreSize;
+		Valueable<bool> MultiMindControl_ReleaseVictim;
+		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
+		Valueable<bool> AlternateFLH_OnTurret;
+		Valueable<bool> AlternateFLH_ApplyVehicle;
+		Valueable<bool> DestroyAnim_Random;
+		Valueable<bool> UseDisguiseMovementSpeed;
+		Valueable<bool> Convert_ResetMindControl;
+		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
+		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+		Valueable<int> Overload_ParticleSysCount;
+		Valueable<double> FallingDownDamage;
+		Valueable<bool> FallingDownDamage_AllowEMP;
+
+		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
+		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
+		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -411,6 +440,7 @@ public:
 
 		Valueable<bool> UnitsUnsellable;
 
+		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
@@ -512,6 +542,7 @@ public:
 			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, JumpjetRotateOnCrash { true }
 			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP }
 
@@ -566,6 +597,34 @@ public:
 			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
 			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
 			, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
+
+			, Spawner_AttackImmediately { false }
+			, Spawner_UseTurretFacing { false }
+			, Spawner_RecycleRange { Leptons(-1) }
+			, Spawner_RecycleOnTurret { false }
+			, Promote_IncludeSpawns { false }
+			, RadarJamHouses { AffectedHouse::Enemies }
+			, RadarJamDelay { 30 }
+			, MindControl_IgnoreSize { true }
+			, MultiMindControl_ReleaseVictim { false }
+			, MindControlLink_VisibleToHouse { AffectedHouse::All }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
+			, AutoDeath_TechnosExist_AllowLimboed { false }
+			, AlternateFLH_OnTurret { true }
+			, AlternateFLH_ApplyVehicle { false }
+			, DestroyAnim_Random { false }
+			, UseDisguiseMovementSpeed { false }
+			, Convert_ResetMindControl { false }
+			, BuildLimitGroup_ContentIfAnyMatch { false }
+			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
+			, DigitalDisplay_Health_FakeAtDisguise { true }
+			, Overload_ParticleSysCount { 5 }
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_AllowEMP { true }
+
+			, ForceWeapon_InRange_TechnoOnly { true }
+			, ForceWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
 
 			, BuildingProductionQueue { false }
 
@@ -829,6 +888,7 @@ public:
 
 			, UnitsUnsellable { false }
 
+			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }

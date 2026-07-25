@@ -18,7 +18,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
-		if (!pTypeExt->DestroyAnim_Random.Get())
+		if (!pTypeExt->DestroyAnim_Random.Get(RulesExt::Global()->DestroyAnim_Random))
 		{
 			int idxAnim = 0;
 

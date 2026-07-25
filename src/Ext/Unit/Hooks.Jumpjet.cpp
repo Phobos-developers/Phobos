@@ -154,7 +154,7 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
 	auto const pTypeExt = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData;
-	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
+	return pTypeExt->JumpjetRotateOnCrash.Get(RulesExt::Global()->JumpjetRotateOnCrash) ? 0 : 0x54CB3E;
 }
 
 // We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing

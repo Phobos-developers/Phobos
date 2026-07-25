@@ -728,7 +728,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x0)
 	auto const pThisType = pTypeExt->OwnerObject();
 	int maxSpeed = pThisType->Speed;
 
-	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+	if (pTypeExt->UseDisguiseMovementSpeed.Get(RulesExt::Global()->UseDisguiseMovementSpeed) && pThis->IsDisguised())
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 			maxSpeed = pType->Speed;
@@ -975,7 +975,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			{
 				const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				if (!pTypeExt->FallingDownDamage_AllowEMP.Get(RulesExt::Global()->FallingDownDamage_AllowEMP) && pTechno->EMPLockRemaining > 0)
 				{
 					damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -986,9 +986,9 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
 				else
-					ratio = pTypeExt->FallingDownDamage.Get();
+					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 
 				if (ratio < 0.0)
 					damage = static_cast<int>(pThis->Health * std::abs(ratio));

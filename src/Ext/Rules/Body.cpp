@@ -172,11 +172,33 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoQueueUpToEnter_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToEnter.Buildings");
 	this->NoQueueUpToUnload_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToUnload.Buildings");
 
-	this->JumpjetTilt.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt");
-	this->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.ForwardAccelFactor");
-	this->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.ForwardSpeedFactor");
-	this->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.SidewaysRotationFactor");
-	this->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "JumpjetTilt.SidewaysSpeedFactor");
+	this->Spawner_AttackImmediately.Read(exINI, GameStrings::General, "Spawner.AttackImmediately");
+	this->Spawner_UseTurretFacing.Read(exINI, GameStrings::General, "Spawner.UseTurretFacing");
+	this->Spawner_RecycleRange.Read(exINI, GameStrings::General, "Spawner.RecycleRange");
+	this->Spawner_RecycleOnTurret.Read(exINI, GameStrings::General, "Spawner.RecycleOnTurret");
+	this->Promote_IncludeSpawns.Read(exINI, GameStrings::General, "Promote.IncludeSpawns");
+	this->RadarJamHouses.Read(exINI, GameStrings::General, "RadarJamHouses");
+	this->RadarJamDelay.Read(exINI, GameStrings::General, "RadarJamDelay");
+	this->MindControl_IgnoreSize.Read(exINI, GameStrings::General, "MindControl.IgnoreSize");
+	this->MultiMindControl_ReleaseVictim.Read(exINI, GameStrings::General, "MultiMindControl.ReleaseVictim");
+	this->MindControlLink_VisibleToHouse.Read(exINI, GameStrings::General, "MindControlLink.VisibleToHouse");
+	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, GameStrings::General, "AutoDeath.TechnosDontExist.AllowLimboed");
+	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, GameStrings::General, "AutoDeath.TechnosExist.AllowLimboed");
+	this->AlternateFLH_OnTurret.Read(exINI, GameStrings::General, "AlternateFLH.OnTurret");
+	this->AlternateFLH_ApplyVehicle.Read(exINI, GameStrings::General, "AlternateFLH.ApplyVehicle");
+	this->DestroyAnim_Random.Read(exINI, GameStrings::General, "DestroyAnim.Random");
+	this->UseDisguiseMovementSpeed.Read(exINI, GameStrings::General, "UseDisguiseMovementSpeed");
+	this->Convert_ResetMindControl.Read(exINI, GameStrings::General, "Convert.ResetMindControl");
+	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.ContentIfAnyMatch");
+	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.NotBuildableIfQueueMatch");
+	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
+	this->Overload_ParticleSysCount.Read(exINI, GameStrings::CombatDamage, "Overload.ParticleSysCount");
+	this->FallingDownDamage.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage");
+	this->FallingDownDamage_AllowEMP.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.AllowEMP");
+
+	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, GameStrings::General, "ForceWeapon.InRange.TechnoOnly");
+	this->ForceWeapon_InRange_ApplyRangeModifiers.Read(exINI, GameStrings::General, "ForceWeapon.InRange.ApplyRangeModifiers");
+	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, GameStrings::General, "ForceAAWeapon.InRange.ApplyRangeModifiers");
 
 	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
@@ -463,6 +485,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
+	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
 	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
 	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
@@ -651,6 +674,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldApplyArmorMult)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->VeinholeWarhead)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
@@ -700,6 +724,32 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetTilt_ForwardSpeedFactor)
 		.Process(this->JumpjetTilt_SidewaysRotationFactor)
 		.Process(this->JumpjetTilt_SidewaysSpeedFactor)
+		.Process(this->Spawner_AttackImmediately)
+		.Process(this->Spawner_UseTurretFacing)
+		.Process(this->Spawner_RecycleRange)
+		.Process(this->Spawner_RecycleOnTurret)
+		.Process(this->Promote_IncludeSpawns)
+		.Process(this->RadarJamHouses)
+		.Process(this->RadarJamDelay)
+		.Process(this->MindControl_IgnoreSize)
+		.Process(this->MultiMindControl_ReleaseVictim)
+		.Process(this->MindControlLink_VisibleToHouse)
+		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
+		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
+		.Process(this->AlternateFLH_OnTurret)
+		.Process(this->AlternateFLH_ApplyVehicle)
+		.Process(this->DestroyAnim_Random)
+		.Process(this->UseDisguiseMovementSpeed)
+		.Process(this->Convert_ResetMindControl)
+		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
+		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
+		.Process(this->ForceWeapon_InRange_TechnoOnly)
+		.Process(this->ForceWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+		.Process(this->Overload_ParticleSysCount)
+		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_AllowEMP)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
@@ -923,6 +973,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
+		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
 		.Process(this->DisableOveroptimizationInTargeting)
 		.Process(this->ExtraThreat_IsThreat)
@@ -1165,6 +1216,12 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+	pRulesExt->JumpjetRotateOnCrash.Read(exINI, GameStrings::JumpjetControls, "RotateOnCrash");
+	pRulesExt->JumpjetTilt.Read(exINI, GameStrings::JumpjetControls, "Tilt");
+	pRulesExt->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.ForwardAccelFactor");
+	pRulesExt->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.ForwardSpeedFactor");
+	pRulesExt->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.SidewaysRotationFactor");
+	pRulesExt->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.SidewaysSpeedFactor");
 
 	return 0;
 }

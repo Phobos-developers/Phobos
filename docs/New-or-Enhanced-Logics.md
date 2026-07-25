@@ -1472,16 +1472,22 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Spawner.AttackImmediately=false    ; boolean
+Spawner.UseTurretFacing=false      ; boolean
+Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.RecycleOnTurret=false      ; boolean
+
 [SOMETECHNO]                       ; TechnoType
 Spawner.LimitRange=false           ; boolean
 Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
-Spawner.AttackImmediately=false    ; boolean
-Spawner.UseTurretFacing=false      ; boolean
-Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.AttackImmediately=         ; boolean, default to [General] -> Spawner.AttackImmediately
+Spawner.UseTurretFacing=           ; boolean, default to [General] -> Spawner.UseTurretFacing
+Spawner.RecycleRange=              ; floating point value, range in cells, default to [General] -> Spawner.RecycleRange
 Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
-Spawner.RecycleOnTurret=false      ; boolean
+Spawner.RecycleOnTurret=           ; boolean, default to [General] -> Spawner.RecycleOnTurret
 ```
 
 ```{note}
@@ -1600,12 +1606,16 @@ To make this logic work properly, you need to ensure that there is no flag like 
 
 In `rulesmd.ini`:
 ```ini
+[General]
+BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
+BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
 BuildLimitGroup.Nums=                           ; integer, or a List of integers
 BuildLimitGroup.Factor=1                        ; integer
-BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
-BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+BuildLimitGroup.ContentIfAnyMatch=              ; boolean, default to [General] -> BuildLimitGroup.ContentIfAnyMatch
+BuildLimitGroup.NotBuildableIfQueueMatch=       ; boolean, default to [General] -> BuildLimitGroup.NotBuildableIfQueueMatch
 BuildLimitGroup.ExtraLimit.Types=               ; List of TechnoTypes
 BuildLimitGroup.ExtraLimit.Nums=                ; List of integers
 BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
@@ -1741,9 +1751,13 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+[General]
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RadarJamDelay=30                  ; integer
+
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> RadarJamHouses
+RadarJamDelay=                    ; integer, default to [General] -> RadarJamDelay
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
@@ -1759,10 +1773,11 @@ When `DriverKilled.KeptPassengers=true` is set, passengers will always be retain
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
+DriverKilled.KeptPassengers=false   ; boolean
 DriverKilled.KillPassengers=false   ; boolean
 
 [SOMETECHNO]                        ; TechnoType, transport
-DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KeptPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KeptPassengers
 DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
 ```
 
@@ -1823,9 +1838,10 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+UseDisguiseMovementSpeed=false
 
 [SOMETECHNO]                      ; TechnoType
-UseDisguiseMovementSpeed=false    ; boolean
+UseDisguiseMovementSpeed=         ; boolean, default to [General] -> UseDisguiseMovementSpeed
 ```
 
 ### Exclusion from base center calculations
@@ -1924,18 +1940,23 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 
 In `rulesmd.ini`:
 ```ini
+[General]
+ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
 ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
 ForceWeapon.InRange=                            ; List of integers
+ForceWeapon.InRange.TechnoOnly=                 ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=        ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
 ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=      ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
 ForceWeapon.Buildings=-1                        ; integer, -1 to disable
 ForceWeapon.Defenses=-1                         ; integer, -1 to disable
 ForceWeapon.Infantry=-1                         ; integer, -1 to disable
@@ -2030,6 +2051,10 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 In `rulesmd.ini`:
 ```ini
+[General]
+AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
+
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
 AutoDeath.VanishAnimation=                     ; List of AnimationTypes
@@ -2040,11 +2065,11 @@ AutoDeath.OnOwnerChange.ComputerToHuman=       ; boolean, default to AutoDeath.O
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false           ; boolean
-AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=       ; boolean, default to [General] -> AutoDeath.TechnosDontExist.AllowLimboed
 AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
+AutoDeath.TechnosExist.AllowLimboed=           ; boolean, default to [General] -> AutoDeath.TechnosExist.AllowLimboed
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
@@ -2084,11 +2109,16 @@ PriorityDeployFiltering=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                          ; TechnoType, as Mind controllers
-MindControlRangeLimit=-1.0            ; floating point value
+[General]
 MindControl.IgnoreSize=true           ; boolean
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType, as Mind controllers
+MindControlRangeLimit=-1.0            ; floating point value
+MindControl.IgnoreSize=               ; boolean, default to [General] -> MindControl.IgnoreSize
+MindControlLink.VisibleToHouse=       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> MindControlLink.VisibleToHouse
+MultiMindControl.ReleaseVictim=       ; boolean, default to [General] -> MultiMindControl.ReleaseVictim
 
 [SOMETECHNO]                          ; TechnoType, as Mind controlled targets
 MindControlSize=1                     ; integer
@@ -2167,6 +2197,8 @@ NoReload.Temporal=       ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Overload.ParticleSysCount=5   ; integer
 
 [SOMETECHNO]                  ; TechnoType
 Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
@@ -2174,7 +2206,7 @@ Overload.Damage=              ; List of integers, default to [CombatDamage] -> O
 Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
-Overload.ParticleSysCount=5   ; integer
+Overload.ParticleSysCount=    ; integer, default to [CombatDamage] -> Overload.ParticleSysCount
 ```
 
 ### Promoted Spawns
@@ -2186,8 +2218,11 @@ Overload.ParticleSysCount=5   ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                 ; TechnoType
+[General]
 Promote.IncludeSpawns=false  ; boolean
+
+[SOMETECHNO]                 ; TechnoType
+Promote.IncludeSpawns=       ; boolean, default to [General] -> Promote.IncludeSpawns
 ```
 
 ### Promotion animation
@@ -2269,14 +2304,17 @@ RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ### Reset MindControl after transformation
 
 - After the unit conversion is completed, its mind control can be reset.
-  - If all warheads don't have `MindControl=yes`, then `Convert.ResetMindControl=yes` will release all controlled units.
-  - If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes` resets its maximum number of controls.
-  - If all weapons don't have `InfiniteMindControl=yes`, then `Convert.ResetMindControl=yes` release controlled units that exceed the limit.
+  - If all warheads don't have `MindControl=true`, then `Convert.ResetMindControl=true` will release all controlled units.
+  - If any warhead has `MindControl=true`, then `Convert.ResetMindControl=true` resets its maximum number of controls.
+  - If all weapons don't have `InfiniteMindControl=true`, then `Convert.ResetMindControl=true` release controlled units that exceed the limit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType, before conversion
-Convert.ResetMindControl=false          ; boolean
+[General]
+Convert.ResetMindControl=false  ; boolean
+
+[SOMETECHNO]                    ; TechnoType, before conversion
+Convert.ResetMindControl=       ; boolean, default to [General] -> Convert.ResetMindControl
 ```
 
 ### Revenge weapon

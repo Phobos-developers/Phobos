@@ -897,7 +897,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 		const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-		if (passive && pTypeExt->DriverKilled_KeptPassengers)
+		if (passive && pTypeExt->DriverKilled_KeptPassengers.Get(RulesExt::Global()->DriverKilled_KeptPassengers))
 			break;
 
 		const bool kill = pTypeExt->DriverKilled_KillPassengers.Get(RulesExt::Global()->DriverKilled_KillPassengers);
