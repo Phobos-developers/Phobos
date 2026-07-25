@@ -1,6 +1,7 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
@@ -171,8 +172,18 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
+	if (pThis->InLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+		return false;
+
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death by conditions out of this function
+	if (this->ShouldBeDead)
+	{
+		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+		return true;
+	}
 
 	// Death if no ammo
 	if (pTypeExt->OwnerObject()->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)

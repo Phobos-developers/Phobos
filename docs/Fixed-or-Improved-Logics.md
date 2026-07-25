@@ -131,7 +131,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed teleport units being unable to visually tilt on slopes.
 - Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
-- Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantry with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
@@ -323,6 +322,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 - Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
+- Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
 
 ## Fixes / interactions with other extensions
 
@@ -624,6 +624,19 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Separate the definitions of default direction for aircraft production and landing in the field
+
+- In vanilla, the game reads the value of `[AudioVisual] -> PoseDir=`, processes it according to 8 divisions of the circle for the direction of landing in the field, and according to 256 divisions for other cases. Phobos processes it according to 256 divisions in all scenarios. In order to accommodate functions such as [landing-direction](Fixed-or-Improved-Logics.md#landing-direction) while not breaking original behavior too much, these two new flags are used for separate definitions.
+  - `PoseDir.Production` can be used to determine the default direction of an aircraft that has no landing direction defined when it is produced, as well as the direction of aircraft spawned by a building with `HoverPad=true` when `[General] -> SeparateAircraft=false`.
+  - `PoseDir.Field` can be used to determine the default direction of an aircraft that has no landing direction defined when landing in the field; it defaults to 32 times the value of `[AudioVisual] -> PoseDir=` to ensure that it points due east under vanilla configuration.
+
+In `rulesmd.ini`：
+```ini
+[AudioVisual]
+PoseDir.Production=  ; integer, defaults to [AudioVisual] -> PoseDir
+PoseDir.Field=       ; integer, defaults to 8 * [AudioVisual] -> PoseDir
 ```
 
 ### Skirmish AI behavior dehardcode
@@ -1098,12 +1111,18 @@ AICleanWallNode=false  ; boolean
 
 ### Aircraft docking direction
 
-- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual] -> PoseDir`.
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting.
+- Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
+  - Modders/mappers can use `AircraftDockingDir.DefaultToPoseDir` to disable this behavior, so as to allow control through Map Editor, [`StartFacing`](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings), or dynamic building orientation changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]          ; BuildingType
-AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+[AudioVisual]
+AircraftDockingDir.DefaultToPoseDir=true  ; boolean
+
+[SOMEBUILDING]                            ; BuildingType
+AircraftDockingDir(N)=                    ; Direction type (integers from 0-255)
+AircraftDockingDir.DefaultToPoseDir=      ; boolean, defaults to [AudioVisual] -> AircraftDockingDir.DefaultToPoseDir
 ```
 
 ### Allows refineries to use multiple ActiveAnim simultaneously
@@ -1940,6 +1959,14 @@ FallingDownDamage.AllowEMP=true     ; boolean
 FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
 FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
+```
+
+### Customize crash spin multiplier
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
+CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
 ### Customize the landing animation of technos that have `Locomotor=Fly`

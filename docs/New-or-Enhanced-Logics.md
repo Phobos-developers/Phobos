@@ -2035,6 +2035,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `OnOwnerChange`: The object's ownership has been changed.
+    - `OnOwnerChange.IgnoreRevertOnExit`: Whether to ignore the case where `Passengers.SyncOwner.RevertOnExit=true` causes ownership change.
     - `OnOwnerChange.HumanToComputer/ComputerToHuman`: The object's ownership has been changed from human to computer or from computer to human. Default to `OnOwnerChange` if not set.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
@@ -2047,30 +2048,35 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 - If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. If more than one animation is listed, a random one is selected.
+- `AutoDeath.AllowLimboed` can be used to define whether the auto death effect is triggered when the unit is in limbo state.
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
-[General]
-AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
+[CombatDamage]
+AutoDeath.AllowLimboed=true                       ; boolean
+AutoDeath.OnOwnerChange.IgnoreRevertOnExit=false  ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=false     ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false         ; boolean
 
-[SOMETECHNO]                                   ; TechnoType
-AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation=                     ; List of AnimationTypes
-AutoDeath.OnAmmoDepletion=false                ; boolean
-AutoDeath.OnOwnerChange=false                  ; boolean
-AutoDeath.OnOwnerChange.HumanToComputer=       ; boolean, default to AutoDeath.OnOwnerChange
-AutoDeath.OnOwnerChange.ComputerToHuman=       ; boolean, default to AutoDeath.OnOwnerChange
-AutoDeath.AfterDelay=0                         ; positive integer
-AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
-AutoDeath.TechnosDontExist.Any=false           ; boolean
-AutoDeath.TechnosDontExist.AllowLimboed=       ; boolean, default to [General] -> AutoDeath.TechnosDontExist.AllowLimboed
-AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.TechnosExist=                        ; List of TechnoTypes
-AutoDeath.TechnosExist.Any=true                ; boolean
-AutoDeath.TechnosExist.AllowLimboed=           ; boolean, default to [General] -> AutoDeath.TechnosExist.AllowLimboed
-AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMETECHNO]                                      ; TechnoType
+AutoDeath.Behavior=                               ; enumeration (kill | vanish | sell), default not set
+AutoDeath.AllowLimboed=true                       ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowLimboed
+AutoDeath.VanishAnimation=                        ; List of AnimationTypes
+AutoDeath.OnAmmoDepletion=false                   ; boolean
+AutoDeath.OnOwnerChange=false                     ; boolean
+AutoDeath.OnOwnerChange.IgnoreRevertOnExit=       ; boolean, defaults to [CombatDamage] -> AutoDeath.OnOwnerChange.IgnoreRevertOnExit
+AutoDeath.OnOwnerChange.HumanToComputer=          ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.OnOwnerChange.ComputerToHuman=          ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.AfterDelay=0                            ; positive integer
+AutoDeath.TechnosDontExist=                       ; List of TechnoTypes
+AutoDeath.TechnosDontExist.Any=false              ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=          ; boolean, default to [CombatDamage] -> AutoDeath.TechnosDontExist.AllowLimboed
+AutoDeath.TechnosDontExist.Houses=owner           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist=                           ; List of TechnoTypes
+AutoDeath.TechnosExist.Any=true                   ; boolean
+AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
+AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{note}

@@ -182,8 +182,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MindControl_IgnoreSize.Read(exINI, GameStrings::General, "MindControl.IgnoreSize");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, GameStrings::General, "MultiMindControl.ReleaseVictim");
 	this->MindControlLink_VisibleToHouse.Read(exINI, GameStrings::General, "MindControlLink.VisibleToHouse");
-	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, GameStrings::General, "AutoDeath.TechnosDontExist.AllowLimboed");
-	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, GameStrings::General, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AlternateFLH_OnTurret.Read(exINI, GameStrings::General, "AlternateFLH.OnTurret");
 	this->AlternateFLH_ApplyVehicle.Read(exINI, GameStrings::General, "AlternateFLH.ApplyVehicle");
 	this->DestroyAnim_Random.Read(exINI, GameStrings::General, "DestroyAnim.Random");
@@ -573,6 +571,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->StartFacing.Read(exINI, GameStrings::General, "BuildingStartFacing");
 	this->StartFacing_Random.Read(exINI, GameStrings::General, "BuildingStartFacing.Random");
 
+	this->AutoDeath_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.AllowLimboed");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, GameStrings::CombatDamage, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
+	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.TechnosDontExist.AllowLimboed");
+	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.TechnosExist.AllowLimboed");
+
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exINI, GameStrings::AudioVisual, "AircraftDockingDir.DefaultToPoseDir");
+	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
+	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -734,8 +741,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MultiMindControl_ReleaseVictim)
 		.Process(this->MindControlLink_VisibleToHouse)
-		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
-		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AlternateFLH_OnTurret)
 		.Process(this->AlternateFLH_ApplyVehicle)
 		.Process(this->DestroyAnim_Random)
@@ -1032,7 +1037,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)
 		.Process(this->StartFacing)
 		.Process(this->StartFacing_Random)
-		;
+		.Process(this->AutoDeath_AllowLimboed)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
+		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
+		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
+		.Process(this->PoseDir_Production)
+		.Process(this->PoseDir_Field)
+    ;
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

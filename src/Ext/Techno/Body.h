@@ -81,6 +81,8 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
+	bool ShouldBeDead;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, Shield {}
@@ -126,6 +128,7 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
+		, ShouldBeDead { false }
 	{ }
 
 	void OnEarlyUpdate();

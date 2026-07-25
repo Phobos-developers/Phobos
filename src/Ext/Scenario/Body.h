@@ -84,6 +84,7 @@ public:
 
 		void UpdateAutoDeathObjectsInLimbo();
 		void UpdateTransportReloaders();
+		void RegisterAutoDeath(TechnoClass* pTechno);
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

@@ -2735,6 +2735,27 @@ DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 	return pThis->CloakState != CloakState::Uncloaked ? SkipDraw : 0;
 }
 
+#pragma region Locomotor=Fly shadow fix
+
+DEFINE_HOOK(0x4146EA, AircraftClass_DrawIt_SkipShadowPoint, 0x7)
+{
+	enum { SkipGameCode = 0x4146F1 };
+
+	GET(Point2D*, pBuffer, ECX);
+
+	*pBuffer = Point2D::Empty;
+	R->EAX(pBuffer);
+	return SkipGameCode;
+}
+
+DEFINE_JUMP(LJMP, 0x41476F, 0x4147F9)
+DEFINE_JUMP(LJMP, 0x4148A5, 0x4148B1)
+
+// Redirect FlyLocomotionClass::Shadow_Point to LocomotionClass::Shadow_Point
+DEFINE_JUMP(VTABLE, 0x7E8A24, 0x55A8C0)
+
+#pragma endregion
+
 // Fix the issue that the jumpjet vehicles cannot stop correctly after going berserk
 DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 {

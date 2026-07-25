@@ -90,9 +90,11 @@ public:
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+	Nullable<bool> AutoDeath_AllowLimboed;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
 	Valueable<bool> AutoDeath_OnOwnerChange;
+	Nullable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 	Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
 	Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 	Valueable<int> AutoDeath_AfterDelay;
@@ -296,6 +298,8 @@ public:
 	Nullable<AnimTypeClass*> Wake_Grapple;
 	Nullable<AnimTypeClass*> Wake_Sinking;
 	Nullable<bool> MakesWake;
+
+	Valueable<float> CrashSpin_Multiplier;
 
 	Nullable<int> AINormalTargetingDelay;
 	Nullable<int> PlayerNormalTargetingDelay;
@@ -527,9 +531,11 @@ public:
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }
+		, AutoDeath_AllowLimboed {}
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
 		, AutoDeath_OnOwnerChange { false }
+		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit {}
 		, AutoDeath_OnOwnerChange_HumanToComputer {}
 		, AutoDeath_OnOwnerChange_ComputerToHuman {}
 		, AutoDeath_AfterDelay { 0 }
@@ -681,6 +687,8 @@ public:
 		, Wake_Grapple { }
 		, Wake_Sinking { }
 		, MakesWake { }
+
+		, CrashSpin_Multiplier { 1.0f }
 
 		, AINormalTargetingDelay {}
 		, PlayerNormalTargetingDelay {}

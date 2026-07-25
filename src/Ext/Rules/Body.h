@@ -123,8 +123,6 @@ public:
 		Valueable<bool> MindControl_IgnoreSize;
 		Valueable<bool> MultiMindControl_ReleaseVictim;
 		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
-		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
-		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 		Valueable<bool> AlternateFLH_OnTurret;
 		Valueable<bool> AlternateFLH_ApplyVehicle;
 		Valueable<bool> DestroyAnim_Random;
@@ -513,6 +511,15 @@ public:
 		Valueable<int> StartFacing;
 		Valueable<bool> StartFacing_Random;
 
+		Valueable<bool> AutoDeath_AllowLimboed;
+		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
+
+		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
+		Nullable<int> PoseDir_Production;
+		Nullable<int> PoseDir_Field;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -608,8 +615,6 @@ public:
 			, MindControl_IgnoreSize { true }
 			, MultiMindControl_ReleaseVictim { false }
 			, MindControlLink_VisibleToHouse { AffectedHouse::All }
-			, AutoDeath_TechnosDontExist_AllowLimboed { false }
-			, AutoDeath_TechnosExist_AllowLimboed { false }
 			, AlternateFLH_OnTurret { true }
 			, AlternateFLH_ApplyVehicle { false }
 			, DestroyAnim_Random { false }
@@ -959,6 +964,15 @@ public:
 
 			, StartFacing { 0 }
 			, StartFacing_Random { false }
+
+			, AutoDeath_AllowLimboed { true }
+			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
+			, AutoDeath_TechnosExist_AllowLimboed { false }
+
+			, AircraftDockingDir_DefaultToPoseDir{ true }
+			, PoseDir_Production {}
+			, PoseDir_Field{}
 		{ }
 
 		virtual ~ExtData() = default;
