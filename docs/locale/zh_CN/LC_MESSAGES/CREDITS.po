@@ -2242,6 +2242,9 @@ msgid ""
 "breaking the normal operation of existing Mods"
 msgstr "为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
 
+msgid "Implement `CurleyShuffle` for AircraftTypes (ported from Vinifera)"
+msgstr "实现战机微观 `CurleyShuffle` 设置（移植自 Vinifera）"
+
 msgid "Fix the bug where warhead flags are read twice"
 msgstr "修复了弹头标签被读取两次的 Bug"
 
@@ -2957,16 +2960,6 @@ msgstr "AI 载具生产更新代码"
 
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
-
-msgid ""
-"**[Vinifera Contributors](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**:"
-msgstr ""
-"**[Vinifera 贡献者](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**："
-
-msgid "Implement `CurleyShuffle` for AircraftTypes"
-msgstr "实现战机微观 `CurleyShuffle` 设置"
 
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
