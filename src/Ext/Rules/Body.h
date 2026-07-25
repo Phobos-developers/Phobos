@@ -407,6 +407,10 @@ public:
 		Valueable<bool> AutoDeath_AllowLimboed;
 		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 
+		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
+		Nullable<int> PoseDir_Production;
+		Nullable<int> PoseDir_Field;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -753,6 +757,10 @@ public:
 
 			, AutoDeath_AllowLimboed { true }
 			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
+
+			, AircraftDockingDir_DefaultToPoseDir{ true }
+			, PoseDir_Production {}
+			, PoseDir_Field{}
 		{ }
 
 		virtual ~ExtData() = default;

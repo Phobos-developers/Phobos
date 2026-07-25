@@ -712,6 +712,10 @@ This page lists all the individual contributions to the project by their author.
   - Add a defining for the auto death effect on whether it can trigger when in Limbo state
   - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange`
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic
+  - Provide a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir`
+  - Separate the definitions of default direction for aircraft production and landing in the field
+  - Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration
+  - Fix the bug where landing direction cannot be correctly converted when set to a value exceeding 256
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
