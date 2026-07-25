@@ -4405,6 +4405,9 @@ msgid ""
 "on the current health of the unit."
 msgstr "若设置负百分比则会根据单位当前生命值按比例造成对应伤害。"
 
+msgid "Customize crash spin multiplier"
+msgstr "自定义坠毁旋转倍率"
+
 msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
 msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
 
