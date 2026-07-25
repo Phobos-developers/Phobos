@@ -390,6 +390,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix Ares' InitialPayload for teams spawned by trigger actions
   - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign
   - Misc code refactor & maintenance, CN doc fixes, bugfixes
+  - Show game time
 - **FlyStar**:
   - Campaign load screen PCX support
   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
@@ -741,6 +742,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
+  - Show game time
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

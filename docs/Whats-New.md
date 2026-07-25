@@ -624,6 +624,7 @@ HideShakeEffects=false           ; boolean
 - [Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-crash-spin-multiplier) (by NetsuNegi)
 - Add a defining for the auto death effect on whether it can trigger when in Limbo state (by Noble_Fish)
 - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange` (by Noble_Fish)
+- [Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
