@@ -28,23 +28,13 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 static void __fastcall InitialPayloadFix(TechnoClass* pThis)
 {
 	pThis->IsInPlayfield = true;
-
-	if (auto const pExt = TechnoExt::Fetch(pThis))
-	{
-		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-		{
-			auto& vec = ScenarioExt::Global()->AutoDeathObjects;
-			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
-				vec.push_back(pExt);
-		}
-	}
-
+	ScenarioExt::Global()->RegisterAutoDeath(pThis);
 	pThis->Limbo();
 }
 
 static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger)
 {
-	InitialPayloadFix(pPassenger);
+	ScenarioExt::Global()->RegisterAutoDeath(pPassenger);
 	pPassenger->AbortMotion();
 }
 
@@ -59,17 +49,7 @@ static void __fastcall UpdateThreatInCell_InitOccupant(TechnoClass* pBuilding, v
 		{
 			FootClass* pLast = pBld->Occupants.GetItem(count - 1);
 			if (pLast)
-			{
-				if (auto pExt = TechnoExt::Fetch(pLast))
-				{
-					if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-					{
-						auto& vec = ScenarioExt::Global()->AutoDeathObjects;
-						if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
-							vec.push_back(pExt);
-					}
-				}
-			}
+				ScenarioExt::Global()->RegisterAutoDeath(pLast);
 		}
 	}
 }
