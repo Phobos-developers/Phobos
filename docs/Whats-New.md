@@ -342,6 +342,7 @@ HideLightFlashEffects=false      ; boolean
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 - Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
 - Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
+- Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 ```
 
 ### 0.4.0.2
