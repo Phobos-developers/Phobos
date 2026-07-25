@@ -17,6 +17,7 @@
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/Tiberium/Body.h>
 #include <Ext/VoxelAnim/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -254,6 +255,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CellExt,
 	EBoltExt,
+	FootExt,
 	HouseExt,
 	HouseTypeExt,
 	InfantryExt,
@@ -272,6 +274,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TEventExt,
 	TiberiumExt,
 	UnitExt,
 	UnitTypeExt,
@@ -279,6 +282,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
+	ParticleTypeExt,
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,

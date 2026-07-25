@@ -299,6 +299,8 @@ public:
 	Nullable<AnimTypeClass*> Wake_Sinking;
 	Nullable<bool> MakesWake;
 
+	Valueable<float> CrashSpin_Multiplier;
+
 	Nullable<int> AINormalTargetingDelay;
 	Nullable<int> PlayerNormalTargetingDelay;
 	Nullable<int> AIGuardAreaTargetingDelay;
@@ -687,6 +689,8 @@ public:
 		, Wake_Grapple { }
 		, Wake_Sinking { }
 		, MakesWake { }
+
+		, CrashSpin_Multiplier { 1.0f }
 
 		, AINormalTargetingDelay {}
 		, PlayerNormalTargetingDelay {}

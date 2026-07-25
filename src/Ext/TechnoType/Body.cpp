@@ -1017,6 +1017,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->MakesWake.Read(exINI, pSection, "MakesWake");
 
+	this->CrashSpin_Multiplier.Read(exINI, pSection, "CrashSpin.Multiplier");
+
 	this->AINormalTargetingDelay.Read(exINI, pSection, "AINormalTargetingDelay");
 	this->PlayerNormalTargetingDelay.Read(exINI, pSection, "PlayerNormalTargetingDelay");
 	this->AIGuardAreaTargetingDelay.Read(exINI, pSection, "AIGuardAreaTargetingDelay");
@@ -1625,6 +1627,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 		.Process(this->MakesWake)
+
+		.Process(this->CrashSpin_Multiplier)
 
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)
