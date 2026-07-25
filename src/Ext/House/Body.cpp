@@ -820,7 +820,8 @@ CanBuildResult HouseExt::BuildLimitGroupUpgradeCheck(const HouseClass* pThis, co
 			auto const pTmpType = extraLimitTypes[i];
 			auto const pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTmpType);
 
-			if (pBuildingType && (BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			if (pBuildingType && BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0)
 				count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 			else
 				count = pThis->CountOwnedNow(pTmpType);
@@ -850,7 +851,8 @@ CanBuildResult HouseExt::BuildLimitGroupUpgradeCheck(const HouseClass* pThis, co
 		auto const pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
 		int ownedNow;
 
-		if (pBuildingType && (BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+		// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+		if (pBuildingType && BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0)
 			ownedNow = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 		else
 			ownedNow = CountOwnedIncludeDeploy(pThis, pType);
@@ -1052,7 +1054,8 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTmpType);
 			int count = 0;
 
-			if (pBuildingType && (BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			if (pBuildingType && BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0)
 				count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				count = pHouse->CountOwnedNow(pTmpType);
@@ -1092,7 +1095,8 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			int owned = 0;
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 
-			if (pBuildingType && (BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			if (pBuildingType && BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0)
 				owned = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				owned = pHouse->CountOwnedNow(pTmpType);
@@ -1130,7 +1134,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			int num = 0;
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 
-			if (pBuildingType && (BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
+			if (pBuildingType && BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.size() > 0)
 				num = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				num = pHouse->CountOwnedNow(pTmpType);
