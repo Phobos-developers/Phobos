@@ -706,7 +706,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
   - Customize the initial facing of buildings
   - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
-  - Add a defining for the auto death effect on whether it can trigger when in Limbo state or as a passenger
+  - Add a defining for the auto death effect on whether it can trigger when in Limbo state
   - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange`
   - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic
 - **Ollerus**:

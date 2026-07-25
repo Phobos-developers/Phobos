@@ -621,7 +621,7 @@ HideShakeEffects=false           ; boolean
 - [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
 - [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
 - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
-- Add a defining for the auto death effect on whether it can trigger when in Limbo state or as a passenger (by Noble_Fish)
+- Add a defining for the auto death effect on whether it can trigger when in Limbo state (by Noble_Fish)
 - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange` (by Noble_Fish)
 
 #### Vanilla fixes:

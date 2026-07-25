@@ -2007,25 +2007,17 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 - If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. If more than one animation is listed, a random one is selected.
 - `AutoDeath.AllowLimboed` can be used to define whether the auto death effect is triggered when the unit is in limbo state.
-- `AutoDeath.AllowPassenger` can be used to define whether the unit triggers the auto death effect when it is a passenger.
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
-
-```{hint}
-Here, the logic has been simplified at the INI writing level:
-- Passengers only check their own `AutoDeath.AllowPassenger` and do not check `AutoDeath.AllowLimboed`, regardless of what the `OpenTopped` of the transport they are riding is.
-```
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 AutoDeath.AllowLimboed=true                       ; boolean
-AutoDeath.AllowPassenger=true                     ; boolean
 AutoDeath.OnOwnerChange.IgnoreRevertOnExit=false  ; boolean
 
 [SOMETECHNO]                                      ; TechnoType
 AutoDeath.Behavior=                               ; enumeration (kill | vanish | sell), default not set
 AutoDeath.AllowLimboed=true                       ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowLimboed
-AutoDeath.AllowPassenger=true                     ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowPassenger
 AutoDeath.VanishAnimation=                        ; List of AnimationTypes
 AutoDeath.OnAmmoDepletion=false                   ; boolean
 AutoDeath.OnOwnerChange=false                     ; boolean

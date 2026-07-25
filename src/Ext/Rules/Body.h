@@ -405,7 +405,6 @@ public:
 		Valueable<bool> StartFacing_Random;
 
 		Valueable<bool> AutoDeath_AllowLimboed;
-		Valueable<bool> AutoDeath_AllowPassenger;
 		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -753,7 +752,6 @@ public:
 			, StartFacing_Random { false }
 
 			, AutoDeath_AllowLimboed { true }
-			, AutoDeath_AllowPassenger { true }
 			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
 		{ }
 

@@ -175,24 +175,6 @@ static void ActivateCommonControls6()
 
 void Phobos::ExeRun()
 {
-	// SyringeEx sets these exported flags before installing any hooks; under an
-	// older Syringe they remain false. Phobos relies on SyringeEx behavior
-	// (e.g. relative-instruction relocation in trampolines), so refuse to run without it.
-	if (!SyringeFeatures::ESPModification
-		|| !SyringeFeatures::ZFPreservation
-		|| !SyringeFeatures::ReladdrInstructionFixup)
-	{
-		MessageBoxW(NULL,
-			L"This version of Phobos requires SyringeEx to run, but the game appears "
-			L"to have been launched with an older version of Syringe.\n\n"
-
-			L"Please replace Syringe.exe in your game folder with the latest SyringeEx release:\n"
-			L"https://github.com/Phobos-developers/SyringeEx/releases",
-			L"Phobos - unsupported Syringe version", MB_OK | MB_ICONERROR);
-
-		ExitProcess(1u);
-	}
-
 	ActivateCommonControls6();
 
 	Patch::ApplyStatic();

@@ -172,18 +172,8 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
-	if (pThis->Transporter)
-	{
-		if (!pTypeExt->AutoDeath_AllowPassenger.Get(RulesExt::Global()->AutoDeath_AllowPassenger))
-			return false;
-
-		// For passengers in OpenTopped transport
-		isInLimbo = true;
-	}
-	else if (isInLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
-	{
+	if (pThis->InLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
 		return false;
-	}
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();

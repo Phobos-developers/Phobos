@@ -240,7 +240,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		}
 		if (pExt->ShouldBeDead && pThis->Transporter
 		&& !IgnoreRevertOnExit
-		&& !pTypeExt->AutoDeath_AllowPassenger.Get(RulesExt::Global()->AutoDeath_AllowPassenger))
+		&& !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
 			pExt->ShouldBeDead = false;
 	}
 

@@ -779,7 +779,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_AllowLimboed.Read(exINI, pSection, "AutoDeath.AllowLimboed");
-	this->AutoDeath_AllowPassenger.Read(exINI, pSection, "AutoDeath.AllowPassenger");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_OnOwnerChange.Read(exINI, pSection, "AutoDeath.OnOwnerChange");
@@ -1420,7 +1419,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_AllowLimboed)
-		.Process(this->AutoDeath_AllowPassenger)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_OnOwnerChange)
