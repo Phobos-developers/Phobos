@@ -2222,7 +2222,7 @@ msgid ""
 "[Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-"
 "crash-spin-multiplier) (by NetsuNegi)"
 msgstr ""
-"自定义坠毁旋转倍率（by NetsuNegi）"
+"[自定义坠毁旋转倍率](Fixed-or-Improved-Logics.md#customize-crash-spin-multiplier)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

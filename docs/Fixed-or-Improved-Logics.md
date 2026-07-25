@@ -1915,7 +1915,7 @@ FallingDownDamage.AllowEMP=true     ; boolean
 
 ### Customize crash spin multiplier
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
 CrashSpin.Multiplier=1.0          ; floating point value
