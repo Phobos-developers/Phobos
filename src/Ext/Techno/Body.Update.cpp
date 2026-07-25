@@ -904,7 +904,7 @@ void TechnoExt::UpdateAttachEffects()
 	auto const pThis = this->OwnerObject();
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
@@ -917,10 +917,10 @@ void TechnoExt::UpdateAttachEffects()
 
 		attachEffect->AI();
 
-		if (attachEffect->NeedsRecalculateStat)
+		if (attachEffect->ShouldRecalculateStats)
 		{
-			altered = true;
-			attachEffect->NeedsRecalculateStat = false;
+			requiresRecalc = true;
+			attachEffect->ShouldRecalculateStats = false;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -931,8 +931,8 @@ void TechnoExt::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -971,7 +971,7 @@ void TechnoExt::UpdateAttachEffects()
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -997,7 +997,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
-	bool altered = false;
+	bool requiresRecalc = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1010,8 +1010,8 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -1048,7 +1048,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (altered && !count)
+	if (requiresRecalc && !count)
 		this->RecalculateStatMultipliers();
 }
 
