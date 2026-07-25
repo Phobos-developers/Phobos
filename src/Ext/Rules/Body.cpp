@@ -470,6 +470,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->StartFacing.Read(exINI, GameStrings::General, "BuildingStartFacing");
 	this->StartFacing_Random.Read(exINI, GameStrings::General, "BuildingStartFacing.Random");
 
+	this->AutoDeath_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.AllowLimboed");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, GameStrings::CombatDamage, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -839,6 +842,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)
 		.Process(this->StartFacing)
 		.Process(this->StartFacing_Random)
+		.Process(this->AutoDeath_AllowLimboed)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
 		;
 }
 
