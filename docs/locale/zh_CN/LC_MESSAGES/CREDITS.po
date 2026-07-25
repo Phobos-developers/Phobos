@@ -1815,6 +1815,11 @@ msgid ""
 "tokens when entered transport"
 msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
 
+msgid ""
+"Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`,"
+" and for Aircraft units being dragged by warheads with `IsLocomotor=yes`"
+msgstr "修复了 `Locomotor=Fly` 的非Aircraft单位与被 `IsLocomotor=yes` 弹头拖拽的Aircraft单位的阴影绘制位置不正确的问题"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
