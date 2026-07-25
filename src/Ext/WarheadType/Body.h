@@ -251,8 +251,6 @@ public:
 	Valueable<bool> ChangeOwner;
 	Valueable<bool> ChangeOwner_SetAsMindControl;
 	Nullable<AnimTypeClass*> ChangeOwner_MindControlAnim;
-	Nullable<int> ChangeOwner_Duration;
-	Valueable<bool> ChangeOwner_Duration_PreventChange;
 
 	Nullable<bool> ApplyPerTargetEffectsOnDetonate;
 
@@ -549,8 +547,6 @@ public:
 		, ChangeOwner { false }
 		, ChangeOwner_SetAsMindControl { false }
 		, ChangeOwner_MindControlAnim {}
-		, ChangeOwner_Duration {}
-		, ChangeOwner_Duration_PreventChange { false }
 
 		, ApplyPerTargetEffectsOnDetonate {}
 

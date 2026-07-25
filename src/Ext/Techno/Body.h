@@ -83,10 +83,6 @@ public:
 
 	bool ShouldBeDead;
 
-	CDTimerClass OwnerTimer;
-	HouseClass* OwnerOriginalOwner;
-	bool ImmuneToChangeOwner;
-
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, Shield {}
@@ -133,9 +129,6 @@ public:
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
 		, ShouldBeDead { false }
-		, OwnerTimer {}
-		, OwnerOriginalOwner {}
-		, ImmuneToChangeOwner { false }
 	{ }
 
 	void OnEarlyUpdate();
@@ -173,7 +166,6 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
-	void UpdateOwnerTimer();
 
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();

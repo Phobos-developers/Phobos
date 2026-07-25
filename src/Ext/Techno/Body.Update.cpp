@@ -24,7 +24,6 @@ void TechnoExt::OnEarlyUpdate()
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
 	this->UpdateLastTargetCrd();
-	this->UpdateOwnerTimer();
 
 	if (this->CheckDeathConditions())
 		return;
@@ -1247,15 +1246,6 @@ void TechnoExt::UpdateTintValues()
 	{
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
-	}
-}
-
-void TechnoExt::ExtData::UpdateOwnerTimer()
-{
-	if (this->OwnerTimer.Completed())
-	{
-		this->OwnerObject()->SetOwningHouse(this->OwnerOriginalOwner);
-		this->ImmuneToChangeOwner = false;
 	}
 }
 

@@ -431,8 +431,6 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
 	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
-	this->ChangeOwner_Duration.Read(exINI, pSection, "ChangeOwner.Duration");
-	this->ChangeOwner_Duration_PreventChange.Read(exINI, pSection, "ChangeOwner.Duration.PreventChange");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
@@ -784,8 +782,6 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->ChangeOwner)
 		.Process(this->ChangeOwner_SetAsMindControl)
 		.Process(this->ChangeOwner_MindControlAnim)
-		.Process(this->ChangeOwner_Duration)
-		.Process(this->ChangeOwner_Duration_PreventChange)
 
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 

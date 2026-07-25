@@ -290,8 +290,6 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 			pTrail->CurrentColor = pNewOwner->LaserColor;
 	}
 
-	pExt->OwnerTimer.Stop();
-
 	return 0;
 }
 

@@ -490,23 +490,12 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 
 void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	const bool isMindControl = this->ChangeOwner_SetAsMindControl;
-	const bool isImmune = pTargetExt->ImmuneToChangeOwner || (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
+	const bool isImmune = (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
 
 	if (!isImmune)
 	{
-		auto const pOwner = pTarget->Owner;
 		pTarget->SetOwningHouse(pHouse, true);
-		pTargetExt->OwnerOriginalOwner = pOwner;
-
-		if (this->ChangeOwner_Duration && !isMindControl)
-		{
-			pTargetExt->OwnerTimer.Start(this->ChangeOwner_Duration);
-
-			if (this->ChangeOwner_Duration_PreventChange)
-				pTargetExt->ImmuneToChangeOwner = true;
-		}
 
 		if (isMindControl)
 		{
