@@ -2264,6 +2264,7 @@ msgstr ""
 
 msgid "[Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)"
 msgstr ""
+"[显示游戏时间](User-Interface.md#show-game-time)（by Trsdy 与 Ollerus）"
 
 msgid ""
 "Provided a toggle for whether the landing direction in default scenarios "

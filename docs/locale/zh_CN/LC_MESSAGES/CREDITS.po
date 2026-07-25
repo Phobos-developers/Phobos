@@ -1170,6 +1170,7 @@ msgstr "各种代码重构与维护、中文文档修正、错误修复"
 
 msgid "Show game time"
 msgstr ""
+"显示游戏时间"
 
 msgid "**FlyStar**:"
 msgstr "**FlyStar**："

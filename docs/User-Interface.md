@@ -400,6 +400,7 @@ ShowDesignatorRange=false             ; boolean
 ```
 
 ### Show game time
+
 - A timer can be displayed to show how many time has passed since game starts.
   - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
   - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.
