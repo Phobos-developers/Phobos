@@ -2191,6 +2191,11 @@ msgstr ""
 "[自定义建筑初始方向](Fixed-or-Improved-Logics.md"
 "#customize-the-initial-facing-of-buildings)（by Noble_Fish）"
 
+msgid ""
+"Customize crash spin multiplier (by NetsuNegi)"
+msgstr ""
+"自定义坠毁旋转倍率（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2642,6 +2647,11 @@ msgid ""
 "Fixed the bug that techno will get stuck if change owner in tunnel (by "
 "NetsuNegi)"
 msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug（by NetsuNegi）"
+
+msgid ""
+"Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`,"
+" and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)"
+msgstr "修复了 `Locomotor=Fly` 的非Aircraft单位与被 `IsLocomotor=yes` 弹头拖拽的Aircraft单位的阴影绘制位置不正确的问题（by NetsuNegi）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："

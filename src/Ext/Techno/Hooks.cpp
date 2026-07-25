@@ -47,13 +47,12 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	auto const pExt = FootExt::Fetch(pThis);
-
-	if (pExt->PreviousType)
-		pExt->UpdateTypeData_Foot();
-
 	pExt->UpdateWarpInDelay();
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
+
+	if (pExt->AttackMoveFollowerTempCount)
+		pExt->AttackMoveFollowerTempCount--;
 
 	return 0;
 }
@@ -70,6 +69,7 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
 	pExt->UpdateSubterraneanHarvester();
+	pExt->UpdateRecoilData();
 
 	// Replace vanilla animation counter code in UnitClass::AI.
 	if (pThis->IsAlive && !pExt->DelayedFireSequencePaused && !((pThis->IsWarpingIn() && pThis->TemporalTargetingMe) || pThis->IsBeingWarpedOut()))
@@ -288,7 +288,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
-	pExt->InitializeRecoilData();
+
+	if (pType->WhatAmI() == AbstractType::UnitType)
+		static_cast<UnitExt*>(pExt)->InitializeRecoilData();
 
 	if (!pExt->AE.HasTint) // already updated when initializing attach effect
 		pExt->UpdateTintValues();
@@ -716,7 +718,7 @@ DEFINE_HOOK(0x44F62B, BuildingClass_CanPlayerMove_NoManualMove, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
+DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x0)
 {
 	enum { SkipGameCode = 0x70EFF2 };
 
@@ -1262,7 +1264,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
 			pThis->GetGuardRange(2) / (double)Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
 
-		TechnoClass* pClosestTarget = nullptr;
+		FootClass* pClosestTarget = nullptr;
 		int closestRange = 65536;
 		const auto pMegaMissionTarget = pThis->MegaDestination ? pThis->MegaDestination : (pThis->MegaTarget ? pThis->MegaTarget : pThis);
 		const auto pOwner = pThis->Owner;
@@ -1273,7 +1275,8 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				&& pTechno != pThis && pTechno->Owner == pOwner
 				&& pTechno->MegaMissionIsAttackMove())
 			{
-				auto const pTargetExt = TechnoExt::Fetch(pTechno);
+				auto const pFoot = static_cast<FootClass*>(pTechno);
+				auto const pTargetExt = FootExt::Fetch(pFoot);
 
 				// Check this to prevent the followed techno from being surrounded
 				if (pTargetExt->AttackMoveFollowerTempCount >= 6)
@@ -1283,11 +1286,11 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 				if (!pTargetTypeExt->AttackMove_Follow)
 				{
-					auto const dist = pTechno->DistanceFrom(pMegaMissionTarget);
+					auto const dist = pFoot->DistanceFrom(pMegaMissionTarget);
 
 					if (dist < closestRange)
 					{
-						pClosestTarget = pTechno;
+						pClosestTarget = pFoot;
 						closestRange = dist;
 					}
 				}
@@ -1296,7 +1299,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 		if (pClosestTarget)
 		{
-			auto const pTargetExt = TechnoExt::Fetch(pClosestTarget);
+			auto const pTargetExt = FootExt::Fetch(pClosestTarget);
 			pTargetExt->AttackMoveFollowerTempCount += pThis->WhatAmI() == AbstractType::Infantry ? 1 : 3;
 			pThis->SetDestination(pClosestTarget, false);
 			pThis->SetArchiveTarget(pClosestTarget);

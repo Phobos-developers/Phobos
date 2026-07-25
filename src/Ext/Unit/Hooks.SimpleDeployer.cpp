@@ -2,9 +2,7 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Utilities/AresFunctions.h>
 
 static __forceinline bool HasDeployingAnim(UnitTypeClass* pType)

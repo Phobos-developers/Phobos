@@ -3,10 +3,8 @@
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/Aircraft/Body.h>
-#include <Ext/UnitType/Body.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
@@ -14,7 +12,10 @@ DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor, int turIdx)
 {
-	TechnoTypeExt::Fetch(pType)->ApplyTurretOffset(mtx, factor, turIdx);
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+		UnitTypeExt::Fetch(pUnitType)->ApplyTurretOffsetUnit(mtx, factor, turIdx);
+	else
+		TechnoTypeExt::Fetch(pType)->ApplyTurretOffset(mtx, factor);
 }
 
 DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
@@ -31,9 +32,9 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 {
 	enum { CleanFlag = 0x73B78A, SkipFlag = 0x73B790 };
 
-	GET(TechnoTypeClass* const, pDrawType, EBX);
+	GET(UnitTypeClass* const, pDrawType, EBX);
 
-	auto const pDrawTypeExt = TechnoTypeExt::Fetch(pDrawType);
+	auto const pDrawTypeExt = UnitTypeExt::Fetch(pDrawType);
 
 	return (*pDrawTypeExt->TurretOffset.GetEx() == CoordStruct::Empty
 		&& pDrawTypeExt->ExtraTurretCount <= 0
@@ -68,7 +69,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	enum { SkipGameCode = 0x73BEA4 };
 
 	GET(UnitClass* const, pThis, EBP);
-	GET(TechnoTypeClass* const, pDrawType, EBX);
+	GET(UnitTypeClass* const, pDrawType, EBX);
 	GET_STACK(const bool, haveTurretCache, STACK_OFFSET(0x1C4, -0x1B3));
 	GET_STACK(const bool, haveBar, STACK_OFFSET(0x1C4, -0x1B2));
 	GET(const bool, haveBarrelCache, EAX);
@@ -83,8 +84,8 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	// base matrix
 	const auto mtx = Matrix3D::VoxelDefaultMatrix * drawMatrix;
 
-	const auto pExt = TechnoExt::Fetch(pThis);
-	const auto pDrawTypeExt = TechnoTypeExt::Fetch(pDrawType);
+	const auto pExt = UnitExt::Fetch(pThis);
+	const auto pDrawTypeExt = UnitTypeExt::Fetch(pDrawType);
 	const bool notChargeTurret = pThis->Type->TurretCount <= 0 || pThis->Type->IsGattling;
 
 	auto getTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
@@ -146,7 +147,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 			auto getTurretMatrix = [=, &mtx]() -> Matrix3D
 				{
 					auto mtx_turret = mtx;
-					pDrawTypeExt->ApplyTurretOffset(&mtx_turret, Pixel_Per_Lepton, turIdx);
+					pDrawTypeExt->ApplyTurretOffsetUnit(&mtx_turret, Pixel_Per_Lepton, turIdx);
 					mtx_turret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - GetPrimaryRadian(pThis)));
 
 					if (turretInRecoil)
@@ -848,7 +849,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	const auto haveBar = pBarrelVoxel && pBarrelVoxel->VXL && pBarrelVoxel->HVA && !pBarrelVoxel->VXL->Initialized;
 	auto pCache = &pDrawType->VoxelShadowCache;
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = UnitExt::Fetch(pThis);
 
 	// Not available under multiple turrets/barrels due to different base positions
 	if (notUseTurretShadow)
@@ -858,7 +859,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	auto drawTurretShadow = [&](int turIdx)
 		{
 			auto mtx_turret = mtx;
-			pDrawTypeExt->ApplyTurretOffset(&mtx_turret, adjustedFactor, turIdx);
+			pDrawTypeExt->ApplyTurretOffsetUnit(&mtx_turret, adjustedFactor, turIdx);
 			mtx_turret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
 			const auto pTurData = pDrawType->TurretRecoil ? ((turIdx >= 0) ? &pExt->ExtraTurretRecoil[turIdx] : &pThis->TurretRecoil) : nullptr;
@@ -1032,7 +1033,6 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	return FinishDrawing;
 }
 
-DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);// Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
 DEFINE_JUMP(LJMP, 0x706BDD, 0x706C01); // I checked it a priori
 
 /*

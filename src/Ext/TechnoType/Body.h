@@ -90,9 +90,11 @@ public:
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+	Nullable<bool> AutoDeath_AllowLimboed;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
 	Valueable<bool> AutoDeath_OnOwnerChange;
+	Nullable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 	Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
 	Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 	Valueable<int> AutoDeath_AfterDelay;
@@ -148,16 +150,16 @@ public:
 	Nullable<int> OpenTopped_RangeBonus;
 	Nullable<float> OpenTopped_DamageMultiplier;
 	Nullable<int> OpenTopped_WarpDistance;
-	Valueable<bool> OpenTopped_IgnoreRangefinding;
-	Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+	Nullable<bool> OpenTopped_IgnoreRangefinding;
+	Nullable<bool> OpenTopped_AllowFiringIfDeactivated;
 	Nullable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
-	Valueable<bool> OpenTopped_ShareTransportTarget;
-	Valueable<bool> OpenTopped_UseTransportRangeModifiers;
-	Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
+	Nullable<bool> OpenTopped_ShareTransportTarget;
+	Nullable<bool> OpenTopped_UseTransportRangeModifiers;
+	Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 	Nullable<bool> OpenTopped_DecloakToFire;
 	Nullable<bool> OpenTopped_FireWhileMoving;
-	Valueable<int> OpenTransport_RangeBonus;
-	Valueable<float> OpenTransport_DamageMultiplier;
+	Nullable<int> OpenTransport_RangeBonus;
+	Nullable<float> OpenTransport_DamageMultiplier;
 	Nullable<bool> OpenTransport_FireWhileMoving;
 
 	Valueable<bool> AutoTargetOwnPosition;
@@ -297,6 +299,8 @@ public:
 	Nullable<AnimTypeClass*> Wake_Sinking;
 	Nullable<bool> MakesWake;
 
+	Valueable<float> CrashSpin_Multiplier;
+
 	Nullable<int> AINormalTargetingDelay;
 	Nullable<int> PlayerNormalTargetingDelay;
 	Nullable<int> AIGuardAreaTargetingDelay;
@@ -426,14 +430,6 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-	Nullable<bool> BarrelOverTurret;
-	Valueable<int> BarrelOffset;
-	Valueable<int> ExtraBarrelCount;
-	std::vector<int> ExtraBarrelOffsets;
-	Valueable<int> ExtraTurretCount;
-	std::vector<CoordStruct> ExtraTurretOffsets;
-	Valueable<int> BurstPerTurret;
-
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -514,16 +510,16 @@ public:
 		, OpenTopped_RangeBonus {}
 		, OpenTopped_DamageMultiplier {}
 		, OpenTopped_WarpDistance {}
-		, OpenTopped_IgnoreRangefinding { false }
+		, OpenTopped_IgnoreRangefinding {}
 		, OpenTopped_AllowFiringIfAttackedByLocomotor {}
-		, OpenTopped_AllowFiringIfDeactivated { true }
-		, OpenTopped_ShareTransportTarget { true }
-		, OpenTopped_UseTransportRangeModifiers { false }
-		, OpenTopped_CheckTransportDisableWeapons { false }
+		, OpenTopped_AllowFiringIfDeactivated {}
+		, OpenTopped_ShareTransportTarget {}
+		, OpenTopped_UseTransportRangeModifiers {}
+		, OpenTopped_CheckTransportDisableWeapons {}
 		, OpenTopped_DecloakToFire {}
 		, OpenTopped_FireWhileMoving {}
-		, OpenTransport_RangeBonus { 0 }
-		, OpenTransport_DamageMultiplier { 1.0f }
+		, OpenTransport_RangeBonus {}
+		, OpenTransport_DamageMultiplier {}
 		, OpenTransport_FireWhileMoving {}
 
 		, AutoTargetOwnPosition { false }
@@ -537,9 +533,11 @@ public:
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }
+		, AutoDeath_AllowLimboed {}
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
 		, AutoDeath_OnOwnerChange { false }
+		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit {}
 		, AutoDeath_OnOwnerChange_HumanToComputer {}
 		, AutoDeath_OnOwnerChange_ComputerToHuman {}
 		, AutoDeath_AfterDelay { 0 }
@@ -692,6 +690,8 @@ public:
 		, Wake_Sinking { }
 		, MakesWake { }
 
+		, CrashSpin_Multiplier { 1.0f }
+
 		, AINormalTargetingDelay {}
 		, PlayerNormalTargetingDelay {}
 		, AIGuardAreaTargetingDelay {}
@@ -806,14 +806,6 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
-
-		, BarrelOverTurret { }
-		, BarrelOffset { 0 }
-		, ExtraBarrelCount { 0 }
-		, ExtraBarrelOffsets { }
-		, ExtraTurretCount { 0 }
-		, ExtraTurretOffsets { }
-		, BurstPerTurret { 0 }
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
@@ -822,7 +814,7 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0, int turIdx = -1);
+	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 	void CalculateSpawnerRange();
 	bool IsSecondary(int nWeaponIndex) const;
 

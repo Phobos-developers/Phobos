@@ -34,7 +34,6 @@ public:
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 	AttachEffectTechnoProperties AE;
-	TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 	std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 	int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 	CDTimerClass PassengerDeletionTimer;
@@ -74,8 +73,6 @@ public:
 	int TintIntensityAllies;
 	int TintIntensityEnemies;
 
-	int AttackMoveFollowerTempCount;
-
 	bool SpecialTracked;
 	bool FallingDownTracked;
 
@@ -84,8 +81,7 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	std::vector<RecoilData> ExtraTurretRecoil;
-	std::vector<RecoilData> ExtraBarrelRecoil;
+	bool ShouldBeDead;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
@@ -93,7 +89,6 @@ public:
 		, LaserTrails {}
 		, AttachedEffects {}
 		, AE {}
-		, PreviousType { nullptr }
 		, ElectricBolts {}
 		, AnimRefCount { 0 }
 		, PassengerDeletionTimer {}
@@ -127,15 +122,13 @@ public:
 		, TintIntensityOwner { 0 }
 		, TintIntensityAllies { 0 }
 		, TintIntensityEnemies { 0 }
-		, AttackMoveFollowerTempCount { 0 }
 		, SpecialTracked { false }
 		, FallingDownTracked { false }
 		, OnParachuted { false }
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, ExtraTurretRecoil {}
-		, ExtraBarrelRecoil {}
+		, ShouldBeDead { false }
 	{ }
 
 	void OnEarlyUpdate();
@@ -153,7 +146,6 @@ public:
 	void EatPassengers();
 	void UpdateShield();
 	void ApplySpawnLimitRange();
-	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
@@ -174,9 +166,6 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
-	void InitializeRecoilData();
-	void UpdateRecoilData();
-	void RecordRecoilData();
 
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
@@ -257,7 +246,6 @@ public:
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
-	static bool IsVeterancyInThreshold(TechnoClass* pObject, double min, double max);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);

@@ -221,7 +221,7 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	{
 		const auto pTransporterTypeExt = TechnoExt::Fetch(pThis->Transporter)->TypeExtData;
 		mult *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
-		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 	}
 
 	return mult;
@@ -355,11 +355,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	{
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
-
-			if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
-				pFootExt->UpdateTypeData_Foot();
-
+			FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 			return true;
 		}
 
@@ -461,11 +457,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	TechnoExt::Fetch(pThis)->UpdateTypeData(pToType);
-
-	if (auto const pFootExt = FootExt::TryFetch(abstract_cast<FootClass*, true>(pThis)))
-		pFootExt->UpdateTypeData_Foot();
-
+	FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
 }
 
@@ -1064,7 +1056,6 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
-		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
@@ -1097,15 +1088,13 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->TintIntensityOwner)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
-		.Process(this->AttackMoveFollowerTempCount)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->ExtraTurretRecoil)
-		.Process(this->ExtraBarrelRecoil)
+		.Process(this->ShouldBeDead)
 		;
 }
 

@@ -1,7 +1,7 @@
 #include "Body.h"
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TeamType/Body.h>
+#include <Ext/Scenario/Body.h>
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
@@ -45,6 +45,8 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 
 		if (isTransportOpenTopped)
 			pTransport->EnteredOpenTopped(pNext);
+
+		ScenarioExt::Global()->RegisterAutoDeath(pNext);
 	}
 
 	// Add to transport - this will load the payload object and everything linked to it (rest of the team) in reverse order

@@ -159,57 +159,6 @@ void TechnoExt::InitializeAttachEffects()
 	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 }
 
-void TechnoExt::InitializeRecoilData()
-{
-	const auto pTypeExt = this->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
-
-	if (!pType->TurretRecoil)
-		return;
-
-	// Always resize to match the current type's count so that type conversions
-	// (e.g. 9 turrets -> 2) do not leave stale elements that waste memory and
-	// inflate the save file.
-	this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
-
-	if (pTypeExt->ExtraTurretCount)
-	{
-		const auto& refData = pType->TurretAnimData;
-
-		for (auto& data : this->ExtraTurretRecoil)
-		{
-			data.Turret.Travel = refData.Travel;
-			data.Turret.CompressFrames = refData.CompressFrames;
-			data.Turret.RecoverFrames = refData.RecoverFrames;
-			data.Turret.HoldFrames = refData.HoldFrames;
-			data.TravelPerFrame = 0.0;
-			data.TravelSoFar = 0.0;
-			data.State = RecoilData::RecoilState::Inactive;
-			data.TravelFramesLeft = 0;
-		}
-	}
-
-	const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
-	this->ExtraBarrelRecoil.resize(dataCount);
-
-	if (dataCount)
-	{
-		const auto& refData = pType->BarrelAnimData;
-
-		for (auto& data : this->ExtraBarrelRecoil)
-		{
-			data.Turret.Travel = refData.Travel;
-			data.Turret.CompressFrames = refData.CompressFrames;
-			data.Turret.RecoverFrames = refData.RecoverFrames;
-			data.Turret.HoldFrames = refData.HoldFrames;
-			data.TravelPerFrame = 0.0;
-			data.TravelSoFar = 0.0;
-			data.State = RecoilData::RecoilState::Inactive;
-			data.TravelFramesLeft = 0;
-		}
-	}
-}
-
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
 int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk)
 {

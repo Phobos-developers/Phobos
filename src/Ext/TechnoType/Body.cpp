@@ -7,7 +7,6 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/InfantryType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -17,10 +16,10 @@
 
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor, int turIdx)
+void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
-	const auto offset = turIdx < 0 ? static_cast<CoordStruct*>(this->TurretOffset.GetEx()) : &this->ExtraTurretOffsets[turIdx];
+	const auto offset = static_cast<CoordStruct*>(this->TurretOffset.GetEx());
 	const float x = static_cast<float>(offset->X * factor);
 	const float y = static_cast<float>(offset->Y * factor);
 	const float z = static_cast<float>(offset->Z * factor);
@@ -779,9 +778,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_AllowLimboed.Read(exINI, pSection, "AutoDeath.AllowLimboed");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_OnOwnerChange.Read(exINI, pSection, "AutoDeath.OnOwnerChange");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, pSection, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
 	this->AutoDeath_OnOwnerChange_HumanToComputer.Read(exINI, pSection, "AutoDeath.OnOwnerChange.HumanToComputer");
 	this->AutoDeath_OnOwnerChange_ComputerToHuman.Read(exINI, pSection, "AutoDeath.OnOwnerChange.ComputerToHuman");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
@@ -1015,6 +1016,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->MakesWake.Read(exINI, pSection, "MakesWake");
+
+	this->CrashSpin_Multiplier.Read(exINI, pSection, "CrashSpin.Multiplier");
 
 	this->AINormalTargetingDelay.Read(exINI, pSection, "AINormalTargetingDelay");
 	this->PlayerNormalTargetingDelay.Read(exINI, pSection, "PlayerNormalTargetingDelay");
@@ -1295,51 +1298,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			this->AlternateFLHs.emplace_back(alternateFLH);
 	}
 
-	// Multi-turret / multi-barrel position offsets
-	this->BarrelOverTurret.Read(exArtINI, pArtSection, "BarrelOverTurret");
-	this->BarrelOffset.Read(exArtINI, pArtSection, "BarrelOffset");
-	this->ExtraBarrelCount.Read(exArtINI, pArtSection, "ExtraBarrelCount");
-
-	if (this->ExtraBarrelCount > 0)
-	{
-		for (int i = 0; i < this->ExtraBarrelCount; ++i)
-		{
-			Valueable<int> extraBarrelOffset;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraBarrelOffset%u", i);
-			extraBarrelOffset.Read(exArtINI, pArtSection, tempBuffer);
-			this->ExtraBarrelOffsets.emplace_back(extraBarrelOffset.Get());
-		}
-	}
-	else
-	{
-		this->ExtraBarrelCount = 0;
-	}
-
-	this->ExtraTurretCount.Read(exArtINI, pArtSection, "ExtraTurretCount");
-
-	if (this->ExtraTurretCount > 0)
-	{
-		for (int i = 0; i < this->ExtraTurretCount; ++i)
-		{
-			Valueable<CoordStruct> extraTurretOffset;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraTurretOffset%u", i);
-			extraTurretOffset.Read(exArtINI, pArtSection, tempBuffer);
-			this->ExtraTurretOffsets.emplace_back(extraTurretOffset.Get());
-		}
-		this->BurstPerTurret.Read(exArtINI, pArtSection, "BurstPerTurret");
-	}
-	else
-	{
-		this->ExtraTurretCount = 0;
-	}
-
 	// Parasitic types
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
 	if (canParse && !this->PassengerDeletionType)
-		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(pThis);
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>();
 
 	if (this->PassengerDeletionType)
 	{
@@ -1369,7 +1334,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (isInterceptor)
 	{
 		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(pThis);
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>();
 
 		this->InterceptorType->LoadFromINI(pINI, pSection);
 	}
@@ -1455,9 +1420,11 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->PassengerDeletionType)
 
 		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_AllowLimboed)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_OnOwnerChange)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
 		.Process(this->AutoDeath_OnOwnerChange_HumanToComputer)
 		.Process(this->AutoDeath_OnOwnerChange_ComputerToHuman)
 		.Process(this->AutoDeath_AfterDelay)
@@ -1661,6 +1628,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Wake_Sinking)
 		.Process(this->MakesWake)
 
+		.Process(this->CrashSpin_Multiplier)
+
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)
 		.Process(this->AIGuardAreaTargetingDelay)
@@ -1775,14 +1744,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
-
-		.Process(this->BarrelOverTurret)
-		.Process(this->BarrelOffset)
-		.Process(this->ExtraBarrelCount)
-		.Process(this->ExtraBarrelOffsets)
-		.Process(this->ExtraTurretCount)
-		.Process(this->ExtraTurretOffsets)
-		.Process(this->BurstPerTurret)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
@@ -1807,18 +1768,8 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 	// The extension is allocated by the concrete type leaf constructors
 	// (UnitType/InfantryType/BuildingType/AircraftType), not here at the TechnoTypeClass level.
 	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
-
-	return 0;
-}
-
-//DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
-DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, EBP);
-	GET_STACK(CCINIClass*, pINI, 0x380);
-
-	if (auto const pExt = TechnoTypeExt::TryFetch(pItem))
-		pExt->LoadFromINI(pINI);
+	pItem->LeptonMindControlOffset = RulesExt::Global()->LeptonMindControlOffset;
+	pItem->MindControlRingOffset = RulesExt::Global()->MindControlRingOffset;
 
 	return 0;
 }
@@ -1837,15 +1788,3 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 }
 #endif
 
-DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
-{
-	GET(UnitTypeClass*, pItem, ESI);
-
-	if (auto pTypeExt = TechnoTypeExt::TryFetch(pItem))
-	{
-		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
-			pTypeExt->Harvester_Counted = true;
-	}
-
-	return 0;
-}

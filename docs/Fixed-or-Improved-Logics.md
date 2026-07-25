@@ -286,7 +286,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
-- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 - Fixed the bug that techno in attack move will move to target if it cannot attack it.
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
@@ -323,6 +322,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 - Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
+- Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
 
 ## Fixes / interactions with other extensions
 
@@ -502,6 +502,24 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 AdjacentWallDamage=200  ; integer
+```
+
+### Customize the global default values of some vanilla flags
+
+- The following flags supplement definitions for flags that do not have global default values in vanilla.
+
+```{hint}
+Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+DefaultToGuardArea=false    ; boolean
+
+[AudioVisual]
+LeptonMindControlOffset=70  ; integer, in leptons
+MindControlRingOffset=140   ; integer, in leptons
 ```
 
 ### Customizing effect of level lighting on air units
@@ -1911,6 +1929,14 @@ In `rulesmd.ini`:
 FallingDownDamage=                  ; integer / percentage
 FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
+```
+
+### Customize crash spin multiplier
+
+In `rulesmd.ini`
+```ini
+[SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
+CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
 ### Customize the landing animation of technos that have `Locomotor=Fly`

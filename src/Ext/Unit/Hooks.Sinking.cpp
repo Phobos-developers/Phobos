@@ -1,6 +1,5 @@
-#include <Ext/Techno/Body.h>
+
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
 {

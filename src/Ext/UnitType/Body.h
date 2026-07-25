@@ -75,6 +75,14 @@ public:
 
 	SHPStruct* TurretShape;
 
+	Nullable<bool> BarrelOverTurret;
+	Valueable<int> BarrelOffset;
+	Valueable<int> ExtraBarrelCount;
+	std::vector<int> ExtraBarrelOffsets;
+	Valueable<int> ExtraTurretCount;
+	std::vector<CoordStruct> ExtraTurretOffsets;
+	Valueable<int> BurstPerTurret;
+
 	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, SinkSpeed { 5 }
 		, Sinkable {}
@@ -128,6 +136,13 @@ public:
 		, Deploy_NoTiberium { false }
 		, HoverDrownable { true }
 		, TurretShape { nullptr }
+		, BarrelOverTurret { }
+		, BarrelOffset { 0 }
+		, ExtraBarrelCount { 0 }
+		, ExtraBarrelOffsets { }
+		, ExtraTurretCount { 0 }
+		, ExtraTurretOffsets { }
+		, BurstPerTurret { 0 }
 	{ }
 
 	UnitTypeClass* OwnerObject() const
@@ -157,6 +172,8 @@ public:
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+	void ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx);
 
 private:
 	template <typename T>

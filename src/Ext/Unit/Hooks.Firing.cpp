@@ -1,6 +1,4 @@
-#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_JUMP(LJMP, 0x741406, 0x741427)

@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -13,7 +12,7 @@
 	TechnoTypeClass const*pType = pLinked->GetTechnoType(); \
 	TechnoTypeExt const*pExt = TechnoTypeExt::Fetch(pType);
 
-DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
+DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x0)
 {
 	GET_LOCO(ESI);
 

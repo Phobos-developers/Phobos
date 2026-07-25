@@ -2,7 +2,6 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Ext/Foot/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/WeaponType/Body.h>
 

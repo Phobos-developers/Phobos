@@ -114,7 +114,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
 			&& pExt->OriginalPassengerOwner)
 		{
+			pExt->IsOwnerChangeFromRevertOnExit = true;
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
+			pExt->IsOwnerChangeFromRevertOnExit = false;
 		}
 	}
 
@@ -175,7 +177,7 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 		auto const pExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 		const int rangeBonus = pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus);
 
-		R->EAX(rangeBonus + TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_RangeBonus);
+		R->EAX(rangeBonus + TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_RangeBonus.Get(RulesExt::Global()->OpenTransport_RangeBonus));
 		return 0x6F72DE;
 	}
 
@@ -207,7 +209,7 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 	{
 		auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-		if (!pTypeExt->OpenTopped_ShareTransportTarget)
+		if (!pTypeExt->OpenTopped_ShareTransportTarget.Get(RulesExt::Global()->OpenTopped_ShareTransportTarget))
 			return ReturnFromFunction;
 	}
 

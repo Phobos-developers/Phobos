@@ -31,6 +31,8 @@ void UnitExt::Serialize(T& Stm)
 		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->IsBurrowed)
 		.Process(this->UndergroundTracked)
+		.Process(this->ExtraTurretRecoil)
+		.Process(this->ExtraBarrelRecoil)
 		;
 }
 
@@ -378,6 +380,111 @@ UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)
 	}
 
 	return nullptr;
+}
+
+void UnitExt::InitializeRecoilData()
+{
+	const auto pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
+	const auto pType = pTypeExt->OwnerObject();
+
+	if (!pType->TurretRecoil)
+		return;
+
+	// Always resize to match the current type's count so that type conversions
+	// (e.g. 9 turrets -> 2) do not leave stale elements that waste memory and
+	// inflate the save file.
+	this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
+
+	if (pTypeExt->ExtraTurretCount)
+	{
+		const auto& refData = pType->TurretAnimData;
+
+		for (auto& data : this->ExtraTurretRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
+
+	const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
+	this->ExtraBarrelRecoil.resize(dataCount);
+
+	if (dataCount)
+	{
+		const auto& refData = pType->BarrelAnimData;
+
+		for (auto& data : this->ExtraBarrelRecoil)
+		{
+			data.Turret.Travel = refData.Travel;
+			data.Turret.CompressFrames = refData.CompressFrames;
+			data.Turret.RecoverFrames = refData.RecoverFrames;
+			data.Turret.HoldFrames = refData.HoldFrames;
+			data.TravelPerFrame = 0.0;
+			data.TravelSoFar = 0.0;
+			data.State = RecoilData::RecoilState::Inactive;
+			data.TravelFramesLeft = 0;
+		}
+	}
+}
+
+void UnitExt::RecordRecoilData()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = static_cast<UnitTypeExt*>(this->TypeExtData);
+
+	if (auto turretIndex = pTypeExt->BurstPerTurret
+		? ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1))
+		: 0)
+	{
+		turretIndex -= 1;
+		this->ExtraTurretRecoil[turretIndex].TravelSoFar = 0.0;
+		this->ExtraTurretRecoil[turretIndex].Fire();
+	}
+	else
+	{
+		pThis->TurretRecoil.TravelSoFar = 0.0;
+		pThis->TurretRecoil.Fire();
+	}
+
+	if (auto barrelIndex = (pTypeExt->ExtraTurretCount || pTypeExt->ExtraBarrelCount)
+		? (pThis->CurrentBurstIndex % ((pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1)))
+		: 0)
+	{
+		barrelIndex -= 1;
+		this->ExtraBarrelRecoil[barrelIndex].TravelSoFar = 0.0;
+		this->ExtraBarrelRecoil[barrelIndex].Fire();
+	}
+	else
+	{
+		pThis->BarrelRecoil.TravelSoFar = 0.0;
+		pThis->BarrelRecoil.Fire();
+	}
+}
+
+// Skip vanilla recoil update
+DEFINE_JUMP(LJMP, 0x6FA4D1, 0x6FA4FB);
+
+void UnitExt::UpdateRecoilData()
+{
+	if (!this->TypeExtData->OwnerObject()->TurretRecoil)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	pThis->TurretRecoil.Update();
+	pThis->BarrelRecoil.Update();
+
+	for (auto& data : this->ExtraTurretRecoil)
+		data.Update();
+
+	for (auto& data : this->ExtraBarrelRecoil)
+		data.Update();
 }
 
 void UnitExt::LoadFromStream(PhobosStreamReader& Stm)

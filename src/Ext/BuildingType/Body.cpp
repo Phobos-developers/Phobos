@@ -485,6 +485,20 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 	return 0;
 }
 
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
+{
+	GET(BuildingTypeClass*, pItem, EBP);
+	GET_STACK(CCINIClass*, pINI, 0x364);
+
+	if (auto const pExt = BuildingTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
+
+	return 0;
+}
+
 // Late in every destructor body of the class, right before it chains into the
 // base destructor: the last point where the extension is no longer used.
 DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0xE)
