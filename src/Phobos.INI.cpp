@@ -118,7 +118,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowFlashOnSelecting", false);
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 	Phobos::Config::ShowGameTime = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowGameTime", false);
-	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 0);
+	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);

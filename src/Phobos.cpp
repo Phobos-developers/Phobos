@@ -315,7 +315,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
-			DSurface::Composite->GetWidth() - wanted.Width - 10,
+			DSurface::Composite->GetWidth() - wanted.Width - 30,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
@@ -334,11 +334,16 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		return 0;
 
 	wchar_t buffer[0x20] {};
-	const int total_seconds = Unsorted::CurrentFrame / 15;
+	const auto& timer = ScenarioClass::Instance->ElapsedTimer;
+	int currentTime = timer.TimeLeft;
 
-	const int hours = total_seconds / 3600;
-	const int minutes = (total_seconds / 60) % 60;
-	const int seconds = total_seconds % 60;
+	if (timer.StartTime != -1)
+		currentTime += SystemTimer::GetTime() - timer.StartTime;
+
+	currentTime /= 60;
+	const int hours = currentTime / 3600;
+	const int minutes = (currentTime / 60) % 60;
+	const int seconds = currentTime % 60;
 	const auto text = GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time:");
 
 	if (hours > 0)
@@ -353,7 +358,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	auto wantedB = Drawing::GetTextDimensions(buffer, { 0, 0 }, 0, 2, 0);
 
 	RectangleStruct rectB = {
-		DSurface::Composite->GetWidth() - wantedB.Width - 10,
+		DSurface::Composite->GetWidth() - wantedB.Width - 30,
 		coordY,
 		wantedB.Width + 10,
 		wantedB.Height + 10
