@@ -120,6 +120,19 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 	}
 }
 
+void ScenarioExt::ExtData::RegisterAutoDeath(TechnoClass* pTechno)
+{
+	if (auto const pExt = TechnoExt::Fetch(pTechno))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = this->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
+	}
+}
+
 // =============================
 // load / save
 

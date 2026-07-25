@@ -7,14 +7,22 @@ ScriptExt::ExtContainer ScriptExt::ExtMap;
 // =============================
 // load / save
 
+template <typename T>
+void ScriptExt::Serialize(T& Stm)
+{
+	//Stm;
+}
+
 void ScriptExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	// Nothing yet
+	AbstractExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
 void ScriptExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	// Nothing yet
+	AbstractExt::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)

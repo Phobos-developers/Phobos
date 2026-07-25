@@ -549,6 +549,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
   - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
+  - Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`
+  - Customize crash spin multiplier
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -707,6 +709,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
   - Customize the initial facing of buildings
   - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
+  - Add a defining for the auto death effect on whether it can trigger when in Limbo state
+  - Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange`
+  - Fix a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
