@@ -217,13 +217,16 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
+		const auto pFoot = generic_cast<FootClass*>(pThis);
+		const bool IgnoreRevertOnExit = pFoot ? FootExt::Fetch(pFoot)->IsOwnerChangeFromRevertOnExit : false;
 		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
 		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
 
-		if (humanToComputer && computerToHuman)
+		if (pTypeExt->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Get(RulesExt::Global()->AutoDeath_OnOwnerChange_IgnoreRevertOnExit) && IgnoreRevertOnExit)
+			pExt->ShouldBeDead = false;
+		else if (humanToComputer && computerToHuman)
 		{
-			TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
-			return 0;
+			pExt->ShouldBeDead = true;
 		}
 		else if (humanToComputer || computerToHuman)
 		{
@@ -232,12 +235,13 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 			if (I_am_human != pNewOwner->IsControlledByHuman())
 			{
 				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
-				{
-					TechnoExt::KillSelf(pThis, pTypeExt->AutoDeath_Behavior, pTypeExt->AutoDeath_VanishAnimation, !pThis->IsInLogic && pThis->IsAlive);
-					return 0;
-				}
+					pExt->ShouldBeDead = true;
 			}
 		}
+		if (pExt->ShouldBeDead && pThis->Transporter
+		&& !IgnoreRevertOnExit
+		&& !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+			pExt->ShouldBeDead = false;
 	}
 
 	auto const pType = pTypeExt->OwnerObject();

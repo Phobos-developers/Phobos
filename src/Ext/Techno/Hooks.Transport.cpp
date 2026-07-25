@@ -114,7 +114,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
 			&& pExt->OriginalPassengerOwner)
 		{
+			pExt->IsOwnerChangeFromRevertOnExit = true;
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
+			pExt->IsOwnerChangeFromRevertOnExit = false;
 		}
 	}
 

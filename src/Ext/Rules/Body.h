@@ -333,7 +333,6 @@ public:
 		Valueable<bool> AffectsInvokerOnly_IgnoreInvokerState;
 
 		Valueable<bool> FiringAnim_Update;
-		int FiringAnimUpdateCount;
 
 		Valueable<bool> ExtendedPlayerRepair;
 		
@@ -403,6 +402,13 @@ public:
 
 		Valueable<int> StartFacing;
 		Valueable<bool> StartFacing_Random;
+
+		Valueable<bool> AutoDeath_AllowLimboed;
+		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
+
+		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
+		Nullable<int> PoseDir_Production;
+		Nullable<int> PoseDir_Field;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -712,7 +718,6 @@ public:
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
-			, FiringAnimUpdateCount { 0 }
 			, ExtendedPlayerRepair { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }
@@ -747,6 +752,13 @@ public:
 
 			, StartFacing { 0 }
 			, StartFacing_Random { false }
+
+			, AutoDeath_AllowLimboed { true }
+			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
+
+			, AircraftDockingDir_DefaultToPoseDir{ true }
+			, PoseDir_Production {}
+			, PoseDir_Field{}
 		{ }
 
 		virtual ~ExtData() = default;

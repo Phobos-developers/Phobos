@@ -421,7 +421,7 @@ DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 
 static DirType __fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 {
-	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
+	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding, true);
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x446F67, AircraftClass_PoseDir_Wrapper); // BuildingClass_GrandOpening
 
@@ -440,7 +440,7 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AircraftClass*, pAircraft, EBP);
 
-	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
+	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis, true));
 
 	if (AircraftTypeExt::Fetch(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		pAircraft->PrimaryFacing.SetCurrent(dir);

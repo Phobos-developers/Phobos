@@ -386,7 +386,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
@@ -396,8 +396,8 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -416,7 +416,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)

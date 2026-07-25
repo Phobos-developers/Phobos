@@ -184,17 +184,17 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
 
-	// NeedCalculate
+	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
 		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
 		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
 	{
-		this->NeedCalculate = true;
+		this->RequiresRecalculation = true;
 	}
 	else
 	{
-		this->NeedCalculate = false;
+		this->RequiresRecalculation = false;
 	}
 }
 
@@ -264,7 +264,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
-		.Process(this->NeedCalculate)
+		.Process(this->RequiresRecalculation)
 		;
 }
 

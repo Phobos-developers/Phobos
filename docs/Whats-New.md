@@ -22,6 +22,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
+- The default direction for aircraft landing on an airfield will use the direction specified by `[AudioVisual] -> PoseDir=` instead of the building's direction, which can be reverted by setting `AircraftDockingDir.DefaultToPoseDir=false`.
 
 ## Breaking changes
 
@@ -35,6 +36,8 @@ This serves as a changelog for when you just need to drop the new version in wit
 - `UseCenterCoordsIfAttached` has been replaced by enumeration key `AttachedAnimPosition`. Set `AttachedAnimPosition=center` to replicate effects of `UseCenterCoordsIfAttached=true`.
 - Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned if the position was corrected to account for the bug.
 - `DeployingAnim.AllowAnyDirection` has been superceded by `DeployDir`. Use value of -1 to re-enable the no facing restriction.
+- In v0.4, the direction for aircraft landing in the field would treat `[AudioVisual] -> PoseDir=` as 256-directional instead of 8-directional; now it is controlled by `[AudioVisual] -> PoseDir.Field` and defaults to 32 times the value of `[AudioVisual] -> PoseDir=` to avoid breaking original behavior.
+- In v0.4, the landing direction of aircraft was clamped to `[0, 255]`. This has now been improved to allow correct calculation of values exceeding 255, just like the original `PoseDir`. Correspondingly, designs that previously relied on this clamping need to be manually adjusted to accommodate.
 - The following tags were renamed for consistency:
   - `[AttachEffectType] -> AffectTargets` -> `[AttachEffectType] -> AffectsTarget`
   - `[AttachEffectType] -> ReflectDamage.AffectsHouses` -> `[AttachEffectType] -> ReflectDamage.AffectsHouse`
@@ -622,6 +625,11 @@ HideShakeEffects=false           ; boolean
 - [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
 - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
 - [Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-crash-spin-multiplier) (by NetsuNegi)
+- Add a defining for the auto death effect on whether it can trigger when in Limbo state (by Noble_Fish)
+- Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange` (by Noble_Fish)
+- [Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)
+- Provided a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir` (by Noble_Fish)
+- [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -746,6 +754,8 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
+- Fixed the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration (by Noble_Fish)
+- Fixed the bug where landing direction cannot be correctly converted when set to a value exceeding 256 (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -773,6 +783,7 @@ HideShakeEffects=false           ; boolean
 - [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 ```
 
 ### 0.4.0.3

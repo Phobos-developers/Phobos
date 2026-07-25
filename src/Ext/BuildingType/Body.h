@@ -68,6 +68,7 @@ public:
 	Valueable<bool> IsAnimDelayedBurst;
 
 	std::vector<std::optional<DirType>> AircraftDockingDirs;
+		Nullable<bool> AircraftDockingDir_DefaultToPoseDir;
 
 	ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 	ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
