@@ -1,4 +1,4 @@
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 
 DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 {
@@ -20,7 +20,7 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 
 			if (pWeapon && pWeapon->FireOnce)
 			{
-				const auto pExt = TechnoExt::Fetch(pThis);
+				const auto pExt = UnitExt::Fetch(pUnit);
 
 				if (pExt->DeployFireTimer.HasTimeLeft())
 					return DoNotExecute;
@@ -57,7 +57,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 		{
 			pThis->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
-			const auto pExt = TechnoExt::Fetch(pThis);
+			const auto pExt = UnitExt::Fetch(pThis);
 			const auto UnloadControl = &MissionControlClass::Array[(int)Mission::Unload];
 			const int delay = static_cast<int>(UnloadControl->Rate * 900) + ScenarioClass::Instance->Random(0, 2);
 			pExt->DeployFireTimer.Start(Math::min(pWeapon->ROF, delay));

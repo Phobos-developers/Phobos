@@ -53,6 +53,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `[WarheadType/SuperWeaponType] -> Convert(N).AffectedHouses` -> `[WarheadType/SuperWeaponType] -> Convert(N).AffectsHouse`
   - `[SuperWeaponType] -> LimboKill.Affected` -> `[SuperWeaponType] -> LimboKill.AffectsHouse`
 - The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
+- Phobos now requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) to run - under older Syringe versions the game will show an error and exit on startup. Replace `Syringe.exe` in your game folder with the one bundled with the Phobos package (also available separately on the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases)).
 
 ```{note}
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.
@@ -617,6 +618,10 @@ HideShakeEffects=false           ; boolean
 - Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
 - Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
 - [Customize the initial facing of buildings](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings) (by Noble_Fish)
+- [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
+- [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
+- Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
+- [Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-crash-spin-multiplier) (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -702,6 +707,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
+- Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

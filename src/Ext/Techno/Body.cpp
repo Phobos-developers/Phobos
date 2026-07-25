@@ -15,8 +15,6 @@
 #include <Utilities/AresHelper.h>
 #include <Interop/TechnoExt.h>
 
-UnitClass* TechnoExt::Deployer = nullptr;
-
 TechnoExt::~TechnoExt()
 {
 	auto const pTypeExt = this->TypeExtData;
@@ -59,9 +57,6 @@ TechnoExt::~TechnoExt()
 	}
 
 	this->ElectricBolts.clear();
-
-	if (this->UndergroundTracked)
-		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
 
 	if (this->SpecialTracked)
 		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
@@ -226,7 +221,7 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	{
 		const auto pTransporterTypeExt = TechnoExt::Fetch(pThis->Transporter)->TypeExtData;
 		mult *= pTransporterTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier);
-		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		mult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 	}
 
 	return mult;
@@ -360,9 +355,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	{
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			auto const pTypeExt = TechnoExt::Fetch(pThis);
-			pTypeExt->UpdateTypeData(pToType);
-			pTypeExt->UpdateTypeData_Foot();
+			FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 			return true;
 		}
 
@@ -464,35 +457,8 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	auto const pTypeExt = TechnoExt::Fetch(pThis);
-	pTypeExt->UpdateTypeData(pToType);
-	pTypeExt->UpdateTypeData_Foot();
+	FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
-}
-
-// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
-bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
-{
-	if (!pThis)
-		return false;
-
-	auto const pDeployType = pThis->Type->DeploysInto;
-
-	if (!pDeployType)
-		return noDeploysIntoDefaultValue;
-
-	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
-
-	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
-		mapCoords += CellStruct { -1, -1 };
-
-	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
-	// Now, through additional checks, we can directly exclude the unit who want to deploy.
-	TechnoExt::Deployer = pThis;
-	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
-	TechnoExt::Deployer = nullptr;
-
-	return canDeploy;
 }
 
 bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
@@ -607,72 +573,6 @@ int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEf
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pData)
-{
-	if (pUnit->IsGreenHP())
-	{
-		return nullptr;
-	}
-	else if (pUnit->IsYellowHP())
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
-	else
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageRed = pData->WaterImage_ConditionRed)
-				return imageRed;
-			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageRed = pData->Image_ConditionRed)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageRed);
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
-
-	return nullptr;
-}
-
-AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
-{
-	auto const pType = pAircraft->Type;
-	auto const pData = TechnoTypeExt::Fetch(pType);
-
-	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
-	{
-		return pType;
-	}
-	else if (pAircraft->IsYellowHP())
-	{
-		if (auto const imageYellow = pData->Image_ConditionYellow)
-			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-	}
-	else
-	{
-		if (auto const imageRed = pData->Image_ConditionRed)
-			return abstract_cast<AircraftTypeClass*, true>(imageRed);
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-	}
-
-	return pType;
-
-}
-
 void TechnoExt::ResetDelayedFireTimer()
 {
 	this->DelayedFireTimer.Stop();
@@ -772,131 +672,6 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 	const double hp = pObject->GetHealthPercentage();
 	return (hp > 0 ? hp > min : hp >= min) && hp <= max;
-}
-
-bool TechnoExt::CannotMove(UnitClass* pThis)
-{
-	if (pThis->LocomotorSource)
-		return false;
-
-	const auto pType = pThis->Type;
-
-	if (pType->Speed == 0)
-		return true;
-
-	const auto movementRestrictedTo = pType->MovementRestrictedTo;
-
-	if (movementRestrictedTo == LandType::None)
-		return false;
-
-	auto landType = pThis->GetCell()->LandType;
-
-	if (landType == LandType::Tunnel)
-		return false;
-
-	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
-		landType = LandType::Road;
-
-	if (movementRestrictedTo != landType)
-		return true;
-
-	return false;
-}
-
-bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
-{
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
-	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return true;
-
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-		return true;
-
-	return false;
-}
-
-void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
-{
-	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	if (const int add = pTypeExt->Ammo_AddOnDeploy)
-	{
-		const int maxAmmo = maxAmmoOverride >= 0 ? maxAmmoOverride : pTypeExt->OwnerObject()->Ammo;
-		const int originalAmmo = pThis->Ammo;
-		pThis->Ammo = std::clamp(originalAmmo + add, 0, maxAmmo);
-
-		if (originalAmmo != pThis->Ammo)
-		{
-			pThis->StartReloading();
-			pThis->Mark(MarkType::Change);
-		}
-	}
-}
-
-bool TechnoExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes)
-{
-	auto const pType = pThis->Type;
-
-	if (!pType->IsSimpleDeployer)
-		return defaultValue;
-
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
-
-	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-	{
-		LandTypeFlags disallowedLandTypes;
-
-		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
-		{
-			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
-		}
-		else
-		{
-			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
-			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
-			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
-			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
-		}
-
-		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
-			return false;
-
-		if (alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-			return true;
-	}
-	else
-	{
-		return defaultValue;
-	}
-
-	auto const pTypeConvert = pTypeExt->Convert_Deploy;
-	SpeedType speed = SpeedType::None;
-	MovementZone mZone = MovementZone::None;
-
-	if (AresFunctions::ConvertTypeTo && pTypeConvert)
-	{
-		speed = pTypeConvert->SpeedType;
-		mZone = pTypeConvert->MovementZone;
-	}
-	else
-	{
-		speed = pType->SpeedType;
-		mZone = pType->MovementZone;
-	}
-
-	if (speed != SpeedType::None && mZone != MovementZone::None)
-	{
-		auto const pCell = pThis->GetCell();
-		return pCell->IsClearToMove(speed, true, true, -1, mZone, -1, pCell->ContainsBridge());
-	}
-
-	return true;
 }
 
 void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
@@ -1281,28 +1056,14 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
-		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
-		.Process(this->SubterraneanHarvStatus)
-		.Process(this->SubterraneanHarvRallyPoint)
-		.Process(this->ReceiveDamage)
-		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
-		.Process(this->LastWarpDistance)
-		.Process(this->JumpjetSpeed)
 		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->DamageNumberOffset)
-		.Process(this->Strafe_BombsDroppedThisRound)
-		.Process(this->Strafe_TargetCell)
-		.Process(this->CurrentAircraftWeaponIndex)
-		.Process(this->IsInTunnel)
-		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
-		.Process(this->DeployFireTimer)
-		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
@@ -1314,39 +1075,25 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetID)
 		.Process(this->AccumulatedGattlingValue)
 		.Process(this->ShouldUpdateGattlingValue)
-		.Process(this->OriginalPassengerOwner)
-		.Process(this->HasRemainingWarpInDelay)
-		.Process(this->LastWarpInDelay)
-		.Process(this->IsBeingChronoSphered)
-		.Process(this->KeepTargetOnMove)
-		.Process(this->LastSensorsMapCoords)
-		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
-		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
-		.Process(this->ResetLocomotor)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
 		.Process(this->TintColorEnemies)
 		.Process(this->TintIntensityOwner)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
-		.Process(this->AttackMoveFollowerTempCount)
-		.Process(this->UndergroundTracked)
 		.Process(this->SpecialTracked)
 		.Process(this->FallingDownTracked)
-		.Process(this->JumpjetStraightAscend)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->ExtraTurretRecoil)
-		.Process(this->ExtraBarrelRecoil)
 		;
 }
 

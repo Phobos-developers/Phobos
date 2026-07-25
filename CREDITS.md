@@ -548,6 +548,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that techno will get stuck if change owner in tunnel
   - Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect
   - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
+  - Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`
+  - Customize crash spin multiplier
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -587,6 +589,7 @@ This page lists all the individual contributions to the project by their author.
   - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
   - Voxel drawing invisible sections skip
   - Extension system rework
+  - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -704,6 +707,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the distance for `NoQueueUpToEnter` transport units to board passengers
   - Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking
   - Customize the initial facing of buildings
+  - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

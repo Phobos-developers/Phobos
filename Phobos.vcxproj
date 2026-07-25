@@ -33,6 +33,7 @@
   <Import Project="$(YRppDir)\YRpp.props" />
   <!-- Resource files -->
   <ItemGroup>
+    <ResourceCompile Include="src\Misc\ExceptionHandler.rc" />
     <ResourceCompile Include="src\version.rc" />
   </ItemGroup>
   <!-- Compiled files -->
@@ -76,6 +77,7 @@
     <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\Ext\Foot\Body.cpp" />
     <ClCompile Include="src\Ext\Unit\Body.cpp" />
     <ClCompile Include="src\Ext\Infantry\Body.cpp" />
     <ClCompile Include="src\Ext\UnitType\Body.cpp" />
@@ -247,6 +249,9 @@
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.Dialog.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.Report.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
@@ -401,6 +406,8 @@
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->
     <ClInclude Include="src\Misc\BlittersFix.h" />
+    <ClInclude Include="src\Misc\ExceptionHandler.h" />
+    <ClInclude Include="src\Misc\ExceptionHandler.Resource.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\MessageColumn.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />

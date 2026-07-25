@@ -11,7 +11,36 @@ public:
 
 	static constexpr DWORD Canary = 0xF5F6F7F8;
 
+	Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+	NullableIdx<VocClass> SlavesFreeSound;
+	Valueable<bool> NotHuman_RandomDeathSequence;
+	Valueable<InfantryTypeClass*> DefaultDisguise;
+	Nullable<double> ProneSpeed;
+	Valueable<bool> OnlyUseLandSequences;
+	Nullable<bool> SecondaryFireSequenceLandOnly;
+	Nullable<CoordStruct> PronePrimaryFireFLH;
+	Nullable<CoordStruct> ProneSecondaryFireFLH;
+	Nullable<CoordStruct> DeployedPrimaryFireFLH;
+	Nullable<CoordStruct> DeployedSecondaryFireFLH;
+	std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
+	std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+	std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
+	std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+	Nullable<bool> InfantryAutoDeploy;
+
 	explicit InfantryTypeExt(InfantryTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
+		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+		, SlavesFreeSound {}
+		, NotHuman_RandomDeathSequence { false }
+		, DefaultDisguise {}
+		, ProneSpeed {}
+		, OnlyUseLandSequences { false }
+		, SecondaryFireSequenceLandOnly {}
+		, PronePrimaryFireFLH {}
+		, ProneSecondaryFireFLH {}
+		, DeployedPrimaryFireFLH {}
+		, DeployedSecondaryFireFLH {}
+		, InfantryAutoDeploy {}
 	{ }
 
 	InfantryTypeClass* OwnerObject() const
@@ -37,4 +66,12 @@ public:
 	{
 		return AbstractExt::TryFetch<InfantryTypeExt>(pThis);
 	}
+
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };

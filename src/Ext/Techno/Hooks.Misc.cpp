@@ -5,6 +5,10 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
+#include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -14,7 +18,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 {
 	GET(TechnoClass*, pSlave, EDI);
 
-	const auto pTypeExt = TechnoExt::Fetch(pSlave)->TypeExtData;
+	const auto pTypeExt = InfantryTypeExt::Fetch(static_cast<InfantryClass*>(pSlave)->Type);
 	const int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
@@ -28,7 +32,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 
 	GET(InfantryClass*, pSlave, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pSlave->Type);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pSlave->Type);
 
 	switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
 	{
@@ -432,7 +436,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = TechnoExt::Fetch(pLoco->LinkedTo);
+	const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
 	pExt->IsBurrowed = true;
 
 	if (const auto pShieldData = pExt->Shield.get())
@@ -454,7 +458,7 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 
 	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
 	{
-		const auto pExt = TechnoExt::Fetch(pLoco->LinkedTo);
+		const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
 		pExt->IsBurrowed = false;
 
 		if (const auto pShieldData = pExt->Shield.get())
@@ -476,7 +480,7 @@ DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -491,7 +495,7 @@ DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -507,7 +511,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
@@ -524,7 +528,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 	GET(TechnoClass*, pLinkedTo, EAX);
 	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
 
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 
 	return SkipGameCode;
@@ -537,7 +541,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 {
 	GET(InfantryClass*, pThis, ECX);
-	auto const pExt = TechnoTypeExt::Fetch(pThis->Type);
+	auto const pExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pExt->DefaultDisguise)
 	{
@@ -557,7 +561,7 @@ DEFINE_HOOK(0x746A30, UnitClass_UpdateDisguise_DefaultMirageDisguises, 0x5)
 	enum { Apply = 0x746A6C };
 
 	GET(UnitClass*, pThis, ESI);
-	const auto& disguises = TechnoTypeExt::Fetch(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
+	const auto& disguises = UnitTypeExt::Fetch(pThis->Type)->DefaultMirageDisguises.GetElements(RulesClass::Instance->DefaultMirageDisguises);
 	TerrainTypeClass* pDisguiseAs = nullptr;
 
 	if (const int size = static_cast<int>(disguises.size()))
@@ -746,7 +750,7 @@ DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
 
 	const auto pType = pThis->Type;
 
-	if (!TechnoTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+	if (!UnitTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return NoNeedToCheck;
 
 	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
@@ -803,7 +807,7 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 
 	if (!pTarget)
 	{
-		auto const pExt = TechnoExt::Fetch(pThis);
+		auto const pExt = InfantryExt::Fetch(pThis);
 
 		if (pExt->SkipTargetChangeResetSequence)
 		{
@@ -840,7 +844,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 
 	R->EBP(0); // Restore overridden instructions.
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 	if (pTypeExt->OnlyUseLandSequences)
 		return SkipWaterSequences;
 
@@ -925,6 +929,29 @@ DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
 	return 0;
 }
 
+// rotation when crashing made optional
+DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
+{
+	enum { SkipGameCode = 0x4DED4B };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	const float multiplier = pTypeExt->CrashSpin_Multiplier;
+
+	if (multiplier > 0.0f)
+	{
+		auto& random = ScenarioClass::Instance->Random;
+		pThis->RockingSidewaysPerFrame = static_cast<float>((random(0, 2147483646) * 4.656612877414201e-10 * 0.15 + 0.1) * multiplier);
+
+		if (!random(0, 1))
+			pThis->RockingSidewaysPerFrame *= -1.0f;
+
+		pThis->RockingForwardsPerFrame = static_cast<float>(random(0, 2147483646) * 4.656612877414201e-10 * 0.1 * multiplier);
+	}
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region Events
@@ -944,7 +971,7 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 		}
 
 		// Explicit stop command should reset subterranean harvester state machine.
-		auto const pExt = TechnoExt::Fetch(pUnit);
+		auto const pExt = UnitExt::Fetch(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
 		pExt->SubterraneanHarvRallyPoint = nullptr;
 	}
@@ -963,7 +990,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
 
 	GET(EventClass*, pThis, ESI);
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
-	auto const pExt = TechnoExt::Fetch(pTechno);
+	auto const pExt = UnitExt::Fetch(static_cast<UnitClass*>(pTechno));
 
 	if (mission == Mission::Move)
 	{

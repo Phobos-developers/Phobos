@@ -3,41 +3,24 @@
 #include <LoadOptionsClass.h>
 
 #include <Ext/Aircraft/Body.h>
-#include <Ext/AircraftType/Body.h>
-#include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
-#include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
-#include <Ext/House/Body.h>
-#include <Ext/HouseType/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
-#include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
-#include <Ext/SWType/Body.h>
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
-#include <Ext/Team/Body.h>
-#include <Ext/TeamType/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/Tiberium/Body.h>
 #include <Ext/VoxelAnim/Body.h>
-#include <Ext/VoxelAnimType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
 
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -272,6 +255,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CellExt,
 	EBoltExt,
+	FootExt,
 	HouseExt,
 	HouseTypeExt,
 	InfantryExt,
@@ -290,6 +274,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TEventExt,
 	TiberiumExt,
 	UnitExt,
 	UnitTypeExt,
@@ -297,6 +282,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
+	ParticleTypeExt,
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,

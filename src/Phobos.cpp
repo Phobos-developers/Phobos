@@ -4,6 +4,10 @@
 #include <SessionClass.h>
 #include <Unsorted.h>
 
+#include <commctrl.h>
+
+#include <Misc/ExceptionHandler.h>
+
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
@@ -42,12 +46,9 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
-	bool dontSetExceptionHandler =
-#ifdef DEBUG
-		true;
-#else
-		false;
-#endif // DEBUG
+	// Enabled by default in all builds: an attached debugger receives
+	// exceptions first, so the handler does not get in the way of debugging.
+	bool dontSetExceptionHandler = false;
 	Parser<bool> boolParser { };
 
 	// > 1 because the exe path itself counts as an argument, too!
@@ -82,6 +83,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			bool v = dontSetExceptionHandler;
 			if (boolParser.TryParse(value.c_str(), &v))
 				dontSetExceptionHandler = !v;
+		}
+		if (_stricmp(pArg, "-FullCrashDump") == 0)
+		{
+			ExceptionHandler::GenerateFullCrashDump = true;
 		}
 	}
 
@@ -121,12 +126,75 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 
 	Game::DontSetExceptionHandler = dontSetExceptionHandler;
 
+	// Phobos replaces the game's exception handler with its own (see
+	// ExceptionHandler.cpp); it is reachable exactly when the game's main
+	// loop handler is armed, so it shares the -ExceptionHandler toggle.
+	if (!dontSetExceptionHandler)
+		ExceptionHandler::Init();
+
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
+// gamemd.exe has no manifest, so its windows bind the ancient Common Controls
+// v5 and render Win9x-style. Activating Phobos' embedded manifest (resource 2,
+// carrying the comctl32 v6 dependency - see ExceptionHandler.rc) for the rest
+// of the process' lifetime makes every window created on the main thread use
+// modern visual styles: game dialogs, message boxes and the crash dialog.
+static void ActivateCommonControls6()
+{
+	char modulePath[MAX_PATH] = { };
+	GetModuleFileNameA(static_cast<HMODULE>(Phobos::hInstance), modulePath, sizeof(modulePath));
+
+	ACTCTXA actCtx = { };
+	actCtx.cbSize = sizeof(actCtx);
+	actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID;
+	actCtx.lpSource = modulePath;
+	actCtx.lpResourceName = MAKEINTRESOURCEA(2); // ISOLATIONAWARE_MANIFEST_RESOURCE_ID
+
+	HANDLE const hActCtx = CreateActCtxA(&actCtx);
+	ULONG_PTR cookie = 0;
+	if (hActCtx != INVALID_HANDLE_VALUE)
+		ActivateActCtx(hActCtx, &cookie); // deliberately never deactivated
+
+	// gamemd.exe has no manifest, so it loaded Common Controls v5 at startup
+	// and the v6 theming subclasses were never installed. With the context
+	// now active, loading comctl32 resolves to the v6 side-by-side assembly;
+	// InitCommonControlsEx then registers its themed classes. Without this,
+	// activating the manifest alone leaves controls rendering unthemed.
+	if (HMODULE const comctl = LoadLibraryA("comctl32.dll"))
+	{
+		using InitCommonControlsEx_t = BOOL(WINAPI*)(const INITCOMMONCONTROLSEX*);
+		if (auto const pInit = reinterpret_cast<InitCommonControlsEx_t>(GetProcAddress(comctl, "InitCommonControlsEx")))
+		{
+			INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES };
+			pInit(&icc);
+		}
+	}
+}
+
 void Phobos::ExeRun()
 {
+	// SyringeEx sets these exported flags before installing any hooks; under an
+	// older Syringe they remain false. Phobos relies on SyringeEx behavior
+	// (e.g. relative-instruction relocation in trampolines), so refuse to run without it.
+	if (!SyringeFeatures::ESPModification
+		|| !SyringeFeatures::ZFPreservation
+		|| !SyringeFeatures::ReladdrInstructionFixup)
+	{
+		MessageBoxW(NULL,
+			L"This version of Phobos requires SyringeEx to run, but the game appears "
+			L"to have been launched with an older version of Syringe.\n\n"
+
+			L"Please replace Syringe.exe in your game folder with the latest SyringeEx release:\n"
+			L"https://github.com/Phobos-developers/SyringeEx/releases",
+			L"Phobos - unsupported Syringe version", MB_OK | MB_ICONERROR);
+
+		ExitProcess(1u);
+	}
+
+	ActivateCommonControls6();
+
 	Patch::ApplyStatic();
 
 #ifdef DEBUG

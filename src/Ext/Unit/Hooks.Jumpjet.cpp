@@ -1,6 +1,7 @@
 #include <JumpjetLocomotionClass.h>
 
-#include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
@@ -68,7 +69,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
 		return 0;
 
-	if (err == FireError::REARM && !TechnoTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+	if (err == FireError::REARM && !UnitTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return 0;
 
 	auto const pWpn = pThis->GetWeapon(wpIdx)->WeaponType;
@@ -182,7 +183,7 @@ DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
 {
 	GET(FootClass*, pLinkedTo, EAX);
 	const auto pType = pLinkedTo->GetTechnoType();
-	const auto pExt = TechnoExt::Fetch(pLinkedTo);
+	const auto pExt = FootExt::Fetch(pLinkedTo);
 
 	pExt->JumpjetSpeed = pType->JumpjetSpeed;
 	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
@@ -388,7 +389,7 @@ DEFINE_HOOK(0x54BBD0, JumpjetLocomotionClass_Ascending_JumpjetStraightAscend, 0x
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pTechnoExt = TechnoExt::Fetch(pThis->LinkedTo);
+	auto const pTechnoExt = FootExt::Fetch(pThis->LinkedTo);
 
 	if (pTechnoExt->JumpjetStraightAscend)
 		return SkipGameCode;
@@ -405,7 +406,7 @@ DEFINE_HOOK(0x54D600, JumpjetLocomotionClass_MovementAI_JumpjetStraightAscend, 0
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	auto const pLinkedTo = pThis->LinkedTo;
-	auto const pTechnoExt = TechnoExt::Fetch(pLinkedTo);
+	auto const pTechnoExt = FootExt::Fetch(pLinkedTo);
 
 	if (pTechnoExt->JumpjetStraightAscend)
 	{
@@ -464,7 +465,7 @@ DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x
 	GET(ILocomotion*, pThis, EBP);
 	GET(FootClass*, pLinkedTo, EBX);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(pThis);
-	const auto pLinkedToExt = TechnoExt::Fetch(pLinkedTo);
+	const auto pLinkedToExt = FootExt::Fetch(pLinkedTo);
 	const auto pType = pLinkedTo->GetTechnoType();
 
 	if (const auto pLocomotorWarhead = WarheadTypeExt::LocomotorWarhead)

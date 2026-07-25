@@ -1,4 +1,4 @@
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_JUMP(LJMP, 0x741406, 0x741427)
@@ -15,8 +15,8 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	if (pType->Turret || pType->Voxel || pThis->InLimbo)
 		return 0;
 
-	const auto pExt = TechnoExt::Fetch(pThis);
-	const auto pTypeExt = pExt->TypeExtData;
+	const auto pExt = UnitExt::Fetch(pThis);
+	const auto pTypeExt = pExt->GetTypeExtData();
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
 	const int fireUp = pTypeExt->FireUp;
