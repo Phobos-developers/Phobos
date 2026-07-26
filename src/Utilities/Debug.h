@@ -78,7 +78,7 @@ public:
 	static void Release();
 
 	template<size_t Length>
-	constexpr static void Write(const char (&str)[Length])
+	constexpr static void Write(const char(&str)[Length])
 	{
 		Write(str, Length - 1); // -1 because there is a '\0' here
 	}

@@ -4,8 +4,40 @@
 #include <unordered_map>
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
 #include <Utilities/TemplateDef.h>
+#include "LaserTrailTypeClass.h"
+
+// AE discard condition
+enum class DiscardCondition : unsigned short
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+	Drain = 0x8,
+	InRange = 0x10,
+	OutOfRange = 0x20,
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploying = 0x100,
+	Harvesting = 0x200
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
+
+// AE expire weapon condition
+enum class ExpireWeaponCondition : unsigned char
+{
+	None = 0x0,
+	Expire = 0x1,
+	Remove = 0x2,
+	Death = 0x4,
+	Discard = 0x8,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
@@ -13,15 +45,23 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
+	ValueableVector<TechnoTypeClass*> AffectTypes;
+	ValueableVector<TechnoTypeClass*> IgnoreTypes;
+	Valueable<AffectedTarget> AffectsTarget;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
+	Valueable<bool> CumulativeAnimations_RestartOnChange;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
@@ -30,11 +70,14 @@ public:
 	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
+	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -49,27 +92,42 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
-	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
+	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
-	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
+	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
+	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool RequiresRecalculation;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
+		, AffectTypes {}
+		, IgnoreTypes {}
+		, AffectsTarget { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
+		, CumulativeAnimations_RestartOnChange { true }
 		, Animation_ResetOnReapply { false }
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
@@ -78,11 +136,14 @@ public:
 		, ExpireWeapon {}
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
+		, ExpireWeapon_UseInvokerAsOwner { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
+		, ArmorMultiplier_AllowWarheads {}
+		, ArmorMultiplier_DisallowWarheads {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -97,14 +158,21 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage { false }
+		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
-		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_AffectsHouse { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
+		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
+		, Unkillable { false }
+		, LaserTrail_Type { -1 }
 		, Groups {}
+		, RequiresRecalculation { false }
 	{};
 
 	bool HasTint() const
@@ -114,13 +182,20 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
 
-	virtual ~AttachEffectTypeClass() override = default;
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
+	{
+		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+			return nullptr;
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+		return this->CumulativeAnimations.at(index);
+	}
+
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 	static void Clear()
 	{
@@ -128,6 +203,7 @@ public:
 	}
 
 	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
+	static void HandleEvent(TechnoClass* pTarget);
 
 private:
 	template <typename T>
@@ -135,3 +211,73 @@ private:
 	void AddToGroupsMap();
 };
 
+// Container for AttachEffect attachment for an individual effect passed to AE attach function.
+struct AEAttachParams
+{
+	int DurationOverride;
+	int Delay;
+	int InitialDelay;
+	int RecreationDelay;
+	int CumulativeSourceMaxCount;
+	bool CumulativeRefreshAll;
+	bool CumulativeRefreshAll_OnAttach;
+	bool CumulativeRefreshSameSourceOnly;
+
+	AEAttachParams() :
+		DurationOverride { 0 }
+		, Delay { 0 }
+		, InitialDelay { 0 }
+		, RecreationDelay { -1 }
+		, CumulativeSourceMaxCount { -1 }
+		, CumulativeRefreshAll { false }
+		, CumulativeRefreshAll_OnAttach { false }
+		, CumulativeRefreshSameSourceOnly { true }
+	{
+	}
+};
+
+// Container for AttachEffect attachment info parsed from INI.
+class AEAttachInfoTypeClass
+{
+public:
+	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<int> CumulativeSourceMaxCount;
+	Valueable<bool> CumulativeRefreshAll;
+	Valueable<bool> CumulativeRefreshAll_OnAttach;
+	Valueable<bool> CumulativeRefreshSameSourceOnly;
+	ValueableVector<AttachEffectTypeClass*> RemoveTypes;
+	std::vector<std::string> RemoveGroups;
+	ValueableVector<int> CumulativeRemoveMinCounts;
+	ValueableVector<int> CumulativeRemoveMaxCounts;
+	ValueableVector<int> DurationOverrides;
+	ValueableVector<int> Delays;
+	ValueableVector<int> InitialDelays;
+	ValueableVector<int> RecreationDelays;
+
+	void LoadFromINI(CCINIClass* pINI, const char* pSection);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	AEAttachParams GetAttachParams(unsigned int index, bool selfOwned) const;
+
+	AEAttachInfoTypeClass() :
+		AttachTypes {}
+		, CumulativeSourceMaxCount { -1 }
+		, CumulativeRefreshAll { false }
+		, CumulativeRefreshAll_OnAttach { false }
+		, CumulativeRefreshSameSourceOnly { true }
+		, RemoveTypes {}
+		, RemoveGroups {}
+		, CumulativeRemoveMinCounts {}
+		, CumulativeRemoveMaxCounts {}
+		, DurationOverrides {}
+		, Delays {}
+		, InitialDelays {}
+		, RecreationDelays {}
+	{
+	}
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};

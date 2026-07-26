@@ -1,6 +1,7 @@
 #pragma once
 
-class PhobosCRT {
+class PhobosCRT
+{
 public:
 
 	// these two are saner mechanisms for string copying
@@ -13,12 +14,14 @@ public:
 	static void wstrCopy(wchar_t* Dest, const wchar_t* Source, size_t Count);
 
 	template<size_t Size>
-	static void strCopy(char(&Dest)[Size], const char* Source) {
+	static void strCopy(char(&Dest)[Size], const char* Source)
+	{
 		strCopy(Dest, Source, Size);
 	}
 
 	template<size_t Size>
-	static void wstrCopy(wchar_t(&Dest)[Size], const wchar_t* Source) {
+	static void wstrCopy(wchar_t(&Dest)[Size], const wchar_t* Source)
+	{
 		wstrCopy(Dest, Source, Size);
 	}
 };

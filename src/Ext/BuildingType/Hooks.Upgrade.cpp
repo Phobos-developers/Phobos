@@ -1,26 +1,28 @@
-#include <Utilities/Macro.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
-#include <HouseClass.h>
-#include <Utilities/EnumFunctions.h>
 #include "Body.h"
-#include <Ext/TechnoType/Body.h>
-#include <FactoryClass.h>
+
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
 {
-	auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgradeType);
+	auto const pUpgradeExt = BuildingTypeExt::TryFetch(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
+		auto const pType = pBuilding->Type;
+
+		// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+		/*
+		auto const idx = pType->ID;
+
 		// PowersUpBuilding
-		if (_stricmp(pBuilding->Type->ID, pUpgradeType->PowersUpBuilding) == 0)
+		if (_stricmp(idx, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
+		*/
 
 		// PowersUp.Buildings
-		for (auto& pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
+		for (auto const pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
-			if (_stricmp(pBuilding->Type->ID, pPowerUpBuilding->ID) == 0)
+			if (pPowerUpBuilding == pType)
 				return true;
 		}
 	}
@@ -52,9 +54,11 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 	GET(BuildingClass*, pBuilding, EDI);
 	GET(BuildingClass*, pUpgrade, ESI);
 
-	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade->Type, pUpgrade->Owner))
+	const auto pType = pUpgrade->Type;
+
+	if (BuildingTypeExt::CanUpgrade(pBuilding, pType, pUpgrade->Owner))
 	{
-		R->EBX(pUpgrade->Type);
+		R->EBX(pType);
 		pUpgrade->SetOwningHouse(pBuilding->Owner, false);
 		return Continue;
 	}
@@ -64,9 +68,9 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 
 #pragma region UpgradesInteraction
 
-int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
+static int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
-	auto const BuildLimit = pItem->BuildLimit;
+	const int BuildLimit = pItem->BuildLimit;
 
 	if (BuildLimit >= 0)
 		return BuildLimit - BuildingTypeExt::GetUpgradesAmount(const_cast<BuildingTypeClass*>(pItem), const_cast<HouseClass*>(pHouse));
@@ -74,12 +78,12 @@ int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const*
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
+static int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
-	int BuildLimit = pItem->BuildLimit;
-	int Remaining = BuildLimitRemaining(pHouse, pItem);
+	const int BuildLimit = pItem->BuildLimit;
+	const int Remaining = BuildLimitRemaining(pHouse, pItem);
 
 	if (BuildLimit >= 0 && Remaining <= 0)
 		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? NotReached : ReachedPermanently;
@@ -88,29 +92,21 @@ int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* con
 
 }
 
-DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
+DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 {
 	GET(HouseClass const* const, pThis, ECX);
 	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
-	GET_STACK(bool, buildLimitOnly, 0x8);
+	GET_STACK(bool const, buildLimitOnly, 0x8);
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
+	if (resultOfAres != CanBuildResult::Buildable)
+		return 0;
+
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
-		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
-		{
-			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
-				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
-		}
-	}
-
-	if (resultOfAres == CanBuildResult::Buildable)
-	{
-		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
-
-		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
-			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+		if (BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
+			R->EAX(HouseExt::BuildLimitGroupUpgradeCheck(pThis, pItem, buildLimitOnly, includeInProduction));
 	}
 
 	return 0;
@@ -135,28 +131,103 @@ DEFINE_HOOK(0x4F7877, HouseClass_CanBuild_UpgradesInteraction_WithoutAres, 0x5)
 
 #pragma region UpgradeAnimLogic
 
-// Parse Powered(Light|Effect|Special) keys for upgrade anims.
-DEFINE_HOOK(0x4648B3, BuildingTypeClass_ReadINI_PowerUpAnims, 0x5)
+// Always parse all info for PowerUp anims if building can have even one upgrade, including power settings.
+DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 {
+	enum { SkipGameCode = 0x46492E };
+
 	GET(BuildingTypeClass*, pThis, EBP);
-	GET(int, index, EBX);
 
-	auto const pINI = &CCINIClass::INI_Art();
-	auto const animData = &pThis->BuildingAnim[index - 1];
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis);
+	auto const pINI = &CCINIClass::INI_Art;
 
+	int index = 1;
 	char buffer[0x20];
 
-	sprintf_s(buffer, "PowerUp%01dPowered", index);
-	animData->Powered = pINI->ReadBool(pThis->ImageFile, buffer, animData->Powered);
+	pTypeExt->HasPowerUpAnim.clear();
 
-	sprintf_s(buffer, "PowerUp%01dPoweredLight", index);
-	animData->PoweredLight = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredLight);
+	while (index - 1 < 3)
+	{
+		auto const animData = &pThis->BuildingAnim[index - 1];
 
-	sprintf_s(buffer, "PowerUp%01dPoweredEffect", index);
-	animData->PoweredEffect = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredEffect);
+		sprintf_s(buffer, "PowerUp%01dAnim", index);
+		pINI->GetString(pThis->ImageFile, buffer, animData->Anim);
 
-	sprintf_s(buffer, "PowerUp%01dPoweredSpecial", index);
-	animData->PoweredSpecial = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredSpecial);
+		pTypeExt->HasPowerUpAnim.emplace_back(GeneralUtils::IsValidString(animData->Anim));
+
+		sprintf_s(buffer, "PowerUp%01dDamagedAnim", index);
+		pINI->GetString(pThis->ImageFile, buffer, animData->Damaged);
+
+		sprintf_s(buffer, "PowerUp%01dLocXX", index);
+		animData->Position.X = pINI->ReadInteger(pThis->ImageFile, buffer, animData->Position.X);
+
+		sprintf_s(buffer, "PowerUp%01dLocYY", index);
+		animData->Position.Y = pINI->ReadInteger(pThis->ImageFile, buffer, animData->Position.Y);
+
+		sprintf_s(buffer, "PowerUp%01dLocZZ", index);
+		animData->ZAdjust = pINI->ReadInteger(pThis->ImageFile, buffer, animData->ZAdjust);
+
+		sprintf_s(buffer, "PowerUp%01dYSort", index);
+		animData->YSort = pINI->ReadInteger(pThis->ImageFile, buffer, animData->YSort);
+
+		sprintf_s(buffer, "PowerUp%01dPowered", index);
+		animData->Powered = pINI->ReadBool(pThis->ImageFile, buffer, animData->Powered);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredLight", index);
+		animData->PoweredLight = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredLight);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredEffect", index);
+		animData->PoweredEffect = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredEffect);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredSpecial", index);
+		animData->PoweredSpecial = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredSpecial);
+
+		index++;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
+{
+	enum { SkipGameCode = 0x4409C7 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(BuildingClass*, pTarget, EDI);
+
+	auto const pTargetExt = BuildingExt::Fetch(pTarget);
+	auto const pType = pThis->Type;
+	pTargetExt->PoweredUpToLevel = pTarget->UpgradeLevel + 1;
+	int animIndex = pTarget->UpgradeLevel;
+
+	if (pType->PowersUpToLevel > 0)
+	{
+		pTargetExt->PoweredUpToLevel = Math::max(pType->PowersUpToLevel, pTargetExt->PoweredUpToLevel);
+		animIndex = pTargetExt->PoweredUpToLevel - 1;
+	}
+
+	auto const animData = &pTarget->Type->BuildingAnim[animIndex];
+
+	// Only copy image name to BuildingType anim struct if theres no explicit PowersUpAnim for this level.
+	if (!pTargetExt->GetTypeExtData()->HasPowerUpAnim[animIndex])
+		strncpy(animData->Anim, pType->ImageFile, 16u);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
+{
+	enum { SkipGameCode = 0x451638 };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	const int animIndex = BuildingExt::Fetch(pThis)->PoweredUpToLevel - 1;
+
+	if (animIndex)
+	{
+		R->EAX(animIndex);
+		return SkipGameCode;
+	}
 
 	return 0;
 }
@@ -168,16 +239,15 @@ static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAni
 
 	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
 	{
-		int upgradeLevel = pBuilding->UpgradeLevel - 1;
+		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
 
-		if (upgradeLevel < 0 || (int)anim != upgradeLevel)
+		if (animIndex < 0 || (int)anim != animIndex)
 			return false;
 
 		auto const animData = pType->BuildingAnim[int(anim)];
 
-		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect)) ||
-			(pType->PoweredSpecial && animData.PoweredSpecial)) &&
-			!(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
+		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect)) || (pType->PoweredSpecial && animData.PoweredSpecial))
+			&& !(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
 		{
 			return false;
 		}

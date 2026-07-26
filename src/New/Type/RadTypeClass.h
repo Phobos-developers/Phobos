@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 #include <Ext/Rules/Body.h>
 
 class WarheadTypeClass;
@@ -23,6 +22,7 @@ private:
 	Nullable<ColorStruct> Color;
 	Nullable<WarheadTypeClass*> SiteWarhead;
 	Nullable<bool> SiteWarhead_Detonate;
+	Nullable<bool> SiteWarhead_Detonate_Full;
 	Nullable<bool> HasOwner;
 	Nullable<bool> HasInvoker;
 
@@ -42,11 +42,10 @@ public:
 		, Color { }
 		, SiteWarhead { }
 		, SiteWarhead_Detonate { }
+		, SiteWarhead_Detonate_Full { }
 		, HasOwner { }
 		, HasInvoker { }
 	{ }
-
-	virtual ~RadTypeClass() override = default;
 
 	static void AddDefaults();
 
@@ -58,6 +57,11 @@ public:
 	bool GetWarheadDetonate() const
 	{
 		return this->SiteWarhead_Detonate.Get(RulesExt::Global()->RadSiteWarhead_Detonate);
+	}
+
+	bool GetWarheadDetonateFull() const
+	{
+		return this->SiteWarhead_Detonate_Full.Get(RulesExt::Global()->RadSiteWarhead_Detonate_Full);
 	}
 
 	const ColorStruct& GetColor() const
@@ -125,9 +129,9 @@ public:
 		return this->HasInvoker.Get(RulesExt::Global()->RadHasInvoker);
 	}
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 private:
 	template <typename T>

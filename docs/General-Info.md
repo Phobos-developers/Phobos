@@ -9,6 +9,10 @@ There are three main types of Phobos builds:
 - *development builds* - those are the builds which contain functionality that needs to be tested. They are numbered plainly starting from 0 and incrementing the number on each release. Mod authors still can include those versions with their mods if they want latest features, though we can't guarantee lack of bugs;
 - *nightly builds* - bleeding edge versions which can include prototypes, proofs of concepts, scrapped features etc., in other words - we can't guarantee anything in those builds and they absolutely should NOT be used in mod releases and should only be used to help with development and testing.
 
+```{hint}
+You can find the downloads for these versions on the document's [main page](index.md#downloads).
+```
+
 ### Disabling development build warning
 
 **DISCLAIMER:** We understand that everyone wants to try and use the new features as soon as they're released, but we can't do all the testing ourselves, so we only test the functionality on a basic level. We ask everyone who uses the new development build first to **test the new changes in every possible way first before disabling the development build warning** and proceeding to include the build in your mod release. This would allow us to concentrate on implementing the actual features, which is the most complex task. Learn more on testing [here](Contributing.md#testing).
@@ -21,6 +25,12 @@ Phobos fully supports saving and loading thanks to prototype code from publicly 
 
 ## Compatibility
 
+Phobos requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) as the launcher - it relies on capabilities (signalled via SyringeEx feature flags) that older Syringe versions do not provide, and will show an error and exit on startup without them.
+
 While Phobos is standalone, it is designed to be used alongside [Ares](https://ares.strategy-x.com) and [CnCNet5 spawner](https://github.com/CnCNet/cncnet-for-ares). Adding new features or improving existing ones is done with compatibility with those in mind.
 
 While we would also like to support HAres we can't guarantee compatibility with it due to the separation of it's userbase and developers from international community. We welcome any help on the matter though!
+
+### API versioning
+
+See [Interoperability](Interoperability.md#api-version-tracking).

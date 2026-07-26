@@ -1,62 +1,82 @@
 #pragma once
 #include <TerrainTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 
-class TerrainTypeExt
+class TerrainTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = TerrainTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TerrainTypeExt;
+
 	static constexpr DWORD Canary = 0xBEE78007;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TerrainTypeClass>
+public:
+	// typed owner accessor
+	TerrainTypeClass* OwnerObject() const
 	{
-	public:
-		Valueable<int> SpawnsTiberium_Type;
-		Valueable<int> SpawnsTiberium_Range;
-		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
-		Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
-		Valueable<AnimTypeClass*> DestroyAnim;
-		ValueableIdx<VocClass> DestroySound;
-		Nullable<ColorStruct> MinimapColor;
-		Valueable<bool> IsPassable;
-		Valueable<bool> CanBeBuiltOn;
+		return static_cast<TerrainTypeClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
-			, SpawnsTiberium_Type { 0 }
-			, SpawnsTiberium_Range { 1 }
-			, SpawnsTiberium_GrowthStage { { 3, 0 } }
-			, SpawnsTiberium_CellsPerAnim { { 1, 0 } }
-			, DestroyAnim {}
-			, DestroySound {}
-			, MinimapColor {}
-			, IsPassable { false }
-			, CanBeBuiltOn { false }
-		{ }
+	Valueable<int> SpawnsTiberium_Type;
+	Valueable<int> SpawnsTiberium_Range;
+	Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
+	Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
+	ValueableIdx<ParticleTypeClass> SpawnsTiberium_Particle;
+	ValueableVector<AnimTypeClass*> DestroyAnim;
+	ValueableIdx<VocClass> DestroySound;
+	Nullable<ColorStruct> MinimapColor;
+	Valueable<bool> IsPassable;
+	Valueable<bool> CanBeBuiltOn;
+	Valueable<bool> HasDamagedFrames;
+	Valueable<bool> HasCrumblingFrames;
+	ValueableIdx<VocClass> CrumblingSound;
+	Nullable<int> AnimationLength;
 
-		virtual ~ExtData() = default;
+	PhobosFixedString<32u> PaletteFile;
+	DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	TerrainTypeExt(TerrainTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, SpawnsTiberium_Type { 0 }
+		, SpawnsTiberium_Range { 1 }
+		, SpawnsTiberium_GrowthStage { { 3 } }
+		, SpawnsTiberium_CellsPerAnim { { 1 } }
+		, SpawnsTiberium_Particle { -1 }
+		, DestroyAnim {}
+		, DestroySound {}
+		, MinimapColor {}
+		, IsPassable { false }
+		, CanBeBuiltOn { false }
+		, HasDamagedFrames { false }
+		, HasCrumblingFrames { false }
+		, CrumblingSound {}
+		, AnimationLength {}
+		, PaletteFile {}
+		, Palette {}
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~TerrainTypeExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		int GetTiberiumGrowthStage();
-		int GetCellsPerAnim();
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+	int GetTiberiumGrowthStage();
+	int GetCellsPerAnim();
+	void PlayDestroyEffects(const CoordStruct& coords);
 
-	class ExtContainer final : public Container<TerrainTypeExt> {
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
+	class ExtContainer final : public Container<TerrainTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
@@ -64,8 +84,19 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static TerrainTypeExt* Fetch(const TerrainTypeClass* pThis)
+	{
+		return AbstractExt::Fetch<TerrainTypeExt>(pThis);
+	}
+
+	static TerrainTypeExt* TryFetch(const TerrainTypeClass* pThis)
+	{
+		return AbstractExt::TryFetch<TerrainTypeExt>(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void Remove(TerrainClass* pTerrain);
 };
+

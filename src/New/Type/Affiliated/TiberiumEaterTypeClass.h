@@ -1,0 +1,29 @@
+#pragma once
+
+#include <Utilities/TemplateDef.h>
+
+class TiberiumEaterTypeClass
+{
+public:
+	Valueable<int> TransDelay { -1 };
+	Valueable<float>  CashMultiplier { 1.0f };
+	Valueable<int> AmountPerCell { 0 };
+	std::vector<Vector2D<int>> Cells { std::vector<Vector2D<int>>(1) };
+	Valueable<bool> Display { true };
+	Valueable<AffectedHouse> DisplayToHouse { AffectedHouse::All };
+	Valueable<Point2D> DisplayOffset { Point2D::Empty };
+	ValueableVector<AnimTypeClass*> Anims {};
+	NullableVector<AnimTypeClass*> Anims_Tiberiums[4] {};
+	Valueable<bool> AnimMove { true };
+
+	TiberiumEaterTypeClass() = default;
+
+	void LoadFromINI(CCINIClass* pINI, const char* pSection);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+
+	template <typename T>
+	bool Serialize(T& stm);
+};
