@@ -861,8 +861,8 @@ CanBuildResult HouseExt::BuildLimitGroupUpgradeCheck(const HouseClass* pThis, co
 	}
 
 	const int factor = pItemExt->BuildLimitGroup_Factor;
-	const bool notBuildable = pItemExt->BuildLimitGroup_NotBuildableIfQueueMatch;
-	const bool contentIfAny = pItemExt->BuildLimitGroup_ContentIfAnyMatch;
+	const bool notBuildable = pItemExt->BuildLimitGroup_NotBuildableIfQueueMatch.Get(RulesExt::Global()->BuildLimitGroup_NotBuildableIfQueueMatch);
+	const bool contentIfAny = pItemExt->BuildLimitGroup_ContentIfAnyMatch.Get(RulesExt::Global()->BuildLimitGroup_ContentIfAnyMatch);
 
 	if (limits.size() == 1)
 	{
@@ -1077,7 +1077,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	}
 
 	const int factor = pTypeExt->BuildLimitGroup_Factor;
-	const bool notBuildable = pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch;
+	const bool notBuildable = pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch.Get(RulesExt::Global()->BuildLimitGroup_NotBuildableIfQueueMatch);
 
 	if (limits.size() == 1)
 	{
@@ -1122,7 +1122,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	else
 	{
 		const size_t size = Math::min(limits.size(), pTypeExt->BuildLimitGroup_Types.size());
-		const bool contentIfAny = pTypeExt->BuildLimitGroup_ContentIfAnyMatch;
+		const bool contentIfAny = pTypeExt->BuildLimitGroup_ContentIfAnyMatch.Get(RulesExt::Global()->BuildLimitGroup_ContentIfAnyMatch);
 		bool reached = true;
 		bool realReached = true;
 

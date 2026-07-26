@@ -149,6 +149,7 @@ Buildings.DefaultDigitalDisplayTypes=          ; List of DigitalDisplayTypes
 Infantry.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Vehicles.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Aircraft.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
@@ -182,7 +183,7 @@ Shape.PercentageFrame=false                    ; boolean
 [SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
-DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
+DigitalDisplay.Health.FakeAtDisguise=          ; boolean, default to [AudioVisual] -> DigitalDisplay.Health.FakeAtDisguise
 ```
 
 In `RA2MD.INI`:
@@ -400,6 +401,7 @@ ShowDesignatorRange=false             ; boolean
 ```
 
 ### Show game time
+
 - A timer can be displayed to show how many time has passed since game starts.
   - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
   - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.

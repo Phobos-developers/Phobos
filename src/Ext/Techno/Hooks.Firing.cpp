@@ -449,9 +449,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
 	{
 		if (pTransportFoot->IsAttackedByLocomotor && !pTypeExt->OpenTopped_AllowFiringIfAttackedByLocomotor.Get(RulesExt::Global()->OpenTopped_AllowFiringIfAttackedByLocomotor))
-		{
 			return Illegal;
-		}
 
 		if (!pTypeExt->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
@@ -861,7 +859,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_LateLogic, 0x6)
 			pBulletExt->InterceptorTechnoType = pTypeExt;
 			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 
-			if (!pInterceptorType->ApplyFirepowerMult)
+			if (!pInterceptorType->ApplyFirepowerMult.Get(RulesExt::Global()->Interceptor_ApplyFirepowerMult))
 				pBullet->Health = pWeapon->Damage;
 		}
 	}
@@ -981,7 +979,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 	{
 		const auto pTransporter = pThis->Transporter;
 
-		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::Fetch(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle)
+		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::Fetch(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle.Get(RulesExt::Global()->AlternateFLH_ApplyVehicle))
 		{
 			if (const int idx = pTransporter->Passengers.IndexOf(pThis))
 			{
@@ -1038,7 +1036,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
 			flh = pTypeExt->AlternateFLHs[index];
 
-		if (!pTypeExt->AlternateFLH_OnTurret)
+		if (!pTypeExt->AlternateFLH_OnTurret.Get(RulesExt::Global()->AlternateFLH_OnTurret))
 			allowOnTurret = false;
 	}
 
