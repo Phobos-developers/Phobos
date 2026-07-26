@@ -1632,17 +1632,17 @@ BallisticScatter.Max= ; floating point value, distance in cells
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-Shrapnel.AffectsGround=false       ; boolean
-Shrapnel.AffectsBuildings=false    ; boolean
-Shrapnel.UseWeaponTargeting=false  ; boolean
-Shrapnel.IgnoreHitBuildings=false  ; boolean
+Shrapnel.AffectsGround=false                ; boolean
+Shrapnel.AffectsBuildings=false             ; boolean
+Shrapnel.UseWeaponTargeting=false           ; boolean
+Shrapnel.IgnoreHitBuildings=false           ; boolean
 Shrapnel.ObeyWarheadTriggerConditions=true  ; boolean
 
-[SOMEPROJECTILE]                   ; Projectile
-Shrapnel.AffectsGround=            ; boolean, default to [CombatDamage] -> Shrapnel.AffectsGround
-Shrapnel.AffectsBuildings=         ; boolean, default to [CombatDamage] -> Shrapnel.AffectsBuildings
-Shrapnel.UseWeaponTargeting=       ; boolean, default to [CombatDamage] -> Shrapnel.UseWeaponTargeting
-Shrapnel.IgnoreHitBuildings=       ; boolean, default to [CombatDamage] -> Shrapnel.IgnoreHitBuildings
+[SOMEPROJECTILE]                            ; Projectile
+Shrapnel.AffectsGround=                     ; boolean, defaults to [CombatDamage] -> Shrapnel.AffectsGround
+Shrapnel.AffectsBuildings=                  ; boolean, defaults to [CombatDamage] -> Shrapnel.AffectsBuildings
+Shrapnel.UseWeaponTargeting=                ; boolean, defaults to [CombatDamage] -> Shrapnel.UseWeaponTargeting
+Shrapnel.IgnoreHitBuildings=                ; boolean, defaults to [CombatDamage] -> Shrapnel.IgnoreHitBuildings
 Shrapnel.ObeyWarheadTriggerConditions=      ; boolean, defaults to [CombatDamage] -> Shrapnel.ObeyWarheadTriggerConditions
 ```
 
