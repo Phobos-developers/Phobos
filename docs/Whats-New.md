@@ -632,6 +632,7 @@ HideShakeEffects=false           ; boolean
 - Provided a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir` (by Noble_Fish)
 - [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
 - Change target Owner on warhead impact (by Fryone)
+- New hotkey to select the units within the current screen that are captured by non-permanent mind-controller. (by TaranDahl)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
