@@ -838,7 +838,7 @@ public:
 
 			, HoverDrownable { true }
 
-			, Arcing_AllowElevationInaccuracy {}
+			, Arcing_AllowElevationInaccuracy { true }
 
 			, Terrain_IsPassable { false }
 			, Terrain_CanBeBuiltOn { false }
