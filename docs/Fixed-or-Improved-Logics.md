@@ -844,6 +844,17 @@ AircraftFiringForceScatter=true     ; boolean
 FiringForceScatter=                 ; boolean, default to [General] -> AircraftFiringForceScatter
 ```
 
+### Customize whether aircraft is a cargo plane
+
+- In vanilla, the `Spawned` flag of an aircraft is determined by the game's own logic during `UnLimbo`. Now, you can explicitly control this flag per AircraftType.
+  - `IsCargoPlane` determines the value of the aircraft's `Spawned` flag when it is unlimboed. If left unset, the vanilla behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]      ; AircraftType
+IsCargoPlane=       ; boolean
+```
+
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.

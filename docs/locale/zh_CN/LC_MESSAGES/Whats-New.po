@@ -2288,6 +2288,13 @@ msgstr ""
 "definitions-of-default-direction-for-aircraft-production-and-landing-in-"
 "the-field)（by Noble_Fish）"
 
+msgid ""
+"[Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md"
+"#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)"
+msgstr ""
+"[自定义飞机是否是cargo plane](Fixed-or-Improved-Logics.md#customize-whether-"
+"aircraft-is-a-cargo-plane)（by TaranDahl）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

@@ -1304,3 +1304,24 @@ DEFINE_HOOK(0x4CD54C, FlyLocomotionClass_EdgeOfTheWorldAI_Paradrop, 0x8)
 }
 
 #pragma endregion
+
+#pragma region CargoPlane
+
+DEFINE_HOOK(0x4143A8, AircraftClass_UnLimbo_CargoPlane, 0x6)
+{
+	enum { SkipGameCode = 0x4143F2 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	auto const pTypeExt = AircraftTypeExt::Fetch(pThis->Type);
+
+	if (pTypeExt->IsCargoPlane.isset())
+	{
+		pThis->Spawned = pTypeExt->IsCargoPlane.Get();
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
