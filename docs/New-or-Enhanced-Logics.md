@@ -1700,21 +1700,21 @@ OpenTransport.FireWhileMoving=true                ; boolean
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
 OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false               ; boolean, defaults to [General] -> OpenTopped.IgnoreRangefinding
-OpenTopped.AllowFiringIfDeactivated=true          ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfDeactivated
-OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
-OpenTopped.ShareTransportTarget=true              ; boolean, defaults to [General] -> OpenTopped.ShareTransportTarget
-OpenTopped.DecloakToFire=                         ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
-OpenTopped.FireWhileMoving=                       ; boolean, defaults to [General] -> OpenTopped.FireWhileMoving
+OpenTopped.IgnoreRangefinding=false               ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=true          ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=true              ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
+OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
 
 [CombatDamage]
 OpenTransport.RangeBonus=0                        ; integer
 OpenTransport.DamageMultiplier=1.0                ; floating point value
 
 [SOMETECHNO]                                      ; TechnoType, passenger
-OpenTransport.RangeBonus=                         ; integer, defaults to [CombatDamage] -> OpenTransport.RangeBonus
-OpenTransport.DamageMultiplier=                   ; floating point value, defaults to [CombatDamage] -> OpenTransport.DamageMultiplier
-OpenTransport.FireWhileMoving=                    ; boolean, defaults to [General] -> OpenTransport.FireWhileMoving
+OpenTransport.RangeBonus=                         ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=                   ; floating point value, default to [CombatDamage] -> OpenTransport.DamageMultiplier
+OpenTransport.FireWhileMoving=                    ; boolean, default to [General] -> OpenTransport.FireWhileMoving
 ```
 
 ```{note}
