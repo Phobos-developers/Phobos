@@ -2306,6 +2306,7 @@ msgid ""
 "Separately define the global default values of TerrainTypes' `IsPassable`"
 " and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)"
 msgstr ""
+"根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

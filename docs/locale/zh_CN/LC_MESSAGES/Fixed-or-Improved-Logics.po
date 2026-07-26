@@ -5165,6 +5165,7 @@ msgid ""
 "`SpawnsTiberium`, so as to facilitate separate definitions for Tiberium "
 "Trees and regular TerrainTypes."
 msgstr ""
+"以上两条根据 `SpawnsTiberium` 使用不同的默认值，以方便为矿柱与常规地形对象分别定义。"
 
 msgid "Tiberiums (ores)"
 msgstr "泰伯利亚（矿石）"

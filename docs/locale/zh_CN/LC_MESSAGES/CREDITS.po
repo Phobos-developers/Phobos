@@ -2452,6 +2452,7 @@ msgid ""
 "Separately define the global default values of TerrainTypes' `IsPassable`"
 " and `CanBeBuiltOn` based on `SpawnsTiberium`"
 msgstr ""
+"根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
