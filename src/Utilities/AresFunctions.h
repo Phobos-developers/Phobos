@@ -47,6 +47,9 @@ public:
 	static bool* (__stdcall* GetInfiltrated)(HouseClass* pHouse, AntaresFactory factory);
 	static bool (__stdcall* GetOperators)(TechnoTypeClass* pType, InfantryTypeClass* const** ppItems,
 		int* pCount, bool* pAnyAllowed);
+	//! The tunnel network a building belongs to, or null. Opaque -- pass it back
+	//! to AddPassengerFromTunnel and nothing else.
+	static void* (__stdcall* FindTunnel)(BuildingClass* pBuilding);
 	// ---------------------------------------------------------------------------
 
 	// TechnoExt

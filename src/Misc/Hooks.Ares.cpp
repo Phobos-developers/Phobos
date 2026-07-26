@@ -12,6 +12,17 @@
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
+// Antares fixes the following in its own source, so nothing here applies to it --
+// and none of it runs, because Apply_Ares3_0p1_Patches is only reached for genuine
+// Ares. Kept for Ares itself, which is frozen and cannot be fixed at the source:
+//   - the abductor leaving occupation bits behind
+//   - amphibious technos being refused by water structures
+//   - InitialPayload losing Academy veterancy to the scenario-init mutex
+//   - InitialPayload passengers not being marked as having entered the playfield
+//   - type conversion detaching from a Temporal instead of releasing
+//   - Convert.Deploy firing every frame while the unit turns
+//   - UnitDelivery giving buildings a facing derived from the cell index
+
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.

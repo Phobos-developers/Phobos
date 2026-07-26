@@ -39,6 +39,7 @@ decltype(AresFunctions::IsPsionicsImmune) AresFunctions::IsPsionicsImmune = null
 decltype(AresFunctions::IsVeteranBuilding) AresFunctions::IsVeteranBuilding = nullptr;
 decltype(AresFunctions::GetInfiltrated) AresFunctions::GetInfiltrated = nullptr;
 decltype(AresFunctions::GetOperators) AresFunctions::GetOperators = nullptr;
+decltype(AresFunctions::FindTunnel) AresFunctions::FindTunnel = nullptr;
 
 // The Ares extension layouts, in one place instead of scattered across call sites
 // as DummyExtHere structs. Only the Ares backend may use these -- Antares is a
@@ -187,9 +188,19 @@ namespace AresLayout
 		return true;
 	}
 
+	void* __stdcall FindTunnel(BuildingClass* pBuilding)
+	{
+		if (!pBuilding || !AresFunctions::GetTunnel)
+			return nullptr;
+
+		return AresFunctions::GetTunnel(
+			reinterpret_cast<void*>(pBuilding->Type->align_E24), pBuilding->Owner);
+	}
+
 	//! Point the shared accessors at the Ares implementations above.
 	void BindAccessors()
 	{
+		AresFunctions::FindTunnel = &FindTunnel;
 		AresFunctions::FindAlphaShape = &FindAlphaShape;
 		AresFunctions::GetDisableWeaponTimer = &GetDisableWeaponTimer;
 		AresFunctions::GetDriverKilled = &GetDriverKilled;
@@ -315,6 +326,7 @@ void AresFunctions::InitAntares()
 	DetailsCurrentlyEnabled = api->DetailsCurrentlyEnabled;
 	FindEVAIndex = api->FindEVAIndex;
 	AddPassengerFromTunnel = reinterpret_cast<decltype(AddPassengerFromTunnel)>(api->AddTunnelPassenger);
+	FindTunnel = api->FindTunnel;
 
 	FindAlphaShape = api->FindAlphaShape;
 	GetDisableWeaponTimer = api->GetDisableWeaponTimer;

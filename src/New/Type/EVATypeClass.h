@@ -27,7 +27,7 @@ public:
 
 		if (pINI->ReadString(pSection, pKey, "", Phobos::readBuffer))
 		{
-			if (AresHelper::CanUseAres)
+			if (AresFunctions::FindEVAIndex)
 				buffer = AresFunctions::FindEVAIndex(Phobos::readBuffer);
 			else if (!strcmp(Phobos::readBuffer, "Allied"))
 				buffer = 0;

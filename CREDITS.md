@@ -582,6 +582,7 @@ This page lists all the individual contributions to the project by their author.
   - `VoiceDeploy` through hot-key/command bar fix
   - Damaged aircraft image changes
 - **ZivDero**:
+  - Antares interop: detection, API-driven extension access, feature handover
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles

@@ -17,6 +17,63 @@ All exported API functions return `HRESULT` to indicate success or failure follo
 
 Functions that produce output data take an additional output pointer parameter that receives the result. Use `SUCCEEDED(hr)` / `FAILED(hr)` to check the return value.
 
+## Antares
+
+[Antares](https://github.com/Phobos-developers/Antares) is an open-source
+reimplementation of Ares. Phobos supports it alongside Ares, but reaches it a
+different way.
+
+Everything Phobos uses from Ares is either an address relative to `Ares.dll`'s base
+or a field at a known offset inside an Ares extension. Neither survives a different
+compile, so none of it can be pointed at Antares. Antares instead exports
+`GetAntaresAPI`, which hands back a versioned table of function pointers plus
+accessors that return extension data as real objects.
+
+### Detection
+
+Antares is recognised by that export, not by filename or PE timestamp. This matters:
+Antares used to inherit Ares' `OriginalFilename`, so a name-based check found it,
+failed the timestamp match, and disabled integration in a way that also broke
+superweapon chaining.
+
+`AresHelper` reports it as `Version::Antares` and sets `CanUseAntares`. Note the
+three flags are not interchangeable:
+
+| Flag | Meaning |
+|------|---------|
+| `CanUseAres` | Genuine Ares, at a build whose addresses we know. Gates everything that reads an Ares RVA, patches Ares' code, or reads its extension data by offset. **False for Antares.** |
+| `CanUseAntares` | Antares detected and its table obtained. |
+| `CanUseExtension` | Either of the above. Gates anything that goes through `AresFunctions`. |
+
+### Nothing Ares-specific runs
+
+`Apply_Ares3_0p1_Patches` and the RVA resolution in `AresAddressInit.cpp` are only
+reachable for genuine Ares. Those patches must never be applied to Antares -- they
+would land on unrelated code.
+
+The Ares extension layouts live in one place, `AresLayout` in `AresAddressInit.cpp`,
+behind the same accessors Antares' table fills. Call sites go through
+`AresFunctions::GetDriverKilled` and friends and do not know which is behind them.
+
+### Feature handover
+
+Rather than being patched, Antares can be asked to stand a subsystem down at runtime
+so Phobos owns it instead. Phobos currently takes over `EBolt` and `AlphaImage`.
+
+### Known gaps
+
+Some Ares-only paths have no Antares equivalent yet, and degrade rather than fail:
+
+- Voxel turrets past index 18 fall back to the vanilla limit, since reading them
+  needs the Ares `TechnoTypeExt` layout.
+- Warhead `Verses` lookup, the spy-effect income counter, `WeaponIndex_Warp`, and the
+  `InitialPayload` team fix stay Ares-only for the same reason. Antares fixes the
+  payload bug in its own source, so the last one is not needed there.
+- The patch-driven takeovers -- EBolt reimplementation, permanent mind control
+  wrappers, paradrop wrappers, `KillDriver`, `getCellSpreadItems`, `RemoveCameo`,
+  promotion animations and the laser weapon pick -- are Ares-only. Where Antares
+  needs to yield instead, that is what feature handover is for.
+
 ## API Version Tracking
 
 ### Semantic Versioning Rules

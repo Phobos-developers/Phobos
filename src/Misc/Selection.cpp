@@ -236,8 +236,9 @@ DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable,
 	enum { SkipGameCode = 0x465D6A };
 
 	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
-	// So we simply disable this feature if no Ares.
-	if (!AresHelper::CanUseAres)
+	// So we simply disable this feature if no Ares. Antares hooks the same place,
+	// so it counts too.
+	if (!AresHelper::CanUseExtension)
 		return 0;
 
 	if (!ExtSelection::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)

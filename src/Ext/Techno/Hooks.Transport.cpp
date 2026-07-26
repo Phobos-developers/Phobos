@@ -828,8 +828,8 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	if (!pType->InfantryAbsorb)
 		return 0;
 
-	const auto pTunnel = AresHelper::CanUseAres
-		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+	const auto pTunnel = AresFunctions::FindTunnel
+		? AresFunctions::FindTunnel(pBuilding) : nullptr;
 
 	if (pType->Passengers > 0 || pTunnel)
 	{
@@ -860,8 +860,8 @@ DEFINE_HOOK(0x739FA2, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	if (!pType->UnitAbsorb)
 		return 0;
 
-	const auto pTunnel = AresHelper::CanUseAres
-		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+	const auto pTunnel = AresFunctions::FindTunnel
+		? AresFunctions::FindTunnel(pBuilding) : nullptr;
 
 	if (pType->Passengers > 0 || pTunnel)
 	{
