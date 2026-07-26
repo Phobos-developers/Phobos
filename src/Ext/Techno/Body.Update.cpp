@@ -907,6 +907,7 @@ void TechnoExt::UpdateAttachEffects()
 	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -938,7 +939,7 @@ void TechnoExt::UpdateAttachEffects()
 				markForRedraw = true;
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
+				cumulativeAnimTypes.insert(pType);
 
 			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
@@ -978,6 +979,11 @@ void TechnoExt::UpdateAttachEffects()
 	{
 		pThis->MarkForRedraw();
 		this->UpdateTintValues();
+	}
+
+	for (auto const pType : cumulativeAnimTypes)
+	{
+		this->UpdateCumulativeAttachEffects(pType);
 	}
 
 	auto const coords = pThis->GetCoords();
@@ -1053,11 +1059,12 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
+void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
+	int count = 0;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
@@ -1068,7 +1075,7 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 		{
 			pAEWithAnim = attachEffect.get();
 		}
-		else if (attachEffect->CanShowAnim(true))
+		else if (attachEffect->CanShowAnim())
 		{
 			const int currentDuration = attachEffect->GetRemainingDuration();
 
@@ -1078,20 +1085,15 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 				duration = currentDuration;
 			}
 		}
+
+		if (attachEffect->IsActive())
+			count++;
 	}
 
 	if (pAEWithAnim)
-	{
-		pAEWithAnim->UpdateCumulativeAnim();
-
-		if (pRemoved == pAEWithAnim)
-		{
-			pAEWithAnim->HasCumulativeAnim = false;
-
-			if (pAELargestDuration)
-				pAELargestDuration->TransferCumulativeAnim(pAEWithAnim);
-		}
-	}
+		pAEWithAnim->UpdateCumulativeAnim(count);
+	else if (pAELargestDuration)
+		pAELargestDuration->HasCumulativeAnim = true;
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.

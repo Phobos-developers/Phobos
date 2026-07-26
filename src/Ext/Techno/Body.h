@@ -149,7 +149,7 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
+	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();
 	void UpdateMindControlAnim();

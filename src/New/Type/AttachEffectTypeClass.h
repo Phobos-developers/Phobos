@@ -185,7 +185,7 @@ public:
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
-		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+		if (cumulativeCount < 0)
 			return nullptr;
 
 		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;

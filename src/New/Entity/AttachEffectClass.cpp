@@ -453,18 +453,12 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::UpdateCumulativeAnim()
+void AttachEffectClass::UpdateCumulativeAnim(int count)
 {
-	if (!this->HasCumulativeAnim)
-		return;
-
 	const auto pAnim = this->Animation;
 
 	if (!pAnim)
 		return;
-
-	const auto pType = this->Type;
-	const int count = TechnoExt::Fetch(this->Techno)->GetAttachedEffectCumulativeCount(pType);
 
 	if (count < 1)
 	{
@@ -472,22 +466,11 @@ void AttachEffectClass::UpdateCumulativeAnim()
 		return;
 	}
 
+	const auto pType = this->Type;
 	auto const pAnimType = pType->GetCumulativeAnimation(count);
 
 	if (pAnim->Type != pAnimType)
 		AnimExt::ChangeAnimType(pAnim, pAnimType, false, pType->CumulativeAnimations_RestartOnChange);
-}
-
-void AttachEffectClass::TransferCumulativeAnim(AttachEffectClass* pSource)
-{
-	if (!pSource || !pSource->Animation)
-		return;
-
-	this->KillAnim();
-	this->Animation = pSource->Animation;
-	this->HasCumulativeAnim = true;
-	pSource->Animation = nullptr;
-	pSource->HasCumulativeAnim = false;
 }
 
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
@@ -703,6 +686,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	bool decloak = false;
 	double ROFModifier = 1.0;
 	const bool selfOwned = pTarget == pSource;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
@@ -725,7 +709,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-					pTargetExt->UpdateCumulativeAttachEffects(pType);
+					cumulativeAnimTypes.insert(pType);
 			}
 		}
 	}
@@ -748,6 +732,11 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 		if (decloak && pTarget->CloakState == CloakState::Cloaked)
 			pTarget->Uncloak(true);
+	}
+
+	for (auto const pType : cumulativeAnimTypes)
+	{
+		pTargetExt->UpdateCumulativeAttachEffects(pType);
 	}
 	          
 	return attachedCount;
@@ -983,6 +972,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -1013,7 +1003,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			}
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
+				cumulativeAnimTypes.insert(pType);
 
 			if (attachEffect->ResetIfRecreatable())
 			{
@@ -1032,6 +1022,11 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			++it;
 		}
+	}
+
+	for (auto const pType : cumulativeAnimTypes)
+	{
+		pTargetExt->UpdateCumulativeAttachEffects(pType);
 	}
 
 	auto const coords = pTarget->GetCoords();

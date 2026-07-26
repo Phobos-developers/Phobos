@@ -20,13 +20,12 @@ public:
 	void AI_Temporal();
 	void KillAnim();
 	void CreateAnim();
-	void UpdateCumulativeAnim();
-	void TransferCumulativeAnim(AttachEffectClass* pSource);
+	void UpdateCumulativeAnim(int count);
 
-	bool CanShowAnim(bool skipAnimCheck = false) const
+	bool CanShowAnim() const
 	{
 		const auto pType = this->Type;
-		return (pType->Animation || skipAnimCheck || this->HasCumulativeAnim)
+		return (pType->Animation || (pType->Cumulative && pType->CumulativeAnimations.size() > 0))
 			&& (this->IsOnline || pType->Animation_OfflineAction != AttachedAnimFlag::Hides)
 			&& (!this->IsUnderTemporal || pType->Animation_TemporalAction != AttachedAnimFlag::Hides)
 			&& !this->IsAnimHidden && !this->IsInTunnel;
