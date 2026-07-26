@@ -787,7 +787,7 @@ DefaultDisguise=    ; InfantryType
 In `rulesmd.ini`:
 ```ini
 [General]
-NotHuman.RandomDeathSequence=yes  ; boolean
+NotHuman.RandomDeathSequence=no   ; boolean
 
 [SOMEINFANTRY]                    ; InfantryType
 NotHuman.RandomDeathSequence=     ; boolean, default to [General] -> NotHuman.RandomDeathSequence
