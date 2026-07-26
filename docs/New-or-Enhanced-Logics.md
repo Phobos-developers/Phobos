@@ -786,8 +786,8 @@ DefaultDisguise=    ; InfantryType
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                    ; InfantryType
-NotHuman.RandomDeathSequence=yes  ; boolean
+[SOMEINFANTRY]                   ; InfantryType
+NotHuman.RandomDeathSequence=no  ; boolean
 ```
 
 ### Slaves' house decision customization when owner is killed
