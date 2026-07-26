@@ -248,6 +248,10 @@ public:
 
 	Nullable<int> AnimZAdjust;
 
+	Valueable<bool> ChangeOwner;
+	Valueable<bool> ChangeOwner_SetAsMindControl;
+	Nullable<AnimTypeClass*> ChangeOwner_MindControlAnim;
+
 	Nullable<bool> ApplyPerTargetEffectsOnDetonate;
 
 	Valueable<int> PenetratesTransport_Level;
@@ -540,6 +544,10 @@ public:
 
 		, AnimZAdjust {}
 
+		, ChangeOwner { false }
+		, ChangeOwner_SetAsMindControl { false }
+		, ChangeOwner_MindControlAnim {}
+
 		, ApplyPerTargetEffectsOnDetonate {}
 
 		, Taunt { false }
@@ -548,6 +556,7 @@ public:
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 	void ApplyLocomotorInfliction(TechnoClass* pTarget);
 	void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
+	void ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget);
 public:
 	bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
 	bool CanAffectTarget(TechnoClass* pTarget) const;

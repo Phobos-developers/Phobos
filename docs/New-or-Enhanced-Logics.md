@@ -2748,6 +2748,20 @@ ImmuneToCrit=false                         ; boolean
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
 ```
 
+### Change target Owner on impact
+
+- Warheads can now change targets owner to warhead's owner.
+- `ChangeOwner.SetAsMindControl` makes the effect work like permanent mind control, which respects `ImmuneToPsionics`.
+  - `ChangeOwner.MindControlAnim` determines the mind control anim of this effect, which respects `MindControlRingOffset`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                               ; WarheadType
+ChangeOwner=false                           ; boolean
+ChangeOwner.SetAsMindControl=false          ; boolean
+ChangeOwner.MindControlAnim=                ; Animation
+```
+
 ### Convert TechnoType on impact
 
 ![image](_static/images/convertwh.gif)

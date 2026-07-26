@@ -203,9 +203,12 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
-	// Put this at first since it can change the target's house
+	// Put these at first since they can change the target's house
 	if (this->RemoveMindControl)
 		pHouse = this->ApplyRemoveMindControl(pHouse, pTarget);
+
+	if (this->ChangeOwner)
+		this->ApplyOwnerChange(pHouse, pTarget);
 
 	// These can change the target's techno types
 	if (this->Convert_Pairs.size() > 0)
@@ -483,6 +486,42 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 	}
 
 	return pHouse;
+}
+
+void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	const bool isMindControl = this->ChangeOwner_SetAsMindControl;
+	const bool isImmune = (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
+
+	if (!isImmune)
+	{
+		pTarget->SetOwningHouse(pHouse, true);
+
+		if (isMindControl)
+		{
+			pTarget->MindControlledByAUnit = true;
+
+			if (const auto pAnimType = this->ChangeOwner_MindControlAnim.Get())
+			{
+				CoordStruct location = pTarget->Location;
+				const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
+
+				if (isBld)
+					location.Z += static_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
+				else
+					location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+
+				if (const auto pOwnerAnim = GameCreate<AnimClass>(pAnimType, location))
+				{
+					pTarget->MindControlRingAnim = pOwnerAnim;
+					pOwnerAnim->SetOwnerObject(pTarget);
+
+					if (isBld)
+						pOwnerAnim->ZAdjust = -1024;
+				}
+			}
+		}
+	}
 }
 
 void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
