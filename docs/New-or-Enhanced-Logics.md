@@ -1696,6 +1696,10 @@ OpenTopped.DecloakToFire=true                     ; boolean
 OpenTopped.FireWhileMoving=true                   ; boolean
 OpenTransport.FireWhileMoving=true                ; boolean
 
+[CombatDamage]
+OpenTransport.RangeBonus=0                        ; integer
+OpenTransport.DamageMultiplier=1.0                ; floating point value
+
 [SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
@@ -1706,10 +1710,6 @@ OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General
 OpenTopped.ShareTransportTarget=true              ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
 OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
 OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
-
-[CombatDamage]
-OpenTransport.RangeBonus=0                        ; integer
-OpenTransport.DamageMultiplier=1.0                ; floating point value
 
 [SOMETECHNO]                                      ; TechnoType, passenger
 OpenTransport.RangeBonus=                         ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
