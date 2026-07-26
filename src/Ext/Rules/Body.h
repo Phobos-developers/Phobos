@@ -224,6 +224,7 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> ShowPowerPlantEnhancerRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
 		Valueable<int> SetRecruitableOnLiberate;
 		Nullable<AnimTypeClass*> DropPodTrailer;
@@ -695,6 +696,7 @@ public:
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SetTabBySelectingFactory { false }
 			, SelectionFlashDuration { 0 }
 			, SetRecruitableOnLiberate { -1 }
 			, DrawInsignia_OnlyOnSelected { false }

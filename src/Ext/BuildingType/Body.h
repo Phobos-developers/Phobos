@@ -121,6 +121,8 @@ public:
 	Nullable<int> StartFacing;
 	Nullable<bool> StartFacing_Random;
 
+	Valueable<int> SetTabBySelecting;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -212,6 +214,7 @@ public:
 		, TurretAnim_FiringRate { 1 }
 		, StartFacing{}
 		, StartFacing_Random{}
+		, SetTabBySelecting { -1 }
 
 		// Ares 0.2
 		, CloningFacility { false }

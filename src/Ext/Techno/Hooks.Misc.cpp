@@ -5,10 +5,9 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -785,6 +784,8 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
 
+	const bool isControlledbyCurrentPlayer = pThis->GetOwningHouse()->IsControlledByCurrentPlayer();
+	const bool IsCurrentPlayer = pThis->GetOwningHouse()->IsCurrentPlayer();
 	pThis->IsSelected = true;
 
 	if (!Phobos::Config::ShowFlashOnSelecting)
@@ -794,6 +795,31 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(duration);
+
+	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && IsCurrentPlayer)
+	{
+		auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(specific_cast<BuildingClass*>(pThis)->Type);
+		const int tabIndex = pBldTypeExt->SetTabBySelecting;
+
+		if (tabIndex >= 0 && tabIndex < 4)
+			TabClass::Instance.SetTab(tabIndex);
+		else if (tabIndex < 0)
+			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
+			{
+			case AbstractType::InfantryType:
+				TabClass::Instance.SetTab(2);
+				break;
+			case AbstractType::UnitType:
+			case AbstractType::AircraftType:
+				TabClass::Instance.SetTab(3);
+				break;
+			case AbstractType::BuildingType:
+				TabClass::Instance.SetTab(SidebarClass::Instance.ActiveTabIndex == 0 ? 1 : 0); // A controversial design, but no one has yet proposed a better one.
+				break;
+			default:
+				break;
+			}
+	}
 
 	return 0;
 }
