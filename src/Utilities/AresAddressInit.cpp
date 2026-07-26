@@ -15,7 +15,6 @@
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
 decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
-decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 decltype(AresFunctions::UnitDeliveryStateMachine_Update) AresFunctions::UnitDeliveryStateMachine_Update = nullptr;
 decltype(AresFunctions::ApplyPermaMC) AresFunctions::ApplyPermaMC = nullptr;
@@ -40,6 +39,8 @@ decltype(AresFunctions::IsVeteranBuilding) AresFunctions::IsVeteranBuilding = nu
 decltype(AresFunctions::GetInfiltrated) AresFunctions::GetInfiltrated = nullptr;
 decltype(AresFunctions::GetOperators) AresFunctions::GetOperators = nullptr;
 decltype(AresFunctions::FindTunnel) AresFunctions::FindTunnel = nullptr;
+decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
+decltype(AresFunctions::_ReverseEngineer) AresFunctions::_ReverseEngineer = nullptr;
 
 // The Ares extension layouts, in one place instead of scattered across call sites
 // as DummyExtHere structs. Only the Ares backend may use these -- Antares is a
@@ -188,6 +189,16 @@ namespace AresLayout
 		return true;
 	}
 
+	bool __stdcall ReverseEngineer(HouseClass* pHouse, TechnoTypeClass* pVictimType)
+	{
+		if (!pHouse || !pVictimType || !AresFunctions::_ReverseEngineer)
+			return false;
+
+		// Ares' is a HouseExt method, despite the name the IDB carries for it.
+		return AresFunctions::_ReverseEngineer(
+			reinterpret_cast<void*>(pHouse->unknown_16084), pVictimType);
+	}
+
 	void* __stdcall FindTunnel(BuildingClass* pBuilding)
 	{
 		if (!pBuilding || !AresFunctions::GetTunnel)
@@ -201,6 +212,7 @@ namespace AresLayout
 	void BindAccessors()
 	{
 		AresFunctions::FindTunnel = &FindTunnel;
+		AresFunctions::ReverseEngineer = &ReverseEngineer;
 		AresFunctions::FindAlphaShape = &FindAlphaShape;
 		AresFunctions::GetDisableWeaponTimer = &GetDisableWeaponTimer;
 		AresFunctions::GetDriverKilled = &GetDriverKilled;
@@ -231,7 +243,7 @@ void AresFunctions::InitAres3_0()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
 	}
 
-	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
+	NOTE_ARES_FUN(_ReverseEngineer, 0x022360);
 
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032110);
 
@@ -280,7 +292,7 @@ void AresFunctions::InitAres3_0p1()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
 	}
 
-	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
+	NOTE_ARES_FUN(_ReverseEngineer, 0x022DE0);
 
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032AF0);
 
@@ -327,6 +339,7 @@ void AresFunctions::InitAntares()
 	FindEVAIndex = api->FindEVAIndex;
 	AddPassengerFromTunnel = reinterpret_cast<decltype(AddPassengerFromTunnel)>(api->AddTunnelPassenger);
 	FindTunnel = api->FindTunnel;
+	ReverseEngineer = api->ReverseEngineer;
 
 	FindAlphaShape = api->FindAlphaShape;
 	GetDisableWeaponTimer = api->GetDisableWeaponTimer;
@@ -344,7 +357,7 @@ void AresFunctions::InitAntares()
 	IsTargetConstraintsEligible = reinterpret_cast<decltype(IsTargetConstraintsEligible)>(
 		api->MeetsAITargetingConstraints);
 
-	// Deliberately left null: CreateAresEBolt, ReverseEngineer, ApplyPermaMC,
+	// Deliberately left null: CreateAresEBolt, ApplyPermaMC,
 	// SendPDPlane, UnitDeliveryStateMachine_Update and GetTunnel either exist only to
 	// serve a patch into Ares' own code, or take an Ares extension pointer that has no
 	// meaning here. Their call sites go through the accessors or check CanUseAres.

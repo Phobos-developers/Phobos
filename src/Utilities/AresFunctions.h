@@ -50,6 +50,12 @@ public:
 	//! The tunnel network a building belongs to, or null. Opaque -- pass it back
 	//! to AddPassengerFromTunnel and nothing else.
 	static void* (__stdcall* FindTunnel)(BuildingClass* pBuilding);
+	//! Unlock a type for a house by reverse engineering it. House-side: no
+	//! building's ReverseEngineersVictims is consulted.
+	static bool (__stdcall* ReverseEngineer)(HouseClass* pHouse, TechnoTypeClass* pVictimType);
+	//! The raw Ares entry point behind the above. Ares-only; the thunk that wraps
+	//! it is the thing call sites should use.
+	static bool(__thiscall* _ReverseEngineer)(void* pAresHouseExt, TechnoTypeClass* pType);
 	// ---------------------------------------------------------------------------
 
 	// TechnoExt
@@ -59,7 +65,6 @@ public:
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool PreventEscape);
 
-	static bool(__thiscall* ReverseEngineer)(void* pAresHouseExt, TechnoTypeClass* pType);
 
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 

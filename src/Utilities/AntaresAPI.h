@@ -65,7 +65,7 @@ struct AntaresAPI_v1
 
 	bool  (__stdcall* ConvertTypeTo)(TechnoClass* pThis, TechnoTypeClass* pToType);
 	void  (__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool select, bool ignoreDefenses);
-	bool  (__stdcall* ReverseEngineer)(BuildingClass* pThis, TechnoClass* pVictim);
+	bool  (__stdcall* ReverseEngineer)(HouseClass* pHouse, TechnoTypeClass* pVictimType);
 	bool  (__stdcall* MeetsAITargetingConstraints)(SuperWeaponTypeClass* pType, HouseClass* pOwner, bool manual);
 	bool  (__stdcall* IsSuperWeaponAvailable)(SuperWeaponTypeClass* pType, HouseClass* pHouse);
 	bool  (__stdcall* ApplyPermaMindControl)(WarheadTypeClass* pWH, HouseClass* pOwner, AbstractClass* pTarget);

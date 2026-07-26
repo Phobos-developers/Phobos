@@ -254,7 +254,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 void WarheadTypeExt::ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (pHouse && !pHouse->Type->MultiplayPassive && AresFunctions::ReverseEngineer)
-		AresFunctions::ReverseEngineer(reinterpret_cast<void*>(pHouse->unknown_16084), pTarget->GetTechnoType());
+		AresFunctions::ReverseEngineer(pHouse, pTarget->GetTechnoType());
 }
 
 void WarheadTypeExt::ApplyBuildingUndeploy(TechnoClass* pTarget)
