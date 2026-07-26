@@ -5743,19 +5743,23 @@ msgstr "如果你将 `Crit.Warhead` 设为定义暴击的弹头或者创建一�
 
 msgid "Change target Owner on impact"
 msgstr ""
+"改所属弹头"
 
 msgid "Warheads can now change targets owner to warhead's owner."
 msgstr ""
+"现在弹头可以将目标所属更改为弹头的所属方。"
 
 msgid ""
 "`ChangeOwner.SetAsMindControl` makes the effect work like permanent mind "
 "control, which respects `ImmuneToPsionics`."
 msgstr ""
+"`ChangeOwner.SetAsMindControl` 使该效果像永久心灵控制那样工作，并尊重 `ImmuneToPsionics`。"
 
 msgid ""
 "`ChangeOwner.MindControlAnim` determines the mind control anim of this "
 "effect, which respects `MindControlRingOffset`."
 msgstr ""
+"`ChangeOwner.MindControlAnim` 决定此效果的心灵控制动画，其尊重 `MindControlRingOffset`。"
 
 msgid "Convert TechnoType on impact"
 msgstr "单位转换弹头"

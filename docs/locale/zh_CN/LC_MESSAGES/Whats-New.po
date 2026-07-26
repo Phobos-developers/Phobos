@@ -2292,6 +2292,8 @@ msgid ""
 "[Change target Owner on warhead impact](New-or-Enhanced-Logics.md#change-"
 "target-owner-on-impact) (by Fryone)"
 msgstr ""
+"[改所属弹头](New-or-Enhanced-Logics.md#change-"
+"target-owner-on-impact)（by Fryone）"
 
 msgid ""
 "[New hotkey to select the units within the current screen that are "

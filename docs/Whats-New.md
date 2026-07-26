@@ -631,8 +631,8 @@ HideShakeEffects=false           ; boolean
 - [Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)
 - Provided a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir` (by Noble_Fish)
 - [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
-- Change target Owner on warhead impact (by Fryone)
-- New hotkey to select the units within the current screen that are captured by non-permanent mind-controller. (by TaranDahl)
+- [Change target Owner on warhead impact](New-or-Enhanced-Logics.md#change-target-owner-on-impact) (by Fryone)
+- [New hotkey to select the units within the current screen that are captured by non-permanent mind-controller](User-Interface.md#select-captured-units) (by TaranDahl)
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 
 #### Vanilla fixes:
