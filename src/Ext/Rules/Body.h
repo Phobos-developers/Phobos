@@ -462,6 +462,8 @@ public:
 		Valueable<bool> Splits_TargetingDistance_Cylindrical;
 		Valueable<bool> Splits_AllowRepeatTargets;
 		Valueable<bool> Splits_UseWeaponTargeting;
+		Valueable<bool> Airburst_UseCluster;
+		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
 		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
 		Valueable<bool> AirburstWeapon_UseFiringEffects;
 		Valueable<bool> AirburstWeapon_HeadToTarget;
@@ -918,6 +920,8 @@ public:
 			, Splits_TargetingDistance_Cylindrical { false }
 			, Splits_AllowRepeatTargets { false }
 			, Splits_UseWeaponTargeting { false }
+			, Airburst_UseCluster { false }
+			, Airburst_TargetAsSource_SkipHeight { false }
 			, AirburstWeapon_ApplyFirepowerMult { false }
 			, AirburstWeapon_UseFiringEffects { false }
 			, AirburstWeapon_HeadToTarget { false }

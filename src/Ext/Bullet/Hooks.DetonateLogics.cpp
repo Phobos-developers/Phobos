@@ -722,7 +722,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				return true;
 			});
 
-			if (pTypeExt->Airburst_UseCluster)
+			if (pTypeExt->Airburst_UseCluster.Get(RulesExt::Global()->Airburst_UseCluster))
 			{
 				DynamicVectorClass<AbstractClass*> newTargets;
 
@@ -815,7 +815,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		bool const airburst = pType->Airburst;
 		bool const splits = pTypeExt->Splits;
 		bool const targetAsSource = pTypeExt->Airburst_TargetAsSource;
-		bool const skipHeight = pTypeExt->Airburst_TargetAsSource_SkipHeight;
+		bool const skipHeight = pTypeExt->Airburst_TargetAsSource_SkipHeight.Get(RulesExt::Global()->Airburst_TargetAsSource_SkipHeight);
 		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
 		double const retargetSelfProbability = pTypeExt->RetargetSelf_Probability;
 		int const speed = pWeapon->Speed;

@@ -512,6 +512,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Splits_TargetingDistance_Cylindrical.Read(exINI, GameStrings::CombatDamage, "Splits.TargetingDistance.Cylindrical");
 	this->Splits_AllowRepeatTargets.Read(exINI, GameStrings::CombatDamage, "Splits.AllowRepeatTargets");
 	this->Splits_UseWeaponTargeting.Read(exINI, GameStrings::CombatDamage, "Splits.UseWeaponTargeting");
+	this->Airburst_UseCluster.Read(exINI, GameStrings::CombatDamage, "Airburst.UseCluster");
+	this->Airburst_TargetAsSource_SkipHeight.Read(exINI, GameStrings::CombatDamage, "Airburst.TargetAsSource.SkipHeight");
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.ApplyFirepowerMult");
 	this->AirburstWeapon_UseFiringEffects.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.UseFiringEffects");
 	this->AirburstWeapon_HeadToTarget.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.HeadToTarget");
@@ -1002,6 +1004,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Splits_TargetingDistance_Cylindrical)
 		.Process(this->Splits_AllowRepeatTargets)
 		.Process(this->Splits_UseWeaponTargeting)
+		.Process(this->Airburst_UseCluster)
+		.Process(this->Airburst_TargetAsSource_SkipHeight)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
 		.Process(this->AirburstWeapon_UseFiringEffects)
 		.Process(this->AirburstWeapon_HeadToTarget)

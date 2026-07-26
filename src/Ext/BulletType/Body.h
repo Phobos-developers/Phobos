@@ -64,10 +64,10 @@ public:
 	Valueable<bool> RetargetSelf;
 	Valueable<double> RetargetSelf_Probability;
 	Nullable<bool> AroundTarget;
-	Valueable<bool> Airburst_UseCluster;
+	Nullable<bool> Airburst_UseCluster;
 	Valueable<bool> Airburst_RandomClusters;
 	Valueable<bool> Airburst_TargetAsSource;
-	Valueable<bool> Airburst_TargetAsSource_SkipHeight;
+	Nullable<bool> Airburst_TargetAsSource_SkipHeight;
 	Valueable<Leptons> Splits_TargetingDistance;
 	Nullable<bool> Splits_TargetingDistance_Cylindrical;
 	Nullable<bool> Splits_AllowRepeatTargets;
@@ -127,10 +127,10 @@ public:
 		, RetargetSelf { true }
 		, RetargetSelf_Probability { 0.5 }
 		, AroundTarget {}
-		, Airburst_UseCluster { false }
+		, Airburst_UseCluster {}
 		, Airburst_RandomClusters { false }
 		, Airburst_TargetAsSource { false }
-		, Airburst_TargetAsSource_SkipHeight { false }
+		, Airburst_TargetAsSource_SkipHeight {}
 		, Splits_TargetingDistance{ Leptons(1280) }
 		, Splits_TargetingDistance_Cylindrical {}
 		, Splits_AllowRepeatTargets {}
