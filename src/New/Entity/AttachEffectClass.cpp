@@ -1024,9 +1024,9 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		}
 	}
 
-	for (auto const pType : cumulativeAnimTypes)
+	for (auto const type : cumulativeAnimTypes)
 	{
-		pTargetExt->UpdateCumulativeAttachEffects(pType);
+		pTargetExt->UpdateCumulativeAttachEffects(type);
 	}
 
 	auto const coords = pTarget->GetCoords();

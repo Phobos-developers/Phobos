@@ -784,26 +784,19 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
 
-	const bool isControlledbyCurrentPlayer = pThis->GetOwningHouse()->IsControlledByCurrentPlayer();
-	const bool IsCurrentPlayer = pThis->GetOwningHouse()->IsCurrentPlayer();
 	pThis->IsSelected = true;
 
-	if (!Phobos::Config::ShowFlashOnSelecting)
-		return 0;
-
-	auto const duration = RulesExt::Global()->SelectionFlashDuration;
-
-	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(duration);
-
-	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && IsCurrentPlayer)
+	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && pThis->GetOwningHouse()->IsCurrentPlayer())
 	{
-		auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(specific_cast<BuildingClass*>(pThis)->Type);
+		auto const pBldTypeExt = BuildingTypeExt::Fetch(specific_cast<BuildingClass*>(pThis)->Type);
 		const int tabIndex = pBldTypeExt->SetTabBySelecting;
 
 		if (tabIndex >= 0 && tabIndex < 4)
+		{
 			TabClass::Instance.SetTab(tabIndex);
+		}
 		else if (tabIndex < 0)
+		{
 			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
 			{
 			case AbstractType::InfantryType:
@@ -819,7 +812,16 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 			default:
 				break;
 			}
+		}
 	}
+
+	if (!Phobos::Config::ShowFlashOnSelecting)
+		return 0;
+
+	auto const duration = RulesExt::Global()->SelectionFlashDuration;
+
+	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(duration);
 
 	return 0;
 }
