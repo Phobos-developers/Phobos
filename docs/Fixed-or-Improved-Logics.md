@@ -2172,8 +2172,11 @@ ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> F
 
 In `rulesmd.ini`:
 ```ini
+[JumpjetControls]
+RotateOnCrash=true         ; boolean
+
 [SOMETECHNO]               ; TechnoType
-JumpjetRotateOnCrash=true  ; boolean
+JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRotateOnCrash
 ```
 
 ```{warning}

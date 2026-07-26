@@ -172,6 +172,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoQueueUpToEnter_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToEnter.Buildings");
 	this->NoQueueUpToUnload_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToUnload.Buildings");
 
+	this->JumpjetTilt.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt");
+	this->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.ForwardAccelFactor");
+	this->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.ForwardSpeedFactor");
+	this->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.SidewaysRotationFactor");
+	this->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.SidewaysSpeedFactor");
 	this->Spawner_AttackImmediately.Read(exINI, GameStrings::General, "Spawner.AttackImmediately");
 	this->Spawner_UseTurretFacing.Read(exINI, GameStrings::General, "Spawner.UseTurretFacing");
 	this->Spawner_RecycleRange.Read(exINI, GameStrings::General, "Spawner.RecycleRange");
@@ -520,8 +525,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AirburstWeapon_UseFiringEffects.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.UseFiringEffects");
 	this->AirburstWeapon_HeadToTarget.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.HeadToTarget");
 
-	this->AnimDamage_DealtByInvoker.Read(exINI, GameStrings::CombatDamage, "Damage.DealtByInvoker");
-	this->AnimDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Damage.ApplyFirepowerMult");
+	this->AnimDamage_DealtByInvoker.Read(exINI, GameStrings::CombatDamage, "AnimDamage.DealtByInvoker");
+	this->AnimDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "AnimDamage.ApplyFirepowerMult");
 
 	this->Crit_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Crit.ExtraDamage.ApplyFirepowerMult");
@@ -1236,11 +1241,6 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
 	pRulesExt->JumpjetRotateOnCrash.Read(exINI, GameStrings::JumpjetControls, "RotateOnCrash");
-	pRulesExt->JumpjetTilt.Read(exINI, GameStrings::JumpjetControls, "Tilt");
-	pRulesExt->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.ForwardAccelFactor");
-	pRulesExt->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.ForwardSpeedFactor");
-	pRulesExt->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.SidewaysRotationFactor");
-	pRulesExt->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::JumpjetControls, "Tilt.SidewaysSpeedFactor");
 
 	return 0;
 }

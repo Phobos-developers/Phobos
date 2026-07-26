@@ -2538,7 +2538,7 @@ DefaultMirageDisguises=    ; List of TerrainTypes
 
 In `rulesmd.ini`:
 ```ini
-[JumpjetControls]
+[AudioVisual]
 JumpjetTilt=false                       ; boolean
 JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
@@ -2546,11 +2546,11 @@ JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 
 [SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
-JumpjetTilt=                            ; boolean, default to [JumpjetControls] -> JumpjetTilt
-JumpjetTilt.ForwardAccelFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardAccelFactor
-JumpjetTilt.ForwardSpeedFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardSpeedFactor
-JumpjetTilt.SidewaysRotationFactor=     ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysRotationFactor
-JumpjetTilt.SidewaysSpeedFactor=        ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysSpeedFactor
+JumpjetTilt=                            ; boolean, default to [AudioVisual] -> JumpjetTilt
+JumpjetTilt.ForwardAccelFactor=         ; floating point value, default to [AudioVisual] -> JumpjetTilt.ForwardAccelFactor
+JumpjetTilt.ForwardSpeedFactor=         ; floating point value, default to [AudioVisual] -> JumpjetTilt.ForwardSpeedFactor
+JumpjetTilt.SidewaysRotationFactor=     ; floating point value, default to [AudioVisual] -> JumpjetTilt.SidewaysRotationFactor
+JumpjetTilt.SidewaysSpeedFactor=        ; floating point value, default to [AudioVisual] -> JumpjetTilt.SidewaysSpeedFactor
 ```
 
 ### RA1-Style Multi-Turret and Multi-Barrel
