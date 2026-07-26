@@ -419,6 +419,13 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
+// Extensions of owners that are persisted inline within the owner's own savegame
+// block (cells) instead of the centralized extension stream. Their owners are
+// re-constructed in place while a savegame is loading, so the constructor must not
+// allocate an extension that the owner's load path is about to create anyway.
+template <class T>
+concept SavedInline = requires(T) { { T::SavedInline } -> std::convertible_to<bool>; } && T::SavedInline;
+
 // resolves the data class of an extension: the extension class itself for the
 // flattened hierarchy, or the nested ExtData class of the legacy shells (EBolt).
 // slot-mode extensions are their own data class and are resolved directly: their
@@ -515,9 +522,16 @@ protected:
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
-		// during savegame load extensions are restored from the stream instead
-		if (Phobos::IsLoadingSaveGame)
-			return nullptr;
+		// Owners persisted inline (cells) are re-constructed in place while a savegame
+		// is loading and get their extension from their own load path; anything else
+		// reaching a constructor during the load window is an object the game is
+		// genuinely creating, which needs an extension right away - the ones restored
+		// from the extension stream never run their constructors.
+		if constexpr (SavedInline<T>)
+		{
+			if (Phobos::IsLoadingSaveGame)
+				return nullptr;
+		}
 
 		return this->AllocateUnchecked(key);
 	}
@@ -794,6 +808,13 @@ public:
 
 				if (!key)
 					Debug::FatalErrorAndExit("RelinkExtensionPointers - '%s' extension has no owner!\n", this->Name);
+
+				// The owner should carry nothing yet, but drop any other extension it
+				// picked up during the load window before overwriting the slot, so the
+				// stray does not linger in the container untethered. Remove only acts
+				// on genuinely tracked extensions, so a stale slot value is harmless.
+				if (auto const existing = GetExtensionPointer(key); existing && existing != item)
+					this->Remove(key);
 
 				SetExtensionPointer(key, item);
 				item->PostLoad();
