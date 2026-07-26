@@ -379,7 +379,6 @@ msgstr ""
 "`WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` "
 "分别设定哪些武器可以／不可以获得上述射程加成。"
 
-#, fuzzy
 msgid ""
 "On TechnoTypes with `OpenTopped=true`, "
 "`OpenTopped.UseTransportRangeModifiers` can be set to true to make "
@@ -389,6 +388,7 @@ msgid ""
 msgstr ""
 "对于拥有 `OpenTopped=true` 的科技类型，`OpenTopped.UseTransportRangeModifiers` 可以设为"
 " true 以使载员同步获得运输工具所获得的射程加成。"
+"`[General] -> OpenTopped.UseTransportRangeModifiers` 定义了其全局默认值。"
 
 msgid ""
 "`Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the "
@@ -470,7 +470,6 @@ msgid ""
 "weapons."
 msgstr "`DisableWeapons` 可用于禁用 AE 附加对象的所有武器。"
 
-#, fuzzy
 msgid ""
 "On TechnoTypes with `OpenTopped=true`, "
 "`OpenTopped.CheckTransportDisableWeapons` can be set to true to make "
@@ -480,6 +479,7 @@ msgid ""
 msgstr ""
 "在拥有 `OpenTopped=true` 的科技类型上，`OpenTopped.CheckTransportDisableWeapons` "
 "可设为 true 以使载员在运输工具受 `DisableWeapons` 影响期间同步禁言效果。"
+"`[General] -> OpenTopped.CheckTransportDisableWeapons` 定义了其全局默认值"
 
 msgid ""
 "`Unkillable` can be used to prevent the techno from being killed by taken"
