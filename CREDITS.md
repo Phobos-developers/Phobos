@@ -581,6 +581,7 @@ This page lists all the individual contributions to the project by their author.
   - Damaged unit image changes
   - `VoiceDeploy` through hot-key/command bar fix
   - Damaged aircraft image changes
+  - Change target Owner on warhead impact
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
@@ -717,6 +718,7 @@ This page lists all the individual contributions to the project by their author.
   - Separate the definitions of default direction for aircraft production and landing in the field
   - Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration
   - Fix the bug where landing direction cannot be correctly converted when set to a value exceeding 256
+  - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -847,6 +849,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow beacon placement hotkey in single player
   - Adjust recruitable status on team member discharge
   - RA1-Style multi-turret and multi-barrel
+  - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

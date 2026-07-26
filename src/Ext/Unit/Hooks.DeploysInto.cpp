@@ -169,6 +169,15 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	if (!Game::IsActive)
 		return CanExistHere;
 
+	auto isTerrainBuildable = [](TerrainClass* pTerrain) -> bool
+	{
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		return pType->SpawnsTiberium
+			? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+			: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+	};
+
 	if (pBuildingType->LaserFence)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -179,7 +188,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 			}
 		}
@@ -193,7 +202,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -249,7 +258,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;

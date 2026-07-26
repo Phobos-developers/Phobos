@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 06:58+0800\n"
+"POT-Creation-Date: 2026-07-26 16:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1910,6 +1910,9 @@ msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeplo
 msgid "Damaged aircraft image changes"
 msgstr "战机伤残更换图像"
 
+msgid "Change target Owner on warhead impact"
+msgstr ""
+
 msgid "**ZivDero**:"
 msgstr "**ZivDero**："
 
@@ -2444,6 +2447,11 @@ msgid ""
 "set to a value exceeding 256"
 msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug"
 
+msgid ""
+"Separately define the global default values of TerrainTypes' `IsPassable`"
+" and `CanBeBuiltOn` based on `SpawnsTiberium`"
+msgstr ""
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2879,6 +2887,11 @@ msgstr "允许在单人模式下使用信标放置快捷键"
 
 msgid "Adjust recruitable status on team member discharge"
 msgstr "小队成员解散时调整可招募性"
+
+msgid ""
+"New hotkey to select the units within the current screen that are "
+"captured by non-permanent mind-controller"
+msgstr ""
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

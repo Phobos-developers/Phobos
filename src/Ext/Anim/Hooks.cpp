@@ -99,7 +99,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	TechnoClass* pInvoker = nullptr;
 	HouseClass* pOwner = pThis->Owner;
 
-	if (pTypeExt->Damage_DealtByInvoker)
+	if (pTypeExt->Damage_DealtByInvoker.Get(RulesExt::Global()->AnimDamage_DealtByInvoker))
 	{
 		const auto pExt = AnimExt::Fetch(pThis);
 		pInvoker = pExt->Invoker;
@@ -121,11 +121,11 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 				pOwner = pInvoker->Owner;
 
 			// only calculate firepower multiplier in the first round
-			if (firstDamage && pTypeExt->Damage_ApplyFirepowerMult)
+			if (firstDamage && pTypeExt->Damage_ApplyFirepowerMult.Get(RulesExt::Global()->AnimDamage_ApplyFirepowerMult))
 				pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pInvoker);
 		}
 
-		if (pTypeExt->Damage_ApplyFirepowerMult)
+		if (pTypeExt->Damage_ApplyFirepowerMult.Get(RulesExt::Global()->AnimDamage_ApplyFirepowerMult))
 			appliedDamage = static_cast<int>(appliedDamage * pExt->FirepowerMult);
 	}
 

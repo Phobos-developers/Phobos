@@ -54,6 +54,7 @@ public:
 		Valueable<bool> ShieldApplyArmorMult;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
+		Valueable<bool> JumpjetRotateOnCrash;
 
 		Nullable<WarheadTypeClass*> VeinholeWarhead;
 
@@ -96,6 +97,8 @@ public:
 
 		Valueable<bool> ExtendedAircraftMissions;
 		Valueable<int> ExtendedAircraftMissions_UnlandDamage;
+		Valueable<EdgeType> AircraftSpawnFromEdge;
+		Valueable<EdgeType> AircraftRetreatToEdge;
 		Valueable<bool> AmphibiousEnter;
 		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
@@ -103,6 +106,38 @@ public:
 		Valueable<bool> NoQueueUpToUnload;
 		Nullable<bool> NoQueueUpToEnter_Buildings;
 		Nullable<bool> NoQueueUpToUnload_Buildings;
+
+		Valueable<bool> JumpjetTilt;
+		Valueable<double> JumpjetTilt_ForwardAccelFactor;
+		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
+		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
+		Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
+
+		Valueable<bool> Spawner_AttackImmediately;
+		Valueable<bool> Spawner_UseTurretFacing;
+		Valueable<Leptons> Spawner_RecycleRange;
+		Valueable<bool> Spawner_RecycleOnTurret;
+		Valueable<bool> Promote_IncludeSpawns;
+		Valueable<AffectedHouse> RadarJamHouses;
+		Valueable<int> RadarJamDelay;
+		Valueable<bool> MindControl_IgnoreSize;
+		Valueable<bool> MultiMindControl_ReleaseVictim;
+		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
+		Valueable<bool> AlternateFLH_OnTurret;
+		Valueable<bool> AlternateFLH_ApplyVehicle;
+		Valueable<bool> DestroyAnim_Random;
+		Valueable<bool> UseDisguiseMovementSpeed;
+		Valueable<bool> Convert_ResetMindControl;
+		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
+		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+		Valueable<int> Overload_ParticleSysCount;
+		Valueable<double> FallingDownDamage;
+		Valueable<bool> FallingDownDamage_AllowEMP;
+
+		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
+		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
+		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -144,6 +179,18 @@ public:
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
+
+		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<bool> Strafing_UseAmmoPerShot;
+		Valueable<bool> Strafing_TargetCell;
+		Valueable<bool> OmniFire_TurnToTarget;
+		Valueable<bool> AmbientDamage_IgnoreTarget;
+		Valueable<bool> KeepRange_AllowAI;
+		Valueable<bool> KeepRange_AllowPlayer;
+		Valueable<int> KeepRange_EarlyStopFrame;
+		Valueable<bool> AircraftWeapon_KickOutPassengers;
+		Valueable<double> CrushSlowdownMultiplier;
+		Valueable<bool> SkipCrushSlowdown;
 
 		Valueable<bool> LaserPositionUpdate_StopOnFirerConvert;
 		Valueable<int> LaserZAdjust;
@@ -307,6 +354,8 @@ public:
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
+
+		Valueable<bool> ReloadInTransport;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 		Valueable<bool> OpenTopped_AllowFiringIfAttackedByLocomotor;
@@ -318,6 +367,40 @@ public:
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 		Valueable<bool> OpenTransport_FireWhileMoving;
+
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Valueable<bool> Explodes_KillPassengers;
+		Valueable<bool> Explodes_DuringBuildup;
+
+		Valueable<bool> AircraftFiringForceScatter;
+
+		Valueable<bool> HoverDrownable;
+
+		Valueable<bool> Arcing_AllowElevationInaccuracy;
+
+		Valueable<bool> Terrain_IsPassable;
+		Valueable<bool> Tibtree_IsPassable;
+		Valueable<bool> Terrain_CanBeBuiltOn;
+		Valueable<bool> Tibtree_CanBeBuiltOn;
+
+		Nullable<bool> Sinkable;
+		Valueable<bool> Sinkable_SquidGrab;
+		Valueable<int> SinkSpeed;
+
+		Valueable<bool> CreateAnimsOnZeroDamage;
+		Valueable<bool> Conventional_IgnoreUnits;
+		Valueable<bool> DecloakDamagedTargets;
+		Valueable<bool> ShakeIsLocal;
+		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> AllowDamageOnSelf;
+		Valueable<bool> Debris_Conventional;
+		Valueable<bool> Parasite_DisableParticleSystem;
+
+		Valueable<bool> ProjectileInterceptable;
+		Valueable<bool> Interceptor_GuardRange_IsCylindrical;
+		Valueable<bool> Interceptor_ApplyFirepowerMult;
 
 		Valueable<bool> SortCameoByName;
 
@@ -356,6 +439,7 @@ public:
 
 		Valueable<bool> UnitsUnsellable;
 
+		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
@@ -369,10 +453,35 @@ public:
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
 
+		Valueable<bool> Shrapnel_AffectsGround;
+		Valueable<bool> Shrapnel_AffectsBuildings;
+		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Valueable<bool> Shrapnel_IgnoreHitBuildings;
 		Valueable<bool> Shrapnel_ObeyWarheadTriggerConditions;
 
+		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+
+		Valueable<bool> Splits_TargetingDistance_Cylindrical;
+		Valueable<bool> Splits_AllowRepeatTargets;
+		Valueable<bool> Splits_UseWeaponTargeting;
+		Valueable<bool> Airburst_UseCluster;
+		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
+		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+		Valueable<bool> AirburstWeapon_UseFiringEffects;
+		Valueable<bool> AirburstWeapon_HeadToTarget;
+
+		Valueable<bool> AnimDamage_DealtByInvoker;
+		Valueable<bool> AnimDamage_ApplyFirepowerMult;
+
+		Valueable<bool> Crit_ApplyChancePerTarget;
+		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
+		Valueable<bool> Crit_AnimOnAffectedTargets;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
+		Valueable<bool> ReturnWarhead_ApplyChancePerTarget;
+
 		Nullable<PartialVector2D<int>> BuildingGuardRetryDelay;
+
+		Valueable<bool> Vertical_AircraftFix;
 
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
@@ -396,6 +505,8 @@ public:
 
 		Valueable<bool> AllowChatBoxInSinglePlayer;
 
+		Valueable<bool> NotHuman_RandomDeathSequence;
+		Valueable<bool> OnlyUseLandSequences;
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
@@ -405,6 +516,8 @@ public:
 
 		Valueable<bool> AutoDeath_AllowLimboed;
 		Valueable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 
 		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
 		Nullable<int> PoseDir_Production;
@@ -439,6 +552,7 @@ public:
 			, ShieldApplyArmorMult { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, JumpjetRotateOnCrash { true }
 			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP }
 
@@ -478,6 +592,8 @@ public:
 
 			, ExtendedAircraftMissions { false }
 			, ExtendedAircraftMissions_UnlandDamage { -1 }
+			, AircraftSpawnFromEdge { EdgeType::Owner }
+			, AircraftRetreatToEdge { EdgeType::Owner }
 			, AmphibiousEnter { false }
 			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
@@ -485,6 +601,38 @@ public:
 			, NoQueueUpToUnload { false }
 			, NoQueueUpToEnter_Buildings {}
 			, NoQueueUpToUnload_Buildings {}
+
+			, JumpjetTilt { false }
+			, JumpjetTilt_ForwardAccelFactor { 1.0 }
+			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
+			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
+			, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
+
+			, Spawner_AttackImmediately { false }
+			, Spawner_UseTurretFacing { false }
+			, Spawner_RecycleRange { Leptons(-1) }
+			, Spawner_RecycleOnTurret { false }
+			, Promote_IncludeSpawns { false }
+			, RadarJamHouses { AffectedHouse::Enemies }
+			, RadarJamDelay { 30 }
+			, MindControl_IgnoreSize { true }
+			, MultiMindControl_ReleaseVictim { false }
+			, MindControlLink_VisibleToHouse { AffectedHouse::All }
+			, AlternateFLH_OnTurret { true }
+			, AlternateFLH_ApplyVehicle { false }
+			, DestroyAnim_Random { true }
+			, UseDisguiseMovementSpeed { false }
+			, Convert_ResetMindControl { false }
+			, BuildLimitGroup_ContentIfAnyMatch { false }
+			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
+			, DigitalDisplay_Health_FakeAtDisguise { true }
+			, Overload_ParticleSysCount { 5 }
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_AllowEMP { true }
+
+			, ForceWeapon_InRange_TechnoOnly { true }
+			, ForceWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
 
 			, BuildingProductionQueue { false }
 
@@ -514,6 +662,17 @@ public:
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
 			, AirstrikeLineZAdjust { 0 }
+			, Strafing_SimulateBurst { false }
+			, Strafing_UseAmmoPerShot { false }
+			, Strafing_TargetCell { false }
+			, OmniFire_TurnToTarget { false }
+			, AmbientDamage_IgnoreTarget { false }
+			, KeepRange_AllowAI { false }
+			, KeepRange_AllowPlayer { false }
+			, KeepRange_EarlyStopFrame { 0 }
+			, AircraftWeapon_KickOutPassengers { true }
+			, CrushSlowdownMultiplier { 0.2 }
+			, SkipCrushSlowdown { false }
 			, LaserPositionUpdate_StopOnFirerConvert { false }
 			, LaserZAdjust { 0 }
 			, EBoltZAdjust { 0 }
@@ -658,6 +817,8 @@ public:
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
+
+			, ReloadInTransport { false }
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_AllowFiringIfAttackedByLocomotor { true }
@@ -669,6 +830,40 @@ public:
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
 			, OpenTransport_FireWhileMoving { true }
+
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
+
+			, Explodes_KillPassengers { true }
+			, Explodes_DuringBuildup { true }
+
+			, AircraftFiringForceScatter { true }
+
+			, HoverDrownable { true }
+
+			, Arcing_AllowElevationInaccuracy { true }
+
+			, Terrain_IsPassable { false }
+			, Tibtree_IsPassable { false }
+			, Terrain_CanBeBuiltOn { false }
+			, Tibtree_CanBeBuiltOn { false }
+
+			, Sinkable {}
+			, Sinkable_SquidGrab { true }
+			, SinkSpeed { 5 }
+
+			, CreateAnimsOnZeroDamage { false }
+			, Conventional_IgnoreUnits { false }
+			, DecloakDamagedTargets { true }
+			, ShakeIsLocal { false }
+			, ApplyModifiersOnNegativeDamage { false }
+			, AllowDamageOnSelf { false }
+			, Debris_Conventional { false }
+			, Parasite_DisableParticleSystem { false }
+
+			, ProjectileInterceptable { false }
+			, Interceptor_GuardRange_IsCylindrical { false }
+			, Interceptor_ApplyFirepowerMult { true }
 
 			, SortCameoByName { false }
 
@@ -703,6 +898,7 @@ public:
 
 			, UnitsUnsellable { false }
 
+			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
@@ -719,9 +915,29 @@ public:
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+			, Shrapnel_AffectsGround { false }
+			, Shrapnel_AffectsBuildings { false }
+			, Shrapnel_UseWeaponTargeting { false }
 			, Shrapnel_IgnoreHitBuildings { false }
 			, Shrapnel_ObeyWarheadTriggerConditions { true }
+			, ReturnWeapon_ApplyFirepowerMult { false }
+			, Splits_TargetingDistance_Cylindrical { false }
+			, Splits_AllowRepeatTargets { false }
+			, Splits_UseWeaponTargeting { false }
+			, Airburst_UseCluster { false }
+			, Airburst_TargetAsSource_SkipHeight { false }
+			, AirburstWeapon_ApplyFirepowerMult { false }
+			, AirburstWeapon_UseFiringEffects { false }
+			, AirburstWeapon_HeadToTarget { false }
+			, AnimDamage_DealtByInvoker { false }
+			, AnimDamage_ApplyFirepowerMult { false }
+			, Crit_ApplyChancePerTarget { false }
+			, Crit_ExtraDamage_ApplyFirepowerMult { false }
+			, Crit_AnimOnAffectedTargets { false }
+			, Crit_SuppressWhenIntercepted { false }
+			, ReturnWarhead_ApplyChancePerTarget { false }
 			, BuildingGuardRetryDelay {}
+			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
 			, DiscardOn_MoveBasedOnDestination { false }
@@ -744,6 +960,8 @@ public:
 				
 			, AllowChatBoxInSinglePlayer { false }
 
+			, NotHuman_RandomDeathSequence { false }
+			, OnlyUseLandSequences { false }
 			, SecondaryFireSequenceLandOnly { true }
 
 			, AutoRemoveEarliestBeacon { false }
@@ -755,6 +973,8 @@ public:
 
 			, AutoDeath_AllowLimboed { true }
 			, AutoDeath_OnOwnerChange_IgnoreRevertOnExit { false }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
+			, AutoDeath_TechnosExist_AllowLimboed { false }
 
 			, AircraftDockingDir_DefaultToPoseDir{ true }
 			, PoseDir_Production {}
