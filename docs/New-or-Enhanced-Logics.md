@@ -2721,6 +2721,8 @@ In `rulesmd.ini`:
 [CombatDamage]
 Crit.ApplyChancePerTarget=false            ; boolean
 Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.AnimOnAffectedTargets=false           ; boolean
+Crit.SuppressWhenIntercepted=false         ; boolean
 
 [SOMEWARHEAD]                              ; WarheadType
 Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
@@ -2737,8 +2739,8 @@ Crit.AnimList=                             ; List of AnimationTypes
 Crit.AnimList.PickRandom=                  ; boolean
 Crit.AnimList.CreateAll=                   ; boolean
 Crit.ActiveChanceAnims=                    ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false           ; boolean
-Crit.SuppressWhenIntercepted=false         ; boolean
+Crit.AnimOnAffectedTargets=                ; boolean, default to [CombatDamage] -> Crit.AnimOnAffectedTargets
+Crit.SuppressWhenIntercepted=              ; boolean, default to [CombatDamage] -> Crit.SuppressWhenIntercepted
 
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
