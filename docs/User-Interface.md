@@ -600,8 +600,15 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 
 ### `[ ]` Select Captured Units
 - Select the units within the current screen that are captured by non-permanent mind-controller.
+- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
 - If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
 - For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SelectCapturedKeyEnabled=false    ; boolean
+```
 
 ## Loading screen
 

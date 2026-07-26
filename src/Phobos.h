@@ -118,6 +118,7 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
+		static bool SelectCapturedCommand;
 	};
 
 	class Misc
