@@ -547,7 +547,7 @@ public:
 		, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
 		, AutoDeath_TechnosExist {}
 		, AutoDeath_TechnosExist_Any { true }
-		, AutoDeath_TechnosExist_AllowLimboed { true }
+		, AutoDeath_TechnosExist_AllowLimboed { false }
 		, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 		, SellSound {}
