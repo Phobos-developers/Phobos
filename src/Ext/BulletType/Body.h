@@ -119,7 +119,7 @@ public:
 		, AAOnly { false }
 		, Arcing_AllowElevationInaccuracy {}
 		, ReturnWeapon {}
-		, ReturnWeapon_ApplyFirepowerMult { false }
+		, ReturnWeapon_ApplyFirepowerMult {}
 		, SubjectToGround { false }
 		, Splits { false }
 		, AirburstSpread { 1.5 }
@@ -132,15 +132,15 @@ public:
 		, Airburst_TargetAsSource { false }
 		, Airburst_TargetAsSource_SkipHeight { false }
 		, Splits_TargetingDistance{ Leptons(1280) }
-		, Splits_TargetingDistance_Cylindrical { false }
-		, Splits_AllowRepeatTargets { false }
+		, Splits_TargetingDistance_Cylindrical {}
+		, Splits_AllowRepeatTargets {}
 		, Splits_TargetCellRange { 3 }
-		, Splits_UseWeaponTargeting { false }
-		, AirburstWeapon_ApplyFirepowerMult { false }
+		, Splits_UseWeaponTargeting {}
+		, AirburstWeapon_ApplyFirepowerMult {}
 		, AirburstWeapon_SourceScatterMin { Leptons(0) }
 		, AirburstWeapon_SourceScatterMax { Leptons(0) }
-		, AirburstWeapon_UseFiringEffects { false }
-		, AirburstWeapon_HeadToTarget { false }
+		, AirburstWeapon_UseFiringEffects {}
+		, AirburstWeapon_HeadToTarget {}
 		, AirburstWeapon_RadialFireSegments { 0 }
 		, Parachuted { false }
 		, Parachuted_FallRate { 1 }
