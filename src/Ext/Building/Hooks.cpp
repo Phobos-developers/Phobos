@@ -327,8 +327,18 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EBP);
 
-	AnimExt::Fetch(pAnim)->ParentBuilding = pThis;
-	TechnoExt::Fetch(pThis)->AnimRefCount++;
+	// This runs while a savegame is loading too, where neither extension exists yet:
+	// the building's is restored from the extension stream and attached once the load
+	// settles, and an animation the game creates along the way gets one then as well.
+	// The reference count only makes sense if both ends are there, so skip both.
+	auto const pAnimExt = AnimExt::TryFetch(pAnim);
+	auto const pExt = TechnoExt::TryFetch(pThis);
+
+	if (pAnimExt && pExt)
+	{
+		pAnimExt->ParentBuilding = pThis;
+		pExt->AnimRefCount++;
+	}
 
 	return 0;
 }

@@ -185,6 +185,20 @@ struct RelinkExtensionsAction
 	}
 };
 
+// calls:
+// T::ExtMap.AllocatePendingExtensions()
+struct AllocatePendingExtensionsAction
+{
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+			T::ExtMap.AllocatePendingExtensions();
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -224,6 +238,11 @@ struct TypeRegistry
 	__forceinline static void RelinkExtensions()
 	{
 		dispatch_mass_action<RelinkExtensionsAction>();
+	}
+
+	__forceinline static void AllocatePendingExtensions()
+	{
+		dispatch_mass_action<AllocatePendingExtensionsAction>();
 	}
 
 private:
@@ -364,6 +383,9 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
+	// with the restored extensions in place, the owners left over are the objects the
+	// game created itself while loading; they get their extensions now
+	PhobosTypeRegistry::AllocatePendingExtensions();
 	return 0;
 }
 
