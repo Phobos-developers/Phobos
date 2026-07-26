@@ -832,21 +832,6 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 	return true;
 }
 
-struct DummyExtHere
-{
-	char _pad0[0x50];
-	CDTimerClass DisableWeaponsTimer;
-	char _pad1[0x40];
-	bool DriverKilled; 
-};
-
-struct DummyTypeExtHere
-{
-	char _[0xF4];
-	ValueableVector<TechnoTypeClass*> Operators;
-	bool Operator_Any;
-};
-
 bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy)
 {
 	const auto pThis = abstract_cast<FootClass*, true>(*pData);
@@ -855,14 +840,37 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 		return false;
 
 	const bool passive = pToHouse->IsNeutral();
-	const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
-	pExt_Ares->DriverKilled = passive;
+
+	if (auto const pDriverKilled = AresFunctions::GetDriverKilled
+		? AresFunctions::GetDriverKilled(pThis) : nullptr)
+	{
+		*pDriverKilled = passive;
+	}
 
 	if (pThis->Owner == pToHouse)
 		return false;
 
 	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
+
+	// Operator= -- the infantry that has to ride along for this to be a crewed unit.
+	InfantryTypeClass* const* pOperators = nullptr;
+	int operatorCount = 0;
+	bool anyOperatorAllowed = false;
+
+	if (AresFunctions::GetOperators)
+		AresFunctions::GetOperators(pType, &pOperators, &operatorCount, &anyOperatorAllowed);
+
+	auto const isOperator = [&](TechnoTypeClass* pPassengerType)
+		{
+			for (int i = 0; i < operatorCount; ++i)
+			{
+				if (pOperators[i] == pPassengerType)
+					return true;
+			}
+
+			return false;
+		};
+
 	auto& passengers = pThis->Passengers;
 
 	do
@@ -870,17 +878,17 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 		if (!passengers.GetFirstPassenger())
 			break;
 
-		if (pTypeExt_Ares->Operator_Any)
+		if (anyOperatorAllowed)
 		{
 			const auto pOperator = pThis->RemoveFirstPassenger();
 			pOperator->RegisterDestruction(pKiller);
 			pOperator->UnInit();
 		}
-		else if (!pTypeExt_Ares->Operators.empty())
+		else if (operatorCount > 0)
 		{
 			for (NextObject passenger(passengers.GetFirstPassenger()); passenger; ++passenger)
 			{
-				if (!pTypeExt_Ares->Operators.Contains(passenger->GetTechnoType()))
+				if (!isOperator(passenger->GetTechnoType()))
 					continue;
 
 				const auto pOperator = static_cast<FootClass*>(*passenger);
@@ -1008,11 +1016,9 @@ bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 	if (TechnoExt::Fetch(pThis)->AE.DisableWeapons)
 		return true;
 
-	if (AresHelper::CanUseAres)
+	if (AresFunctions::GetDisableWeaponTimer)
 	{
-		const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
-
-		if (pExt_Ares->DisableWeaponsTimer.InProgress())
+		if (AresFunctions::GetDisableWeaponTimer(pThis)->InProgress())
 			return true;
 	}
 
@@ -1022,24 +1028,24 @@ bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
-	auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
-	bool const canUseAres = AresHelper::CanUseAres;
+	auto const pTimer = AresFunctions::GetDisableWeaponTimer
+		? AresFunctions::GetDisableWeaponTimer(pThis) : nullptr;
 	bool const disableWeapons = pExt->AE.DisableWeapons;
 	int timeLeft = 0;
 
 	pExt->AE.DisableWeapons = false;
 
-	if (canUseAres)
+	if (pTimer)
 	{
-		timeLeft = pExt_Ares->DisableWeaponsTimer.GetTimeLeft();
-		pExt_Ares->DisableWeaponsTimer.Stop();
+		timeLeft = pTimer->GetTimeLeft();
+		pTimer->Stop();
 	}
 
 	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
 	pExt->AE.DisableWeapons = disableWeapons;
 
-	if (canUseAres && timeLeft > 0)
-		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
+	if (pTimer && timeLeft > 0)
+		pTimer->Start(timeLeft);
 
 	return fireError;
 }

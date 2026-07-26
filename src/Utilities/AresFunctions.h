@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "Constructs.h"
+#include "AntaresAPI.h"   // AntaresFactory, and the types the accessors traffic in
 
 class TechnoClass;
 class TechnoTypeClass;
@@ -24,7 +25,29 @@ class AresFunctions
 public:
 	static void InitAres3_0();
 	static void InitAres3_0p1();
+
+	//! Fill the shared entries below from Antares' interop table rather than from
+	//! Ares RVAs. Anything that only exists to support a patch into Ares' own code
+	//! stays null: Antares is never patched, it hands subsystems over instead.
+	static void InitAntares();
+
 	static void InitNoAres();
+
+	// ---------------------------------------------------------------------------
+	// Extension data, reached through accessors rather than by offset.
+	//
+	// Both backends fill these. For Ares they are thunks over the layouts we know;
+	// for Antares they come straight from its table. Call sites go through them so
+	// no shadow struct has to exist outside AresAddressInit.cpp.
+	static AlphaShapeClass* (__stdcall* FindAlphaShape)(ObjectClass* pObject);
+	static CDTimerClass* (__stdcall* GetDisableWeaponTimer)(TechnoClass* pThis);
+	static bool* (__stdcall* GetDriverKilled)(TechnoClass* pThis);
+	static bool (__stdcall* IsPsionicsImmune)(TechnoTypeClass* pType, VeterancyStruct const* pVeterancy);
+	static bool (__stdcall* IsVeteranBuilding)(HouseTypeClass* pCountry, BuildingTypeClass* pType);
+	static bool* (__stdcall* GetInfiltrated)(HouseClass* pHouse, AntaresFactory factory);
+	static bool (__stdcall* GetOperators)(TechnoTypeClass* pType, InfantryTypeClass* const** ppItems,
+		int* pCount, bool* pAnyAllowed);
+	// ---------------------------------------------------------------------------
 
 	// TechnoExt
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);

@@ -12,6 +12,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <New/Type/InsigniaTypeClass.h>
 
+#include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 
 bool TechnoTypeExt::SelectWeaponMutex = false;
@@ -263,26 +264,17 @@ bool TechnoTypeExt::CameoIsVeteran(HouseClass* pHouse) const
 
 	const auto pCountry = pHouse->Type;
 
-	struct DummyHouseExtHere
-	{
-		char _[0x48];
-		bool ShipYardInfiltrated;
-		bool AirFieldInfiltrated;
-		bool ConstructionYardInfiltrated;
-	};
-
-	struct DummyHouseTypeExtHere
-	{
-		char _[0x15C];
-		ValueableVector<BuildingTypeClass*> VeteranBuildings;
-	};
-
-	const auto pHouseExt_Ares = AresHelper::CanUseAres ? reinterpret_cast<DummyHouseExtHere*>(*(uintptr_t*)((char*)pHouse + 0x16084)) : nullptr;
+	auto const infiltrated = [pHouse](AntaresFactory factory)
+		{
+			auto const pFlag = AresFunctions::GetInfiltrated
+				? AresFunctions::GetInfiltrated(pHouse, factory) : nullptr;
+			return pFlag && *pFlag;
+		};
 
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::UnitType:
-		if (pThis->Trainable && (pThis->Naval ? (pHouseExt_Ares && pHouseExt_Ares->ShipYardInfiltrated) : pHouse->WarFactoryInfiltrated))
+		if (pThis->Trainable && (pThis->Naval ? infiltrated(AntaresFactory::NavalYard) : pHouse->WarFactoryInfiltrated))
 			return true;
 
 		return pCountry->VeteranUnits.FindItemIndex(static_cast<UnitTypeClass*>(pThis)) != -1;
@@ -298,20 +290,21 @@ bool TechnoTypeExt::CameoIsVeteran(HouseClass* pHouse) const
 		{
 			if (const auto pUndeploysInto = pThis->UndeploysInto)
 			{
-				if (pThis->Naval ? (pHouseExt_Ares && pHouseExt_Ares->ShipYardInfiltrated) : pHouse->WarFactoryInfiltrated)
+				if (pThis->Naval ? infiltrated(AntaresFactory::NavalYard) : pHouse->WarFactoryInfiltrated)
 					return true;
 
 				return pCountry->VeteranUnits.FindItemIndex(pUndeploysInto) != -1;
 			}
 
-			if (pHouseExt_Ares && pHouseExt_Ares->ConstructionYardInfiltrated)
+			if (infiltrated(AntaresFactory::ConstructionYard))
 				return true;
 		}
 
-		return AresHelper::CanUseAres && reinterpret_cast<DummyHouseTypeExtHere*>(*(uintptr_t*)((char*)pCountry + 0xC4))->VeteranBuildings.Contains(static_cast<BuildingTypeClass*>(pThis));
+		return AresFunctions::IsVeteranBuilding
+			&& AresFunctions::IsVeteranBuilding(pCountry, static_cast<BuildingTypeClass*>(pThis));
 
 	case AbstractType::AircraftType:
-		if (pThis->Trainable && pHouseExt_Ares && pHouseExt_Ares->AirFieldInfiltrated)
+		if (pThis->Trainable && infiltrated(AntaresFactory::AircraftFactory))
 			return true;
 
 		return pCountry->VeteranAircraft.FindItemIndex(static_cast<AircraftTypeClass*>(pThis)) != -1;

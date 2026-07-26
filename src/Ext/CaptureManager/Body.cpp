@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Techno/Body.h>
+#include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 
 int CaptureManagerExt::GetControlledTotalSize(CaptureManagerClass* pManager)
@@ -15,20 +16,6 @@ int CaptureManagerExt::GetControlledTotalSize(CaptureManagerClass* pManager)
 
 	return totalSize;
 }
-
-struct DummyExtHere
-{
-	char _[0x9C];
-	bool DriverKilled;
-};
-
-struct DummyTypeExtHere
-{
-	char _[0x131];
-	bool Vet_PsionicsImmune;
-	bool __[0x6];
-	bool Elite_PsionicsImmune;
-};
 
 bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
@@ -50,23 +37,10 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	if (pTargetType->ImmuneToPsionics)
 		return false;
 
-	if (AresHelper::CanUseAres)
+	if (AresFunctions::IsPsionicsImmune
+		&& AresFunctions::IsPsionicsImmune(pTargetType, &pTarget->Veterancy))
 	{
-		const auto pTargetTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pTargetType->align_2FC);
-
-		switch (pTarget->Veterancy.GetRemainingLevel())
-		{
-		case Rank::Elite:
-			if (pTargetTypeExt_Ares->Elite_PsionicsImmune)
-				return false;
-
-		case Rank::Veteran:
-			if (pTargetTypeExt_Ares->Vet_PsionicsImmune)
-				return false;
-
-		default:
-			break;
-		}
+		return false;
 	}
 
 	// disallow capturing bunkered units
@@ -103,7 +77,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 		return false;
 
 	// driver killed. has no mind.
-	if (AresHelper::CanUseAres && reinterpret_cast<DummyExtHere*>(*(uintptr_t*)((char*)pTarget + 0x154))->DriverKilled)
+	if (AresFunctions::GetDriverKilled && *AresFunctions::GetDriverKilled(pTarget))
 		return false;
 
 	return true;

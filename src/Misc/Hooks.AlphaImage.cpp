@@ -75,11 +75,9 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
 		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
 
-	auto& alphaExt = *AresFunctions::AlphaExtMap;
-
 	if (inactive)
 	{
-		if (const auto pAlpha = alphaExt.get_or_default(pSource))
+		if (const auto pAlpha = AresFunctions::FindAlphaShape(pSource))
 			GameDelete(pAlpha);
 
 		return;
@@ -87,7 +85,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
 	{
-		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret()))
+		if (AresFunctions::FindAlphaShape(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret()))
 			return;
 
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;
@@ -106,7 +104,7 @@ DEFINE_HOOK(0x5F3E78, ObjectClass_AI_UpdateAlphaShape, 0x6)
 {
 	GET(ObjectClass*, pThis, ESI);
 
-	if (AresFunctions::AlphaExtMap)
+	if (AresFunctions::FindAlphaShape)
 		UpdateAlphaShape(pThis);
 
 	return 0;

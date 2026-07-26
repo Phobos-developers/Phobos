@@ -1,6 +1,14 @@
 #include "AresFunctions.h"
 #include "AresHelper.h"
 #include "Patch.h"
+#include "Template.h"
+
+#include <AlphaShapeClass.h>
+#include <HouseClass.h>
+#include <HouseTypeClass.h>
+#include <InfantryTypeClass.h>
+#include <TechnoClass.h>
+#include <TechnoTypeClass.h>
 
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
@@ -23,6 +31,174 @@ decltype(AresFunctions::FindEVAIndex) AresFunctions::FindEVAIndex = nullptr;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;
+
+decltype(AresFunctions::FindAlphaShape) AresFunctions::FindAlphaShape = nullptr;
+decltype(AresFunctions::GetDisableWeaponTimer) AresFunctions::GetDisableWeaponTimer = nullptr;
+decltype(AresFunctions::GetDriverKilled) AresFunctions::GetDriverKilled = nullptr;
+decltype(AresFunctions::IsPsionicsImmune) AresFunctions::IsPsionicsImmune = nullptr;
+decltype(AresFunctions::IsVeteranBuilding) AresFunctions::IsVeteranBuilding = nullptr;
+decltype(AresFunctions::GetInfiltrated) AresFunctions::GetInfiltrated = nullptr;
+decltype(AresFunctions::GetOperators) AresFunctions::GetOperators = nullptr;
+
+// The Ares extension layouts, in one place instead of scattered across call sites
+// as DummyExtHere structs. Only the Ares backend may use these -- Antares is a
+// different compile and answers the same questions through its table.
+namespace AresLayout
+{
+	struct TechnoExtData
+	{
+		char _pad0[0x50];
+		CDTimerClass DisableWeaponsTimer;
+		char _pad1[0x40];
+		bool DriverKilled;
+	};
+
+	struct TechnoTypeExtData
+	{
+		char _pad0[0xF4];
+		ValueableVector<TechnoTypeClass*> Operators;
+		bool Operator_Any;
+		char _pad1[0x131 - 0xF4 - sizeof(ValueableVector<TechnoTypeClass*>) - 1];
+		bool Vet_PsionicsImmune;
+		char _pad2[0x6];
+		bool Elite_PsionicsImmune;
+	};
+
+	struct HouseExtData
+	{
+		char _pad0[0x48];
+		bool ShipYardInfiltrated;
+		bool AirFieldInfiltrated;
+		bool ConstructionYardInfiltrated;
+	};
+
+	struct HouseTypeExtData
+	{
+		char _pad0[0x15C];
+		ValueableVector<BuildingTypeClass*> VeteranBuildings;
+	};
+
+	//! The extension pointer Ares stores on the object, as a typed view.
+	template <typename T>
+	T* Ext(uintptr_t stored)
+	{
+		return reinterpret_cast<T*>(stored);
+	}
+
+	//! Same, for classes whose slot is not a reachable member.
+	template <typename T>
+	T* ExtAt(void const* pObject, size_t offset)
+	{
+		return reinterpret_cast<T*>(*reinterpret_cast<uintptr_t const*>(
+			reinterpret_cast<char const*>(pObject) + offset));
+	}
+
+	AlphaShapeClass* __stdcall FindAlphaShape(ObjectClass* pObject)
+	{
+		auto const pMap = AresFunctions::AlphaExtMap;
+		return pMap ? pMap->get_or_default(pObject) : nullptr;
+	}
+
+	CDTimerClass* __stdcall GetDisableWeaponTimer(TechnoClass* pThis)
+	{
+		return pThis ? &Ext<TechnoExtData>(pThis->align_154)->DisableWeaponsTimer : nullptr;
+	}
+
+	bool* __stdcall GetDriverKilled(TechnoClass* pThis)
+	{
+		return pThis ? &Ext<TechnoExtData>(pThis->align_154)->DriverKilled : nullptr;
+	}
+
+	bool __stdcall IsPsionicsImmune(TechnoTypeClass* pType, VeterancyStruct const* pVeterancy)
+	{
+		if (!pType || !pVeterancy)
+			return false;
+
+		if (pType->ImmuneToPsionics)
+			return true;
+
+		auto const pExt = Ext<TechnoTypeExtData>(pType->align_2FC);
+
+		// Ranks accumulate: an elite unit still has whatever the veteran set granted,
+		// so this falls through deliberately. Antares answers the same way, through
+		// its ability set.
+		switch (pVeterancy->GetRemainingLevel())
+		{
+		case Rank::Elite:
+			if (pExt->Elite_PsionicsImmune)
+				return true;
+			[[fallthrough]];
+
+		case Rank::Veteran:
+			if (pExt->Vet_PsionicsImmune)
+				return true;
+			break;
+
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	bool __stdcall IsVeteranBuilding(HouseTypeClass* pCountry, BuildingTypeClass* pType)
+	{
+		// HouseTypeClass' slot is protected, so it is reached by offset.
+		return pCountry && pType
+			&& ExtAt<HouseTypeExtData>(pCountry, 0xC4)->VeteranBuildings.Contains(pType);
+	}
+
+	bool* __stdcall GetInfiltrated(HouseClass* pHouse, AntaresFactory factory)
+	{
+		if (!pHouse)
+			return nullptr;
+
+		auto const pExt = Ext<HouseExtData>(pHouse->unknown_16084);
+
+		switch (factory)
+		{
+		case AntaresFactory::WarFactory:       return &pHouse->WarFactoryInfiltrated;
+		case AntaresFactory::Barracks:         return &pHouse->BarracksInfiltrated;
+		case AntaresFactory::NavalYard:        return &pExt->ShipYardInfiltrated;
+		case AntaresFactory::AircraftFactory:  return &pExt->AirFieldInfiltrated;
+		case AntaresFactory::ConstructionYard: return &pExt->ConstructionYardInfiltrated;
+		}
+
+		return nullptr;
+	}
+
+	bool __stdcall GetOperators(TechnoTypeClass* pType, InfantryTypeClass* const** ppItems,
+		int* pCount, bool* pAnyAllowed)
+	{
+		if (!pType)
+			return false;
+
+		auto const pExt = Ext<TechnoTypeExtData>(pType->align_2FC);
+
+		// Ares types this as TechnoTypeClass*, Antares as InfantryTypeClass*; only
+		// infantry can ever be an operator, so the reinterpret is safe either way.
+		if (ppItems)
+			*ppItems = reinterpret_cast<InfantryTypeClass* const*>(pExt->Operators.data());
+		if (pCount)
+			*pCount = static_cast<int>(pExt->Operators.size());
+		if (pAnyAllowed)
+			*pAnyAllowed = pExt->Operator_Any;
+
+		return true;
+	}
+
+	//! Point the shared accessors at the Ares implementations above.
+	void BindAccessors()
+	{
+		AresFunctions::FindAlphaShape = &FindAlphaShape;
+		AresFunctions::GetDisableWeaponTimer = &GetDisableWeaponTimer;
+		AresFunctions::GetDriverKilled = &GetDriverKilled;
+		AresFunctions::IsPsionicsImmune = &IsPsionicsImmune;
+		AresFunctions::IsVeteranBuilding = &IsVeteranBuilding;
+		AresFunctions::GetInfiltrated = &GetInfiltrated;
+		AresFunctions::GetOperators = &GetOperators;
+	}
+}
 
 void Apply_Ares3_0_Patches();
 void Apply_Ares3_0p1_Patches();
@@ -59,6 +235,8 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x57C70);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC1C54);
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
+
+	AresLayout::BindAccessors();
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
 
@@ -107,6 +285,8 @@ void AresFunctions::InitAres3_0p1()
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC2C50);
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
+	AresLayout::BindAccessors();
+
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
 
 	// BuildingTypeExt
@@ -122,6 +302,46 @@ void AresFunctions::InitAres3_0p1()
 }
 
 #undef NOTE_ARES_FUN
+
+void AresFunctions::InitAntares()
+{
+	auto const api = AresHelper::Antares;
+
+	if (!api)
+		return;
+
+	ConvertTypeTo = api->ConvertTypeTo;
+	SpawnSurvivors = api->SpawnSurvivors;
+	DetailsCurrentlyEnabled = api->DetailsCurrentlyEnabled;
+	FindEVAIndex = api->FindEVAIndex;
+	AddPassengerFromTunnel = reinterpret_cast<decltype(AddPassengerFromTunnel)>(api->AddTunnelPassenger);
+
+	FindAlphaShape = api->FindAlphaShape;
+	GetDisableWeaponTimer = api->GetDisableWeaponTimer;
+	GetDriverKilled = api->GetDriverKilled;
+	IsPsionicsImmune = api->IsPsionicsImmune;
+	IsVeteranBuilding = api->IsVeteranBuilding;
+	GetInfiltrated = api->GetInfiltrated;
+	GetOperators = api->GetOperators;
+
+	// Antares takes the superweapon type directly, so the two-step lookup Ares needs
+	// collapses: hand the type through unchanged and let the constraint check take it.
+	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt)
+		{ return reinterpret_cast<AresSWTypeExtData*>(swt); };
+
+	IsTargetConstraintsEligible = reinterpret_cast<decltype(IsTargetConstraintsEligible)>(
+		api->MeetsAITargetingConstraints);
+
+	// Deliberately left null: CreateAresEBolt, ReverseEngineer, ApplyPermaMC,
+	// SendPDPlane, UnitDeliveryStateMachine_Update and GetTunnel either exist only to
+	// serve a patch into Ares' own code, or take an Ares extension pointer that has no
+	// meaning here. Their call sites go through the accessors or check CanUseAres.
+
+	// Take over the subsystems we reimplement, so Antares stops driving them and we
+	// are not both writing the same registers.
+	api->DisableFeature(AntaresFeature::EBolt);
+	api->DisableFeature(AntaresFeature::AlphaImage);
+}
 
 void AresFunctions::InitNoAres()
 {

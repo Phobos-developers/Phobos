@@ -117,11 +117,9 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 	const auto pType = pThis->GetTechnoType();
 	const auto pImage = pType->AlphaImage;
 
-	if (pImage && AresHelper::CanUseAres)
+	if (pImage && AresFunctions::FindAlphaShape)
 	{
-		auto& alphaExt = *AresFunctions::AlphaExtMap;
-
-		if (const auto pAlpha = alphaExt.get_or_default(pThis))
+		if (const auto pAlpha = AresFunctions::FindAlphaShape(pThis))
 		{
 			GameDelete(pAlpha);
 

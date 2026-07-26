@@ -808,9 +808,9 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->SetTarget(nullptr);
 
 	// Clear AlphaImage
-	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	if (AresFunctions::FindAlphaShape)
 	{
-		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+		if (const auto pAlpha = AresFunctions::FindAlphaShape(pThis))
 			GameDelete(pAlpha);
 	}
 }

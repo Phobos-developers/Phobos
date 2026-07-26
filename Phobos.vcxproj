@@ -438,6 +438,7 @@
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <!-- src\Utilities -->
     <ClInclude Include="src\Utilities\Anchor.h" />
+    <ClInclude Include="src\Utilities\AntaresAPI.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\Interpolation.h" />

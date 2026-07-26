@@ -257,9 +257,9 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
 		pExt->CreateAttachedSystem();
 
-	if (const auto pAlphaMap = AresFunctions::AlphaExtMap)
+	if (AresFunctions::FindAlphaShape)
 	{
-		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
+		if (const auto pAlpha = AresFunctions::FindAlphaShape(pThis))
 			GameDelete(pAlpha);
 	}
 

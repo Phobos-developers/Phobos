@@ -13,8 +13,13 @@ class TechnoTypeClass;
 uintptr_t AresHelper::PhobosBaseAddress = 0x0;
 uintptr_t AresHelper::AresBaseAddress = 0x0;
 HMODULE AresHelper::AresDllHmodule = nullptr;
+uintptr_t AresHelper::AntaresBaseAddress = 0x0;
+HMODULE AresHelper::AntaresDllHmodule = nullptr;
+AntaresAPI_v1* AresHelper::Antares = nullptr;
 AresHelper::Version AresHelper::AresVersion = AresHelper::Version::Unknown;
 bool AresHelper::CanUseAres = false;
+bool AresHelper::CanUseAntares = false;
+bool AresHelper::CanUseExtension = false;
 
 const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 {
@@ -80,7 +85,15 @@ void AresHelper::GetGameModulesBaseAddresses()
 					continue;
 				if (module_has_syhks00(modEntry.hModule))
 				{
-					if (!_strcmpi(originalModuleName, "Ares.dll"))
+					// Antares is recognised by its export, not by name or timestamp.
+					// A reimplementation has no stable base-relative anything, so an
+					// interface it publishes is the only sound thing to key off.
+					if (GetProcAddress(modEntry.hModule, "GetAntaresAPI"))
+					{
+						AntaresDllHmodule = modEntry.hModule;
+						AntaresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
+					}
+					else if (!_strcmpi(originalModuleName, "Ares.dll"))
 						AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
 					else if (!_strcmpi(originalModuleName, PHOBOS_DLL))
 						PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
@@ -109,6 +122,39 @@ void AresHelper::Init()
 {
 	GetGameModulesBaseAddresses();
 
+	// Antares is checked first. An older build of it may still be claiming Ares'
+	// OriginalFilename, and the export is the authoritative answer regardless.
+	if (AntaresDllHmodule)
+	{
+		auto const getAPI = reinterpret_cast<GetAntaresAPIFunc>(
+			GetProcAddress(AntaresDllHmodule, "GetAntaresAPI"));
+
+		AntaresAPI_v1* pApi = nullptr;
+
+		// A smaller table than we mirror means an older Antares that does not have
+		// everything below; reading past its end would be reading its .data.
+		if (getAPI && SUCCEEDED(getAPI(AntaresAPIMajor, &pApi))
+			&& pApi && pApi->size >= sizeof(AntaresAPI_v1))
+		{
+			Antares = pApi;
+			AresVersion = Version::Antares;
+			CanUseAntares = true;
+			CanUseExtension = true;
+			Debug::LogDeferred("[Phobos] Detected Antares, interop API %u.%u.%u.\n",
+				pApi->major, pApi->minor, pApi->patch);
+			AresFunctions::InitAntares();
+		}
+		else
+		{
+			Debug::LogDeferred("[Phobos] Detected Antares, but not an interop API this "
+				"build understands. Disabling integration.\n");
+		}
+
+		// Deliberately not InitNoAres(): that neuters 0x6CDE40, which is where
+		// Antares hands us control when it has handled a superweapon.
+		return;
+	}
+
 	if (!AresBaseAddress)
 	{
 		Debug::LogDeferred("[Phobos] Failed to detect Ares. Disabling integration.\n");
@@ -130,6 +176,7 @@ void AresHelper::Init()
 		AresVersion = Version::Unknown;
 	}
 	CanUseAres = AresVersion != Version::Unknown;
+	CanUseExtension = CanUseAres;
 
 	switch (AresVersion)
 	{
