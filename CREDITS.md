@@ -718,6 +718,7 @@ This page lists all the individual contributions to the project by their author.
   - Separate the definitions of default direction for aircraft production and landing in the field
   - Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration
   - Fix the bug where landing direction cannot be correctly converted when set to a value exceeding 256
+  - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

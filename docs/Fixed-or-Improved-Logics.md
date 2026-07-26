@@ -2439,15 +2439,21 @@ MinimapColor=      ; integer - Red,Green,Blue
   - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
   - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
 
+```{hint}
+The above two items use different default values according to `SpawnsTiberium`, so as to facilitate separate definitions for Tiberium Trees and regular TerrainTypes.
+```
+
 In `rulesmd.ini`:
 ```ini
 [General]
 Terrain.IsPassable=false    ; boolean
+Tibtree.IsPassable=false    ; boolean
 Terrain.CanBeBuiltOn=false  ; boolean
+Tibtree.CanBeBuiltOn=false  ; boolean
 
 [SOMETERRAINTYPE]           ; TerrainType
-IsPassable=                 ; boolean, default to [General] -> Terrain.IsPassable
-CanBeBuiltOn=               ; boolean, default to [General] -> Terrain.CanBeBuiltOn
+IsPassable=                 ; boolean, default to [General] -> Tibtree.IsPassable if SpawnsTiberium=true, otherwise [General] -> Terrain.IsPassable
+CanBeBuiltOn=               ; boolean, default to [General] -> Tibtree.CanBeBuiltOn if SpawnsTiberium=true, otherwise [General] -> Terrain.CanBeBuiltOn
 ```
 
 ## Tiberiums (ores)
