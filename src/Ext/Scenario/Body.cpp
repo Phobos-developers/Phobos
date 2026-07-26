@@ -191,6 +191,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
 		.Process(this->EVAIndex)
+		.Process(this->FiringAnimUpdateCount)
 		;
 }
 
