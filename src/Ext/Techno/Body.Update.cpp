@@ -906,7 +906,7 @@ void TechnoExt::UpdateAttachEffects()
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<AEWeaponParams> expireWeapons;
 	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -949,11 +949,13 @@ void TechnoExt::UpdateAttachEffects()
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
 						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+						else
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
 					}
 				}
 			}
@@ -983,15 +985,14 @@ void TechnoExt::UpdateAttachEffects()
 
 	for (auto const pType : cumulativeAnimTypes)
 	{
-		this->UpdateCumulativeAttachEffects(pType);
+		this->UpdateCumulativeAttachEffects(pType, true);
 	}
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 }
 
@@ -1002,7 +1003,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<AEWeaponParams> expireWeapons;
 	bool requiresRecalc = false;
 
 	// Delete ones on old type and not on current.
@@ -1026,11 +1027,13 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
 						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+						else
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
 					}
 				}
 			}
@@ -1045,10 +1048,9 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
 	// Add new ones.
@@ -1059,7 +1061,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
@@ -1091,9 +1093,16 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 	}
 
 	if (pAEWithAnim)
+	{
 		pAEWithAnim->UpdateCumulativeAnim(count);
+	}
 	else if (pAELargestDuration)
+	{
 		pAELargestDuration->HasCumulativeAnim = true;
+
+		if (createAnim)
+			pAELargestDuration->CreateAnim();
+	}
 }
 
 // Recalculates AttachEffect stat multipliers and other bonuses.
