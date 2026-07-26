@@ -1,13 +1,7 @@
 #include "Body.h"
 
-#include <Utilities/SavegameDef.h>
-#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-#include <AircraftClass.h>
-#include <HouseClass.h>
+#include <New/Entity/ShieldClass.h>
 
 //Static init
 TEventExt::ExtContainer TEventExt::ExtMap;
@@ -16,29 +10,55 @@ TEventExt::ExtContainer TEventExt::ExtMap;
 // load / save
 
 template <typename T>
-void TEventExt::ExtData::Serialize(T& Stm)
+void TEventExt::Serialize(T& Stm)
 {
 	//Stm;
 }
 
-void TEventExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TEventExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TEventClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TEventExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TEventClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+// by Fly-Star
+int TEventExt::GetFlags(int iEvent)
 {
-	bHandled = true;
-	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
+	// 0x0 : If it has to have an AttachedObject in order to use it, then let it return 0.
+	// 0x4 : In MapClass, ZoneEntryBy uses it. borrowed from 0x684D61.
+	// 0x8 : In HouseClass, It will be added to the RelatedTags of the specified house. Ares' TriggerEvent 75/77 uses it. borrowed from 0x684E34.
+	// 0x10 : In LogicClass. borrowed from 0x684DCA.
+	switch (static_cast<PhobosTriggerEvent>(iEvent))
 	{
+	case PhobosTriggerEvent::ShieldBroken:
+		return 0;
+	//case
+	//	return 0x4;
+	//case
+	//	return 0x8;
+	default:
+		return 0x10;
+	}
+}
+
+std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
+{
+	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
+
+	// They must be the same, but for other triggers to take effect normally, this cannot be judged outside case.
+	auto isSameEvent = [&]() { return eventKind == static_cast<PhobosTriggerEvent>(iEvent); };
+
+	switch (eventKind)
+	{
+	// The triggering conditions that need to be checked at any time are written here
+
 		// helper struct
 		struct and_with { bool operator()(int a, int b) { return a & b; } };
 
@@ -117,8 +137,6 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
-	case PhobosTriggerEvent::ShieldBroken:
-		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 	case PhobosTriggerEvent::HouseOwnsTechnoType:
 		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
 	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
@@ -127,10 +145,23 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::AttachedIsUnderAttachedEffect:
+		return TEventExt::AttachedIsUnderAttachedEffectTEvent(pThis, pObject);
+
+
+	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+
+	// SomeTriggerAttachedToObject needs to be restricted to situations where ...
+//	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+//		return isSameEvent() && ...::ThisAttachedToObjectTEvent(pObject, ...);
+
+	// ShieldBroken needs to be restricted to situations where the shield is being attacked.
+	case PhobosTriggerEvent::ShieldBroken:
+		return isSameEvent() && ShieldClass::ShieldIsBrokenTEvent(pObject);
+
 
 	default:
-		bHandled = false;
-		return true;
+		return std::nullopt;
 	};
 }
 
@@ -169,13 +200,29 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 
 bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 {
-	auto pType = TechnoTypeClass::Find(pThis->String);
+	auto const pType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pType)
 		return false;
 
-	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+	auto const pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
 	if (!pHouse)
 		return false;
+
+	if (pType->WhatAmI() == AbstractType::BuildingType)
+	{
+		for (auto const pBuilding : pHouse->Buildings)
+		{
+			if (pBuilding->Type != pType)
+				continue;
+
+			if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
+				return true;
+		}
+
+		return false;
+	}
 
 	return pHouse->CountOwnedNow(pType) > 0;
 }
@@ -187,10 +234,13 @@ bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
 
 bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	int desiredListIdx = -1;
+
 	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
@@ -202,10 +252,6 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 	{
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 	bool found = false;
@@ -234,19 +280,18 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 
 bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pDesiredType)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 
@@ -273,6 +318,27 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 	return false;
 }
 
+bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject)
+{
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
+		return false;
+
+	auto const pDesiredType = AttachEffectTypeClass::Find(pThis->String);
+
+	if (!pDesiredType)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid AttachEffect ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	if (TechnoExt::Fetch(pTechno)->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
+		return true;
+
+	return false;
+}
+
 // =============================
 // container
 
@@ -280,46 +346,3 @@ TEventExt::ExtContainer::ExtContainer() : Container("TEventClass") { }
 
 TEventExt::ExtContainer::~ExtContainer() = default;
 
-// =============================
-// container hooks
-
-#ifdef MAKE_GAME_SLOWER_FOR_NO_REASON
-DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.TryAllocate(pItem);
-	return 0;
-}
-
-DEFINE_HOOK(0x6E4761, TActionClass_SDDTOR, 0x6)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6E3E30, TActionClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x6E3DB0, TActionClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(TActionClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TActionExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E29, TActionClass_Load_Suffix, 0x4)
-{
-	TActionExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E4A, TActionClass_Save_Suffix, 0x3)
-{
-	TActionExt::ExtMap.SaveStatic();
-	return 0;
-}
-#endif

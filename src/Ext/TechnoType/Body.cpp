@@ -1,46 +1,336 @@
 #include "Body.h"
 
-#include <AircraftTrackerClass.h>
-#include <AnimClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <TechnoTypeClass.h>
-#include <StringTable.h>
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/InfantryType/Body.h>
+#include <Ext/Foot/Body.h>
+#include <Ext/UnitType/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <New/Type/InsigniaTypeClass.h>
 
-#include <Utilities/GeneralUtils.h>
+#include <Utilities/AresHelper.h>
 
-TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::ExtData::Initialize()
-{
-	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
-}
-
-void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
+void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
-	auto offset = this->TurretOffset.GetEx();
-	float x = static_cast<float>(offset->X * factor);
-	float y = static_cast<float>(offset->Y * factor);
-	float z = static_cast<float>(offset->Z * factor);
+	const auto offset = static_cast<CoordStruct*>(this->TurretOffset.GetEx());
+	const float x = static_cast<float>(offset->X * factor);
+	const float y = static_cast<float>(offset->Y * factor);
+	const float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
 }
 
+int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const
+{
+	if (TechnoTypeExt::SelectWeaponMutex || !this->ForceWeapon_Check || !pTarget) // In theory, pTarget must exist
+		return -1;
+
+	int forceWeaponIndex = -1;
+	const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget);
+	TechnoTypeClass* pTargetType = nullptr;
+
+	if (pTargetTechno)
+	{
+		pTargetType = pTargetTechno->GetTechnoType();
+
+		if (this->ForceWeapon_Naval_Decloaked >= 0
+			&& pTargetType->Cloakable
+			&& pTargetType->Naval
+			&& pTargetTechno->CloakState == CloakState::Uncloaked)
+		{
+			forceWeaponIndex = this->ForceWeapon_Naval_Decloaked;
+		}
+		else if (this->ForceWeapon_Cloaked >= 0
+			&& pTargetTechno->CloakState == CloakState::Cloaked)
+		{
+			forceWeaponIndex = this->ForceWeapon_Cloaked;
+		}
+		else if (this->ForceWeapon_Disguised >= 0
+			&& pTargetTechno->IsDisguised())
+		{
+			forceWeaponIndex = this->ForceWeapon_Disguised;
+		}
+		else if (this->ForceWeapon_UnderEMP >= 0
+			&& pTargetTechno->IsUnderEMP())
+		{
+			forceWeaponIndex = this->ForceWeapon_UnderEMP;
+		}
+	}
+
+	if (forceWeaponIndex == -1
+		&& (pTargetTechno || !this->ForceWeapon_InRange_TechnoOnly.Get(RulesExt::Global()->ForceWeapon_InRange_TechnoOnly))
+		&& (!this->ForceWeapon_InRange.empty() || !this->ForceAAWeapon_InRange.empty()))
+	{
+		TechnoTypeExt::SelectWeaponMutex = true;
+		forceWeaponIndex = TechnoExt::Fetch(pThis)->ApplyForceWeaponInRange(pTarget);
+		TechnoTypeExt::SelectWeaponMutex = false;
+	}
+
+	if (forceWeaponIndex == -1 && pTargetType)
+	{
+		switch (pTarget->WhatAmI())
+		{
+			case AbstractType::Building:
+			{
+				forceWeaponIndex = this->ForceWeapon_Buildings;
+
+				if (this->ForceWeapon_Defenses >= 0)
+				{
+					auto const pBuildingType = static_cast<BuildingTypeClass*>(pTargetType);
+
+					if (pBuildingType->BuildCat == BuildCat::Combat)
+						forceWeaponIndex = this->ForceWeapon_Defenses;
+				}
+
+				break;
+			}
+			case AbstractType::Infantry:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Infantry >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Infantry : this->ForceWeapon_Infantry;
+
+				break;
+			}
+			case AbstractType::Unit:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Units >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Units : ((this->ForceWeapon_Naval_Units >= 0 && pTargetType->Naval)
+					? this->ForceWeapon_Naval_Units : this->ForceWeapon_Units);
+
+				break;
+			}
+			case AbstractType::Aircraft:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Aircraft >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Aircraft : this->ForceWeapon_Aircraft;
+
+				break;
+			}
+		}
+	}
+
+	return forceWeaponIndex;
+}
+
+bool TechnoTypeExt::IsSecondary(int nWeaponIndex) const
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->IsGattling)
+		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
+
+	if (this->MultiWeapon.Get() && nWeaponIndex >= 0
+		&& !this->MultiWeapon_IsSecondary.empty())
+	{
+		return this->MultiWeapon_IsSecondary[nWeaponIndex];
+	}
+
+	return nWeaponIndex != 0;
+}
+
+int TechnoTypeExt::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const
+{
+	if (!pTarget || !this->MultiWeapon)
+		return -1;
+
+	const auto pType = this->OwnerObject();
+
+	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
+		return -1;
+
+	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount);
+	const bool noSecondary = this->NoSecondaryWeaponFallback;
+
+	if (weaponCount < 2)
+		return 0;
+	else if (weaponCount == 2 && !noSecondary)
+		return -1;
+
+	std::vector<bool> secondaryCanTargets {};
+	secondaryCanTargets.resize(weaponCount, false);
+
+	const bool isElite = pThis->Veterancy.IsElite();
+
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
+	{
+		bool getNavalTargeting = false;
+
+		auto checkSecondary = [&](int weaponIndex) -> bool
+		{
+			const auto pWeapon = TechnoTypeExt::GetWeaponType(pType, weaponIndex, isElite);
+
+			if (!pWeapon || pWeapon->NeverUse)
+			{
+				secondaryCanTargets[weaponIndex] = true;
+				return false;
+			}
+
+			bool secondaryPriority = getNavalTargeting;
+
+			if (!getNavalTargeting)
+			{
+				const auto pWH = pWeapon->Warhead;
+				const bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+				const bool isInAir = pTargetTechno->IsInAir();
+
+				if (pWH->Airstrike)
+				{
+					// Can it attack the air force now?
+					secondaryPriority = isInAir ? !this->NoSecondaryWeaponFallback_AllowAA.Get() : !noSecondary;
+				}
+				else if (isInAir)
+				{
+					secondaryPriority = !this->NoSecondaryWeaponFallback_AllowAA.Get();
+				}
+				else if (pWeapon->DrainWeapon
+					&& pTargetTechno->GetTechnoType()->Drainable
+					&& !pThis->DrainTarget && !isAllies)
+				{
+					secondaryPriority = !noSecondary;
+				}
+				else if (pWH->ElectricAssault && isAllies
+					&& pTargetTechno->WhatAmI() == AbstractType::Building
+					&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
+				{
+					secondaryPriority = !noSecondary;
+				}
+			}
+
+			if (secondaryPriority)
+			{
+				if (TechnoExt::MultiWeaponCanFire(pThis, pTargetTechno, pWeapon))
+					return true;
+
+				secondaryCanTargets[weaponIndex] = true;
+				return false;
+			}
+
+			return false;
+		};
+
+		const LandType landType = pTargetTechno->GetCell()->LandType;
+
+		if (!pTargetTechno->OnBridge && (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir())
+		{
+			const int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+			if (result != -1)
+				getNavalTargeting = (result == 1);
+		}
+
+		const bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
+
+		for (int index = getSecondaryList ? 0 : 1; index < weaponCount; index++)
+		{
+			if (getSecondaryList && !this->MultiWeapon_IsSecondary[index])
+				continue;
+
+			if (checkSecondary(index))
+				return index;
+		}
+	}
+	else if (noSecondary)
+	{
+		return 0;
+	}
+
+	for (int index = 0; index < weaponCount; index++)
+	{
+		if (secondaryCanTargets[index])
+			continue;
+
+		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, TechnoTypeExt::GetWeaponType(pType, index, isElite)))
+			return index;
+	}
+
+	return 0;
+}
+
 // Ares 0.A source
-const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
+bool TechnoTypeExt::CameoIsVeteran(HouseClass* pHouse) const
+{
+	const auto pThis = this->OwnerObject();;
+
+	if (!pThis->AltCameo && !this->AltCameoPCX.Exists())
+		return false;
+
+	const auto pCountry = pHouse->Type;
+
+	struct DummyHouseExtHere
+	{
+		char _[0x48];
+		bool ShipYardInfiltrated;
+		bool AirFieldInfiltrated;
+		bool ConstructionYardInfiltrated;
+	};
+
+	struct DummyHouseTypeExtHere
+	{
+		char _[0x15C];
+		ValueableVector<BuildingTypeClass*> VeteranBuildings;
+	};
+
+	const auto pHouseExt_Ares = AresHelper::CanUseAres ? reinterpret_cast<DummyHouseExtHere*>(*(uintptr_t*)((char*)pHouse + 0x16084)) : nullptr;
+
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::UnitType:
+		if (pThis->Trainable && (pThis->Naval ? (pHouseExt_Ares && pHouseExt_Ares->ShipYardInfiltrated) : pHouse->WarFactoryInfiltrated))
+			return true;
+
+		return pCountry->VeteranUnits.FindItemIndex(static_cast<UnitTypeClass*>(pThis)) != -1;
+
+	case AbstractType::InfantryType:
+		if (pThis->Trainable && !pThis->Naval && pHouse->BarracksInfiltrated)
+			return true;
+
+		return pCountry->VeteranInfantry.FindItemIndex(static_cast<InfantryTypeClass*>(pThis)) != -1;
+
+	case AbstractType::BuildingType:
+		if (pThis->Trainable)
+		{
+			if (const auto pUndeploysInto = pThis->UndeploysInto)
+			{
+				if (pThis->Naval ? (pHouseExt_Ares && pHouseExt_Ares->ShipYardInfiltrated) : pHouse->WarFactoryInfiltrated)
+					return true;
+
+				return pCountry->VeteranUnits.FindItemIndex(pUndeploysInto) != -1;
+			}
+
+			if (pHouseExt_Ares && pHouseExt_Ares->ConstructionYardInfiltrated)
+				return true;
+		}
+
+		return AresHelper::CanUseAres && reinterpret_cast<DummyHouseTypeExtHere*>(*(uintptr_t*)((char*)pCountry + 0xC4))->VeteranBuildings.Contains(static_cast<BuildingTypeClass*>(pThis));
+
+	case AbstractType::AircraftType:
+		if (pThis->Trainable && pHouseExt_Ares && pHouseExt_Ares->AirFieldInfiltrated)
+			return true;
+
+		return pCountry->VeteranAircraft.FindItemIndex(static_cast<AircraftTypeClass*>(pThis)) != -1;
+
+	default:
+		break;
+	}
+
+	return false;
+}
+
+const char* TechnoTypeExt::GetSelectionGroupID() const
 {
 	return GeneralUtils::IsValidString(this->GroupAs) ? this->GroupAs : this->OwnerObject()->ID;
 }
 
 const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
 {
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(static_cast<TechnoTypeClass*>(pType)))
+	if (const auto pExt = TechnoTypeExt::TryFetch(static_cast<TechnoTypeClass*>(pType)))
 		return pExt->GetSelectionGroupID();
 
 	return pType->ID;
@@ -48,18 +338,18 @@ const char* TechnoTypeExt::GetSelectionGroupID(ObjectTypeClass* pType)
 
 bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 {
-	auto id = TechnoTypeExt::GetSelectionGroupID(pType);
+	const auto id = TechnoTypeExt::GetSelectionGroupID(pType);
 
 	return (_strcmpi(id, pID) == 0);
 }
 
-void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
+void TechnoTypeExt::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection,
 	std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
 	char tempBufferFLH[48];
 	auto pThis = this->OwnerObject();
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	bool parseMultiWeapons = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
 	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
 	nFLH.resize(weaponCount);
 	nEFlh.resize(weaponCount);
@@ -85,10 +375,154 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 			else if (!FLH.isset() && !eliteFLH.isset())
 				break;
 
-			nFLH[i].push_back(FLH.Get());
-			nEFlh[i].push_back(eliteFLH.Get());
+			nFLH[i].emplace_back(FLH.Get());
+			nEFlh[i].emplace_back(eliteFLH.Get());
 		}
 	}
+}
+
+void TechnoTypeExt::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
+{
+	if (!this->ReadMultiWeapon)
+	{
+		voice.clear();
+		voiceElite.clear();
+		return;
+	}
+
+	const auto pThis = this->OwnerObject();
+	const auto weaponCount = Math::max(pThis->WeaponCount, 0);
+
+	while (static_cast<int>(voice.size()) > weaponCount)
+		voice.erase(voice.begin() + voice.size() - 1);
+
+	while (static_cast<int>(voiceElite.size()) > weaponCount)
+		voiceElite.erase(voiceElite.begin() + voiceElite.size() - 1);
+
+	char tempBuff[64];
+
+	for (int idx = 0; idx < weaponCount; idx++)
+	{
+		NullableIdx<VocClass> voiceAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", idx + 1);
+		voiceAttack.Read(exINI, pSection, tempBuff);
+
+		NullableIdx<VocClass> voiceEliteAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", idx + 1);
+		voiceEliteAttack.Read(exINI, pSection, tempBuff);
+
+		if (static_cast<int>(voice.size()) > idx)
+		{
+			voice[idx] = voiceAttack.Get(voice[idx]);
+			voiceElite[idx] = voiceEliteAttack.Get(voiceElite[idx]);
+		}
+		else
+		{
+			const int voiceAttackIdx = voiceAttack.Get(-1);
+			voice.emplace_back(voiceAttackIdx);
+			voiceElite.emplace_back(voiceEliteAttack.Get(voiceAttackIdx));
+		}
+	}
+}
+
+void TechnoTypeExt::UpdateAdditionalAttributes()
+{
+	int num = 0;
+	int eliteNum = 0;
+
+	this->ThreatTypes = { ThreatType::Normal,ThreatType::Normal };
+	this->CombatDamages = { 0,0 };
+
+	const auto pThis = this->OwnerObject();
+	int count = 2;
+
+	const bool attackFriendlies = pThis->AttackFriendlies;
+	this->AttackFriendlies = { attackFriendlies ,attackFriendlies };
+
+	if (this->MultiWeapon
+		&& (!pThis->IsGattling && (!pThis->HasMultipleTurrets() || !pThis->Gunner)))
+	{
+		count = pThis->WeaponCount;
+	}
+
+	auto WeaponCheck = [&](WeaponTypeClass* const pWeapon, const bool isElite)
+	{
+		if (!pWeapon)
+			return;
+
+		if (isElite)
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.Y |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.Y += (pWeapon->Damage + pWeapon->AmbientDamage);
+			eliteNum++;
+
+			if (!this->AttackFriendlies.Y
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.Y = true;
+			}
+		}
+		else
+		{
+			if (pWeapon->Projectile)
+				this->ThreatTypes.X |= pWeapon->AllowedThreats();
+
+			this->CombatDamages.X += (pWeapon->Damage + pWeapon->AmbientDamage);
+			num++;
+
+			if (!this->AttackFriendlies.X
+				&& WeaponTypeExt::Fetch(pWeapon)->AttackFriendlies.Get(false))
+			{
+				this->AttackFriendlies.X = true;
+			}
+		}
+	};
+
+	for (int index = 0; index < count; index++)
+	{
+		const auto pWeapon = pThis->GetWeapon(index)->WeaponType;
+		auto pEliteWeapon = pThis->GetEliteWeapon(index)->WeaponType;
+
+		if (!pEliteWeapon)
+			pEliteWeapon = pWeapon;
+
+		WeaponCheck(pWeapon, false);
+		WeaponCheck(pEliteWeapon, true);
+	}
+
+	if (num > 0)
+		this->CombatDamages.X /= num;
+
+	if (eliteNum > 0)
+		this->CombatDamages.Y /= eliteNum;
+}
+
+void TechnoTypeExt::CalculateSpawnerRange()
+{
+	const auto pThis = this->OwnerObject();
+	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
+	this->SpawnerRange = 0;
+	this->EliteSpawnerRange = 0;
+
+	auto setWeaponRange = [](int& range, WeaponTypeClass* pWeapon)
+		{
+			if (pWeapon && pWeapon->Spawner && pWeapon->Range > range)
+				range = pWeapon->Range;
+		};
+
+	const bool multiweapon = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
+	const int weaponCount = multiweapon ? pThis->WeaponCount : 2;
+
+	for (int i = 0; i < weaponCount; ++i)
+	{
+		setWeaponRange(this->SpawnerRange, TechnoTypeExt::GetWeaponType(pThis, i, false));
+		setWeaponRange(this->EliteSpawnerRange, TechnoTypeExt::GetWeaponType(pThis, i, true));
+	}
+
+	this->SpawnerRange += weaponRangeExtra;
+	this->EliteSpawnerRange += weaponRangeExtra;
 }
 
 //TODO: YRpp this with proper casting
@@ -102,10 +536,10 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 		UnitType = 0x7F6218,
 	};
 	auto const vtThis = static_cast<IUnknownVtbl>(VTable::Get(pType));
-	if (vtThis == IUnknownVtbl::AircraftType ||
-		vtThis == IUnknownVtbl::BuildingType ||
-		vtThis == IUnknownVtbl::InfantryType ||
-		vtThis == IUnknownVtbl::UnitType)
+	if (vtThis == IUnknownVtbl::InfantryType
+		|| vtThis == IUnknownVtbl::UnitType
+		|| vtThis == IUnknownVtbl::AircraftType
+		|| vtThis == IUnknownVtbl::BuildingType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}
@@ -113,44 +547,56 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 	return nullptr;
 }
 
-TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse,
-	AnimTypeClass* pSpawnAnimType, int spawnHeight, bool alwaysOnGround, bool checkPathfinding, bool parachuteIfInAir, Mission mission, Mission* missionAI)
+TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
+	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
+	auto const pType = pCreateUnit->Type.Get();
 	auto const rtti = pType->WhatAmI();
 
 	if (rtti == AbstractType::BuildingType)
 		return nullptr;
 
-	HouseClass* decidedOwner = pOwner && !pOwner->Defeated
-		? pOwner : HouseClass::FindCivilianSide();
+	HouseClass* decidedOwner = pOwner;
 
-	auto pCell = MapClass::Instance->GetCellAt(location);
+	if (!pOwner || pOwner->Defeated)
+	{
+		if (pCreateUnit->RequireOwner)
+			return nullptr;
+
+		decidedOwner = HouseClass::FindCivilianSide();
+	}
+
+	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
 	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
-	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
-	bool isBridge = allowBridges && pCell->ContainsBridge();
-	int baseHeight = location.Z;
+	const bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0f;
+	bool isBridge = allowBridges && pCell && pCell->ContainsBridge();
+	const int baseHeight = location.Z;
 	bool inAir = location.Z >= Unsorted::CellHeight * 2;
 
-	if (checkPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
+	if (pCreateUnit->ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
 	{
-		auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-			speedType, -1, mZone, isBridge, 1, 1, true,
-			false, false, isBridge, CellStruct::Empty, false, false);
+		auto const nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location), speedType, -1, mZone,
+			isBridge, 1, 1, true, false, false, isBridge, CellStruct::Empty, false, false);
 
-		pCell = MapClass::Instance->TryGetCellAt(nCell);
-		location = pCell->GetCoords();
+		if (nCell != CellStruct::Empty)
+		{
+			pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+			if (pCell)
+				location = pCell->GetCoords();
+		}
 	}
 
 	if (pCell)
 	{
 		isBridge = allowBridges && pCell->ContainsBridge();
-		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
-		int zCoord = alwaysOnGround ? INT32_MIN : baseHeight;
-		int cellFloorHeight = MapClass::Instance->GetCellFloorHeight(location) + bridgeZ;
+		const int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
+		const int zCoord = pCreateUnit->AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
+		const int cellFloorHeight = MapClass::Instance.GetCellFloorHeight(location) + bridgeZ;
 
-		if (!alwaysOnGround && spawnHeight >= 0)
-			location.Z = cellFloorHeight + spawnHeight;
+		if (!pCreateUnit->AlwaysSpawnOnGround && pCreateUnit->SpawnHeight >= 0)
+			location.Z = cellFloorHeight + pCreateUnit->SpawnHeight;
 		else
 			location.Z = Math::max(cellFloorHeight, zCoord);
 
@@ -160,16 +606,16 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 			bool parachuted = false;
 			pTechno->OnBridge = isBridge;
 
-			if (rtti != AbstractType::AircraftType && parachuteIfInAir && !alwaysOnGround && inAir)
+			if (rtti != AbstractType::AircraftType && pCreateUnit->SpawnParachutedInAir && !pCreateUnit->AlwaysSpawnOnGround && inAir)
 			{
 				parachuted = true;
 				success = pTechno->SpawnParachuted(location);
 			}
-			else if (!pCell->GetBuilding() || !checkPathfinding)
+			else if (!pCell->GetBuilding() || !pCreateUnit->ConsiderPathfinding)
 			{
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 				success = pTechno->Unlimbo(location, facing);
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 			}
 			else
 			{
@@ -181,25 +627,18 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 				if (secondaryFacing)
 					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
 
-				if (pSpawnAnimType)
-				{
-					if (auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location))
-					{
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
-					}
-				}
+				AnimExt::CreateRandomAnim(pCreateUnit->SpawnAnim, location, pInvoker, pInvokerHouse, true);
 
 				if (!pTechno->InLimbo)
 				{
-					if (!alwaysOnGround)
+					if (!pCreateUnit->AlwaysSpawnOnGround)
 					{
+						inAir = pTechno->IsInAir();
+
 						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
 						{
 							pTechno->SetLocation(location);
-							bool airportBound = rtti == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pType)->AirportBound;
+							const bool airportBound = rtti == AbstractType::AircraftType && static_cast<AircraftTypeClass*>(pType)->AirportBound;
 
 							if (pCell->GetContent() || airportBound)
 								pTechno->EnterIdleMode(false, true);
@@ -212,14 +651,10 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 
 							if (pType->BalloonHover)
 							{
-								// Makes the jumpjet think it is hovering without actually moving.
-								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+								// Order BalloonHover jumpjets to ascend.
 								pJJLoco->IsMoving = true;
-								pJJLoco->DestinationCoords = location;
-								pJJLoco->CurrentHeight = pType->JumpjetHeight;
-
-								if (!inAir)
-									AircraftTrackerClass::Instance->Add(pTechno);
+								pJJLoco->DestinationCoords = pTechno->GetCoords();
+								FootExt::Fetch(pTechno)->JumpjetStraightAscend = true;
 							}
 							else if (inAir)
 							{
@@ -230,15 +665,16 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 						else if (inAir && !parachuted)
 						{
 							pTechno->IsFallingDown = true;
+							TechnoExt::Fetch(pTechno)->OnParachuted = true;
 						}
 					}
 
-					auto newMission = mission;
+					auto newMission = pCreateUnit->UnitMission;
 
-					if (!decidedOwner->IsControlledByHuman() && missionAI)
-						newMission = *missionAI;
+					if (!decidedOwner->IsControlledByHuman() && pCreateUnit->AIUnitMission.isset())
+						newMission = pCreateUnit->AIUnitMission;
 
-					pTechno->QueueMission(mission, false);
+					pTechno->QueueMission(newMission, false);
 				}
 
 				if (!decidedOwner->Type->MultiplayPassive)
@@ -257,35 +693,72 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	return nullptr;
 }
 
+// used for more WeaponX added by Ares.
+WeaponTypeClass* TechnoTypeExt::GetWeaponType(TechnoTypeClass* pThis, int weaponIndex, bool isElite)
+{
+	if (isElite)
+	{
+		if (const auto pEliteStruct = pThis->GetEliteWeapon(weaponIndex))
+		{
+			if (const auto pEliteWeapon = pEliteStruct->WeaponType)
+				return pEliteWeapon;
+		}
+	}
+
+	const auto pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
+	return pWeaponStruct ? pWeaponStruct->WeaponType : nullptr;
+}
+
 // =============================
 // load / save
 
-void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
+	char tempBuffer[40];
+
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
+	this->HealthBar_HidePips.Read(exINI, pSection, "HealthBar.HidePips");
+	this->HealthBar_Permanent.Read(exINI, pSection, "HealthBar.Permanent");
+	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
+	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
+
+	if (pThis->Gunner)
+	{
+		this->WeaponGroupAs.resize(pThis->WeaponCount);
+
+		for (int idx = 0; idx < pThis->WeaponCount; ++idx)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponGroupAs%d", idx + 1);
+			this->WeaponGroupAs[idx].Read(pINI, pSection, tempBuffer);
+		}
+	}
+
+	this->RadarJamHouses.Read(exINI, pSection, "RadarJamHouses");
+	this->RadarJamDelay.Read(exINI, pSection, "RadarJamDelay");
+	this->RadarJamAffect.Read(exINI, pSection, "RadarJamAffect");
+	this->RadarJamIgnore.Read(exINI, pSection, "RadarJamIgnore");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+	this->MindControl_IgnoreSize.Read(exINI, pSection, "MindControl.IgnoreSize");
+	this->MindControlSize.Read(exINI, pSection, "MindControlSize");
+	this->MindControlLink_VisibleToHouse.Read(exINI, pSection, "MindControlLink.VisibleToHouse");
 	this->FactoryPlant_Multiplier.Read(exINI, pSection, "FactoryPlant.Multiplier");
 
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
 	this->Spawner_AttackImmediately.Read(exINI, pSection, "Spawner.AttackImmediately");
+	this->Spawner_UseTurretFacing.Read(exINI, pSection, "Spawner.UseTurretFacing");
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
 		this->Harvester_Counted = true;
-	if (this->Harvester_Counted.Get())
-		RulesExt::Global()->HarvesterTypes.AddUnique(pThis);
 
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -297,17 +770,21 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
 	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
+	this->IgnoreForBaseCenter.Read(exINI, pSection, "IgnoreForBaseCenter");
+
+	this->LaserTargetColor.Read(exINI, pSection, "LaserTargetColor");
+	this->AirstrikeLineColor.Read(exINI, pSection, "AirstrikeLineColor");
+
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
-	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
-	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
-	this->Ammo_AutoDeployMaximumAmount.Read(exINI, pSection, "Ammo.AutoDeployMaximumAmount");
-	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
-	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
-
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_AllowLimboed.Read(exINI, pSection, "AutoDeath.AllowLimboed");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
+	this->AutoDeath_OnOwnerChange.Read(exINI, pSection, "AutoDeath.OnOwnerChange");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, pSection, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
+	this->AutoDeath_OnOwnerChange_HumanToComputer.Read(exINI, pSection, "AutoDeath.OnOwnerChange.HumanToComputer");
+	this->AutoDeath_OnOwnerChange_ComputerToHuman.Read(exINI, pSection, "AutoDeath.OnOwnerChange.ComputerToHuman");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
 	this->AutoDeath_TechnosDontExist.Read(exINI, pSection, "AutoDeath.TechnosDontExist");
 	this->AutoDeath_TechnosDontExist_Any.Read(exINI, pSection, "AutoDeath.TechnosDontExist.Any");
@@ -318,18 +795,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
 
-	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
-	this->SlavesFreeSound.Read(exINI, pSection, "SlavesFreeSound");
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->CombatAlert.Read(exINI, pSection, "CombatAlert");
+	this->CombatAlert_NotBuilding.Read(exINI, pSection, "CombatAlert.NotBuilding");
+	this->CombatAlert_UseFeedbackVoice.Read(exINI, pSection, "CombatAlert.UseFeedbackVoice");
+	this->CombatAlert_UseAttackVoice.Read(exINI, pSection, "CombatAlert.UseAttackVoice");
+	this->CombatAlert_UseEVA.Read(exINI, pSection, "CombatAlert.UseEVA");
+	this->CombatAlert_EVA.Read(exINI, pSection, "CombatAlert.EVA");
+
 	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
-	this->VoicePickup.Read(exINI, pSection, "VoicePickup");
 
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
 	this->WarpIn.Read(exINI, pSection, "WarpIn");
+	this->Chronoshift_WarpOut.Read(exINI, pSection, "Chronoshift.WarpOut");
+	this->Chronoshift_WarpIn.Read(exINI, pSection, "Chronoshift.WarpIn");
 	this->WarpAway.Read(exINI, pSection, "WarpAway");
 	this->ChronoTrigger.Read(exINI, pSection, "ChronoTrigger");
 	this->ChronoDistanceFactor.Read(exINI, pSection, "ChronoDistanceFactor");
@@ -344,17 +827,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 
-	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
-	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
-
-	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
-	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
-	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
-
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
-	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
-	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
 	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
@@ -362,28 +836,77 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
 	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
 	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
+	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, pSection, "OpenTopped.AllowFiringIfAttackedByLocomotor");
 	this->OpenTopped_ShareTransportTarget.Read(exINI, pSection, "OpenTopped.ShareTransportTarget");
 	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, pSection, "OpenTopped.UseTransportRangeModifiers");
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
+	this->OpenTopped_DecloakToFire.Read(exINI, pSection, "OpenTopped.DecloakToFire");
+	this->OpenTopped_FireWhileMoving.Read(exINI, pSection, "OpenTopped.FireWhileMoving");
+	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
+	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
+	this->OpenTransport_FireWhileMoving.Read(exINI, pSection, "OpenTransport.FireWhileMoving");
 
-	this->AutoFire.Read(exINI, pSection, "AutoFire");
-	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
+	if (exINI.ReadString(pSection, "AutoFire") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AutoFire is deprecated and has been replaced by AutoTargetOwnPosition! If both are set, the latter will be used.\n", pSection);
+	}
+	this->AutoTargetOwnPosition.Read(exINI, pSection, "AutoFire"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->AutoTargetOwnPosition.Read(exINI, pSection, "AutoTargetOwnPosition");
+	if (exINI.ReadString(pSection, "AutoFire.TargetSelf") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AutoFire.TargetSelf is deprecated and has been replaced by AutoTargetOwnPosition.Self! If both are set, the latter will be used.\n", pSection);
+	}
+	this->AutoTargetOwnPosition_Self.Read(exINI, pSection, "AutoFire.TargetSelf"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->AutoTargetOwnPosition_Self.Read(exINI, pSection, "AutoTargetOwnPosition.Self");
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
+	this->AllowWeaponSelectAgainstWalls.Read(exINI, pSection, "AllowWeaponSelectAgainstWalls");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
-	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
-	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
-	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
-	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
-
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
 	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
+	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
+	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, pSection, "ForceWeapon.InRange.TechnoOnly");
+	this->ForceWeapon_InRange.Read(exINI, pSection, "ForceWeapon.InRange");
+	this->ForceWeapon_InRange_Overrides.Read(exINI, pSection, "ForceWeapon.InRange.Overrides");
+	this->ForceWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceWeapon.InRange.ApplyRangeModifiers");
+	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
+	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
+	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Buildings.Read(exINI, pSection, "ForceWeapon.Buildings");
+	this->ForceWeapon_Defenses.Read(exINI, pSection, "ForceWeapon.Defenses");
+	this->ForceWeapon_Infantry.Read(exINI, pSection, "ForceWeapon.Infantry");
+	this->ForceWeapon_Naval_Units.Read(exINI, pSection, "ForceWeapon.Naval.Units");
+	this->ForceWeapon_Units.Read(exINI, pSection, "ForceWeapon.Units");
+	this->ForceWeapon_Aircraft.Read(exINI, pSection, "ForceWeapon.Aircraft");
+	this->ForceAAWeapon_Infantry.Read(exINI, pSection, "ForceAAWeapon.Infantry");
+	this->ForceAAWeapon_Units.Read(exINI, pSection, "ForceAAWeapon.Units");
+	this->ForceAAWeapon_Aircraft.Read(exINI, pSection, "ForceAAWeapon.Aircraft");
+
+	this->ForceWeapon_Check = (
+		this->ForceWeapon_Naval_Decloaked >= 0
+		|| this->ForceWeapon_Cloaked >= 0
+		|| this->ForceWeapon_Disguised >= 0
+		|| this->ForceWeapon_UnderEMP >= 0
+		|| !this->ForceWeapon_InRange.empty()
+		|| !this->ForceAAWeapon_InRange.empty()
+		|| this->ForceWeapon_Buildings >= 0
+		|| this->ForceWeapon_Defenses >= 0
+		|| this->ForceWeapon_Infantry >= 0
+		|| this->ForceWeapon_Naval_Units >= 0
+		|| this->ForceWeapon_Units >= 0
+		|| this->ForceWeapon_Aircraft >= 0
+		|| this->ForceAAWeapon_Infantry >= 0
+		|| this->ForceAAWeapon_Units >= 0
+		|| this->ForceAAWeapon_Aircraft >= 0
+	);
+
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -398,23 +921,38 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceShield_KillWarhead.Read<true>(exINI, pSection, "ForceShield.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
-	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
+	this->DriverKilled_KeptPassengers.Read(exINI, pSection, "DriverKilled.KeptPassengers");
+	this->DriverKilled_KillPassengers.Read(exINI, pSection, "DriverKilled.KillPassengers");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
-	this->Insignia.Read(exINI, pSection, "Insignia.%s");
-	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
-	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
-	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
+	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
+	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
-	this->TiltsWhenCrushes_Vehicles.Read(exINI, pSection, "TiltsWhenCrushes.Vehicles");
-	this->TiltsWhenCrushes_Overlays.Read(exINI, pSection, "TiltsWhenCrushes.Overlays");
-	this->CrushForwardTiltPerFrame.Read(exINI, pSection, "CrushForwardTiltPerFrame");
-	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
-	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
+	// insignia type
+	Nullable<InsigniaTypeClass*> InsigniaType;
+	InsigniaType.Read(exINI, pSection, "InsigniaType");
+
+	if (InsigniaType.isset())
+	{
+		this->Insignia = InsigniaType.Get()->Insignia;
+		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
+		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+	}
+	else
+	{
+		this->Insignia.Read(exINI, pSection, "Insignia.%s");
+		this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
+		this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	}
+
+	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
+
+	this->SelectBox.Read(exINI, pSection, "SelectBox");
+	this->HideSelectBox.Read(exINI, pSection, "HideSelectBox");
 
 	this->AmmoPipFrame.Read(exINI, pSection, "AmmoPipFrame");
 	this->EmptyAmmoPipFrame.Read(exINI, pSection, "EmptyAmmoPipFrame");
@@ -428,21 +966,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
-	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
-	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
-	this->LandingDir.Read(exINI, pSection, "LandingDir");
-
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
-
-	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
+	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] RevengeWeapon.AffectsHouses is deprecated and has been replaced by RevengeWeapon.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
+
+	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
@@ -453,12 +995,141 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
+
+	this->AmphibiousEnter.Read(exINI, pSection, "AmphibiousEnter");
+	this->AmphibiousUnload.Read(exINI, pSection, "AmphibiousUnload");
+	this->NoQueueUpToEnter.Read(exINI, pSection, "NoQueueUpToEnter");
+	this->NoQueueUpToEnter_BoardDistance.Read(exINI, pSection, "NoQueueUpToEnter.BoardDistance");
+	this->NoQueueUpToUnload.Read(exINI, pSection, "NoQueueUpToUnload");
+
+	this->RateDown_Delay.Read(exINI, pSection, "RateDown.Delay");
+	this->RateDown_Reset.Read(exINI, pSection, "RateDown.Reset");
+	this->RateDown_Cover_Value.Read(exINI, pSection, "RateDown.Cover.Value");
+	this->RateDown_Cover_AmmoBelow.Read(exINI, pSection, "RateDown.Cover.AmmoBelow");
+
+	this->NoRearm_UnderEMP.Read(exINI, pSection, "NoRearm.UnderEMP");
+	this->NoRearm_Temporal.Read(exINI, pSection, "NoRearm.Temporal");
+	this->NoReload_UnderEMP.Read(exINI, pSection, "NoReload.UnderEMP");
+	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
+	this->MakesWake.Read(exINI, pSection, "MakesWake");
+
+	this->CrashSpin_Multiplier.Read(exINI, pSection, "CrashSpin.Multiplier");
+
+	this->AINormalTargetingDelay.Read(exINI, pSection, "AINormalTargetingDelay");
+	this->PlayerNormalTargetingDelay.Read(exINI, pSection, "PlayerNormalTargetingDelay");
+	this->AIGuardAreaTargetingDelay.Read(exINI, pSection, "AIGuardAreaTargetingDelay");
+	this->PlayerGuardAreaTargetingDelay.Read(exINI, pSection, "PlayerGuardAreaTargetingDelay");
+	this->AIAttackMoveTargetingDelay.Read(exINI, pSection, "AIAttackMoveTargetingDelay");
+	this->PlayerAttackMoveTargetingDelay.Read(exINI, pSection, "PlayerAttackMoveTargetingDelay");
+	this->DistributeTargetingFrame.Read(exINI, pSection, "DistributeTargetingFrame");
+
+	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
+
+	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
+
+	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
+	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
+
+	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
+	this->KeepTargetOnMove_Weapon.Read(exINI, pSection, "KeepTargetOnMove.Weapon");
+	this->KeepTargetOnMove_NoMorePursuit.Read(exINI, pSection, "KeepTargetOnMove.NoMorePursuit");
+	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
+
+	this->Power.Read(exINI, pSection, "Power");
+
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
+
+	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
+	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
+
+	this->NeedDamagedImage = this->Image_ConditionYellow.isset() || this->Image_ConditionRed.isset();
+
+	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
+	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
+
+	this->Spawner_RecycleRange.Read(exINI, pSection, "Spawner.RecycleRange");
+	this->Spawner_RecycleAnim.Read(exINI, pSection, "Spawner.RecycleAnim");
+	this->Spawner_RecycleCoord.Read(exINI, pSection, "Spawner.RecycleCoord");
+	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
+
+	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
+	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
+
+	this->Promote_VeteranAnimation.Read(exINI, pSection, "Promote.VeteranAnimation");
+	this->Promote_EliteAnimation.Read(exINI, pSection, "Promote.EliteAnimation");
+
+	this->RadarInvisibleToHouse.Read(exINI, pSection, "RadarInvisibleToHouse");
+
+	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
+	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
+	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
+	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
+	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
+	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
+
+	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
+	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
+
+	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
+
+	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
+	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
+
+	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
+	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
+	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
+	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
+	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
+
+	this->Ammo_AutoConvertMinimumAmount.Read(exINI, pSection, "Ammo.AutoConvertMinimumAmount");
+	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
+	this->Ammo_AutoConvertType.Read(exINI, pSection, "Ammo.AutoConvertType");
+
+	if (this->Ammo_AutoConvertMinimumAmount > this->Ammo_AutoConvertMaximumAmount)
+		Debug::Log("[Developer warning][%s] Ammo.AutoConvertMinimumAmount is greater than Ammo.AutoConvertMaximumAmount, resulting in no conversion.\n", pSection);
+
+	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
+
+	this->DrainMoneyFrameDelay.Read(exINI, pSection, "DrainMoneyFrameDelay");
+	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
+	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
+	this->DrainMoneyDisplay.Read(exINI, pSection, "DrainMoneyDisplay");
+	this->DrainMoneyDisplay_Houses.Read(exINI, pSection, "DrainMoneyDisplay.Houses");
+	this->DrainMoneyDisplay_Offset.Read(exINI, pSection, "DrainMoneyDisplay.Offset");
+	this->DrainMoneyDisplay_OnTarget.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget");
+	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, pSection, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
+
+	this->ParadropMission.Read(exINI, pSection, "ParadropMission");
+	this->AIParadropMission.Read(exINI, pSection, "AIParadropMission");
+
+	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
+	this->PenetratesTransport_PassThroughMultiplier.Read(exINI, pSection, "PenetratesTransport.PassThroughMultiplier");
+	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
+	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
+
+	this->JumpjetClimbIgnoreBuilding.Read(exINI, pSection, "JumpjetClimbIgnoreBuilding");
+
+	this->ExtraThreat_IsThreat.Read(exINI, pSection, "ExtraThreat.IsThreat");
+	this->AlwaysConsideredThreat.Read(exINI, pSection, "AlwaysConsideredThreat");
+	this->ExtraThreat_InRange.Read(exINI, pSection, "ExtraThreat.InRange");
+	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, pSection, "ExtraThreatCoefficient.InRangeDistance");
+	this->ExtraThreatCoefficient_Facing.Read(exINI, pSection, "ExtraThreatCoefficient.Facing");
+	this->ExtraThreatCoefficient_DistanceToLastTarget.Read(exINI, pSection, "ExtraThreatCoefficient.DistanceToLastTarget");
+	this->ExtraThreat_Enabled = ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat) != 0.0
+		|| ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange) != 0.0
+		|| ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance) != 0.0
+		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0.0
+		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0.0;
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+	// Ares 0.3
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -471,37 +1142,96 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
-	char tempBuffer[32];
+	// Ares 2.0
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
-	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	// Ares 3.0
+	this->Unsellable.Read(exINI, pSection, "Unsellable");
+
+	if (pThis->Gunner)
 	{
-		int weaponCount = this->OwnerObject()->WeaponCount;
-		this->Insignia_Weapon.resize(weaponCount);
-		this->InsigniaFrame_Weapon.resize(weaponCount);
-		this->InsigniaFrames_Weapon.resize(weaponCount);
+		size_t weaponCount = pThis->WeaponCount;
 
-		for (int i = 0; i < weaponCount; i++)
+		if (this->Insignia_Weapon.empty() || this->Insignia_Weapon.size() != weaponCount)
 		{
-			Promotable<SHPStruct*> insignia;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-			insignia.Read(exINI, pSection, tempBuffer);
-			this->Insignia_Weapon[i] = insignia;
-
-			Promotable<int> frame = Promotable<int>(-1);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-			frame.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrame_Weapon[i] = frame;
-
+			this->Insignia_Weapon.resize(weaponCount);
+			this->InsigniaFrame_Weapon.resize(weaponCount, Promotable<int>(-1));
 			Valueable<Vector3D<int>> frames;
 			frames = Vector3D<int>(-1, -1, -1);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-			frames.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrames_Weapon[i] = frames;
+			this->InsigniaFrames_Weapon.resize(weaponCount, frames);
+		}
+
+		for (size_t i = 0; i < weaponCount; i++)
+		{
+			Nullable<InsigniaTypeClass*> InsigniaType_Weapon;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Weapon%d", i + 1);
+			InsigniaType_Weapon.Read(exINI, pSection, tempBuffer);
+
+			if (InsigniaType_Weapon.isset())
+			{
+				this->Insignia_Weapon[i] = InsigniaType_Weapon.Get()->Insignia;
+				this->InsigniaFrame_Weapon[i] = InsigniaType_Weapon.Get()->InsigniaFrame;
+				this->InsigniaFrames_Weapon[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+				this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+				this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
+				this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
+			}
 		}
 	}
 
+	if (pThis->Passengers > 0)
+	{
+		size_t passengers = pThis->Passengers + 1;
+
+		if (this->Insignia_Passengers.empty() || this->Insignia_Passengers.size() != passengers)
+		{
+			this->Insignia_Passengers.resize(passengers);
+			this->InsigniaFrame_Passengers.resize(passengers, Promotable<int>(-1));
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			this->InsigniaFrames_Passengers.resize(passengers, frames);
+		}
+
+		for (size_t i = 0; i < passengers; i++)
+		{
+			Nullable<InsigniaTypeClass*> InsigniaType_Passengers;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", i);
+			InsigniaType_Passengers.Read(exINI, pSection, tempBuffer);
+
+			if (InsigniaType_Passengers.isset())
+			{
+				this->Insignia_Passengers[i] = InsigniaType_Passengers.Get()->Insignia;
+				this->InsigniaFrame_Passengers[i] = InsigniaType_Passengers.Get()->InsigniaFrame;
+				this->InsigniaFrames_Passengers[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
+				this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
+				this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
+				this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
+			}
+		}
+	}
+
+	// Airstrike tint color
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
+
 	// Art tags
-	INI_EX exArtINI(CCINIClass::INI_Art);
+	const auto pArtINI = &CCINIClass::INI_Art;
+	INI_EX exArtINI(pArtINI);
 	auto pArtSection = pThis->ImageFile;
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
@@ -521,6 +1251,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->ShadowIndices[shadow_indices[i]] = shadow_indices_frame[i];
 
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
+
+	this->AltCameoPCX.Read(pArtINI, pArtSection, "AltCameoPCX");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -544,15 +1276,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->WeaponBurstFLHs, this->EliteWeaponBurstFLHs, "");
-	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
-	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->OnlyUseLandSequences.Read(exArtINI, pArtSection, "OnlyUseLandSequences");
-
-	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
-	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
-	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
-	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+	this->AlternateFLH_OnTurret.Read(exArtINI, pArtSection, "AlternateFLH.OnTurret");
+	this->AlternateFLH_ApplyVehicle.Read(exArtINI, pArtSection, "AlternateFLH.ApplyVehicle");
 
 	for (size_t i = 0; ; i++)
 	{
@@ -564,12 +1290,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (i >= 5U && !alternateFLH.isset())
 			break;
 		else if (!alternateFLH.isset())
-			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
+			alternateFLH = pThis->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
 
 		if (this->AlternateFLHs.size() < i)
 			this->AlternateFLHs[i] = alternateFLH;
 		else
-			this->AlternateFLHs.push_back(alternateFLH);
+			this->AlternateFLHs.emplace_back(alternateFLH);
 	}
 
 	// Parasitic types
@@ -578,7 +1304,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
 	if (canParse && !this->PassengerDeletionType)
-		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>();
 
 	if (this->PassengerDeletionType)
 	{
@@ -588,13 +1314,27 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
 
+	Nullable<int> transDelay;
+	transDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
+
+	if (transDelay.Get(-1) >= 0 && !this->TiberiumEaterType)
+		this->TiberiumEaterType = std::make_unique<TiberiumEaterTypeClass>();
+
+	if (this->TiberiumEaterType)
+	{
+		if (transDelay.isset() && transDelay.Get() < 0)
+			this->TiberiumEaterType.reset();
+		else
+			this->TiberiumEaterType->LoadFromINI(pINI, pSection);
+	}
+
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
 
 	if (isInterceptor)
 	{
 		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>();
 
 		this->InterceptorType->LoadFromINI(pINI, pSection);
 	}
@@ -603,10 +1343,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InterceptorType.reset();
 	}
 
-	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
+	if (pThis->WhatAmI() != AbstractType::BuildingType)
 	{
 		if (this->DroppodType == nullptr)
 			this->DroppodType = std::make_unique<DroppodTypeClass>();
+
 		this->DroppodType->LoadFromINI(pINI, pSection);
 	}
 	else
@@ -616,22 +1357,38 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
+
+	// VoiceIFVRepair from Ares 0.2
+	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
+	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
 template <typename T>
-void TechnoTypeExt::ExtData::Serialize(T& Stm)
+void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->HealthBar_Hide)
+		.Process(this->HealthBar_HidePips)
+		.Process(this->HealthBar_Permanent)
+		.Process(this->HealthBar_Permanent_PipScale)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
+		.Process(this->LowDeployPriority)
 		.Process(this->MindControlRangeLimit)
+		.Process(this->MindControl_IgnoreSize)
+		.Process(this->MindControlSize)
+		.Process(this->MindControlLink_VisibleToHouse)
 		.Process(this->FactoryPlant_Multiplier)
 
 		.Process(this->InterceptorType)
 
 		.Process(this->GroupAs)
+		.Process(this->WeaponGroupAs)
 		.Process(this->RadarJamRadius)
+		.Process(this->RadarJamHouses)
+		.Process(this->RadarJamDelay)
+		.Process(this->RadarJamAffect)
+		.Process(this->RadarJamIgnore)
 		.Process(this->InhibitorRange)
 		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
@@ -639,30 +1396,37 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShadowIndices)
 		.Process(this->ShadowIndex_Frame)
 		.Process(this->Spawner_LimitRange)
-		.Process(this->Spawner_ExtraLimitRange)
+		//.Process(this->Spawner_ExtraLimitRange)
+		.Process(this->SpawnerRange)
+		.Process(this->EliteSpawnerRange)
 		.Process(this->Spawner_DelayFrames)
 		.Process(this->Spawner_AttackImmediately)
+		.Process(this->Spawner_UseTurretFacing)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
 		.Process(this->MultiMindControl_ReleaseVictim)
 		.Process(this->CameoPriority)
+		.Process(this->AltCameoPCX)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
 		.Process(this->ForbidParallelAIQueues)
+		.Process(this->IgnoreForBaseCenter)
+		.Process(this->TintColorAirstrike)
+		.Process(this->LaserTargetColor)
+		.Process(this->AirstrikeLineColor)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
-		.Process(this->Ammo_AddOnDeploy)
-		.Process(this->Ammo_AutoDeployMinimumAmount)
-		.Process(this->Ammo_AutoDeployMaximumAmount)
-		.Process(this->Ammo_DeployUnlockMinimumAmount)
-		.Process(this->Ammo_DeployUnlockMaximumAmount)
-
 		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_AllowLimboed)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
+		.Process(this->AutoDeath_OnOwnerChange)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
+		.Process(this->AutoDeath_OnOwnerChange_HumanToComputer)
+		.Process(this->AutoDeath_OnOwnerChange_ComputerToHuman)
 		.Process(this->AutoDeath_AfterDelay)
 		.Process(this->AutoDeath_TechnosDontExist)
 		.Process(this->AutoDeath_TechnosDontExist_Any)
@@ -673,16 +1437,22 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
 
-		.Process(this->Slaved_OwnerWhenMasterKilled)
-		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
 
+		.Process(this->CombatAlert)
+		.Process(this->CombatAlert_NotBuilding)
+		.Process(this->CombatAlert_UseFeedbackVoice)
+		.Process(this->CombatAlert_UseAttackVoice)
+		.Process(this->CombatAlert_UseEVA)
+		.Process(this->CombatAlert_EVA)
+
 		.Process(this->VoiceCreated)
-		.Process(this->VoicePickup)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
+		.Process(this->Chronoshift_WarpOut)
+		.Process(this->Chronoshift_WarpIn)
 		.Process(this->WarpAway)
 		.Process(this->ChronoTrigger)
 		.Process(this->ChronoDistanceFactor)
@@ -696,63 +1466,69 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
 
-		.Process(this->SubterraneanSpeed)
-		.Process(this->SubterraneanHeight)
-
-		.Process(this->OreGathering_Anims)
-		.Process(this->OreGathering_Tiberiums)
-		.Process(this->OreGathering_FramesPerDir)
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
-		.Process(this->NotHuman_RandomDeathSequence)
-		.Process(this->DefaultDisguise)
 		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->AlternateFLHs)
+		.Process(this->AlternateFLH_OnTurret)
+		.Process(this->AlternateFLH_ApplyVehicle)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
 		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
 		.Process(this->OpenTopped_ShareTransportTarget)
 		.Process(this->OpenTopped_UseTransportRangeModifiers)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
+		.Process(this->OpenTopped_DecloakToFire)
+		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTransport_RangeBonus)
+		.Process(this->OpenTransport_DamageMultiplier)
+		.Process(this->OpenTransport_FireWhileMoving)
 
-		.Process(this->AutoFire)
-		.Process(this->AutoFire_TargetSelf)
+		.Process(this->AutoTargetOwnPosition)
+		.Process(this->AutoTargetOwnPosition_Self)
 		.Process(this->NoSecondaryWeaponFallback)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
+		.Process(this->AllowWeaponSelectAgainstWalls)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
-		.Process(this->DeployingAnim_AllowAnyDirection)
-		.Process(this->DeployingAnim_KeepUnitVisible)
-		.Process(this->DeployingAnim_ReverseForUndeploy)
-		.Process(this->DeployingAnim_UseUnitDrawer)
 
 		.Process(this->EnemyUIName)
+
+		.Process(this->ForceWeapon_Check)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->ForceWeapon_Cloaked)
 		.Process(this->ForceWeapon_Disguised)
+		.Process(this->ForceWeapon_UnderEMP)
+		.Process(this->ForceWeapon_InRange_TechnoOnly)
+		.Process(this->ForceWeapon_InRange)
+		.Process(this->ForceWeapon_InRange_Overrides)
+		.Process(this->ForceWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceAAWeapon_InRange)
+		.Process(this->ForceAAWeapon_InRange_Overrides)
+		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceWeapon_Buildings)
+		.Process(this->ForceWeapon_Defenses)
+		.Process(this->ForceWeapon_Infantry)
+		.Process(this->ForceWeapon_Naval_Units)
+		.Process(this->ForceWeapon_Units)
+		.Process(this->ForceWeapon_Aircraft)
+		.Process(this->ForceAAWeapon_Infantry)
+		.Process(this->ForceAAWeapon_Units)
+		.Process(this->ForceAAWeapon_Aircraft)
+
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
-
-		.Process(this->OnlyUseLandSequences)
-
-		.Process(this->PronePrimaryFireFLH)
-		.Process(this->ProneSecondaryFireFLH)
-		.Process(this->DeployedPrimaryFireFLH)
-		.Process(this->DeployedSecondaryFireFLH)
-		.Process(this->CrouchedWeaponBurstFLHs)
-		.Process(this->EliteCrouchedWeaponBurstFLHs)
-		.Process(this->DeployedWeaponBurstFLHs)
-		.Process(this->EliteDeployedWeaponBurstFLHs)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
@@ -762,9 +1538,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceShield_KillWarhead)
 
 		.Process(this->Explodes_KillPassengers)
-		.Process(this->Explodes_DuringBuildup)
+		.Process(this->DriverKilled_KeptPassengers)
+		.Process(this->DriverKilled_KillPassengers)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
+
+		.Process(this->AreaGuardRange)
+		.Process(this->MaxGuardRange)
 
 		.Process(this->Insignia)
 		.Process(this->InsigniaFrames)
@@ -773,15 +1553,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
-
-		.Process(this->TiltsWhenCrushes_Vehicles)
-		.Process(this->TiltsWhenCrushes_Overlays)
-		.Process(this->CrushForwardTiltPerFrame)
-		.Process(this->CrushOverlayExtraForwardTilt)
-		.Process(this->CrushSlowdownMultiplier)
+		.Process(this->Insignia_Passengers)
+		.Process(this->InsigniaFrame_Passengers)
+		.Process(this->InsigniaFrames_Passengers)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->SelectBox)
+		.Process(this->HideSelectBox)
 
 		.Process(this->AmmoPipFrame)
 		.Process(this->EmptyAmmoPipFrame)
@@ -795,24 +1575,26 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
 
-		.Process(this->SpawnDistanceFromTarget)
-		.Process(this->SpawnHeight)
-		.Process(this->LandingDir)
 		.Process(this->DroppodType)
 
+		.Process(this->TiberiumEaterType)
+
+		.Process(this->Convert_Deploy)
+		.Process(this->Convert_Undeploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
-
-		.Process(this->CrateGoodie_RerollChance)
+		.Process(this->Convert_ResetMindControl)
 
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
 
 		.Process(this->RevengeWeapon)
-		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_AffectsHouse)
 
 		.Process(this->AttachEffects)
+
+		.Process(this->RecountBurst)
 
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)
@@ -824,28 +1606,157 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
+		.Process(this->AmphibiousEnter)
+		.Process(this->AmphibiousUnload)
+		.Process(this->NoQueueUpToEnter)
+		.Process(this->NoQueueUpToEnter_BoardDistance)
+		.Process(this->NoQueueUpToUnload)
+		.Process(this->Passengers_BySize)
+
+		.Process(this->RateDown_Delay)
+		.Process(this->RateDown_Reset)
+		.Process(this->RateDown_Cover_Value)
+		.Process(this->RateDown_Cover_AmmoBelow)
+
+		.Process(this->NoRearm_UnderEMP)
+		.Process(this->NoRearm_Temporal)
+		.Process(this->NoReload_UnderEMP)
+		.Process(this->NoReload_Temporal)
+
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+		.Process(this->MakesWake)
+
+		.Process(this->CrashSpin_Multiplier)
+
+		.Process(this->AINormalTargetingDelay)
+		.Process(this->PlayerNormalTargetingDelay)
+		.Process(this->AIGuardAreaTargetingDelay)
+		.Process(this->PlayerGuardAreaTargetingDelay)
+		.Process(this->AIAttackMoveTargetingDelay)
+		.Process(this->PlayerAttackMoveTargetingDelay)
+		.Process(this->DistributeTargetingFrame)
+
+		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+
+		.Process(this->AttackMove_Aggressive)
+		.Process(this->AttackMove_UpdateTarget)
+
+		.Process(this->BunkerableAnyway)
+		.Process(this->KeepTargetOnMove)
+		.Process(this->KeepTargetOnMove_Weapon)
+		.Process(this->KeepTargetOnMove_NoMorePursuit)
+		.Process(this->KeepTargetOnMove_ExtraDistance)
+
+		.Process(this->Power)
+
+		.Process(this->AllowAirstrike)
+
+		.Process(this->Image_ConditionYellow)
+		.Process(this->Image_ConditionRed)
+		.Process(this->NeedDamagedImage)
+
+		.Process(this->InitialSpawnsNumber)
+		.Process(this->Spawns_Queue)
+
+		.Process(this->Spawner_RecycleRange)
+		.Process(this->Spawner_RecycleAnim)
+		.Process(this->Spawner_RecycleCoord)
+		.Process(this->Spawner_RecycleOnTurret)
+
+		.Process(this->SuppressKillWeapons)
+		.Process(this->SuppressKillWeapons_Types)
+
+		.Process(this->Promote_VeteranAnimation)
+		.Process(this->Promote_EliteAnimation)
+
+		.Process(this->RadarInvisibleToHouse)
+
+		.Process(this->Overload_Count)
+		.Process(this->Overload_Damage)
+		.Process(this->Overload_Frames)
+		.Process(this->Overload_DeathSound)
+		.Process(this->Overload_ParticleSys)
+		.Process(this->Overload_ParticleSysCount)
+
+		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
+		.Process(this->FallingDownDamage_AllowEMP)
+
+		.Process(this->Ammo_AutoConvertMinimumAmount)
+		.Process(this->Ammo_AutoConvertMaximumAmount)
+		.Process(this->Ammo_AutoConvertType)
+
+		//.Process(this->SecondaryFire)
+
+		.Process(this->DebrisTypes_Limit)
+		.Process(this->DebrisMinimums)
+
+		.Process(this->EngineerRepairAmount)
+
+		.Process(this->AttackMove_Follow)
+		.Process(this->AttackMove_Follow_IncludeAir)
+		.Process(this->AttackMove_Follow_IfMindControlIsFull)
+		.Process(this->AttackMove_StopWhenTargetAcquired)
+		.Process(this->AttackMove_PursuitTarget)
+
+		.Process(this->MultiWeapon)
+		.Process(this->MultiWeapon_IsSecondary)
+		.Process(this->MultiWeapon_SelectCount)
+		.Process(this->ReadMultiWeapon)
+		.Process(this->ThreatTypes)
+		.Process(this->CombatDamages)
+
+		.Process(this->VoiceIFVRepair)
+		.Process(this->VoiceWeaponAttacks)
+		.Process(this->VoiceEliteWeaponAttacks)
+
+		.Process(this->TeamMember_ConsideredAs)
+
+		.Process(this->AttackFriendlies)
+
+		.Process(this->DrainMoneyFrameDelay)
+		.Process(this->DrainMoneyAmount)
+		.Process(this->DrainAnimationType)
+		.Process(this->DrainMoneyDisplay)
+		.Process(this->DrainMoneyDisplay_Houses)
+		.Process(this->DrainMoneyDisplay_Offset)
+		.Process(this->DrainMoneyDisplay_OnTarget)
+		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
+
+		.Process(this->ParadropMission)
+		.Process(this->AIParadropMission)
+
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->PenetratesTransport_PassThroughMultiplier)
+		.Process(this->PenetratesTransport_FatalRateMultiplier)
+		.Process(this->PenetratesTransport_DamageMultiplier)
+
+		.Process(this->JumpjetClimbIgnoreBuilding)
+
+		.Process(this->Unsellable)
+
+		.Process(this->ExtraThreat_Enabled)
+		.Process(this->ExtraThreat_IsThreat)
+		.Process(this->AlwaysConsideredThreat)
+		.Process(this->ExtraThreat_InRange)
+		.Process(this->ExtraThreatCoefficient_InRangeDistance)
+		.Process(this->ExtraThreatCoefficient_Facing)
+		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
 		;
 }
-void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TechnoTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TechnoTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-// =============================
-// container
-
-TechnoTypeExt::ExtContainer::ExtContainer() : Container("TechnoTypeClass") { }
-TechnoTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
 // container hooks
@@ -854,52 +1765,11 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
-	TechnoTypeExt::ExtMap.TryAllocate(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x711AE0, TechnoTypeClass_DTOR, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, ECX);
-
-	TechnoTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x716DC0, TechnoTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x7162F0, TechnoTypeClass_SaveLoad_Prefix, 0x6)
-{
-	GET_STACK(TechnoTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TechnoTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x716DAC, TechnoTypeClass_Load_Suffix, 0xA)
-{
-	TechnoTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
-{
-	TechnoTypeExt::ExtMap.SaveStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
-{
-	GET(TechnoTypeClass*, pItem, EBP);
-	GET_STACK(CCINIClass*, pINI, 0x380);
-
-	TechnoTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	// The extension is allocated by the concrete type leaf constructors
+	// (UnitType/InfantryType/BuildingType/AircraftType), not here at the TechnoTypeClass level.
+	pItem->DefaultToGuardArea = RulesExt::Global()->DefaultToGuardArea;
+	pItem->LeptonMindControlOffset = RulesExt::Global()->LeptonMindControlOffset;
+	pItem->MindControlRingOffset = RulesExt::Global()->MindControlRingOffset;
 
 	return 0;
 }
@@ -918,18 +1788,3 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 }
 #endif
 
-DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
-{
-	GET(UnitTypeClass*, pItem, ESI);
-
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
-	{
-		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
-		{
-			pTypeExt->Harvester_Counted = true;
-			RulesExt::Global()->HarvesterTypes.AddUnique(pItem);
-		}
-	}
-
-	return 0;
-}

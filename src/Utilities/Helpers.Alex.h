@@ -42,6 +42,8 @@
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
 
+#include <Ext/WarheadType/Body.h>
+
 #include <set>
 #include <functional>
 #include <algorithm>
@@ -53,79 +55,15 @@ namespace Helpers
 
 	namespace Alex
 	{
-
-		//! Less comparison for pointer types.
-		/*!
-			Dereferences the values before comparing them using std::less.
-
-			This compares the actual objects pointed to instead of their
-			arbitrary pointer values.
-		*/
-		struct deref_less
-		{
-			using is_transparent = void;
-
-			template <typename T, typename U>
-			bool operator()(T&& lhs, U&& rhs) const
-			{
-				return std::less<>()(*lhs, *rhs);
-			}
-		};
-
 		//! Represents a set of unique items.
-		/*!
-			Items can be added using the insert method. Even though an item
-			can be added multiple times, it is only contained once in the set.
-
-			Use either the for_each method to call a method using each item as
-			a parameter, or iterate the set through the begin and end methods.
-		*/
 		template<typename T>
-		class DistinctCollector
-		{
-			using less_type = std::conditional_t<std::is_pointer<T>::value, deref_less, std::less<>>;
-			using set_type = std::set<T, less_type>;
-			set_type _set;
-
-		public:
-			bool operator() (T item)
+		using DistinctCollector = std::set<T, decltype([](T a, T b)
 			{
-				insert(item);
-				return true;
-			}
-
-			void insert(T value)
-			{
-				_set.insert(value);
-			}
-
-			size_t size() const
-			{
-				return _set.size();
-			}
-
-			typename set_type::const_iterator begin() const
-			{
-				return _set.begin();
-			}
-
-			typename set_type::const_iterator end() const
-			{
-				return _set.end();
-			}
-
-			template <typename Func>
-			void for_each(Func&& action) const
-			{
-				std::find_if_not(begin(), end(), action);
-			}
-
-			template <typename Func>
-			int for_each_count(Func&& action) const
-			{
-				return std::distance(begin(), std::find_if_not(begin(), end(), action));
-			}
-		};
+				if constexpr (std::is_pointer_v<std::remove_cv_t<T>>)
+					return *a < *b;
+				else
+					return a < b;
+			}) > ;
 
 		//! Gets the new duration a stackable or absolute effect will last.
 		/*!
@@ -183,44 +121,56 @@ namespace Helpers
 			}
 		}
 
-		//! Gets a list of all units in range of a cell spread weapon.
-		/*!
-			CellSpread is handled as described in
-			http://modenc.renegadeprojects.com/CellSpread.
 
+#pragma region GetCellSpreadItems
+
+		//! Gets a list of all technos in range.
+		/*!
+		    Contains actual implementation of getCellSpreadItems,
+			can have additional params over it to retain
+			the original's function signature.
+			
 			\param coords The location the projectile detonated.
 			\param spread The range to find items in.
 			\param includeInAir Include items that are currently InAir.
-
-			\author AlexB
-			\date 2010-06-28
-
-			\modifications by Starkku
-			\date 2024-05-20
+			\param ignoreHeight Ignore height checks.
 		*/
-		inline std::vector<TechnoClass*> getCellSpreadItems(
+		inline DistinctCollector<TechnoClass*> getCellSpreadItemsExt(
 			CoordStruct const& coords, double const spread,
-			bool const includeInAir = false)
+			bool const includeInAir, bool const ignoreHeight)
 		{
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
-			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
+			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
-				auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
+				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
+
+				if (!pCell)
+					continue;
+
 				bool isCenter = pCell->MapCoords == cellCoords;
+
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						// Starkku: Buildings need their distance from the origin coords checked at cell level.
+						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
-							auto const cellCenterCoords = pCell->GetCenterCoords();
+							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+								continue;
+
+							auto cellCenterCoords = pCell->GetCenterCoords();
+
+							// Ignore Z coordinate / height.
+							if (ignoreHeight)
+								cellCenterCoords.Z = coords.Z;
+
 							double dist = cellCenterCoords.DistanceFrom(coords);
 
 							// If this is the center cell, there's some different behaviour.
@@ -235,6 +185,10 @@ namespace Helpers
 							if (dist > spreadMult)
 								continue;
 						}
+						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
+						{
+							continue;
+						}
 
 						set.insert(pTechno);
 					}
@@ -242,64 +196,67 @@ namespace Helpers
 			}
 
 			// flying objects are not included normally
-			// Starkku: Reimplemented using AircraftTrackerClass.
+			// May 22, 2024 - Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
 					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						if (pTechno->Location.DistanceFrom(coords) <= spreadMult)
-						{
+						auto location = pTechno->Location;
+
+						// Ignore Z coordinate / height.
+						if (ignoreHeight)
+							location.Z = coords.Z;
+
+						auto dist = location.DistanceFrom(coords);
+
+						// reduce the distance for flying aircraft
+						if (pTechno->WhatAmI() == AbstractType::Aircraft)
+							dist *= 0.5;
+						if (dist <= spreadMult)
 							set.insert(pTechno);
-						}
 					}
 				}
 			}
 
-			// look closer. the final selection. put all affected items in a vector.
-			std::vector<TechnoClass*> ret;
-			ret.reserve(set.size());
-
-			for (auto const& pTechno : set)
-			{
-				auto const abs = pTechno->WhatAmI();
-				bool isBuilding = false;
-
-				// ignore buildings that are not visible, like ambient light posts
-				if (abs == AbstractType::Building)
-				{
-					auto const pBuilding = static_cast<BuildingClass*>(pTechno);
-					if (pBuilding->Type->InvisibleInGame)
-					{
-						continue;
-					}
-					isBuilding = true;
-				}
-
-				// get distance from impact site
-				auto const target = pTechno->GetCoords();
-				auto dist = target.DistanceFrom(coords);
-
-				// reduce the distance for flying aircraft
-				if (abs == AbstractType::Aircraft && pTechno->IsInAir())
-				{
-					dist *= 0.5;
-				}
-
-				// this is good
-				// Starkku: Building distance is checked prior on cell level, skip here.
-				if (isBuilding || dist <= spreadMult)
-				{
-					ret.push_back(pTechno);
-				}
-			}
-
-			return ret;
+			return set;
 		}
+
+		//! Gets a list of all technos in range.
+		/*!
+			CellSpread is handled as described in
+			http://modenc.renegadeprojects.com/CellSpread.
+			
+			NOTE: Function signature for this has to stay the same
+			here due to Ares calls being redirected to this.
+			
+			Use getCellSpreadItemsExt() directly to get additional
+			features from Phobos WarheadTypeExt.
+			
+			\param coords The location the projectile detonated.
+			\param spread The range to find items in.
+			\param includeInAir Include items that are currently InAir.
+
+			\author AlexB
+			\date 2010-06-28
+
+			\modifications by Starkku
+			\date 2024-05-20
+			\modifications by Trsdy
+			\date 2024-12-05
+		*/
+		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
+			CoordStruct const& coords, double const spread,
+			bool const includeInAir = false)
+		{
+			return getCellSpreadItemsExt(coords, spread, includeInAir, false);
+		}
+
+#pragma endregion
 
 		//! Invokes an action for every cell or every object contained on the cells.
 		/*!

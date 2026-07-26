@@ -4,7 +4,7 @@ BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
 {
-	auto const pData = BulletTypeExt::ExtMap.Find(pType);
+	auto const pData = BulletTypeExt::Fetch(pType);
 	auto const nGravity = pData->Gravity.Get(RulesClass::Instance->Gravity);
 	return pType->Floater ? nGravity * 0.5 : nGravity;
 }
@@ -22,14 +22,10 @@ BulletTypeClass* BulletTypeExt::GetDefaultBulletType()
 // =============================
 // load / save
 
-void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->Armor.Read(exINI, pSection, "Armor");
@@ -37,12 +33,16 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
 	this->Interceptable_WeaponOverride.Read<true>(exINI, pSection, "Interceptable.WeaponOverride");
 	this->Gravity.Read(exINI, pSection, "Gravity");
+	this->Vertical_AircraftFix.Read(exINI, pSection, "Vertical.AircraftFix");
+	this->VerticalInitialFacing.Read(exINI, pSection, "VerticalInitialFacing");
 
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 	this->Shrapnel_UseWeaponTargeting.Read(exINI, pSection, "Shrapnel.UseWeaponTargeting");
+	this->Shrapnel_IgnoreHitBuildings.Read(exINI, pSection, "Shrapnel.IgnoreHitBuildings");
+	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, pSection, "Shrapnel.ObeyWarheadTriggerConditions");
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
 	this->SubjectToLand.Read(exINI, pSection, "SubjectToLand");
@@ -52,6 +52,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AAOnly.Read(exINI, pSection, "AAOnly");
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
+	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, pSection, "ReturnWeapon.ApplyFirepowerMult");
+	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
 
 	this->Splits.Read(exINI, pSection, "Splits");
 	this->AirburstSpread.Read(exINI, pSection, "AirburstSpread");
@@ -61,10 +63,24 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AroundTarget.Read(exINI, pSection, "AroundTarget");
 	this->Airburst_UseCluster.Read(exINI, pSection, "Airburst.UseCluster");
 	this->Airburst_RandomClusters.Read(exINI, pSection, "Airburst.RandomClusters");
+	this->Airburst_TargetAsSource.Read(exINI, pSection, "Airburst.TargetAsSource");
+	this->Airburst_TargetAsSource_SkipHeight.Read(exINI, pSection, "Airburst.TargetAsSource.SkipHeight");
 	this->Splits_TargetingDistance.Read(exINI, pSection, "Splits.TargetingDistance");
+	this->Splits_TargetingDistance_Cylindrical.Read(exINI, pSection, "Splits.TargetingDistance.Cylindrical");
+	this->Splits_AllowRepeatTargets.Read(exINI, pSection, "Splits.AllowRepeatTargets");
 	this->Splits_TargetCellRange.Read(exINI, pSection, "Splits.TargetCellRange");
 	this->Splits_UseWeaponTargeting.Read(exINI, pSection, "Splits.UseWeaponTargeting");
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
+	this->AirburstWeapon_SourceScatterMin.Read(exINI, pSection, "AirburstWeapon.SourceScatterMin");
+	this->AirburstWeapon_SourceScatterMax.Read(exINI, pSection, "AirburstWeapon.SourceScatterMax");
+	this->AirburstWeapon_UseFiringEffects.Read(exINI, pSection, "AirburstWeapon.UseFiringEffects");
+	this->AirburstWeapon_HeadToTarget.Read(exINI, pSection, "AirburstWeapon.HeadToTarget");
+	this->AirburstWeapon_RadialFireSegments.Read(exINI, pSection, "AirburstWeapon.RadialFireSegments");
+	this->Parachuted.Read(exINI, pSection, "Parachuted");
+	this->Parachuted_FallRate.Read(exINI, pSection, "Parachuted.FallRate");
+	this->Parachuted_MaxFallRate.Read(exINI, pSection, "Parachuted.MaxFallRate");
+	this->BombParachute.Read(exINI, pSection, "BombParachute");
+	this->AU.Read(exINI, pSection, "AU");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -77,10 +93,12 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
 
+	this->ZAdjust.Read(exArtINI, pSection, "ZAdjust");
+
 	this->TrajectoryValidation();
 }
 
-void BulletTypeExt::ExtData::TrajectoryValidation() const
+void BulletTypeExt::TrajectoryValidation() const
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -115,7 +133,7 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 }
 
 template <typename T>
-void BulletTypeExt::ExtData::Serialize(T& Stm)
+void BulletTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Armor)
@@ -124,9 +142,13 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable_WeaponOverride)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
+		.Process(this->Vertical_AircraftFix)
+		.Process(this->VerticalInitialFacing)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
+		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
 		.Process(this->ClusterScatter_Min)
 		.Process(this->ClusterScatter_Max)
 		.Process(this->BallisticScatter_Min)
@@ -138,6 +160,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->ReturnWeapon_ApplyFirepowerMult)
+		.Process(this->SubjectToGround)
 		.Process(this->Splits)
 		.Process(this->AirburstSpread)
 		.Process(this->RetargetAccuracy)
@@ -146,25 +170,39 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AroundTarget)
 		.Process(this->Airburst_UseCluster)
 		.Process(this->Airburst_RandomClusters)
+		.Process(this->Airburst_TargetAsSource)
+		.Process(this->Airburst_TargetAsSource_SkipHeight)
 		.Process(this->Splits_TargetingDistance)
+		.Process(this->Splits_TargetingDistance_Cylindrical)
+		.Process(this->Splits_AllowRepeatTargets)
 		.Process(this->Splits_TargetCellRange)
 		.Process(this->Splits_UseWeaponTargeting)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
-
+		.Process(this->AirburstWeapon_SourceScatterMin)
+		.Process(this->AirburstWeapon_SourceScatterMax)
+		.Process(this->AirburstWeapon_UseFiringEffects)
+		.Process(this->AirburstWeapon_HeadToTarget)
+		.Process(this->AirburstWeapon_RadialFireSegments)
+		.Process(this->Parachuted)
+		.Process(this->Parachuted_FallRate)
+		.Process(this->Parachuted_MaxFallRate)
+		.Process(this->BombParachute)
+		.Process(this->AU)
+		.Process(this->ZAdjust)
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;
 }
 
-void BulletTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BulletTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<BulletTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BulletTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BulletTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<BulletTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -195,30 +233,7 @@ DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x46C730, BulletTypeClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x46C6A0, BulletTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BulletTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BulletTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x46C722, BulletTypeClass_Load_Suffix, 0x4)
-{
-	BulletTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x46C74A, BulletTypeClass_Save_Suffix, 0x3)
-{
-	BulletTypeExt::ExtMap.SaveStatic();
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x46C429, BulletTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x46C429, BulletTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x46C41C, BulletTypeClass_LoadFromINI, 0xA)
 {
 	GET(BulletTypeClass*, pItem, ESI);

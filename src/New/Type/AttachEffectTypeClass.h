@@ -5,9 +5,10 @@
 
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
+#include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned char
+enum class DiscardCondition : unsigned short
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -16,7 +17,10 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploying = 0x100,
+	Harvesting = 0x200
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -41,13 +45,20 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
+	ValueableVector<TechnoTypeClass*> AffectTypes;
+	ValueableVector<TechnoTypeClass*> IgnoreTypes;
+	Valueable<AffectedTarget> AffectsTarget;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -59,6 +70,7 @@ public:
 	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
+	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -80,25 +92,39 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
-	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
+	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
-	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
+	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
+	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool RequiresRecalculation;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
+		, AffectTypes {}
+		, IgnoreTypes {}
+		, AffectsTarget { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
@@ -110,6 +136,7 @@ public:
 		, ExpireWeapon {}
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
+		, ExpireWeapon_UseInvokerAsOwner { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -131,14 +158,21 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage { false }
+		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
-		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_AffectsHouse { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
+		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
+		, Unkillable { false }
+		, LaserTrail_Type { -1 }
 		, Groups {}
+		, RequiresRecalculation { false }
 	{};
 
 	bool HasTint() const
@@ -148,7 +182,16 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
+
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
+	{
+		if (cumulativeCount < 0)
+			return nullptr;
+
+		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+		return this->CumulativeAnimations.at(index);
+	}
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
@@ -160,6 +203,7 @@ public:
 	}
 
 	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
+	static void HandleEvent(TechnoClass* pTarget);
 
 private:
 	template <typename T>
@@ -174,6 +218,7 @@ struct AEAttachParams
 	int Delay;
 	int InitialDelay;
 	int RecreationDelay;
+	int CumulativeSourceMaxCount;
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
@@ -183,6 +228,7 @@ struct AEAttachParams
 		, Delay { 0 }
 		, InitialDelay { 0 }
 		, RecreationDelay { -1 }
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
@@ -195,6 +241,7 @@ class AEAttachInfoTypeClass
 {
 public:
 	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<int> CumulativeSourceMaxCount;
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
@@ -215,6 +262,7 @@ public:
 
 	AEAttachInfoTypeClass() :
 		AttachTypes {}
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
