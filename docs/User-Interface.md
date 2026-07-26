@@ -601,6 +601,7 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
 
 ### `[ ]` Select Captured Units
+
 - Select the units within the current screen that are captured by non-permanent mind-controller.
 - Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
 - If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.

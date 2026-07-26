@@ -2893,6 +2893,7 @@ msgid ""
 "New hotkey to select the units within the current screen that are "
 "captured by non-permanent mind-controller"
 msgstr ""
+"用于选取当前屏幕内被非永久心控捕获的单位的新快捷键"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

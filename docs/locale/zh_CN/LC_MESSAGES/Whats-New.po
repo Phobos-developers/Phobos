@@ -2300,6 +2300,7 @@ msgid ""
 "captured by non-permanent mind-controller](User-Interface.md#select-"
 "captured-units) (by TaranDahl)"
 msgstr ""
+"[用于选取当前屏幕内被非永久心控捕获的单位的新快捷键](User-Interface.md#select-captured-units)（by TaranDahl）"
 
 msgid ""
 "Separately define the global default values of TerrainTypes' `IsPassable`"
