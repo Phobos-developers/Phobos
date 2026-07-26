@@ -632,7 +632,7 @@ NoWobbles=false  ; boolean
   - `PoseDir.Production` can be used to determine the default direction of an aircraft that has no landing direction defined when it is produced, as well as the direction of aircraft spawned by a building with `HoverPad=true` when `[General] -> SeparateAircraft=false`.
   - `PoseDir.Field` can be used to determine the default direction of an aircraft that has no landing direction defined when landing in the field; it defaults to 32 times the value of `[AudioVisual] -> PoseDir=` to ensure that it points due east under vanilla configuration.
 
-In `rulesmd.ini`：
+In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 PoseDir.Production=  ; integer, defaults to [AudioVisual] -> PoseDir
@@ -1933,7 +1933,7 @@ FallingDownDamage.AllowEMP=true     ; boolean
 
 ### Customize crash spin multiplier
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
 CrashSpin.Multiplier=1.0          ; floating point value
