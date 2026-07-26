@@ -33,13 +33,13 @@ const wchar_t* SelectCapturedCommandClass::GetUIDescription() const
 void SelectCapturedCommandClass::Execute(WWKey eInput) const
 {
 
-	MapClass::Instance->SetTogglePowerMode(0);
-	MapClass::Instance->SetWaypointMode(0, false);
-	MapClass::Instance->SetRepairMode(0);
-	MapClass::Instance->SetSellMode(0);
+	MapClass::Instance.SetTogglePowerMode(0);
+	MapClass::Instance.SetWaypointMode(0, false);
+	MapClass::Instance.SetRepairMode(0);
+	MapClass::Instance.SetSellMode(0);
 
-	auto pFirstObject = MapClass::Instance->NextObject(
-		ObjectClass::CurrentObjects->Count ? ObjectClass::CurrentObjects->GetItem(0) : nullptr);
+	auto pFirstObject = MapClass::Instance.NextObject(
+		ObjectClass::CurrentObjects.Count ? ObjectClass::CurrentObjects.GetItem(0) : nullptr);
 
 	bool capturedPresent = false;
 	auto pCurrentObject = pFirstObject;
@@ -65,17 +65,17 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 			}
 		}
 
-		pCurrentObject = MapClass::Instance->NextObject(pCurrentObject);
+		pCurrentObject = MapClass::Instance.NextObject(pCurrentObject);
 	}
 	while (pCurrentObject != pFirstObject);
 
 	if (capturedPresent)
 	{
-		MapClass::Instance->MarkNeedsRedraw(1);
-		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SelectCaptured", L"Captured units selected."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MapClass::Instance.MarkNeedsRedraw(1);
+		MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SelectCaptured", L"Captured units selected."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 	else
 	{
-		MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance.PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 }
