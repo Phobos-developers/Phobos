@@ -266,16 +266,30 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	if (!pThis->GetTechnoType()) // Critical sanity check in s/l
+		return 0;
+
+	// No extension while a savegame is loading: either it comes from the extension
+	// stream, or the object is one the game is creating as part of the load and its
+	// extension - and this initialization with it - follows once the load settles.
+	if (auto const pExt = TechnoExt::TryFetch(pThis))
+		pExt->InitializeState();
+
+	return 0;
+}
+
+// The state a techno's extension gets when the techno itself is initialized. Also run
+// for extensions allocated after the fact, for technos the game created while a
+// savegame was loading.
+void TechnoExt::InitializeState()
+{
+	auto const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
 
-	if (!pType) // Critical sanity check in s/l
-		return 0;
+	if (!pType)
+		return;
 
-	auto const pExt = TechnoExt::TryFetch(pThis);
-
-	if (!pExt) // constructed during savegame load; state comes from the stream instead
-		return 0;
-
+	auto const pExt = this;
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	pExt->TypeExtData = pTypeExt;
 
@@ -306,8 +320,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
-
-	return 0;
 }
 
 DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)

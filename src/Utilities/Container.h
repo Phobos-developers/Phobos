@@ -156,6 +156,12 @@ public:
 	// called after loading once all pointers (including the owner) have been remapped
 	virtual void PostLoad() { }
 
+	// Called when the extension is created only after its owner already exists: the
+	// game constructed the owner while a savegame was loading, so the game hook that
+	// normally initializes the extension right after construction found none to
+	// initialize. Extensions that rely on such a hook have to catch up here.
+	virtual void OnDeferredAllocation() { }
+
 protected:
 	AbstractClass* GetAttachedObject() const
 	{
@@ -546,16 +552,34 @@ public:
 
 	// Called once the extension stream has been relinked: every owner constructed
 	// during the load window that the stream did not cover is an object the game
-	// created itself and still needs an extension.
-	void AllocatePendingExtensions()
+	// created itself and still needs an extension. Returns whether it created any -
+	// the deferred initialization can make the game create further objects, which
+	// register themselves the same way while the load is still settling.
+	bool AllocatePendingExtensions()
 	{
-		for (auto const key : this->PendingAllocations)
+		bool allocated = false;
+
+		// drained rather than iterated: allocating can append to PendingAllocations
+		while (!this->PendingAllocations.empty())
 		{
-			if (!this->TryFindRaw(key))
-				this->AllocateUnchecked(key);
+			std::vector<base_type_ptr> pending;
+			pending.swap(this->PendingAllocations);
+
+			for (auto const key : pending)
+			{
+				if (this->TryFindRaw(key))
+					continue;
+
+				auto const val = this->AllocateUnchecked(key);
+				allocated = true;
+
+				// the legacy shells (EBolt) are not AbstractExt and have no such hook
+				if constexpr (requires { val->OnDeferredAllocation(); })
+					val->OnDeferredAllocation();
+			}
 		}
 
-		this->PendingAllocations.clear();
+		return allocated;
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
@@ -677,6 +701,9 @@ public:
 
 	void Clear()
 	{
+		// the owners these refer to are being discarded along with everything else
+		this->PendingAllocations.clear();
+
 		if (this->Items.size())
 		{
 			Debug::Log("Cleared %u items from %s.\n", this->Items.size(), this->Name);

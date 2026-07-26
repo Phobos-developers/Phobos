@@ -189,11 +189,18 @@ struct RelinkExtensionsAction
 // T::ExtMap.AllocatePendingExtensions()
 struct AllocatePendingExtensionsAction
 {
+	// whether the last sweep created anything; the dispatch folds with && and would
+	// short-circuit on a false result, so the outcome travels out of band
+	static inline bool AllocatedAny = false;
+
 	template <typename T>
 	static bool Process()
 	{
 		if constexpr (HasExtMap<T>)
-			T::ExtMap.AllocatePendingExtensions();
+		{
+			if (T::ExtMap.AllocatePendingExtensions())
+				AllocatedAny = true;
+		}
 
 		return true;
 	}
@@ -242,7 +249,14 @@ struct TypeRegistry
 
 	__forceinline static void AllocatePendingExtensions()
 	{
-		dispatch_mass_action<AllocatePendingExtensionsAction>();
+		// a sweep can make the game create objects tracked by a container that was
+		// already swept, so repeat until one full pass turns up nothing new
+		do
+		{
+			AllocatePendingExtensionsAction::AllocatedAny = false;
+			dispatch_mass_action<AllocatePendingExtensionsAction>();
+		}
+		while (AllocatePendingExtensionsAction::AllocatedAny);
 	}
 
 private:
