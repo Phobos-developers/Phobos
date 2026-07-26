@@ -3,6 +3,16 @@
 #include <ASMMacros.h>
 #include "Patch.h"
 
+// Export / calling-convention macros for public C ABI functions
+// Usage:
+//   DEFINE_EXPORT(return_type, func_name, arglist...)
+#define DEFINE_EXPORT(ret, name, ...) extern "C" __declspec(dllexport) ret __stdcall name(__VA_ARGS__)
+
+// Callback typedef helper
+// Usage:
+//   DEFINE_CALLBACK(return_type, func_name, arglist...)
+#define DEFINE_CALLBACK(ret, name, ...) typedef ret (__stdcall* name)(__VA_ARGS__)
+
 #define GET_REGISTER_STATIC_TYPE(type, dst, reg) static type dst; _asm { mov dst, reg }
 
 template<typename T>

@@ -10,7 +10,7 @@ int CaptureManagerExt::GetControlledTotalSize(CaptureManagerClass* pManager)
 	for (const auto pNode : pManager->ControlNodes)
 	{
 		if (const auto pTechno = pNode->Unit)
-			totalSize += TechnoExt::ExtMap.Find(pTechno)->TypeExtData->MindControlSize;
+			totalSize += TechnoExt::Fetch(pTechno)->TypeExtData->MindControlSize;
 	}
 
 	return totalSize;
@@ -79,14 +79,14 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	// free slot? (move on if infinite or single slot which will be freed if used)
 	if (!pManager->InfiniteMindControl && pManager->MaxControlNodes != 1)
 	{
-		const auto pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
+		const auto pOwnerTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
 		if (!pOwnerTypeExt->MindControl_IgnoreSize)
 		{
 			const int totalSize = CaptureManagerExt::GetControlledTotalSize(pManager);
 			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim ? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
 
-			if (TechnoTypeExt::ExtMap.Find(pTargetType)->MindControlSize > available)
+			if (TechnoTypeExt::Fetch(pTargetType)->MindControlSize > available)
 				return false;
 		}
 		else
@@ -138,7 +138,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				const auto pOriginOwner = pNode->OriginalOwner->Defeated
 					? HouseClass::FindNeutral() : pNode->OriginalOwner;
 
-				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
+				TechnoExt::Fetch(pTarget)->BeControlledThreatFrame = 0;
 
 				pTarget->SetOwningHouse(pOriginOwner, !silent);
 				pManager->DecideUnitFate(pTarget);
@@ -172,7 +172,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			}
 			else if (pManager->ControlNodes.Count > 0 && removeFirst)
 			{
-				const auto pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+				const auto pOwnerTypeExt = TechnoTypeExt::Fetch(pManager->Owner->GetTechnoType());
 
 				if (pOwnerTypeExt->MindControl_IgnoreSize)
 				{
@@ -181,7 +181,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 				}
 				else
 				{
-					const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+					const auto pTargetTypeExt = TechnoTypeExt::Fetch(pTarget->GetTechnoType());
 
 					while (pManager->ControlNodes.Count && pTargetTypeExt->MindControlSize > pManager->MaxControlNodes - CaptureManagerExt::GetControlledTotalSize(pManager))
 						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
@@ -197,7 +197,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 		pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
 
 		if (threatDelay > 0)
-			TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
+			TechnoExt::Fetch(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
 
 		auto const pOwner = pManager->Owner;
 
@@ -237,7 +237,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 {
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
-		const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData;
+		const auto pTechnoTypeExt = TechnoExt::Fetch(pManager->Owner)->TypeExtData;
 		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim, pControlledAnimType, false, threatDelay);
 	}
 

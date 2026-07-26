@@ -4,7 +4,7 @@
 
 ## Project Summary
 
-Phobos is a community C++ engine extension for Command & Conquer: Yuri's Revenge. It injects code into the game via [Syringe](https://github.com/Ares-Developers/Syringe) hooks and is designed to complement [Ares](https://github.com/Ares-Developers/Ares). The build output is a 32-bit Windows DLL (`Phobos.dll`). There are no unit tests - correctness is validated by successful compilation and manual in-game testing.
+Phobos is a community C++ engine extension for Command & Conquer: Yuri's Revenge. It injects code into the game via [SyringeEx](https://github.com/Phobos-developers/SyringeEx) hooks (the required launcher - Phobos verifies its `SyringeFeatures` flags at startup and refuses to run under older Syringe versions) and is designed to complement [Ares](https://github.com/Ares-Developers/Ares). The build output is a 32-bit Windows DLL (`Phobos.dll`). There are no unit tests - correctness is validated by successful compilation and manual in-game testing.
 
 - **Language:** C++20 (`/std:c++20`), Win32/x86 only
 - **Build system:** MSBuild via Visual Studio 2022 (MSVC v143 toolset)
@@ -92,9 +92,11 @@ scripts/                Build and setup scripts
 ### Extending a vanilla game class
 
 Each extension lives in `src/Ext/<ClassName>/` with:
-- **`Body.h`**: Declares `<Name>Ext` with `ExtData` (inherits `Extension<T>`) and `ExtContainer`/`ExtMap`.
+- **`Body.h`**: Declares `<Name>Ext`, part of an inheritance hierarchy mirroring the game's own class tree rooted at `AbstractExt` (`Container.h`); concrete leaf classes also declare an `ExtContainer`/`ExtMap` (inherits `Container<T>`).
 - **`Body.cpp`**: Implements constructor, `LoadFromINIFile`, serialization (`Serialize`), and common hooks.
 - **`Hooks.cpp` / `Hooks.*.cpp`**: `DEFINE_HOOK(address, Name, size)` macros for Syringe code injection.
+
+Look extensions up only through the typed static accessors available at every level of the hierarchy: `<Name>Ext::Fetch(pThis)` (fatals if the object has no extension attached) or `<Name>Ext::TryFetch(pThis)` (returns null instead — also the right choice while a savegame is loading). The container lookups `ExtMap.Find`/`ExtMap.TryFind` are deprecated compatibility forwards, as is each pre-rework class's `ExtData` alias (the extension class itself replaced the old nested data class); `ExtMap`'s remaining role is lifecycle and persistence machinery (`Allocate`/`Remove`/`LoadFromINI` plus the centralized streaming driven from `Phobos.Ext.cpp`).
 
 After creating a new extension class, **always register it** in `src/Phobos.Ext.cpp` inside the `PhobosTypeRegistry` alias (the `using PhobosTypeRegistry = TypeRegistry<...>` declaration).
 
@@ -188,8 +190,8 @@ Hook addresses must be determined by **disassembling `gamemd.exe`** (e.g., in ID
 1. **Instruction boundary** - The address must be the start of an x86 instruction. Hooking mid-instruction corrupts the code.
 2. **Size alignment** - `size` must cover complete instructions. Look at the disassembly to see which instructions span the 5-byte overwrite region and set size to the end of the last overlapping instruction.
 3. **Register/stack state** - Choose a point where the registers/stack contain the data you need. Determine which registers hold which values by reading the disassembly - do not assume a fixed calling convention or register assignment without verifying it at the specific address.
-4. **No EIP-relative stolen bytes** - Syringe does **not** fix up EIP-relative operands in stolen bytes. If you use `return 0` and the stolen instructions contain EIP-relative addressing (e.g., `CALL rel32`, `JMP rel32`, `Jcc rel8/rel32`, `LEA reg, [EIP+disp]`, maybe others), they will execute with a wrong target because they run from Syringe's buffer, not from their original location. Either avoid hooking at such instructions when you need `return 0`, or always return a nonzero address to skip the stolen bytes entirely.
-5. **Stack pointer is read-only** - Syringe currently does not support stack depth/pointer modifications inside hooks. Do not use `push`/`pop` or inline assembly that changes real ESP - it will corrupt the stack. Changes via `R->ESP()` are also ignored for the time being (Syringe version with fixes for that to be released in future). The hook must return at exactly the same stack depth it was entered with.
+4. **EIP-relative stolen bytes** - SyringeEx (the required launcher, `ReladdrInstructionFixup` feature flag) relocates EIP-relative operands (`CALL rel32`, `JMP rel32`, `Jcc rel8/rel32`) in stolen bytes when copying them to its trampoline, so `return 0` across such instructions is safe. Returning an explicit nonzero address to skip the stolen bytes entirely remains a valid defensive pattern.
+5. **Stack pointer modification** - SyringeEx (`ESPModification` feature flag) honors stack pointer changes made via `R->ESP()`, allowing a hook to exit at an address with a different stack depth than its entry point. Do not use `push`/`pop` or inline assembly that changes real ESP directly - it will corrupt the stack; go through `R->ESP()`.
 6. **Control flow** - Hook at or before a branch if you need to influence a conditional. Hook after if you only need to observe the result.
 7. **Avoid conflicts** - Check that no other hook (in Phobos or Ares) already occupies overlapping bytes.
 
@@ -270,6 +272,69 @@ When the type or function you need is missing or incorrect in YRpp, add or fix i
 4. After the YRpp PR is merged, check out the merge commit in `YRpp/`, verify Phobos compiles, and commit the updated submodule pointer.
 
 **Important:** Always push your YRpp branch *before* pushing the Phobos commit that references it, otherwise CI cannot resolve the submodule.
+
+### Interop API design
+
+#### Key macros
+
+Interop exports are declared in `src/Interop/*.h` using macros from `src/Utilities/Macro.h`:
+
+| Macro | Purpose | Notes |
+|---|---|---|
+| `DEFINE_CALLBACK(returnType, FuncName, params...)` | Declares a callback type. Callbacks are chain-able (each receives previous result) and stored in a static `std::vector`. Use null-checks when invoking. | Declare in header, initialize in `.cpp` |
+| `DEFINE_EXPORT(returnType, FuncName, params...)` | Exports a C function for P/Invoke. Signature: `extern "C" __declspec(dllexport)`. Use `_Phobos` suffix to avoid naming collisions with Ares. | See `src/Interop/TechnoExt.h/cpp` for examples |
+
+#### Interop API version management
+
+Interop API versions are defined in `src/Interop/Version.h` and follow **Semantic Versioning 2.0.0** (see https://semver.org/):
+
+| Version Component | Increment When | Example |
+|---|---|---|
+| **Major** | Breaking change (backward incompatible). Existing external code **will not work** without modification. | Changing callback signature: `double f(int a)` → `double f(int a, int b)` |
+| **Minor** | New backward-compatible feature added. External code continues to work without change. | Adding a new `DEFINE_EXPORT` function or new callback type. |
+| **Patch** | Backward-compatible bug fix only. No API changes. | Fixing a logic error in an exported function implementation. |
+
+**Version constants in `Version.h`:**
+```cpp
+#define INTEROP_API_VERSION_MAJOR 1
+#define INTEROP_API_VERSION_MINOR 2
+#define INTEROP_API_VERSION_PATCH 0
+```
+
+**When to increment:**
+
+- **MAJOR bump** (1.0.0 → 2.0.0):
+  - Change callback/function signature (parameter type, return type, count).
+  - Remove or rename a callback/export.
+  - Change callback return value semantics (e.g., return value now used differently).
+
+- **MINOR bump** (1.0.0 → 1.1.0):
+  - Add a new callback type and its registration function.
+  - Add a new `DEFINE_EXPORT` function.
+  - Extend callback behavior with new optional parameters (if backward compatible).
+
+- **PATCH bump** (1.0.0 → 1.0.1):
+  - Fix a bug in an exported function's implementation.
+  - Clarify documentation/comments.
+  - No API signature changes.
+
+**Example workflow:**
+
+1. You add `DEFINE_EXPORT(void, NewFeature_Phobos, ...)` - this is a new feature → **MINOR** bump (1.0.0 → 1.1.0).
+2. You change the signature of an existing callback from `int f(ptr)` to `int f(ptr, int extra)` → **MAJOR** bump (1.1.0 → 2.0.0).
+3. You fix a logic bug in `ConvertToType_Phobos` without changing its signature → **PATCH** bump (2.0.0 → 2.0.1).
+
+**Deprecated APIs:**
+
+When an exported function or callback becomes obsolete but must remain for compatibility, keep its stub but document it with a version range and deprecation note:
+
+```cpp
+/// <summary>
+/// DEPRECATED: Use RegisterCalculateSightCallback_Phobos (available since 1.1.0).
+/// This function will be removed in version 3.0.0.
+/// </summary>
+DEFINE_EXPORT(void, RegisterSightModifier_Phobos, OldCallbackType callback);  // Removed in 3.0.0
+```
 
 ## Code Style (enforced by .editorconfig)
 

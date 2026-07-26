@@ -4,7 +4,7 @@
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
+bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
 	const bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
 	const bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
@@ -21,7 +21,7 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 		if (!pTechno)
 			return true;
 
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		auto const pTechnoExt = TechnoExt::Fetch(pTechno);
 		auto const pWH = this->OwnerObject()->Warhead;
 
 		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
@@ -40,22 +40,22 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+bool WeaponTypeExt::IsHealthInThreshold(TechnoClass* pTarget) const
 {
 	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth);
 }
 
-bool WeaponTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+bool WeaponTypeExt::IsVeterancyInThreshold(TechnoClass* pTarget) const
 {
 	return EnumFunctions::CanTargetVeterancy(this->CanTargetVeterancy, pTarget);
 }
 
-void WeaponTypeExt::ExtData::Initialize()
+void WeaponTypeExt::Initialize()
 {
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
+int WeaponTypeExt::GetBurstDelay(int burstIndex) const
 {
 	int burstDelay = -1;
 
@@ -72,7 +72,7 @@ int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 // =============================
 // load / save
 
-void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -117,6 +117,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
+	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
+	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
 	this->EBoltZAdjust_ClampInitialDepthForBuilding.Read(exINI, pSection, "EBoltZAdjust.ClampInitialDepthForBuilding");
@@ -129,6 +131,30 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
+	this->ExtraWarheads_RollChances.Read(exINI, pSection, "ExtraWarheads.RollChances");
+
+	// ExtraWarheads.RandomWeights
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights3;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraWarheads.RandomWeights%d", i);
+		weights3.Read(exINI, pSection, tempBuffer);
+
+		if (!weights3.size())
+			break;
+
+		this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+	ValueableVector<int> weights3;
+	weights3.Read(exINI, pSection, "ExtraWarheads.RandomWeights");
+	if (weights3.size())
+	{
+		if (this->ExtraWarheads_WeightsData.size())
+			this->ExtraWarheads_WeightsData[0] = std::move(weights3);
+		else
+			this->ExtraWarheads_WeightsData.emplace_back(std::move(weights3));
+	}
+
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
@@ -183,10 +209,14 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->SkipWeaponPicking = false;
 	}
+	else
+	{
+		this->SkipWeaponPicking = true;
+	}
 }
 
 template <typename T>
-void WeaponTypeExt::ExtData::Serialize(T& Stm)
+void WeaponTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DiskLaser_Radius)
@@ -217,6 +247,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
+		.Process(this->LaserPositionUpdate)
+		.Process(this->LaserPositionUpdate_StopOnFirerConvert)
 		.Process(this->LaserZAdjust)
 		.Process(this->EBoltZAdjust)
 		.Process(this->EBoltZAdjust_ClampInitialDepthForBuilding)
@@ -229,6 +261,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
+		.Process(this->ExtraWarheads_RollChances)
+		.Process(this->ExtraWarheads_WeightsData)
 		.Process(this->ExtraWarheads_FullDetonation)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
@@ -277,16 +311,16 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		;
 };
 
-void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void WeaponTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<WeaponTypeClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
 }
 
-void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void WeaponTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<WeaponTypeClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -349,13 +383,13 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 	if (auto const pTransport = pTechno->Transporter)
 	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
+		auto const pTypeExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 
-		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers.Get(RulesExt::Global()->OpenTopped_UseTransportRangeModifiers) && pTypeExt->OwnerObject()->OpenTopped)
 			pTechno = pTransport;
 	}
 
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto const pTechnoExt = TechnoExt::Fetch(pTechno);
 
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;
@@ -392,7 +426,7 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 	if (!pThis)
 		return 0;
 
-	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	const auto pExt = WeaponTypeExt::Fetch(pThis);
 	const auto keepRange = pExt->KeepRange.Get();
 
 	if (!keepRange || !pFirer || pFirer->Transporter)
@@ -475,31 +509,6 @@ DEFINE_HOOK(0x77311D, WeaponTypeClass_SDDTOR, 0x6)
 	GET(WeaponTypeClass*, pItem, ESI);
 
 	WeaponTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x772EB0, WeaponTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x772CD0, WeaponTypeClass_SaveLoad_Prefix, 0x7)
-{
-	GET_STACK(WeaponTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	WeaponTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x772EA6, WeaponTypeClass_Load_Suffix, 0x6)
-{
-	WeaponTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x772F8C, WeaponTypeClass_Save, 0x5)
-{
-	WeaponTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

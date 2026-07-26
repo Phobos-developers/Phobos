@@ -13,7 +13,7 @@ DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
 	{
 		if (const auto pHouse = HouseClass::CurrentPlayer)
 		{
-			const int EVAIndex = HouseTypeExt::ExtMap.Find(pHouse->Type)->EVATag;
+			const int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
 
 			if (EVAIndex != -2)
 				VoxClass::EVAIndex = EVAIndex;
@@ -27,7 +27,7 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 {
 	if (const auto pHouse = HouseClass::CurrentPlayer)
 	{
-		const int EVAIndex = HouseTypeExt::ExtMap.Find(pHouse->Type)->EVATag;
+		const int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
 
 		if (EVAIndex != -2)
 			VoxClass::EVAIndex = EVAIndex;

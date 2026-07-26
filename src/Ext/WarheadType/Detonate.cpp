@@ -5,6 +5,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresFunctions.h>
+#include <Ext/CaptureManager/Body.h>
 
 #pragma region CreateGap Calls
 
@@ -20,8 +21,26 @@ static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
 
 #pragma endregion
 
-void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
+struct InvokerGuard
 {
+	WarheadTypeExt* pExt;
+	TechnoClass* pOldInvoker;
+
+	InvokerGuard(WarheadTypeExt* pExt, TechnoClass* pInvoker)
+		: pExt(pExt), pOldInvoker(pExt->DamageAreaInvoker)
+	{
+		pExt->DamageAreaInvoker = pInvoker;
+	}
+
+	~InvokerGuard()
+	{
+		pExt->DamageAreaInvoker = pOldInvoker;
+	}
+};
+
+void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt* pBulletExt, CoordStruct coords)
+{
+	InvokerGuard guard(this, pOwner);
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
 	if (pBulletExt && pBulletExt->InterceptorTechnoType)
@@ -103,7 +122,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
 			{
-				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+				const auto pSWExt = SWTypeExt::Fetch(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
 
 				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended)))
@@ -156,7 +175,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			auto const items = Helpers::Alex::getCellSpreadItemsExt(coords, cellSpread, true, this->CellSpread_Cylinder);
 
 			for (auto const pTarget : items)
-				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
@@ -165,18 +184,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				if (pBullet->DistanceFrom(pTarget) <= 64.0) // Unsorted::LeptonsPerCell / 4.0
-					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 			}
 		}
 		else if (auto const pTarget = this->DamageAreaTarget)
 		{
 			if (coords.DistanceFromSquared(pTarget->GetCoords()) <= 4096.0) // (Unsorted::LeptonsPerCell / 4.0) * (Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, pBulletExt, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, bool bulletWasIntercepted, int distance)
+void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt* pBulletExt, bool bulletWasIntercepted, int distance)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -220,7 +239,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	// Put Crit at last since it might kill the target
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
-		this->ApplyCrit(pHouse, pTarget, pOwner);
+		this->ApplyCrit(pHouse, pTarget, pOwner, pBulletExt);
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -232,13 +251,13 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 }
 
-void WarheadTypeExt::ExtData::ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (pHouse && !pHouse->Type->MultiplayPassive && AresFunctions::ReverseEngineer)
 		AresFunctions::ReverseEngineer(reinterpret_cast<void*>(pHouse->unknown_16084), pTarget->GetTechnoType());
 }
 
-void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
 
@@ -340,9 +359,9 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	pBuilding->Sell(1);
 }
 
-void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyShieldModifiers(TechnoClass* pTarget)
 {
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 	auto& pShield = pTargetExt->Shield;
 	int shieldIndex = -1;
 	double ratio = 1.0;
@@ -381,7 +400,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 		if (shieldType)
 		{
-			if (shieldType->Strength
+			if (shieldType->Strength > 0
 				&& (!pShield
 					|| (this->Shield_ReplaceNonRespawning
 						&& pShield->IsBrokenAndNonRespawning()
@@ -444,7 +463,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveDisguise(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyRemoveDisguise(TechnoClass* pTarget)
 {
 	if (pTarget->IsDisguised())
 	{
@@ -455,25 +474,25 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(TechnoClass* pTarget)
 	}
 }
 
-HouseClass* WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
+HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (const auto pController = pTarget->MindControlledBy)
 	{
-		pController->CaptureManager->FreeUnit(pTarget);
+		CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
 		return pTarget->Owner;
 	}
 
 	return pHouse;
 }
 
-void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
 {
 	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;
 
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 
 	if (pTargetExt->TypeExtData->ImmuneToCrit)
 		return;
@@ -506,7 +525,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+			AnimExt::Fetch(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 		else
 		{
@@ -514,15 +533,20 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 			{
 				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
-				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+				AnimExt::Fetch(pAnim)->SetInvoker(pOwner, pHouse);
 			}
 		}
 	}
 
 	int damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_ExtraDamage_ApplyFirepowerMult && pOwner)
-		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult)
+	{
+		if (pBulletExt)
+			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
+		else if (pOwner)
+			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
+	}
 
 	if (this->Crit_Warhead)
 	{
@@ -535,7 +559,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
 
-void WarheadTypeExt::ExtData::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
 	const double dice = this->ReturnWarhead_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
 
@@ -557,15 +581,15 @@ void WarheadTypeExt::ExtData::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass
 		pOwner->ReceiveDamage(&this->ReturnWarhead_Damage, 0, this->ReturnWarhead, pTarget, false, false, pTarget->Owner);
 }
 
-void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
+void WarheadTypeExt::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
 {
-	const float cellSpread = this->OwnerObject()->CellSpread;
+	const double cellSpread = (double)this->OwnerObject()->CellSpread;
 
 	if (cellSpread == 0.0)
 	{
 		if (const auto pBullet = abstract_cast<BulletClass*>(pInterceptor->Target))
 		{
-			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 			if (!pBulletExt->TypeExtData->Interceptable)
 				return;
@@ -581,7 +605,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 
 		for (const auto& pBullet : BulletClass::Array)
 		{
-			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
 			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
@@ -593,7 +617,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
@@ -603,7 +627,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
 }
 
-void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyLocomotorInfliction(TechnoClass* pTarget)
 {
 	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
@@ -625,7 +649,7 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 	LocomotionClass::ChangeLocomotorTo(pTargetFoot, inflictCLSID);
 }
 
-void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
 {
 	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
@@ -650,7 +674,7 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget
 	LocomotionClass::End_Piggyback(pTargetFoot->Locomotor);
 }
 
-void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker)
+void WarheadTypeExt::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker)
 {
 	std::vector<int> dummy = std::vector<int>();
 	auto const& info = this->AttachEffects;
@@ -659,14 +683,14 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 	AttachEffectClass::DetachByGroups(pTarget, info);
 }
 
-double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
+double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 {
 	double critChance = this->Crit_Chance;
 
 	if (!pFirer)
 		return critChance;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+	auto const pExt = TechnoExt::Fetch(pFirer);
 
 	if (!pExt->AE.HasCritModifiers)
 		return critChance;
@@ -701,7 +725,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	return critChance + extraChance;
 }
 
-void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance)
+void WarheadTypeExt::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance)
 {
 	auto& passengers = pTarget->Passengers;
 	auto passenger = passengers.GetFirstPassenger();
@@ -709,7 +733,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 	if (!passenger)
 		return;
 
-	const auto pTargetTypeExt = TechnoExt::ExtMap.Find(pTarget)->TypeExtData;
+	const auto pTargetTypeExt = TechnoExt::Fetch(pTarget)->TypeExtData;
 	const auto pTargetType = pTargetTypeExt->OwnerObject();
 
 	if (this->PenetratesTransport_Level <= pTargetTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
@@ -739,7 +763,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			while (passenger)
 			{
 				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
-				const auto pPassengerTypeExt = TechnoExt::ExtMap.Find(passenger)->TypeExtData;
+				const auto pPassengerTypeExt = TechnoExt::Fetch(passenger)->TypeExtData;
 				const auto pPassengerType = pPassengerTypeExt->OwnerObject();
 
 				if (this->PenetratesTransport_Level > pPassengerTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
@@ -767,7 +791,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			{
 				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
 
-				if (this->PenetratesTransport_Level > TechnoExt::ExtMap.Find(passenger)->TypeExtData->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+				if (this->PenetratesTransport_Level > TechnoExt::Fetch(passenger)->TypeExtData->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
 					passenger->SetLocation(transporterCoords);
 					int applyDamage = adjustedDamage;
@@ -796,7 +820,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			--poorBastardIdx;
 		}
 
-		const auto pPassengerTypeExt = TechnoExt::ExtMap.Find(passenger)->TypeExtData;
+		const auto pPassengerTypeExt = TechnoExt::Fetch(passenger)->TypeExtData;
 		const auto pPassengerType = pPassengerTypeExt->OwnerObject();
 
 		if (this->PenetratesTransport_Level <= pPassengerTypeExt->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))

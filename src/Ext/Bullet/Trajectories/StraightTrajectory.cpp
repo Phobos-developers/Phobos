@@ -184,7 +184,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	if (this->WaitOneFrame && this->BulletPrepareCheck(pBullet))
 		return false;
 
-	const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::Fetch(pBullet)->FirerHouse;
 	const auto pType = this->Type;
 
 	if (this->BulletDetonatePreCheck(pBullet))
@@ -234,7 +234,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	// Whether to snap to target?
 	if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
 	{
-		const auto pExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pExt = BulletExt::Fetch(pBullet);
 		pExt->SnappedToTarget = true;
 		pBullet->SetLocation(coords);
 	}
@@ -347,7 +347,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
-		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		const auto pTypeExt = BulletTypeExt::Fetch(pBullet->Type);
 		const auto offsetMult = 0.0004 * theSourceCoords.DistanceFrom(theTargetCoords);
 		const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
 		const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
@@ -922,8 +922,8 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	{
 		std::sort(&validTargets[0], &validTargets[targetsSize],[pBullet](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
 		{
-			const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
-			const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+			const double distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+			const double distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 
 			// Distance priority
 			if (distanceA < distanceB)

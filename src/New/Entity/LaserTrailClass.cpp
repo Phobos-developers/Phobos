@@ -10,7 +10,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 		return false;
 
 	bool result = false;
-	const int segmentLength = this->Type->SegmentLength;
+	const double segmentLength = (double)this->Type->SegmentLength;
 
 	if (!this->LastLocation.isset())
 	{

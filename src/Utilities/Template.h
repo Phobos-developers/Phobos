@@ -38,6 +38,8 @@
 #include <FootClass.h>
 
 #include "Savegame.h"
+#include "Enum.h"
+#include <map>
 
 class INI_EX;
 
@@ -460,6 +462,16 @@ public:
 		return this->BaseValue;
 	}
 
+	constexpr bool isset() const noexcept
+	{
+		return this->BaseValue || this->ConditionYellow.isset() || this->ConditionRed.isset();
+	}
+
+	constexpr bool isDamagedValueSet() const noexcept
+	{
+		return this->ConditionYellow.isset() || this->ConditionRed.isset();
+	}
+
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
 	inline bool Save(PhobosStreamWriter& Stm) const;
@@ -522,3 +534,65 @@ public:
 		}
 	}
 };
+
+// Designates that the type can read it's value from multiple flags.
+template<typename T, typename... TExtraArgs>
+concept MultiflagReadable = requires(T obj, INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	{ obj.Read(parser, pSection, pBaseFlag, extraArgs...) } -> std::same_as<bool>;
+};
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+class MultiflagValueableVector : public ValueableVector<T>
+{
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
+};
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+class MultiflagNullableVector : public NullableVector<T>
+{
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
+};
+
+template<typename TValue>
+class Animatable
+{
+public:
+	using absolute_length_t = int;
+
+	class KeyframeDataEntry
+	{
+	public:
+		double Percentage = -1.0;
+		Valueable<TValue> Value;
+
+		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
+
+		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+		inline bool Save(PhobosStreamWriter& Stm) const;
+	};
+
+	TValue DefaultValue;
+	InterpolationMode InterpolationMode;
+	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
+	std::vector<KeyframeDataEntry> SortedKeyFrames;
+	mutable std::map<double, TValue> KeyframeValueCache;
+
+	inline bool HasValues() const;
+
+	inline TValue Get(double const percentage) const;
+
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0), bool requireParsedFallback = false);
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>::KeyframeDataEntry>);
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>>);

@@ -112,9 +112,9 @@ private:
 
 	void RespawnShield();
 
-	void CreateAnim();
-	void UpdateIdleAnim();
-	AnimTypeClass* GetIdleAnimType();
+	void CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType = nullptr);
+	void UpdateIdleAnim(ShieldTypeClass* pType, double ratio = 0.0);
+	AnimTypeClass* GetIdleAnimType(ShieldTypeClass* pType, bool idleAnimSet, bool idleAnimDamagedSet, double ratio = 0.0);
 
 	void WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim);
 	void ResponseAttack();

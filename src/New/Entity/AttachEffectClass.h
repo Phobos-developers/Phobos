@@ -23,10 +23,12 @@ public:
 	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
 
-	bool CanShowAnim() const
+	bool CanShowAnim(bool skipAnimCheck = false) const
 	{
-		return (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-			&& (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
+		const auto pType = this->Type;
+		return (pType->Animation || skipAnimCheck || this->HasCumulativeAnim)
+			&& (this->IsOnline || pType->Animation_OfflineAction != AttachedAnimFlag::Hides)
+			&& (!this->IsUnderTemporal || pType->Animation_TemporalAction != AttachedAnimFlag::Hides)
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 
@@ -45,7 +47,7 @@ public:
 	bool IsActiveIgnorePowered() const
 	{
 		if (this->IsSelfOwned())
-			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->ShouldRefreshDuration;
 		else
 			return this->Duration;
 	}
@@ -91,7 +93,7 @@ private:
 	bool IsOnline;
 	bool IsCloaked;
 	bool HasInitialized;
-	bool NeedsDurationRefresh;
+	bool ShouldRefreshDuration;
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
@@ -100,7 +102,7 @@ private:
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
-	bool NeedsRecalculateStat;
+	bool ShouldRecalculateStats;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.

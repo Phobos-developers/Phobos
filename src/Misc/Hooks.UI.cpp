@@ -75,6 +75,29 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 	return 0x64203D;
 }
 
+DEFINE_HOOK(0x4A26E8, CreditClass_AI_SmoothDisable, 0x6)
+{
+	if (!Phobos::UI::CreditsIndicator_Smooth)
+		return 0x4A26F0;
+	else
+		return 0;
+}
+
+DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
+{
+	enum { Continue = 0x4A2735 };
+
+    const int maxStep = Phobos::UI::CreditsIndicator_MaxStep;
+    if (maxStep <= 0)
+        return Continue;
+
+    GET(const int, current, EAX);
+
+    R->EAX(Math::min(current, maxStep));
+
+    return Continue;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	auto const pPlayer = HouseClass::CurrentPlayer;
@@ -85,7 +108,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{
-		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
+		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
@@ -113,7 +136,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
 	{
-		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
+		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 
 		ColorStruct clrToolTip;
@@ -151,7 +174,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
 	{
-		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
+		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		const ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);
 
@@ -199,12 +222,12 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
 	GET_STACK(const AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
 	GET_STACK(const AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
-	const auto pLeftTechnoExt = TechnoTypeExt::ExtMap.TryFind(pLeft);
-	const auto pRightTechnoExt = TechnoTypeExt::ExtMap.TryFind(pRight);
+	const auto pLeftTechnoExt = TechnoTypeExt::TryFetch(pLeft);
+	const auto pRightTechnoExt = TechnoTypeExt::TryFetch(pRight);
 	const auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItem(idxLeft)) : nullptr;
+		? SWTypeExt::TryFetch(SuperWeaponTypeClass::Array.GetItem(idxLeft)) : nullptr;
 	const auto pRightSWExt = (rttiRight == AbstractType::Special || rttiRight == AbstractType::Super || rttiRight == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItem(idxRight)) : nullptr;
+		? SWTypeExt::TryFetch(SuperWeaponTypeClass::Array.GetItem(idxRight)) : nullptr;
 
 	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
 	{
@@ -337,7 +360,7 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 	{
 		const SideClass* pSide = SideClass::Array.GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
 
-		if (const auto pSideExt = SideExt::ExtMap.TryFind(pSide))
+		if (const auto pSideExt = SideExt::TryFetch(pSide))
 			theme = pSideExt->BriefingTheme;
 	}
 
@@ -540,7 +563,7 @@ DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
 
 	DrawTimerTemp::IsPercentage = false;
 	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
-	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pSWTypeExt = SWTypeExt::Fetch(pSuper->Type);
 
 	if (pSWTypeExt->ShowTimer_Percentage.Get(RulesExt::Global()->SuperWeaponTimer_Percentage))
 	{
@@ -619,7 +642,7 @@ DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
 
 	if (Phobos::Config::ShowPowerPlantEnhancerRange && RulesExt::Global()->ShowPowerPlantEnhancerRange)
 	{
-		const auto pCurrentExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+		const auto pCurrentExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
 		const auto center = DisplayClass::Instance.CurrentFoundation_CenterCell;
 
 		for (const auto pEnhancer : pCurrentExt->PowerPlantEnhancers)
@@ -627,7 +650,7 @@ DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
 			if (!TechnoExt::IsActive(pEnhancer) || pEnhancer->InLimbo || !pEnhancer->HasPower)
 				continue;
 
-			const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancer->Type);
+			const auto pEnhancerTypeExt = BuildingTypeExt::Fetch(pEnhancer->Type);
 			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell;
 
 			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pCurrentBuilding->Type))
