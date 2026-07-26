@@ -617,7 +617,7 @@ public:
 			, MindControlLink_VisibleToHouse { AffectedHouse::All }
 			, AlternateFLH_OnTurret { true }
 			, AlternateFLH_ApplyVehicle { false }
-			, DestroyAnim_Random { false }
+			, DestroyAnim_Random { true }
 			, UseDisguiseMovementSpeed { false }
 			, Convert_ResetMindControl { false }
 			, BuildLimitGroup_ContentIfAnyMatch { false }
