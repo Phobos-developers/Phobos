@@ -279,15 +279,15 @@ SelectionFlashDuration=0  ; integer, number of frames
 ### Set sidebar tab by selecting factory
 
 - Factory buildings, owned by player, now may switch corresponded sidebar tabs, when selected, by enabling `SetTabBySelectingFactory` parameter.
-- You may overwrite it to be able to switch to any sidebar tab by any building type selected, by setting `SetTabBySelecting` between 1 and 4.
-  - You may also disable it for factory building type by setting `SetTabBySelecting = 0`.
+  - You may overwrite it to be able to switch to any sidebar tab by any building type selected, by setting `SetTabBySelecting` between `1` and `4`.
+  - You may also disable it for factory building type by setting `SetTabBySelecting=0`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 SetTabBySelectingFactory=false  ; boolean
 
-[SOMEBUILDING]
+[SOMEBUILDING]                  ; BuildingType
 SetTabBySelecting=-1            ; integer, index of tab
 ```
 
