@@ -1690,8 +1690,8 @@ In `rulesmd.ini`:
 [General]
 OpenTopped.IgnoreRangefinding=false               ; boolean
 OpenTopped.AllowFiringIfDeactivated=true          ; boolean
-OpenTopped.ShareTransportTarget=true              ; boolean
 OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
+OpenTopped.ShareTransportTarget=true              ; boolean
 OpenTopped.DecloakToFire=true                     ; boolean
 OpenTopped.FireWhileMoving=true                   ; boolean
 OpenTransport.FireWhileMoving=true                ; boolean
