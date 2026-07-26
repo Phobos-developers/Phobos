@@ -1704,10 +1704,10 @@ OpenTransport.DamageMultiplier=1.0                ; floating point value
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
 OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false               ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
-OpenTopped.AllowFiringIfDeactivated=true          ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.IgnoreRangefinding=                    ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=              ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
 OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
-OpenTopped.ShareTransportTarget=true              ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.ShareTransportTarget=                  ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
 OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
 OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
 
