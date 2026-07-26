@@ -380,22 +380,20 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 		auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(specific_cast<BuildingClass*>(pThis)->Type);
 		const int tabIndex = pBldTypeExt->SetTabBySelecting;
 
-		if (5 > tabIndex && tabIndex > 0)
-			TabClass::Instance->SetTab(tabIndex - 1);
-		else if (tabIndex == -1)
+		if (tabIndex >= 0 && tabIndex < 4)
+			TabClass::Instance->SetTab(tabIndex);
+		else if (tabIndex < 0)
 			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
 			{
-			case AbstractType::BuildingType:
-				TabClass::Instance->SetTab(SidebarClass::Instance->ActiveTabIndex == 0 ? 1 : 0);
-				break;
 			case AbstractType::InfantryType:
 				TabClass::Instance->SetTab(2);
 				break;
+			case AbstractType::UnitType:
 			case AbstractType::AircraftType:
 				TabClass::Instance->SetTab(3);
 				break;
-			case AbstractType::UnitType:
-				TabClass::Instance->SetTab(3);
+			case AbstractType::BuildingType:
+				TabClass::Instance->SetTab(SidebarClass::Instance->ActiveTabIndex == 0 ? 1 : 0); // A controversial design, but no one has yet proposed a better one.
 				break;
 			default:
 				break;
