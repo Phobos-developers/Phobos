@@ -40,9 +40,9 @@ public:
 	Valueable<AttachedAnimPosition> AttachedAnimPosition;
 	Valueable<WeaponTypeClass*> Weapon;
 	Valueable<int> Damage_Delay;
-	Valueable<bool> Damage_DealtByInvoker;
+	Nullable<bool> Damage_DealtByInvoker;
 	Valueable<bool> Damage_ApplyOncePerLoop;
-	Valueable<bool> Damage_ApplyFirepowerMult;
+	Nullable<bool> Damage_ApplyFirepowerMult;
 	Valueable<bool> ExplodeOnWater;
 	Valueable<bool> Warhead_Detonate;
 	ValueableVector<AnimTypeClass*> WakeAnim;
@@ -84,9 +84,9 @@ public:
 		, AttachedAnimPosition { AttachedAnimPosition::Default }
 		, Weapon {}
 		, Damage_Delay { 0 }
-		, Damage_DealtByInvoker { false }
+		, Damage_DealtByInvoker {}
 		, Damage_ApplyOncePerLoop { false }
-		, Damage_ApplyFirepowerMult { false }
+		, Damage_ApplyFirepowerMult {}
 		, ExplodeOnWater { false }
 		, Warhead_Detonate { false }
 		, WakeAnim {}

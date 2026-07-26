@@ -53,7 +53,7 @@ This page describes all the engine features that are either new and introduced b
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
     - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead. `[General] -> OpenTopped.UseTransportRangeModifiers` defines its global default value.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
@@ -63,7 +63,7 @@ This page describes all the engine features that are either new and introduced b
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
     - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`. `[General] -> OpenTopped.CheckTransportDisableWeapons` defines its global default value.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
@@ -786,8 +786,11 @@ DefaultDisguise=    ; InfantryType
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                   ; InfantryType
-NotHuman.RandomDeathSequence=no  ; boolean
+[General]
+NotHuman.RandomDeathSequence=no   ; boolean
+
+[SOMEINFANTRY]                    ; InfantryType
+NotHuman.RandomDeathSequence=     ; boolean, default to [General] -> NotHuman.RandomDeathSequence
 ```
 
 ### Slaves' house decision customization when owner is killed
@@ -808,10 +811,16 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 
 - Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
 
+In `rulesmd.ini`:
+```ini
+[General]
+OnlyUseLandSequences=false  ; boolean
+```
+
 In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
-OnlyUseLandSequences=false  ; boolean
+OnlyUseLandSequences=       ; boolean, default to [General] -> OnlyUseLandSequences
 ```
 
 ## Projectiles
@@ -871,6 +880,11 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ProjectileInterceptable=false               ; boolean
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.ApplyFirepowerMult=true         ; boolean
+
 [SOMETECHNO]                                ; TechnoType
 Interceptor=false                           ; boolean
 Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
@@ -880,10 +894,10 @@ Interceptor.GuardRange=0.0                  ; floating point value
 Interceptor.VeteranGuardRange=              ; floating point value
 Interceptor.EliteGuardRange=                ; floating point value
 Interceptor.MinimumGuardRange=0.0           ; floating point value
-Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.GuardRange.IsCylindrical=       ; boolean, default to [CombatDamage] -> Interceptor.GuardRange.IsCylindrical
 Interceptor.VeteranMinimumGuardRange=       ; floating point value
 Interceptor.EliteMinimumGuardRange=         ; floating point value
-Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.ApplyFirepowerMult=             ; boolean, default to [CombatDamage] -> Interceptor.ApplyFirepowerMult
 Interceptor.DeleteOnIntercept=false         ; boolean
 Interceptor.WeaponOverride=                 ; WeaponType
 Interceptor.WeaponReplaceProjectile=false   ; boolean
@@ -891,7 +905,7 @@ Interceptor.WeaponCumulativeDamage=false    ; boolean
 Interceptor.KeepIntact=false                ; boolean
 
 [SOMEPROJECTILE]                            ; Projectile
-Interceptable=false                         ; boolean
+Interceptable=false                         ; boolean, default to [CombatDamage] -> ProjectileInterceptable
 Interceptable.DeleteOnIntercept=false       ; boolean
 Interceptable.WeaponOverride=               ; WeaponType
 Strength=0                                  ; integer
@@ -1122,9 +1136,12 @@ SubjectToGround=false         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+
 [SOMEPROJECTILE]                        ; Projectile
 ReturnWeapon=                           ; WeaponType
-ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+ReturnWeapon.ApplyFirepowerMult=        ; boolean, default to [CombatDamage] -> ReturnWeapon.ApplyFirepowerMult
 ```
 
 ## Super Weapons
@@ -1455,16 +1472,22 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Spawner.AttackImmediately=false    ; boolean
+Spawner.UseTurretFacing=false      ; boolean
+Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.RecycleOnTurret=false      ; boolean
+
 [SOMETECHNO]                       ; TechnoType
 Spawner.LimitRange=false           ; boolean
 Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
-Spawner.AttackImmediately=false    ; boolean
-Spawner.UseTurretFacing=false      ; boolean
-Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.AttackImmediately=         ; boolean, default to [General] -> Spawner.AttackImmediately
+Spawner.UseTurretFacing=           ; boolean, default to [General] -> Spawner.UseTurretFacing
+Spawner.RecycleRange=              ; floating point value, range in cells, default to [General] -> Spawner.RecycleRange
 Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
-Spawner.RecycleOnTurret=false      ; boolean
+Spawner.RecycleOnTurret=           ; boolean, default to [General] -> Spawner.RecycleOnTurret
 ```
 
 ```{note}
@@ -1542,9 +1565,13 @@ PassengerDeletion.UnderEMP=false                ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
+[General]
 Passengers.SyncOwner=false              ; boolean
 Passengers.SyncOwner.RevertOnExit=true  ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+Passengers.SyncOwner=                   ; boolean, default to [General] -> Passengers.SyncOwner
+Passengers.SyncOwner.RevertOnExit=      ; boolean, default to [General] -> Passengers.SyncOwner.RevertOnExit
 ```
 
 ### Automatically firing weapons
@@ -1579,12 +1606,16 @@ To make this logic work properly, you need to ensure that there is no flag like 
 
 In `rulesmd.ini`:
 ```ini
+[General]
+BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
+BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
 BuildLimitGroup.Nums=                           ; integer, or a List of integers
 BuildLimitGroup.Factor=1                        ; integer
-BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
-BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+BuildLimitGroup.ContentIfAnyMatch=              ; boolean, default to [General] -> BuildLimitGroup.ContentIfAnyMatch
+BuildLimitGroup.NotBuildableIfQueueMatch=       ; boolean, default to [General] -> BuildLimitGroup.NotBuildableIfQueueMatch
 BuildLimitGroup.ExtraLimit.Types=               ; List of TechnoTypes
 BuildLimitGroup.ExtraLimit.Nums=                ; List of integers
 BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
@@ -1673,7 +1704,7 @@ OpenTransport.DamageMultiplier=1.0                ; floating point value
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
 OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false               ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.IgnoreRangefinding=                    ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
 OpenTopped.AllowFiringIfDeactivated=              ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
 OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
 OpenTopped.ShareTransportTarget=                  ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
@@ -1720,9 +1751,13 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+[General]
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RadarJamDelay=30                  ; integer
+
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> RadarJamHouses
+RadarJamDelay=                    ; integer, default to [General] -> RadarJamDelay
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
@@ -1738,10 +1773,11 @@ When `DriverKilled.KeptPassengers=true` is set, passengers will always be retain
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
+DriverKilled.KeptPassengers=false   ; boolean
 DriverKilled.KillPassengers=false   ; boolean
 
 [SOMETECHNO]                        ; TechnoType, transport
-DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KeptPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KeptPassengers
 DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
 ```
 
@@ -1802,9 +1838,10 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+UseDisguiseMovementSpeed=false
 
 [SOMETECHNO]                      ; TechnoType
-UseDisguiseMovementSpeed=false    ; boolean
+UseDisguiseMovementSpeed=         ; boolean, default to [General] -> UseDisguiseMovementSpeed
 ```
 
 ### Exclusion from base center calculations
@@ -1903,18 +1940,23 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 
 In `rulesmd.ini`:
 ```ini
+[General]
+ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
 ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
 ForceWeapon.InRange=                            ; List of integers
+ForceWeapon.InRange.TechnoOnly=                 ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=        ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
 ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=      ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
 ForceWeapon.Buildings=-1                        ; integer, -1 to disable
 ForceWeapon.Defenses=-1                         ; integer, -1 to disable
 ForceWeapon.Infantry=-1                         ; integer, -1 to disable
@@ -2014,6 +2056,8 @@ In `rulesmd.ini`:
 [CombatDamage]
 AutoDeath.AllowLimboed=true                       ; boolean
 AutoDeath.OnOwnerChange.IgnoreRevertOnExit=false  ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=false     ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false         ; boolean
 
 [SOMETECHNO]                                      ; TechnoType
 AutoDeath.Behavior=                               ; enumeration (kill | vanish | sell), default not set
@@ -2027,11 +2071,11 @@ AutoDeath.OnOwnerChange.ComputerToHuman=          ; boolean, default to AutoDeat
 AutoDeath.AfterDelay=0                            ; positive integer
 AutoDeath.TechnosDontExist=                       ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false              ; boolean
-AutoDeath.TechnosDontExist.AllowLimboed=false     ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=          ; boolean, default to [CombatDamage] -> AutoDeath.TechnosDontExist.AllowLimboed
 AutoDeath.TechnosDontExist.Houses=owner           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 AutoDeath.TechnosExist=                           ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                   ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false         ; boolean
+AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
 AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
@@ -2071,11 +2115,16 @@ PriorityDeployFiltering=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                          ; TechnoType, as Mind controllers
-MindControlRangeLimit=-1.0            ; floating point value
+[General]
 MindControl.IgnoreSize=true           ; boolean
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType, as Mind controllers
+MindControlRangeLimit=-1.0            ; floating point value
+MindControl.IgnoreSize=               ; boolean, default to [General] -> MindControl.IgnoreSize
+MindControlLink.VisibleToHouse=       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> MindControlLink.VisibleToHouse
+MultiMindControl.ReleaseVictim=       ; boolean, default to [General] -> MultiMindControl.ReleaseVictim
 
 [SOMETECHNO]                          ; TechnoType, as Mind controlled targets
 MindControlSize=1                     ; integer
@@ -2154,6 +2203,8 @@ NoReload.Temporal=       ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Overload.ParticleSysCount=5   ; integer
 
 [SOMETECHNO]                  ; TechnoType
 Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
@@ -2161,7 +2212,7 @@ Overload.Damage=              ; List of integers, default to [CombatDamage] -> O
 Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
-Overload.ParticleSysCount=5   ; integer
+Overload.ParticleSysCount=    ; integer, default to [CombatDamage] -> Overload.ParticleSysCount
 ```
 
 ### Promoted Spawns
@@ -2173,8 +2224,11 @@ Overload.ParticleSysCount=5   ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                 ; TechnoType
+[General]
 Promote.IncludeSpawns=false  ; boolean
+
+[SOMETECHNO]                 ; TechnoType
+Promote.IncludeSpawns=       ; boolean, default to [General] -> Promote.IncludeSpawns
 ```
 
 ### Promotion animation
@@ -2256,14 +2310,17 @@ RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ### Reset MindControl after transformation
 
 - After the unit conversion is completed, its mind control can be reset.
-  - If all warheads don't have `MindControl=yes`, then `Convert.ResetMindControl=yes` will release all controlled units.
-  - If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes` resets its maximum number of controls.
-  - If all weapons don't have `InfiniteMindControl=yes`, then `Convert.ResetMindControl=yes` release controlled units that exceed the limit.
+  - If all warheads don't have `MindControl=true`, then `Convert.ResetMindControl=true` will release all controlled units.
+  - If any warhead has `MindControl=true`, then `Convert.ResetMindControl=true` resets its maximum number of controls.
+  - If all weapons don't have `InfiniteMindControl=true`, then `Convert.ResetMindControl=true` release controlled units that exceed the limit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType, before conversion
-Convert.ResetMindControl=false          ; boolean
+[General]
+Convert.ResetMindControl=false  ; boolean
+
+[SOMETECHNO]                    ; TechnoType, before conversion
+Convert.ResetMindControl=       ; boolean, default to [General] -> Convert.ResetMindControl
 ```
 
 ### Revenge weapon
@@ -2426,8 +2483,11 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
+[General]
 HoverDrownable=true     ; boolean
+
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=         ; boolean, default to [General] -> HoverDrownable
 ```
 
 ### Damaged unit image changes
@@ -2478,12 +2538,19 @@ DefaultMirageDisguises=    ; List of TerrainTypes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+[JumpjetControls]
 JumpjetTilt=false                       ; boolean
 JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
 JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
+
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=                            ; boolean, default to [JumpjetControls] -> JumpjetTilt
+JumpjetTilt.ForwardAccelFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardAccelFactor
+JumpjetTilt.ForwardSpeedFactor=         ; floating point value, default to [JumpjetControls] -> JumpjetTilt.ForwardSpeedFactor
+JumpjetTilt.SidewaysRotationFactor=     ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysRotationFactor
+JumpjetTilt.SidewaysSpeedFactor=        ; floating point value, default to [JumpjetControls] -> JumpjetTilt.SidewaysSpeedFactor
 ```
 
 ### RA1-Style Multi-Turret and Multi-Barrel
@@ -2651,11 +2718,15 @@ AffectsGround=true         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+
 [SOMEWARHEAD]                              ; WarheadType
 Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ApplyChancePerTarget=                 ; boolean, default to [CombatDamage] -> Crit.ApplyChancePerTarget
 Crit.ExtraDamage=0                         ; integer
-Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=       ; boolean, default to [CombatDamage] -> Crit.ExtraDamage.ApplyFirepowerMult
 Crit.Warhead=                              ; WarheadType
 Crit.Warhead.FullDetonation=true           ; boolean
 Crit.AffectsTarget=all                     ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
@@ -2969,11 +3040,14 @@ RemoveDisguise=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+
 [SOMEWARHEAD]                               ; WarheadType
 ReturnWarhead=                              ; WarheadType
 ReturnWarhead.Damage=0                      ; integer
 ReturnWarhead.Chance=0.0                    ; floating point value, percents or absolute (0.0-1.0)
-ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+ReturnWarhead.ApplyChancePerTarget=         ; boolean, default to [CombatDamage] -> ReturnWarhead.ApplyChancePerTarget
 ReturnWarhead.FullDetonation=true           ; boolean
 ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -3365,11 +3439,16 @@ That is to say, the total duration of executing KeepRange equals the value of we
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-KeepRange=0                   ; floating point value
+[General]
 KeepRange.AllowAI=false       ; boolean
 KeepRange.AllowPlayer=false   ; boolean
 KeepRange.EarlyStopFrame=0    ; integer
+
+[SOMEWEAPON]                  ; WeaponType
+KeepRange=0                   ; floating point value
+KeepRange.AllowAI=            ; boolean, default to [General] -> KeepRange.AllowAI
+KeepRange.AllowPlayer=        ; boolean, default to [General] -> KeepRange.AllowPlayer
+KeepRange.EarlyStopFrame=     ; integer, default to [General] -> KeepRange.EarlyStopFrame
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`
@@ -3379,8 +3458,11 @@ KeepRange.EarlyStopFrame=0    ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType, with OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
+[General]
+OmniFire.TurnToTarget=false  ; boolean
+
+[SOMEWEAPON]                 ; WeaponType, with OmniFire=yes
+OmniFire.TurnToTarget=       ; boolean, default to [General] -> OmniFire.TurnToTarget
 ```
 
 ### Radiation enhancements
@@ -3418,12 +3500,17 @@ CylinderRangefinding=             ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                   ; WeaponType
-Strafing=                      ; boolean
-Strafing.Shots=                ; integer
+[General]
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.TargetCell=false      ; boolean
+
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=                ; integer
+Strafing.SimulateBurst=        ; boolean, default to [General] -> Strafing.SimulateBurst
+Strafing.UseAmmoPerShot=       ; boolean, default to [General] -> Strafing.UseAmmoPerShot
+Strafing.TargetCell=           ; boolean, default to [General] -> Strafing.TargetCell
 Strafing.EndDelay=             ; integer, game frames
 ```
 

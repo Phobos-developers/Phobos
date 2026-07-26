@@ -30,7 +30,7 @@ TechnoExt::~TechnoExt()
 	}
 
 	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
-		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
@@ -897,7 +897,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 		const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-		if (passive && pTypeExt->DriverKilled_KeptPassengers)
+		if (passive && pTypeExt->DriverKilled_KeptPassengers.Get(RulesExt::Global()->DriverKilled_KeptPassengers))
 			break;
 
 		const bool kill = pTypeExt->DriverKilled_KillPassengers.Get(RulesExt::Global()->DriverKilled_KillPassengers);

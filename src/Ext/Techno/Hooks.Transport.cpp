@@ -36,7 +36,7 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 
 	if (auto const pTransport = pThis->Transporter)
 	{
-		if (TechnoExt::Fetch(pTransport)->TypeExtData->Passengers_SyncOwner)
+		if (TechnoExt::Fetch(pTransport)->TypeExtData->Passengers_SyncOwner.Get(RulesExt::Global()->Passengers_SyncOwner))
 			return returnAddress;
 	}
 
@@ -49,7 +49,7 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		if (TechnoExt::Fetch(pThis)->TypeExtData->Passengers_SyncOwner)
+		if (TechnoExt::Fetch(pThis)->TypeExtData->Passengers_SyncOwner.Get(RulesExt::Global()->Passengers_SyncOwner))
 		{
 			const auto pOwner = pThis->Owner;
 
@@ -77,11 +77,11 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
+		if (pTransTypeExt->Passengers_SyncOwner.Get(RulesExt::Global()->Passengers_SyncOwner) && pTransTypeExt->Passengers_SyncOwner_RevertOnExit.Get(RulesExt::Global()->Passengers_SyncOwner_RevertOnExit))
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
 		}
@@ -104,14 +104,14 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 
 		// Remove from transport reloader list before switching house
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		}
 
-		if (pTransTypeExt->Passengers_SyncOwner
-			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
+		if (pTransTypeExt->Passengers_SyncOwner.Get(RulesExt::Global()->Passengers_SyncOwner)
+			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit.Get(RulesExt::Global()->Passengers_SyncOwner_RevertOnExit)
 			&& pExt->OriginalPassengerOwner)
 		{
 			pExt->IsOwnerChangeFromRevertOnExit = true;
@@ -132,7 +132,7 @@ DEFINE_HOOK(0x737F80, UnitClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 	{
 		auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 
-		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
+		if (pTypeExt->Passengers_SyncOwner.Get(RulesExt::Global()->Passengers_SyncOwner) && pTypeExt->Passengers_SyncOwner_RevertOnExit.Get(RulesExt::Global()->Passengers_SyncOwner_RevertOnExit))
 		{
 			do
 			{
@@ -159,7 +159,7 @@ DEFINE_HOOK(0x51DF82, InfantryClass_FireAt_ReloadInTransport, 0x6)
 		auto const pType = pThis->Type;
 		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
-		if (pTypeExt->ReloadInTransport && pType->Ammo > 0 && pThis->Ammo < pType->Ammo)
+		if (pTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport) && pType->Ammo > 0 && pThis->Ammo < pType->Ammo)
 			pThis->StartReloading();
 	}
 

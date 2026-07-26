@@ -19,7 +19,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 	{
 		int& bombDropCount = pExt->Strafe_BombsDroppedThisRound;
 		int& currentBurstIndex = pThis->CurrentBurstIndex;
-		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst;
+		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst.Get(RulesExt::Global()->Strafing_SimulateBurst);
 
 		for (int i = 0; i < burstCount; i++)
 		{
@@ -33,7 +33,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 		{
 			bombDropCount++;
 
-			if (pWeaponExt->Strafing_UseAmmoPerShot)
+			if (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot))
 			{
 				pThis->Ammo--;
 				pThis->ShouldLoseAmmo = false;
@@ -85,7 +85,8 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
 	auto const pTypeExt = AircraftTypeExt::Fetch(pPlaneType);
-	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
+	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge.Get(RulesExt::Global()->AircraftSpawnFromEdge)
+		: pTypeExt->RetreatToEdge.Get(RulesExt::Global()->AircraftRetreatToEdge);
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
 
