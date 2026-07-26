@@ -633,6 +633,7 @@ HideShakeEffects=false           ; boolean
 - [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
 - Change target Owner on warhead impact (by Fryone)
 - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller. (by TaranDahl)
+- Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

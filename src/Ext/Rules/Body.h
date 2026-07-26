@@ -381,7 +381,9 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 
 		Valueable<bool> Terrain_IsPassable;
+		Valueable<bool> Tibtree_IsPassable;
 		Valueable<bool> Terrain_CanBeBuiltOn;
+		Valueable<bool> Tibtree_CanBeBuiltOn;
 
 		Nullable<bool> Sinkable;
 		Valueable<bool> Sinkable_SquidGrab;
@@ -842,7 +844,9 @@ public:
 			, Arcing_AllowElevationInaccuracy { true }
 
 			, Terrain_IsPassable { false }
+			, Tibtree_IsPassable { false }
 			, Terrain_CanBeBuiltOn { false }
+			, Tibtree_CanBeBuiltOn { false }
 
 			, Sinkable {}
 			, Sinkable_SquidGrab { true }

@@ -9,9 +9,13 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	auto const pTypeExt = TerrainTypeExt::Fetch(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+	bool const isPassable = pType->SpawnsTiberium
+		? pTypeExt->IsPassable.Get(RulesExt::Global()->Tibtree_IsPassable)
+		: pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable);
 
-	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
+	if (isPassable)
 		return Skip;
 
 	return 0;
@@ -31,7 +35,13 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (!isForceFire && TerrainTypeExt::Fetch(pTerrain->Type)->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		bool const isPassable = pType->SpawnsTiberium
+			? pTypeExt->IsPassable.Get(RulesExt::Global()->Tibtree_IsPassable)
+			: pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable);
+
+		if (!isForceFire && isPassable)
 		{
 			R->EBP(Action::Move);
 			return ReturnAction;
@@ -49,9 +59,13 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
+	auto const pType = pTerrain->Type;
 	auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
+	bool const isPassable = pType->SpawnsTiberium
+		? pTypeExt->IsPassable.Get(RulesExt::Global()->Tibtree_IsPassable)
+		: pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable);
 
-	if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
+	if (isPassable)
 	{
 		pThis->Passability = PassabilityType::Passable;
 		return ReturnFromFunction;
@@ -69,9 +83,13 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
+		auto const pType = pTerrain->Type;
 		auto const pTypeExt = TerrainTypeExt::Fetch(pTerrain->Type);
+		bool const isPassable = pType->SpawnsTiberium
+			? pTypeExt->IsPassable.Get(RulesExt::Global()->Tibtree_IsPassable)
+			: pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable);
 
-		if (pTypeExt->IsPassable.Get(RulesExt::Global()->Terrain_IsPassable))
+		if (isPassable)
 			return SkipTerrainChecks;
 	}
 
@@ -89,7 +107,15 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-		return TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn) ? ContinueChecks : DontDraw;
+	{
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		bool const canBuild = pType->SpawnsTiberium
+			? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+			: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+
+		return canBuild ? ContinueChecks : DontDraw;
+	}
 
 	return ContinueChecks;
 }
@@ -104,7 +130,13 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			if (TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+			auto const pType = pTerrain->Type;
+			auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+			bool const canBuild = pType->SpawnsTiberium
+				? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+				: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+
+			if (canBuild)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -127,7 +159,13 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		bool const canBuild = pType->SpawnsTiberium
+			? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+			: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+
+		if (!canBuild)
 			return NoUnlimbo;
 
 		pCell->RemoveContent(pTerrain, false);
@@ -146,7 +184,13 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 	{
-		if (!TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		bool const canBuild = pType->SpawnsTiberium
+			? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+			: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+
+		if (!canBuild)
 			return Disallow;
 	}
 
@@ -192,7 +236,13 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 
 			if (pTerrain)
 			{
-				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !TerrainTypeExt::Fetch(pTerrain->Type)->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn))
+				auto const pType = pTerrain->Type;
+				auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+				bool const canBuild = pType->SpawnsTiberium
+					? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+					: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+
+				if (!FindBuildLocationTemp::EvaluatingBuildLocation || !canBuild)
 				{
 					R->EAX(false);
 					return ReturnFromFunction;
