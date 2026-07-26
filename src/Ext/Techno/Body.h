@@ -171,6 +171,8 @@ public:
 	void UpdateLastTargetCrd();
 	int GetSight();
 
+	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
+
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
