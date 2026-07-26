@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-19 21:50+0800\n"
+"POT-Creation-Date: 2026-07-26 06:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1168,6 +1168,9 @@ msgstr "允许在战役模式中由其他被玩家控制的所属方拾取到的
 msgid "Misc code refactor & maintenance, CN doc fixes, bugfixes"
 msgstr "各种代码重构与维护、中文文档修正、错误修复"
 
+msgid "Show game time"
+msgstr "显示游戏时间"
+
 msgid "**FlyStar**:"
 msgstr "**FlyStar**："
 
@@ -1816,9 +1819,12 @@ msgid ""
 msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
 
 msgid ""
-"Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`,"
-" and for Aircraft units being dragged by warheads with `IsLocomotor=yes`"
-msgstr "修复了 `Locomotor=Fly` 的非Aircraft单位与被 `IsLocomotor=yes` 弹头拖拽的Aircraft单位的阴影绘制位置不正确的问题"
+"Fix incorrect shadow rendering positions for non-Aircraft units with "
+"`Locomotor=Fly`, and for Aircraft units being dragged by warheads with "
+"`IsLocomotor=yes`"
+msgstr ""
+"修复了 `Locomotor=Fly` 的非 Aircraft 单位与被 `IsLocomotor=yes` 弹头拖拽的 Aircraft "
+"单位阴影绘制位置不正确的问题"
 
 msgid "Customize crash spin multiplier"
 msgstr "自定义坠毁旋转倍率"
@@ -1929,6 +1935,11 @@ msgstr "将 255 种覆盖物数量限制解编码方式调整为使用一种不�
 
 msgid "Extension system rework"
 msgstr "扩展系统重置"
+
+msgid ""
+"New exception handler with a crash dialog, crash report and minidumps "
+"(ported from Vinifera)"
+msgstr "带有崩溃对话框、崩溃报告和小型转储的新版异常处理程序（移植自 Vinifera）"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
@@ -2230,6 +2241,9 @@ msgid ""
 "breaking the normal operation of existing Mods"
 msgstr "为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
 
+msgid "Implement `CurleyShuffle` for AircraftTypes (ported from Vinifera)"
+msgstr "实现战机微观 `CurleyShuffle` 设置（移植自 Vinifera）"
+
 msgid "Fix the bug where warhead flags are read twice"
 msgstr "修复了弹头标签被读取两次的 Bug"
 
@@ -2378,18 +2392,57 @@ msgstr "允许激光绘制位置更新"
 msgid ""
 "Customize the distance for `NoQueueUpToEnter` transport units to board "
 "passengers"
-msgstr ""
-"自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离"
+msgstr "自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离"
 
 msgid ""
 "Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
 " immediately when attacking"
-msgstr ""
-"修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
+msgstr "修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
 
 msgid "Customize the initial facing of buildings"
-msgstr ""
-"自定义建筑初始方向"
+msgstr "自定义建筑初始方向"
+
+msgid ""
+"Global default value for `LeptonMindControlOffset` and "
+"`MindControlRingOffset`"
+msgstr "`LeptonMindControlOffset` 和 `MindControlRingOffset` 的全局默认值"
+
+msgid ""
+"Add a defining for the auto death effect on whether it can trigger when "
+"in Limbo state"
+msgstr "为自毁效果能否在虚拟化状态时触发的定义"
+
+msgid ""
+"Customize whether `Passengers.SyncOwner.RevertOnExit` triggers "
+"`AutoDeath.OnOwnerChange`"
+msgstr "自定义 `Passengers.SyncOwner.RevertOnExit` 是否触发 `AutoDeath.OnOwnerChange`"
+
+msgid ""
+"Fix a bug where passengers created by the InitialPayload logic or "
+"TeamType with `Full=true` would fail to execute the auto death logic"
+msgstr "修复了由初始载员逻辑或勾选了 `预装载小队` 的作战小队创建的乘客无法执行自毁逻辑的 Bug"
+
+msgid ""
+"Provide a toggle for whether the landing direction in default scenarios "
+"does not use the building direction but follows `[AudioVisual] -> "
+"PoseDir`"
+msgstr "为默认情景下的降落方向是否不使用建筑方向而是跟随 `[AudioVisual] -> PoseDir` 提供开关"
+
+msgid ""
+"Separate the definitions of default direction for aircraft production and"
+" landing in the field"
+msgstr "分离定义战机生产和在野地降落的默认方向"
+
+msgid ""
+"Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` "
+"caused the landing direction of aircraft to behave incorrectly under "
+"vanilla configuration"
+msgstr "修复了对 `[AudioVisual] -> PoseDir` 计算错误导致原版配置下战机降落方向表现错误的 Bug"
+
+msgid ""
+"Fix the bug where landing direction cannot be correctly converted when "
+"set to a value exceeding 256"
+msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2899,16 +2952,6 @@ msgstr "AI 载具生产更新代码"
 
 msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
-
-msgid ""
-"**[Vinifera Contributors](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**:"
-msgstr ""
-"**[Vinifera 贡献者](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**："
-
-msgid "Implement `CurleyShuffle` for AircraftTypes"
-msgstr "实现战机微观 `CurleyShuffle` 设置"
 
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "

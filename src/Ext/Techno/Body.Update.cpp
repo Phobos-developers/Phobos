@@ -78,7 +78,7 @@ void TechnoExt::ApplyInterceptor()
 		const auto pBulletExt = BulletExt::Fetch(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
-		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+		if (!pBulletTypeExt->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable) || pBullet->SpawnNextAnim)
 			continue;
 
 		const bool isTargetedOrLocked = static_cast<bool>(pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked));
@@ -89,7 +89,7 @@ void TechnoExt::ApplyInterceptor()
 
 		auto bulletLoc = pBullet->Location;
 
-		if (pInterceptorType->GuardRange_IsCylindrical)
+		if (pInterceptorType->GuardRange_IsCylindrical.Get(RulesExt::Global()->Interceptor_GuardRange_IsCylindrical))
 			bulletLoc.Z = location.Z;
 
 		const auto distanceSq = bulletLoc.DistanceFromSquared(location);
@@ -233,7 +233,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
-		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed.Get(RulesExt::Global()->AutoDeath_TechnosDontExist_AllowLimboed)))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
@@ -244,7 +244,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos exist
 	if (!pTypeExt->AutoDeath_TechnosExist.empty())
 	{
-		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed.Get(RulesExt::Global()->AutoDeath_TechnosExist_AllowLimboed)))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
@@ -904,7 +904,7 @@ void TechnoExt::UpdateAttachEffects()
 	auto const pThis = this->OwnerObject();
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
@@ -917,10 +917,10 @@ void TechnoExt::UpdateAttachEffects()
 
 		attachEffect->AI();
 
-		if (attachEffect->NeedsRecalculateStat)
+		if (attachEffect->ShouldRecalculateStats)
 		{
-			altered = true;
-			attachEffect->NeedsRecalculateStat = false;
+			requiresRecalc = true;
+			attachEffect->ShouldRecalculateStats = false;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -931,8 +931,8 @@ void TechnoExt::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -971,7 +971,7 @@ void TechnoExt::UpdateAttachEffects()
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -997,7 +997,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
-	bool altered = false;
+	bool requiresRecalc = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1010,8 +1010,8 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -1048,7 +1048,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (altered && !count)
+	if (requiresRecalc && !count)
 		this->RecalculateStatMultipliers();
 }
 

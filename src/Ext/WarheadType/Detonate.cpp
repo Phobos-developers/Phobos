@@ -161,7 +161,7 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
-		if (!this->ReturnWarhead_ApplyChancePerTarget)
+		if (!this->ReturnWarhead_ApplyChancePerTarget.Get(RulesExt::Global()->ReturnWarhead_ApplyChancePerTarget))
 			this->ReturnWarhead_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
@@ -241,7 +241,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 	// Put Crit at last since it might kill the target
-	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted.Get(RulesExt::Global()->Crit_SuppressWhenIntercepted) || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pBulletExt);
 
 #ifdef LOCO_TEST_WARHEADS
@@ -526,7 +526,8 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 
 void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
 {
-	const double dice = this->Crit_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
+	const double dice = this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget)
+		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
 	if (this->Crit_CurrentChance < dice)
 		return;
@@ -555,7 +556,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	this->Crit_Active = true;
 
-	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
+	if (this->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets) && this->Crit_AnimList.size())
 	{
 		if (!this->Crit_AnimList_CreateAll.Get(false))
 		{
@@ -579,7 +580,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	int damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_ExtraDamage_ApplyFirepowerMult)
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult.Get(RulesExt::Global()->Crit_ExtraDamage_ApplyFirepowerMult))
 	{
 		if (pBulletExt)
 			damage = static_cast<int>(damage * pBulletExt->FirepowerMult);
@@ -600,7 +601,8 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 void WarheadTypeExt::ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	const double dice = this->ReturnWarhead_ApplyChancePerTarget || !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
+	const double dice = this->ReturnWarhead_ApplyChancePerTarget.Get(RulesExt::Global()->ReturnWarhead_ApplyChancePerTarget)
+		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->ReturnWarhead_RandomBuffer;
 
 	if (this->ReturnWarhead_Chance < dice)
 		return;
@@ -630,7 +632,7 @@ void WarheadTypeExt::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterce
 		{
 			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
-			if (!pBulletExt->TypeExtData->Interceptable)
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable))
 				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
@@ -647,7 +649,7 @@ void WarheadTypeExt::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterce
 			const auto pBulletExt = BulletExt::Fetch(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
+			if (!pBulletExt->TypeExtData->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable) || pBullet->SpawnNextAnim)
 				continue;
 
 			if (pBullet->Location.DistanceFromSquared(coords) <= cellSpreadSq)

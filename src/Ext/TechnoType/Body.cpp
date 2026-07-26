@@ -65,7 +65,7 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 	}
 
 	if (forceWeaponIndex == -1
-		&& (pTargetTechno || !this->ForceWeapon_InRange_TechnoOnly)
+		&& (pTargetTechno || !this->ForceWeapon_InRange_TechnoOnly.Get(RulesExt::Global()->ForceWeapon_InRange_TechnoOnly))
 		&& (!this->ForceWeapon_InRange.empty() || !this->ForceAAWeapon_InRange.empty()))
 	{
 		TechnoTypeExt::SelectWeaponMutex = true;

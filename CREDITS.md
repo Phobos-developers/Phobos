@@ -669,6 +669,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a read bug when setting the SHP file name in INI
   - Unify the messy tag names such as `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names like `AutoFire`
   - Add compatibility for deprecated tag names and output warnings to avoid breaking the normal operation of existing Mods
+  - Implement `CurleyShuffle` for AircraftTypes (ported from Vinifera)
   - Fix the bug where warhead flags are read twice
   - Fix an issue where shadow matrix scaling was incorrectly applied to `TurretOffset` causing turret shadow misplacement
   - Extend the Harvester counter color definition and standardize the variable names
@@ -868,8 +869,6 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
-- **[Vinifera Contributors](https://github.com/Vinifera-developers/Vinifera/blob/develop/CREDITS.md)**:
-  - Implement `CurleyShuffle` for AircraftTypes
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix

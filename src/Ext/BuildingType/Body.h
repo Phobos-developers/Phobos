@@ -63,7 +63,7 @@ public:
 	Valueable<bool> ZShapePointMove_OnBuildup;
 	Valueable<int> SellBuildupLength;
 	Valueable<bool> IsDestroyableObstacle;
-	Valueable<bool> Explodes_DuringBuildup;
+	Nullable<bool> Explodes_DuringBuildup;
 
 	Valueable<bool> IsAnimDelayedBurst;
 
@@ -177,7 +177,7 @@ public:
 		, FactoryPlant_MaxCount { -1 }
 		, IsAnimDelayedBurst { true }
 		, IsDestroyableObstacle { false }
-		, Explodes_DuringBuildup { true }
+		, Explodes_DuringBuildup {}
 		, Units_RepairRate {}
 		, Units_RepairStep {}
 		, Units_RepairPercent {}

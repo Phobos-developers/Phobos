@@ -850,7 +850,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, 
 
 void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue)
 {
-	if (TechnoExt::Fetch(pThis)->TypeExtData->DigitalDisplay_Health_FakeAtDisguise)
+	if (TechnoExt::Fetch(pThis)->TypeExtData->DigitalDisplay_Health_FakeAtDisguise.Get(RulesExt::Global()->DigitalDisplay_Health_FakeAtDisguise))
 	{
 		if (const auto pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{

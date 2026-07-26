@@ -215,7 +215,8 @@ static inline int GetDelay(AircraftClass* pThis, bool isLastShot)
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	int delay = pWeapon->ROF;
 
-	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5) || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
+	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5)
+		|| (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot) && !pThis->Ammo))
 	{
 		pExt->Strafe_TargetCell = nullptr;
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
@@ -231,7 +232,7 @@ DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 
 	auto const pExt = AircraftExt::Fetch(pThis);
 
-	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell)
+	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell.Get(RulesExt::Global()->Strafing_TargetCell))
 		pExt->Strafe_TargetCell = MapClass::Instance.GetCellAt(pThis->Target->GetCoords());
 
 	pThis->IsLocked = true;
@@ -321,7 +322,7 @@ DEFINE_HOOK(0x41879D, AircraftClass_Mission_Attack_StrafeCell, 0x6)
 
 		AircraftExt::FireWeapon(pThis, pTargetCell);
 
-		if (AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter)
+		if (AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter))
 			pTargetCell->ScatterContent(pThis->Location, true, false, false);
 
 		pThis->SetDestination(pTargetCell, true);
@@ -345,13 +346,13 @@ DEFINE_HOOK_AGAIN(0x418B46, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x44);
+	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter) ? 0 : (R->Origin() + 0x44);
 }
 
 DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x5)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x43);
+	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter) ? 0 : (R->Origin() + 0x43);
 }
 
 #pragma endregion
@@ -466,7 +467,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
-	if (pWeaponExt->KickOutPassengers)
+	if (pWeaponExt->KickOutPassengers.Get(RulesExt::Global()->AircraftWeapon_KickOutPassengers))
 		return 0;
 
 	return SkipKickOutPassengers;

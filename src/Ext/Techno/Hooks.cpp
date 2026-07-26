@@ -386,7 +386,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
@@ -396,8 +396,8 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -416,7 +416,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -728,7 +728,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x0)
 	auto const pThisType = pTypeExt->OwnerObject();
 	int maxSpeed = pThisType->Speed;
 
-	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+	if (pTypeExt->UseDisguiseMovementSpeed.Get(RulesExt::Global()->UseDisguiseMovementSpeed) && pThis->IsDisguised())
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 			maxSpeed = pType->Speed;
@@ -843,7 +843,7 @@ DEFINE_HOOK(0x62A0D3, ParasiteClass_AI_ParticleSystem, 0x5)
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x4C, -0x2C));
 	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (pWHExt->Parasite_DisableParticleSystem)
+	if (pWHExt->Parasite_DisableParticleSystem.Get(RulesExt::Global()->Parasite_DisableParticleSystem))
 		return SkipGameCode;
 
 	if (const auto pParticleSysType = pWHExt->Parasite_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
@@ -944,7 +944,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				if (static_cast<UnitExt*>(pExt)->GetTypeExtData()->HoverDrownable)
+				if (static_cast<UnitExt*>(pExt)->GetTypeExtData()->HoverDrownable.Get(RulesExt::Global()->HoverDrownable))
 				{
 					int damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -975,7 +975,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			{
 				const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				if (!pTypeExt->FallingDownDamage_AllowEMP.Get(RulesExt::Global()->FallingDownDamage_AllowEMP) && pTechno->EMPLockRemaining > 0)
 				{
 					damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -986,9 +986,9 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
 				else
-					ratio = pTypeExt->FallingDownDamage.Get();
+					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 
 				if (ratio < 0.0)
 					damage = static_cast<int>(pThis->Health * std::abs(ratio));

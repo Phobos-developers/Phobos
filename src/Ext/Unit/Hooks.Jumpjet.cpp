@@ -76,7 +76,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 
 	if (pWpn->OmniFire)
 	{
-		if (WeaponTypeExt::Fetch(pWpn)->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
+		if (WeaponTypeExt::Fetch(pWpn)->OmniFire_TurnToTarget.Get(RulesExt::Global()->OmniFire_TurnToTarget) && !pThis->Locomotor->Is_Moving_Now())
 		{
 			CoordStruct& source = pThis->Location;
 			const CoordStruct target = pThis->Target->GetCoords();
@@ -154,7 +154,7 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
 	auto const pTypeExt = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData;
-	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
+	return pTypeExt->JumpjetRotateOnCrash.Get(RulesExt::Global()->JumpjetRotateOnCrash) ? 0 : 0x54CB3E;
 }
 
 // We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing

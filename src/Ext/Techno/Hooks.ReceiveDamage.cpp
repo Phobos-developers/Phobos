@@ -206,7 +206,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto const pExt = WarheadTypeExt::TryFetch(pWarhead))
 	{
-		if (pExt->DecloakDamagedTargets)
+		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}
 
@@ -237,11 +237,11 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup.Get(RulesExt::Global()->Explodes_DuringBuildup) && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
 			return SkipExploding;
 	}
 
-	if (!pExt->TypeExtData->Explodes_KillPassengers)
+	if (!pExt->TypeExtData->Explodes_KillPassengers.Get(RulesExt::Global()->Explodes_KillPassengers))
 		return SkipKillingPassengers;
 
 	return 0;
@@ -292,7 +292,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	int resultSequence = Die(1);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
+	if (pTypeExt->NotHuman_RandomDeathSequence.Get(RulesExt::Global()->NotHuman_RandomDeathSequence))
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
 
 	if (receiveDamageArgs.WH)

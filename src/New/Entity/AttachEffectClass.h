@@ -47,7 +47,7 @@ public:
 	bool IsActiveIgnorePowered() const
 	{
 		if (this->IsSelfOwned())
-			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->ShouldRefreshDuration;
 		else
 			return this->Duration;
 	}
@@ -93,7 +93,7 @@ private:
 	bool IsOnline;
 	bool IsCloaked;
 	bool HasInitialized;
-	bool NeedsDurationRefresh;
+	bool ShouldRefreshDuration;
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
@@ -102,7 +102,7 @@ private:
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
-	bool NeedsRecalculateStat;
+	bool ShouldRecalculateStats;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
