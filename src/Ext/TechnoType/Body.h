@@ -428,7 +428,7 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-  Nullable<TechnoTypeClass*>  TemperateImage;
+    Nullable<TechnoTypeClass*>  TemperateImage;
 	Nullable<TechnoTypeClass*> SnowImage;
 	Nullable<TechnoTypeClass*> UrbanImage;
 	Nullable<TechnoTypeClass*> DesertImage;
@@ -804,12 +804,12 @@ public:
 
 		, Unsellable {}
 	
-    , TemperateImage {}
-	  , SnowImage {}
-	  , UrbanImage {}
-	  , DesertImage {}
-	  , NewUrbanImage {}
-	  , LunarImage {}
+        , TemperateImage {}
+	    , SnowImage {}
+	    , UrbanImage {}
+	    , DesertImage {}
+	    , NewUrbanImage {}
+	    , LunarImage {}
 
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
