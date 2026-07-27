@@ -1148,12 +1148,12 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
 
-  this->TemperateImage.Read(exINI, pSection, "TemperateImage");
-  this->SnowImage.Read(exINI, pSection, "SnowImage");
-  this->UrbanImage.Read(exINI, pSection, "UrbanImage");
-  this->DesertImage.Read(exINI, pSection, "DesertImage");
-  this->NewUrbanImage.Read(exINI, pSection, "NewUrbanImage");
-  this->LunarImage.Read(exINI, pSection, "LunarImage");
+    this->TemperateImage.Read(exINI, pSection, "TemperateImage");
+    this->SnowImage.Read(exINI, pSection, "SnowImage");
+    this->UrbanImage.Read(exINI, pSection, "UrbanImage");
+    this->DesertImage.Read(exINI, pSection, "DesertImage");
+    this->NewUrbanImage.Read(exINI, pSection, "NewUrbanImage");
+    this->LunarImage.Read(exINI, pSection, "LunarImage");
 
 	if (pThis->Gunner)
 	{
@@ -1744,12 +1744,12 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->Unsellable)
 
-    .Process(this->TemperateImage)
-	  .Process(this->SnowImage)
-	  .Process(this->UrbanImage)
-	  .Process(this->DesertImage)
-	  .Process(this->NewUrbanImage)
-	  .Process(this->LunarImage)
+        .Process(this->TemperateImage)
+	    .Process(this->SnowImage)
+	    .Process(this->UrbanImage)
+	    .Process(this->DesertImage)
+	    .Process(this->NewUrbanImage)
+	    .Process(this->LunarImage)
 
 		.Process(this->ExtraThreat_Enabled)
 		.Process(this->ExtraThreat_IsThreat)
