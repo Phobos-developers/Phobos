@@ -79,8 +79,39 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoTurret_TrackTarget.Read(exINI, pSection, "NoTurret.TrackTarget");
 	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
 	this->WaterImage_ConditionRed.Read(exINI, pSection, "WaterImage.ConditionRed");
+  this->TemperateImage.Read(exINI, pSection, "TemperateImage");
+	this->SnowImage.Read(exINI, pSection, "SnowImage");
+	this->UrbanImage.Read(exINI, pSection, "UrbanImage");
+  this->DesertImage.Read(exINI, pSection, "DesertImage");
+  this->NewUrbanImage.Read(exINI, pSection, "NewUrbanImage");
+	this->LunarImage.Read(exINI, pSection, "LunarImage");
+  this->TemperateImage_ConditionYellow.Read(exINI, pSection, "TemperateImage.ConditionYellow");
+	this->SnowImage_ConditionYellow.Read(exINI, pSection, "SnowImage.ConditionYellow");
+  this->UrbanImage_ConditionYellow.Read(exINI, pSection, "UrbanImage.ConditionYellow");
+	this->DesertImage_ConditionYellow.Read(exINI, pSection, "DesertImage.ConditionYellow");
+	this->NewUrbanImage_ConditionYellow.Read(exINI, pSection, "NewUrbanImage.ConditionYellow");
+	this->LunarImage_ConditionYellow.Read(exINI, pSection, "LunarImage.ConditionYellow");
+  this->TemperateImage_ConditionRed.Read(exINI, pSection, "TemperateImage.ConditionRed");
+	this->SnowImage_ConditionRed.Read(exINI, pSection, "SnowImage.ConditionRed");
+	this->UrbanImage_ConditionRed.Read(exINI, pSection, "UrbanImage.ConditionRed");
+	this->DesertImage_ConditionRed.Read(exINI, pSection, "DesertImage.ConditionRed");
+	this->NewUrbanImage_ConditionRed.Read(exINI, pSection, "NewUrbanImage.ConditionRed");
+	this->LunarImage_ConditionRed.Read(exINI, pSection, "LunarImage.ConditionRed");
 
-	this->NeedDamagedImage |= this->WaterImage_ConditionYellow.isset() || this->WaterImage_ConditionRed.isset();
+	this->NeedDamagedImage |= this->WaterImage_ConditionYellow.isset() 
+  || this->WaterImage_ConditionRed.isset()
+  || this->TemperateImage_ConditionYellow.isset()
+	|| this->SnowImage_ConditionYellow.isset()
+  || this->UrbanImage_ConditionYellow.isset()
+	|| this->DesertImage_ConditionYellow.isset()
+	|| this->NewUrbanImage_ConditionYellow.isset()
+	|| this->LunarImage_ConditionYellow.isset()
+  || this->TemperateImage_ConditionRed.isset()
+	|| this->SnowImage_ConditionRed.isset()
+	|| this->UrbanImage_ConditionRed.isset()
+	|| this->DesertImage_ConditionRed.isset()
+	|| this->NewUrbanImage_ConditionRed.isset()
+	|| this->LunarImage_ConditionRed.isset();
 
 	this->TurretResponse.Read(exINI, pSection, "TurretResponse");
 	this->Deploy_SkipPassengerUnload.Read(exINI, pSection, "Deploy.SkipPassengerUnload");
@@ -185,6 +216,24 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->WaterImage_ConditionYellow)
 		.Process(this->WaterImage_ConditionRed)
+    .Process(this->TemperateImage)
+	  .Process(this->SnowImage)
+	  .Process(this->UrbanImage)
+    .Process(this->DesertImage)
+    .Process(this->NewUrbanImage)
+	  .Process(this->LunarImage)
+    .Process(this->TemperateImage_ConditionYellow)
+	  .Process(this->SnowImage_ConditionYellow)
+    .Process(this->UrbanImage_ConditionYellow)
+	  .Process(this->DesertImage_ConditionYellow)
+	  .Process(this->NewUrbanImage_ConditionYellow)
+	  .Process(this->LunarImage_ConditionYellow)
+    .Process(this->TemperateImage_ConditionRed)
+	  .Process(this->SnowImage_ConditionRed)
+	  .Process(this->UrbanImage_ConditionRed)
+	  .Process(this->DesertImage_ConditionRed)
+	  .Process(this->NewUrbanImage_ConditionRed)
+	  .Process(this->LunarImage_ConditionRed)
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		.Process(this->TurretResponse)

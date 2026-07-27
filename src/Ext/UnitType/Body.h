@@ -64,7 +64,25 @@ public:
 	Nullable<bool> NoTurret_TrackTarget;
 	Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 	Nullable<UnitTypeClass*> WaterImage_ConditionRed;
-
+  Nullable<UnitTypeClass*> TemperateImage;
+	Nullable<UnitTypeClass*> SnowImage;
+	Nullable<UnitTypeClass*> UrbanImage;
+	Nullable<UnitTypeClass*> DesertImage;
+	Nullable<UnitTypeClass*> NewUrbanImage;
+	Nullable<UnitTypeClass*> LunarImage;
+  Nullable<UnitTypeClass*> TemperateImage_ConditionYellow;
+	Nullable<UnitTypeClass*> SnowImage_ConditionYellow;
+	Nullable<UnitTypeClass*> UrbanImage_ConditionYellow;
+	Nullable<UnitTypeClass*> DesertImage_ConditionYellow;
+	Nullable<UnitTypeClass*> NewUrbanImage_ConditionYellow;
+	Nullable<UnitTypeClass*> LunarImage_ConditionYellow;
+  Nullable<UnitTypeClass*> TemperateImage_ConditionRed;
+	Nullable<UnitTypeClass*> SnowImage_ConditionRed;
+	Nullable<UnitTypeClass*> UrbanImage_ConditionRed;
+	Nullable<UnitTypeClass*> DesertImage_ConditionRed;
+	Nullable<UnitTypeClass*> NewUrbanImage_ConditionRed;
+	Nullable<UnitTypeClass*> LunarImage_ConditionRed;
+	
 	Valueable<int> FireUp;
 	Valueable<bool> FireUp_ResetInRetarget;
 	Nullable<bool> TurretResponse;
@@ -128,6 +146,24 @@ public:
 		, NoTurret_TrackTarget {}
 		, WaterImage_ConditionYellow {}
 		, WaterImage_ConditionRed {}
+    , TemperateImage {}
+	  , SnowImage {}
+	  , UrbanImage {}
+	  , DesertImage {}
+	  , NewUrbanImage {}
+	  , LunarImage {}
+    , TemperateImage_ConditionYellow {}
+	  , SnowImage_ConditionYellow {}
+	  , UrbanImage_ConditionYellow {}
+	  , DesertImage_ConditionYellow {}
+	  , NewUrbanImage_ConditionYellow {}
+	  , LunarImage_ConditionYellow {}
+    , TemperateImage_ConditionRed {}
+	  , SnowImage_ConditionRed {}
+	  , UrbanImage_ConditionRed {}
+	  , DesertImage_ConditionRed {}
+	  , NewUrbanImage_ConditionRed {}
+	  , LunarImage_ConditionRed {}
 		, FireUp { -1 }
 		, FireUp_ResetInRetarget { true }
 		, TurretResponse {}

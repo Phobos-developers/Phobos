@@ -344,41 +344,223 @@ bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultV
 
 UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)
 {
-	if (pUnit->IsGreenHP())
-	{
-		return nullptr;
-	}
-	else if (pUnit->IsYellowHP())
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
-	else
-	{
-		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-		{
-			if (auto const imageRed = pData->WaterImage_ConditionRed)
-				return imageRed;
-			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-				return imageYellow;
-		}
-		else if (auto const imageRed = pData->Image_ConditionRed)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageRed);
-		}
-		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
-			return abstract_cast<UnitTypeClass*, true>(imageYellow);
-		}
-	}
+  const bool waterCondition = pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge; 
+  const bool isGreenHP = pUnit->IsGreenHP();
+  const bool isYellowHP = pUnit->IsYellowHP();
 
+  if (waterCondition) {
+    if (isGreenHP) {
+      return nullptr;
+    }
+    else if (isYellowHP) {
+      if (auto const image = pData->WaterImage_ConditionYellow) {
+				return image;
+      } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  }
+      return nullptr;
+    }
+    else {
+      if (auto const image = pData->WaterImage_ConditionRed) {
+				return image;
+      } else if (auto const image = pData->WaterImage_ConditionYellow) {
+				return image;
+      } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  }
+      return nullptr;
+    }
+  }
+
+  const auto theater = ScenarioClass::Instance->Theater;
+	switch (theater) {
+	case TheaterType::Temperate: {
+    if (isGreenHP) {
+  	  if (auto const image = pData->TemperateImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->TemperateImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->TemperateImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->TemperateImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->TemperateImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->TemperateImage) {
+    	  return image;
+  	  } 
+    }
+  	break;
+	}
+	case TheaterType::Snow: {
+        if (isGreenHP) {
+  	  if (auto const image = pData->SnowImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->SnowImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->SnowImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->SnowImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->SnowImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->SnowImage) {
+    	  return image;
+  	  } 
+    }
+  	break;
+	}
+	case TheaterType::Urban: {
+        if (isGreenHP) {
+  	  if (auto const image = pData->UrbanImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->UrbanImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->UrbanImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->UrbanImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->UrbanImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->UrbanImage) {
+    	  return image;
+  	  } 
+    }
+  	break;
+	}
+	case TheaterType::Desert: {
+    if (isGreenHP) {
+  	  if (auto const image = pData->DesertImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->DesertImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->DesertImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->DesertImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->DesertImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->DesertImage) {
+    	  return image;
+  	  } 
+    }    
+  	break;
+	}
+	case TheaterType::NewUrban: {
+    if (isGreenHP) {
+  	  if (auto const image = pData->NewUrbanImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->NewUrbanImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->NewUrbanImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->NewUrbanImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->NewUrbanImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->NewUrbanImage) {
+    	  return image;
+  	  } 
+    }    
+  	break;
+	}
+	case TheaterType::Lunar: {
+    if (isGreenHP) {
+  	  if (auto const image = pData->LunarImage) {
+    	  return image;
+  	  }
+    } else if(isYellowHP) {
+      if (auto const image = pData->LunarImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->LunarImage) {
+    	  return image;
+  	  }
+    } else {
+      if (auto const image = pData->LunarImage_ConditionRed) {
+    	  return image;
+  	  } else if (auto const image = pData->LunarImage_ConditionYellow) {
+    	  return image;
+  	  } else if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->LunarImage) {
+    	  return image;
+  	  } 
+    }   
+		break;
+	}
+	default: {
+    if (isGreenHP) {
+    	return nullptr;
+    } else if(isYellowHP) {
+      if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  }
+    } else {
+      if (auto const image = pData->Image_ConditionRed) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  } else if (auto const image = pData->Image_ConditionYellow) {
+			  return abstract_cast<UnitTypeClass*, true>(image);
+		  }
+    }
+  	break;
+	}
+	}
 	return nullptr;
 }
 
