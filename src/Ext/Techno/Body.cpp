@@ -599,9 +599,11 @@ void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimTy
 {
 	if (pAnimType)
 	{
-		auto coords = pThis->GetCenterCoords();
+		CoordStruct coords;
 
-		if (!center)
+		if (center)
+			coords = pThis->GetCenterCoords();
+		else
 			coords = TechnoExt::GetFLHAbsoluteCoords(pThis, firingCoords, onTurret);
 
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
