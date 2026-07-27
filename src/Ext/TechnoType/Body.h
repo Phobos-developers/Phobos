@@ -428,13 +428,6 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-    Nullable<TechnoTypeClass*>  TemperateImage;
-	Nullable<TechnoTypeClass*> SnowImage;
-	Nullable<TechnoTypeClass*> UrbanImage;
-	Nullable<TechnoTypeClass*> DesertImage;
-	Nullable<TechnoTypeClass*> NewUrbanImage;
-	Nullable<TechnoTypeClass*> LunarImage;
-
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -803,13 +796,6 @@ public:
 		, JumpjetClimbIgnoreBuilding {}
 
 		, Unsellable {}
-	
-        , TemperateImage {}
-	    , SnowImage {}
-	    , UrbanImage {}
-	    , DesertImage {}
-	    , NewUrbanImage {}
-	    , LunarImage {}
 
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
