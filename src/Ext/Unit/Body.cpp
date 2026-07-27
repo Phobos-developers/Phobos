@@ -344,51 +344,50 @@ bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultV
 
 UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)
 {
+	const auto theater = ScenarioClass::Instance->Theater;
+	switch (theater) {
+	case TheaterType::Temperate: {
+  		if (auto const image = pData->TemperateImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+  		break;
+	}
+	case TheaterType::Snow: {
+  		if (auto const image = pData->SnowImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+  		break;
+	}
+	case TheaterType::Urban: {
+  		if (auto const image = pData->UrbanImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+  		break;
+	}
+	case TheaterType::Desert: {
+  		if (auto const image = pData->DesertImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+  		break;
+	}
+	case TheaterType::NewUrban: {
+  		if (auto const image = pData->NewUrbanImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+  		break;
+	}
+	case TheaterType::Lunar: {
+  		if (auto const image = pData->LunarImage) {
+    		return abstract_cast<UnitTypeClass *, true>(image);
+  		}
+		break;
+	}
+	default: {
+  			break;
+	}
+	}
 	if (pUnit->IsGreenHP())
 	{
-		const auto theater = ScenarioClass::Instance->Theater;
-		switch (theater) {
-      case TheaterType::Temperate:
-				{
-					if (auto const image = pData->TemperateImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			case TheaterType::Snow:
-				{
-					if (auto const image = pData->SnowImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			case TheaterType::Urban:
-				{
-					if (auto const image = pData->UrbanImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			case TheaterType::Desert:
-				{
-					if (auto const image = pData->DesertImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			case TheaterType::NewUrban:
-				{
-					if (auto const image = pData->NewUrbanImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			case TheaterType::Lunar: 
-				{
-					if (auto const image = pData->LunarImage)
-						return abstract_cast<UnitTypeClass*, true>(image);
-					break;
-				}
-			default:
-				{
-					break;
-				}
-		}
 		return nullptr;
 	}
 	else if (pUnit->IsYellowHP())
