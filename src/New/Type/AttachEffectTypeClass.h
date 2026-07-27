@@ -8,7 +8,7 @@
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned char
+enum class DiscardCondition : unsigned short
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -17,7 +17,11 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploying = 0x100,
+	Harvesting = 0x200,
+	InvokerDie = 0x400
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -49,6 +53,8 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -102,6 +108,7 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool RequiresRecalculation;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -112,6 +119,8 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
@@ -164,6 +173,7 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, RequiresRecalculation { false }
 	{};
 
 	bool HasTint() const
@@ -176,7 +186,7 @@ public:
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
-		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+		if (cumulativeCount < 0)
 			return nullptr;
 
 		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
@@ -271,4 +281,26 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+};
+
+// Container for AE attached weapons
+struct AEWeaponParams
+{
+	WeaponTypeClass* Weapon;
+	TechnoClass* Invoker;
+	HouseClass* InvokerHouse;
+
+	AEWeaponParams() :
+		Weapon {}
+		, Invoker {}
+		, InvokerHouse {}
+	{
+	}
+
+	AEWeaponParams(WeaponTypeClass* pWeapon, TechnoClass* pInvoker, HouseClass* pInvokerHouse) :
+		Weapon { pWeapon }
+		, Invoker { pInvoker }
+		, InvokerHouse { pInvokerHouse }
+	{
+	}
 };

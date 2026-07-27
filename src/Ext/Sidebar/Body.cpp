@@ -196,3 +196,4 @@ DEFINE_HOOK(0x6AC5EA, SidebarClass_Save_Suffix, 0x6)
 
 	return 0;
 }
+

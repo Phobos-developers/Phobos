@@ -56,6 +56,17 @@ What can make any PR more controversial and requiring a higher level maintainer'
 - Mixing contribution types
 - Current level of maintainers not being sure about whether they can judge this PR
 
+## Contribution process
+
+To ensure your contribution goes smoothly, please stick to the following process when contributing to the project:
+1. **Check whether there is already an open Pull Request** for whatever you want to contribute. If there is - comment on it and see if you can help with it instead of starting your own first. We hate to discard otherwise valid work just because it's a duplicate.
+2. If all is clear - you should **get in touch with maintainers** of level respective to the complexity of your PR (see [Types of contributions](#types-of-contributions)) to review/merge your upcoming PR and **talk with them about key design aspects before you even submit a contribution**.
+   - This is *especially* important for bigger and more fundamental improvements, when you're learning and when you're exploring "uncharted territories". Staying engaged in communication with the maintainers will help you to avoid unnecessary wasted effort and reworks later on and make sure that your contribution is aligned with how we do things. Not only that, but it also allows you to essentially get early reviews on important things and faster merges (which is especially important in light of our large amount of PRs) with higher level of confidence.
+   - Currently the Phobos channel on Discord is the best place to brainstorm things like that, as it's the most accessible place to reach out to maintainers and discuss your ideas (or if there's nobody around - try messaging experienced maintainers privately).
+     - GitHub issues, discussions and draft PRs (with not a lot of work done yet) are also OK to discuss things, but they are not as fast as Discord and are better used for persistent storage of info, and usually it's easier to grab someone's attention if you approach them personally in chat.
+   - It's also a good thing to get opinions of multiple maintainers and not always consult specific one or a separate part of them. We should try to stay interconnected with each other, even if initially divided by language or habitually.
+3. When we all have a clear idea of the plan you have in mind - all that is left to do is to finalize the design and implementation in the PR, and we'll review the minor things left and merge it.
+
 ## Project structure
 
 Assuming you've successfully cloned and built the project before getting here, you should end up with the following project structure:
@@ -64,12 +75,13 @@ Assuming you've successfully cloned and built the project before getting here, y
   - `New/` - source code for new ingame classes.
     - `Type/` - new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `Enumerable.h`.
     - `Entity/` - classes that represent ingame entities are located here.
-  - `Ext/` - source code for vanilla engine class extensions. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
-    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class must contain the following to work correctly:
-      - `ExtData` - extension data class definition which inherits `Extension<T>` from `Container.h` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
-      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `Container.h` (where `T` is the extension data class);
-      - `ExtMap` - a static instance of `ExtContainer` map;
-      - constructor, destructor, serialization, deserialization and (for appropriate classes) INI reading hooks.
+  - `Ext/` - source code for vanilla engine class extensions. Extension classes form a parallel inheritance hierarchy mirroring the game's own class tree (`AbstractExt` from `Container.h` is the root; e.g. `BuildingExt : TechnoExt : RadioExt : MissionExt : ObjectExt : AbstractExt`), and every game object carries exactly one extension instance of the most derived matching type, cached inside the object at the unified `AbstractClass` `0x18` slot. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
+    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class contains the following to work correctly:
+      - new data members and (for appropriate classes) `LoadFromINIFile`/`SaveToStream`/`LoadFromStream` overrides, plus static helper methods;
+      - `ExtContainer`/`ExtMap` - the per-class container (inherits `Container<T>` from `Container.h`) that tracks all live instances of one concrete extension class for bulk operations (allocation/removal, centralized savegame streaming, post-load relinking, scenario clearing); only concrete leaf classes (e.g. `BuildingExt`) have containers, while every level of the hierarchy provides typed `Fetch`/`TryFetch`. The container's own `Find`/`TryFind` lookups are deprecated compatibility forwards (`TechnoExt`/`TechnoTypeExt`, whose containers were split into per-leaf ones, keep a lookup-only `ExtMap` stand-in for the same reason), and every pre-rework class carries a deprecated `ExtData` alias of itself so code written against the old nested data classes keeps compiling;
+      - `Fetch`/`TryFetch` statics - the O(1) lookup used at call sites (`TechnoExt::Fetch(pThis)`); `Fetch` fatals if the object carries no extension, `TryFetch` returns null instead (also the right choice while a savegame is loading);
+      - constructor/destructor and (for appropriate classes) INI reading hooks. Serialization is centralized in `Phobos.Ext.cpp` - there are no per-class savegame hooks. The one exception is `CellExt`: the game treats cells as value objects with unstable identity (it re-initializes them in place and copies them around wholesale), so cell extensions are persisted inline within each cell's own savegame block instead (see `Ext/Cell/Body.cpp`).
+    - Extensions subscribe to pointer invalidation by inheriting `Detach::Listener<T>` from `Utilities/Detach.h` and overriding `OnDetach` (see `HouseExt` for an example).
     - `Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch in new custom logics.
   - `ExtraHeaders/` - extra header files to interact with / describe types included in game binary that are not included in YRpp yet.
   - `Misc/` - uncategorized source code, including hooks that don't belong to an extension class.
@@ -186,7 +198,7 @@ if (SomeCondition())
 - A space must be put between braces of empty curly brace blocks.
 - To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
-ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+TerrainTypeExt(TerrainTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
     , SpawnsTiberium_Type(0)
     , SpawnsTiberium_Range(1)
     , SpawnsTiberium_GrowthStage({ 3, 0 })

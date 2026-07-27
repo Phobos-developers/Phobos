@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <stdint.h>
 
+#include <HouseClass.h>
+
 enum class EventTypeExt : uint8_t
 {
 	// Vanilla game used Events from 0x00 to 0x2F
@@ -11,9 +13,10 @@ enum class EventTypeExt : uint8_t
 	// Ares used Events 0x60 and 0x61
 
 	ApproachObject = 0x40,
+	TogglePlayerAutoRepair = 0x41,
 
 	FIRST = ApproachObject,
-	LAST = ApproachObject
+	LAST = TogglePlayerAutoRepair
 };
 
 #pragma pack(push, 1)
@@ -33,12 +36,16 @@ public:
 			TargetClass Whom;
 			TargetClass Target;
 		} ApproachObject;
+		struct TogglePlayerAutoRepair
+		{ } TogglePlayerAutoRepair;
 	};
 
 	bool AddEvent();
 	void RespondEvent();
 
 	void RespondApproachObject();
+	static void RaiseTogglePlayerAutoRepair();
+	void RespondToTogglePlayerAutoRepair();
 
 	static size_t GetDataSize(EventTypeExt type);
 	static bool IsValidType(EventTypeExt type);
@@ -47,3 +54,4 @@ public:
 static_assert(sizeof(EventExt) == 111);
 static_assert(offsetof(EventExt, DataBuffer) == 7);
 #pragma pack(pop)
+

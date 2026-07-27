@@ -62,6 +62,8 @@ public:
 		static int SuperWeaponSidebar_CameoHeight;
 		static int SuperWeaponSidebar_Max;
 		static int SuperWeaponSidebar_MaxColumns;
+		static int CreditsIndicator_MaxStep;
+		static bool CreditsIndicator_Smooth;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -100,6 +102,7 @@ public:
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool ShowPowerPlantEnhancerRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
 		static bool ShowBriefing;
@@ -113,6 +116,9 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool ShowGameTime;
+		static int ShowGameTime_BoardOpacity;
+		static bool SelectCapturedCommand;
 	};
 
 	class Misc
@@ -128,6 +134,7 @@ public:
 	{
 	public:
 		static bool Applied;
+		static bool DisableBalloonHoverPathingFix;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
 	};

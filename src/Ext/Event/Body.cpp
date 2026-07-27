@@ -1,10 +1,14 @@
+
 #include "Body.h"
 
-#include <EventClass.h>
-#include <FootClass.h>
-#include <HouseClass.h>
+#include <Ext/House/Body.h>
+#include <Ext/Rules/Body.h>
 
 #include <Helpers/Macro.h>
+#include <EventClass.h>
+#include <HouseClass.h>
+#include <FootClass.h>
+#include <ShapeButtonClass.h>
 
 bool EventExt::AddEvent()
 {
@@ -18,10 +22,22 @@ void EventExt::RespondEvent()
 	case EventTypeExt::ApproachObject:
 		this->RespondApproachObject();
 		break;
-
+	case EventTypeExt::TogglePlayerAutoRepair:
+		this->RespondToTogglePlayerAutoRepair();
+		break;
 	default:
 		break;
 	}
+}
+
+void EventExt::RaiseTogglePlayerAutoRepair()
+{
+	EventExt eventExt {};
+	eventExt.Type = EventTypeExt::TogglePlayerAutoRepair;
+	eventExt.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex;
+	eventExt.Frame = Unsorted::CurrentFrame;
+	eventExt.AddEvent();
+	Debug::LogGame("Adding event TOGGLE_PLAYER_AUTOREPAIR\n");
 }
 
 size_t EventExt::GetDataSize(EventTypeExt type)
@@ -30,7 +46,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 	{
 	case EventTypeExt::ApproachObject:
 		return sizeof(EventExt::ApproachObject);
-
+	case EventTypeExt::TogglePlayerAutoRepair:
+		return sizeof(EventExt::TogglePlayerAutoRepair);
 	default:
 		break;
 	}
@@ -94,6 +111,29 @@ void EventExt::RespondApproachObject()
 	pSource->Target = nullptr;
 }
 
+void EventExt::RespondToTogglePlayerAutoRepair()
+{
+	if (this->HouseIndex >= HouseClass::Array.Count)
+		return;
+
+	if (!RulesExt::Global()->ExtendedPlayerRepair)
+		return;
+
+	auto pHouse = HouseClass::Array.GetItem(this->HouseIndex);
+	auto pHouseExt = HouseExt::Fetch(pHouse);
+	pHouseExt->PlayerAutoRepair = !pHouseExt->PlayerAutoRepair;
+
+	if (HouseClass::CurrentPlayer == pHouse)
+	{
+		SidebarClass::Instance.SidebarNeedsRedraw = true;
+
+		if (pHouseExt->PlayerAutoRepair)
+			SidebarClass::ToggleRepairButton.TurnOn();
+		else
+			SidebarClass::ToggleRepairButton.TurnOff();
+	}
+}
+
 // hooks
 
 DEFINE_HOOK(0x4C6CC8, Networking_RespondToEvent, 0x5)
@@ -155,3 +195,4 @@ DEFINE_HOOK(0x64C30E, sub_64BDD0_GetEventSize2, 0x6)
 
 	return 0;
 }
+
