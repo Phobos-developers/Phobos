@@ -551,6 +551,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
   - Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`
   - Customize crash spin multiplier
+  - Customize reveal radius of `RevealToAll`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
