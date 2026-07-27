@@ -492,7 +492,7 @@ DEFINE_HOOK(0x446816, BuildingClass_Place_RevealToAll_UpdateSight, 0x5)
 
 	GET(BuildingClass*, pThis, EBP);
 	const auto pType = pThis->Type;
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = BuildingTypeExt::Fetch(pType);
 
 	const int radius = pTypeExt->RevealToAll_Radius.Get(pType->Sight);
 	pThis->UpdateSight(false, false, true, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
@@ -505,7 +505,7 @@ DEFINE_HOOK(0x4ADE55, Sub_4ADCD0_RevealToAll_UpdateSight, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 	const auto pType = pThis->Type;
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = BuildingTypeExt::Fetch(pType);
 
 	const int radius = pTypeExt->RevealToAll_Radius.Get(pType->Sight);
 	pThis->UpdateSight(false, false, true, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
