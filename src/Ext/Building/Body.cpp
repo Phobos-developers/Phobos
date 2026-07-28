@@ -452,6 +452,15 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 	return pThis->GetPrimaryWeapon();
 }
 
+void BuildingExt::UpdateFactoryQueues(BuildingClass* pThis)
+{
+	const auto pType = pThis->Type;
+	const auto factory = pType->Factory;
+
+	if (factory != AbstractType::None)
+		pThis->Owner->Update_FactoriesQueues(factory, pType->Naval, BuildCat::DontCare);
+}
+
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
 	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())

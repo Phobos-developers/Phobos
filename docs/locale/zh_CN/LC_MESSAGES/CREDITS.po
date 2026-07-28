@@ -1829,6 +1829,10 @@ msgstr ""
 msgid "Customize crash spin multiplier"
 msgstr "自定义坠毁旋转倍率"
 
+msgid ""
+"Fix the bug that deactivate don't reset links between techno and building"
+msgstr "修复了 Deactivate 不能重置载具与建筑链接状态的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

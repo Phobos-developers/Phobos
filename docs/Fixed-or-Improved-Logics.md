@@ -375,6 +375,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
+- Fixed the bug that deactivate don't reset links between techno and building.
 
 ## Newly added global settings
 

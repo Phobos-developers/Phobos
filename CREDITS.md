@@ -552,6 +552,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`
   - Customize crash spin multiplier
   - Customize reveal radius of `RevealToAll`
+  - Fix the bug that deactivate don't reset links between techno and building
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -1907,6 +1907,10 @@ msgid ""
 "is no longer meaningless."
 msgstr "允许了添加自定义巡航导弹，因此 Ares 的 `Missile.RaiseRate` 不再没有意义。"
 
+msgstr ""
+"Fixed the bug that deactivate don't reset links between techno and building."
+msgstr "修复了 Deactivate 不能重置载具与建筑链接状态的 Bug。"
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 

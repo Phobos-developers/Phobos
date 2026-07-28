@@ -3107,6 +3107,10 @@ msgid ""
 "Noble_Fish)"
 msgstr "修复了由初始载员逻辑或勾选了 `预装载小队` 的作战小队创建的乘客无法执行自毁逻辑的 Bug（by Noble_Fish）"
 
+msgid ""
+"Fixed the bug that deactivate don't reset links between techno and building (by NetsuNegi)"
+msgstr "修复了 Deactivate 不能重置载具与建筑链接状态的 Bug（by NetsuNegi）"
+
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
 
