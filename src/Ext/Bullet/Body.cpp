@@ -197,7 +197,7 @@ bool BulletExt::FireAdditionals()
 	const double range = (double)pType->DisperseEffectiveRange.Get();
 
 	// Weapons can only be fired when the distance is close enough
-	if (range && pBullet->TargetCoords.DistanceFromSquared(pBullet->Location) > range * range)
+	if (range < 0.0 || (range > 0.0 && pBullet->TargetCoords.DistanceFromSquared(pBullet->Location) > range * range))
 		return false;
 
 	// Fire after checking the orientation
