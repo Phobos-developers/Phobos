@@ -1918,6 +1918,7 @@ msgstr "改所属弹头"
 
 msgid "Set sidebar tab by selecting factory"
 msgstr ""
+"通过选择建筑来切换侧边栏标签"
 
 msgid "**ZivDero**:"
 msgstr "**ZivDero**："

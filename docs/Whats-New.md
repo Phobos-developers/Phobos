@@ -635,6 +635,7 @@ HideShakeEffects=false           ; boolean
 - [New hotkey to select the units within the current screen that are captured by non-permanent mind-controller](User-Interface.md#select-captured-units) (by TaranDahl)
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
+- [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -1027,7 +1028,6 @@ HideShakeEffects=false           ; boolean
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
-- [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 
 #### Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
