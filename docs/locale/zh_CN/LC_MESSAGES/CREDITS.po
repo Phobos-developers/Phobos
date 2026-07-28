@@ -1831,6 +1831,7 @@ msgstr "自定义坠毁旋转倍率"
 
 msgid "Customize reveal radius of `RevealToAll`"
 msgstr ""
+"自定义 `RevealToAll` 揭示范围"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"

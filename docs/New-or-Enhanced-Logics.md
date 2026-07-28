@@ -662,7 +662,7 @@ NoBuildAreaOnBuildup=false              ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                  ; BuildingType
-RevealToAll.Radius=             ; integer
+RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
 ```
 
 ### Destroyable pathfinding obstacles

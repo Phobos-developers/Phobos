@@ -2310,8 +2310,8 @@ msgstr ""
 "根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值（by "
 "Noble_Fish）"
 
-msgid "Customize reveal radius of `RevealToAll` (by NetsuNegi)"
-msgstr ""
+msgid "[Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)"
+msgstr "[自定义 `RevealToAll` 揭示范围](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall)（by NetsuNegi）"
 
 msgid ""
 "[Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-"
