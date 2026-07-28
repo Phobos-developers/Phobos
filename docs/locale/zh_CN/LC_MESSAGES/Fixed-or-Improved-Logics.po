@@ -2589,6 +2589,20 @@ msgid ""
 "following flag to `false`."
 msgstr "在原版中当一架战机发起攻击它会强制触发目标单元格上的分散效果。现在你可以通过将下面的语句设为 `false` 来禁用该行为。"
 
+msgid "Customize whether aircraft is a cargo plane"
+msgstr "自定义飞机是否是cargo plane"
+
+msgid ""
+"In vanilla, the `Spawned` flag of an aircraft is determined by the game's "
+"own logic during `UnLimbo`. Now, you can explicitly control this flag per "
+"AircraftType."
+msgstr "在原版中，战机的 `Spawned` 标志由游戏自身逻辑在 `UnLimbo` 期间决定。现在你可以按 AircraftType 显式控制此标志。"
+
+msgid ""
+"`IsALoaner` determines the value of the aircraft's `IsALoaner` flag when "
+"it is unlimboed. If left unset, the vanilla behavior is preserved."
+msgstr "`IsCargoPlane` 决定战机被 unlimbo 时的 `IsALoaner` 标志值。若未设置则保留原版行为。"
+
 msgid "Extended Aircraft Missions"
 msgstr "拓展的战机任务"
 
