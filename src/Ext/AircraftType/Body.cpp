@@ -37,7 +37,7 @@ void AircraftTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParadropDelay.Read(exINI, pSection, "ParadropDelay");
 	this->ParadropEndDelay.Read(exINI, pSection, "ParadropEndDelay");
 	this->FlyNoWobbles.Read(exINI, pSection, "FlyNoWobbles");
-	this->IsCargoPlane.Read(exINI, pSection, "IsCargoPlane");
+	this->IsALoaner.Read(exINI, pSection, "IsALoaner");
 	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 	this->Missile_Cruise.Read(exINI, pSection, "Missile.Cruise");
 	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
@@ -65,7 +65,7 @@ void AircraftTypeExt::Serialize(T& Stm)
 		.Process(this->ParadropDelay)
 		.Process(this->ParadropEndDelay)
 		.Process(this->FlyNoWobbles)
-		.Process(this->IsCargoPlane)
+		.Process(this->IsALoaner)
 		.Process(this->LandingAnim)
 		.Process(this->Missile_Cruise)
 		.Process(this->Missile_TakeOffAnim)

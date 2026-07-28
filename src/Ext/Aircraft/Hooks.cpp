@@ -1315,9 +1315,9 @@ DEFINE_HOOK(0x4143A8, AircraftClass_UnLimbo_CargoPlane, 0x6)
 
 	auto const pTypeExt = AircraftTypeExt::Fetch(pThis->Type);
 
-	if (pTypeExt->IsCargoPlane.isset())
+	if (pTypeExt->IsALoaner.isset() || pThis->Type->Spawned)
 	{
-		pThis->Spawned = pTypeExt->IsCargoPlane.Get();
+		pThis->IsALoaner = pTypeExt->IsALoaner.Get(false);
 		return SkipGameCode;
 	}
 
