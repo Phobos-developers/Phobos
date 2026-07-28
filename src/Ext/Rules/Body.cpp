@@ -272,7 +272,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
-	this->SetTabBySelectingFactory.Read(exINI, GameStrings::AudioVisual, "SetTabBySelectingFactory");
+	this->SetTabBySelectingFactory.Read(exINI, GameStrings::General, "SetTabBySelectingFactory");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->SetRecruitableOnLiberate.Read(exINI, GameStrings::General, "SetRecruitableOnLiberate");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");

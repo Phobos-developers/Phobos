@@ -2880,6 +2880,9 @@ msgstr "允许在单人模式下使用信标放置快捷键"
 msgid "Adjust recruitable status on team member discharge"
 msgstr "小队成员解散时调整可招募性"
 
+msgid "Fix the issue that spawner or slave would execute some player commands"
+msgstr "修正子机或奴隶会执行部分玩家指令的问题"
+
 msgid "Customize whether aircraft is a cargo plane"
 msgstr "自定义飞机是否是cargo plane"
 

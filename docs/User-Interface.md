@@ -551,7 +551,7 @@ ShowPowerPlantEnhancerRange=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[AudioVisual]
+[General]
 SetTabBySelectingFactory=false  ; boolean
 
 [SOMEBUILDING]                  ; BuildingType

@@ -156,7 +156,7 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType);
+	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();
 	void UpdateMindControlAnim();
@@ -177,6 +177,8 @@ public:
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
 	int GetSight();
+
+	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;

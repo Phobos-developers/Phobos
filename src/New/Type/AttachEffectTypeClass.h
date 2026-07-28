@@ -20,7 +20,8 @@ enum class DiscardCondition : unsigned short
 	Firing = 0x40,
 	Selling = 0x80,
 	Undeploying = 0x100,
-	Harvesting = 0x200
+	Harvesting = 0x200,
+	InvokerDie = 0x400
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -280,4 +281,26 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+};
+
+// Container for AE attached weapons
+struct AEWeaponParams
+{
+	WeaponTypeClass* Weapon;
+	TechnoClass* Invoker;
+	HouseClass* InvokerHouse;
+
+	AEWeaponParams() :
+		Weapon {}
+		, Invoker {}
+		, InvokerHouse {}
+	{
+	}
+
+	AEWeaponParams(WeaponTypeClass* pWeapon, TechnoClass* pInvoker, HouseClass* pInvokerHouse) :
+		Weapon { pWeapon }
+		, Invoker { pInvoker }
+		, InvokerHouse { pInvokerHouse }
+	{
+	}
 };
