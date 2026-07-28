@@ -2905,7 +2905,7 @@ msgid ""
 "captured by non-permanent mind-controller"
 msgstr "用于选取当前屏幕内被非永久心控捕获的单位的新快捷键"
 
-msgid "Fix the issue that spawner or slave would execute some player commands"
+msgid "Fix the issue that spawnee or slave would execute some player commands"
 msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 
 msgid "**solar-III (凤九歌)**"

@@ -2781,7 +2781,7 @@ msgstr ""
 "单位阴影绘制位置不正确的问题（by NetsuNegi）"
 
 msgid ""
-"Fixed the issue that spawner or slave would execute some player commands "
+"Fixed the issue that spawnee or slave would execute some player commands "
 "(by TaranDahl)"
 msgstr "修正了子机或奴隶会执行部分玩家指令的问题（by TaranDahl）"
 
