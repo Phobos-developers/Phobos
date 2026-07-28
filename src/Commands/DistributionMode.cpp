@@ -58,7 +58,7 @@ const char* DistributionModeSpreadCommandClass::GetName() const
 
 const wchar_t* DistributionModeSpreadCommandClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_SPREAD", L"Distribution spread");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_SPREAD", L"Change distribution range");
 }
 
 const wchar_t* DistributionModeSpreadCommandClass::GetUICategory() const
@@ -98,7 +98,7 @@ const char* DistributionModeFilterCommandClass::GetName() const
 
 const wchar_t* DistributionModeFilterCommandClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER", L"Distribution filter");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER", L"Change distribution filter");
 }
 
 const wchar_t* DistributionModeFilterCommandClass::GetUICategory() const
@@ -511,8 +511,8 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 		return 0;
 	}
 
-	const float spreadRange = Phobos::Config::DistributionSpreadRange * Unsorted::CellWidthInPixels / Unsorted::LeptonsPerCell / Math::Sqrt2;
-	const auto filterMode = Phobos::Config::DistributionFilterMode;
+	const double spreadRange = Phobos::Config::DistributionSpreadRange * Unsorted::CellWidthInPixels / Unsorted::LeptonsPerCell / Math::Sqrt2;
+	const int filterMode = Phobos::Config::DistributionFilterMode;
 
 	if (spreadRange || filterMode)
 	{
@@ -522,7 +522,7 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 		const auto color = (filterMode > 1)
 			? ((filterMode == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
 			: ((filterMode == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
-		Game::DrawRadialIndicator(false, true, center, color, spreadRange, true, true);
+		Game::DrawRadialIndicator(false, true, center, color, (float)spreadRange, true, true);
 	}
 
 	return 0;
