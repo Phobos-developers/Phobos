@@ -133,11 +133,12 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 {
 	// Only call once
 	// Substitute the speed to calculate velocity
-	double velocityLength = this->MovingVelocity.Magnitude();
+	const double velocityLengthSq = this->MovingVelocity.MagnitudeSquared();
 
-	if (velocityLength < BulletExt::Epsilon)
+	if (velocityLengthSq < BulletExt::EpsilonSquared)
 		return true;
 
+	double velocityLength = sqrt(velocityLengthSq);
 	const auto pBullet = this->Bullet;
 	const auto pBulletExt = BulletExt::Fetch(pBullet);
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
@@ -220,15 +221,15 @@ void EngraveTrajectory::ChangeVelocity()
 
 	target += BulletExt::PointRotate(virtualTarget, this->RotateRadian);
 	const auto delta = target - source;
-	const double distance = delta.Magnitude();
+	const double distanceSq = delta.MagnitudeSquared();
 
-	if (distance < BulletExt::Epsilon)
+	if (distanceSq < BulletExt::EpsilonSquared)
 	{
 		pBulletExt->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
-	const auto newLocation = BulletExt::Point2Coord((source + delta * (path / distance)), pBullet->TargetCoords.Z);
+	const auto newLocation = BulletExt::Point2Coord((source + delta * (path / sqrt(distanceSq))), pBullet->TargetCoords.Z);
 	this->MovingVelocity = BulletExt::Coord2Vector(newLocation - pBullet->Location);
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
 }

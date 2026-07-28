@@ -520,14 +520,14 @@ void PhobosTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 // Something that needs to be done when setting the new speed of the projectile
 bool PhobosTrajectory::CalculateBulletVelocity(const double speed)
 {
-	const double velocityLength = this->MovingVelocity.Magnitude();
+	const double velocityLengthSq = this->MovingVelocity.MagnitudeSquared();
 
 	// Check if it is a zero vector
-	if (velocityLength < BulletExt::Epsilon)
+	if (velocityLengthSq < BulletExt::EpsilonSquared)
 		return true;
 
 	// Reset speed vector
-	this->MovingVelocity *= speed / velocityLength;
+	this->MovingVelocity *= speed / sqrt(velocityLengthSq);
 	this->MovingSpeed = speed;
 	return false;
 }

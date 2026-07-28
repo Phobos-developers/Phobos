@@ -194,10 +194,10 @@ bool BulletExt::FireAdditionals()
 		return false;
 
 	const auto pBullet = this->OwnerObject();
-	const auto range = pType->DisperseEffectiveRange.Get();
+	const double range = (double)pType->DisperseEffectiveRange.Get();
 
 	// Weapons can only be fired when the distance is close enough
-	if (range && pBullet->TargetCoords.DistanceFrom(pBullet->Location) > range)
+	if (range && pBullet->TargetCoords.DistanceFromSquared(pBullet->Location) > range * range)
 		return false;
 
 	// Fire after checking the orientation
@@ -217,7 +217,6 @@ void BulletExt::DetonateOnObstacle()
 	// Slow down and reset the target
 	this->ExtraCheck = nullptr;
 	const auto pBullet = this->OwnerObject();
-	const double distance = pDetonateAt->GetCoords().DistanceFrom(pBullet->Location);
 
 	// Set the new target so that the snap function can take effect
 	pBullet->SetTarget(pDetonateAt);
@@ -225,10 +224,11 @@ void BulletExt::DetonateOnObstacle()
 	if (const auto pTraj = this->Trajectory.get())
 	{
 		const double speed = pTraj->MovingSpeed;
+		const double distanceSq = pDetonateAt->GetCoords().DistanceFromSquared(pBullet->Location);
 
 		// Check whether need to slow down
-		if (speed && distance < speed)
-			pTraj->MultiplyBulletVelocity(distance / speed, true);
+		if (speed && distanceSq < speed * speed)
+			pTraj->MultiplyBulletVelocity(sqrt(distanceSq) / speed, true);
 		else
 			this->Status |= TrajectoryStatus::Detonate;
 	}

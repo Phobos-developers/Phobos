@@ -178,6 +178,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static constexpr double Epsilon = 1e-10;
+	static constexpr double EpsilonSquared = 1e-20;
 
 	static BulletExt* Fetch(const BulletClass* pThis)
 	{
@@ -206,6 +207,10 @@ public:
 	static inline double Get2DDistance(const CoordStruct& coords)
 	{
 		return Point2D { coords.X, coords.Y }.Magnitude();
+	}
+	static inline double Get2DDistanceSquared(const CoordStruct& coords)
+	{
+		return Point2D { coords.X, coords.Y }.MagnitudeSquared();
 	}
 	static inline double Get2DDistance(const CoordStruct& source, const CoordStruct& target)
 	{

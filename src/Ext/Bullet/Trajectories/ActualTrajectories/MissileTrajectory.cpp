@@ -201,7 +201,9 @@ TrajectoryCheckReturnType MissileTrajectory::OnDetonateUpdate(const CoordStruct&
 		return TrajectoryCheckReturnType::Detonate;
 
 	// Close enough
-	if ((this->Bullet->TargetCoords + this->OffsetCoord).DistanceFrom(position) < this->Type->DetonationDistance.Get())
+	const double range = (double)this->Type->DetonationDistance.Get();
+
+	if ((this->Bullet->TargetCoords + this->OffsetCoord).DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;
@@ -279,12 +281,12 @@ void MissileTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 
 bool MissileTrajectory::CalculateBulletVelocity(const double speed)
 {
-	const double velocityLength = this->MovingVelocity.Magnitude();
+	const double velocityLengthSq = this->MovingVelocity.MagnitudeSquared();
 
-	if (velocityLength < BulletExt::Epsilon)
+	if (velocityLengthSq < BulletExt::EpsilonSquared)
 		return true;
 
-	this->MovingVelocity *= speed / velocityLength;
+	this->MovingVelocity *= speed / sqrt(velocityLengthSq);
 	return false;
 }
 
@@ -405,13 +407,13 @@ bool MissileTrajectory::CurveVelocityChange()
 	if (!this->InStraight) // In the launch phase
 	{
 		const auto horizonVelocity = BulletExt::Coord2Point(targetLocation - pBullet->Location);
-		const double horizonDistance = horizonVelocity.Magnitude();
+		const double horizonDistanceSq = horizonVelocity.MagnitudeSquared();
 
-		if (horizonDistance > 0)
+		if (horizonDistanceSq > 0.0)
 		{
 			// Slowly step up
 			constexpr double uniqueCurveVelocityScale = 64.0;
-			double horizonMult = std::abs(this->MovingVelocity.Z / uniqueCurveVelocityScale) / horizonDistance;
+			double horizonMult = std::abs(this->MovingVelocity.Z / uniqueCurveVelocityScale) / sqrt(horizonDistanceSq);
 			this->MovingVelocity.X += horizonMult * horizonVelocity.X;
 			this->MovingVelocity.Y += horizonMult * horizonVelocity.Y;
 			const double horizonLength = sqrt(this->MovingVelocity.X * this->MovingVelocity.X + this->MovingVelocity.Y * this->MovingVelocity.Y);
@@ -546,12 +548,13 @@ bool MissileTrajectory::StandardVelocityChange()
 			if (this->CruiseEnable)
 			{
 				const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
-				const double horizontalDistance = horizontal.Magnitude();
+				const double horizontalDistanceSq = horizontal.MagnitudeSquared();
+				const double range = (double)pType->CruiseUnableRange.Get();
 
 				// The distance is still long, continue cruising
-				if (horizontalDistance > pType->CruiseUnableRange.Get())
+				if (horizontalDistanceSq > range * range)
 				{
-					const double ratio = this->MovingSpeed / horizontalDistance;
+					const double ratio = this->MovingSpeed / sqrt(horizontalDistanceSq);
 					targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
 					targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
 

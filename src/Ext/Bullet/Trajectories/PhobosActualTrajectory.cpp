@@ -109,17 +109,17 @@ bool ActualTrajectory::OnEarlyUpdate()
 
 void ActualTrajectory::OnPreDetonate()
 {
-	const auto targetSnapDistance = static_cast<const ActualTrajectoryType*>(this->GetType())->TargetSnapDistance.Get();
+	const double targetSnapDistance = (double)(static_cast<const ActualTrajectoryType*>(this->GetType())->TargetSnapDistance.Get());
 
 	// Can snap to target?
-	if (targetSnapDistance > 0)
+	if (targetSnapDistance > 0.0)
 	{
 		const auto pBullet = this->Bullet;
 		const auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 		const auto coords = pTarget ? pTarget->GetCoords() : pBullet->TargetCoords;
 
 		// Whether to snap to target?
-		if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
+		if (coords.DistanceFromSquared(pBullet->Location) <= targetSnapDistance * targetSnapDistance)
 		{
 			const auto pExt = BulletExt::Fetch(pBullet);
 			pExt->SnappedToTarget = true;

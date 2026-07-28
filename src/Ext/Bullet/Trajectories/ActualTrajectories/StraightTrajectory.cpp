@@ -131,7 +131,9 @@ TrajectoryCheckReturnType StraightTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pBullet = this->Bullet;
 
 	// Close enough
-	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFrom(position) < pType->DetonationDistance.Get())
+	const double range = (double)pType->DetonationDistance.Get();
+
+	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;

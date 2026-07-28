@@ -12,12 +12,12 @@ std::vector<CellClass*> BulletExt::GetCellsInProximityRadius()
 
 	// Seems like the y-axis is reversed, but it's okay.
 	const auto walkCoord = pTraj ? Vector2D<double>{ pTraj->MovingVelocity.X, pTraj->MovingVelocity.Y } : Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y };
-	const double walkDistance = walkCoord.Magnitude();
+	const double walkDistanceSq = walkCoord.MagnitudeSquared();
 	const auto radius = this->TypeExtData->ProximityRadius.Get();
 	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
 
 	// Special case of zero speed
-	if (walkDistance <= BulletExt::Epsilon)
+	if (walkDistanceSq <= BulletExt::EpsilonSquared)
 	{
 		const double range = radius / static_cast<double>(Unsorted::LeptonsPerCell);
 		std::vector<CellClass*> cirCellClass;
@@ -33,6 +33,7 @@ std::vector<CellClass*> BulletExt::GetCellsInProximityRadius()
 		return cirCellClass;
 	}
 
+	const double walkDistance = sqrt(walkDistanceSq);
 	const double sideMult = radius / walkDistance;
 
 	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
@@ -735,14 +736,15 @@ int BulletExt::GetTrueDamage(int damage, bool self)
 double BulletExt::GetExtraDamageMultiplier()
 {
 	const auto pBullet = this->OwnerObject();
-	const double distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
+	const double distanceSq = pBullet->Location.DistanceFromSquared(pBullet->SourceCoords);
+	const double range = (double)this->AttenuationRange;
 
 	// Directly use edge value if the distance is too far
-	if (this->AttenuationRange <= static_cast<int>(distance))
+	if (range * range <= distanceSq)
 		return this->TypeExtData->DamageEdgeAttenuation;
 
 	// Remove the first cell distance for calculation
-	const double calculateDistance = distance - static_cast<double>(Unsorted::LeptonsPerCell);
+	const double calculateDistance = sqrt(distanceSq) - static_cast<double>(Unsorted::LeptonsPerCell);
 
 	// Directly use original value if the distance is too close
 	if (calculateDistance <= 0.0)

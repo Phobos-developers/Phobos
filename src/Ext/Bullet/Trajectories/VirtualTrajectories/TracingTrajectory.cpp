@@ -204,15 +204,16 @@ bool TracingTrajectory::ChangeVelocity()
 	const auto pWeapon = pBullet->WeaponType;
 	const int baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
 	const int applyRange = (pBulletExt->TypeExtData->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
+	const double applyRangeDouble = (double)applyRange;
 
 	// Calculate the distance between the projectile and the firer
 	const auto source = (pFirer && !pBulletExt->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto delta = destination - source;
-	const double distance = (pBulletExt->NotMainWeapon || pBulletExt->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? BulletExt::Get2DDistance(delta) : delta.Magnitude();
+	const double distanceSq = (pBulletExt->NotMainWeapon || pBulletExt->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? BulletExt::Get2DDistanceSquared(delta) : delta.MagnitudeSquared();
 
 	// Check if the limit has been exceeded
-	if (static_cast<int>(distance) >= applyRange)
-		destination = source + (delta * (applyRange / distance));
+	if (distanceSq >= applyRangeDouble * applyRangeDouble)
+		destination = source + (delta * (applyRange / sqrt(distanceSq)));
 
 	CoordStruct offset = pType->VirtualTargetCoord.Get();
 

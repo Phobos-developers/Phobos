@@ -327,7 +327,9 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pType = this->Type;
 
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(position) < pType->DetonationDistance.Get())
+	const double range = (double)pType->DetonationDistance.Get();
+
+	if (pBullet->TargetCoords.DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
 
 	// Height
@@ -467,7 +469,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -500,7 +502,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 4: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 5: Recalculate the speed when time is limited
@@ -532,7 +534,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
@@ -562,7 +564,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -596,7 +598,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
@@ -628,7 +630,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.MagnitudeSquared() <= BulletExt::EpsilonSquared)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
@@ -657,10 +659,10 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 	// Calculate horizontal distance
 	const auto distanceCoords = pBullet->TargetCoords - source;
-	const double distance = distanceCoords.Magnitude();
+	const double distanceSq = distanceCoords.MagnitudeSquared();
 	const double horizontalDistance = BulletExt::Get2DDistance(distanceCoords);
 
-	if (distance <= BulletExt::Epsilon)
+	if (distanceSq <= BulletExt::EpsilonSquared)
 	{
 		BulletExt::Fetch(pBullet)->Status |= TrajectoryStatus::Detonate;
 		return;
