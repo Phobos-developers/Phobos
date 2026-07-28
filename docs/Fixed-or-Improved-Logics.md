@@ -855,7 +855,7 @@ FiringForceScatter=                 ; boolean, default to [General] -> AircraftF
 In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]      ; AircraftType
-IsALoaner=       ; boolean
+IsALoaner=          ; boolean
 ```
 
 ### Extended Aircraft Missions
