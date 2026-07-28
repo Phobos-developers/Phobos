@@ -150,6 +150,7 @@ msgstr ""
 
 msgid "`invokerdie`: Discard when the invoker of the effect is destroyed."
 msgstr ""
+"`invokerdie`：当 AE 的调用者被摧毁时弃用。"
 
 msgid ""
 "`DiscardOn.MoveBasedOnDestination` defines whether to determine the "
