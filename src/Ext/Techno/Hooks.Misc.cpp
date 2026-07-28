@@ -5,10 +5,9 @@
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -787,6 +786,35 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
+	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && pThis->GetOwningHouse()->IsCurrentPlayer())
+	{
+		auto const pBldTypeExt = BuildingTypeExt::Fetch(specific_cast<BuildingClass*>(pThis)->Type);
+		const int tabIndex = pBldTypeExt->SetTabBySelecting;
+
+		if (tabIndex >= 0 && tabIndex < 4)
+		{
+			TabClass::Instance.SetTab(tabIndex);
+		}
+		else if (tabIndex < 0)
+		{
+			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
+			{
+			case AbstractType::InfantryType:
+				TabClass::Instance.SetTab(2);
+				break;
+			case AbstractType::UnitType:
+			case AbstractType::AircraftType:
+				TabClass::Instance.SetTab(3);
+				break;
+			case AbstractType::BuildingType:
+				TabClass::Instance.SetTab(SidebarClass::Instance.ActiveTabIndex == 0 ? 1 : 0); // A controversial design, but no one has yet proposed a better one.
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	if (!Phobos::Config::ShowFlashOnSelecting)
 		return 0;
 
@@ -1015,6 +1043,31 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
 	}
 
 	pExt->KeepTargetOnMove = false;
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region Controllability
+
+DEFINE_HOOK_AGAIN(0x4C6D4D, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOff
+DEFINE_HOOK_AGAIN(0x4C71CA, EventClass_RespondToEvent_CheckControllability, 0x8)  // MegaMission
+DEFINE_HOOK_AGAIN(0x4C74CB, EventClass_RespondToEvent_CheckControllability, 0x8)  // Idle
+DEFINE_HOOK_AGAIN(0x4C7859, EventClass_RespondToEvent_CheckControllability, 0x8)  // Scatter
+DEFINE_HOOK_AGAIN(0x4C76BC, EventClass_RespondToEvent_CheckControllability, 0x8)  // Deploy
+DEFINE_HOOK_AGAIN(0x4C6F12, EventClass_RespondToEvent_CheckControllability, 0x8)  // Sell
+DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOn
+{
+	enum { SkipGameCode = 0x4C6D42 };
+
+	GET(EventClass* const, pThis, ESI);
+
+	auto const pTechno = pThis->MegaMission.Whom.As_Techno();
+	auto const pHouse = pTechno->GetOwningHouse();
+
+	if (!TechnoExt::CanReceiveEvent(pTechno, pHouse))
+		return SkipGameCode;
 
 	return 0;
 }

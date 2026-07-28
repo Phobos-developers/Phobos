@@ -337,6 +337,10 @@ namespace detail
 				{
 					parsed |= DiscardCondition::Harvesting;
 				}
+				else if (!_strcmpi(cur, "invokerdie"))
+				{
+					parsed |= DiscardCondition::InvokerDie;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");

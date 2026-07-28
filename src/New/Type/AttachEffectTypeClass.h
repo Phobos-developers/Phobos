@@ -20,7 +20,8 @@ enum class DiscardCondition : unsigned short
 	Firing = 0x40,
 	Selling = 0x80,
 	Undeploying = 0x100,
-	Harvesting = 0x200
+	Harvesting = 0x200,
+	InvokerDie = 0x400
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -185,7 +186,7 @@ public:
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
-		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+		if (cumulativeCount < 0)
 			return nullptr;
 
 		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
@@ -280,4 +281,26 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+};
+
+// Container for AE attached weapons
+struct AEWeaponParams
+{
+	WeaponTypeClass* Weapon;
+	TechnoClass* Invoker;
+	HouseClass* InvokerHouse;
+
+	AEWeaponParams() :
+		Weapon {}
+		, Invoker {}
+		, InvokerHouse {}
+	{
+	}
+
+	AEWeaponParams(WeaponTypeClass* pWeapon, TechnoClass* pInvoker, HouseClass* pInvokerHouse) :
+		Weapon { pWeapon }
+		, Invoker { pInvoker }
+		, InvokerHouse { pInvokerHouse }
+	{
+	}
 };

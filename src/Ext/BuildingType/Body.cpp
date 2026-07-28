@@ -264,6 +264,10 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			this->PowersUp_Buildings.emplace_back(pPowerUpType);
 	}
 
+	this->SetTabBySelecting.Read(exINI, pSection, "SetTabBySelecting");
+
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		std::optional<DirType> empty;
@@ -433,6 +437,8 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->TurretAnim_FiringFrames)
 		.Process(this->StartFacing)
 		.Process(this->StartFacing_Random)
+		.Process(this->SetTabBySelecting)
+		.Process(this->RevealToAll_Radius)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

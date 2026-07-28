@@ -9,23 +9,38 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
+	// No extension while a savegame is loading: either it comes from the extension
+	// stream, or the bullet is one the game is creating as part of the load and its
+	// extension - and this initialization with it - follows once the load settles.
 	if (auto const pExt = BulletExt::TryFetch(pThis))
-	{
-		if (pThis->Owner)
-		{
-			pExt->FirerHouse = pThis->Owner->Owner;
-			pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
-		}
-
-		auto const pType = pThis->Type;
-		pExt->CurrentStrength = pType->Strength;
-		pExt->TypeExtData = BulletTypeExt::Fetch(pType);
-
-		if (!pType->Inviso)
-			pExt->InitializeLaserTrails();
-	}
+		pExt->InitializeState();
 
 	return 0;
+}
+
+// The state a bullet's extension gets when the bullet itself is initialized. Also run
+// for extensions allocated after the fact, for bullets the game created while a
+// savegame was loading.
+void BulletExt::InitializeState()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->Owner)
+	{
+		this->FirerHouse = pThis->Owner->Owner;
+		this->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
+	}
+
+	auto const pType = pThis->Type;
+
+	if (!pType)
+		return;
+
+	this->CurrentStrength = pType->Strength;
+	this->TypeExtData = BulletTypeExt::Fetch(pType);
+
+	if (!pType->Inviso)
+		this->InitializeLaserTrails();
 }
 
 // Set in BulletClass::AI and guaranteed to be valid within it.

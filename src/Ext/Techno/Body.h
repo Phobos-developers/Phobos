@@ -133,6 +133,13 @@ public:
 
 	void OnEarlyUpdate();
 
+	// the extension state that goes with TechnoClass::Init
+	void InitializeState();
+
+	// the techno was created while a savegame was loading, so TechnoClass::Init found
+	// no extension to initialize; catch up now that there is one
+	virtual void OnDeferredAllocation() override { this->InitializeState(); }
+
 	// True while the object is hidden underground (subterranean units); false for
 	// everything else. Overridden by UnitExt, which owns the burrow state.
 	virtual bool IsBurrowedState() const { return false; }
@@ -149,7 +156,7 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
+	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();
 	void UpdateMindControlAnim();
@@ -170,6 +177,8 @@ public:
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
 	int GetSight();
+
+	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;

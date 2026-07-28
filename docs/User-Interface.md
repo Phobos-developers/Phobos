@@ -541,6 +541,23 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
+### Set sidebar tab by selecting factory
+
+- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
+  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
+    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
+    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+SetTabBySelecting=-1            ; integer, index of tab
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers

@@ -185,6 +185,27 @@ struct RelinkExtensionsAction
 	}
 };
 
+// calls:
+// T::ExtMap.AllocatePendingExtensions()
+struct AllocatePendingExtensionsAction
+{
+	// whether the last sweep created anything; the dispatch folds with && and would
+	// short-circuit on a false result, so the outcome travels out of band
+	static inline bool AllocatedAny = false;
+
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+		{
+			if (T::ExtMap.AllocatePendingExtensions())
+				AllocatedAny = true;
+		}
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -224,6 +245,18 @@ struct TypeRegistry
 	__forceinline static void RelinkExtensions()
 	{
 		dispatch_mass_action<RelinkExtensionsAction>();
+	}
+
+	__forceinline static void AllocatePendingExtensions()
+	{
+		// a sweep can make the game create objects tracked by a container that was
+		// already swept, so repeat until one full pass turns up nothing new
+		do
+		{
+			AllocatePendingExtensionsAction::AllocatedAny = false;
+			dispatch_mass_action<AllocatePendingExtensionsAction>();
+		}
+		while (AllocatePendingExtensionsAction::AllocatedAny);
 	}
 
 private:
@@ -364,6 +397,9 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
+	// with the restored extensions in place, the owners left over are the objects the
+	// game created itself while loading; they get their extensions now
+	PhobosTypeRegistry::AllocatePendingExtensions();
 	return 0;
 }
 

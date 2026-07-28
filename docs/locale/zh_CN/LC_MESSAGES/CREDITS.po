@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 16:59+0800\n"
+"POT-Creation-Date: 2026-07-28 16:04+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1829,6 +1829,9 @@ msgstr ""
 msgid "Customize crash spin multiplier"
 msgstr "自定义坠毁旋转倍率"
 
+msgid "Customize reveal radius of `RevealToAll`"
+msgstr ""
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1911,8 +1914,10 @@ msgid "Damaged aircraft image changes"
 msgstr "战机伤残更换图像"
 
 msgid "Change target Owner on warhead impact"
+msgstr "改所属弹头"
+
+msgid "Set sidebar tab by selecting factory"
 msgstr ""
-"改所属弹头"
 
 msgid "**ZivDero**:"
 msgstr "**ZivDero**："
@@ -2202,6 +2207,9 @@ msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 �
 msgid "RA1-Style multi-turret and multi-barrel"
 msgstr "RA1 风格多炮塔与多炮管"
 
+msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
+msgstr ""
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2451,8 +2459,7 @@ msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug"
 msgid ""
 "Separately define the global default values of TerrainTypes' `IsPassable`"
 " and `CanBeBuiltOn` based on `SpawnsTiberium`"
-msgstr ""
-"根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值"
+msgstr "根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2893,8 +2900,10 @@ msgstr "小队成员解散时调整可招募性"
 msgid ""
 "New hotkey to select the units within the current screen that are "
 "captured by non-permanent mind-controller"
-msgstr ""
-"用于选取当前屏幕内被非永久心控捕获的单位的新快捷键"
+msgstr "用于选取当前屏幕内被非永久心控捕获的单位的新快捷键"
+
+msgid "Fix the issue that spawner or slave would execute some player commands"
+msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

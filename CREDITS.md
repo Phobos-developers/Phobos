@@ -551,6 +551,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport
   - Fix incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`
   - Customize crash spin multiplier
+  - Customize reveal radius of `RevealToAll`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -582,6 +583,7 @@ This page lists all the individual contributions to the project by their author.
   - `VoiceDeploy` through hot-key/command bar fix
   - Damaged aircraft image changes
   - Change target Owner on warhead impact
+  - Set sidebar tab by selecting factory
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
@@ -659,6 +661,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
+  - Fix the issue of Ares' EMP not suspending the production of AI factories
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -850,6 +853,7 @@ This page lists all the individual contributions to the project by their author.
   - Adjust recruitable status on team member discharge
   - RA1-Style multi-turret and multi-barrel
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
+  - Fix the issue that spawner or slave would execute some player commands
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
