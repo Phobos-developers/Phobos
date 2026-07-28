@@ -661,6 +661,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow merging AOE damage to buildings into one
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
+  - Fix the issue of Ares' EMP not suspending the production of AI factories
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
