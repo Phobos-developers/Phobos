@@ -721,6 +721,7 @@ HideShakeEffects=false           ; boolean
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
+- Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -789,7 +790,6 @@ HideShakeEffects=false           ; boolean
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
-- Fixed the bug that deactivate don't reset links between techno and building (by NetsuNegi)
 ```
 
 ### 0.4.0.3

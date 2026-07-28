@@ -1662,6 +1662,12 @@ msgstr ""
 "修复了 `Locomotor=Fly` 的非 Aircraft 单位与被 `IsLocomotor=yes` 弹头拖拽的 Aircraft "
 "单位阴影绘制位置不正确的问题。"
 
+msgid ""
+"Fixed the bug that technos do not reset their link with the linked "
+"building when deactivated."
+msgstr ""
+"修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -1906,10 +1912,6 @@ msgid ""
 "Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` "
 "is no longer meaningless."
 msgstr "允许了添加自定义巡航导弹，因此 Ares 的 `Missile.RaiseRate` 不再没有意义。"
-
-msgstr ""
-"Fixed the bug that deactivate don't reset links between techno and building."
-msgstr "修复了 Deactivate 不能重置载具与建筑链接状态的 Bug。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
