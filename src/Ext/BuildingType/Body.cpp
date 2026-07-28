@@ -5,8 +5,11 @@
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
+BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
+BuildingTypeExt::ExtContainer::~ExtContainer() = default;
+
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
-int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
+int BuildingTypeExt::GetSuperWeaponCount() const
 {
 	// The user should only use SuperWeapon and SuperWeapon2 if the attached sw count isn't bigger than 2
 	const auto pThis = this->OwnerObject();
@@ -15,13 +18,13 @@ int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 	return count + this->SuperWeapons.size();
 }
 
-int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
+int BuildingTypeExt::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
 {
 	const int idxSW = this->GetSuperWeaponIndex(index);
 
 	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
 	{
-		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 		if (!pExt->IsAvailable(pHouse))
 			return -1;
@@ -30,7 +33,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* p
 	return idxSW;
 }
 
-int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
+int BuildingTypeExt::GetSuperWeaponIndex(const int index) const
 {
 	const auto pThis = this->OwnerObject();
 
@@ -45,7 +48,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 
 std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
 {
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::Fetch(pHouse);
 	int amount = 0;
 	float factor = 1.0f;
 	std::map<int, int> applied; // index, count
@@ -56,7 +59,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 			continue;
 
 		const auto pEnhancerType = pEnhancer->Type;
-		const auto pEnhancerTypeExt = BuildingTypeExt::ExtMap.Find(pEnhancerType);
+		const auto pEnhancerTypeExt = BuildingTypeExt::Fetch(pEnhancerType);
 
 		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
 			continue;
@@ -86,7 +89,7 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuildi
 
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 {
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	auto const nSound = buildUp
 		? pTypeExt->BunkerWallsUpSound.Get(RulesClass::Instance->BunkerWallsUpSound)
 		: pTypeExt->BunkerWallsDownSound.Get(RulesClass::Instance->BunkerWallsDownSound);
@@ -140,21 +143,24 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}*/
 
-	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
+	for (auto const pTPowersUp : BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings)
 		checkUpgrade(pTPowersUp);
 
 	return isUpgrade ? result : -1;
 }
 
-
-void BuildingTypeExt::ExtData::Initialize()
-{ }
+void BuildingTypeExt::Initialize()
+{
+	TechnoTypeExt::Initialize();
+}
 
 // =============================
 // load / save
 
-void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
+	TechnoTypeExt::LoadFromINIFile(pINI);
+
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
@@ -199,6 +205,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
@@ -242,6 +249,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
+	this->StartFacing.Read(exINI, pSection, "StartFacing");
+	this->StartFacing_Random.Read(exINI, pSection, "StartFacing.Random");
+
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -253,6 +263,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (pPowerUpType && !this->PowersUp_Buildings.Contains(pPowerUpType))
 			this->PowersUp_Buildings.emplace_back(pPowerUpType);
 	}
+
+	this->SetTabBySelecting.Read(exINI, pSection, "SetTabBySelecting");
+
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -275,6 +289,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
 	}
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exArtINI, pArtSection, "AircraftDockingDir.DefaultToPoseDir");
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
@@ -329,14 +344,14 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
 
-void BuildingTypeExt::ExtData::CompleteInitialization()
+void BuildingTypeExt::CompleteInitialization()
 {
 	auto const pThis = this->OwnerObject();
 	UNREFERENCED_PARAMETER(pThis);
 }
 
 template <typename T>
-void BuildingTypeExt::ExtData::Serialize(T& Stm)
+void BuildingTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->PowersUp_Owner)
@@ -381,11 +396,13 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
 		.Process(this->FactoryPlant_MaxCount)
 		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
+		.Process(this->Explodes_DuringBuildup)
 		.Process(this->Units_RepairRate)
 		.Process(this->Units_RepairStep)
 		.Process(this->Units_RepairPercent)
@@ -418,6 +435,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretAnim_LowPowerFiringFrames)
 		.Process(this->TurretAnim_IdleRate)
 		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->StartFacing)
+		.Process(this->StartFacing_Random)
+		.Process(this->SetTabBySelecting)
+		.Process(this->RevealToAll_Radius)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -431,24 +452,17 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void BuildingTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void BuildingTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<BuildingTypeClass>::LoadFromStream(Stm);
+	TechnoTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void BuildingTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void BuildingTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<BuildingTypeClass>::SaveToStream(Stm);
+	TechnoTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-bool BuildingTypeExt::ExtContainer::Load(BuildingTypeClass* pThis, IStream* pStm)
-{
-	BuildingTypeExt::ExtData* pData = this->LoadKey(pThis, pStm);
-
-	return pData != nullptr;
-};
 
 bool BuildingTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
@@ -463,9 +477,7 @@ bool BuildingTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
-
-BuildingTypeExt::ExtContainer::~ExtContainer() = default;
+// container facade defined at the top of this file
 
 // =============================
 // container hooks
@@ -474,48 +486,32 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+	BuildingTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x45E707, BuildingTypeClass_DTOR, 0x6)
-{
-	GET(BuildingTypeClass*, pItem, ESI);
-
-	BuildingTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x465300, BuildingTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x465010, BuildingTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(BuildingTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	BuildingTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4652ED, BuildingTypeClass_Load_Suffix, 0x7)
-{
-	BuildingTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
-{
-	BuildingTypeExt::ExtMap.SaveStatic();
-	return 0;
-}
-
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
 //DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
 {
 	GET(BuildingTypeClass*, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x364);
 
-	BuildingTypeExt::ExtMap.LoadFromINI(pItem, pINI);
+	if (auto const pExt = BuildingTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
+
+	return 0;
+}
+
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK(0x45E732, BuildingTypeClass_DTOR, 0xE)
+{
+	GET(BuildingTypeClass*, pItem, ESI);
+
+	BuildingTypeExt::ExtMap.Remove(pItem);
+
 	return 0;
 }

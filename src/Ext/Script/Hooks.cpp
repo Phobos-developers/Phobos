@@ -4,7 +4,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
 	GET(TeamClass*, pTeam, ESI);
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	// Force a line jump. This should support vanilla YR Actions
 	if (pTeamData->ForceJump_InitialCountdown > 0 && pTeamData->ForceJump_Countdown.Expired())

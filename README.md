@@ -11,7 +11,7 @@
 
 # Phobos
 
-...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Phobos-developers/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
+...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Phobos-developers/YRpp) and [SyringeEx](https://github.com/Phobos-developers/SyringeEx) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
@@ -41,9 +41,9 @@ Last two listed versions are bleeding edge (don't redistribute them outside of t
 Installation and Usage
 ----------------------
 
-0. If you don't have Syringe installed into your mod already, you can download it together with the [latest Ares package](https://launchpad.net/ares/+download). To install simply drop `Syringe.exe` into your game folder (where your `gamemd.exe` is located). It's highly recommended to **install Ares** too to get full Phobos feature set, just drop all the files from the archive except documentation folder into your game folder.
-1. Obtain a Phobos "package" (official builds can be found on [releases page](https://github.com/Phobos-developers/Phobos/releases); read below to learn how to get nightly builds). You should end up with two files: `Phobos.dll` and `Phobos.pdb`.
-2. Place those files in the game folder (where your `gamemd.exe` is located).
+0. Phobos requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) - an extended, open-source version of Syringe - to run; the game will show an error and quit on startup under older Syringe versions. Phobos packages and nightly builds come with the SyringeEx `Syringe.exe` bundled; it can also be downloaded separately from the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases). It's highly recommended to **install [Ares](https://launchpad.net/ares/+download)** too to get full Phobos feature set, just drop all the files from the archive except documentation folder and `Syringe.exe` into your game folder.
+1. Obtain a Phobos "package" (official builds can be found on [releases page](https://github.com/Phobos-developers/Phobos/releases); read below to learn how to get nightly builds). You should end up with `Phobos.dll`, `Phobos.pdb` and the bundled SyringeEx `Syringe.exe`.
+2. Place those files in the game folder (where your `gamemd.exe` is located), replacing any existing `Syringe.exe` (for example the one shipped with Ares).
 3. To launch the game with Phobos (and all other installed Syringe-compatible engine extensions including Ares) you need to execute `Syringe.exe "gamemd.exe" [command line arguments for gamemd.exe]` in command line (omit arguments if you don't need any). `RunAres.bat` from Ares package does the same so you may use that as well.
 
 If you already use Ares in your mod, you just need to drop Phobos files mentioned above in your game folder, Syringe will load Phobos automatically. This also applies to mods using XNA client with Syringe; if your mod doesn't use Syringe and Ares (or you just haven't set up the client) yet we recommend to use [CnCNet client mod base by Starkku](https://github.com/Starkku/cncnet-client-mod-base) which is compatible with Ares and Phobos out of the box.

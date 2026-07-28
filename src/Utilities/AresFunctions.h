@@ -39,7 +39,7 @@ public:
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
 
-	// WarheadTypeExt::ExtData
+	// WarheadTypeExt
 	static bool(__thiscall* ApplyPermaMC)(void*, HouseClass* pSourceHouse, AbstractClass* pTarget);
 
 	static bool (*DetailsCurrentlyEnabled)();
@@ -50,7 +50,7 @@ public:
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
 
-	// BuildingTypeExt::ExtData
+	// BuildingTypeExt
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
 

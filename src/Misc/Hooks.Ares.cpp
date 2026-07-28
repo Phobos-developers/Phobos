@@ -8,6 +8,7 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -24,10 +25,33 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 	return instance;
 }
 
-static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
+static void __fastcall InitialPayloadFix(TechnoClass* pThis)
 {
 	pThis->IsInPlayfield = true;
+	ScenarioExt::Global()->RegisterAutoDeath(pThis);
 	pThis->Limbo();
+}
+
+static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger)
+{
+	ScenarioExt::Global()->RegisterAutoDeath(pPassenger);
+	pPassenger->AbortMotion();
+}
+
+static void __fastcall UpdateThreatInCell_InitOccupant(TechnoClass* pBuilding, void*, CellClass* pCell)
+{
+	pBuilding->UpdateThreatInCell(pCell);
+
+	if (auto* pBld = abstract_cast<BuildingClass*>(pBuilding))
+	{
+		const int count = pBld->GetOccupantCount();
+		if (count > 0)
+		{
+			FootClass* pLast = pBld->Occupants.GetItem(count - 1);
+			if (pLast)
+				ScenarioExt::Global()->RegisterAutoDeath(pLast);
+		}
+	}
 }
 
 static void __fastcall LetGo(TemporalClass* pTemporal)
@@ -68,12 +92,12 @@ static EBolt* __stdcall CreateEBolt2(WeaponTypeClass* pWeapon)
 
 static bool __fastcall CameoIsVeteran(TechnoTypeClass** pTypeExt_Ares, void*, HouseClass* pHouse)
 {
-	return TechnoTypeExt::ExtMap.Find(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
+	return TechnoTypeExt::Fetch(*pTypeExt_Ares)->CameoIsVeteran(pHouse);
 }
 
 static bool __fastcall SW_IsAvailable(SuperWeaponTypeClass** pExt_Ares, void*, HouseClass* pHouse)
 {
-	return SWTypeExt::ExtMap.Find(*pExt_Ares)->IsAvailable(pHouse);
+	return SWTypeExt::Fetch(*pExt_Ares)->IsAvailable(pHouse);
 }
 
 namespace PermaMCTemp
@@ -93,7 +117,7 @@ static bool __fastcall ApplyPermaMC_Wrapper(WarheadTypeClass** pExt_Ares, void*,
 static bool __fastcall PermaMC_FreeUnit_SetContext(CaptureManagerClass* pManager, void*, TechnoClass* pTechno)
 {
 	PermaMCTemp::Selected = pTechno->IsSelected;
-	return CaptureManagerExt::FreeUnit(pManager, pTechno, WarheadTypeExt::ExtMap.Find(PermaMCTemp::Warhead)->RemoveMindControl_Silent.Get(RulesExt::Global()->MindControl_Permanent_ReplaceSilent));
+	return CaptureManagerExt::FreeUnit(pManager, pTechno, WarheadTypeExt::Fetch(PermaMCTemp::Warhead)->RemoveMindControl_Silent.Get(RulesExt::Global()->MindControl_Permanent_ReplaceSilent));
 }
 
 static bool __fastcall PermaMC_SetOwningHouse_Select(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
@@ -151,6 +175,32 @@ static bool __fastcall ParadropPlaneUnlimbo(AircraftClass* pThis, void* _, const
 
 #pragma endregion
 
+#pragma region UpdateFactoryQueues
+
+static void __stdcall UpdateFactoryQueues_Wrapper(BuildingClass* pBuilding)
+{
+	const auto pType = pBuilding->Type;
+	const auto absType = pType->Factory;
+
+	if (absType == AbstractType::None)
+		return;
+
+	if (const auto pFactory = pBuilding->Factory)
+	{
+		if (pFactory->Object)
+		{
+			if (pBuilding->Deactivated || !pBuilding->HasPower)
+				pFactory->Suspend(false);
+			else if (pFactory->IsSuspended && !pFactory->IsManual)
+				pFactory->Unsuspend(false);
+		}
+	}
+
+	pBuilding->Owner->Update_FactoriesQueues(absType, pType->Naval, BuildCat::DontCare);
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -185,7 +235,9 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayload_OpenToppedFix));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayloadFix));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43DBC, &UpdateThreatInCell_InitOccupant);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43E33, &InitialPayloadFix_Building);
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
@@ -220,14 +272,14 @@ void Apply_Ares3_0_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 
-	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	// Redirect Ares's TechnoTypeExt::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3D800, &CameoIsVeteran);
 
-	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
+	// Redirect Ares's SWTypeExt::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x32BE0, &SW_IsAvailable);
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x329E0, &SWTypeExt::IsSuperAvailable);
 
@@ -256,6 +308,11 @@ void Apply_Ares3_0_Patches()
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x742AC, &ParadropPlaneUnlimbo);
+
+	// Replace Ares factory update logic with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x13FA7, &UpdateFactoryQueues_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CD9E, &UpdateFactoryQueues_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &UpdateFactoryQueues_Wrapper);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -284,7 +341,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayload_OpenToppedFix));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayloadFix));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4489C, &UpdateThreatInCell_InitOccupant);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x44913, &InitialPayloadFix_Building);
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
@@ -319,14 +378,14 @@ void Apply_Ares3_0p1_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 
-	// Redirect Ares's TechnoTypeExt::ExtData::CameoIsElite() to our implementation:
+	// Redirect Ares's TechnoTypeExt::CameoIsElite() to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3E210, &CameoIsVeteran);
 
-	// Redirect Ares's SWTypeExt::ExtData::IsAvailable to our implementation:
+	// Redirect Ares's SWTypeExt::IsAvailable to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x335E0, &SW_IsAvailable);
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x333E0, &SWTypeExt::IsSuperAvailable);
 
@@ -355,4 +414,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x7535C, &ParadropPlaneUnlimbo);
+
+	// Replace Ares factory update logic with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x14537, &UpdateFactoryQueues_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DA0E, &UpdateFactoryQueues_Wrapper);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &UpdateFactoryQueues_Wrapper);
 }

@@ -94,7 +94,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 	for (auto const pHouse : HouseClass::Array)
 	{
-		HouseExt::ExtMap.Find(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
 	}
 }
 
@@ -117,6 +117,19 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 
 		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
+	}
+}
+
+void ScenarioExt::ExtData::RegisterAutoDeath(TechnoClass* pTechno)
+{
+	if (auto const pExt = TechnoExt::Fetch(pTechno))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = this->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
 	}
 }
 
@@ -178,6 +191,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
 		.Process(this->EVAIndex)
+		.Process(this->FiringAnimUpdateCount)
 		;
 }
 

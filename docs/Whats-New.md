@@ -22,6 +22,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
+- The default direction for aircraft landing on an airfield will use the direction specified by `[AudioVisual] -> PoseDir=` instead of the building's direction, which can be reverted by setting `AircraftDockingDir.DefaultToPoseDir=false`.
 
 ## Breaking changes
 
@@ -57,6 +58,11 @@ This serves as a changelog for when you just need to drop the new version in wit
 - If it is detected that you are using the old INI flags, a warning will be outputted to `debug.log`.
 - The old INI flags will still take effect, but if there are corresponding new version flags at the same time, the new version will take precedence.
 ```
+
+- In v0.4, the direction for aircraft landing in the field would treat `[AudioVisual] -> PoseDir=` as 256-directional instead of 8-directional; now it is controlled by `[AudioVisual] -> PoseDir.Field` and defaults to 32 times the value of `[AudioVisual] -> PoseDir=` to avoid breaking original behavior.
+- In v0.4, the landing direction of aircraft was clamped to `[0, 255]`. This has now been improved to allow correct calculation of values exceeding 255, just like the original `PoseDir`. Correspondingly, designs that previously relied on this clamping need to be manually adjusted to accommodate.
+- The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
+- Phobos now requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) to run - under older Syringe versions the game will show an error and exit on startup. Replace `Syringe.exe` in your game folder with the one bundled with the Phobos package (also available separately on the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases)).
 
 #### Changes compared to inter-version builds / pre-releases
 
@@ -609,6 +615,26 @@ HideShakeEffects=false           ; boolean
 - Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn` (by Noble_Fish)
 - [Additional reinforcement aircraft (airstrike, paradrop and spy plane) spawn customizations](Fixed-or-Improved-Logics.md#reinforcement-aircraft-spawn-settings) (by Starkku)
 - [`ZAdjust` for Projectiles](Fixed-or-Improved-Logics.md#zadjust-for-projectiles) (by Noble_Fish)
+- [Adjust recruitable status on team member discharge](AI-Scripting-and-Mapping.md#adjust-recruitable-status-on-team-member-discharge) (by TaranDahl)
+- Customize whether or not passenger can fire out when the transport is moving (by Ollerus)
+- [RA1-Style Multi-Turret and Multi-Barrel](New-or-Enhanced-Logics.md#ra1-style-multi-turret-and-multi-barrel) (by TaranDahl & CrimRecya)
+- [Allow Laser drawing position update](New-or-Enhanced-Logics.md#allow-laser-drawing-position-update) (by Noble_Fish)
+- Customize the distance for `NoQueueUpToEnter` transport units to board passengers (by Noble_Fish)
+- Reworked the extension system internals to form a class hierarchy mirroring the game's own, with centralized savegame serialization (by ZivDero)
+- [Customize the initial facing of buildings](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings) (by Noble_Fish)
+- [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
+- [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
+- Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
+- [Customize crash spin multiplier](Fixed-or-Improved-Logics.md#customize-crash-spin-multiplier) (by NetsuNegi)
+- Add a defining for the auto death effect on whether it can trigger when in Limbo state (by Noble_Fish)
+- Customize whether `Passengers.SyncOwner.RevertOnExit` triggers `AutoDeath.OnOwnerChange` (by Noble_Fish)
+- [Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)
+- Provided a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir` (by Noble_Fish)
+- [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
+- Change target Owner on warhead impact (by Fryone)
+- New hotkey to select the units within the current screen that are captured by non-permanent mind-controller. (by TaranDahl)
+- Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
+- Customize reveal radius of `RevealToAll` (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -663,7 +689,6 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker (by FlyStar)
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon (by NetsuNegi)
 - Fixed an issue that retaliation will make the unit keep switching among multiple targets with the same amount of threat (by TaranDahl)
-- Fixed the issue where units recruited by a team with `AreTeamMembersRecruitable=false` cannot be recruited even if they have been liberated by that team (by TaranDahl)
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon (by NetsuNegi)
 - Fixed the bug that techno in attack move will move to target if it cannot attack it (by NetsuNegi)
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4 (by FlyStar)
@@ -695,6 +720,8 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that low-air taking off / landing objects will receive twice damage (by NetsuNegi)
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
+- Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
+- Fixed the issue that spawner or slave would execute some player commands (by TaranDahl)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -733,6 +760,8 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
+- Fixed the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration (by Noble_Fish)
+- Fixed the bug where landing direction cannot be correctly converted when set to a value exceeding 256 (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
@@ -760,6 +789,8 @@ HideShakeEffects=false           ; boolean
 - [Export interface for accessing scenario local/global variables](Interoperability.md#scenarioext) (by Chang_zhi)
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true` (by Noble_Fish)
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
+- Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
+- Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 ```
 
 ### 0.4.0.3
@@ -788,6 +819,7 @@ HideShakeEffects=false           ; boolean
 - Fixed building interceptors being able to pick targets during construction and selling (by Starkku)
 - Fixed the bug that the vanilla `SecondSpawnOffset` no longer takes effect (by NetsuNegi)
 - Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
+- Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 ```
 
 ### 0.4.0.2
@@ -996,6 +1028,7 @@ HideShakeEffects=false           ; boolean
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
+- [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 
 #### Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

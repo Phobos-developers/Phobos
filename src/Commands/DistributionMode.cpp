@@ -378,8 +378,8 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				if (!pItemType)
 					continue;
 
-				if (TechnoTypeExt::ExtMap.Find(info.pType)->FakeOf != pItemType
-					&& TechnoTypeExt::ExtMap.Find(pItemType)->FakeOf != info.pType)
+				if (TechnoTypeExt::Fetch(info.pType)->FakeOf != pItemType
+					&& TechnoTypeExt::Fetch(pItemType)->FakeOf != info.pType)
 				{
 					if (filterMode == 1)
 					{

@@ -23,6 +23,7 @@ This page describes all the engine features that are either new and introduced b
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
+    - `invokerdie`: Discard when the invoker of the effect is destroyed. 
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
@@ -53,7 +54,7 @@ This page describes all the engine features that are either new and introduced b
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
     - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead. `[General] -> OpenTopped.UseTransportRangeModifiers` defines its global default value.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
@@ -63,7 +64,7 @@ This page describes all the engine features that are either new and introduced b
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
     - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
-    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`. `[General] -> OpenTopped.CheckTransportDisableWeapons` defines its global default value.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
@@ -108,7 +109,7 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
 DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
@@ -165,14 +166,18 @@ Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
 
+[General]
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+OpenTopped.UseTransportRangeModifiers=             ; boolean, default to [General] -> OpenTopped.UseTransportRangeModifiers
+OpenTopped.CheckTransportDisableWeapons=           ; boolean, default to [General] -> OpenTopped.CheckTransportDisableWeapons
 
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
@@ -650,6 +655,16 @@ Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
 NoBuildAreaOnBuildup=false              ; boolean
 ```
 
+### Customize reveal radius of `RevealToAll`
+
+- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                  ; BuildingType
+RevealToAll.Radius=             ; integer
+```
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
@@ -782,8 +797,11 @@ DefaultDisguise=    ; InfantryType
 
 In `rulesmd.ini`:
 ```ini
+[General]
+NotHuman.RandomDeathSequence=no   ; boolean
+
 [SOMEINFANTRY]                    ; InfantryType
-NotHuman.RandomDeathSequence=yes  ; boolean
+NotHuman.RandomDeathSequence=     ; boolean, default to [General] -> NotHuman.RandomDeathSequence
 ```
 
 ### Slaves' house decision customization when owner is killed
@@ -804,10 +822,16 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 
 - Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
 
+In `rulesmd.ini`:
+```ini
+[General]
+OnlyUseLandSequences=false  ; boolean
+```
+
 In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
-OnlyUseLandSequences=false  ; boolean
+OnlyUseLandSequences=       ; boolean, default to [General] -> OnlyUseLandSequences
 ```
 
 ## Projectiles
@@ -867,6 +891,11 @@ BombParachute=           ; AnimationType, default to [General] -> BombParachute
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ProjectileInterceptable=false               ; boolean
+Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.ApplyFirepowerMult=true         ; boolean
+
 [SOMETECHNO]                                ; TechnoType
 Interceptor=false                           ; boolean
 Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
@@ -876,10 +905,10 @@ Interceptor.GuardRange=0.0                  ; floating point value
 Interceptor.VeteranGuardRange=              ; floating point value
 Interceptor.EliteGuardRange=                ; floating point value
 Interceptor.MinimumGuardRange=0.0           ; floating point value
-Interceptor.GuardRange.IsCylindrical=false  ; boolean
+Interceptor.GuardRange.IsCylindrical=       ; boolean, default to [CombatDamage] -> Interceptor.GuardRange.IsCylindrical
 Interceptor.VeteranMinimumGuardRange=       ; floating point value
 Interceptor.EliteMinimumGuardRange=         ; floating point value
-Interceptor.ApplyFirepowerMult=true         ; boolean
+Interceptor.ApplyFirepowerMult=             ; boolean, default to [CombatDamage] -> Interceptor.ApplyFirepowerMult
 Interceptor.DeleteOnIntercept=false         ; boolean
 Interceptor.WeaponOverride=                 ; WeaponType
 Interceptor.WeaponReplaceProjectile=false   ; boolean
@@ -887,7 +916,7 @@ Interceptor.WeaponCumulativeDamage=false    ; boolean
 Interceptor.KeepIntact=false                ; boolean
 
 [SOMEPROJECTILE]                            ; Projectile
-Interceptable=false                         ; boolean
+Interceptable=false                         ; boolean, default to [CombatDamage] -> ProjectileInterceptable
 Interceptable.DeleteOnIntercept=false       ; boolean
 Interceptable.WeaponOverride=               ; WeaponType
 Strength=0                                  ; integer
@@ -1118,9 +1147,12 @@ SubjectToGround=false         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+
 [SOMEPROJECTILE]                        ; Projectile
 ReturnWeapon=                           ; WeaponType
-ReturnWeapon.ApplyFirepowerMult=false   ; boolean
+ReturnWeapon.ApplyFirepowerMult=        ; boolean, default to [CombatDamage] -> ReturnWeapon.ApplyFirepowerMult
 ```
 
 ## Super Weapons
@@ -1441,7 +1473,7 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 - If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
-- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
+- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 10 frames for launchers with `MissileSpawn=true` and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
 - `Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same way as turret does upon being created if the spawner has a turret.
 - `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
@@ -1451,16 +1483,22 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Spawner.AttackImmediately=false    ; boolean
+Spawner.UseTurretFacing=false      ; boolean
+Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.RecycleOnTurret=false      ; boolean
+
 [SOMETECHNO]                       ; TechnoType
 Spawner.LimitRange=false           ; boolean
 Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
-Spawner.AttackImmediately=false    ; boolean
-Spawner.UseTurretFacing=false      ; boolean
-Spawner.RecycleRange=-1            ; floating point value, range in cells
+Spawner.AttackImmediately=         ; boolean, default to [General] -> Spawner.AttackImmediately
+Spawner.UseTurretFacing=           ; boolean, default to [General] -> Spawner.UseTurretFacing
+Spawner.RecycleRange=              ; floating point value, range in cells, default to [General] -> Spawner.RecycleRange
 Spawner.RecycleAnim=               ; List of AnimationTypes
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
-Spawner.RecycleOnTurret=false      ; boolean
+Spawner.RecycleOnTurret=           ; boolean, default to [General] -> Spawner.RecycleOnTurret
 ```
 
 ```{note}
@@ -1538,9 +1576,13 @@ PassengerDeletion.UnderEMP=false                ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
+[General]
 Passengers.SyncOwner=false              ; boolean
 Passengers.SyncOwner.RevertOnExit=true  ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+Passengers.SyncOwner=                   ; boolean, default to [General] -> Passengers.SyncOwner
+Passengers.SyncOwner.RevertOnExit=      ; boolean, default to [General] -> Passengers.SyncOwner.RevertOnExit
 ```
 
 ### Automatically firing weapons
@@ -1575,12 +1617,16 @@ To make this logic work properly, you need to ensure that there is no flag like 
 
 In `rulesmd.ini`:
 ```ini
+[General]
+BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
+BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
 BuildLimitGroup.Nums=                           ; integer, or a List of integers
 BuildLimitGroup.Factor=1                        ; integer
-BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
-BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+BuildLimitGroup.ContentIfAnyMatch=              ; boolean, default to [General] -> BuildLimitGroup.ContentIfAnyMatch
+BuildLimitGroup.NotBuildableIfQueueMatch=       ; boolean, default to [General] -> BuildLimitGroup.NotBuildableIfQueueMatch
 BuildLimitGroup.ExtraLimit.Types=               ; List of TechnoTypes
 BuildLimitGroup.ExtraLimit.Nums=                ; List of integers
 BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
@@ -1648,30 +1694,46 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - `OpenTopped.ShareTransportTarget` controls whether or not the current target of the transport itself is passed to the passengers as well.
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
 - `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
+- `OpenTopped/OpenTransport.FireWhileMoving` can be used to customize whether or not passengers can fire out when the transport is moving, for transport and passenger respectively. Both of them and the weapon's `FireWhileMoving` toggle need to be set to true to allow firing out when moving.
 
 In `rulesmd.ini`:
 ```ini
 [General]
+OpenTopped.IgnoreRangefinding=false               ; boolean
+OpenTopped.AllowFiringIfDeactivated=true          ; boolean
 OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
+OpenTopped.ShareTransportTarget=true              ; boolean
 OpenTopped.DecloakToFire=true                     ; boolean
+OpenTopped.FireWhileMoving=true                   ; boolean
+OpenTransport.FireWhileMoving=true                ; boolean
+
+[CombatDamage]
+OpenTransport.RangeBonus=0                        ; integer
+OpenTransport.DamageMultiplier=1.0                ; floating point value
 
 [SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
 OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
 OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
 OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=false               ; boolean
-OpenTopped.AllowFiringIfDeactivated=true          ; boolean
-OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, defaults to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
-OpenTopped.ShareTransportTarget=true              ; boolean
-OpenTopped.DecloakToFire=                         ; boolean, defaults to [General] -> OpenTopped.DecloakToFire
+OpenTopped.IgnoreRangefinding=                    ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=              ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=                  ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
+OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
 
 [SOMETECHNO]                                      ; TechnoType, passenger
-OpenTransport.RangeBonus=0                        ; integer
-OpenTransport.DamageMultiplier=1.0                ; floating point value
+OpenTransport.RangeBonus=                         ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=                   ; floating point value, default to [CombatDamage] -> OpenTransport.DamageMultiplier
+OpenTransport.FireWhileMoving=                    ; boolean, default to [General] -> OpenTransport.FireWhileMoving
 ```
 
 ```{note}
 Range of passive acquiring of passengers in an OpenTopped transport won't be affected by these RangeBonus values.
+```
+
+```{note}
+Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMoving` and `FireWhileMoving` for opentopped transport are somewhat different from `FireWhileMoving` for regular techno. This might be changed in the future.
 ```
 
 ### Customizable spawns queue
@@ -1700,9 +1762,13 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+[General]
 RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 RadarJamDelay=30                  ; integer
+
+[SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
+RadarJamHouses=                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> RadarJamHouses
+RadarJamDelay=                    ; integer, default to [General] -> RadarJamDelay
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
 ```
@@ -1718,10 +1784,11 @@ When `DriverKilled.KeptPassengers=true` is set, passengers will always be retain
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
+DriverKilled.KeptPassengers=false   ; boolean
 DriverKilled.KillPassengers=false   ; boolean
 
 [SOMETECHNO]                        ; TechnoType, transport
-DriverKilled.KeptPassengers=false   ; boolean
+DriverKilled.KeptPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KeptPassengers
 DriverKilled.KillPassengers=        ; boolean, defaults to [CombatDamage] -> DriverKilled.KillPassengers
 ```
 
@@ -1782,9 +1849,10 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+UseDisguiseMovementSpeed=false
 
 [SOMETECHNO]                      ; TechnoType
-UseDisguiseMovementSpeed=false    ; boolean
+UseDisguiseMovementSpeed=         ; boolean, default to [General] -> UseDisguiseMovementSpeed
 ```
 
 ### Exclusion from base center calculations
@@ -1883,18 +1951,23 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 
 In `rulesmd.ini`:
 ```ini
+[General]
+ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+
 [SOMETECHNO]                                    ; TechnoType
 ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
 ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
 ForceWeapon.InRange=                            ; List of integers
+ForceWeapon.InRange.TechnoOnly=                 ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceWeapon.InRange.TechnoOnly=true             ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=        ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
 ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=      ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
 ForceWeapon.Buildings=-1                        ; integer, -1 to disable
 ForceWeapon.Defenses=-1                         ; integer, -1 to disable
 ForceWeapon.Infantry=-1                         ; integer, -1 to disable
@@ -1913,22 +1986,29 @@ Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(A
 ### Fast access vehicle/structure
 
 - Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles/structures without queuing.
+  - `NoQueueUpToEnter.BoardDistance` can be used to define the minimum distance that passengers must reach to enter the transport.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-NoQueueUpToEnter=false          ; boolean
-NoQueueUpToUnload=false         ; boolean
-NoQueueUpToEnter.Buildings=     ; boolean, default to NoQueueUpToEnter
-NoQueueUpToUnload.Buildings=    ; boolean, default to NoQueueUpToUnload
+NoQueueUpToEnter=false              ; boolean
+NoQueueUpToUnload=false             ; boolean
+NoQueueUpToEnter.BoardDistance=384  ; integer, distance in leptons (1/256th of a cell)
+NoQueueUpToEnter.Buildings=         ; boolean, default to NoQueueUpToEnter
+NoQueueUpToUnload.Buildings=        ; boolean, default to NoQueueUpToUnload
 
-[SOMEVEHICLE/SOMEBUILDING]      ; VehicleType/BuildingType, transport
-NoQueueUpToEnter=               ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
-NoQueueUpToUnload=              ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
+[SOMEVEHICLE/SOMEBUILDING]          ; VehicleType/BuildingType, transport
+NoQueueUpToEnter=                   ; boolean, default to [General] -> NoQueueUpToEnter(.Buildings)
+NoQueueUpToEnter.BoardDistance=     ; integer, distance in leptons (1/256th of a cell), default to [General] -> NoQueueUpToEnter.BoardDistance
+NoQueueUpToUnload=                  ; boolean, default to [General] -> NoQueueUpToUnload(.Buildings)
 ```
 
 ```{note}
 Note that this logic is used for [Passenger](https://modenc.renegadeprojects.com/Passengers) logic, which is different from [Occupier](https://modenc.renegadeprojects.com/Occupier).
+```
+
+```{warning}
+If `NoQueueUpToEnter.BoardDistance` is set to a too small value, the passenger units may be blocked by other units and fail to reach the required distance before successfully entering the transport, in which case they will continue trying to get closer and keep moving.
 ```
 
 ### Initial spawns number
@@ -1966,6 +2046,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 - Objects can be destroyed automatically if *any* of these conditions is met:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `OnOwnerChange`: The object's ownership has been changed.
+    - `OnOwnerChange.IgnoreRevertOnExit`: Whether to ignore the case where `Passengers.SyncOwner.RevertOnExit=true` causes ownership change.
     - `OnOwnerChange.HumanToComputer/ComputerToHuman`: The object's ownership has been changed from human to computer or from computer to human. Default to `OnOwnerChange` if not set.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
@@ -1978,26 +2059,35 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 - If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. If more than one animation is listed, a random one is selected.
+- `AutoDeath.AllowLimboed` can be used to define whether the auto death effect is triggered when the unit is in limbo state.
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                                   ; TechnoType
-AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation=                     ; List of AnimationTypes
-AutoDeath.OnAmmoDepletion=false                ; boolean
-AutoDeath.OnOwnerChange=false                  ; boolean
-AutoDeath.OnOwnerChange.HumanToComputer=       ; boolean, default to AutoDeath.OnOwnerChange
-AutoDeath.OnOwnerChange.ComputerToHuman=       ; boolean, default to AutoDeath.OnOwnerChange
-AutoDeath.AfterDelay=0                         ; positive integer
-AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
-AutoDeath.TechnosDontExist.Any=false           ; boolean
-AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
-AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.TechnosExist=                        ; List of TechnoTypes
-AutoDeath.TechnosExist.Any=true                ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
-AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[CombatDamage]
+AutoDeath.AllowLimboed=true                       ; boolean
+AutoDeath.OnOwnerChange.IgnoreRevertOnExit=false  ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=false     ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false         ; boolean
+
+[SOMETECHNO]                                      ; TechnoType
+AutoDeath.Behavior=                               ; enumeration (kill | vanish | sell), default not set
+AutoDeath.AllowLimboed=true                       ; boolean, defaults to [CombatDamage] -> AutoDeath.AllowLimboed
+AutoDeath.VanishAnimation=                        ; List of AnimationTypes
+AutoDeath.OnAmmoDepletion=false                   ; boolean
+AutoDeath.OnOwnerChange=false                     ; boolean
+AutoDeath.OnOwnerChange.IgnoreRevertOnExit=       ; boolean, defaults to [CombatDamage] -> AutoDeath.OnOwnerChange.IgnoreRevertOnExit
+AutoDeath.OnOwnerChange.HumanToComputer=          ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.OnOwnerChange.ComputerToHuman=          ; boolean, default to AutoDeath.OnOwnerChange
+AutoDeath.AfterDelay=0                            ; positive integer
+AutoDeath.TechnosDontExist=                       ; List of TechnoTypes
+AutoDeath.TechnosDontExist.Any=false              ; boolean
+AutoDeath.TechnosDontExist.AllowLimboed=          ; boolean, default to [CombatDamage] -> AutoDeath.TechnosDontExist.AllowLimboed
+AutoDeath.TechnosDontExist.Houses=owner           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist=                           ; List of TechnoTypes
+AutoDeath.TechnosExist.Any=true                   ; boolean
+AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
+AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{note}
@@ -2036,11 +2126,16 @@ PriorityDeployFiltering=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                          ; TechnoType, as Mind controllers
-MindControlRangeLimit=-1.0            ; floating point value
+[General]
 MindControl.IgnoreSize=true           ; boolean
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType, as Mind controllers
+MindControlRangeLimit=-1.0            ; floating point value
+MindControl.IgnoreSize=               ; boolean, default to [General] -> MindControl.IgnoreSize
+MindControlLink.VisibleToHouse=       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> MindControlLink.VisibleToHouse
+MultiMindControl.ReleaseVictim=       ; boolean, default to [General] -> MultiMindControl.ReleaseVictim
 
 [SOMETECHNO]                          ; TechnoType, as Mind controlled targets
 MindControlSize=1                     ; integer
@@ -2119,6 +2214,8 @@ NoReload.Temporal=       ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Overload.ParticleSysCount=5   ; integer
 
 [SOMETECHNO]                  ; TechnoType
 Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
@@ -2126,7 +2223,7 @@ Overload.Damage=              ; List of integers, default to [CombatDamage] -> O
 Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
-Overload.ParticleSysCount=5   ; integer
+Overload.ParticleSysCount=    ; integer, default to [CombatDamage] -> Overload.ParticleSysCount
 ```
 
 ### Promoted Spawns
@@ -2138,8 +2235,11 @@ Overload.ParticleSysCount=5   ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                 ; TechnoType
+[General]
 Promote.IncludeSpawns=false  ; boolean
+
+[SOMETECHNO]                 ; TechnoType
+Promote.IncludeSpawns=       ; boolean, default to [General] -> Promote.IncludeSpawns
 ```
 
 ### Promotion animation
@@ -2221,14 +2321,17 @@ RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ### Reset MindControl after transformation
 
 - After the unit conversion is completed, its mind control can be reset.
-  - If all warheads don't have `MindControl=yes`, then `Convert.ResetMindControl=yes` will release all controlled units.
-  - If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes` resets its maximum number of controls.
-  - If all weapons don't have `InfiniteMindControl=yes`, then `Convert.ResetMindControl=yes` release controlled units that exceed the limit.
+  - If all warheads don't have `MindControl=true`, then `Convert.ResetMindControl=true` will release all controlled units.
+  - If any warhead has `MindControl=true`, then `Convert.ResetMindControl=true` resets its maximum number of controls.
+  - If all weapons don't have `InfiniteMindControl=true`, then `Convert.ResetMindControl=true` release controlled units that exceed the limit.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType, before conversion
-Convert.ResetMindControl=false          ; boolean
+[General]
+Convert.ResetMindControl=false  ; boolean
+
+[SOMETECHNO]                    ; TechnoType, before conversion
+Convert.ResetMindControl=       ; boolean, default to [General] -> Convert.ResetMindControl
 ```
 
 ### Revenge weapon
@@ -2391,8 +2494,11 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
+[General]
 HoverDrownable=true     ; boolean
+
+[SOMEVEHICLE]           ; VehicleType
+HoverDrownable=         ; boolean, default to [General] -> HoverDrownable
 ```
 
 ### Damaged unit image changes
@@ -2443,12 +2549,48 @@ DefaultMirageDisguises=    ; List of TerrainTypes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+[AudioVisual]
 JumpjetTilt=false                       ; boolean
 JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
 JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
+
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=                            ; boolean, default to [AudioVisual] -> JumpjetTilt
+JumpjetTilt.ForwardAccelFactor=         ; floating point value, default to [AudioVisual] -> JumpjetTilt.ForwardAccelFactor
+JumpjetTilt.ForwardSpeedFactor=         ; floating point value, default to [AudioVisual] -> JumpjetTilt.ForwardSpeedFactor
+JumpjetTilt.SidewaysRotationFactor=     ; floating point value, default to [AudioVisual] -> JumpjetTilt.SidewaysRotationFactor
+JumpjetTilt.SidewaysSpeedFactor=        ; floating point value, default to [AudioVisual] -> JumpjetTilt.SidewaysSpeedFactor
+```
+
+### RA1-Style Multi-Turret and Multi-Barrel
+
+![image](_static/images/multiTurretAndMultiBarrel.gif)
+*Shogun Battleship in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Vehicles can now draw and fire the same turret at multiple positions (RA1-style multi-turret) and draw multiple barrels for each turret, only supports regular VXL vehicles.
+  - `ExtraTurretCount` controls how many extra turret positions a unit has. `ExtraTurretOffsetX` controls the offset of the X-th turret position relative to the center of the unit. X is 0-based.
+  - `ExtraBarrelCount` controls how many extra barrels each turret draws. `BarrelOffset` controls the offset distance of the main barrel relative to the center of the turret in the left-right direction (positive values shift left). `ExtraBarrelOffsetX` controls the offset distance of the X-th extra barrel of each turret relative to the center of the turret in the left-right direction (positive values shift left). X is 0-based.
+  - `BarrelOverTurret` controls whether the barrel layer is always above the turret layer. Otherwise, the layer relationship will be judged according to the direction of the turret.
+  - When a unit fires, it will first use the original turret to fire `BurstPerTurret` times, then switch to the 0th additional turret position to fire `BurstPerTurret` times, then switch to the 1st, and so on.
+- The firing FLH is also calculated relative to the firing turret's position. If the unit's turret or barrel has recoil effects set, the turret/barrel index will be automatically calculated based on `Burst`.
+- The firing position is essentially determined by the current `Burst`. If you want the rear turrets to fire, you need weapons with high `Burst`. For example, a battleship with 2 additional turret positions (3 turrets total) and `BurstPerTurret=3` would need at least `Burst=9` to allow all turrets to fire completely once. The same applies to barrels on each turret.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]               ; VehicleType
+BarrelOverTurret=           ; boolean
+BarrelOffset=0              ; integer
+ExtraBarrelCount=0          ; integer
+ExtraBarrelOffsetX=0        ; integer
+ExtraTurretCount=0          ; integer
+ExtraTurretOffsetX=0,0,0    ; integer - Forward,Lateral,Height
+BurstPerTurret=0            ; integer
+```
+
+```{note}
+This is essentially designed to restore multi-turrets in RA1, not to help you make a Zantos. Therefore, features like different turrets using different weapons/targeting separately/calculating cooldown separately/having separate health are not within the scope of this function. Please use techno attachment for such requirements.
 ```
 
 ### Turret Response
@@ -2587,11 +2729,17 @@ AffectsGround=true         ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.AnimOnAffectedTargets=false           ; boolean
+Crit.SuppressWhenIntercepted=false         ; boolean
+
 [SOMEWARHEAD]                              ; WarheadType
 Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ApplyChancePerTarget=                 ; boolean, default to [CombatDamage] -> Crit.ApplyChancePerTarget
 Crit.ExtraDamage=0                         ; integer
-Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.ExtraDamage.ApplyFirepowerMult=       ; boolean, default to [CombatDamage] -> Crit.ExtraDamage.ApplyFirepowerMult
 Crit.Warhead=                              ; WarheadType
 Crit.Warhead.FullDetonation=true           ; boolean
 Crit.AffectsTarget=all                     ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
@@ -2602,8 +2750,8 @@ Crit.AnimList=                             ; List of AnimationTypes
 Crit.AnimList.PickRandom=                  ; boolean
 Crit.AnimList.CreateAll=                   ; boolean
 Crit.ActiveChanceAnims=                    ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false           ; boolean
-Crit.SuppressWhenIntercepted=false         ; boolean
+Crit.AnimOnAffectedTargets=                ; boolean, default to [CombatDamage] -> Crit.AnimOnAffectedTargets
+Crit.SuppressWhenIntercepted=              ; boolean, default to [CombatDamage] -> Crit.SuppressWhenIntercepted
 
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
@@ -2611,6 +2759,20 @@ ImmuneToCrit=false                         ; boolean
 
 ```{warning}
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
+### Change target Owner on impact
+
+- Warheads can now change targets owner to warhead's owner.
+- `ChangeOwner.SetAsMindControl` makes the effect work like permanent mind control, which respects `ImmuneToPsionics`.
+  - `ChangeOwner.MindControlAnim` determines the mind control anim of this effect, which respects `MindControlRingOffset`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                               ; WarheadType
+ChangeOwner=false                           ; boolean
+ChangeOwner.SetAsMindControl=false          ; boolean
+ChangeOwner.MindControlAnim=                ; Animation
 ```
 
 ### Convert TechnoType on impact
@@ -2905,11 +3067,14 @@ RemoveDisguise=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+
 [SOMEWARHEAD]                               ; WarheadType
 ReturnWarhead=                              ; WarheadType
 ReturnWarhead.Damage=0                      ; integer
 ReturnWarhead.Chance=0.0                    ; floating point value, percents or absolute (0.0-1.0)
-ReturnWarhead.ApplyChancePerTarget=false    ; boolean
+ReturnWarhead.ApplyChancePerTarget=         ; boolean, default to [CombatDamage] -> ReturnWarhead.ApplyChancePerTarget
 ReturnWarhead.FullDetonation=true           ; boolean
 ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -3080,6 +3245,36 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ## Weapons
+
+### Allow Laser drawing position update
+
+- Now you can define via `LaserPositionUpdate` whether the endpoints of a laser drawing are updated during its duration.
+  - `None`: No update.
+  - `Firer`: The start point follows the firer's FLH; if the firer dies, the update stops.
+    - Since the FLH of `DiskLaser` actually determines the center of the ring, in this scenario, during the update process, the direction of the line connecting the beam's starting point to the center is fixed relative to the ground and the distance is constant - that is, the starting point will still remain on the ring.
+  - `Target`: The end point follows the target; if the target object dies, the update stops.
+  - `All`: Equivalent to specifying both `Firer` and `Target`.
+- `LaserPositionUpdate.StopOnFirerConvert` determines whether the laser source stops updating when the firer transforms. If set to false (default), the laser will continue to update using the transformed unit's corresponding parameters.
+
+```{note}
+For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start point is the position where the parent weapon detonates, not the firer's FLH.
+- If `Firer` is set, it will be treated as `None`.
+- If `All` is set, it will be treated as `Target`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType with IsLaser=yes or DiskLaser=yes
+LaserPositionUpdate=none                     ; Position Follow Enumeration (none|firer|target|all)
+LaserPositionUpdate.StopOnFirerConvert=false ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
+```
+
+```{warning}
+If the weapon sets this logic to a non-`None` value while also using other logics that change the drawing position, such as `FlakScatter` and `VisualScatter`, then after initially drawing the laser according to those other logics, the drawing position will be forced to change due to the update rules.
+```
 
 ### AreaFire target customization
 
@@ -3271,11 +3466,16 @@ That is to say, the total duration of executing KeepRange equals the value of we
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-KeepRange=0                   ; floating point value
+[General]
 KeepRange.AllowAI=false       ; boolean
 KeepRange.AllowPlayer=false   ; boolean
 KeepRange.EarlyStopFrame=0    ; integer
+
+[SOMEWEAPON]                  ; WeaponType
+KeepRange=0                   ; floating point value
+KeepRange.AllowAI=            ; boolean, default to [General] -> KeepRange.AllowAI
+KeepRange.AllowPlayer=        ; boolean, default to [General] -> KeepRange.AllowPlayer
+KeepRange.EarlyStopFrame=     ; integer, default to [General] -> KeepRange.EarlyStopFrame
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`
@@ -3285,8 +3485,11 @@ KeepRange.EarlyStopFrame=0    ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType, with OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
+[General]
+OmniFire.TurnToTarget=false  ; boolean
+
+[SOMEWEAPON]                 ; WeaponType, with OmniFire=yes
+OmniFire.TurnToTarget=       ; boolean, default to [General] -> OmniFire.TurnToTarget
 ```
 
 ### Radiation enhancements
@@ -3324,12 +3527,17 @@ CylinderRangefinding=             ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                   ; WeaponType
-Strafing=                      ; boolean
-Strafing.Shots=                ; integer
+[General]
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.TargetCell=false      ; boolean
+
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=                ; integer
+Strafing.SimulateBurst=        ; boolean, default to [General] -> Strafing.SimulateBurst
+Strafing.UseAmmoPerShot=       ; boolean, default to [General] -> Strafing.UseAmmoPerShot
+Strafing.TargetCell=           ; boolean, default to [General] -> Strafing.TargetCell
 Strafing.EndDelay=             ; integer, game frames
 ```
 

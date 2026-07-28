@@ -950,6 +950,33 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<PositionFollow>(PositionFollow& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PositionFollow> Names[] =
+			{
+				{"none", PositionFollow::None},
+				{"firer", PositionFollow::Firer},
+				{"target", PositionFollow::Target},
+				{"all", PositionFollow::All},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a position follow mode (None, Firer, Target, All)");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

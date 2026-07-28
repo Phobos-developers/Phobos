@@ -353,10 +353,12 @@ namespace Savegame
 				return false;
 
 			if (hasValue)
+			{
+				Value.emplace();
 				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
-			else
-				Value.reset();
+			}
 
+			Value.reset();
 			return true;
 		}
 

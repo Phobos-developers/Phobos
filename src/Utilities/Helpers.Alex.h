@@ -92,7 +92,7 @@ namespace Helpers
 		inline int getCappedDuration(int CurrentValue, int Duration, int Cap)
 		{
 			// Usually, the new duration is just added.
-			int ProposedDuration = CurrentValue + Duration;
+			const int ProposedDuration = CurrentValue + Duration;
 
 			if (Duration > 0)
 			{
@@ -105,7 +105,7 @@ namespace Helpers
 				else if (Cap > 0)
 				{
 					// Cap the duration.
-					int cappedValue = std::min(ProposedDuration, Cap);
+					const int cappedValue = std::min(ProposedDuration, Cap);
 					return std::max(CurrentValue, cappedValue);
 				}
 				else
@@ -142,6 +142,9 @@ namespace Helpers
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
+			double const spreadMultSq = spreadMult * spreadMult;
+			double const threshold = spreadMult + Unsorted::LevelHeight;
+			double const thresholdSq = threshold * threshold;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
 			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
@@ -153,7 +156,7 @@ namespace Helpers
 				if (!pCell)
 					continue;
 
-				bool isCenter = pCell->MapCoords == cellCoords;
+				bool const isCenter = pCell->MapCoords == cellCoords;
 
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
@@ -171,21 +174,23 @@ namespace Helpers
 							if (ignoreHeight)
 								cellCenterCoords.Z = coords.Z;
 
-							double dist = cellCenterCoords.DistanceFrom(coords);
-
 							// If this is the center cell, there's some different behaviour.
 							if (isCenter)
 							{
-								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
-									dist = 0;
-								else
-									dist -= Unsorted::LevelHeight;
-							}
+								double distanceSq = 0.0;
 
-							if (dist > spreadMult)
+								if (coords.Z - cellCenterCoords.Z > Unsorted::LevelHeight)
+									distanceSq = cellCenterCoords.DistanceFromSquared(coords);
+
+								if (distanceSq > thresholdSq)
+									continue;
+							}
+							else if (cellCenterCoords.DistanceFromSquared(coords) > spreadMultSq)
+							{
 								continue;
+							}
 						}
-						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
+						else if (pTechno->Location.DistanceFromSquared(coords) > spreadMultSq)
 						{
 							continue;
 						}
@@ -212,12 +217,13 @@ namespace Helpers
 						if (ignoreHeight)
 							location.Z = coords.Z;
 
-						auto dist = location.DistanceFrom(coords);
+						double distanceSq = location.DistanceFromSquared(coords);
 
 						// reduce the distance for flying aircraft
 						if (pTechno->WhatAmI() == AbstractType::Aircraft)
-							dist *= 0.5;
-						if (dist <= spreadMult)
+							distanceSq *= 0.25; // 0.5 * 0.5
+
+						if (distanceSq <= spreadMultSq)
 							set.insert(pTechno);
 					}
 				}

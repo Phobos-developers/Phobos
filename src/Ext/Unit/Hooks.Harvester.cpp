@@ -1,4 +1,4 @@
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -74,7 +74,11 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 
 	GET(FootClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pUnit = abstract_cast<UnitClass*, true>(pThis);
+	if (!pUnit)
+		return 0;
+
+	auto const pTypeExt = UnitTypeExt::Fetch(pUnit->Type);
 
 	if (pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman())
 	{
@@ -89,7 +93,7 @@ DEFINE_HOOK_AGAIN(0x73D515, UnitClass_Harvesting_HarvesterLoadRate, 6)
 DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 {
 	GET(UnitClass* const, pThis, ESI);
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
 
@@ -99,7 +103,7 @@ DEFINE_HOOK(0x73D5D5, UnitClass_Harvesting_HarvesterLoadRate, 6)
 DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
 {
 	GET(UnitClass* const, pThis, ESI);
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	double dumpRate = pTypeExt->HarvesterDumpRate.Get(RulesClass::Instance->HarvesterDumpRate);
 
@@ -114,7 +118,7 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 
 	GET(UnitClass*, pThis, ESI);
 	GET(const int, tiberiumIdx, EBP);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
 	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
 
@@ -129,7 +133,7 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
 {
 	GET(UnitClass* const, pThis, EBP);
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	R->EAX(pTypeExt->HarvesterLoadRate.Get(RulesClass::Instance->HarvesterLoadRate));
 
@@ -145,7 +149,7 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 
 	const auto pType = pThis->Type;
 	// Focus is set when the harvester is fully loaded and go home.
-	if (pFocus && !pType->Weeder && TechnoTypeExt::ExtMap.Find(pType)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
+	if (pFocus && !pType->Weeder && UnitTypeExt::Fetch(pType)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
 	{
 		auto cellBuffer = CellStruct::Empty;
 		const auto pCellStru = pThis->ScanForTiberium(&cellBuffer, RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell, 0);
@@ -221,7 +225,7 @@ DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
 
 		if ((pType->Harvester || pType->Weeder) && pType->MovementZone == MovementZone::Subterrannean)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+			auto const pExt = UnitExt::Fetch(pUnit);
 			pExt->SubterraneanHarvStatus = 1;
 			pExt->SubterraneanHarvRallyPoint = pThis->ArchiveTarget;
 			pThis->ArchiveTarget = nullptr;

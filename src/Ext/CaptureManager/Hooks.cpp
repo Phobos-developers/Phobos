@@ -34,9 +34,9 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture, 0x6)
 
 static int __fastcall _GetControlledCount(CaptureManagerClass* pThis)
 {
-	const auto pOwnerTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+	const auto pOwnerTypeExt = TechnoExt::Fetch(pThis->Owner)->TypeExtData;
 
-	if (!pOwnerTypeExt->MindControl_IgnoreSize)
+	if (!pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 		return CaptureManagerExt::GetControlledTotalSize(pThis);
 
 	return pThis->ControlNodes.Count;
@@ -94,7 +94,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	GET_STACK(const int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
 
 	auto const pAttacker = pThis->Owner;
-	auto const pExt = TechnoExt::ExtMap.Find(pAttacker)->TypeExtData;
+	auto const pExt = TechnoExt::Fetch(pAttacker)->TypeExtData;
 
 	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
 	auto const pOwner = pThis->Owner;
-	auto const pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
+	auto const pOwnerTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
 	if (!pOwnerTypeExt) // we cant find type Ext for this , just return to original function !
 	{
@@ -172,7 +172,7 @@ static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThi
 				{
 					auto& random = ScenarioClass::Instance->Random;
 
-					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
+					for (int i = pOwnerTypeExt->Overload_ParticleSysCount.Get(RulesExt::Global()->Overload_ParticleSysCount); i > 0; --i)
 					{
 						auto const nRandomY = random.RandomRanged(-200, 200);
 						auto const nRamdomX = random.RandomRanged(-200, 200);
