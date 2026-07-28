@@ -4,7 +4,12 @@
 
 DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
+	enum { SkipGameCode = 0x4401D2 };
+
 	GET(BuildingClass*, pBuilding, ESI);
+
+	if (pBuilding->IsUnderEMP())
+		return SkipGameCode;
 
 	auto const pOwner = pBuilding->Owner;
 	const int index = pOwner->ProducingAircraftTypeIndex;

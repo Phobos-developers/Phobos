@@ -1048,3 +1048,28 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
 }
 
 #pragma endregion
+
+#pragma region Controllability
+
+DEFINE_HOOK_AGAIN(0x4C6D4D, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOff
+DEFINE_HOOK_AGAIN(0x4C71CA, EventClass_RespondToEvent_CheckControllability, 0x8)  // MegaMission
+DEFINE_HOOK_AGAIN(0x4C74CB, EventClass_RespondToEvent_CheckControllability, 0x8)  // Idle
+DEFINE_HOOK_AGAIN(0x4C7859, EventClass_RespondToEvent_CheckControllability, 0x8)  // Scatter
+DEFINE_HOOK_AGAIN(0x4C76BC, EventClass_RespondToEvent_CheckControllability, 0x8)  // Deploy
+DEFINE_HOOK_AGAIN(0x4C6F12, EventClass_RespondToEvent_CheckControllability, 0x8)  // Sell
+DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOn
+{
+	enum { SkipGameCode = 0x4C6D42 };
+
+	GET(EventClass* const, pThis, ESI);
+
+	auto const pTechno = pThis->MegaMission.Whom.As_Techno();
+	auto const pHouse = pTechno->GetOwningHouse();
+
+	if (!TechnoExt::CanReceiveEvent(pTechno, pHouse))
+		return SkipGameCode;
+
+	return 0;
+}
+
+#pragma endregion

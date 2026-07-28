@@ -323,6 +323,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 - Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
+- Fixed the issue that spawnee or slave would execute some player commands.
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
 
 ## Fixes / interactions with other extensions
@@ -376,6 +377,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
+- Fix the issue of Ares' EMP not suspending the production of AI factories.
 
 ## Newly added global settings
 
