@@ -112,7 +112,7 @@ public:
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
-	static void UpdateFactoryQueues(BuildingClass* pThis);
+	static void __stdcall UpdateFactoryQueues(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
 };
