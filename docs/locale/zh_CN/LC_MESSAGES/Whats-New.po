@@ -2758,6 +2758,11 @@ msgstr ""
 msgid "Fixed the issue that spawner or slave would execute some player commands (by TaranDahl)"
 msgstr "修正了子机或奴隶会执行部分玩家指令的问题（by TaranDahl）"
 
+msgid ""
+"Fixed the bug that technos do not reset their link with the linked "
+"building when deactivated (by NetsuNegi)"
+msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

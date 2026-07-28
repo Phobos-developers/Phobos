@@ -1665,6 +1665,12 @@ msgstr ""
 msgid "Fixed the issue that spawner or slave would execute some player commands."
 msgstr "修正了子机或奴隶会执行部分玩家指令的问题。"
 
+msgid ""
+"Fixed the bug that technos do not reset their link with the linked "
+"building when deactivated."
+msgstr ""
+"修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

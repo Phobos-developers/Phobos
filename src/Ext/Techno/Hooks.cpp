@@ -12,6 +12,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/UnitType/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/Helpers.Alex.h>
@@ -2325,3 +2326,65 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)
 
+namespace DeactivateTemp
+{
+	class TechnoClassFake final : public TechnoClass
+	{
+		void _Deactivate();
+	};
+}
+
+void DeactivateTemp::TechnoClassFake::_Deactivate()
+{
+	const auto pThis = static_cast<TechnoClass*>(this);
+
+	if (pThis->IsTether)
+	{
+		const auto pLink = pThis->GetNthLink();
+
+		if (pLink && pThis->GetCell()->GetBuilding() == pLink)
+			return;
+	}
+
+	pThis->Guard();
+	pThis->Deselect();
+
+	const auto pFoot = abstract_cast<FootClass*, true>(pThis);
+
+	if (pFoot)
+		pFoot->Locomotor->Power_Off();
+
+	const bool wasDeactivated = std::exchange(pThis->Deactivated, true);
+
+	if (wasDeactivated)
+		return;
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (!Unsorted::ScenarioInit && pType->DeactivateSound != -1)
+		VocClass::PlayAt(pType->DeactivateSound, pThis->Location);
+
+	if (AresFunctions::SetSpotlight)
+	{
+		struct DummyTypeExtHere
+		{
+			char _[0x77];
+			bool HasSpotlight;
+		};
+
+		if (reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC)->HasSpotlight)
+			AresFunctions::SetSpotlight(reinterpret_cast<void*>(pThis->align_154), nullptr);
+	}
+
+	if (pFoot)
+	{
+		if (abstract_cast<BuildingClass*>(pThis->GetNthLink()))
+			pThis->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+	else
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		BuildingExt::UpdateFactoryQueues(pBuilding);
+	}
+}
+DEFINE_FUNCTION_JUMP(LJMP, 0x70FC90, DeactivateTemp::TechnoClassFake::_Deactivate)

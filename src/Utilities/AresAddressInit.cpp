@@ -10,6 +10,7 @@ decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 decltype(AresFunctions::UnitDeliveryStateMachine_Update) AresFunctions::UnitDeliveryStateMachine_Update = nullptr;
+decltype(AresFunctions::SetSpotlight) AresFunctions::SetSpotlight = nullptr;
 decltype(AresFunctions::ApplyPermaMC) AresFunctions::ApplyPermaMC = nullptr;
 decltype(AresFunctions::DetailsCurrentlyEnabled) AresFunctions::DetailsCurrentlyEnabled = nullptr;
 decltype(AresFunctions::SendPDPlane) AresFunctions::SendPDPlane = nullptr;
@@ -49,6 +50,8 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032110);
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x075DE0);
+
+	NOTE_ARES_FUN(SetSpotlight, 0x046420);
 
 	NOTE_ARES_FUN(ApplyPermaMC, 0x052CD0);
 
@@ -96,6 +99,8 @@ void AresFunctions::InitAres3_0p1()
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032AF0);
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x076E90);
+
+	NOTE_ARES_FUN(SetSpotlight, 0x046F90);
 
 	NOTE_ARES_FUN(ApplyPermaMC, 0x053980);
 
