@@ -1833,6 +1833,11 @@ msgid "Customize reveal radius of `RevealToAll`"
 msgstr ""
 "自定义 `RevealToAll` 揭示范围"
 
+msgid ""
+"Fix the bug that technos do not reset their link with the linked building"
+" when deactivated"
+msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2907,6 +2912,9 @@ msgstr "用于选取当前屏幕内被非永久心控捕获的单位的新快捷
 
 msgid "Fix the issue that spawnee or slave would execute some player commands"
 msgstr "修正子机或奴隶会执行部分玩家指令的问题"
+
+msgid "Customize whether aircraft is a cargo plane"
+msgstr "自定义飞机是否是cargo plane"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"

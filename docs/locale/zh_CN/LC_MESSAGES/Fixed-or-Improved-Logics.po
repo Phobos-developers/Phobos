@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 16:04+0800\n"
+"POT-Creation-Date: 2026-07-29 07:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1667,6 +1667,11 @@ msgstr ""
 msgid "Fixed the issue that spawnee or slave would execute some player commands."
 msgstr "修正了子机或奴隶会执行部分玩家指令的问题。"
 
+msgid ""
+"Fixed the bug that technos do not reset their link with the linked "
+"building when deactivated."
+msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -1912,9 +1917,10 @@ msgid ""
 "is no longer meaningless."
 msgstr "允许了添加自定义巡航导弹，因此 Ares 的 `Missile.RaiseRate` 不再没有意义。"
 
-msgid "Fixed the issue of Ares' EMP not suspending the production of AI factories."
-msgstr ""
-"修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题。"
+msgid ""
+"Fixed the issue of Ares' EMP not suspending the production of AI "
+"factories."
+msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
@@ -2594,6 +2600,23 @@ msgid ""
 "trigger a scatter. Now you can disable this behavior by setting the "
 "following flag to `false`."
 msgstr "在原版中当一架战机发起攻击它会强制触发目标单元格上的分散效果。现在你可以通过将下面的语句设为 `false` 来禁用该行为。"
+
+msgid "Customize whether aircraft is a cargo plane"
+msgstr "自定义飞机是否是cargo plane"
+
+#, fuzzy
+msgid ""
+"In vanilla, the `IsALoaner` flag of an aircraft is determined by the "
+"game's own logic during `UnLimbo`. Now, you can explicitly control this "
+"flag per AircraftType."
+msgstr "在原版中，战机的 `Spawned` 标志由游戏自身逻辑在 `UnLimbo` 期间决定。现在你可以按 AircraftType 显式控制此标志。"
+
+#, fuzzy
+msgid ""
+"The key `IsALoaner` determines the value of the aircraft's `IsALoaner` "
+"flag when it is unlimboed. If left unset, the vanilla behavior is "
+"preserved."
+msgstr "`IsCargoPlane` 决定战机被 unlimbo 时的 `IsALoaner` 标志值。若未设置则保留原版行为。"
 
 msgid "Extended Aircraft Missions"
 msgstr "拓展的战机任务"

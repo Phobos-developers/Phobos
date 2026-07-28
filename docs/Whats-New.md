@@ -636,6 +636,7 @@ HideShakeEffects=false           ; boolean
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 - [Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
 - [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
+- [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -723,6 +724,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
 - Fixed the issue that spawnee or slave would execute some player commands (by TaranDahl)
+- Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -1245,7 +1245,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	// Check aircraft
 	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
-	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->IsALoaner;
 	const auto mission = pTechno->CurrentMission;
 
 	// To avoid aircraft overlap by keep link if is returning or is in airport now.
