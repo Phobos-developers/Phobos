@@ -2211,6 +2211,7 @@ msgstr "RA1 风格多炮塔与多炮管"
 
 msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
 msgstr ""
+"修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："

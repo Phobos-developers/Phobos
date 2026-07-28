@@ -376,7 +376,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
-- Fix the issue of Ares' EMP not suspending the production of AI factories.
+- Fixed the issue of Ares' EMP not suspending the production of AI factories.
 
 ## Newly added global settings
 
