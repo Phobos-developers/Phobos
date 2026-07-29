@@ -69,7 +69,7 @@ DEFINE_HOOK(0x44E371, BuildingClass_Mission_Unload_DeployFire, 0x6)
 			}
 		}
 
-		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::Fetch(pType);
 		const int result = pTypeExt->DeployFireDelay.isset()
 			? pTypeExt->DeployFireDelay : (ScenarioClass::Instance->Random.RandomRanged(0, 2) + 14);
 
