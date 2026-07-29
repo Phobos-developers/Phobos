@@ -1127,7 +1127,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 
-		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+		if (type->RestrictedArmorMultiplier)
 			pAE.HasRestrictedArmorMultipliers = true;
 		else
 			pAE.ArmorMultiplier *= type->ArmorMultiplier;
@@ -1159,7 +1159,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		firepower *= type->FirepowerMultiplier;
 		speed *= type->SpeedMultiplier;
 
-		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+		if (type->RestrictedArmorMultiplier)
 			hasRestrictedArmorMultipliers = true;
 		else
 			armor *= type->ArmorMultiplier;

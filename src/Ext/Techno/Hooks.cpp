@@ -505,12 +505,20 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 	if (pExt->AE.HasRestrictedArmorMultipliers)
 	{
+		auto& random = ScenarioClass::Instance->Random;
+
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
 				continue;
 
 			auto const type = attachEffect->GetType();
+
+			if (!type->RestrictedArmorMultiplier)
+				continue;
+
+			if (type->ArmorMultiplier_Chance < random.RandomDouble())
+				continue;
 
 			if (pWarhead)
 			{
@@ -520,12 +528,11 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 				if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
 					continue;
 			}
-			else if (type->ArmorMultiplier_DisallowWarheads.size() <= 0 && type->ArmorMultiplier_AllowWarheads.size() <= 0) // already calculated
-			{
-				continue;
-			}
 
 			mult *= type->ArmorMultiplier;
+
+			// HitAnim
+			AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
 		}
 	}
 
