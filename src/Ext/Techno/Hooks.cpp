@@ -498,7 +498,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, bool hitAnim)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
@@ -532,7 +532,8 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 			mult *= type->ArmorMultiplier;
 
 			// HitAnim
-			AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
+			if (hitAnim)
+				AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
 		}
 	}
 
@@ -545,7 +546,7 @@ DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead, true)));
 
 	return 0;
 }
@@ -556,7 +557,7 @@ DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 	GET(const int, damage, EAX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, true)));
 
 	return 0;
 }
