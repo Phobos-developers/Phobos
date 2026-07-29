@@ -793,6 +793,7 @@ HideShakeEffects=false           ; boolean
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
+- Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 ```
 
 ### 0.4.0.3
