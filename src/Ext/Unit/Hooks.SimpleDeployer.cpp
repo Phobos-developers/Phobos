@@ -1,22 +1,27 @@
 #include <GameOptionsClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <UnitClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Utilities/AresFunctions.h>
-#include <Utilities/Macro.h>
 
-static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
+static __forceinline bool HasDeployingAnim(UnitTypeClass* pType)
+{
+	return pType->DeployingAnim || UnitTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
+}
+
+static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
-	if (isDeploying && pUnit->Locomotor->Is_Moving_Now())
+	const ILocomotionPtr pLoco = pUnit->Locomotor;
+
+	if (isDeploying && pLoco->Is_Moving_Now())
 		return true;
 
 	FacingClass* currentDir = &pUnit->PrimaryFacing;
 	bool isJumpjet = false;
 
-	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pLoco))
 	{
 		// Jumpjet rotating is basically half a guarantee it is also moving and
 		// may not be caught by the Is_Moving_Now() check.
@@ -28,12 +33,11 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pType = pUnit->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pUnit))->GetTypeExtData();
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
-	if (facing == FacingType::None)
+	if (facing == FacingType::None || (!pTypeExt->DeployDir.isset() && !HasDeployingAnim(pTypeExt->OwnerObject())))
 		return false;
 
 	if (facing != (FacingType)currentDir->Current().GetFacing<8>())
@@ -48,7 +52,7 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 			if (isJumpjet)
 				currentDir->SetDesired(dir);
 
-			pUnit->Locomotor->Do_Turn(dir);
+			pLoco->Do_Turn(dir);
 
 			return true;
 		}
@@ -61,18 +65,13 @@ static bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	return false;
 }
 
-static bool HasDeployingAnim(UnitTypeClass* pUnitType)
-{
-	return pUnitType->DeployingAnim || TechnoTypeExt::ExtMap.Find(pUnitType)->DeployingAnims.size() > 0;
-}
-
-static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
+static inline void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 {
 	if (!pUnit->DeployAnim)
 	{
 		auto const pType = pUnit->Type;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		auto pAnimType = pUnit->Type->DeployingAnim;
+		auto const pTypeExt = UnitTypeExt::Fetch(pType);
+		auto pAnimType = pType->DeployingAnim;
 
 		if (pTypeExt->DeployingAnims.size() > 0)
 			pAnimType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pTypeExt->DeployingAnims, pUnit->PrimaryFacing.Current());
@@ -83,8 +82,8 @@ static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 		pUnit->DeployAnim = pAnim;
 		pAnim->SetOwnerObject(pUnit);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pUnit->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pUnit);
-		auto const pExt = TechnoExt::ExtMap.Find(pUnit);
+		AnimExt::Fetch(pAnim)->SetInvoker(pUnit);
+		auto const pExt = UnitExt::Fetch(pUnit);
 
 		if (pTypeExt->DeployingAnim_UseUnitDrawer)
 		{
@@ -128,7 +127,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 		if (pThis->Deploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -158,6 +157,14 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 	if (pThis->Deployed)
 	{
+		int maxAmmo = -1;
+		auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+
+		if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
+			maxAmmo = pTypeExt->Convert_Deploy->Ammo;
+
+		UnitExt::HandleOnDeployAmmoChange(pThis, maxAmmo);
+
 		if (pType->DeploySound != -1)
 			VocClass::PlayAt(pType->DeploySound, pThis->Location);
 	}
@@ -181,7 +188,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 	{
 		if (pThis->Undeploying && pThis->DeployAnim)
 		{
-			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pExt = UnitExt::Fetch(pThis);
 			auto& timer = pExt->SimpleDeployerAnimationTimer;
 
 			if (timer.Completed())
@@ -199,7 +206,7 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 		{
 			if (HasDeployingAnim(pType))
 			{
-				CreateDeployingAnim(pThis, true);
+				CreateDeployingAnim(pThis, false);
 				pThis->Undeploying = true;
 			}
 			else
@@ -213,6 +220,8 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 
 		if (!pThis->Deployed)
 		{
+			UnitExt::HandleOnDeployAmmoChange(pThis);
+
 			if (pType->UndeploySound != -1)
 				VocClass::PlayAt(pType->UndeploySound, pThis->Location);
 		}
@@ -237,43 +246,26 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 	return SkipGameCode;
 }
 
-// Disable DeployToLand=no forcing landing when idle due to what appears to be
-// a code oversight and no need for DeployToLand=no to work in vanilla game.
-DEFINE_HOOK(0x54BED4, JumpjetLocomotionClass_Hovering_DeployToLand, 0x7)
+DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 {
-	enum { SkipGameCode = 0x54BEE0 };
+	enum { SkipGameCode = 0x54C65F };
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
 
-	auto const pType = pLinkedTo->GetTechnoType();
+	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
 
-	if (!pType->BalloonHover || pType->DeployToLand)
-		pThis->State = JumpjetLocomotionClass::State::Descending;
+	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
+		return SkipGameCode;
 
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
+	return 0;
 }
+
+// Skip DeployToLand check for IsSimpleDeployer jumpjet units, the desired behaviour here
+// should be same for both (hover in place if not deploying)
+DEFINE_JUMP(LJMP, 0x54BDDE, 0x54BDF2);
 
 // Same as above but at a different state.
-DEFINE_HOOK(0x54C2DF, JumpjetLocomotionClass_Cruising_DeployToLand, 0xA)
-{
-	enum { SkipGameCode = 0x54C4FD };
-
-	GET(JumpjetLocomotionClass*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pType = pLinkedTo->GetTechnoType();
-
-	if (!pType->BalloonHover || pType->DeployToLand)
-	{
-		pThis->CurrentHeight = 0;
-		pThis->State = JumpjetLocomotionClass::State::Descending;
-	}
-
-	pLinkedTo->TryNextPlanningTokenNode();
-	return SkipGameCode;
-}
+DEFINE_JUMP(LJMP, 0x54C212, 0x54C22A);
 
 // Disable Ares hover locomotor bobbing processing DeployToLand hook.
 DEFINE_PATCH(0x513EAA, 0xA1, 0xE0, 0x71, 0x88, 0x00);
@@ -319,18 +311,17 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	GET(bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
+	auto const pUnit = abstract_cast<UnitClass*>(pLinkedTo);
 
-	if (pLinkedTo->InAir)
+	if (pUnit && pUnit->InAir)
 	{
-		auto const pType = pLinkedTo->GetTechnoType();
+		auto const pType = pUnit->GetTechnoType();
 
 		if (pType->DeployToLand)
 		{
-			auto const landType = pLinkedTo->GetCell()->LandType;
-
-			if (landType == LandType::Water || landType == LandType::Beach)
+			if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 			{
-				pLinkedTo->InAir = false;
+				pUnit->InAir = false;
 				pLinkedTo->QueueMission(Mission::Guard, true);
 			}
 
@@ -392,7 +383,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible || (pThis->Deploying && !pThis->DeployAnim))
 			return Continue;
@@ -403,25 +394,3 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return Continue;
 }
 
-// Disable deploy cursor if Ares type conversion on deploy is available and the new type is not allowed to move to the cell.
-DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_IsSimpleDeployer, 0x5)
-{
-	enum { DoNotAllowDeploy = 0x700DCE };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-		if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
-		{
-			auto const pCell = pThis->GetCell();
-
-			if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
-				return DoNotAllowDeploy;
-		}
-	}
-
-	return 0;
-}

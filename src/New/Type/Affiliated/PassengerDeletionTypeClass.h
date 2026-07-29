@@ -1,18 +1,12 @@
 #pragma once
 
-#include <Utilities/Constructs.h>
-#include <Utilities/Enum.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class PassengerDeletionTypeClass
 {
 public:
 
 	PassengerDeletionTypeClass() = default;
-
-	PassengerDeletionTypeClass(TechnoTypeClass* pOwnerType);
-
-	TechnoTypeClass* OwnerType;
 
 	Valueable<int> Rate;
 	Valueable<bool> Rate_SizeMultiply;
@@ -28,7 +22,7 @@ public:
 	Valueable<AffectedHouse> DisplaySoylentToHouses;
 	Valueable<Point2D> DisplaySoylentOffset;
 	ValueableIdx<VocClass> ReportSound;
-	Valueable<AnimTypeClass*> Anim;
+	ValueableVector<AnimTypeClass*> Anim;
 	Valueable<bool> UnderEMP;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
