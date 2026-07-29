@@ -173,6 +173,28 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6F724E, TechnoClass_InRange_InfiniteRangeMinRangeCheck, 0x6)
+{
+	enum { Continue = 0x6F7261, ReturnInRange = 0x6F7258 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET(int, range, EDI);
+
+	if (range != -512)
+		return Continue;
+
+	if (!pWeapon->MinimumRange && !WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, true))
+	{
+		R->AL(1);
+		return ReturnInRange;
+	}
+
+	R->EDI(0x3FFFFFFF);
+
+	return Continue;
+}
+
 DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 {
 	enum { SkipGameCode = 0x6F729F };
@@ -276,6 +298,31 @@ namespace ApproachTargetTemp
 	int SearchRange = 0;
 }
 
+DEFINE_HOOK(0x4D59F0, FootClass_ApproachTarget_ClearCond, 0x6)
+{
+	enum { SkipClear = 0x4D5A07, Clear = 0x4D59FB };
+
+	GET(int, distDestTarget, EAX);  // |Destination - Target|
+	GET(int, resetThreshold, EDX);  // ResetMultiplier * weapon range
+	GET_BASE(bool, keepDestination, 0x8);  // skips clearing when set
+
+	// Infinite-range weapons (Range=-2) read a negative weapon range into the
+	// clear-Destination threshold, so the vanilla distance check always fires
+	// and the unit paces instead of backing out of MinimumRange; keep the
+	// Destination here so these weapons back out like regular ones.
+	if (resetThreshold < 0)
+		return SkipClear;
+
+	if (distDestTarget <= resetThreshold)
+		return SkipClear;
+
+	if (keepDestination)
+		return SkipClear;
+
+	R->EDI(0);
+	return Clear;
+}
+
 DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
 {
 	enum { WantAggressiveCrush = 0x4D6892, StartSearching = 0x4D5FE0 };
@@ -283,30 +330,45 @@ DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
 	GET(TechnoTypeClass*, pType, EAX);
 	R->ESI(pType->MovementZone);
 
+	GET(FootClass*, pThis, EBX);
+	GET_STACK(const int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
+	const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
 	GET_STACK(int, searchRange, STACK_OFFSET(0x158, -0x120));
 	ApproachTargetTemp::FromMaximumRange = true;
 	ApproachTargetTemp::SearchRange = searchRange;
+
+	// Range=-2 makes the vanilla search range negative, so it takes the "too small ->
+	// charge target" path and never does the normal search; widen it so these weapons
+	// back out of MinimumRange like regular weapons.
+	if (pWeapon && pWeapon->Range == -512)
+	{
+		const int minSearch = pWeapon->MinimumRange + Unsorted::LeptonsPerCell;
+		if (searchRange < minSearch)
+			searchRange = minSearch;
+	}
 
 	if (searchRange <= 204)
 		return WantAggressiveCrush;
 
 	GET_STACK(const bool, inRange, STACK_OFFSET(0x158, -0x146));
 
-	if (!inRange)
+	if (!inRange && pWeapon)
 	{
-		GET(FootClass*, pThis, EBX);
-		GET_STACK(const int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
-		const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+		const int distance = (pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID)
+			? pThis->DistanceFrom(pThis->Target)
+			: pThis->DistanceFrom3D(pThis->Target);
+		ApproachTargetTemp::FromMaximumRange = distance >= pWeapon->MinimumRange;
 
-		if (pWeapon && pWeapon->Range != -512)
+		if (!ApproachTargetTemp::FromMaximumRange)
 		{
-			const int distance = (pThis->IsInAir() || pWeapon->Projectile->Arcing || pThis->WhatAmI() == AircraftClass::AbsID)
-				? pThis->DistanceFrom(pThis->Target)
-				: pThis->DistanceFrom3D(pThis->Target);
-			ApproachTargetTemp::FromMaximumRange = distance >= pWeapon->MinimumRange;
+			searchRange = 204;
 
-			if (!ApproachTargetTemp::FromMaximumRange)
-				searchRange = 204;
+			// Range=-2 weapons have no max range, so the vanilla SearchRange (a
+			// negative/zero value) would stop the outward search before it reaches past
+			// the MinimumRange - widen it like a normal weapon's max range would.
+			if (pWeapon->Range == -512)
+				ApproachTargetTemp::SearchRange = pWeapon->MinimumRange + Unsorted::LeptonsPerCell;
 		}
 	}
 

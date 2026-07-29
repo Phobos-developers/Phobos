@@ -739,6 +739,7 @@ This page lists all the individual contributions to the project by their author.
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
   - Disable AlphaImage during Buildup
+  - Fix the bug where `Range=-2` ignores `MinimumRange`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
