@@ -13,6 +13,33 @@ This page describes all AI scripting and mapping related additions and changes i
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Fixed AI team recruitment inconsistency causing underfilled teams.
+
+### Dynamic Team Delays
+
+- It is now possible to make `TeamDelays` in skirmish changed dynamically based on player's amount.
+- `TeamDelays.DynamicType` controls how team delay will be changed. Neutral houses and observers won't be accounted in all the following patterns.
+  - `startingpoint`: taking the map's `NumberStartingPoints` into account.
+  - `playercount`: taking the total amount of players into account, including itself.
+  - `allies`: taking the amount of allied players into account, excluding itself.
+  - `enemies`: taking the amount of hostile players into account.
+  - `alivecount`: taking the amount of players that's not defeated at the moment into account, including itself.
+  - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
+  - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
+  - `none`: dynamic team delay will be disabled regardless of the settings of `TeamDelays.CountN`.
+- `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
+  - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies/aliveenemy|none)
+TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
+```
 
 ### Increased Overlay Limit
 
@@ -666,6 +693,22 @@ ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointI
 ...
 ```
 
+### `512` Set Follower for Associated Unit
+
+![image](_static/images/follow_index.gif)
+*The locomotive pulls away the parked multiple carriages in [Bellum Æternum](https://ra2be.com/download.html)*
+
+- Sets the follower for the associated object. The parameter is the index of the follower unit.
+  - Invalid for non-vehicle objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
+...
+```
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -745,7 +788,7 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-team-delays) if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
@@ -753,6 +796,10 @@ In `mycampaign.map`:
 ...
 ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 ...
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
 ```
 
 ### `800-802` Display Banner
@@ -773,6 +820,7 @@ ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
   - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+  - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
 
 In `rulesmd.ini`:
 ```ini
@@ -790,6 +838,7 @@ CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
 Duration=-1                 ; integer
 Delay=-1                    ; integer
+ClampToScreen=true          ; boolean
 ```
 
 In `mycampaign.map`:
@@ -947,4 +996,22 @@ In `mycampaign.map`:
 ...
 ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
+```
+
+## Teams
+
+### Adjust recruitable status on team member liberate
+
+- In vanilla, when a unit is added to a team, its `RecruitableB` flag is overwritten by the team's `AreTeamMembersRecruitable` setting. When the unit is liberated from the team, the flag is not restored. The following settings allow a team to reset this flag when liberating its members.
+  - If set to a value **greater than 0**, the liberated unit is forcibly marked as recruitable.
+  - If set to **0**, the liberated unit is forcibly marked as not recruitable.
+  - If set to a value **less than 0** (default: `-1`), the original game behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetRecruitableOnLiberate=-1  ; integer
+
+[SOMETEAMTYPE]               ; TeamType
+SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
 ```

@@ -54,9 +54,7 @@ DEFINE_HOOK(0x44E371, BuildingClass_Mission_Unload_DeployFire, 0x6)
 		if (fireError == FireError::ILLEGAL)
 		{
 			// Do not allow the building to remain in the Unload task indefinitely.
-			pThis->QueueMission(Mission::Guard, false);
-			pThis->NextMission();
-
+			pThis->ForceMission(Mission::Guard);
 			return SkipGameCode;
 		}
 		else if (fireError == FireError::OK && pThis->Fire(pCell, weaponIndex))
@@ -66,9 +64,7 @@ DEFINE_HOOK(0x44E371, BuildingClass_Mission_Unload_DeployFire, 0x6)
 			if (pWeapon->FireOnce)
 			{
 				// When Turret=yes, the Unload task may not be canceled, so this handling is performed.
-				pThis->QueueMission(Mission::Guard, false);
-				pThis->NextMission();
-
+				pThis->ForceMission(Mission::Guard);
 				return SkipGameCode;
 			}
 		}
@@ -103,12 +99,7 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 			continue;
 		}
 
-		const Mission currentMission = pBuilding->CurrentMission;
-
-		if (currentMission == Mission::Construction || currentMission == Mission::Selling)
-			continue;
-
-		if (pBuilding->EMPLockRemaining > 0 || !pBuilding->WasOnline || pBuilding->BunkerLinkedItem)
+		if (!BuildingExt::BuildingOnline(pBuilding))
 			continue;
 
 		pBuilding->ClickedMission(Mission::Unload, nullptr, nullptr, nullptr);

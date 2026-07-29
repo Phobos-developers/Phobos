@@ -240,7 +240,7 @@ msgid ""
 "selection filtering Ares' `GroupAs` was initially broken and units using "
 "it weren't being type selected properly)."
 msgstr ""
-"**重叠功能的兼容性**：（包括来自 Ares、HAres、CNCNet Spanwer DLL "
+"**重叠功能的兼容性**：（包括来自 Ares、HAres、CnCNet Spanwer DLL "
 "等第三方库的功能）考虑哪些功能的代码可能与你当前所测试功能的代码重叠（从技术上讲；这意味着它们修改了相同代码）。由于项目的性质部分功能可能会出现冲突（例如：最初实现的低优先级框选曾导致"
 " Ares 的 `GroupAs` 被破坏，导致使用它的单位无法被正确按类群选）。"
 

@@ -92,7 +92,7 @@ namespace Helpers
 		inline int getCappedDuration(int CurrentValue, int Duration, int Cap)
 		{
 			// Usually, the new duration is just added.
-			int ProposedDuration = CurrentValue + Duration;
+			const int ProposedDuration = CurrentValue + Duration;
 
 			if (Duration > 0)
 			{
@@ -105,7 +105,7 @@ namespace Helpers
 				else if (Cap > 0)
 				{
 					// Cap the duration.
-					int cappedValue = std::min(ProposedDuration, Cap);
+					const int cappedValue = std::min(ProposedDuration, Cap);
 					return std::max(CurrentValue, cappedValue);
 				}
 				else
@@ -121,67 +121,30 @@ namespace Helpers
 			}
 		}
 
-		// We can't touch function signature because Ares calls are redirected to it, so this is a workaround to introduce
-		// new params for now.
-		namespace GetCellSpreadItems
-		{
-			static bool IsCylindrical = false;
-			static bool AffectsAir = true;
-			static bool AffectsGround = true;
 
-			static void SetParams(WarheadTypeExt::ExtData* pWarheadExt)
-			{
-				IsCylindrical = pWarheadExt->CellSpread_Cylinder;
-				AffectsAir = pWarheadExt->AffectsAir;
-				AffectsGround = pWarheadExt->AffectsGround;
-			}
+#pragma region GetCellSpreadItems
 
-			static void ResetParams()
-			{
-				IsCylindrical = false;
-				AffectsAir = true;
-				AffectsGround = true;
-			}
-
-			// Helper for checking AffectsAir & AffectsGround
-			static bool CanBeAffected(TechnoClass* pTechno)
-			{
-				if (!AffectsAir || !AffectsGround)
-				{
-					bool isInAir = pTechno->IsInAir();
-
-					if ((!AffectsAir && isInAir) || (!AffectsGround && !isInAir))
-						return false;
-				}
-
-				return true;
-			}
-		}
-
-		//! Gets a list of all units in range of a cell spread weapon.
+		//! Gets a list of all technos in range.
 		/*!
-			CellSpread is handled as described in
-			http://modenc.renegadeprojects.com/CellSpread.
-
+		    Contains actual implementation of getCellSpreadItems,
+			can have additional params over it to retain
+			the original's function signature.
+			
 			\param coords The location the projectile detonated.
 			\param spread The range to find items in.
 			\param includeInAir Include items that are currently InAir.
-
-			\author AlexB
-			\date 2010-06-28
-
-			\modifications by Starkku
-			\date 2024-05-20
-			\modifications by Trsdy
-			\date 2024-12-05
+			\param ignoreHeight Ignore height checks.
 		*/
-		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
+		inline DistinctCollector<TechnoClass*> getCellSpreadItemsExt(
 			CoordStruct const& coords, double const spread,
-			bool const includeInAir = false)
+			bool const includeInAir, bool const ignoreHeight)
 		{
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
+			double const spreadMultSq = spreadMult * spreadMult;
+			double const threshold = spreadMult + Unsorted::LevelHeight;
+			double const thresholdSq = threshold * threshold;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
 			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
@@ -189,16 +152,16 @@ namespace Helpers
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
 				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
-				if (!pCell)continue;
-				bool isCenter = pCell->MapCoords == cellCoords;
+
+				if (!pCell)
+					continue;
+
+				bool const isCenter = pCell->MapCoords == cellCoords;
+
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						// Check AffectsAir & AffectsGround.
-						if (!GetCellSpreadItems::CanBeAffected(pTechno))
-							continue;
-
 						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
@@ -207,25 +170,27 @@ namespace Helpers
 
 							auto cellCenterCoords = pCell->GetCenterCoords();
 
-							// Ignore Z coordinate if detonation is cylindrical.
-							if (GetCellSpreadItems::IsCylindrical)
+							// Ignore Z coordinate / height.
+							if (ignoreHeight)
 								cellCenterCoords.Z = coords.Z;
-
-							double dist = cellCenterCoords.DistanceFrom(coords);
 
 							// If this is the center cell, there's some different behaviour.
 							if (isCenter)
 							{
-								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
-									dist = 0;
-								else
-									dist -= Unsorted::LevelHeight;
-							}
+								double distanceSq = 0.0;
 
-							if (dist > spreadMult)
+								if (coords.Z - cellCenterCoords.Z > Unsorted::LevelHeight)
+									distanceSq = cellCenterCoords.DistanceFromSquared(coords);
+
+								if (distanceSq > thresholdSq)
+									continue;
+							}
+							else if (cellCenterCoords.DistanceFromSquared(coords) > spreadMultSq)
+							{
 								continue;
+							}
 						}
-						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
+						else if (pTechno->Location.DistanceFromSquared(coords) > spreadMultSq)
 						{
 							continue;
 						}
@@ -246,22 +211,19 @@ namespace Helpers
 				{
 					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						// Check AffectsAir & AffectsGround.
-						if (!GetCellSpreadItems::CanBeAffected(pTechno))
-							continue;
-
 						auto location = pTechno->Location;
 
-						// Ignore Z coordinate if detonation is cylindrical.
-						if (GetCellSpreadItems::IsCylindrical)
+						// Ignore Z coordinate / height.
+						if (ignoreHeight)
 							location.Z = coords.Z;
 
-						auto dist = location.DistanceFrom(coords);
+						double distanceSq = location.DistanceFromSquared(coords);
 
 						// reduce the distance for flying aircraft
 						if (pTechno->WhatAmI() == AbstractType::Aircraft)
-							dist *= 0.5;
-						if (dist <= spreadMult)
+							distanceSq *= 0.25; // 0.5 * 0.5
+
+						if (distanceSq <= spreadMultSq)
 							set.insert(pTechno);
 					}
 				}
@@ -269,6 +231,38 @@ namespace Helpers
 
 			return set;
 		}
+
+		//! Gets a list of all technos in range.
+		/*!
+			CellSpread is handled as described in
+			http://modenc.renegadeprojects.com/CellSpread.
+			
+			NOTE: Function signature for this has to stay the same
+			here due to Ares calls being redirected to this.
+			
+			Use getCellSpreadItemsExt() directly to get additional
+			features from Phobos WarheadTypeExt.
+			
+			\param coords The location the projectile detonated.
+			\param spread The range to find items in.
+			\param includeInAir Include items that are currently InAir.
+
+			\author AlexB
+			\date 2010-06-28
+
+			\modifications by Starkku
+			\date 2024-05-20
+			\modifications by Trsdy
+			\date 2024-12-05
+		*/
+		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
+			CoordStruct const& coords, double const spread,
+			bool const includeInAir = false)
+		{
+			return getCellSpreadItemsExt(coords, spread, includeInAir, false);
+		}
+
+#pragma endregion
 
 		//! Invokes an action for every cell or every object contained on the cells.
 		/*!

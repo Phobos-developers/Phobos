@@ -1,4 +1,5 @@
 name: 'Build Phobos'
+description: 'Builds Phobos and uploads the build artifact with SyringeEx bundled'
 inputs:
   sln-path:
     description: 'Path to the solution file relative to the root of the project'
@@ -7,6 +8,10 @@ inputs:
   build-config:
     description: 'Configuration to build'
     required: true
+  syringeex-tag:
+    description: 'SyringeEx release tag to bundle (empty for the latest release)'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -24,6 +29,28 @@ runs:
     run: msbuild /m /p:Configuration=${{inputs.build-config}} /p:GitCommit=${{github.sha}} /p:GitBranch=${{github.ref}} ${{inputs.sln-path}}
     shell: cmd
 
+  - name: Stage exception database
+    if: ${{success()}}
+    run: Copy-Item ${{inputs.sln-path}}/gamemd.edb ${{inputs.sln-path}}/${{inputs.build-config}}/gamemd.edb
+    shell: pwsh
+
+  # Phobos requires SyringeEx and refuses to run under older Syringe versions,
+  # so ship the launcher with every build.
+  - name: Bundle SyringeEx
+    if: ${{success()}}
+    env:
+      GH_TOKEN: ${{github.token}}
+    run: |
+      $tag = '${{inputs.syringeex-tag}}'
+      $tagArgs = if ($tag) { @($tag) } else { @() }
+      gh release download @tagArgs --repo Phobos-developers/SyringeEx --pattern 'Syringe-*.zip' --dir syringeex-download
+      if ($LASTEXITCODE -ne 0) { throw "Failed to download the SyringeEx release" }
+      $archive = Get-ChildItem syringeex-download/Syringe-*.zip | Select-Object -First 1
+      Expand-Archive $archive.FullName -DestinationPath syringeex-download/extracted
+      Copy-Item syringeex-download/extracted/Syringe.exe ${{inputs.sln-path}}/${{inputs.build-config}}/Syringe.exe
+      Copy-Item syringeex-download/extracted/LICENSE ${{inputs.sln-path}}/${{inputs.build-config}}/Syringe.LICENSE.txt
+    shell: pwsh
+
   - name: Upload Artifact
     if: ${{success()}}
     uses: actions/upload-artifact@v4
@@ -32,3 +59,6 @@ runs:
       path: |
         ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.dll
         ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.pdb
+        ${{inputs.sln-path}}/${{inputs.build-config}}/gamemd.edb
+        ${{inputs.sln-path}}/${{inputs.build-config}}/Syringe.exe
+        ${{inputs.sln-path}}/${{inputs.build-config}}/Syringe.LICENSE.txt
