@@ -1,13 +1,19 @@
 #include "Phobos.h"
 
 #include <Drawing.h>
+#include <HouseClass.h>
 #include <SessionClass.h>
 #include <Unsorted.h>
+
+#include <commctrl.h>
+
+#include <Misc/ExceptionHandler.h>
 
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 #include "Utilities/AresHelper.h"
+#include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
 #ifndef IS_RELEASE_VER
@@ -24,6 +30,7 @@ const char* Phobos::AppIconPath = nullptr;
 bool Phobos::IsLoadingSaveGame = false;
 
 bool Phobos::Optimizations::Applied = false;
+bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
 
@@ -40,12 +47,9 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
-	bool dontSetExceptionHandler =
-#ifdef DEBUG
-		true;
-#else
-		false;
-#endif // DEBUG
+	// Enabled by default in all builds: an attached debugger receives
+	// exceptions first, so the handler does not get in the way of debugging.
+	bool dontSetExceptionHandler = false;
 	Parser<bool> boolParser { };
 
 	// > 1 because the exe path itself counts as an argument, too!
@@ -80,6 +84,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			bool v = dontSetExceptionHandler;
 			if (boolParser.TryParse(value.c_str(), &v))
 				dontSetExceptionHandler = !v;
+		}
+		if (_stricmp(pArg, "-FullCrashDump") == 0)
+		{
+			ExceptionHandler::GenerateFullCrashDump = true;
 		}
 	}
 
@@ -119,12 +127,75 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 
 	Game::DontSetExceptionHandler = dontSetExceptionHandler;
 
+	// Phobos replaces the game's exception handler with its own (see
+	// ExceptionHandler.cpp); it is reachable exactly when the game's main
+	// loop handler is armed, so it shares the -ExceptionHandler toggle.
+	if (!dontSetExceptionHandler)
+		ExceptionHandler::Init();
+
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
+// gamemd.exe has no manifest, so its windows bind the ancient Common Controls
+// v5 and render Win9x-style. Activating Phobos' embedded manifest (resource 2,
+// carrying the comctl32 v6 dependency - see ExceptionHandler.rc) for the rest
+// of the process' lifetime makes every window created on the main thread use
+// modern visual styles: game dialogs, message boxes and the crash dialog.
+static void ActivateCommonControls6()
+{
+	char modulePath[MAX_PATH] = { };
+	GetModuleFileNameA(static_cast<HMODULE>(Phobos::hInstance), modulePath, sizeof(modulePath));
+
+	ACTCTXA actCtx = { };
+	actCtx.cbSize = sizeof(actCtx);
+	actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID;
+	actCtx.lpSource = modulePath;
+	actCtx.lpResourceName = MAKEINTRESOURCEA(2); // ISOLATIONAWARE_MANIFEST_RESOURCE_ID
+
+	HANDLE const hActCtx = CreateActCtxA(&actCtx);
+	ULONG_PTR cookie = 0;
+	if (hActCtx != INVALID_HANDLE_VALUE)
+		ActivateActCtx(hActCtx, &cookie); // deliberately never deactivated
+
+	// gamemd.exe has no manifest, so it loaded Common Controls v5 at startup
+	// and the v6 theming subclasses were never installed. With the context
+	// now active, loading comctl32 resolves to the v6 side-by-side assembly;
+	// InitCommonControlsEx then registers its themed classes. Without this,
+	// activating the manifest alone leaves controls rendering unthemed.
+	if (HMODULE const comctl = LoadLibraryA("comctl32.dll"))
+	{
+		using InitCommonControlsEx_t = BOOL(WINAPI*)(const INITCOMMONCONTROLSEX*);
+		if (auto const pInit = reinterpret_cast<InitCommonControlsEx_t>(GetProcAddress(comctl, "InitCommonControlsEx")))
+		{
+			INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES };
+			pInit(&icc);
+		}
+	}
+}
+
 void Phobos::ExeRun()
 {
+	// SyringeEx sets these exported flags before installing any hooks; under an
+	// older Syringe they remain false. Phobos relies on SyringeEx behavior
+	// (e.g. relative-instruction relocation in trampolines), so refuse to run without it.
+	if (!SyringeFeatures::ESPModification
+		|| !SyringeFeatures::ZFPreservation
+		|| !SyringeFeatures::ReladdrInstructionFixup)
+	{
+		MessageBoxW(NULL,
+			L"This version of Phobos requires SyringeEx to run, but the game appears "
+			L"to have been launched with an older version of Syringe.\n\n"
+
+			L"Please replace Syringe.exe in your game folder with the latest SyringeEx release:\n"
+			L"https://github.com/Phobos-developers/SyringeEx/releases",
+			L"Phobos - unsupported Syringe version", MB_OK | MB_ICONERROR);
+
+		ExitProcess(1u);
+	}
+
+	ActivateCommonControls6();
+
 	Patch::ApplyStatic();
 
 #ifdef DEBUG
@@ -231,30 +302,75 @@ DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 	return 0;
 }
 
-#ifndef IS_RELEASE_VER
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
+	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
+	int coordY = 0;
+
+#ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
-		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0,0 }, 0, 2, 0);
+		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
-			DSurface::Composite->GetWidth() - wanted.Width - 10,
+			DSurface::Composite->GetWidth() - wanted.Width - marginX,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
 		};
 
-		Point2D location { rect.X + 5,5 };
-
+		Point2D location { rect.X + 5, 5 };
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
 		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
+
+		// add margin for next text
+		coordY = rect.Height;
 	}
+#endif // !IS_RELEASE_VER
+
+	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+		return 0;
+
+	wchar_t buffer[0x20] {};
+	const auto& timer = ScenarioClass::Instance->ElapsedTimer;
+	int currentTime = timer.TimeLeft;
+
+	if (timer.StartTime != -1)
+		currentTime += SystemTimer::GetTime() - timer.StartTime;
+
+	currentTime /= 60;
+	const int hours = currentTime / 3600;
+	const int minutes = (currentTime / 60) % 60;
+	const int seconds = currentTime % 60;
+	const auto text = GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time:");
+
+	if (hours > 0)
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", text, hours, minutes, seconds);
+	}
+	else
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", text, minutes, seconds);
+	}
+
+	auto wantedB = Drawing::GetTextDimensions(buffer, { 0, 0 }, 0, 2, 0);
+
+	RectangleStruct rectB = {
+		DSurface::Composite->GetWidth() - wantedB.Width - marginX,
+		coordY,
+		wantedB.Width + 10,
+		wantedB.Height + 10
+	};
+
+	Point2D locationB { rectB.X + 5, rectB.Y + 5 };
+	ColorStruct color { 0x0, 0x0 ,0x0 };
+	DSurface::Composite->FillRectTrans(&rectB, &color, Phobos::Config::ShowGameTime_BoardOpacity);
+	DSurface::Composite->DrawText(buffer, &locationB, COLOR_WHITE);
+
 	return 0;
 }
-#endif
 
 // Mainly used to disable hooks for optimization.
 // Called after loading saved game and at end of scenario start after all INI data etc has been initialized.
@@ -268,8 +384,31 @@ void Phobos::ApplyOptimizations()
 	if (Phobos::Optimizations::DisableRadDamageOnBuildings)
 		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
 
+	// Disable BalloonHover path finding fix
+	if (Phobos::Optimizations::DisableBalloonHoverPathingFix)
+	{
+		Patch::Apply_RAW(0x64D592, { 0x0F, 0x8F, 0xB8, 0x00, 0x00, 0x00 });
+		Patch::Apply_RAW(0x64D575, { 0x0F, 0x8F, 0xD5, 0x00, 0x00, 0x00 });
+		Patch::Apply_RAW(0x64D5C5, { 0x8A, 0x44, 0x24, 0x13, 0x84, 0xC0 });
+		Patch::Apply_RAW(0x51BFA2, { 0x85, 0x99, 0x40, 0x01, 0x00, 0x00 });
+		Patch::Apply_RAW(0x73F0A7, { 0x8B, 0xD9, 0x8B, 0x8C, 0x24, 0x88, 0x00, 0x00, 0x00 });
+		Patch::Apply_RAW(0x4D62C0, { 0x8A, 0x88, 0x95, 0x06, 0x00, 0x00 });
+	}
+
 	if (!SessionClass::IsMultiplayer())
 	{
+		// Disable TechnoClass_DeleteGap_CellCheck
+		Patch::Apply_RAW(0x6FB5E5, { 0xB9, 0xE8, 0xF7, 0x87, 0x00 });
+
+		// Disable TechnoClass_CreateGap_CellCheck
+		Patch::Apply_RAW(0x6FB2FB, { 0xB9, 0xE8, 0xF7, 0x87, 0x00 });
+
+		// Disable MapClass_ResetShroud_CellCheck
+		Patch::Apply_RAW(0x577AFF, { 0x8B, 0x86, 0xF4, 0x00, 0x00, 0x00 });
+
+		// Disable MapClass_ResetShroudForTMission_CellCheck
+		Patch::Apply_RAW(0x577BF1, { 0x8B, 0x86, 0xF4, 0x00, 0x00, 0x00 });
+
 		// Disable Random2Class_Random_SyncLog
 		Patch::Apply_RAW(0x65C7D0, { 0xC3, 0x90, 0x90, 0x90, 0x90 });
 

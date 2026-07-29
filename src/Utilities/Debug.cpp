@@ -4,6 +4,8 @@
 #include <YRPPCore.h>
 #include <MessageListClass.h>
 #include <CRT.h>
+#include <CCFileClass.h>
+#include <VocClass.h>
 
 char Debug::StringBuffer[0x1000];
 char Debug::FinalStringBuffer[0x1000];
@@ -229,4 +231,35 @@ void Console::PatchLog(DWORD dwAddr, void* fakeFunc, DWORD* pdwRealFunc)
 	pInst->offset = reinterpret_cast<DWORD>(fakeFunc) - dwAddr - 5;
 
 	VirtualProtect((LPVOID)dwAddr, 5, dwOldFlag, NULL);
+}
+
+// Patch out sound buffer size etc. logging calls.
+DEFINE_JUMP(LJMP, 0x40A55D, 0x40A562);
+DEFINE_JUMP(LJMP, 0x40A5BC, 0x40A5C1);
+
+DEFINE_HOOK(0x7504C9, VocClass_ReadINI_LogMissingSamples, 0x5)
+{
+	GET(VocClass*, pThis, ECX);
+	GET(const char*, pSampleName, EDX);
+
+	// Skip prefixes from sample names.
+	while (*pSampleName == '$' || *pSampleName == '#')
+		++pSampleName;
+
+	int sampleIndex = pThis->SampleIndex[pThis->NumSamples - 1];
+	bool validSample = sampleIndex != -1 && pThis->SamplesOK;
+
+	// Ares loose audio file handling. If sample index >= 65536 it is a pointer to sample name string for loose files.
+	if (validSample && sampleIndex >= 0x10000)
+	{
+		char filename[0x100];
+		_snprintf_s(filename, _TRUNCATE, "%s.wav", pSampleName);
+		CCFileClass file{ filename };
+		validSample = file.Exists();
+	}
+
+	if (!validSample)
+		Debug::Log("[Developer warning] VocClass [%s] has missing sample '%s'\n", pThis->Name, pSampleName);
+
+	return 0;
 }

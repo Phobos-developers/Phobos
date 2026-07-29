@@ -1,12 +1,11 @@
 #include "Body.h"
 
-#include <AirstrikeClass.h>
-
-#include <Utilities/EnumFunctions.h>
+#include <Ext/Foot/Body.h>
+#include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
 
-void TechnoExt::ExtData::InitializeLaserTrails()
+void TechnoExt::InitializeLaserTrails()
 {
 	if (this->LaserTrails.size())
 		return;
@@ -28,43 +27,62 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
-			auto const pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
+			auto const pKillerTechnoData = FootExt::Fetch(pFootKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 		}
 	}
 }
 
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
 {
-	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	Matrix3D mtx;
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 
-	// Step 1: get body transform matrix
 	if (pFoot && pFoot->Locomotor)
-		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
+		mtx = isShadow ? pFoot->Locomotor->Shadow_Matrix(pKey) : pFoot->Locomotor->Draw_Matrix(pKey);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
-	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
+	return mtx;
+}
+
+Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor, int turIdx)
+{
+	auto const pType = pThis->GetTechnoType();
+	const bool isFoot = (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None;
+
+	// turret offset and rotation
+	if (isOnTurret && (pType->Turret || !isFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor, turIdx);
 
 		const double turretRad = pThis->TurretFacing().GetRadian<32>();
 		// For BuildingClass turret facing is equal to primary facing
-		const float angle = pFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
+		const float angle = isFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
 
 		mtx.RotateZ(angle);
 	}
 
-	// Step 4: apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+	return mtx;
+}
 
-	auto const result = mtx.GetTranslation();
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret, double factor, bool isShadow, int turIdx)
+{
+	Matrix3D transform = TechnoExt::GetTransform(pThis, nullptr, isShadow);
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor, turIdx);
 
-	// Step 5: apply as an offset to global object coords
+	// apply FLH offset
+	mtx.Translate((float)(flh.X * factor), (float)(flh.Y * factor), (float)(flh.Z * factor));
+
+	return mtx;
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret, int turIdx)
+{
+	auto result = TechnoExt::GetFLHMatrix(pThis, flh, isOnTurret, 1.0, false, turIdx).GetTranslation();
+
+	// apply as an offset to global object coords
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	auto const location = pThis->GetRenderCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
@@ -76,7 +94,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	auto const pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
@@ -85,10 +103,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	{
 		if (pInf)
 		{
-			if (pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-			else if (pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+			if (pInf->IsDeployed() && pInfTypeExt->EliteDeployedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteDeployedWeaponBurstFLHs;
+			else if (pInf->Crawling && pInfTypeExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteCrouchedWeaponBurstFLHs;
 			else
 				pickedFLHs = pExt->EliteWeaponBurstFLHs;
 		}
@@ -99,10 +119,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	}
 	else if (pInf)
 	{
-		if (pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+		auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+		if (pInf->IsDeployed() && pInfTypeExt->DeployedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->DeployedWeaponBurstFLHs;
+		else if (pInf->Crawling && pInfTypeExt->CrouchedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
@@ -113,42 +135,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
-CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
-{
-	FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	Nullable<CoordStruct> pickedFLH;
-
-	if (pThis->IsDeployed())
-	{
-		if (weaponIndex == 0)
-			pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
-		else if (weaponIndex == 1)
-			pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
-	}
-	else
-	{
-		if (pThis->Crawling)
-		{
-			if (weaponIndex == 0)
-				pickedFLH = pTypeExt->PronePrimaryFireFLH;
-			else if (weaponIndex == 1)
-				pickedFLH = pTypeExt->ProneSecondaryFireFLH;
-		}
-	}
-
-	if (pickedFLH.isset())
-	{
-		FLH = pickedFLH.Get();
-		FLHFound = true;
-	}
-
-	return FLH;
-}
-
-void TechnoExt::ExtData::InitializeDisplayInfo()
+void TechnoExt::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
@@ -161,7 +148,7 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
 }
 
-void TechnoExt::ExtData::InitializeAttachEffects()
+void TechnoExt::InitializeAttachEffects()
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -186,11 +173,11 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 
 		if (airstrike)
 		{
-			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
+			auto const pExt =  TechnoExt::Fetch(pThis);
 
 			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
 			{
-				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
+				auto const pTypeExt = TechnoExt::Fetch(pAirstrike->Owner)->TypeExtData;
 				tintColor |= pTypeExt->TintColorAirstrike;
 			}
 		}
@@ -225,7 +212,7 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 // Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::Fetch(pThis);
 	auto const pOwner = pThis->Owner;
 
 	if (pOwner == HouseClass::CurrentPlayer)

@@ -1,5 +1,7 @@
 #include "AttachEffectTypeClass.h"
 
+#include <Ext/TEvent/Body.h>
+
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
@@ -99,11 +101,18 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
+	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
+	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
 	this->IgnoreTypes.Read(exINI, pSection, "IgnoreTypes");
-	this->AffectTargets.Read(exINI, pSection, "AffectTargets");
+	if (exINI.ReadString(pSection, "AffectTargets") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AffectTargets is deprecated and has been replaced by AffectsTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->AffectsTarget.Read(exINI, pSection, "AffectTargets"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->AffectsTarget.Read(exINI, pSection, "AffectsTarget");
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
@@ -145,14 +154,24 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
-	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] RevengeWeapon.AffectsHouses is deprecated and has been replaced by RevengeWeapon.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->RevengeWeapon_AffectsHouse.Read(exINI, pSection, "RevengeWeapon.AffectsHouse");
 	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
-	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	if (exINI.ReadString(pSection, "ReflectDamage.AffectsHouses") > 0)
+	{
+		Debug::Log("[Developer warning][%s] ReflectDamage.AffectsHouses is deprecated and has been replaced by ReflectDamage.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
+	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
@@ -164,6 +183,19 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
+
+	// RequiresRecalculation
+	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
+		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
+		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+	{
+		this->RequiresRecalculation = true;
+	}
+	else
+	{
+		this->RequiresRecalculation = false;
+	}
 }
 
 template <typename T>
@@ -178,11 +210,13 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
 		.Process(this->DiscardOn_RangeOverride)
+		.Process(this->DiscardOn_MoveBasedOnDestination)
+		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
 		.Process(this->IgnoreTypes)
-		.Process(this->AffectTargets)
+		.Process(this->AffectsTarget)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)
@@ -216,13 +250,13 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)
-		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_AffectsHouse)
 		.Process(this->RevengeWeapon_UseInvokerAsOwner)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)
 		.Process(this->ReflectDamage_Multiplier)
-		.Process(this->ReflectDamage_AffectsHouses)
+		.Process(this->ReflectDamage_AffectsHouse)
 		.Process(this->ReflectDamage_Chance)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
@@ -230,6 +264,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
+		.Process(this->RequiresRecalculation)
 		;
 }
 
@@ -289,6 +324,22 @@ namespace detail
 				else if (!_strcmpi(cur, "firing"))
 				{
 					parsed |= DiscardCondition::Firing;
+				}
+				else if (!_strcmpi(cur, "selling"))
+				{
+					parsed |= DiscardCondition::Selling;
+				}
+				else if (!_strcmpi(cur, "undeploying"))
+				{
+					parsed |= DiscardCondition::Undeploying;
+				}
+				else if (!_strcmpi(cur, "harvesting"))
+				{
+					parsed |= DiscardCondition::Harvesting;
+				}
+				else if (!_strcmpi(cur, "invokerdie"))
+				{
+					parsed |= DiscardCondition::InvokerDie;
 				}
 				else
 				{
@@ -361,6 +412,7 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	INI_EX exINI(pINI);
 
 	this->AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->CumulativeSourceMaxCount.Read(exINI, pSection, "AttachEffect.CumulativeSourceMaxCount");
 	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
 	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
 	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
@@ -394,6 +446,7 @@ AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool s
 	}
 	else
 	{
+		info.CumulativeSourceMaxCount = this->CumulativeSourceMaxCount;
 		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
 		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
 		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
@@ -409,6 +462,7 @@ bool AEAttachInfoTypeClass::Serialize(T& stm)
 {
 	return stm
 		.Process(this->AttachTypes)
+		.Process(this->CumulativeSourceMaxCount)
 		.Process(this->CumulativeRefreshAll)
 		.Process(this->CumulativeRefreshAll_OnAttach)
 		.Process(this->CumulativeRefreshSameSourceOnly)
