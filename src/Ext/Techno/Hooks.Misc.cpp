@@ -988,7 +988,7 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
 		auto const pType = pUnit->Type;
 
@@ -999,7 +999,7 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 			pUnit->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
 		}
-		
+
 		// Explicit stop command should reset subterranean harvester state machine.
 		auto const pExt = UnitExt::Fetch(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
@@ -1013,8 +1013,7 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 			&& pType->DeployFire && pType->Factory == AbstractType::None)
 		{
 			pBuilding->SetTarget(nullptr);
-			pBuilding->QueueMission(Mission::Guard, false);
-			pBuilding->NextMission();
+			pBuilding->ForceMission(Mission::Guard);
 		}
 	}
 
