@@ -1,6 +1,7 @@
 #pragma once
 #include <BulletTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -8,149 +9,162 @@
 
 #include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
 
-class BulletTypeExt
+class BulletTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = BulletTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = BulletTypeExt;
+
 	static constexpr DWORD Canary = 0xF00DF00D;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<BulletTypeClass>
+public:
+	// typed owner accessor
+	BulletTypeClass* OwnerObject() const
 	{
-	public:
-		// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
-		Nullable<ArmorType> Armor;
-		Valueable<bool> Interceptable;
-		Valueable<bool> Interceptable_DeleteOnIntercept;
-		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
-		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
-		Nullable<double> Gravity;
-		Valueable<bool> Vertical_AircraftFix;
-		Nullable<bool> VerticalInitialFacing;
+		return static_cast<BulletTypeClass*>(this->GetAttachedObject());
+	}
 
-		TrajectoryTypePointer TrajectoryType;
+	// Valueable<int> Strength; //Use OwnerObject()->ObjectTypeClass::Strength
+	Nullable<ArmorType> Armor;
+	Nullable<bool> Interceptable;
+	Valueable<bool> Interceptable_DeleteOnIntercept;
+	Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
+	ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
+	Nullable<double> Gravity;
+	Nullable<bool> Vertical_AircraftFix;
+	Nullable<bool> VerticalInitialFacing;
 
-		Valueable<bool> Shrapnel_AffectsGround;
-		Valueable<bool> Shrapnel_AffectsBuildings;
-		Valueable<bool> Shrapnel_UseWeaponTargeting;
-		Nullable<bool> Shrapnel_IgnoreHitBuildings;
-		Nullable<bool> SubjectToLand;
-		Valueable<bool> SubjectToLand_Detonate;
-		Nullable<bool> SubjectToWater;
-		Valueable<bool> SubjectToWater_Detonate;
+	TrajectoryTypePointer TrajectoryType;
 
-		Valueable<Leptons> ClusterScatter_Min;
-		Valueable<Leptons> ClusterScatter_Max;
+	Nullable<bool> Shrapnel_AffectsGround;
+	Nullable<bool> Shrapnel_AffectsBuildings;
+	Nullable<bool> Shrapnel_UseWeaponTargeting;
+	Nullable<bool> Shrapnel_IgnoreHitBuildings;
+	Nullable<bool> Shrapnel_ObeyWarheadTriggerConditions;
+	Nullable<bool> SubjectToLand;
+	Valueable<bool> SubjectToLand_Detonate;
+	Nullable<bool> SubjectToWater;
+	Valueable<bool> SubjectToWater_Detonate;
 
-		Valueable<bool> AAOnly;
-		Valueable<bool> Arcing_AllowElevationInaccuracy;
-		Valueable<WeaponTypeClass*> ReturnWeapon;
-		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+	Valueable<Leptons> ClusterScatter_Min;
+	Valueable<Leptons> ClusterScatter_Max;
 
-		Valueable<bool> SubjectToGround;
+	Valueable<bool> AAOnly;
+	Nullable<bool> Arcing_AllowElevationInaccuracy;
+	Valueable<WeaponTypeClass*> ReturnWeapon;
+	Nullable<bool> ReturnWeapon_ApplyFirepowerMult;
 
-		Valueable<bool> Splits;
-		Valueable<double> AirburstSpread;
-		Valueable<double> RetargetAccuracy;
-		Valueable<bool> RetargetSelf;
-		Valueable<double> RetargetSelf_Probability;
-		Nullable<bool> AroundTarget;
-		Valueable<bool> Airburst_UseCluster;
-		Valueable<bool> Airburst_RandomClusters;
-		Valueable<bool> Airburst_TargetAsSource;
-		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
-		Valueable<Leptons> Splits_TargetingDistance;
-		Valueable<bool> Splits_TargetingDistance_Cylindrical;
-		Valueable<bool> Splits_AllowRepeatTargets;
-		Valueable<int> Splits_TargetCellRange;
-		Valueable<bool> Splits_UseWeaponTargeting;
-		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
-		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
-		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
-		Valueable<bool> AirburstWeapon_UseFiringEffects;
+	Valueable<bool> SubjectToGround;
 
-		Valueable<bool> Parachuted;
-		Valueable<int> Parachuted_FallRate;
-		Nullable<int> Parachuted_MaxFallRate;
-		Nullable<AnimTypeClass*> BombParachute;
+	Valueable<bool> Splits;
+	Valueable<double> AirburstSpread;
+	Valueable<double> RetargetAccuracy;
+	Valueable<bool> RetargetSelf;
+	Valueable<double> RetargetSelf_Probability;
+	Nullable<bool> AroundTarget;
+	Nullable<bool> Airburst_UseCluster;
+	Valueable<bool> Airburst_RandomClusters;
+	Valueable<bool> Airburst_TargetAsSource;
+	Nullable<bool> Airburst_TargetAsSource_SkipHeight;
+	Valueable<Leptons> Splits_TargetingDistance;
+	Nullable<bool> Splits_TargetingDistance_Cylindrical;
+	Nullable<bool> Splits_AllowRepeatTargets;
+	Valueable<int> Splits_TargetCellRange;
+	Nullable<bool> Splits_UseWeaponTargeting;
+	Nullable<bool> AirburstWeapon_ApplyFirepowerMult;
+	Valueable<Leptons> AirburstWeapon_SourceScatterMin;
+	Valueable<Leptons> AirburstWeapon_SourceScatterMax;
+	Nullable<bool> AirburstWeapon_UseFiringEffects;
+	Nullable<bool> AirburstWeapon_HeadToTarget;
+	Valueable<int> AirburstWeapon_RadialFireSegments;
 
-		Valueable<bool> AU;
+	Valueable<bool> Parachuted;
+	Valueable<int> Parachuted_FallRate;
+	Nullable<int> Parachuted_MaxFallRate;
+	Nullable<AnimTypeClass*> BombParachute;
 
-		// Ares 0.7
-		Nullable<Leptons> BallisticScatter_Min;
-		Nullable<Leptons> BallisticScatter_Max;
+	Valueable<bool> AU;
 
-		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
-			, Armor {}
-			, Interceptable { false }
-			, Interceptable_DeleteOnIntercept { false }
-			, Interceptable_WeaponOverride {}
-			, LaserTrail_Types {}
-			, Gravity {}
-			, Vertical_AircraftFix { true }
-			, VerticalInitialFacing {}
-			, TrajectoryType { }
-			, Shrapnel_AffectsGround { false }
-			, Shrapnel_AffectsBuildings { false }
-			, Shrapnel_UseWeaponTargeting { false }
-			, Shrapnel_IgnoreHitBuildings {}
-			, ClusterScatter_Min { Leptons(256) }
-			, ClusterScatter_Max { Leptons(512) }
-			, BallisticScatter_Min {}
-			, BallisticScatter_Max {}
-			, SubjectToLand {}
-			, SubjectToLand_Detonate { true }
-			, SubjectToWater {}
-			, SubjectToWater_Detonate { true }
-			, AAOnly { false }
-			, Arcing_AllowElevationInaccuracy { true }
-			, ReturnWeapon {}
-			, ReturnWeapon_ApplyFirepowerMult { false }
-			, SubjectToGround { false }
-			, Splits { false }
-			, AirburstSpread { 1.5 }
-			, RetargetAccuracy { 0.0 }
-			, RetargetSelf { true }
-			, RetargetSelf_Probability { 0.5 }
-			, AroundTarget {}
-			, Airburst_UseCluster { false }
-			, Airburst_RandomClusters { false }
-			, Airburst_TargetAsSource { false }
-			, Airburst_TargetAsSource_SkipHeight { false }
-			, Splits_TargetingDistance{ Leptons(1280) }
-			, Splits_TargetingDistance_Cylindrical { false }
-			, Splits_AllowRepeatTargets { false }
-			, Splits_TargetCellRange { 3 }
-			, Splits_UseWeaponTargeting { false }
-			, AirburstWeapon_ApplyFirepowerMult { false }
-			, AirburstWeapon_SourceScatterMin { Leptons(0) }
-			, AirburstWeapon_SourceScatterMax { Leptons(0) }
-			, AirburstWeapon_UseFiringEffects { false }
-			, Parachuted { false }
-			, Parachuted_FallRate { 1 }
-			, Parachuted_MaxFallRate {}
-			, BombParachute {}
-			, AU { false }
-		{ }
+	Valueable<int> ZAdjust;
 
-		virtual ~ExtData() = default;
+	// Ares 0.7
+	Nullable<Leptons> BallisticScatter_Min;
+	Nullable<Leptons> BallisticScatter_Max;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		// virtual void Initialize() override;
+	BulletTypeExt(BulletTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, Armor {}
+		, Interceptable {}
+		, Interceptable_DeleteOnIntercept { false }
+		, Interceptable_WeaponOverride {}
+		, LaserTrail_Types {}
+		, Gravity {}
+		, Vertical_AircraftFix {}
+		, VerticalInitialFacing {}
+		, TrajectoryType { }
+		, Shrapnel_AffectsGround {}
+		, Shrapnel_AffectsBuildings {}
+		, Shrapnel_UseWeaponTargeting {}
+		, Shrapnel_IgnoreHitBuildings {}
+		, Shrapnel_ObeyWarheadTriggerConditions {}
+		, ClusterScatter_Min { Leptons(256) }
+		, ClusterScatter_Max { Leptons(512) }
+		, BallisticScatter_Min {}
+		, BallisticScatter_Max {}
+		, SubjectToLand {}
+		, SubjectToLand_Detonate { true }
+		, SubjectToWater {}
+		, SubjectToWater_Detonate { true }
+		, AAOnly { false }
+		, Arcing_AllowElevationInaccuracy {}
+		, ReturnWeapon {}
+		, ReturnWeapon_ApplyFirepowerMult {}
+		, SubjectToGround { false }
+		, Splits { false }
+		, AirburstSpread { 1.5 }
+		, RetargetAccuracy { 0.0 }
+		, RetargetSelf { true }
+		, RetargetSelf_Probability { 0.5 }
+		, AroundTarget {}
+		, Airburst_UseCluster {}
+		, Airburst_RandomClusters { false }
+		, Airburst_TargetAsSource { false }
+		, Airburst_TargetAsSource_SkipHeight {}
+		, Splits_TargetingDistance{ Leptons(1280) }
+		, Splits_TargetingDistance_Cylindrical {}
+		, Splits_AllowRepeatTargets {}
+		, Splits_TargetCellRange { 3 }
+		, Splits_UseWeaponTargeting {}
+		, AirburstWeapon_ApplyFirepowerMult {}
+		, AirburstWeapon_SourceScatterMin { Leptons(0) }
+		, AirburstWeapon_SourceScatterMax { Leptons(0) }
+		, AirburstWeapon_UseFiringEffects {}
+		, AirburstWeapon_HeadToTarget {}
+		, AirburstWeapon_RadialFireSegments { 0 }
+		, Parachuted { false }
+		, Parachuted_FallRate { 1 }
+		, Parachuted_MaxFallRate {}
+		, BombParachute {}
+		, AU { false }
+		, ZAdjust { 0 }
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~BulletTypeExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	// virtual void Initialize() override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void TrajectoryValidation() const;
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+	void TrajectoryValidation() const;
+
+public:
 	class ExtContainer final : public Container<BulletTypeExt>
 	{
 	public:
@@ -160,6 +174,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static BulletTypeExt* Fetch(const BulletTypeClass* pThis)
+	{
+		return AbstractExt::Fetch<BulletTypeExt>(pThis);
+	}
+
+	static BulletTypeExt* TryFetch(const BulletTypeClass* pThis)
+	{
+		return AbstractExt::TryFetch<BulletTypeExt>(pThis);
+	}
+
 	static double GetAdjustedGravity(BulletTypeClass* pType);
 	static BulletTypeClass* GetDefaultBulletType();
 };
+

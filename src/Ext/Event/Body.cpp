@@ -120,7 +120,7 @@ void EventExt::RespondToTogglePlayerAutoRepair()
 		return;
 
 	auto pHouse = HouseClass::Array.GetItem(this->HouseIndex);
-	auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	auto pHouseExt = HouseExt::Fetch(pHouse);
 	pHouseExt->PlayerAutoRepair = !pHouseExt->PlayerAutoRepair;
 
 	if (HouseClass::CurrentPlayer == pHouse)

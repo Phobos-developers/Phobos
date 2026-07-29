@@ -70,7 +70,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 	__assume(iloco != nullptr);
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	auto const linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	auto const linkedExt = TechnoExt::Fetch(pLinked);
 	const auto podType = linkedExt->TypeExtData->DroppodType.get();
 
 	if (!podType)
@@ -187,7 +187,7 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType = TechnoExt::ExtMap.Find(pLinked)->TypeExtData->DroppodType.get();
+	const auto podType = TechnoExt::Fetch(pLinked)->TypeExtData->DroppodType.get();
 
 	if (!podType)
 		return 0;
@@ -222,7 +222,7 @@ DEFINE_HOOK(0x519168, InfantryClass_Draw_Droppod, 0x5)
 	GET(InfantryClass*, pThis, EBP);
 	REF_STACK(SHPStruct*, shp, STACK_OFFSET(0x54, -0x34));
 
-	auto const podType = TechnoTypeExt::ExtMap.Find(pThis->Type)->DroppodType.get();
+	auto const podType = TechnoTypeExt::Fetch(pThis->Type)->DroppodType.get();
 	shp = podType->AirImage.Get(RulesExt::Global()->PodImage);
 
 	return 0x519176;

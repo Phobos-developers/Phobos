@@ -24,11 +24,12 @@ const wchar_t* DeselectObject5CommandClass::GetUIDescription() const
 
 void DeselectObject5CommandClass::Execute(WWKey eInput) const
 {
-	int nCount = ObjectClass::CurrentObjects.Count;
+	const int nCount = ObjectClass::CurrentObjects.Count;
 
 	if (nCount > 0)
 	{
-		int max = nCount >= 5 ? 5 : nCount;
+		const int max = nCount >= 5 ? 5 : nCount;
+
 		for (int i = max - 1; i >= 0; i--)
 		{
 			ObjectClass::CurrentObjects.GetItem(i)->Deselect();

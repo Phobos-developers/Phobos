@@ -10,7 +10,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 		return false;
 
 	bool result = false;
-	const int segmentLength = this->Type->SegmentLength;
+	const double segmentLength = (double)this->Type->SegmentLength;
 
 	if (!this->LastLocation.isset())
 	{
@@ -60,7 +60,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 				pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
 				pBolt->AlternateColor = pType->IsAlternateColor;
 
-				pBolt->Fire(this->LastLocation, location, 0);
+				pBolt->Fire(this->LastLocation, location, pType->Bolt_ZAdjust);
 			}
 			else if (pType->DrawType == LaserTrailDrawType::RadBeam)
 			{

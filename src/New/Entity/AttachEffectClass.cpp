@@ -11,10 +11,10 @@ AttachEffectClass::AttachEffectClass()
 	Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
-	, NeedsDurationRefresh { false }
+	, ShouldRefreshDuration { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
-	, NeedsRecalculateStat { false }
+	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -36,10 +36,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsCloaked { false }
 	, LastActiveStat { true }
 	, LaserTrail { nullptr }
-	, NeedsDurationRefresh { false }
+	, ShouldRefreshDuration { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
-	, NeedsRecalculateStat { false }
+	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -58,7 +58,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
 		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker)), 0);
 
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	const auto pTechnoExt = TechnoExt::Fetch(pTechno);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
 	{
@@ -75,7 +75,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	}
 
 	if (pInvoker)
-		TechnoExt::ExtMap.Find(pInvoker)->AttachedEffectInvokerCount++;
+		TechnoExt::Fetch(pInvoker)->AttachedEffectInvokerCount++;
 
 	AttachEffectClass::Array.emplace_back(this);
 }
@@ -84,7 +84,7 @@ AttachEffectClass::~AttachEffectClass()
 {
 	if (const auto& pTrail = this->LaserTrail)
 	{
-		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 		const auto it = std::find_if(pTechnoExt->LaserTrails.cbegin(), pTechnoExt->LaserTrails.cend(), [pTrail](std::unique_ptr<LaserTrailClass> const& item) { return item.get() == pTrail; });
 
 		if (it != pTechnoExt->LaserTrails.cend())
@@ -100,27 +100,35 @@ AttachEffectClass::~AttachEffectClass()
 
 	this->KillAnim();
 
+	// the invoker may be mid-destruction with its extension already removed
 	if (this->Invoker)
-		TechnoExt::ExtMap.Find(this->Invoker)->AttachedEffectInvokerCount--;
+	{
+		if (auto const pInvokerExt = TechnoExt::TryFetch(this->Invoker))
+			pInvokerExt->AttachedEffectInvokerCount--;
+	}
 }
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 {
+	if (!removed)
+		return;
+
 	auto const abs = static_cast<AbstractClass*>(ptr);
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+		auto const pAnimExt = AnimExt::TryFetch(pAnim);
+
+		// the flag is only a fast-path gate: during scenario teardown the anim's
+		// extension is already gone, and the references must still be dropped
+		if (!pAnimExt || pAnimExt->IsAttachedEffectAnim)
 		{
-			if (pAnimExt->IsAttachedEffectAnim)
+			for (auto const pEffect : AttachEffectClass::Array)
 			{
-				for (auto const pEffect : AttachEffectClass::Array)
+				if (pAnim == pEffect->Animation)
 				{
-					if (pAnim == pEffect->Animation)
-					{
-						pEffect->Animation = nullptr;
-						break; // one anim must be used by less than one AE
-					}
+					pEffect->Animation = nullptr;
+					break; // one anim must be used by less than one AE
 				}
 			}
 		}
@@ -128,17 +136,24 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
+		auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
 
-		if (int count = TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
+		// the counter is only a fast-path gate: during scenario teardown the techno's
+		// extension is already gone, and the invoker references must still be dropped
+		int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : -1;
+
+		if (count != 0)
 		{
 			for (auto const pEffect : AttachEffectClass::Array)
 			{
 				if (pTechno == pEffect->Invoker)
 				{
 					AnnounceInvalidPointer(pEffect->Invoker, ptr);
-					count--;
 
-					if (count <= 0)
+					if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
+						pEffect->ShouldBeDiscarded = true;
+
+					if (--count == 0)
 						break;
 				}
 			}
@@ -163,6 +178,7 @@ void AttachEffectClass::AI()
 	}
 
 	auto const pType = this->Type;
+	auto const pExt = TechnoExt::Fetch(pTechno);
 
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
@@ -171,17 +187,21 @@ void AttachEffectClass::AI()
 		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			const double ROFModifier = pType->ROFMultiplier;
-			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
 
 			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
-		if (pType->HasTint())
-			pTechno->MarkForRedraw();
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
 
-		this->NeedsRecalculateStat = true;
+		if (pType->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
+
 		AttachEffectTypeClass::HandleEvent(pTechno);
 	}
 
@@ -192,19 +212,28 @@ void AttachEffectClass::AI()
 			this->CurrentDelay--;
 
 			if (this->CurrentDelay == 0)
-				this->NeedsDurationRefresh = true;
+				this->ShouldRefreshDuration = true;
 		}
 
 		return;
 	}
 
-	if (this->NeedsDurationRefresh)
+	if (this->ShouldRefreshDuration)
 	{
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
-			this->NeedsRecalculateStat = true;
-			this->NeedsDurationRefresh = false;
+
+			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+				pTechno->Uncloak(true);
+
+			if (pType->HasTint())
+			{
+				pTechno->MarkForRedraw();
+				pExt->UpdateTintValues();
+			}
+
+			this->ShouldRefreshDuration = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
 
@@ -226,7 +255,9 @@ void AttachEffectClass::AI()
 		if (delay > 0)
 		{
 			this->KillAnim();
-			this->NeedsRecalculateStat = true;
+
+			if (pType->RequiresRecalculation)
+				this->ShouldRecalculateStats = true;
 		}
 		else if (!this->ShouldBeDiscardedNow())
 		{
@@ -234,7 +265,7 @@ void AttachEffectClass::AI()
 		}
 		else
 		{
-			this->NeedsDurationRefresh = true;
+			this->ShouldRefreshDuration = true;
 		}
 
 		return;
@@ -285,7 +316,7 @@ void AttachEffectClass::AnimCheck()
 {
 	if (this->Type->Animation_HideIfAttachedWith.size() > 0)
 	{
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		auto const pTechnoExt = TechnoExt::Fetch(this->Techno);
 
 		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, nullptr, nullptr, nullptr, nullptr))
 		{
@@ -309,9 +340,9 @@ void AttachEffectClass::OnlineCheck()
 	auto const pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
-	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
 	{
-		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
 	}
 
@@ -319,7 +350,17 @@ void AttachEffectClass::OnlineCheck()
 
 	if (isActive != this->LastActiveStat)
 	{
-		this->NeedsRecalculateStat = true;
+		auto const pExt = TechnoExt::Fetch(pTechno);
+
+		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
+			pTechno->Uncloak(true);
+
+		if (this->Type->HasTint())
+		{
+			pTechno->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
+
 		this->LastActiveStat = isActive;
 	}
 
@@ -360,26 +401,22 @@ void AttachEffectClass::CloakCheck()
 	const auto cloakState = this->Techno->CloakState;
 	this->IsCloaked = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
-	if (this->IsCloaked && this->Animation && AnimTypeExt::ExtMap.Find(this->Animation->Type)->DetachOnCloak)
+	if (this->IsCloaked && this->Animation && AnimTypeExt::Fetch(this->Animation->Type)->DetachOnCloak)
 		this->KillAnim();
 }
 
 void AttachEffectClass::CreateAnim()
 {
 	auto const pType = this->Type;
-
-	if (!pType)
-		return;
-
-	AnimTypeClass* pAnimType = nullptr;
 	auto const pTechno = this->Techno;
+	AnimTypeClass* pAnimType = nullptr;
 
 	if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 	{
 		if (!this->HasCumulativeAnim)
 			return;
 
-		const int count = TechnoExt::ExtMap.Find(pTechno)->GetAttachedEffectCumulativeCount(pType);
+		const int count = TechnoExt::Fetch(pTechno)->GetAttachedEffectCumulativeCount(pType);
 		pAnimType = pType->GetCumulativeAnimation(count);
 	}
 	else
@@ -387,17 +424,17 @@ void AttachEffectClass::CreateAnim()
 		pAnimType = pType->Animation;
 	}
 
-	if (this->IsCloaked && (!pAnimType || AnimTypeExt::ExtMap.Find(pAnimType)->DetachOnCloak))
-		return;
-
-	if (!this->Animation && pAnimType)
+	if (pAnimType)
 	{
+		if (this->IsCloaked && AnimTypeExt::Fetch(pAnimType)->DetachOnCloak)
+			return;
+
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
 
 		pAnim->SetOwnerObject(pTechno);
 		pAnim->Owner = pType->Animation_UseInvokerAsOwner ? this->InvokerHouse : pTechno->Owner;
 
-		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		auto const pAnimExt = AnimExt::Fetch(pAnim);
 		pAnimExt->IsAttachedEffectAnim = true;
 
 		if (pType->Animation_UseInvokerAsOwner)
@@ -419,18 +456,12 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::UpdateCumulativeAnim()
+void AttachEffectClass::UpdateCumulativeAnim(int count)
 {
-	if (!this->HasCumulativeAnim)
-		return;
-
 	const auto pAnim = this->Animation;
 
 	if (!pAnim)
 		return;
-
-	const auto pType = this->Type;
-	const int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(pType);
 
 	if (count < 1)
 	{
@@ -438,22 +469,11 @@ void AttachEffectClass::UpdateCumulativeAnim()
 		return;
 	}
 
+	const auto pType = this->Type;
 	auto const pAnimType = pType->GetCumulativeAnimation(count);
 
 	if (pAnim->Type != pAnimType)
 		AnimExt::ChangeAnimType(pAnim, pAnimType, false, pType->CumulativeAnimations_RestartOnChange);
-}
-
-void AttachEffectClass::TransferCumulativeAnim(AttachEffectClass* pSource)
-{
-	if (!pSource || !pSource->Animation)
-		return;
-
-	this->KillAnim();
-	this->Animation = pSource->Animation;
-	this->HasCumulativeAnim = true;
-	pSource->Animation = nullptr;
-	pSource->HasCumulativeAnim = false;
 }
 
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
@@ -479,7 +499,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
 	{
-		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(this->Techno, pTechnoExt->TypeExtData->OwnerObject());
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
 	}
@@ -501,6 +521,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
+	this->ShouldRefreshDuration = true;
 
 	return true;
 }
@@ -531,7 +552,11 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		if (pFoot->Locomotor->Is_Really_Moving_Now())
+		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+			? pFoot->Locomotor->Is_Moving()
+			: pFoot->Locomotor->Is_Really_Moving_Now();
+
+		if (isMoving)
 		{
 			if ((discardOn & DiscardCondition::Move) != DiscardCondition::None)
 			{
@@ -539,10 +564,61 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				return true;
 			}
 		}
-		else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		else if (pType->DiscardOn_ConsiderHarvestingAsStationary.Get(RulesExt::Global()->DiscardOn_ConsiderHarvestingAsStationary))
 		{
-			this->LastDiscardCheckValue = true;
-			return true;
+			if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+		else
+		{
+			bool isHarvestingNow = false;
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pFoot))
+				isHarvestingNow = pUnit->IsHarvesting;
+			else if (auto const pInf = abstract_cast<InfantryClass*, true>(pFoot))
+				isHarvestingNow = (pInf->SequenceAnim == Sequence::Shovel);
+
+			if (isHarvestingNow)
+			{
+				if ((discardOn & DiscardCondition::Harvesting) != DiscardCondition::None)
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
+			}
+			else if (pFoot->CurrentMission == Mission::Harvest && pFoot->GetCell()->LandType == LandType::Tiberium)
+			{
+				// Handle the intermediate state that is about to start harvesting but does not satisfy the above judgment.
+				this->LastDiscardCheckValue = false;
+				return false;
+			}
+			else if ((discardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+	}
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
+	{
+		if (pBuilding->CurrentMission == Mission::Selling)
+		{
+			if (pBuilding->ArchiveTarget)
+			{
+				if ((discardOn & DiscardCondition::Undeploying) != DiscardCondition::None)
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
+			}
+			else if ((discardOn & DiscardCondition::Selling) != DiscardCondition::None)
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
 		}
 	}
 
@@ -606,12 +682,14 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	if (types.size() < 1 || !pTarget)
 		return false;
 
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 	auto const pTargetType = pTargetExt->TypeExtData->OwnerObject();
 	int attachedCount = 0;
 	bool markForRedraw = false;
+	bool decloak = false;
 	double ROFModifier = 1.0;
 	const bool selfOwned = pTarget == pSource;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
@@ -624,6 +702,9 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 			if (params.InitialDelay <= 0)
 			{
+				if (pTargetExt->RecalculateStatMultipliers(pAE))
+					decloak = true;
+
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
@@ -631,7 +712,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-					pTargetExt->UpdateCumulativeAttachEffects(pType);
+					cumulativeAnimTypes.insert(pType);
 			}
 		}
 	}
@@ -646,10 +727,19 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 	if (attachedCount > 0)
 	{
-		pTargetExt->RecalculateStatMultipliers();
-
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pTargetExt->UpdateTintValues();
+		}
+
+		if (decloak && pTarget->CloakState == CloakState::Cloaked)
+			pTarget->Uncloak(true);
+	}
+
+	for (auto const pType : cumulativeAnimTypes)
+	{
+		pTargetExt->UpdateCumulativeAttachEffects(pType);
 	}
 	          
 	return attachedCount;
@@ -789,7 +879,7 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 	if (groups.size() < 1 || !pTarget)
 		return 0;
 
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 	std::vector<AttachEffectTypeClass*> types;
 	types.reserve(pTargetExt->AttachedEffects.size());
 
@@ -815,6 +905,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 {
 	int detachedCount = 0;
 	bool markForRedraw = false;
+	bool requiresRecalc = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
 	auto const& maxCounts = attachEffectInfo.CumulativeRemoveMaxCounts;
 	size_t index = 0;
@@ -828,8 +919,14 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 
 		const int count = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
 
-		if (count && pType->HasTint())
-			markForRedraw = true;
+		if (count)
+		{
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
+
+			if (pType->HasTint())
+				markForRedraw = true;
+		}
 
 		detachedCount += count;
 		index++;
@@ -837,10 +934,16 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 
 	if (detachedCount > 0)
 	{
-		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
+		const auto pExt = TechnoExt::Fetch(pTarget);
+
+		if (requiresRecalc)
+			pExt->RecalculateStatMultipliers();
 
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pExt->UpdateTintValues();
+		}
 	}
 
 	return detachedCount;
@@ -859,7 +962,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 	if (!pType || !pTarget)
 		return 0;
 
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 	int detachedCount = 0;
 	int stackCount = -1;
 
@@ -871,7 +974,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<AEWeaponParams> expireWeapons;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -892,17 +996,19 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
 						if (auto const pInvoker = attachEffect->Invoker)
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+						else
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pTarget, pTarget->Owner });
 					}
 				}
 			}
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
+				cumulativeAnimTypes.insert(pType);
 
 			if (attachEffect->ResetIfRecreatable())
 			{
@@ -923,12 +1029,16 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		}
 	}
 
+	for (auto const type : cumulativeAnimTypes)
+	{
+		pTargetExt->UpdateCumulativeAttachEffects(type, true);
+	}
+
 	auto const coords = pTarget->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pTarget);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pTarget);
 	}
 
 	return detachedCount;
@@ -936,15 +1046,17 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 /// <summary>
 /// Transfer AttachEffects from one techno to another.
+/// Note that this currently assumes the source techno is deleted afterwards.
 /// </summary>
 /// <param name="pSource">Source techno.</param>
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
 	bool markForRedraw = false;
+	bool requiresRecalc = false;
 	int transferCount = 0;
-	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	const auto pSourceExt = TechnoExt::Fetch(pSource);
+	const auto pTargetExt = TechnoExt::Fetch(pTarget);
 	const auto pTargetType = pTarget->GetTechnoType();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
@@ -1007,6 +1119,9 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				pAE->Duration = attachEffect->Duration;
 		}
 
+		if (type->RequiresRecalculation)
+			requiresRecalc = true;
+
 		if (type->HasTint())
 			markForRedraw = true;
 
@@ -1016,10 +1131,14 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 	if (transferCount > 0)
 	{
-		pTargetExt->RecalculateStatMultipliers();
+		if (requiresRecalc)
+			pTargetExt->RecalculateStatMultipliers();
 
 		if (markForRedraw)
+		{
 			pTarget->MarkForRedraw();
+			pTargetExt->UpdateTintValues();
+		}
 	}
 }
 
@@ -1050,14 +1169,14 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->IsOnline)
 		.Process(this->IsCloaked)
 		.Process(this->HasInitialized)
-		.Process(this->NeedsDurationRefresh)
+		.Process(this->ShouldRefreshDuration)
 		.Process(this->LastDiscardCheckFrame)
 		.Process(this->LastDiscardCheckValue)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
-		.Process(this->NeedsRecalculateStat)
+		.Process(this->ShouldRecalculateStats)
 		.Success();
 }
 

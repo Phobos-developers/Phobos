@@ -70,7 +70,7 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 			&& pThis->Owner->IsControlledByCurrentPlayer()
 			&& !pBuilding->IsBeingWarpedOut()
 			&& pThis->Owner->IsAlliedWith(pTarget)
-			&& (BuildingTypeExt::ExtMap.Find(pType)->Grinding_AllowAllies || action == Action::Select))
+			&& (BuildingTypeExt::Fetch(pType)->Grinding_AllowAllies || action == Action::Select))
 		{
 			action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
 			R->EBP(action);
@@ -176,7 +176,7 @@ DEFINE_HOOK(0x519790, InfantryClass_PerCellProcess_SkipDieSoundBeforeGrinding, 0
 	enum { SkipVoiceDie = 0x51986A };
 	GET(BuildingClass*, pBuilding, EBX);
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound.Get())
+	if (BuildingTypeExt::Fetch(pBuilding->Type)->Grinding_PlayDieSound.Get())
 		return 0;
 
 	return SkipVoiceDie;
@@ -219,7 +219,7 @@ DEFINE_HOOK(0x739FBC, UnitClass_PerCellProcess_BeforeGrinding, 0x5)
 	GET(BuildingClass*, pBuilding, EBX);
 	GrinderRefundTemp::BalanceBefore = pBuilding->Owner->Balance;
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_PlayDieSound)
+	if (BuildingTypeExt::Fetch(pBuilding->Type)->Grinding_PlayDieSound)
 		return 0;
 
 	return SkipDieSound;

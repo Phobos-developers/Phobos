@@ -1,6 +1,10 @@
 #include "BannerClass.h"
 
+#include <Drawing.h>
+
 #include <Ext/Scenario/Body.h>
+
+#include <algorithm>
 
 std::vector<std::unique_ptr<BannerClass>> BannerClass::Array;
 
@@ -61,9 +65,21 @@ void BannerClass::Render()
 
 void BannerClass::RenderPCX(Point2D position)
 {
+	auto const pType = this->Type;
 	BSurface* pcx = this->Type->PCX.GetSurface();
 	position.X -= pcx->Width / 2;
 	position.Y -= pcx->Height / 2;
+
+	// Clamp the position to keep the PCX within the visible area,
+	// preventing it from being drawn partially off-screen.
+	if(pType->ClampToScreen)
+	{
+		const int maxX = std::max(0, DSurface::ViewBounds.Width - pcx->Width);
+		const int maxY = std::max(0, DSurface::ViewBounds.Height - pcx->Height);
+		position.X = std::clamp(position.X, 0, maxX);
+		position.Y = std::clamp(position.Y, 0, maxY);
+	}
+
 	RectangleStruct bounds(position.X, position.Y, pcx->Width, pcx->Height);
 	PCX::Instance.BlitToSurface(&bounds, DSurface::Composite, pcx);
 }
@@ -75,6 +91,16 @@ void BannerClass::RenderSHP(Point2D position)
 	ConvertClass* palette = pType->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	position.X -= shape->Width / 2;
 	position.Y -= shape->Height / 2;
+
+	// Clamp the position to keep the SHP within the visible area,
+	// preventing it from being drawn partially off-screen.
+	if (pType->ClampToScreen)
+	{
+		const int maxX = std::max(0, DSurface::ViewBounds.Width - shape->Width);
+		const int maxY = std::max(0, DSurface::ViewBounds.Height - shape->Height);
+		position.X = std::clamp(position.X, 0, maxX);
+		position.Y = std::clamp(position.Y, 0, maxY);
+	}
 
 	DSurface::Composite->DrawSHP
 	(
@@ -134,11 +160,27 @@ void BannerClass::RenderCSF(Point2D position)
 	}
 
 	const TextPrintType textFlags = TextPrintType::UseGradPal
-		| TextPrintType::Center
 		| TextPrintType::Metal12
 		| (pType->CSF_Background
 			? TextPrintType::Background
-			: TextPrintType::LASTPOINT);
+			: TextPrintType::LASTPOINT)
+		| (pType->ClampToScreen
+			? TextPrintType::LASTPOINT
+			: TextPrintType::Center);
+
+
+	// Measure the text, manually center, then clamp to screen bounds.
+	if (pType->ClampToScreen)
+	{
+		RectangleStruct textRect = Drawing::GetTextDimensions(
+			text.c_str(), position, static_cast<WORD>(textFlags));
+		position.X -= textRect.Width / 2;
+		position.Y -= textRect.Height / 2;
+		int maxX = std::max(0, DSurface::ViewBounds.Width - textRect.Width);
+		int maxY = std::max(0, DSurface::ViewBounds.Height - textRect.Height);
+		position.X = std::clamp(position.X, 0, maxX);
+		position.Y = std::clamp(position.Y, 0, maxY);
+	}
 
 	DSurface::Composite->DrawText
 	(
