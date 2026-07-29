@@ -208,7 +208,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02BDD0, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
 	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x491C2, { 0x90, 0x90 });
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x491B8, AresHelper::AresBaseAddress + 0x491C4);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayloadFix));
@@ -316,7 +316,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02C910, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
 	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x49E12, { 0x90, 0x90 });
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x49E08, AresHelper::AresBaseAddress + 0x49E14);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayloadFix));
