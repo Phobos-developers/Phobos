@@ -1,10 +1,5 @@
 #include "Phobos.h"
 
-#include <Drawing.h>
-#include <HouseClass.h>
-#include <SessionClass.h>
-#include <Unsorted.h>
-
 #include <commctrl.h>
 
 #include <Misc/ExceptionHandler.h>

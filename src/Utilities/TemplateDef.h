@@ -42,23 +42,8 @@
 #include "Macro.h"
 #include "Interpolation.h"
 
-#include <InfantryTypeClass.h>
-#include <AircraftTypeClass.h>
-#include <UnitTypeClass.h>
-#include <BuildingTypeClass.h>
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <InfantryClass.h>
-#include <AircraftClass.h>
-#include <UnitClass.h>
-#include <BuildingClass.h>
 #include <Powerups.h>
-#include <VocClass.h>
-#include <VoxClass.h>
-#include <ParticleTypeClass.h>
 #include <CRT.h>
-#include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
 
 #include <unordered_set>

@@ -1,5 +1,3 @@
-﻿#include "Body.h"
-
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>

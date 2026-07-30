@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>

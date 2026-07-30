@@ -1,17 +1,12 @@
-#include "Body.h"
-
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
-#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/InfantryType/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
