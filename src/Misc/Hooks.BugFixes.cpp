@@ -5,7 +5,7 @@
 #include <FileFormats/HVA.h>
 
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -443,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = static_cast<int>(TechnoExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
+	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
 }
@@ -461,7 +461,7 @@ DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 }
 
 // Set all bullet params (Bright) from weapon for nuke carrier weapon.
-DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
+DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x0)
 {
 	enum { SkipGameCode = 0x44CAF2 };
 
@@ -779,7 +779,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 	GET(UnitClass*, pThis, EBX);
 
-	R->EAX(TechnoExt::CanDeployIntoBuilding(pThis, true));
+	R->EAX(UnitExt::CanDeployIntoBuilding(pThis, true));
 
 	return SkipGameCode;
 }
@@ -790,7 +790,7 @@ DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !TechnoExt::CanDeployIntoBuilding(pThis, true))
+	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !UnitExt::CanDeployIntoBuilding(pThis, true))
 		return MustDeploy;
 
 	return SkipGameCode;
@@ -994,7 +994,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
-	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	auto const pType = pTypeExt->OwnerObject();
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 
@@ -1245,7 +1245,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	// Check aircraft
 	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
-	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->IsALoaner;
 	const auto mission = pTechno->CurrentMission;
 
 	// To avoid aircraft overlap by keep link if is returning or is in airport now.
@@ -1521,7 +1521,7 @@ DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 	pExt->LastSensorsMapCoords = *cell;
 
 	return 0;
@@ -1532,7 +1532,7 @@ DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
 	enum { SkipGameCode = 0x4D8627 };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 	const auto currentCell = pThis->GetMapCoords();
 
 	if (pExt->LastSensorsMapCoords != currentCell)
@@ -1549,7 +1549,7 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
 	enum { SkipGameCode = 0x4DB37C };
 
 	GET(FootClass*, pThis, EDI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 
 	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
@@ -1561,7 +1561,7 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 	enum { SkipGameCode = 0x4DBF01 };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pExt = FootExt::Fetch(pThis);
 
 	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
@@ -1577,7 +1577,7 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		const auto pExt = TechnoExt::Fetch(pLinkedTo);
+		const auto pExt = FootExt::Fetch(pLinkedTo);
 		CellStruct const lastCell = pExt->LastSensorsMapCoords;
 
 		if (lastCell != currentCell)
@@ -1597,7 +1597,7 @@ DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
 
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		const auto pExt = TechnoExt::Fetch(pLinkedTo);
+		const auto pExt = FootExt::Fetch(pLinkedTo);
 		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 	}
 
@@ -2203,7 +2203,7 @@ DEFINE_HOOK(0x489416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
 
 	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
 
-	if (WarheadTypeExt::Fetch(pWarhead)->AllowDamageOnSelf)
+	if (WarheadTypeExt::Fetch(pWarhead)->AllowDamageOnSelf.Get(RulesExt::Global()->AllowDamageOnSelf))
 		return 0;
 
 	return NextTechno;
@@ -2402,7 +2402,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 	GET(BulletClass*, pBullet, ESI);
 
-	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::Fetch(pBullet->Type)->Vertical_AircraftFix))
+	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::Fetch(pBullet->Type)->Vertical_AircraftFix.Get(RulesExt::Global()->Vertical_AircraftFix)))
 		return SkipGameCode;
 
 	return 0;
@@ -2735,6 +2735,27 @@ DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 	return pThis->CloakState != CloakState::Uncloaked ? SkipDraw : 0;
 }
 
+#pragma region Locomotor=Fly shadow fix
+
+DEFINE_HOOK(0x4146EA, AircraftClass_DrawIt_SkipShadowPoint, 0x7)
+{
+	enum { SkipGameCode = 0x4146F1 };
+
+	GET(Point2D*, pBuffer, ECX);
+
+	*pBuffer = Point2D::Empty;
+	R->EAX(pBuffer);
+	return SkipGameCode;
+}
+
+DEFINE_JUMP(LJMP, 0x41476F, 0x4147F9)
+DEFINE_JUMP(LJMP, 0x4148A5, 0x4148B1)
+
+// Redirect FlyLocomotionClass::Shadow_Point to LocomotionClass::Shadow_Point
+DEFINE_JUMP(VTABLE, 0x7E8A24, 0x55A8C0)
+
+#pragma endregion
+
 // Fix the issue that the jumpjet vehicles cannot stop correctly after going berserk
 DEFINE_HOOK(0x74431F, UnitClass_ReadyToNextMission_HuntCheck, 0x6)
 {
@@ -2952,7 +2973,8 @@ DEFINE_HOOK(0x54CC16, JumpjetLocomotionClass_CrashDescent_OffMap, 0x8)
 
 // RocketLocomotionClass::Process - health check after position update.
 // If off-map, bypass the Health > 0 skip and force detonation/cleanup.
-DEFINE_HOOK(0x662FD5, RocketLocomotionClass_Process_OffMap, 0x6)
+// Disable it since it prevents the regular OOB missile cruise.
+/*DEFINE_HOOK(0x662FD5, RocketLocomotionClass_Process_OffMap, 0x6)
 {
 	enum { ForceCleanup = 0x662FDF };
 
@@ -2962,7 +2984,7 @@ DEFINE_HOOK(0x662FD5, RocketLocomotionClass_Process_OffMap, 0x6)
 		return ForceCleanup;
 
 	return 0;
-}
+}*/
 
 DEFINE_HOOK(0x4DEC7F, FootClass_Crash_FallingDownFix, 0x7)
 {

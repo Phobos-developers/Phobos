@@ -1012,6 +1012,6 @@ In `rulesmd.ini`:
 [General]
 SetRecruitableOnLiberate=-1  ; integer
 
-[SOMETEAMTYPE]                               ; TeamType
-SetRecruitableOnLiberate=     ; integer, default to [General] -> SetRecruitableOnLiberate
+[SOMETEAMTYPE]               ; TeamType
+SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
 ```

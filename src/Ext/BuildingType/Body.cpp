@@ -205,6 +205,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
@@ -248,6 +249,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 
+	this->StartFacing.Read(exINI, pSection, "StartFacing");
+	this->StartFacing_Random.Read(exINI, pSection, "StartFacing.Random");
+
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 	{
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
@@ -259,6 +263,10 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		if (pPowerUpType && !this->PowersUp_Buildings.Contains(pPowerUpType))
 			this->PowersUp_Buildings.emplace_back(pPowerUpType);
 	}
+
+	this->SetTabBySelecting.Read(exINI, pSection, "SetTabBySelecting");
+
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -281,6 +289,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
 	}
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exArtINI, pArtSection, "AircraftDockingDir.DefaultToPoseDir");
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
@@ -387,11 +396,13 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
 		.Process(this->FactoryPlant_MaxCount)
 		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
+		.Process(this->Explodes_DuringBuildup)
 		.Process(this->Units_RepairRate)
 		.Process(this->Units_RepairStep)
 		.Process(this->Units_RepairPercent)
@@ -424,6 +435,10 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->TurretAnim_LowPowerFiringFrames)
 		.Process(this->TurretAnim_IdleRate)
 		.Process(this->TurretAnim_FiringFrames)
+		.Process(this->StartFacing)
+		.Process(this->StartFacing_Random)
+		.Process(this->SetTabBySelecting)
+		.Process(this->RevealToAll_Radius)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -472,6 +487,20 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 	GET(BuildingTypeClass*, pItem, EAX);
 
 	BuildingTypeExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
+{
+	GET(BuildingTypeClass*, pItem, EBP);
+	GET_STACK(CCINIClass*, pINI, 0x364);
+
+	if (auto const pExt = BuildingTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }

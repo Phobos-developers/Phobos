@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/AircraftType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -7,7 +8,7 @@ AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = AircraftExt::Fetch(pThis);
 	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
@@ -18,7 +19,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 	{
 		int& bombDropCount = pExt->Strafe_BombsDroppedThisRound;
 		int& currentBurstIndex = pThis->CurrentBurstIndex;
-		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst;
+		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst.Get(RulesExt::Global()->Strafing_SimulateBurst);
 
 		for (int i = 0; i < burstCount; i++)
 		{
@@ -32,7 +33,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 		{
 			bombDropCount++;
 
-			if (pWeaponExt->Strafing_UseAmmoPerShot)
+			if (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot))
 			{
 				pThis->Ammo--;
 				pThis->ShouldLoseAmmo = false;
@@ -51,7 +52,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 	auto dir = DirType::North;
 	auto coords = edgeCoords;
 	coords.Z = 0;
@@ -83,8 +84,9 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct e
 
 CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
 {
-	auto const pTypeExt = TechnoTypeExt::Fetch(pPlaneType);
-	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge : pTypeExt->RetreatToEdge;
+	auto const pTypeExt = AircraftTypeExt::Fetch(pPlaneType);
+	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge.Get(RulesExt::Global()->AircraftSpawnFromEdge)
+		: pTypeExt->RetreatToEdge.Get(RulesExt::Global()->AircraftRetreatToEdge);
 	auto spawnEdge = edge;
 	auto refCell = CellStruct::Empty;
 
@@ -123,7 +125,7 @@ CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, Cell
 	return MapClass::Instance.PickCellOnEdge(spawnEdge, refCell, CellStruct::Empty, SpeedType::Winged, true, MovementZone::Normal);
 }
 
-DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
+DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, bool isProduction)
 {
 	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
 
@@ -136,7 +138,9 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 	auto const pType = pThis->Type;
 
-	if (pDock || pThis->HasAnyLink())
+	const bool hasDockOrLink = (pDock || pThis->HasAnyLink());
+
+	if (hasDockOrLink)
 	{
 		auto const pLink = pThis->GetNthLink(0);
 
@@ -154,17 +158,88 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			}
 			else if (docks > 0 && pBuildingTypeExt->AircraftDockingDirs[0].has_value())
 				return *pBuildingTypeExt->AircraftDockingDirs[0];
+
+			if (!pBuildingTypeExt->AircraftDockingDir_DefaultToPoseDir.Get(RulesExt::Global()->AircraftDockingDir_DefaultToPoseDir))
+			{
+				if (!isProduction)
+					return pBuilding->PrimaryFacing.Current().GetDir();
+			}
 		}
 		else if (!pType->AirportBound)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	const int landingDir = TechnoTypeExt::Fetch(pType)->LandingDir.Get((int)poseDir);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
-	if (!pType->AirportBound && landingDir < 0)
-		return pThis->PrimaryFacing.Current().GetDir();
+	if (pTypeExt->LandingDir.isset())
+	{
+		int landingDir = pTypeExt->LandingDir.Get();
+		if (pType->AirportBound)
+			return static_cast<DirType>(landingDir & 0xFF);
+		else if (landingDir < 0)
+			return pThis->PrimaryFacing.Current().GetDir();
+		else
+			return static_cast<DirType>(landingDir & 0xFF);
+	}
 
-	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
+	if (isProduction)
+		return static_cast<DirType>(RulesExt::Global()->PoseDir_Production.Get((int)poseDir) & 0xFF);
+
+	if (hasDockOrLink)
+		return poseDir;
+
+	int fieldDir = RulesExt::Global()->PoseDir_Field.Get((int)poseDir * 32);
+	return static_cast<DirType>(fieldDir & 0xFF);
+}
+
+AircraftTypeClass* AircraftExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	auto const pType = pAircraft->Type;
+	auto const pData = AircraftTypeExt::Fetch(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
+	{
+		return pType;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pType;
+}
+
+// =============================
+// load / save
+
+template <typename T>
+void AircraftExt::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
+		.Process(this->CurrentAircraftWeaponIndex)
+		;
+}
+
+void AircraftExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	FootExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void AircraftExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	FootExt::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 // =============================

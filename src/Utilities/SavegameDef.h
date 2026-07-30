@@ -10,13 +10,9 @@
 #include <map>
 #include <unordered_map>
 #include <bitset>
-#include <memory>
 
-#include <ArrayClasses.h>
 #include <FileSystem.h>
 #include <FileFormats/SHP.h>
-#include <RulesClass.h>
-#include <SidebarClass.h>
 
 #include "Swizzle.h"
 #include "Debug.h"
@@ -397,10 +393,12 @@ namespace Savegame
 				return false;
 
 			if (hasValue)
+			{
+				Value.emplace();
 				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
-			else
-				Value.reset();
+			}
 
+			Value.reset();
 			return true;
 		}
 

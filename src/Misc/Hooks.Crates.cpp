@@ -1,4 +1,4 @@
-#include <Ext/TechnoType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {
@@ -60,7 +60,7 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	return SkipForcedMCV;
 }
 
-DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x5)
+DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x0)
 {
 	enum { Capped = 0x481C44, NotCapped = 0x481C4A };
 
@@ -82,7 +82,7 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 
 	if (crateGoodie)
 	{
-		auto const pTypeExt = TechnoTypeExt::Fetch(pUnitType);
+		auto const pTypeExt = UnitTypeExt::Fetch(pUnitType);
 
 		if (pTypeExt->CrateGoodie_RerollChance > 0.0)
 			crateGoodie = pTypeExt->CrateGoodie_RerollChance < ScenarioClass::Instance->Random.RandomDouble();

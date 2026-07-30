@@ -452,6 +452,28 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 	return pThis->GetPrimaryWeapon();
 }
 
+void BuildingExt::UpdateFactoryQueues(BuildingClass* pThis)
+{
+	const auto pType = pThis->Type;
+	const auto factory = pType->Factory;
+
+	if (factory == AbstractType::None)
+		return;
+
+	if (const auto pFactory = pThis->Factory)
+	{
+		if (pFactory->Object)
+		{
+			if (pThis->Deactivated || !pThis->HasPower)
+				pFactory->Suspend(false);
+			else if (pFactory->IsSuspended && !pFactory->IsManual)
+				pFactory->Unsuspend(false);
+		}
+	}
+
+	pThis->Owner->Update_FactoriesQueues(factory, pType->Naval, BuildCat::DontCare);
+}
+
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
 	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
@@ -563,10 +585,11 @@ void BuildingExt::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
+		//.Process(this->IsFiringNow) It is set and reset within a same function.
 		.Process(this->TurretAnimIdleFrame)
 		.Process(this->TurretAnimFiringFrame)
 		.Process(this->TurretAnimRateTick)
-		//.Process(this->IsFiringNow) It is set and reset within a same function.
+		.Process(this->ConstructionStartFacing) 
 		;
 }
 

@@ -3,6 +3,7 @@
 #include <GameOptionsClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Misc/SyncLogging.h>
@@ -19,6 +20,9 @@ AnimExt::~AnimExt()
 
 	if (this->ParentBuilding)
 		TechnoExt::Fetch(this->ParentBuilding)->AnimRefCount--;
+
+	if (this->FiringAnim_Weapon)
+		ScenarioExt::Global()->FiringAnimUpdateCount--;
 }
 
 void AnimExt::SetInvoker(TechnoClass* pInvoker)
@@ -70,21 +74,19 @@ void AnimExt::UpdateAsFiringAnim()
 	if (!this->FiringAnim_Weapon)
 		return;
 
-	auto pThis = this->OwnerObject();
+	auto const pThis = this->OwnerObject();
 
 	if (pThis->OwnerObject && (pThis->OwnerObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
-		auto pOwner = reinterpret_cast<TechnoClass*>(pThis->OwnerObject);
+		auto const pOwner = reinterpret_cast<TechnoClass*>(pThis->OwnerObject);
 		auto const currentFacing = pOwner->GetRealFacing();
-		bool facingChanged = currentFacing != this->FiringAnim_LastFacing;
+		const bool facingChanged = currentFacing != this->FiringAnim_LastFacing;
 
 		if (facingChanged)
 		{
 			this->FiringAnim_LastFacing = currentFacing;
-			auto pWeapon = this->FiringAnim_Weapon;
-			AnimTypeClass* pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pWeapon->Anim, currentFacing);
 
-			if (pNewType)
+			if (auto const pNewType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(this->FiringAnim_Weapon->Anim, currentFacing))
 				pThis->Type = pNewType;
 		}
 
@@ -93,9 +95,9 @@ void AnimExt::UpdateAsFiringAnim()
 		if (currentCoords != this->FiringAnim_LastCoords || facingChanged)
 		{
 			this->FiringAnim_LastCoords = currentCoords;
-			auto burstIdx = pOwner->CurrentBurstIndex;
+			const int burstIdx = pOwner->CurrentBurstIndex;
 			pOwner->CurrentBurstIndex = this->FiringAnim_BurstIndex;
-			auto flh = pOwner->GetFLH(this->FiringAnim_WeaponIndex, CoordStruct::Empty);
+			auto const flh = pOwner->GetFLH(this->FiringAnim_WeaponIndex, CoordStruct::Empty);
 			pOwner->CurrentBurstIndex = burstIdx;
 			pThis->SetLocation(flh - currentCoords);
 		}

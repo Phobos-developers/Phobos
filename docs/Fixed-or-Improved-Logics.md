@@ -114,10 +114,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
-- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
+- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
+- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fixed a glitch related to incorrect target setting for missiles.
@@ -131,7 +131,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed teleport units being unable to visually tilt on slopes.
 - Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
-- Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantry with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
@@ -287,7 +286,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where mining vehicles could not move after leaving a tank bunker.
 - `ProductionAnim` is now available for `Factory=InfantryType` as well as non-`ConstructionYard=true` `Factory=BuildingType` buildings. `IdleAnim` will cease to play for its duration normally as well.
 - Fixed the bug where selected technos would lose their selection if their regular mind control was replaced with permanent mind control or with the control from the Psychic Dominator superweapon.
-- Allow the default value of `DefaultToGuardArea` to be defined by `[General] -> DefaultToGuardArea`.
 - Fixed the bug that cause technos teleport to cell 0,0 by ChronoSphere superweapon.
 - Fixed the bug that techno in attack move will move to target if it cannot attack it.
 - Fixed the bug in AI scripts 56 and 57 that forced the launch of superweapons with index numbers 3 and 4.
@@ -324,6 +322,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that techno will get stuck if change owner in tunnel.
 - Restored the original Tiberian Sun behavior of playing the `[AudioVisual] -> DeploySound=` sound effect when clicking the sidebar to execute `Deploy`.
 - Whether or not a passenger's weapon can fire out from an `OpenTopped=yes` transport will now respect the weapon's `FireWhileMoving` setting.
+- Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
+- Fixed the issue that spawnee or slave would execute some player commands.
+- Fixed the bug that technos do not reset their link with the linked building when deactivated.
 
 ## Fixes / interactions with other extensions
 
@@ -376,6 +377,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
+- Fix the issue of Ares' EMP not suspending the production of AI factories.
+- Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 
 ## Newly added global settings
 
@@ -505,6 +508,24 @@ In `rulesmd.ini`:
 AdjacentWallDamage=200  ; integer
 ```
 
+### Customize the global default values of some vanilla flags
+
+- The following flags supplement definitions for flags that do not have global default values in vanilla.
+
+```{hint}
+Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+DefaultToGuardArea=false    ; boolean
+
+[AudioVisual]
+LeptonMindControlOffset=70  ; integer, in leptons
+MindControlRingOffset=140   ; integer, in leptons
+```
+
 ### Customizing effect of level lighting on air units
 
 - It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
@@ -607,6 +628,19 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Separate the definitions of default direction for aircraft production and landing in the field
+
+- In vanilla, the game reads the value of `[AudioVisual] -> PoseDir=`, processes it according to 8 divisions of the circle for the direction of landing in the field, and according to 256 divisions for other cases. Phobos processes it according to 256 divisions in all scenarios. In order to accommodate functions such as [landing-direction](Fixed-or-Improved-Logics.md#landing-direction) while not breaking original behavior too much, these two new flags are used for separate definitions.
+  - `PoseDir.Production` can be used to determine the default direction of an aircraft that has no landing direction defined when it is produced, as well as the direction of aircraft spawned by a building with `HoverPad=true` when `[General] -> SeparateAircraft=false`.
+  - `PoseDir.Field` can be used to determine the default direction of an aircraft that has no landing direction defined when landing in the field; it defaults to 32 times the value of `[AudioVisual] -> PoseDir=` to ensure that it points due east under vanilla configuration.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+PoseDir.Production=  ; integer, defaults to [AudioVisual] -> PoseDir
+PoseDir.Field=       ; integer, defaults to 8 * [AudioVisual] -> PoseDir
 ```
 
 ### Skirmish AI behavior dehardcode
@@ -807,8 +841,22 @@ ParadropEndDelay=   ; integer, game frames
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]            ; AircraftType
-FiringForceScatter=true   ; boolean
+[General]
+AircraftFiringForceScatter=true     ; boolean
+
+[SOMEAIRCRAFT]                      ; AircraftType
+FiringForceScatter=                 ; boolean, default to [General] -> AircraftFiringForceScatter
+```
+
+### Customize whether aircraft is a cargo plane
+
+- In vanilla, the `IsALoaner` flag of an aircraft is determined by the game's own logic during `UnLimbo`. Now, you can explicitly control this flag per AircraftType.
+  - The key `IsALoaner` determines the value of the aircraft's `IsALoaner` flag when it is unlimboed. If left unset, the vanilla behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]      ; AircraftType
+IsALoaner=       ; boolean
 ```
 
 ### Extended Aircraft Missions
@@ -865,11 +913,15 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]            ; AircraftType
-SpawnFromEdge=owner       ; Edge type enumeration (owner|closest|random)
-RetreatToEdge=owner       ; Edge type enumeration (owner|closest|random)
-SpawnDistanceFromTarget=  ; floating point value, distance in cells
-SpawnHeight=              ; integer, height in leptons
+[General]
+AircraftSpawnFromEdge=owner ; Edge type enumeration (owner|closest|random)
+AircraftRetreatToEdge=owner ; Edge type enumeration (owner|closest|random)
+
+[SOMEAIRCRAFT]              ; AircraftType
+SpawnFromEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
+RetreatToEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
+SpawnDistanceFromTarget=    ; floating point value, distance in cells
+SpawnHeight=                ; integer, height in leptons
 ```
 
 ## Animations
@@ -904,12 +956,16 @@ TheaterPalette=                 ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                      ; AnimationType
-Weapon=                         ; WeaponType
-Damage.Delay=0                  ; integer, animation frames
-Damage.DealtByInvoker=false     ; boolean
-Damage.ApplyOncePerLoop=false   ; boolean
-Damage.ApplyFirepowerMult=false ; boolean
+[CombatDamage]
+AnimDamage.DealtByInvoker=false     ; boolean
+AnimDamage.ApplyFirepowerMult=false ; boolean
+
+[SOMEANIM]                          ; AnimationType
+Weapon=                             ; WeaponType
+Damage.Delay=0                      ; integer, animation frames
+Damage.DealtByInvoker=              ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
+Damage.ApplyOncePerLoop=false       ; boolean
+Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
 ```
 
 ```{note}
@@ -1070,12 +1126,18 @@ AICleanWallNode=false  ; boolean
 
 ### Aircraft docking direction
 
-- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual] -> PoseDir`.
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting.
+- Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
+  - Modders/mappers can use `AircraftDockingDir.DefaultToPoseDir` to disable this behavior, so as to allow control through Map Editor, [`StartFacing`](Fixed-or-Improved-Logics.md#customize-the-initial-facing-of-buildings), or dynamic building orientation changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]          ; BuildingType
-AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+[AudioVisual]
+AircraftDockingDir.DefaultToPoseDir=true  ; boolean
+
+[SOMEBUILDING]                            ; BuildingType
+AircraftDockingDir(N)=                    ; Direction type (integers from 0-255)
+AircraftDockingDir.DefaultToPoseDir=      ; boolean, defaults to [AudioVisual] -> AircraftDockingDir.DefaultToPoseDir
 ```
 
 ### Allows refineries to use multiple ActiveAnim simultaneously
@@ -1240,6 +1302,25 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 
 ```{note}
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
+```
+
+### Customize the initial facing of buildings
+
+- In vanilla, buildings always face due north (0). Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingStartFacing=0             ; integer
+BuildingStartFacing.Random=false  ; boolean
+
+[SOMEBUILDING]                    ; BuildingType
+StartFacing=                      ; integer, defaults to [General] -> BuildingStartFacing
+StartFacing.Random=               ; boolean, defaults to [General] -> BuildingStartFacing.Random
+```
+
+```{note}
+Unlike the identically named INI flag in Tiberian Sun, this flag uses a 256-point circle rather than an 8-point circle.
 ```
 
 ### Disable `DamageSound`
@@ -1473,27 +1554,37 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Splits.TargetingDistance.Cylindrical=false  ; boolean
+Splits.AllowRepeatTargets=false             ; boolean
+Splits.UseWeaponTargeting=false             ; boolean
+Airburst.UseCluster=false                   ; boolean
+Airburst.TargetAsSource.SkipHeight=false    ; boolean
+AirburstWeapon.ApplyFirepowerMult=false     ; boolean
+AirburstWeapon.UseFiringEffects=false       ; boolean
+AirburstWeapon.HeadToTarget=false           ; boolean
+
 [SOMEPROJECTILE]                            ; Projectile
 Splits=false                                ; boolean
 RetargetAccuracy=0.0                        ; floating point value, percents or absolute (0.0-1.0)
 RetargetSelf=true                           ; boolean
 RetargetSelf.Probability=0.5                ; floating point value, percents or absolute (0.0-1.0)
 Splits.TargetingDistance=5.0                ; floating point value, distance in cells
-Splits.TargetingDistance.Cylindrical=false  ; boolean
+Splits.TargetingDistance.Cylindrical=       ; boolean, default to [CombatDamage] -> Splits.TargetingDistance.Cylindrical
 Splits.TargetCellRange=3                    ; integer, cell offset
-Splits.AllowRepeatTargets=false             ; boolean
-Splits.UseWeaponTargeting=false             ; boolean
+Splits.AllowRepeatTargets=                  ; boolean, default to [CombatDamage] -> Splits.AllowRepeatTargets
+Splits.UseWeaponTargeting=                  ; boolean, default to [CombatDamage] -> Splits.UseWeaponTargeting
 AirburstSpread=1.5                          ; floating point value, distance in cells
-Airburst.UseCluster=false                   ; boolean
+Airburst.UseCluster=                        ; boolean, default to [CombatDamage] -> Airburst.UseCluster
 Airburst.RandomClusters=false               ; boolean
 Airburst.TargetAsSource=false               ; boolean
-Airburst.TargetAsSource.SkipHeight=false    ; boolean
+Airburst.TargetAsSource.SkipHeight=         ; boolean, default to [CombatDamage] -> Airburst.TargetAsSource.SkipHeight
 AroundTarget=                               ; boolean
-AirburstWeapon.ApplyFirepowerMult=false     ; boolean
+AirburstWeapon.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AirburstWeapon.ApplyFirepowerMult
 AirburstWeapon.SourceScatterMin=0.0         ; floating point value, distance in cells
 AirburstWeapon.SourceScatterMax=0.0         ; floating point value, distance in cells
-AirburstWeapon.UseFiringEffects=false       ; boolean
-AirburstWeapon.HeadToTarget=false           ; boolean
+AirburstWeapon.UseFiringEffects=            ; boolean, default to [CombatDamage] -> AirburstWeapon.UseFiringEffects
+AirburstWeapon.HeadToTarget=                ; boolean, default to [CombatDamage] -> AirburstWeapon.HeadToTarget
 AirburstWeapon.RadialFireSegments=0         ; integer
 ```
 
@@ -1558,14 +1649,17 @@ BallisticScatter.Max= ; floating point value, distance in cells
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
+Shrapnel.AffectsGround=false                ; boolean
+Shrapnel.AffectsBuildings=false             ; boolean
+Shrapnel.UseWeaponTargeting=false           ; boolean
 Shrapnel.IgnoreHitBuildings=false           ; boolean
 Shrapnel.ObeyWarheadTriggerConditions=true  ; boolean
 
 [SOMEPROJECTILE]                            ; Projectile
-Shrapnel.AffectsGround=false                ; boolean
-Shrapnel.AffectsBuildings=false             ; boolean
-Shrapnel.UseWeaponTargeting=false           ; boolean
-Shrapnel.IgnoreHitBuildings=                ; boolean
+Shrapnel.AffectsGround=                     ; boolean, defaults to [CombatDamage] -> Shrapnel.AffectsGround
+Shrapnel.AffectsBuildings=                  ; boolean, defaults to [CombatDamage] -> Shrapnel.AffectsBuildings
+Shrapnel.UseWeaponTargeting=                ; boolean, defaults to [CombatDamage] -> Shrapnel.UseWeaponTargeting
+Shrapnel.IgnoreHitBuildings=                ; boolean, defaults to [CombatDamage] -> Shrapnel.IgnoreHitBuildings
 Shrapnel.ObeyWarheadTriggerConditions=      ; boolean, defaults to [CombatDamage] -> Shrapnel.ObeyWarheadTriggerConditions
 ```
 
@@ -1646,9 +1740,13 @@ TeamMember.ConsideredAs=          ; List of TechnoTypes
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
+[General]
 AlternateFLH.OnTurret=true       ; boolean
 AlternateFLH.ApplyVehicle=false  ; boolean
+
+[SOMETECHNO]                     ; TechnoType
+AlternateFLH.OnTurret=           ; boolean, default to [General] -> AlternateFLH.OnTurret
+AlternateFLH.ApplyVehicle=       ; boolean, default to [General] -> AlternateFLH.ApplyVehicle
 ```
 
 ### Building-provided self-healing customization
@@ -1870,10 +1968,22 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                        ; TechnoType
-FallingDownDamage=                  ; integer / percentage
-FallingDownDamage.Water=            ; integer / percentage
+[CombatDamage]
+FallingDownDamage=1.0               ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
+FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
+```
+
+### Customize crash spin multiplier
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
+CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
 ### Customize the landing animation of technos that have `Locomotor=Fly`
@@ -2001,11 +2111,15 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                 ; TechnoType
+[General]
 Explodes.KillPassengers=true ; boolean
+Explodes.DuringBuildup=true  ; boolean
+
+[SOMETECHNO]                 ; TechnoType
+Explodes.KillPassengers=     ; boolean, default to [General] -> Explodes.KillPassengers
 
 [SOMEBUILDING]               ; BuildingType
-Explodes.DuringBuildup=true  ; boolean
+Explodes.DuringBuildup=      ; boolean, default to [General] -> Explodes.DuringBuildup
 ```
 
 ### Forbid parallel AI queues
@@ -2073,8 +2187,11 @@ ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> F
 
 In `rulesmd.ini`:
 ```ini
+[JumpjetControls]
+RotateOnCrash=true         ; boolean
+
 [SOMETECHNO]               ; TechnoType
-JumpjetRotateOnCrash=true  ; boolean
+JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRotateOnCrash
 ```
 
 ```{warning}
@@ -2340,11 +2457,21 @@ MinimapColor=      ; integer - Red,Green,Blue
   - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
   - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
 
+```{hint}
+The above two items use different default values according to `SpawnsTiberium`, so as to facilitate separate definitions for Tiberium Trees and regular TerrainTypes.
+```
+
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]   ; TerrainType
-IsPassable=false    ; boolean
-CanBeBuiltOn=false  ; boolean
+[General]
+Terrain.IsPassable=false    ; boolean
+Tibtree.IsPassable=false    ; boolean
+Terrain.CanBeBuiltOn=false  ; boolean
+Tibtree.CanBeBuiltOn=false  ; boolean
+
+[SOMETERRAINTYPE]           ; TerrainType
+IsPassable=                 ; boolean, default to [General] -> Tibtree.IsPassable if SpawnsTiberium=true, otherwise [General] -> Terrain.IsPassable
+CanBeBuiltOn=               ; boolean, default to [General] -> Tibtree.CanBeBuiltOn if SpawnsTiberium=true, otherwise [General] -> Terrain.CanBeBuiltOn
 ```
 
 ## Tiberiums (ores)
@@ -2453,13 +2580,17 @@ TypeSelectUseIFVMode=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+CrushSlowdownMultiplier=0.2        ; floating point value
+SkipCrushSlowdown=false            ; boolean
+
 [SOMEVEHICLE]                      ; VehicleType
 TiltsWhenCrushes.Vehicles=         ; boolean
 TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
-CrushSlowdownMultiplier=0.2        ; floating point value
-SkipCrushSlowdown=false            ; boolean
+CrushSlowdownMultiplier=           ; floating point value, default to [General] -> CrushSlowdownMultiplier
+SkipCrushSlowdown=                 ; boolean, default to [General] -> SkipCrushSlowdown
 ```
 
 ### Deployment Enhancement
@@ -2484,9 +2615,12 @@ Deploy.NoTiberium=false             ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+DestroyAnim.Random=true                ; boolean
+
 [SOMEVEHICLE]                          ; VehicleType
 DestroyAnim=                           ; List of AnimationTypes
-DestroyAnim.Random=true                ; boolean
+DestroyAnim.Random=                    ; boolean, default to [General] -> DestroyAnim.Random
 ```
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy
@@ -2584,10 +2718,15 @@ KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]              ; VehicleType
+[General]
 Sinkable=                  ; boolean
 SinkSpeed=5                ; integer, leptons per frame
 Sinkable.SquidGrab=true    ; boolean
+
+[SOMEVEHICLE]              ; VehicleType
+Sinkable=                  ; boolean, default to [General] -> Sinkable
+SinkSpeed=5                ; integer, leptons per frame, default to [General] -> SinkSpeed
+Sinkable.SquidGrab=true    ; boolean, default to [General] -> Sinkable.SquidGrab
 ```
 
 ### Stationary vehicles
@@ -2696,8 +2835,11 @@ Temporal.ApplyMultiplier=       ; boolean, default to [CombatDamage] -> Temporal
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; WarheadType
+[General]
 AllowDamageOnSelf=false  ; boolean
+
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
 ```
 
 ### Berzerk on allies
@@ -2741,9 +2883,12 @@ CLIsBlack=false                            ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Debris.Conventional=false  ; boolean
+
 [SOMEWARHEAD]              ; WarheadType
 DebrisAnims=               ; List of AnimationTypes
-Debris.Conventional=false  ; boolean
+Debris.Conventional=       ; boolean, default to [General] -> Debris.Conventional
 ```
 
 ### Custom debris voxel animations limitation
@@ -2784,6 +2929,10 @@ Rocker.AmplitudeOverride=       ; integer
 
 In `rulesmd.ini`:
 ```ini
+[General]
+CreateAnimsOnZeroDamage=false   ; boolean
+Conventional.IgnoreUnits=false  ; boolean
+
 [SOMEWARHEAD]                   ; WarheadType
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
@@ -2796,8 +2945,8 @@ SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
 SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
-CreateAnimsOnZeroDamage=false   ; boolean
-Conventional.IgnoreUnits=false  ; boolean
+CreateAnimsOnZeroDamage=        ; boolean, default to [General] -> CreateAnimsOnZeroDamage
+Conventional.IgnoreUnits=       ; boolean, default to [General] -> Conventional.IgnoreUnits
 ```
 
 ### Customizable Warhead trigger conditions
@@ -2823,8 +2972,11 @@ EffectsRequireVerses=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]               ; WarheadType
+[General]
 DecloakDamagedTargets=true  ; boolean
+
+[SOMEWARHEAD]               ; WarheadType
+DecloakDamagedTargets=      ; boolean, default to [General] -> DecloakDamagedTargets
 ```
 
 ### Customizing locomotor warhead
@@ -2852,12 +3004,15 @@ JumpjetDeviation=                       ; Integer, default to [TechnoType] -> Ju
 
 In `rulesmd.ini`:
 ```ini
+[CombatDamage]
+Parasite.DisableParticleSystem=false    ; boolean
+
 [AudioVisual]
 Parasite.GrappleAnim=SQDG               ; AnimationType
 
 [SOMEWARHEAD]                           ; WarheadType
 Parasite.ParticleSystem=                ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
-Parasite.DisableParticleSystem=false    ; boolean
+Parasite.DisableParticleSystem=         ; boolean, default to [CombatDamage] -> Parasite.DisableParticleSystem
 Parasite.CullingTarget=infantry         ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 Parasite.GrappleAnim=                   ; AnimationType, default to [AudioVisual] -> Parasite.GrappleAnim
 ```
@@ -2914,8 +3069,11 @@ Due to technical constraints, this does not suppress warnings from Ares' EMP eff
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]       ; WarheadType
+[General]
 ShakeIsLocal=false  ; boolean
+
+[SOMEWARHEAD]       ; WarheadType
+ShakeIsLocal=       ; boolean, default to [General] -> ShakeIsLocal
 ```
 
 ## Weapons
@@ -2926,9 +3084,12 @@ ShakeIsLocal=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[General]
+AmbientDamage.IgnoreTarget=false  ; boolean
+
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
-AmbientDamage.IgnoreTarget=false  ; boolean
+AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDamage.IgnoreTarget
 ```
 
 ### Can attack allies
@@ -2984,8 +3145,11 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), defau
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]            ; WeaponType
-KickOutPassengers=true  ; boolean
+[General]
+AircraftWeapon.KickOutPassengers=true  ; boolean
+
+[SOMEWEAPON]                           ; WeaponType
+KickOutPassengers=                     ; boolean, default to [General] -> AircraftWeapon.KickOutPassengers
 ```
 
 ### Disable FireOnce resetting infantry sequence

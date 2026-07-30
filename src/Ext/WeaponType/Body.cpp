@@ -383,7 +383,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	{
 		auto const pTypeExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 
-		if (pTypeExt->OpenTopped_UseTransportRangeModifiers && pTypeExt->OwnerObject()->OpenTopped)
+		if (pTypeExt->OpenTopped_UseTransportRangeModifiers.Get(RulesExt::Global()->OpenTopped_UseTransportRangeModifiers) && pTypeExt->OwnerObject()->OpenTopped)
 			pTechno = pTransport;
 	}
 
@@ -439,15 +439,15 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 
 	if (pHouse && pHouse->IsControlledByHuman())
 	{
-		if (!pExt->KeepRange_AllowPlayer)
+		if (!pExt->KeepRange_AllowPlayer.Get(RulesExt::Global()->KeepRange_AllowPlayer))
 			return 0;
 	}
-	else if (!pExt->KeepRange_AllowAI)
+	else if (!pExt->KeepRange_AllowAI.Get(RulesExt::Global()->KeepRange_AllowAI))
 	{
 		return 0;
 	}
 
-	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame)
+	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame.Get(RulesExt::Global()->KeepRange_EarlyStopFrame))
 		return 0;
 
 	if (!pFirer->RearmTimer.InProgress())

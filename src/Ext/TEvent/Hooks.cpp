@@ -1,10 +1,6 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <OverlayTypeClass.h>
-#include <VocClass.h>
+
 
 DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 {

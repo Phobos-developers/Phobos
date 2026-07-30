@@ -81,17 +81,18 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	{
 		const auto pOwnerTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
-		if (!pOwnerTypeExt->MindControl_IgnoreSize)
+		if (!pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 		{
 			const int totalSize = CaptureManagerExt::GetControlledTotalSize(pManager);
-			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim ? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
+			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim)
+				? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
 
 			if (TechnoTypeExt::Fetch(pTargetType)->MindControlSize > available)
 				return false;
 		}
 		else
 		{
-			if (pManager->ControlNodes.Count >= pManager->MaxControlNodes && !pOwnerTypeExt->MultiMindControl_ReleaseVictim)
+			if (pManager->ControlNodes.Count >= pManager->MaxControlNodes && !pOwnerTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim))
 				return false;
 		}
 	}
@@ -174,7 +175,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			{
 				const auto pOwnerTypeExt = TechnoTypeExt::Fetch(pManager->Owner->GetTechnoType());
 
-				if (pOwnerTypeExt->MindControl_IgnoreSize)
+				if (pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 				{
 					if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
 						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
@@ -238,7 +239,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
 		const auto pTechnoTypeExt = TechnoExt::Fetch(pManager->Owner)->TypeExtData;
-		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim, pControlledAnimType, false, threatDelay);
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim), pControlledAnimType, false, threatDelay);
 	}
 
 	return false;

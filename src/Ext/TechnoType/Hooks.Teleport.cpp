@@ -1,7 +1,5 @@
-#include "Body.h"
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 #define GET_LOCO(reg_Loco) \
@@ -12,7 +10,7 @@
 	TechnoTypeClass const*pType = pLinked->GetTechnoType(); \
 	TechnoTypeExt const*pExt = TechnoTypeExt::Fetch(pType);
 
-DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
+DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x0)
 {
 	GET_LOCO(ESI);
 
@@ -30,7 +28,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
 	const double distance = Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
-	const auto linkedExt = TechnoExt::Fetch(pLinked);
+	const auto linkedExt = FootExt::Fetch(pLinked);
 	linkedExt->LastWarpDistance = distance;
 
 	if (const auto pImage = pType->AlphaImage)
@@ -87,7 +85,7 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
-	const double lastWarpDistance = TechnoExt::Fetch(pLinked)->LastWarpDistance;
+	const double lastWarpDistance = FootExt::Fetch(pLinked)->LastWarpDistance;
 	const bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 
 	if (auto const weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon) : pExt->WarpInWeapon)
@@ -157,7 +155,7 @@ DEFINE_HOOK(0x7197E4, TeleportLocomotionClass_Process_ChronospherePreDelay, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis->Owner);
+	auto const pExt = FootExt::Fetch(pThis->Owner);
 	pExt->IsBeingChronoSphered = true;
 	R->ECX(pExt->TypeExtData->ChronoSpherePreDelay.Get(RulesExt::Global()->ChronoSpherePreDelay));
 
@@ -168,7 +166,7 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis->Owner);
+	auto const pExt = FootExt::Fetch(pThis->Owner);
 
 	if (!pExt->IsBeingChronoSphered)
 		return 0;

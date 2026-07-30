@@ -132,6 +132,13 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+	// the extension state that goes with BulletClass::Init
+	void InitializeState();
+
+	// the bullet was created while a savegame was loading, so BulletClass::Init found
+	// no extension to initialize; catch up now that there is one
+	virtual void OnDeferredAllocation() override { this->InitializeState(); }
+
 	void InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor);
 	void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 	void InitializeLaserTrails();

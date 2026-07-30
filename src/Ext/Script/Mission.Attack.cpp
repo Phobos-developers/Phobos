@@ -2,6 +2,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
@@ -56,7 +57,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 	for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		const auto pKillerTechnoData = TechnoExt::Fetch(pFoot);
+		const auto pKillerTechnoData = FootExt::Fetch(pFoot);
 
 		if (pKillerTechnoData->LastKillWasTeamTarget)
 		{
@@ -78,7 +79,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 				for (auto pFootTeam = pFirstUnit; pFootTeam; pFootTeam = pFootTeam->NextTeamMember)
 				{
 					// Let's reset all Team Members objective
-					const auto pKillerTeamUnitData = TechnoExt::Fetch(pFootTeam);
+					const auto pKillerTeamUnitData = FootExt::Fetch(pFootTeam);
 					pKillerTeamUnitData->LastKillWasTeamTarget = false;
 
 					if (pFootTeam->WhatAmI() == AbstractType::Aircraft)
@@ -239,7 +240,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 						// If the vehicle cannot be moved, perhaps it is better this way.
 						if (whatAmI == AbstractType::Unit
-							&& TechnoExt::CannotMove(static_cast<UnitClass*>(pFoot))
+							&& UnitExt::CannotMove(static_cast<UnitClass*>(pFoot))
 							&& !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
 						{
 							continue;
