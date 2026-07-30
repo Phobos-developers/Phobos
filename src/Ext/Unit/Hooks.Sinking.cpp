@@ -1,18 +1,13 @@
-#include <AircraftClass.h>
 
-#include <ScenarioClass.h>
-#include <TunnelLocomotionClass.h>
-#include <UnitClass.h>
-
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Unit/Body.h>
 
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
 	GET(const int, CoordZ, EDX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	R->EDX(CoordZ - (pTypeExt->SinkSpeed - 5));
+	auto const pTypeExt = UnitTypeExt::Fetch(pThis->Type);
+	R->EDX(CoordZ - (pTypeExt->SinkSpeed.Get(RulesExt::Global()->SinkSpeed) - 5));
 	return 0;
 }
 
@@ -22,10 +17,10 @@ DEFINE_HOOK(0x737DE2, UnitClass_ReceiveDamage_Sinkable, 0x6)
 
 	GET(UnitTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 	const bool shouldSink = pType->Weight > RulesClass::Instance->ShipSinkingWeight && pType->Naval && !pType->Underwater && !pType->Organic;
 
-	return pTypeExt->Sinkable.Get(shouldSink) ? GoOtherChecks : NoSink;
+	return pTypeExt->Sinkable.Get(RulesExt::Global()->Sinkable.Get(shouldSink)) ? GoOtherChecks : NoSink;
 }
 
 DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
@@ -35,11 +30,11 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	GET(ParasiteClass*, pThis, ESI);
 	GET(FootClass*, pVictim, EDI);
 
-	const auto pVictimType = pVictim->GetTechnoType();
-	const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
+	const auto pVictimExt = TechnoExt::Fetch(pVictim);
 	const auto pOwner = pThis->Owner;
+	const bool isUnit = pVictim->WhatAmI() == AbstractType::Unit;
 
-	if (pVictimTypeExt->Sinkable_SquidGrab || pVictim->WhatAmI() != AbstractType::Unit)
+	if ((isUnit && static_cast<UnitExt*>(pVictimExt)->GetTypeExtData()->Sinkable_SquidGrab.Get(RulesExt::Global()->Sinkable_SquidGrab)) || !isUnit)
 	{
 		pVictim->IsSinking = true;
 		pVictim->Destroyed(pOwner);
@@ -47,7 +42,7 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	}
 	else
 	{
-		auto damage = pVictimType->Strength;
+		auto damage = pVictimExt->TypeExtData->OwnerObject()->Strength;
 		pVictim->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, pOwner, true, false, pOwner->Owner);
 	}
 

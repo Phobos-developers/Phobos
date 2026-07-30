@@ -2,8 +2,6 @@
 #include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
-#include <HouseClass.h>
-#include <SuperClass.h>
 
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 
@@ -198,3 +196,4 @@ DEFINE_HOOK(0x6AC5EA, SidebarClass_Save_Suffix, 0x6)
 
 	return 0;
 }
+
