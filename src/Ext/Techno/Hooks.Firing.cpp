@@ -512,7 +512,7 @@ DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_OnMoving1, 0x17)
 
 	GET(InfantryClass*, pThis, EBX);
 
-	const auto pTypeExt = InfantryExt::Fetch(pThis)->GetTypeExtData();
+	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->FiringByPassMovingCheck || pThis->SpeedPercentage <= 0.1 ) // vanilla check
 		return CheckPass;
@@ -526,7 +526,7 @@ DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_OnMoving2, 0x13)
 
 	GET(InfantryClass*, pThis, EBX);
 
-	const auto pTypeExt = InfantryExt::Fetch(pThis)->GetTypeExtData();
+	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->FiringByPassMovingCheck || !pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now() ) // vanilla check
 		return CheckPass;
