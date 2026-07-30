@@ -634,11 +634,11 @@ DEFINE_HOOK(0x4683F2, BulletClass_Draw_ZAdjust, 0x5)
 }
 
 // Replaces Ares' handling of Ranged=true projectiles.
-DEFINE_HOOK(0x467BA4, BulletClass_AI_Ranged, 0x6)
+DEFINE_HOOK(0x467B8E, BulletClass_AI_Ranged, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
-	REF_STACK(CoordStruct, coordNew, STACK_OFFSET(0x1A8, -0x184));
-	REF_STACK(bool, shouldExplode, STACK_OFFSET(0x1A8, -0x190));
+	REF_STACK(CoordStruct, coordNew, STACK_OFFSET(0x1AC, -0x184));
+	REF_STACK(bool, shouldExplode, STACK_OFFSET(0x1AC, -0x190));
 
 	if (pThis->Type->Ranged)
 	{
@@ -656,6 +656,5 @@ DEFINE_HOOK(0x467BA4, BulletClass_AI_Ranged, 0x6)
 	}
 
 	pThis->SetLocation(coordNew);
-
 	return 0;
 }
