@@ -23,7 +23,7 @@ This page describes all the engine features that are either new and introduced b
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
-    - `invokerdie`: Discard when the invoker of the effect is destroyed. 
+    - `invokerdie`: Discard when the invoker of the effect is destroyed.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
@@ -1264,6 +1264,7 @@ Trajectory.Bombard.TurningPointAnims=        ; List of AnimationTypes
 - Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory.
   - `Trajectory.Missile.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the other items.
   - `Trajectory.Missile.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
+    - `Trajectory.Missile.PreAimScatter.Min` and `Trajectory.Missile.PreAimScatter.Max` control the random scatter range of `Trajectory.Missile.PreAimCoord`.
     - `Trajectory.Missile.FacingCoord` controls whether the forward direction in `Trajectory.Missile.PreAimCoord` is depending on the orientation of the firer. By default, it will depend on the vector between the firer and the target.
     - `Trajectory.Missile.ReduceCoord` controls whether `Trajectory.Missile.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
   - `Trajectory.Missile.LaunchSpeed` controls the initial flight speed of the projectile.
@@ -1275,13 +1276,17 @@ Trajectory.Bombard.TurningPointAnims=        ; List of AnimationTypes
     - `Trajectory.Missile.CruiseAltitude` controls the altitude of the projectile in the cruise phase.
     - `Trajectory.Missile.CruiseAlongLevel` controls whether to calculate `Trajectory.Missile.CruiseAltitude` by the ground height of the current position, otherwise it will be calculated by the height of the launch position.
   - `Trajectory.Missile.CollisionDetection` controls whether the projectile will attempt to fly up when it's going to collide a terrain.
-  - `Trajectory.Missile.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide. When set to a negative number, its absolute value represents a multiple of the initial distance.
   - `Trajectory.Missile.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
+  - `Trajectory.Missile.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide. When set to a negative number, its absolute value represents a multiple of the initial distance.
+  - `Trajectory.Missile.VolatilityRange` controls the volatility amplitude of projectiles during flight.
+  - `Trajectory.Missile.VolatilityPeriod` controls the volatility period of projectiles during flight.
 
 In `rulesmd.ini`:
 ```ini
 Trajectory.Missile.UniqueCurve=false        ; boolean
 Trajectory.Missile.PreAimCoord=0,0,0        ; integer - Forward,Lateral,Height
+Trajectory.Missile.PreAimScatter.Min=0      ; floating point value
+Trajectory.Missile.PreAimScatter.Max=0      ; floating point value
 Trajectory.Missile.FacingCoord=false        ; boolean
 Trajectory.Missile.ReduceCoord=true         ; boolean
 Trajectory.Missile.LaunchSpeed=0            ; floating point value
@@ -1293,8 +1298,10 @@ Trajectory.Missile.CruiseUnableRange=5.0    ; floating point value
 Trajectory.Missile.CruiseAltitude=800       ; integer
 Trajectory.Missile.CruiseAlongLevel=false   ; boolean
 Trajectory.Missile.CollisionDetection=false ; boolean
-Trajectory.Missile.SuicideAboveRange=-3.0   ; floating point value
 Trajectory.Missile.SuicideShortOfROT=false  ; boolean
+Trajectory.Missile.SuicideAboveRange=-3.0   ; floating point value
+Trajectory.Missile.VolatilityRange=0        ; floating point value
+Trajectory.Missile.VolatilityPeriod=4       ; integer
 ```
 
 ```{hint}

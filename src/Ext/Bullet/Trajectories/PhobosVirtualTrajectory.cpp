@@ -1,4 +1,4 @@
-﻿#include "PhobosVirtualTrajectory.h"
+#include "PhobosVirtualTrajectory.h"
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>

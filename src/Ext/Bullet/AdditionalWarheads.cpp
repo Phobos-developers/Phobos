@@ -737,7 +737,7 @@ double BulletExt::GetExtraDamageMultiplier()
 {
 	const auto pBullet = this->OwnerObject();
 	const double distanceSq = pBullet->Location.DistanceFromSquared(pBullet->SourceCoords);
-	const double range = (double)this->AttenuationRange;
+	const double range = static_cast<double>(this->AttenuationRange);
 
 	// Directly use edge value if the distance is too far
 	if (range * range <= distanceSq)

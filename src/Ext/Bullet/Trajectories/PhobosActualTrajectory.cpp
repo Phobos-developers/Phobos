@@ -1,4 +1,4 @@
-﻿#include "PhobosActualTrajectory.h"
+#include "PhobosActualTrajectory.h"
 
 #include <Ext/Bullet/Body.h>
 
@@ -109,7 +109,7 @@ bool ActualTrajectory::OnEarlyUpdate()
 
 void ActualTrajectory::OnPreDetonate()
 {
-	const double targetSnapDistance = (double)(static_cast<const ActualTrajectoryType*>(this->GetType())->TargetSnapDistance.Get());
+	const double targetSnapDistance = static_cast<double>(static_cast<const ActualTrajectoryType*>(this->GetType())->TargetSnapDistance.Get());
 
 	// Can snap to target?
 	if (targetSnapDistance > 0.0)

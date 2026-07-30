@@ -1,7 +1,5 @@
 #include "ParabolaTrajectory.h"
 
-#include <OverlayTypeClass.h>
-
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 
@@ -327,7 +325,7 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pType = this->Type;
 
 	// Close enough
-	const double range = (double)pType->DetonationDistance.Get();
+	const double range = static_cast<double>(pType->DetonationDistance.Get());
 
 	if (pBullet->TargetCoords.DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
@@ -695,11 +693,9 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 		// Step 2: Find projectile velocity
 		const auto velocity = this->SolveFixedAngleVelocity(horizontalDistance, distanceCoords.Z, radian, gravity);
-
 		if (velocity < 0.0)
 		{
-			auto const targetCoords = pBullet->TargetCoords;
-
+			const auto& targetCoords = pBullet->TargetCoords;
 			Debug::Log("Failed to solve fixed angle Parabola trajectory velocity: BulletType: [%s] - Source: %d,%d,%d - Target: %d,%d,%d - Angle: %.2f - Gravity: %.2f\n",
 				pBullet->Type->get_ID(), source.X, source.Y, source.Z, targetCoords.X, targetCoords.Y, targetCoords.Z, pType->LaunchAngle, gravity);
 

@@ -1,6 +1,4 @@
-﻿#include "MissileTrajectory.h"
-
-#include <Ext/Bullet/Body.h>
+#include "MissileTrajectory.h"
 
 #include <Ext/Bullet/Body.h>
 
@@ -17,6 +15,8 @@ void MissileTrajectoryType::Serialize(T& Stm)
 		.Process(this->FacingCoord)
 		.Process(this->ReduceCoord)
 		.Process(this->PreAimCoord)
+		.Process(this->PreAimScatter_Min)
+		.Process(this->PreAimScatter_Max)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
 		.Process(this->TurningSpeed)
@@ -27,8 +27,10 @@ void MissileTrajectoryType::Serialize(T& Stm)
 		.Process(this->CruiseAltitudeRange)
 		.Process(this->CruiseAlongLevel)
 		.Process(this->CollisionDetection)
-		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideShortOfROT)
+		.Process(this->SuicideAboveRange)
+		.Process(this->VolatilityRange)
+		.Process(this->VolatilityPeriod)
 		;
 }
 
@@ -86,6 +88,10 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->FacingCoord.Read(exINI, pSection, "Trajectory.Missile.FacingCoord");
 	this->ReduceCoord.Read(exINI, pSection, "Trajectory.Missile.ReduceCoord");
 	this->PreAimCoord.Read(exINI, pSection, "Trajectory.Missile.PreAimCoord");
+	this->PreAimScatter_Min.Read(exINI, pSection, "Trajectory.Missile.PreAimScatter.Min");
+	this->PreAimScatter_Min = Leptons(Math::max(0, this->PreAimScatter_Min.Get()));
+	this->PreAimScatter_Max.Read(exINI, pSection, "Trajectory.Missile.PreAimScatter.Max");
+	this->PreAimScatter_Max = Leptons(Math::max(0, this->PreAimScatter_Max.Get()));
 	this->LaunchSpeed.Read(exINI, pSection, "Trajectory.Missile.LaunchSpeed");
 	this->LaunchSpeed = Math::max(0.001, this->LaunchSpeed);
 	this->Acceleration.Read(exINI, pSection, "Trajectory.Missile.Acceleration");
@@ -100,8 +106,12 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->CruiseAltitudeRange = this->CruiseAltitude / 2;
 	this->CruiseAlongLevel.Read(exINI, pSection, "Trajectory.Missile.CruiseAlongLevel");
 	this->CollisionDetection.Read(exINI, pSection, "Trajectory.Missile.CollisionDetection");
-	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Missile.SuicideAboveRange");
 	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Missile.SuicideShortOfROT");
+	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Missile.SuicideAboveRange");
+	this->VolatilityRange.Read(exINI, pSection, "Trajectory.Missile.VolatilityRange");
+	this->VolatilityRange = Leptons(std::clamp(static_cast<int>(this->VolatilityRange.Get()), 0, Unsorted::LeptonsPerCell));
+	this->VolatilityPeriod.Read(exINI, pSection, "Trajectory.Missile.VolatilityPeriod");
+	this->VolatilityPeriod = Math::max(1, this->VolatilityPeriod);
 }
 
 template<typename T>
@@ -201,7 +211,7 @@ TrajectoryCheckReturnType MissileTrajectory::OnDetonateUpdate(const CoordStruct&
 		return TrajectoryCheckReturnType::Detonate;
 
 	// Close enough
-	const double range = (double)this->Type->DetonationDistance.Get();
+	const double range = static_cast<double>(this->Type->DetonationDistance.Get());
 
 	if ((this->Bullet->TargetCoords + this->OffsetCoord).DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
@@ -222,17 +232,16 @@ void MissileTrajectory::OpenFire()
 		this->MovingVelocity.Z = 4.0;
 		this->MovingSpeed = 4.0;
 
-		// OriginalDistance is converted to record the maximum height
-		if (this->OriginalDistance < (Unsorted::LeptonsPerCell * 8)) // When the distance is very close, the trajectory tends to be parabolic
-			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 0.75) + (Unsorted::LeptonsPerCell * 2);
-		else if (this->OriginalDistance > (Unsorted::LeptonsPerCell * 15)) // When the distance is far enough, it is the complete trajectory
-			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 0.4) + (Unsorted::LeptonsPerCell * 2);
+		if (this->MaximumHeight < (Unsorted::LeptonsPerCell * 8)) // When the distance is very close, the trajectory tends to be parabolic
+			this->MaximumHeight = static_cast<int>(this->MaximumHeight * 0.75) + (Unsorted::LeptonsPerCell * 2);
+		else if (this->MaximumHeight > (Unsorted::LeptonsPerCell * 15)) // When the distance is far enough, it is the complete trajectory
+			this->MaximumHeight = static_cast<int>(this->MaximumHeight * 0.4) + (Unsorted::LeptonsPerCell * 2);
 		else // The distance is neither long nor short, it is an adaptive trajectory
-			this->OriginalDistance = (Unsorted::LeptonsPerCell * 8);
+			this->MaximumHeight = (Unsorted::LeptonsPerCell * 8);
 
 		// Calculate the maximum height during the ascending phase
 		constexpr int thresholdDistance = 3200;
-		this->OriginalDistance = this->OriginalDistance < thresholdDistance ? this->OriginalDistance / 2 : this->OriginalDistance - (thresholdDistance / 2);
+		this->MaximumHeight = this->MaximumHeight < thresholdDistance ? this->MaximumHeight / 2 : this->MaximumHeight - (thresholdDistance / 2);
 		this->RemainingDistance = INT_MAX;
 	}
 	else // Under normal circumstances, the trajectory is similar to ROT projectile with an initial launch direction
@@ -357,7 +366,26 @@ CoordStruct MissileTrajectory::GetPreAimCoordsWithBurst()
 	if (pType->MirrorCoord && this->CurrentBurst < 0)
 		preAimCoord.Y = -preAimCoord.Y;
 
-	// No rotate now, return original value
+	const int offsetMin = static_cast<int>(pType->PreAimScatter_Min.Get());
+	const int offsetMax = static_cast<int>(pType->PreAimScatter_Max.Get());
+
+	if (offsetMin > 0 || offsetMax > 0)
+	{
+		const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
+		const double angle = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
+
+		auto auxVector = CoordStruct::Empty;
+		if (std::abs(preAimCoord.X) <= std::abs(preAimCoord.Y) && std::abs(preAimCoord.X) <= std::abs(preAimCoord.Z))
+			auxVector.X = 1;
+		else if (std::abs(preAimCoord.Y) <= std::abs(preAimCoord.Z))
+			auxVector.Y = 1;
+		else
+			auxVector.Z = 1;
+
+		const auto baseVector = preAimCoord.CrossProduct(auxVector).Normalized();
+		preAimCoord += (baseVector * (Math::cos(angle) * offsetDistance) + preAimCoord.CrossProduct(baseVector).Normalized() * (Math::sin(angle) * offsetDistance));
+	}
+
 	return preAimCoord;
 }
 
@@ -431,7 +459,7 @@ bool MissileTrajectory::CurveVelocityChange()
 		constexpr double uniqueCurveMaxVerticalSpeed = 160.0;
 
 		// The launch phase is divided into ascending and descending stages
-		if (this->Accelerate && (pBullet->Location.Z - pBullet->SourceCoords.Z) < this->OriginalDistance)
+		if (this->Accelerate && (pBullet->Location.Z - pBullet->SourceCoords.Z) < this->MaximumHeight)
 		{
 			if (this->MovingVelocity.Z < uniqueCurveMaxVerticalSpeed) // Accelerated phase of ascent
 				this->MovingVelocity.Z += MissileTrajectory::UniqueCurveAcceleration;
@@ -528,6 +556,21 @@ bool MissileTrajectory::StandardVelocityChange()
 			}
 		}
 
+		if (!pType->LockDirection && pType->VolatilityRange.Get() > 0)
+		{
+			const auto offset = targetLocation - pBullet->Location;
+			const double offsetDistance = offset.Magnitude();
+			const double volatility = Math::max(0.0, (offsetDistance - (2 * pType->Speed)));
+
+			if (volatility > BulletExt::Epsilon)
+			{
+				const double volatilityDistance = pType->VolatilityRange.Get() * volatility;
+				const CoordStruct volatilityOffset { -offset.Y, offset.X, offset.Z };
+				const double direction = ((pBullet->UniqueID + (Unsorted::CurrentFrame / pType->VolatilityPeriod.Get())) & 1) != 0 ? 1.0 : -1.0;
+				targetLocation += volatilityOffset * (direction * volatilityDistance / offsetDistance / Unsorted::LeptonsPerCell);
+			}
+		}
+
 		do
 		{
 			int cruiseGroundHeight = -1;
@@ -549,7 +592,7 @@ bool MissileTrajectory::StandardVelocityChange()
 			{
 				const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
 				const double horizontalDistanceSq = horizontal.MagnitudeSquared();
-				const double range = (double)pType->CruiseUnableRange.Get();
+				const double range = static_cast<double>(pType->CruiseUnableRange.Get());
 
 				// The distance is still long, continue cruising
 				if (horizontalDistanceSq > range * range)
@@ -661,13 +704,13 @@ int MissileTrajectory::GetCruiseAltitude(bool collisionCheck, int lastCheckHeigh
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
-		{
-			return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
-		};
+	{
+		return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
+	};
 	auto getFloorHeight = [](const CellClass* const pCell, const Point2D& point) -> int
-		{
-			return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
-		};
+	{
+		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+	};
 
 	// Initialize
 	auto curCoord = Point2D { pBullet->Location.X, pBullet->Location.Y };
@@ -685,58 +728,58 @@ int MissileTrajectory::GetCruiseAltitude(bool collisionCheck, int lastCheckHeigh
 	const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
 
 	auto checkStepHeight = [&]() -> bool
+	{
+		// Check forward
+		lastCoord = curCoord;
+		curCoord += stepCoord;
+		pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
+
+		if (!pCurCell)
+			return false;
+
+		maxHeight = Math::max(maxHeight, getFloorHeight(pCurCell, curCoord));
+
+		auto getSideHeight = [](const CellClass* const pCell) -> int
 		{
-			// Check forward
-			lastCoord = curCoord;
-			curCoord += stepCoord;
-			pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
-
-			if (!pCurCell)
-				return false;
-
-			maxHeight = Math::max(maxHeight, getFloorHeight(pCurCell, curCoord));
-
-			auto getSideHeight = [](const CellClass* const pCell) -> int
-				{
-					return (pCell->Level * Unsorted::LevelHeight) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
-				};
-			auto getAntiAliasingCell = [&]() -> CellClass*
-				{
-					// Check if it is a diagonal relationship
-					if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
-						return nullptr;
-
-					constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
-					bool lastX = false;
-
-					// Calculate the bias of the previous cell
-					if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
-					{
-						const int offsetX = curCoord.X & mask;
-						const int deltaX = (stepCoord.X > 0) ? offsetX : (offsetX - Unsorted::LeptonsPerCell);
-						const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
-						lastX = (projectedY ^ curCoord.Y) >> shift == 0;
-					}
-					else
-					{
-						const int offsetY = curCoord.Y & mask;
-						const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
-						const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
-						lastX = (projectedX ^ curCoord.X) >> shift != 0;
-					}
-
-					// Get cell
-					return MapClass::Instance.TryGetCellAt(lastX
-						? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
-					: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
-				};
-
-			// "Anti-Aliasing"
-			if (const auto pCheckCell = getAntiAliasingCell())
-				maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
-
-			return true;
+			return (pCell->Level * Unsorted::LevelHeight) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
 		};
+		auto getAntiAliasingCell = [&]() -> CellClass*
+		{
+			// Check if it is a diagonal relationship
+			if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
+				return nullptr;
+
+			constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
+			bool lastX = false;
+
+			// Calculate the bias of the previous cell
+			if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
+			{
+				const int offsetX = curCoord.X & mask;
+				const int deltaX = (stepCoord.X > 0) ? offsetX : (offsetX - Unsorted::LeptonsPerCell);
+				const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
+				lastX = (projectedY ^ curCoord.Y) >> shift == 0;
+			}
+			else
+			{
+				const int offsetY = curCoord.Y & mask;
+				const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
+				const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
+				lastX = (projectedX ^ curCoord.X) >> shift != 0;
+			}
+
+			// Get cell
+			return MapClass::Instance.TryGetCellAt(lastX
+				? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
+				: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
+		};
+
+		// "Anti-Aliasing"
+		if (const auto pCheckCell = getAntiAliasingCell())
+			maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
+
+		return true;
+	};
 
 	// Predict height
 	for (int i = 0; i < checkSteps && checkStepHeight(); ++i);

@@ -1,4 +1,4 @@
-﻿#include "EngraveTrajectory.h"
+#include "EngraveTrajectory.h"
 
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Bullet/Body.h>

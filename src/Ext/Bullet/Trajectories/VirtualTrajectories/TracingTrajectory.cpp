@@ -1,4 +1,4 @@
-﻿#include "TracingTrajectory.h"
+#include "TracingTrajectory.h"
 
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
@@ -203,8 +203,7 @@ bool TracingTrajectory::ChangeVelocity()
 	// Calculate the maximum separation distance
 	const auto pWeapon = pBullet->WeaponType;
 	const int baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
-	const int applyRange = (pBulletExt->TypeExtData->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
-	const double applyRangeDouble = (double)applyRange;
+	const double applyRange = static_cast<double>(pBulletExt->TypeExtData->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32.0;
 
 	// Calculate the distance between the projectile and the firer
 	const auto source = (pFirer && !pBulletExt->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
@@ -212,7 +211,7 @@ bool TracingTrajectory::ChangeVelocity()
 	const double distanceSq = (pBulletExt->NotMainWeapon || pBulletExt->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? BulletExt::Get2DDistanceSquared(delta) : delta.MagnitudeSquared();
 
 	// Check if the limit has been exceeded
-	if (distanceSq >= applyRangeDouble * applyRangeDouble)
+	if (distanceSq >= applyRange * applyRange)
 		destination = source + (delta * (applyRange / sqrt(distanceSq)));
 
 	CoordStruct offset = pType->VirtualTargetCoord.Get();

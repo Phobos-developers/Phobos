@@ -1,8 +1,5 @@
 #include "BombardTrajectory.h"
 
-#include <LineTrail.h>
-#include <AnimClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 
@@ -156,7 +153,7 @@ TrajectoryCheckReturnType BombardTrajectory::OnDetonateUpdate(const CoordStruct&
 		return TrajectoryCheckReturnType::Detonate;
 
 	// Close enough
-	const double range = (double)pType->DetonationDistance.Get();
+	const double range = static_cast<double>(pType->DetonationDistance.Get());
 
 	if (pBullet->TargetCoords.DistanceFromSquared(position) < range * range)
 		return TrajectoryCheckReturnType::Detonate;
@@ -277,9 +274,9 @@ CoordStruct BombardTrajectory::CalculateMiddleCoords()
 
 	if (!pType->FallScatter_Linear)
 	{
-		const double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-		scatterX = length * Math::cos(angel);
-		scatterY = length * Math::sin(angel);
+		const double angle = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
+		scatterX = length * Math::cos(angle);
+		scatterY = length * Math::sin(angle);
 	}
 	else
 	{

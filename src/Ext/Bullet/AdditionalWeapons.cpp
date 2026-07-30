@@ -2,6 +2,7 @@
 
 #include <AircraftTrackerClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -252,7 +253,6 @@ bool BulletExt::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourc
 	const bool disperseRetarget = pType->DisperseRetarget;
 	const bool disperseSeparate = pType->DisperseSeparate;
 	const bool disperseLocation = pType->DisperseLocation;
-	const bool checkObjects = pType->DisperseMarginal;
 
 	// Launch weapons in sequence
 	for (int weaponNum = 0; weaponNum < validWeapons; ++weaponNum)
@@ -329,6 +329,7 @@ bool BulletExt::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourc
 		// Select what?
 		const auto canTarget = pWeaponExt->CanTarget;
 		const bool checkTechnos = (canTarget & AffectedTarget::AllContents) != AffectedTarget::None;
+		const bool checkObjects = pType->DisperseMarginal;
 		const bool checkCells = (canTarget & AffectedTarget::AllCells) != AffectedTarget::None;
 
 		const int weaponRange = pWeapon->Range;
@@ -399,17 +400,17 @@ bool BulletExt::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourc
 
 		if (disperseHolistic || this->TargetIsInAir) // In air targets
 		{
-			const double range = (double)(weaponRange + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0));
+			const int range = weaponRange + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
 
 			if (checkTechnos)
 			{
 				const auto airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(centerCoords), Game::F2I(range / Unsorted::LeptonsPerCell));
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(centerCoords), Game::F2I(static_cast<double>(range) / Unsorted::LeptonsPerCell));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
 					if (!BulletExt::CheckTechnoIsInvalid(pTechno)
-						&& BulletExt::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pTechno->GetCell(), (int)range, pTarget, pWeapon, pWeaponExt, pFirer))
+						&& BulletExt::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pTechno->GetCell(), range, pTarget, pWeapon, pWeaponExt, pFirer))
 					{
 						validTechnos.push_back(pTechno);
 					}
@@ -418,7 +419,7 @@ bool BulletExt::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourc
 
 			if (checkObjects && BulletExt::Fetch(pBullet)->InterceptorTechnoType)
 			{
-				const double rangeSq = range * range;
+				const double rangeSq = static_cast<double>(range) * range;
 				const auto pWH = pWeapon->Warhead;
 				const auto canTargetHouses = pWeaponExt->CanTargetHouses;
 
@@ -534,6 +535,7 @@ void BulletExt::CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& s
 		const auto pExt = BulletExt::Fetch(pBullet);
 
 		// Record basic information
+		pExt->IsSplitFromAirburst = true;
 		pExt->DispersedTrajectory = true;
 		BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, sourceCoord, false);
 		pExt->DispersedTrajectory = false;

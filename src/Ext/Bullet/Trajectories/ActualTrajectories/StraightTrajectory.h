@@ -48,7 +48,7 @@ public:
 	virtual void OpenFire() override;
 	virtual void FireTrajectory() override;
 	virtual bool GetCanHitGround() const override { return this->Type->SubjectToGround; }
-	virtual bool ShouldSkipBridgeCheck() { return !this->Type->SubjectToGround; }
+	virtual bool ShouldSkipBridgeCheck() const override { return !this->Type->SubjectToGround; };
 
 private:
 	CoordStruct CalculateBulletLeadTime();
