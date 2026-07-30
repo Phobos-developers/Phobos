@@ -1,11 +1,13 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
+
 // Universal handler of the rolls-weights system
-std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
+std::vector<int> SWTypeExt::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
 {
 	bool rollOnce = false;
 	size_t rollsSize = rolls->size();
-	size_t weightsSize = weights->size();
+	const size_t weightsSize = weights->size();
 	int index;
 	std::vector<int> indices;
 
@@ -16,14 +18,17 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		rollOnce = true;
 	}
 
+	indices.reserve(rollsSize);
+
 	for (size_t i = 0; i < rollsSize; i++)
 	{
 		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+
 		if (!rollOnce && this->RandomBuffer > (*rolls)[i])
 			continue;
 
 		// If there are more rolls than weight lists, use the last weight list
-		size_t j = std::min(weightsSize - 1, i);
+		const size_t j = std::min(weightsSize - 1, i);
 		index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &(*weights)[j]);
 
 		// If modder provides more weights than there are objects and we hit one of these, ignore it
@@ -31,19 +36,20 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		if (size_t(index) < size)
 			indices.push_back(index);
 	}
+
 	return indices;
 }
 
 // =============================
 // Ares 0.A helpers
 // Inhibitors check
-bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
+bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) const
 {
 	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
-			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+			if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
 			{
 				if (!pBld->IsPowerOnline())
 					return false;
@@ -52,40 +58,42 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 			return this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechno->GetTechnoType());
 		}
 	}
+
 	return false;
 }
 
-bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
+bool SWTypeExt::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
 	if (this->IsInhibitor(pOwner, pTechno))
 	{
 		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pExt = TechnoTypeExt::Fetch(pType);
 
 		// get the inhibitor's center
-		auto center = pTechno->GetCenterCoords();
+		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
-		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
+		const double range = (double)pExt->InhibitorRange.Get(pType->Sight);
+		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
 	return false;
 }
 
-bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
+bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 {
 	// does not allow inhibitors
 	if (this->SW_Inhibitors.empty() && !this->SW_AnyInhibitor)
 		return false;
 
 	// a single inhibitor in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsInhibitorEligible(pOwner, coords, pTechno); }
 	);
 }
 
 // Designators check
-bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
+bool SWTypeExt::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) const
 {
 	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
 		return this->SW_AnyDesignator || this->SW_Designators.Contains(pTechno->GetTechnoType());
@@ -93,35 +101,36 @@ bool SWTypeExt::ExtData::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno) 
 	return false;
 }
 
-bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
+bool SWTypeExt::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno) const
 {
 	if (this->IsDesignator(pOwner, pTechno))
 	{
 		const auto pType = pTechno->GetTechnoType();
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pExt = TechnoTypeExt::Fetch(pType);
 
 		// get the designator's center
-		auto center = pTechno->GetCenterCoords();
+		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the designator range (which defaults to Sight)
-		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->DesignatorRange.Get(pType->Sight);
+		const double range = (double)pExt->DesignatorRange.Get(pType->Sight);
+		return coords.DistanceFromSquared(CellClass::Coord2Cell(center)) <= range * range;
 	}
 
 	return false;
 }
 
-bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
+bool SWTypeExt::HasDesignator(HouseClass* pOwner, const CellStruct& coords) const
 {
 	// does not require designators
 	if (this->SW_Designators.empty() && !this->SW_AnyDesignator)
 		return true;
 
 	// a single designator in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 
-bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
+bool SWTypeExt::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const
 {
 	if (!this->IsLaunchSite(pBuilding))
 		return false;
@@ -130,64 +139,201 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 		return true;
 
 	// get the range for this building
-	auto range = this->GetLaunchSiteRange(pBuilding);
-	const auto& minRange = range.first;
-	const auto& maxRange = range.second;
+	const auto range = this->GetLaunchSiteRange(pBuilding);
+	const double minRange = range.first;
+	const double maxRange = range.second;
 
-	CoordStruct coords = pBuilding->GetCenterCoords();
+	const auto coords = pBuilding->GetCenterCoords();
 	const auto center = CellClass::Coord2Cell(coords);
-	const auto distance = Coords.DistanceFrom(center);
+	const double distanceSq = Coords.DistanceFromSquared(center);
 
 	// negative range values just pass the test
-	return (minRange < 0.0 || distance >= minRange)
-		&& (maxRange < 0.0 || distance <= maxRange);
+	return (minRange < 0.0 || distanceSq >= minRange * minRange)
+		&& (maxRange < 0.0 || distanceSq <= maxRange * maxRange);
 }
 
-bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
+bool SWTypeExt::IsLaunchSite(BuildingClass* pBuilding) const
 {
 	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);
+		auto const pExt = BuildingExt::Fetch(pBuilding);
+		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
 	}
 
 	return false;
 }
 
-std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* pBuilding) const
+std::pair<double, double> SWTypeExt::GetLaunchSiteRange(BuildingClass* pBuilding) const
 {
 	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
 }
 
-bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
+bool SWTypeExt::IsAvailable(HouseClass* pHouse) const
 {
-	const auto pThis = this->OwnerObject();
+	if (pHouse->TechLevel < this->SW_TechLevel)
+		return false;
 
-	// check whether the optional aux building exists
-	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+	const auto pThis = this->OwnerObject();
+	const int shots = this->SW_Shots;
+
+	if (shots >= 0 && HouseExt::Fetch(pHouse)->SuperExts[pThis->ArrayIndex].ShotCount >= shots)
+		return false;
+
+	if (pHouse->IsControlledByHuman() ? (!this->SW_AllowPlayer) : (!this->SW_AllowAI))
 		return false;
 
 	// allow only certain houses, disallow forbidden houses
-	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
+	const auto ownerBits = 1u << pHouse->Type->ArrayIndex;
 
-	if (!(this->SW_RequiredHouses & OwnerBits) || (this->SW_ForbiddenHouses & OwnerBits))
+	if (!(this->SW_RequiredHouses & ownerBits) || (this->SW_ForbiddenHouses & ownerBits))
+		return false;
+
+	auto IsTechnoPresent = [pHouse](TechnoTypeClass* pType)
+		{
+			const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType);
+
+			// June 7, 2026 - Starkku: PowersUpBuilding is now put in PowersUp_Buildings
+			// so removed  BuildingTypeClass::Find(pBuildingType->PowersUpBuilding check here.
+			if (pBuildingType && !BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.empty())
+				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
+
+			return HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
+		};
+
+	// check whether the optional aux building exists
+	if (pThis->AuxBuilding && !IsTechnoPresent(pThis->AuxBuilding))
 		return false;
 
 	// check that any aux building exist and no neg building
-	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
-	{
-		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
-	};
 
-	const auto& Aux = this->SW_AuxBuildings;
+	const auto& auxBuildings = this->SW_AuxBuildings;
 
-	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
+	if (!auxBuildings.empty() && std::ranges::none_of(auxBuildings, IsTechnoPresent))
 		return false;
 
-	const auto& Neg = this->SW_NegBuildings;
+	const auto& negBuildings = this->SW_NegBuildings;
 
-	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
+	if (std::ranges::any_of(negBuildings, IsTechnoPresent))
+		return false;
+
+	const auto& auxTechnos = this->SW_AuxTechnos;
+
+	if (!auxTechnos.empty() && std::ranges::none_of(auxTechnos, IsTechnoPresent))
+		return false;
+
+	const auto& negTechnos = this->SW_NegTechnos;
+
+	if (std::ranges::any_of(negTechnos, IsTechnoPresent))
 		return false;
 
 	return true;
+}
+
+std::vector<BuildingClass*> SWTypeExt::GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const
+{
+	std::vector<BuildingClass*> emCannons;
+
+	for (auto const& pBuilding : pOwner->Buildings)
+	{
+		bool eligible = false;
+		auto const pType = pBuilding->Type;
+
+		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pType) && pBuilding->IsAlive
+			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+		{
+			eligible = true;
+		}
+		else if (pType->EMPulseCannon && this->IsLaunchSite(pBuilding))
+		{
+			eligible = true;
+		}
+
+		if (eligible)
+		{
+			const auto range = this->GetEMPulseCannonRange(pBuilding);
+			const double& minRange = range.first;
+			const double& maxRange = range.second;
+			const auto center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
+			const double distanceSq = cell.DistanceFromSquared(center);
+
+			if ((minRange < 0.0 || distanceSq >= minRange * minRange)
+				&& (maxRange < 0.0 || distanceSq <= maxRange * maxRange))
+			{
+				emCannons.push_back(pBuilding);
+			}
+		}
+	}
+
+	return emCannons;
+}
+
+std::pair<double, double> SWTypeExt::GetEMPulseCannonRange(BuildingClass* pBuilding) const
+{
+	if (this->EMPulse_TargetSelf)
+		return std::make_pair(-1.0, -1.0);
+
+	if (!pBuilding)
+		return std::make_pair(0.0, 0.0);
+
+	if (auto pWeapon = pBuilding->GetWeapon(0)->WeaponType)
+	{
+		double maxRange = this->SW_RangeMaximum;
+		if (maxRange < 0.0)
+			maxRange = pWeapon->Range / (double)Unsorted::LeptonsPerCell;
+
+		double minRange = this->SW_RangeMinimum;
+		if (minRange < 0.0)
+		{
+			minRange = pWeapon->MinimumRange / (double)Unsorted::LeptonsPerCell;
+		}
+
+		return std::make_pair(minRange, maxRange);
+	}
+
+	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
+}
+
+void SWTypeExt::PrintMessage(const CSFText& message, HouseClass* pFirer) const
+{
+	if (message.empty())
+		return;
+
+	int color = ColorScheme::FindIndex("Gold");
+	if (this->Message_FirerColor)
+	{
+		// firer color
+		if (pFirer)
+		{
+			color = pFirer->ColorSchemeIndex;
+		}
+	}
+	else
+	{
+		if (this->Message_ColorScheme > -1)
+		{
+			// user defined color
+			color = this->Message_ColorScheme;
+		}
+		else if (const auto pCurrent = HouseClass::CurrentPlayer)
+		{
+			// default way: the current player's color
+			color = pCurrent->ColorSchemeIndex;
+		}
+	}
+
+	// print the message
+	MessageListClass::Instance.PrintMessage(message, RulesClass::Instance->MessageDelay, color);
+}
+
+SuperClass* __stdcall SWTypeExt::IsSuperAvailable(int swIdx, HouseClass* pHouse)
+{
+	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(swIdx))
+	{
+		const auto pExt = SWTypeExt::Fetch(pSuper->Type);
+
+		if (pExt->IsAvailable(pHouse))
+			return pSuper;
+	}
+
+	return nullptr;
 }

@@ -1,15 +1,9 @@
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <MessageListClass.h>
-#include <HouseClass.h>
-#include <CRT.h>
-#include <SuperWeaponTypeClass.h>
-#include <SuperClass.h>
-#include <Ext/SWType/Body.h>
-#include <Utilities/SavegameDef.h>
-
+#include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <New/Entity/BannerClass.h>
+#include <Utilities/SpawnerHelper.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -18,20 +12,20 @@ TActionExt::ExtContainer TActionExt::ExtMap;
 // load / save
 
 template <typename T>
-void TActionExt::ExtData::Serialize(T& Stm)
+void TActionExt::Serialize(T& Stm)
 {
 	//Stm;
 }
 
-void TActionExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TActionExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TActionClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TActionExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TActionClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -69,6 +63,28 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::UndeployToWaypoint:
+		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetFollowsIndexForVehicle:
+		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::EditAngerNode:
+		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ClearAngerNode:
+		return TActionExt::ClearAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetForceEnemy:
+		return TActionExt::SetForceEnemy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetFreeRadar:
+		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetTeamDelay:
+		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::CreateBannerLocal:
+		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerGlobal:
+		return TActionExt::CreateBannerGlobal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DeleteBanner:
+		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -81,9 +97,9 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 	std::vector<int> waypoints;
 	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
 
-	auto const pScen = ScenarioClass::Instance();
+	auto const pScen = ScenarioClass::Instance;
 
-	for (auto pair : ScenarioExt::Global()->Waypoints)
+	for (auto const pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
 			waypoints.push_back(pair.first);
 
@@ -101,18 +117,8 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::IsSingleplayer())
-	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
-	}
+	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
+		Phobos::ScheduleGameSave(StringTable::LoadString(pThis->Text));
 
 	return true;
 }
@@ -201,7 +207,7 @@ bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, Obj
 	if (itr != variables.end())
 	{
 		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer);
 	}
 
 	return true;
@@ -260,7 +266,7 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 		return true;
 
 	auto& waypoints = ScenarioExt::Global()->Waypoints;
-	int nWaypoint = pThis->Param5;
+	const int nWaypoint = pThis->Param5;
 
 	// Check if is a valid Waypoint
 	if (nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y)
@@ -274,79 +280,41 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
-		int swIdx = pThis->Param3;
-		int houseIdx = -1;
-		std::vector<int> housesListIdx;
+		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
+		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
+		auto& random = ScenarioClass::Instance->Random;
 
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
+				targetLocation.X = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
+				targetLocation.Y = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
-		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
-
-		// Only valid House indexes
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
-		}
+		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
 		switch (pThis->Param4)
 		{
-		case HouseClass::PlayerAtA:
-			houseIdx = 0;
-			break;
-
-		case HouseClass::PlayerAtB:
-			houseIdx = 1;
-			break;
-
-		case HouseClass::PlayerAtC:
-			houseIdx = 2;
-			break;
-
-		case HouseClass::PlayerAtD:
-			houseIdx = 3;
-			break;
-
-		case HouseClass::PlayerAtE:
-			houseIdx = 4;
-			break;
-
-		case HouseClass::PlayerAtF:
-			houseIdx = 5;
-			break;
-
-		case HouseClass::PlayerAtG:
-			houseIdx = 6;
-			break;
-
-		case HouseClass::PlayerAtH:
-			houseIdx = 7;
-			break;
-
 		case -1:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random non-neutral
-			for (auto pHouse : *HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
 					&& !pHouse->Type->MultiplayPassive)
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -354,34 +322,33 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : *HouseClass::Array)
+			for (auto const pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
-					houseIdx = pHouseNeutral->ArrayIndex;
+					pExecuteHouse = pHouseNeutral;
 					break;
 				}
 			}
 
-			if (houseIdx < 0)
-				return true;
-
 			break;
 
 		case -3:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random Human Player
-			for (auto pHouse : *HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -389,25 +356,22 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				houseIdx = pThis->Param4;
+				pExecuteHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
 			else
 				return true;
 
 			break;
 		}
 
-		if (HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx))
+		if (pExecuteHouse)
 		{
-			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
-			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(targetLocation, false);
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
-			}
+			auto const pSuper = pExecuteHouse->Supers.Items[pThis->Param3];
+
+			const CDTimerClass old_timer = pSuper->RechargeTimer;
+			pSuper->SetReadiness(true);
+			pSuper->Launch(targetLocation, false);
+			pSuper->Reset();
+			pSuper->RechargeTimer = old_timer;
 		}
 	}
 
@@ -416,7 +380,396 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	GameModeOptionsClass::Instance.MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
+bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const auto& nCell = ScenarioExt::Global()->Waypoints[pThis->Waypoint];
+	CellClass* const pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+	if (!pCell)
+		return true;
+
+	HouseClass* vHouse = nullptr;
+	const int houseIndex = pThis->Param3;
+
+	if (houseIndex >= 0)
+	{
+		vHouse = HouseClass::Index_IsMP(houseIndex)
+			? HouseClass::FindByIndex(houseIndex) : HouseClass::FindByCountryIndex(houseIndex);
+	}
+
+	if (!vHouse)
+		return true;
+
+	const char* buildingName = pThis->TechnoID;
+	bool allBuilding = false;
+	BuildingTypeClass* pBuildingType = nullptr;
+
+	if (!strcmp(buildingName, "<All>"))
+	{
+		allBuilding = true;
+	}
+	else
+	{
+		pBuildingType = BuildingTypeClass::Find(buildingName);
+	}
+
+	if (!allBuilding && !pBuildingType)
+		return true;
+
+	const auto& limboDelivereds = HouseExt::Fetch(vHouse)->OwnedLimboDeliveredBuildings;
+	const bool existLimboBuilding = !limboDelivereds.empty();
+	const auto vectorBegin = limboDelivereds.begin();
+	const auto vectorEnd = limboDelivereds.end();
+
+	// Thanks to chaserli for the relevant code!
+	// There should be a more perfect way to do this, but I don't know how.
+	auto canUndeploy = [&](BuildingClass* const pBuilding)
+	{
+		auto const pType = pBuilding->Type;
+
+		if (!pType->UndeploysInto
+			|| pBuilding->Owner != vHouse
+			|| (!allBuilding && pType != pBuildingType)
+			|| pBuilding->CurrentMission == Mission::Selling 
+			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
+		{
+			return false;
+		}
+
+		// verify whether the building's source is LimboDelivery.
+		if (existLimboBuilding
+			&& std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
+		{
+			return false;
+		}
+
+		if (pType->ConstructionYard)
+		{
+			// Conyards can't undeploy if MCVRedeploy=no
+			if (!GameModeOptionsClass::Instance.MCVRedeploy)
+				return false;
+			// or MindControlledBy YURIX (why? for balance?)
+			if (!RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
+				return false;
+		}
+
+		return true;
+	};
+
+	for (const auto pBuilding : BuildingClass::Array)
+	{
+		if (!canUndeploy(pBuilding))
+			continue;
+
+		// Why does having this allow it to undeploy?
+		// Why don't vehicles move when waypoints are placed off the map?
+
+		const bool old = std::exchange(VocClass::VoicesEnabled, false);
+		pBuilding->SetArchiveTarget(pCell);
+		pBuilding->Sell(true);
+		VocClass::VoicesEnabled = old;
+	}
+
+	return true;
+}
+
+bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int followerIndex = pThis->Param3;
+
+	if (followerIndex < 0 || followerIndex >= UnitClass::Array.Count)
+		return false;
+
+	UnitClass* pNewFollower = UnitClass::Array[followerIndex];
+	if (!pNewFollower)
+		return false;
+
+	for (auto const pTechno : TechnoClass::Array)
+	{
+		if (pTechno->WhatAmI() == AbstractType::BuildingType)
+			continue;
+
+		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+		if (!pFoot)
+			continue;
+
+		if (pFoot->WhatAmI() != AbstractType::Unit)
+			continue;
+
+		if (!pFoot->AttachedTag || !pFoot->AttachedTag->ContainsTrigger(pTrigger))
+			continue;
+
+		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
+
+		if (UnitClass* pOldFollower = pLeader->FollowerCar)
+		{
+			pOldFollower->IsFollowerCar = false;
+			pLeader->FollowerCar = nullptr;
+		}
+
+		for (auto pOther : UnitClass::Array)
+		{
+			if (pOther && pOther->FollowerCar == pNewFollower)
+			{
+				pOther->FollowerCar = nullptr;
+				break;
+			}
+		}
+
+		pLeader->FollowerCar = pNewFollower;
+		pNewFollower->IsFollowerCar = true;
+
+	}
+
+	return true;
+}
+
+bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
+	{
+		if (!pTargetHouse || pHouse == pTargetHouse || pHouse->IsAlliedWith(pTargetHouse))
+			return;
+
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			if (pAngerNode.House != pTargetHouse)
+				continue;
+
+			switch (pThis->Param3)
+			{
+			case 0: { pAngerNode.AngerLevel = pThis->Param4; break; }
+			case 1: { pAngerNode.AngerLevel += pThis->Param4; break; }
+			case 2: { pAngerNode.AngerLevel -= pThis->Param4; break; }
+			case 3: { pAngerNode.AngerLevel *= pThis->Param4; break; }
+			case 4: { pAngerNode.AngerLevel /= pThis->Param4; break; }
+			case 5: { pAngerNode.AngerLevel %= pThis->Param4; break; }
+			case 6: { pAngerNode.AngerLevel <<= pThis->Param4; break; }
+			case 7: { pAngerNode.AngerLevel >>= pThis->Param4; break; }
+			case 8: { pAngerNode.AngerLevel = ~pAngerNode.AngerLevel; break; }
+			case 9: { pAngerNode.AngerLevel ^= pThis->Param4; break; }
+			case 10: { pAngerNode.AngerLevel |= pThis->Param4; break; }
+			case 11: { pAngerNode.AngerLevel &= pThis->Param4; break; }
+			default:break;
+			}
+
+			break;
+		}
+	};
+
+	const int value = pThis->Value;
+
+	if (value >= 0)
+	{
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
+
+		setValue(pTargetHouse);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+	else if (value == -1)
+	{
+		for (auto const pTargetHouse : HouseClass::Array)
+		{
+			setValue(pTargetHouse);
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	const int value = pThis->Value;
+
+	if (value >= 0)
+	{
+		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
+
+		if (pTargetHouse)
+		{
+			for (auto& pAngerNode : pHouse->AngerNodes)
+			{
+				if (pAngerNode.House != pTargetHouse)
+					continue;
+
+				pAngerNode.AngerLevel = 0;
+				pHouse->UpdateAngerNodes(0, pHouse);
+				break;
+			}
+		}
+	}
+	else if (value == -1)
+	{
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			pAngerNode.AngerLevel = 0;
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
+	const int value = pThis->Param3;
+
+	if (value >= 0 || value == -2)
+	{
+		if (value != -2)
+		{
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+				? HouseClass::FindByIndex(value)
+				: HouseClass::FindByCountryIndex(value);
+
+			if (pTargetHouse
+				&& pHouse != pTargetHouse
+				&& !pHouse->IsAlliedWith(pTargetHouse))
+			{
+				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
+				pHouse->UpdateAngerNodes(0, pHouse);
+			}
+		}
+		else
+		{
+			pHouseExt->SetForceEnemyIndex(-2);
+			pHouse->UpdateAngerNodes(0, pHouse);
+		}
+	}
+	else if (value == -1)
+	{
+		pHouseExt->SetForceEnemyIndex(-1);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (pHouse->IsControlledByHuman())
+	{
+		auto const pHouseExt = HouseExt::Fetch(pHouse);
+
+		switch (pThis->Param3)
+		{
+		case 1:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = false;
+			break;
+		case 2:
+			pHouseExt->FreeRadar = true;
+			pHouseExt->ForceRadar = true;
+			break;
+		case 3:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = true;
+			break;
+		default:
+			pHouseExt->FreeRadar = false;
+			pHouseExt->ForceRadar = false;
+			break;
+		}
+
+		pHouse->RecheckRadar = true;
+	}
+
+	return true;
+}
+
+bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const int value = pThis->Param3;
+	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[pHouse->GetAIDifficultyIndex()] : value;
+	HouseExt::Fetch(pHouse)->TeamDelay = value;
+
+	auto& Timer = pHouse->TeamDelayTimer;
+	const int time = std::min(Timer.GetTimeLeft(), timer);
+
+	if (Timer.StartTime == -1 && Timer.TimeLeft != 0 && time > 0)
+	{
+		Timer.TimeLeft = time;
+	}
+	else if (Timer.InProgress())
+	{
+		Timer.Start(time);
+	}
+
+	return true;
+}
+
+static void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+{
+	const auto pBannerType = BannerTypeClass::Find(pTAction->Text);
+
+	if (!pBannerType)
+		return;
+
+	auto& banners = BannerClass::Array;
+
+	const auto it = std::find_if(banners.begin(), banners.end(),
+		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pTAction->Param3;
+		});
+
+	if (it != banners.end())
+	{
+		auto& pBanner = *it;
+		pBanner->Type = pBannerType;
+		pBanner->Position = { static_cast<int>(pTAction->Param4 / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(pTAction->Param5 / 100.0 * DSurface::ViewBounds.Height) };
+		pBanner->Variable = pTAction->Param6;
+		pBanner->IsGlobalVariable = isGlobal;
+	}
+	else
+	{
+		banners.emplace_back(
+			std::make_unique<BannerClass>(pBannerType, pTAction->Param3, Point2D { pTAction->Param4, pTAction->Param5 }, pTAction->Param6, isGlobal)
+		);
+	}
+}
+
+bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, false);
+	return true;
+}
+
+bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, true);
+	return true;
+}
+
+bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
+		[pThis](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pThis->Value;
+		});
+
+	if (it != BannerClass::Array.cend())
+		BannerClass::Array.erase(it);
+
 	return true;
 }
 
@@ -428,46 +781,3 @@ TActionExt::ExtContainer::ExtContainer() : Container("TActionClass") { }
 
 TActionExt::ExtContainer::~ExtContainer() = default;
 
-// =============================
-// container hooks
-
-#ifdef MAKE_GAME_SLOWER_FOR_NO_REASON
-DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.TryAllocate(pItem);
-	return 0;
-}
-
-DEFINE_HOOK(0x6E4761, TActionClass_SDDTOR, 0x6)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6E3E30, TActionClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x6E3DB0, TActionClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(TActionClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TActionExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E29, TActionClass_Load_Suffix, 0x4)
-{
-	TActionExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E4A, TActionClass_Save_Suffix, 0x3)
-{
-	TActionExt::ExtMap.SaveStatic();
-	return 0;
-}
-#endif

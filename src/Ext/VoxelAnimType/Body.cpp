@@ -1,11 +1,10 @@
 #include "Body.h"
 
-
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
 
-void VoxelAnimTypeExt::ExtData::Initialize() {}
+void VoxelAnimTypeExt::Initialize() { }
 
-void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void VoxelAnimTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	const char* pID = this->OwnerObject()->ID;
 	INI_EX exINI(pINI);
@@ -16,12 +15,13 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+	this->Trailer_SpawnDelay.Read(exINI, pID, "Trailer.SpawnDelay");
 }
 
 // =============================
 // load / save
 template <typename T>
-void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
+void VoxelAnimTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(LaserTrail_Types)
@@ -30,18 +30,19 @@ void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WakeAnim)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
+		.Process(this->Trailer_SpawnDelay)
 		;
 }
 
-void VoxelAnimTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void VoxelAnimTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<VoxelAnimTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void VoxelAnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void VoxelAnimTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<VoxelAnimTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -60,7 +61,7 @@ bool VoxelAnimTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") {}
+VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") { }
 VoxelAnimTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -80,29 +81,6 @@ DEFINE_HOOK(0x74BA31, VoxelAnimTypeClass_DTOR, 0x5)
 	GET(VoxelAnimTypeClass*, pItem, ECX);
 
 	VoxelAnimTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x74B810, VoxelAnimTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x74B8D0, VoxelAnimTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(VoxelAnimTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	VoxelAnimTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x74B8C2, VoxelAnimTypeClass_Load_Suffix, 0x5)
-{
-	VoxelAnimTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x74B8EA, VoxelAnimTypeClass_Save_Suffix, 0x5)
-{
-	VoxelAnimTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

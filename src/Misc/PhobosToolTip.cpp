@@ -1,22 +1,13 @@
-#include <Helpers/Macro.h>
-
 #include "PhobosToolTip.h"
-
-#include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
-#include <HouseClass.h>
 
 #include <GameOptionsClass.h>
 #include <CCToolTip.h>
-#include <BitFont.h>
-#include <BitText.h>
 #include <FPSCounter.h>
-#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 
 #include <sstream>
 #include <iomanip>
@@ -28,14 +19,14 @@ inline bool PhobosToolTip::IsEnabled() const
 	return Phobos::UI::ExtendedToolTips;
 }
 
-inline const wchar_t* PhobosToolTip::GetUIDescription(TechnoTypeExt::ExtData* pData) const
+inline const wchar_t* PhobosToolTip::GetUIDescription(TechnoTypeExt* pData) const
 {
 	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription.Get().empty()
 		? pData->UIDescription.Get().Text
 		: nullptr;
 }
 
-inline const wchar_t* PhobosToolTip::GetUIDescription(SWTypeExt::ExtData* pData) const
+inline const wchar_t* PhobosToolTip::GetUIDescription(SWTypeExt* pData) const
 {
 	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription.Get().empty()
 		? pData->UIDescription.Get().Text
@@ -69,17 +60,34 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
 	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
-	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
+	const int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
 	return std::max(54, nTimeToBuild);
 }
 
 inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 {
-	if (auto const pBldType = abstract_cast<BuildingTypeClass*>(pType))
-		return pBldType->PowerBonus - pBldType->PowerDrain;
+	switch (pType->WhatAmI())
+	{
+	case AbstractType::AircraftType:
+	case AbstractType::InfantryType:
+	case AbstractType::UnitType:
+		{
+			if (!Phobos::Config::UnitPowerDrain)
+				return 0;
 
-	return 0;
+			const auto pExt = TechnoTypeExt::Fetch(pType);
+			return pExt->Power;
+		}
+	case AbstractType::BuildingType:
+		{
+			const auto pBldType = static_cast<BuildingTypeClass*>(pType);
+			const auto [enhancedPower, extraPower] = BuildingTypeExt::GetEnhancedPower(pBldType, pBldType->PowerBonus, HouseClass::CurrentPlayer);
+			return enhancedPower + extraPower - pBldType->PowerDrain;
+		}
+	default:
+		return 0;
+	}
 }
 
 inline const wchar_t* PhobosToolTip::GetBuffer() const
@@ -90,9 +98,9 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 void PhobosToolTip::HelpText(BuildType& cameo)
 {
 	if (cameo.ItemType == AbstractType::Special)
-		this->HelpText(HouseClass::CurrentPlayer->Supers.Items[cameo.ItemIndex]);
+		this->HelpText_Super(cameo.ItemIndex);
 	else
-		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
+		this->HelpText_Techno(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
 inline static int TickTimeToSeconds(int tickTime)
@@ -101,27 +109,27 @@ inline static int TickTimeToSeconds(int tickTime)
 		return tickTime / 15;
 
 	if (Phobos::Config::RealTimeTimers_Adaptive
-		|| GameOptionsClass::Instance->GameSpeed == 0
+		|| GameOptionsClass::Instance.GameSpeed == 0
 		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
 	{
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
 	}
 
-	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
+	return tickTime / (60 / GameOptionsClass::Instance.GameSpeed);
 }
 
-void PhobosToolTip::HelpText(TechnoTypeClass* pType)
+void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 {
 	if (!pType)
 		return;
 
-	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pData = TechnoTypeExt::Fetch(pType);
 
-	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
-	int nSec = nBuildTime % 60;
-	int nMin = nBuildTime / 60;
+	const int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
+	const int nSec = nBuildTime % 60;
+	const int nMin = nBuildTime / 60;
 
-	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
+	const int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -139,21 +147,23 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 		oss << std::setw(1) << nPower;
 	}
 
-	if (auto pDesc = this->GetUIDescription(pData))
+	if (auto const pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
 	this->TextBuffer = oss.str();
 }
 
-void PhobosToolTip::HelpText(SuperClass* pSuper)
+void PhobosToolTip::HelpText_Super(int swidx)
 {
-	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	auto const pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
+	auto const pType = pSuper->Type;
+	auto const pData = SWTypeExt::Fetch(pType);
 
 	std::wostringstream oss;
-	oss << pSuper->Type->UIName;
-	bool showCost = false;
+	oss << pType->UIName;
+	bool showSth = false;
 
-	if (int nCost = std::abs(pData->Money_Amount))
+	if (const int nCost = std::abs(pData->Money_Amount))
 	{
 		oss << L"\n";
 
@@ -161,24 +171,38 @@ void PhobosToolTip::HelpText(SuperClass* pSuper)
 			oss << '+';
 
 		oss << Phobos::UI::CostLabel << nCost;
-		showCost = true;
+		showSth = true;
 	}
 
-	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
+	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{
-		if (!showCost)
+		if (!showSth)
 			oss << L"\n";
 
-		int nSec = rechargeTime % 60;
-		int nMin = rechargeTime / 60;
+		const int nSec = rechargeTime % 60;
+		const int nMin = rechargeTime / 60;
 
-		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
+		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
+		showSth = true;
 	}
 
-	if (auto pDesc = this->GetUIDescription(pData))
+	auto const& sw_ext = HouseExt::Fetch(HouseClass::CurrentPlayer)->SuperExts[swidx];
+	const int sw_shots = pData->SW_Shots;
+	const int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
+	if (sw_shots > 0)
+	{
+		if (!showSth)
+			oss << L"\n";
+
+		wchar_t buffer[64];
+		swprintf_s(buffer, Phobos::UI::SWShotsFormat, remain_shots, sw_shots);
+		oss << (showSth ? L" " : L"") << buffer;
+	}
+
+	if (auto const pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
 	this->TextBuffer = oss.str();
@@ -199,6 +223,41 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 	return 0x6A93DE;
 }
 
+DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
+{
+	enum { ApplyToolTip = 0x4AE69D };
+
+	if (SWSidebarClass::IsEnabled())
+	{
+		const auto& swSidebar = SWSidebarClass::Instance;
+
+		if (const auto button = swSidebar.CurrentButton)
+		{
+			PhobosToolTip::Instance.IsCameo = true;
+
+			if (PhobosToolTip::Instance.IsEnabled())
+			{
+				PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
+				R->EAX(PhobosToolTip::Instance.GetBuffer());
+			}
+			else
+			{
+				const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
+				R->EAX(pSuper->Type->UIName);
+			}
+
+			return ApplyToolTip;
+		}
+		else if (swSidebar.CurrentColumn || (swSidebar.ToggleButton && swSidebar.ToggleButton->IsHovering))
+		{
+			R->EAX(0);
+			return ApplyToolTip;
+		}
+	}
+
+	return 0;
+}
+
 // TODO: reimplement CCToolTip::Draw2 completely
 
 DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
@@ -211,7 +270,7 @@ DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
-	GET_STACK(bool, bFullRedraw, 0x4);
+	GET_STACK(const bool, bFullRedraw, 0x4);
 
 	// !onSidebar or (onSidebar && ExtToolTip::IsCameo)
 	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo)
@@ -237,7 +296,7 @@ DEFINE_HOOK(0x478E4A, CCToolTip_Draw2_SetSurface, 0x6)
 {
 	if (PhobosToolTip::Instance.SlaveDraw)
 	{
-		R->ESI(DSurface::Composite());
+		R->ESI(DSurface::Composite);
 		return 0x478ED3;
 	}
 	return 0;
@@ -250,8 +309,7 @@ DEFINE_HOOK(0x478EF8, CCToolTip_Draw2_SetMaxWidth, 0x5)
 		if (Phobos::UI::MaxToolTipWidth > 0)
 			R->EAX(Phobos::UI::MaxToolTipWidth);
 		else
-			R->EAX(DSurface::ViewBounds->Width);
-
+			R->EAX(DSurface::ViewBounds.Width);
 	}
 	return 0;
 }
@@ -270,7 +328,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 	{
 		LEA_STACK(RectangleStruct*, Rect, STACK_OFFSET(0x3C, -0x20));
 
-		int const maxHeight = DSurface::ViewBounds->Height - 32;
+		int const maxHeight = DSurface::ViewBounds.Height - 32;
 
 		if (Rect->Height > maxHeight)
 			Rect->Y += maxHeight - Rect->Height;
@@ -301,41 +359,87 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	if (PhobosToolTip::Instance.IsCameo)
+	GET(SurfaceExt*, pThis, ESI);
+	LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+
+	const bool isCameo = PhobosToolTip::Instance.IsCameo;
+
+	if (isCameo && Phobos::UI::AnchoredToolTips
+		&& PhobosToolTip::Instance.IsEnabled()
+		&& Phobos::Config::ToolTipDescriptions)
 	{
-		GET(SurfaceExt*, pThis, ESI);
-		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
 
-		if (Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
+		if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
 		{
-			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
-			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+			// Being too far away may actually be bad
+			/*
+			const auto& columns = SWSidebarClass::Instance.Columns;
+			const int size = columns.size();
+			const int y = pButton->Y + 3;
+
+			auto pColumn = columns.back();
+			if (columns.size() > 1 && y > (pColumn->Y + pColumn->Height))
+				pColumn = columns[size - 2];
+
+			const int x = pColumn->X + pColumn->Width + 2;
+			*/
+			GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
+
+			const auto pColumn = SWSidebarClass::Instance.Columns[pButton->ColumnIndex];
+			const int x = pColumn->X + pColumn->Width + 2;
+			const int y = std::clamp(pButton->Y + 3, 0, DSurface::ViewBounds.Height - textHeight);
 			pRect->X = x;
-			a2->Left = x;
-			pRect->Y -= 40;
-			a2->Top -= 40;
+			pTextRect->Right += (x - pTextRect->Left);
+			pTextRect->Left = x;
+			pRect->Y = y;
+			pTextRect->Bottom += (y - pTextRect->Top);
+			pTextRect->Top = y;
 		}
-
-		// Should we make some SideExt items as static to improve the effeciency?
-		// Though it might not be a big improvement... - secsome
-		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+		else
 		{
-			if (auto const pData = SideExt::ExtMap.Find(pSide))
-			{
-				// Could this flag be lazy?
-				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+			const int x = DSurface::SidebarBounds.X - pRect->Width - 2;
+			pRect->X = x;
+			pTextRect->Left = x;
+			pRect->Y -= 40;
+			pTextRect->Top -= 40;
+		}
+	}
+	else if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
+	{
+		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
+		GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
 
-				pThis->FillRectTrans(pRect,
-					pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
-					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
-				);
+		const int x = pButton->X + pButton->Width;
+		const int y = std::clamp(pButton->Y + 43, 0, DSurface::ViewBounds.Height - textHeight);
+		pRect->X = x;
+		pTextRect->Right += (x - pTextRect->Left);
+		pTextRect->Left = x;
+		pRect->Y = y;
+		pTextRect->Bottom += (y - pTextRect->Top);
+		pTextRect->Top = y;
+	}
 
-				if (Phobos::Config::ToolTipBlur)
-					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+	// Should we make some SideExt items as static to improve the effeciency?
+	// Though it might not be a big improvement... - secsome
+	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
+	if (auto const pSide = SideClass::Array.GetItemOrDefault(nPlayerSideIndex))
+	{
+		if (auto const pData = SideExt::TryFetch(pSide))
+		{
+			// Could this flag be lazy?
+			if (isCameo)
+				SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 
-				return (int)_CCToolTip_Draw2_FillRect_RET;
-			}
+			pThis->FillRectTrans(pRect,
+				pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+				pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
+			);
+
+			if (Phobos::Config::ToolTipBlur)
+				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+
+			return (int)_CCToolTip_Draw2_FillRect_RET;
 		}
 	}
 
@@ -353,9 +457,9 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //
 //	RectangleStruct bounds = pManagerData->Dimension;
 //
-//	if (GameOptionsClass::Instance->SidebarSide == 1)
+//	if (GameOptionsClass::Instance.SidebarSide == 1)
 //	{
-//		int nR = DSurface::ViewBounds->X + DSurface::ViewBounds->Width;
+//		int nR = DSurface::ViewBounds.X + DSurface::ViewBounds.Width;
 //		if (bounds.X + pManagerData->Dimension.Width <= nR)
 //			pSurface = DSurface::Composite;
 //		else
@@ -369,7 +473,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //	}
 //	else
 //	{
-//		int nR = DSurface::SidebarBounds->X + DSurface::SidebarBounds->Width;
+//		int nR = DSurface::SidebarBounds.X + DSurface::SidebarBounds.Width;
 //		if (bounds.X < nR)
 //		{
 //			if (!pThis->FullRedraw || bounds.X + pManagerData->Dimension.Width >= nR)
@@ -388,7 +492,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //	{
 //		BitFont::Instance->GetTextDimension(
 //			PhobosToolTip::Instance.GetBuffer(), bounds.Width, bounds.Height,
-//			Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : DSurface::WindowBounds->Width);
+//			Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : DSurface::WindowBounds.Width);
 //
 //		if (pManagerData->Dimension.Width + bounds.X > pSurface->GetWidth())
 //			bounds.X = pSurface->GetWidth() - pManagerData->Dimension.Width;

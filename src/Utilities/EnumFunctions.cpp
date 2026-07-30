@@ -2,6 +2,8 @@
 
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
+	if (flags == AffectedHouse::All)
+		return true;
 	if (ownerHouse == targetHouse)
 		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
 	if (ownerHouse->IsAlliedWith(targetHouse))
@@ -9,11 +11,31 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
+bool EnumFunctions::CanTargetVeterancy(AffectedVeterancy flags, TechnoClass* pTechno)
+{
+	if (flags == AffectedVeterancy::All)
+		return true;
+
+	switch (pTechno->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Elite:
+		return (flags & AffectedVeterancy::Elite) != AffectedVeterancy::None;
+	case Rank::Veteran:
+		return (flags & AffectedVeterancy::Veteran) != AffectedVeterancy::None;
+	default:
+		return (flags & AffectedVeterancy::Rookie) != AffectedVeterancy::None;
+	}
+}
+
+
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
+	if (allowed == AffectedTarget::All)
+		return true;
+
 	if (explicitEmptyCells)
 	{
-		auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
+		const auto pTechno = abstract_cast<TechnoClass*>(pCell->GetContent());
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -32,6 +54,9 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
 {
+	if (allowed == AffectedTarget::All)
+		return true;
+
 	if (allowed & AffectedTarget::AllContents)
 	{
 		if (pTechno)
@@ -48,7 +73,10 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 				else
 					return (allowed & AffectedTarget::Aircraft) != AffectedTarget::None;
 			case AbstractType::Building:
-				return (allowed & AffectedTarget::Building) != AffectedTarget::None;
+				if (pTechno->IsStrange())
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Building) != AffectedTarget::None;
 			}
 		}
 		else
@@ -66,29 +94,20 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 	if (!pCell)
 		return false;
 
-	auto object = pCell->FirstObject;
-	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges);
+	if (!EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges))
+		return false;
 
-	while (true)
+	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (!object || !eligible)
-			break;
-
-		if (auto pTechno = abstract_cast<TechnoClass*>(object))
+		if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
 		{
-			if (owner)
-			{
-				eligible = EnumFunctions::CanTargetHouse(allowedHouses, owner, pTechno->Owner);
+			if (owner && !EnumFunctions::CanTargetHouse(allowedHouses, owner, pTechno->Owner))
+				return false;
 
-				if (!eligible)
-					break;
-			}
-
-			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately);
+			if (!EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately))
+				return false;
 		}
-
-		object = object->NextObject;
 	}
 
-	return eligible;
+	return true;
 }

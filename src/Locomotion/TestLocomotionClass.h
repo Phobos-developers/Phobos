@@ -49,7 +49,7 @@ class __declspec(uuid("74FC2B59-C2D3-47D7-9D10-93436A34EBB9")) // you can use an
 {
 public:
 
-	//IUnknown
+	// IUnknown
 #ifdef CUSTOM_LOCO_EXAMPLE_PIGGYBACK // Re-implement/override IUnknown w/ account for IPiggyback
 	virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObject)
 	{
@@ -233,28 +233,28 @@ public:
 	virtual int Size() override { return sizeof(*this); }
 
 public:
-		// This is the desired destination coordinate of the object.
-		CoordStruct DestinationCoord;
+	// This is the desired destination coordinate of the object.
+	CoordStruct DestinationCoord;
 
-		// This is the coordinate that the unit is heading to as an immediate
-		// destination. This coordinate is never further than once cell (or track)
-		// from the unit's location. When this coordinate is reached, then the
-		// next location in the path list becomes the next HeadTo coordinate.
-		CoordStruct HeadToCoord;
+	// This is the coordinate that the unit is heading to as an immediate
+	// destination. This coordinate is never further than once cell (or track)
+	// from the unit's location. When this coordinate is reached, then the
+	// next location in the path list becomes the next HeadTo coordinate.
+	CoordStruct HeadToCoord;
 
-		//  This is the logical coordinate for the object. It is the center of
-		//  the circle when calculating the rotation.
-		CoordStruct CenterCoord;
+	//  This is the logical coordinate for the object. It is the center of
+	//  the circle when calculating the rotation.
+	CoordStruct CenterCoord;
 
-		//  The current rotation angle.
-		double Angle;
+	//  The current rotation angle.
+	double Angle;
 
-		//  If this object is moving, then this flag will be true.
-		bool IsMoving;
+	//  If this object is moving, then this flag will be true.
+	bool IsMoving;
 
 #ifdef CUSTOM_LOCO_EXAMPLE_PIGGYBACK // Declare Piggybacker
-		// The piggybacking locomotor.
-		ILocomotionPtr Piggybacker;
+	// The piggybacking locomotor.
+	ILocomotionPtr Piggybacker;
 #endif
 };
 

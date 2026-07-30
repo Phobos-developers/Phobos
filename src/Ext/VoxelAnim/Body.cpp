@@ -1,48 +1,44 @@
 #include "Body.h"
-#include <Ext/VoxelAnimType/Body.h>
-#include <New/Entity/LaserTrailClass.h>
-#include <Utilities/Macro.h>
 
 VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 {
-	auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
-	auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
+	const auto pThisExt = VoxelAnimExt::Fetch(pThis);
 
 	if (pThisExt->LaserTrails.size())
 		return;
 
+	const auto pTypeExt = VoxelAnimTypeExt::Fetch(pThis->Type);
+	const auto pOwner = pThis->OwnerHouse;
+	pThisExt->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
+
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-	{
-		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
-		{
-			pThisExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pThis->OwnerHouse });
-		}
-	}
+		pThisExt->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
-void VoxelAnimExt::ExtData::Initialize() {}
+void VoxelAnimExt::Initialize() { }
 
 // =============================
 // load / save
 template <typename T>
-void VoxelAnimExt::ExtData::Serialize(T& Stm)
+void VoxelAnimExt::Serialize(T& Stm)
 {
 	Stm
-		.Process(LaserTrails)
+		.Process(this->LaserTrails)
+		.Process(this->TrailerSpawnTimer)
 		;
 }
 
-void VoxelAnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void VoxelAnimExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<VoxelAnimClass>::LoadFromStream(Stm);
+	ObjectExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void VoxelAnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void VoxelAnimExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<VoxelAnimClass>::SaveToStream(Stm);
+	ObjectExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -61,7 +57,7 @@ bool VoxelAnimExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") {}
+VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") { }
 VoxelAnimExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -87,25 +83,3 @@ DEFINE_HOOK(0x7499F1, VoxelAnimClass_DTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x74A970, VoxelAnimClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x74AA10, VoxelAnimClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(VoxelAnimClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	VoxelAnimExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x74A9FB, VoxelAnimClass_Load_Suffix, 0x7)
-{
-	VoxelAnimExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x74AA24, VoxelAnimClass_Save_Suffix, 0x5)
-{
-	VoxelAnimExt::ExtMap.SaveStatic();
-	return 0;
-}

@@ -1,13 +1,5 @@
 #include "ShapeTextPrinter.h"
 
-const char* ShapeTextPrinter::SignSequence = "/%$,.!?|";
-const int ShapeTextPrinter::SignSequenceLength = strlen(ShapeTextPrinter::SignSequence);
-
-int ShapeTextPrinter::GetSignIndex(const char sign)
-{
-	return (std::find(SignSequence, SignSequence + SignSequenceLength, sign) - SignSequence);
-}
-
 void ShapeTextPrinter::PrintShape
 (
 	const char* text,
@@ -23,6 +15,7 @@ void ShapeTextPrinter::PrintShape
 {
 	const int length = strlen(text);
 	std::vector<int> frames;
+	frames.reserve(length);
 
 	for (int i = 0; i < length; i++)
 	{
@@ -34,9 +27,9 @@ void ShapeTextPrinter::PrintShape
 		}
 		else
 		{
-			int signIndex = GetSignIndex(text[i]);
+			size_t signIndex = SignSequence.find(text[i]);
 
-			if (signIndex < SignSequenceLength)
+			if (signIndex < SignSequence.size())
 				frame = data.BaseExtraFrame + signIndex;
 			else
 				return;

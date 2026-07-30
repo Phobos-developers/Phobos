@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <Phobos.h>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -66,6 +65,33 @@ enum class SuperWeaponAITargetingMode
 	EnemyBase = 14
 };
 
+enum class LandTypeFlags : unsigned short
+{
+	None = 0,
+	Clear = 1 << (char)LandType::Clear,
+	Road = 1 << (char)LandType::Road,
+	Water = 1 << (char)LandType::Water,
+	Rock = 1 << (char)LandType::Rock,
+	Wall = 1 << (char)LandType::Wall,
+	Tiberium = 1 << (char)LandType::Tiberium,
+	Beach = 1 << (char)LandType::Beach,
+	Rough = 1 << (char)LandType::Rough,
+	Ice = 1 << (char)LandType::Ice,
+	Railroad = 1 << (char)LandType::Railroad,
+	Tunnel = 1 << (char)LandType::Tunnel,
+	Weeds = 1 << (char)LandType::Weeds,
+
+	All = 0xFFFF,
+	DefaultDisallowed = Water | Rock | Ice | Beach
+};
+
+MAKE_ENUM_FLAGS(LandTypeFlags);
+
+constexpr bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+{
+	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
+}
+
 enum class AffectedTarget : unsigned char
 {
 	None = 0x0,
@@ -84,6 +110,18 @@ enum class AffectedTarget : unsigned char
 };
 
 MAKE_ENUM_FLAGS(AffectedTarget);
+
+enum class AffectedVeterancy : unsigned char
+{
+	None = 0x0,
+	Rookie = 0x1,
+	Veteran = 0x2,
+	Elite = 0x4,
+
+	All = Rookie | Veteran | Elite
+};
+
+MAKE_ENUM_FLAGS(AffectedVeterancy);
 
 enum class AffectedHouse : unsigned char
 {
@@ -143,6 +181,16 @@ enum class SlaveChangeOwnerType
 	Neutral = 4,
 };
 
+enum class PositionFollow : BYTE
+{
+	None = 0x0,
+	Firer = 0x1,
+	Target = 0x2,
+	All = Firer | Target
+};
+
+MAKE_ENUM_FLAGS(PositionFollow)
+
 enum class AutoDeathBehavior
 {
 	Kill = 0,     // default death option
@@ -152,17 +200,20 @@ enum class AutoDeathBehavior
 
 enum class SelfHealGainType
 {
-	None = 0,
+	NoHeal = 0,
 	Infantry = 1,
 	Units = 2
 };
 
-enum class InterceptedStatus
+enum class InterceptedStatus : unsigned char
 {
-	None = 0,
-	Targeted = 1,
-	Intercepted = 2
+	None = 0x0,
+	Targeted = 0x1,
+	Intercepted = 0x2,
+	Locked = 0x4
 };
+
+MAKE_ENUM_FLAGS(InterceptedStatus);
 
 enum class PhobosAction
 {
@@ -205,7 +256,7 @@ enum class DamageDisplayType
 enum class ChronoSparkleDisplayPosition : unsigned char
 {
 	None = 0x0,
-	Building= 0x1,
+	Building = 0x1,
 	Occupants = 0x2,
 	OccupantSlots = 0x4,
 
@@ -214,30 +265,12 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
-enum class DiscardCondition : unsigned char
+enum class LaserTrailDrawType : BYTE
 {
-	None = 0x0,
-	Entry = 0x1,
-	Move = 0x2,
-	Stationary = 0x4,
-	Drain = 0x8,
-	InRange = 0x10,
-	OutOfRange = 0x20
+	Laser = 0,
+	EBolt = 1,
+	RadBeam = 2
 };
-
-MAKE_ENUM_FLAGS(DiscardCondition);
-
-enum class ExpireWeaponCondition : unsigned char
-{
-	None = 0x0,
-	Expire = 0x1,
-	Remove = 0x2,
-	Death = 0x4,
-
-	All = 0xFF,
-};
-
-MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
 enum class HorizontalPosition : BYTE
 {
@@ -252,7 +285,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -275,7 +307,51 @@ enum class DisplayInfoType : BYTE
 	Tiberium = 6,
 	Experience = 7,
 	Occupants = 8,
-	GattlingStage = 9
+	GattlingStage = 9,
+	ROF = 10,
+	Reload = 11,
+	SpawnTimer = 12,
+	GattlingTimer = 13,
+	ProduceCash = 14,
+	PassengerKill = 15,
+	AutoDeath = 16,
+	SuperWeapon = 17,
+	IronCurtain = 18,
+	TemporalLife = 19,
+	FactoryProcess = 20
+};
+
+enum class DisplayShowType : unsigned char
+{
+	None = 0x0,
+	CursorHover = 0x1,
+	Selected = 0x2,
+	Idle = 0x4,
+
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
+};
+
+MAKE_ENUM_FLAGS(DisplayShowType);
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
+};
+
+enum class DynamicTeamDelayType : int
+{
+	StartingPoint = 0,
+	PlayerCount = 1,
+	Allies = 2,
+	Enemies = 3,
+	AliveCount = 4,
+	AliveAllies = 5,
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
@@ -338,4 +414,17 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
+};
+
+enum class EdgeType : BYTE
+{
+	Owner = 0,
+	Closest = 1,
+	Random = 2
 };

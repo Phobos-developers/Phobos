@@ -1,9 +1,6 @@
 #include "PassengerDeletionTypeClass.h"
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/TemplateDef.h>
-
-std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
+std::pair<bool, bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
 {
 	Nullable<int> rate;
 	rate.Read(exINI, pSection, "PassengerDeletion.Rate");
@@ -15,25 +12,6 @@ std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const ch
 	return std::make_pair(canParse, shouldResetValue);
 }
 
-PassengerDeletionTypeClass::PassengerDeletionTypeClass(TechnoTypeClass* pOwnerType)
-	: OwnerType(pOwnerType)
-	, Rate { 0 }
-	, Rate_SizeMultiply { true }
-	, UseCostAsRate { false }
-	, CostMultiplier { 1.0 }
-	, CostRateCap {}
-	, AllowedHouses { AffectedHouse::All }
-	, DontScore { false }
-	, Soylent { false }
-	, SoylentMultiplier { 1.0 }
-	, SoylentAllowedHouses { AffectedHouse::Enemies }
-	, DisplaySoylent { false }
-	, DisplaySoylentToHouses { AffectedHouse::All }
-	, DisplaySoylentOffset { { 0, 0 } }
-	, ReportSound {}
-	, Anim {}
-{
-}
 void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
@@ -53,6 +31,7 @@ void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSect
 	this->DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
 	this->ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
+	this->UnderEMP.Read(exINI, pSection, "PassengerDeletion.UnderEMP");
 }
 
 #pragma region(save/load)
@@ -61,7 +40,6 @@ template <class T>
 bool PassengerDeletionTypeClass::Serialize(T& stm)
 {
 	return stm
-		.Process(this->OwnerType)
 		.Process(this->Rate)
 		.Process(this->Rate_SizeMultiply)
 		.Process(this->UseCostAsRate)
@@ -77,6 +55,7 @@ bool PassengerDeletionTypeClass::Serialize(T& stm)
 		.Process(this->DisplaySoylentOffset)
 		.Process(this->ReportSound)
 		.Process(this->Anim)
+		.Process(this->UnderEMP)
 		.Success();
 }
 

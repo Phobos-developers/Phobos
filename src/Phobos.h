@@ -4,14 +4,11 @@
 
 #include <string>
 
-#define CAN_USE_ARES 1
-
 class CCINIClass;
 class AbstractClass;
 
 constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
-constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
 constexpr auto UISETTINGS_SECTION = "UISettings";
 
@@ -29,18 +26,20 @@ public:
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
-	static const char readDelims[4];
+	static constexpr auto readDelims = ",";
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
-	static bool ShouldQuickSave;
+	static bool ShouldSave;
 	static std::wstring CustomGameSaveDescription;
+	static void ScheduleGameSave(const std::wstring& description);
 	static void PassiveSaveGame();
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
+	static void ApplyOptimizations();
 
 	class UI
 	{
@@ -56,6 +55,15 @@ public:
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool SuperWeaponSidebar;
+		static bool SuperWeaponSidebar_Pyramid;
+		static int SuperWeaponSidebar_Interval;
+		static int SuperWeaponSidebar_LeftOffset;
+		static int SuperWeaponSidebar_CameoHeight;
+		static int SuperWeaponSidebar_Max;
+		static int SuperWeaponSidebar_MaxColumns;
+		static int CreditsIndicator_MaxStep;
+		static bool CreditsIndicator_Smooth;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -65,6 +73,7 @@ public:
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
@@ -74,22 +83,42 @@ public:
 		static bool ToolTipDescriptions;
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
+		static bool PriorityDeployFiltering;
+		static bool TypeSelectUseIFVMode;
 		static bool DevelopmentCommands;
+		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
+		static bool MessageApplyHoverState;
+		static bool MessageDisplayInCenter;
+		static int MessageDisplayInCenter_BoardOpacity;
+		static int MessageDisplayInCenter_LabelsCount;
+		static int MessageDisplayInCenter_RecordsCount;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool ShowPowerPlantEnhancerRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
 		static bool ShowBriefing;
 		static bool ShowPowerDelta;
 		static bool ShowHarvesterCounter;
 		static bool ShowWeedsCounter;
+		static bool ShowPlanningPath;
+		static bool HideLightFlashEffects;
+		static bool HideLaserTrailEffects;
+		static bool HideShakeEffects;
+		static bool ShowFlashOnSelecting;
+		static bool UnitPowerDrain;
+		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool ShowGameTime;
+		static int ShowGameTime_BoardOpacity;
+		static bool SelectCapturedCommand;
 	};
 
 	class Misc
@@ -99,5 +128,14 @@ public:
 		static int CustomGS_ChangeInterval[7];
 		static int CustomGS_ChangeDelay[7];
 		static int CustomGS_DefaultDelay[7];
+	};
+
+	class Optimizations
+	{
+	public:
+		static bool Applied;
+		static bool DisableBalloonHoverPathingFix;
+		static bool DisableRadDamageOnBuildings;
+		static bool DisableSyncLogging;
 	};
 };
