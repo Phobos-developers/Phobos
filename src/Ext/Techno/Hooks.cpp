@@ -498,7 +498,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, bool hitAnim)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
@@ -506,6 +506,7 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 	if (pExt->AE.HasRestrictedArmorMultipliers)
 	{
 		auto& random = ScenarioClass::Instance->Random;
+		auto const pOwner = pThis->Owner;
 
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
@@ -518,6 +519,9 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 				continue;
 
 			if (type->ArmorMultiplier_Chance < random.RandomDouble())
+				continue;
+
+			if (pOwner && !EnumFunctions::CanTargetHouse(type->ArmorMultiplier_AffectsHouse, pSourceHouse, pOwner))
 				continue;
 
 			if (pWarhead)
@@ -542,11 +546,12 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EDI);
 	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead, true)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead, pThis->Owner)));
 
 	return 0;
 }
@@ -555,9 +560,10 @@ DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(const int, damage, EAX);
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, true)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse, true)));
 
 	return 0;
 }
@@ -2304,7 +2310,7 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 				double multiplier = 1.0;
 
 				if (applyMultiplier)
-					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
+					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pThis->Owner->Owner, pWarhead);
 
 				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
 				{

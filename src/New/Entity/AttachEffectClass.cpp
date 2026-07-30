@@ -62,7 +62,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
 	{
-		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoExt->TypeExtData->OwnerObject()) * pType->ArmorMultiplier;
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoExt->TypeExtData->OwnerObject(), pInvokerHouse) * pType->ArmorMultiplier;
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
 	}
 
@@ -500,7 +500,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
 	{
 		const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
-		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(this->Techno, pTechnoExt->TypeExtData->OwnerObject());
+		const double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(this->Techno, pTechnoExt->TypeExtData->OwnerObject(), this->InvokerHouse);
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
 	}
 
