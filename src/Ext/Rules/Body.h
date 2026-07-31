@@ -1,6 +1,5 @@
 #pragma once
 
-#include <RulesClass.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 

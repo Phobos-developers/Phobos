@@ -1,6 +1,4 @@
 // methods used in TechnoClass_AI hooks or anything similar
-#include "Body.h"
-
 #include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>

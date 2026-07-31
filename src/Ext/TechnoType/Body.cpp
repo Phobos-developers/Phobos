@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/AircraftType/Body.h>

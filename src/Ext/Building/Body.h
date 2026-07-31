@@ -1,6 +1,7 @@
 #pragma once
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <BuildingClass.h>
 
 class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClass>
 {

@@ -1,7 +1,7 @@
 // Issue #5 Permanently stationary units
 // Author: Starkku
 
-#include <Ext/Unit/Body.h>
+#include "Body.h"
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {

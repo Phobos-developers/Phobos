@@ -6,7 +6,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <RulesClass.h>
 
 #pragma region Mission_Attack
 

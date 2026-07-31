@@ -1,4 +1,5 @@
 #pragma once
+#include <WeaponTypeClass.h>
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>

@@ -1,9 +1,10 @@
 #include <IsometricTileTypeClass.h>
 
+#include "Body.h"
+
 #include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/Building/Body.h>
-#include <Ext/Unit/Body.h>
 
 #pragma region AllowDeployControlledMCV
 

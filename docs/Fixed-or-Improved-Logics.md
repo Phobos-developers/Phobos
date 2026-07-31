@@ -378,6 +378,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
+- Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 
 ## Newly added global settings
 
