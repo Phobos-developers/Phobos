@@ -305,8 +305,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	return 0;
 }
 
-static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget
-	, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
+static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
 {
 	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
 
