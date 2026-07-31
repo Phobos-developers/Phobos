@@ -509,8 +509,8 @@ DEFINE_HOOK(0x77311D, WeaponTypeClass_SDDTOR, 0x6)
 {
 	GET(WeaponTypeClass*, pItem, ESI);
 
-	auto pExt = WeaponTypeExt::TryFetch(pItem);
-	if (pExt && pExt->LaserPositionUpdate != PositionFollow::None)
+	auto pExt = WeaponTypeExt::Fetch(pItem);
+	if (pExt->LaserPositionUpdate != PositionFollow::None)
 		--WeaponTypeExt::LaserTrackingWeaponCount;
 
 	WeaponTypeExt::ExtMap.Remove(pItem);
