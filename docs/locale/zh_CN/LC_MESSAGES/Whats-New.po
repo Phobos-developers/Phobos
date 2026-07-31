@@ -574,6 +574,11 @@ msgstr ""
 " Starkku）"
 
 msgid ""
+"Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being "
+"considered valid build locations by AI (by Starkku)"
+msgstr "修复了 AI 不把有 `CanBeBuiltOn=true` 地形对象的单元格视为可建造位置的问题（by Starkku）"
+
+msgid ""
 "Fixed the bug where `WeaponRange.AllowWeapons` and "
 "`WeaponRange.DisallowWeapons` only support weapons listed in the "
 "`[WeaponTypes]` list (by Noble_Fish)"
