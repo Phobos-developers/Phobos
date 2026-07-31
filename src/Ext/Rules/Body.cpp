@@ -590,6 +590,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
 
+	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -1058,6 +1060,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
+		.Process(this->NoAlphaImageOnBuildup)
     ;
 }
 

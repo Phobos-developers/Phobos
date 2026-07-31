@@ -523,6 +523,8 @@ public:
 		Nullable<int> PoseDir_Production;
 		Nullable<int> PoseDir_Field;
 
+		Valueable<bool> NoAlphaImageOnBuildup;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -980,6 +982,8 @@ public:
 			, AircraftDockingDir_DefaultToPoseDir{ true }
 			, PoseDir_Production {}
 			, PoseDir_Field{}
+
+			, NoAlphaImageOnBuildup { false }
 		{ }
 
 		virtual ~ExtData() = default;

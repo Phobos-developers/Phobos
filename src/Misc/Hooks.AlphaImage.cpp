@@ -72,8 +72,16 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
-	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
-		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
+	if (pBuilding && !inactive)
+	{
+		if (pBuilding->GetCurrentMission() == Mission::Construction)
+		{
+			if (BuildingTypeExt::Fetch(pBuilding->Type)->NoAlphaImageOnBuildup.Get(RulesExt::Global()->NoAlphaImageOnBuildup))
+				inactive = true;
+		}
+		else // Buildup phase has ended
+			inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
+	}
 
 	auto& alphaExt = *AresFunctions::AlphaExtMap;
 

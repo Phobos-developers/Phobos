@@ -81,6 +81,7 @@ public:
 	Nullable<bool> Units_UseRepairCost;
 
 	Valueable<bool> NoBuildAreaOnBuildup;
+	Nullable<bool> NoAlphaImageOnBuildup;
 	ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 	ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 	Valueable<bool> Adjacent_Disallowed_Prohibit;
@@ -188,6 +189,7 @@ public:
 		, Units_RepairPercent {}
 		, Units_UseRepairCost {}
 		, NoBuildAreaOnBuildup { false }
+		, NoAlphaImageOnBuildup {}
 		, Adjacent_Allowed {}
 		, Adjacent_Disallowed {}
 		, Adjacent_Disallowed_Prohibit { false }
