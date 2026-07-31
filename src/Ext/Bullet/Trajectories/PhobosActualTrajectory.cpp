@@ -169,8 +169,8 @@ CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseC
 {
 	const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsets.first, offsets.second);
 	const double offsetAngle = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-	const int offsetX = offsetDistance * Math::cos(offsetAngle);
-	const int offsetY = offsetDistance * Math::sin(offsetAngle);
+	const int offsetX = static_cast<int>(offsetDistance * Math::cos(offsetAngle));
+	const int offsetY = static_cast<int>(offsetDistance * Math::sin(offsetAngle));
 
 	// Substitute to calculate random coordinates
 	return CoordStruct { baseCoord.X + offsetX, baseCoord.Y + offsetY, baseCoord.Z };
