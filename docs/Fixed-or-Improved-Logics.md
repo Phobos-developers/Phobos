@@ -114,16 +114,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-<<<<<<< HEAD
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
-- Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
-- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
-=======
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
->>>>>>> a788ad7b1 (Add toggle to allow building on overlays)
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fixed a glitch related to incorrect target setting for spawned missiles. Notice that this will affect the center of missile explosion, set `[CombatDamage] -> MissileSpawnAttackCell` to false to disable the fix.
@@ -1573,11 +1567,18 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 - It is now possible to make OverlayTypes allow buildings to be placed on them by setting `CanBeBuiltOn` to true. This still requires the tile's landtype (which is changed to overlay's land type unless OverlayType has `NoUseTileLandType=false`) to allow buildings to be placed.
   - If `CanBeBuiltOn.Remove=true`, the overlay will be removed (if it is a wall owned by the player placing the building, it is sold) upon the building being placed. If this is not set to true, buildings with `Wall=true` cannot be placed on the overlay and neither does overlay with `Wall=true` allow buildings to be placed on itself regardless of other settings.
+  - `Tiberium.CanBeBuiltOn` can be used to set the global default value for overlays with `Tiberium=true`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEOVERLAY]             ; OverlayType
-CanBeBuiltOn=false        ; boolean
+[General]
+Tiberium.CanBeBuiltOn=false     ; boolean
+CanBeBuiltOnOverlay.Remove=true ; boolean
+
+[SOMEOVERLAY]                   ; OverlayType
+CanBeBuiltOn=                   ; boolean, default to [General] -> Tiberium.CanBeBuiltOn if it has Tiberium=true, and false otherwise
+CanBeBuiltOn.Remove=            ; boolean, default to [General] -> CanBeBuiltOnOverlay.Remove
+```
 
 ### More than 255 OverlayTypes
 
