@@ -637,6 +637,7 @@ HideShakeEffects=false           ; boolean
 - [Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
 - [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
+- Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -1232,7 +1233,6 @@ HideShakeEffects=false           ; boolean
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
-- Keep Syringe open until the game exits (by 11EJDE11, original by ZivDero & secsome)
 
 #### Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)

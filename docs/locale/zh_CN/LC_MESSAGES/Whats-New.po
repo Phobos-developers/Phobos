@@ -2335,6 +2335,7 @@ msgid ""
 "Keep Syringe open until the game exits (by 11EJDE11, ported from "
 "Vinifera, original by ZivDero & secsome)"
 msgstr ""
+"在游戏退出前保持 Syringe 打开（由 11EJDE11 移植自 Vinifera，原始实现来自 ZivDero 与 secsome）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

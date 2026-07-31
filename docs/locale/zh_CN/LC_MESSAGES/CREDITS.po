@@ -314,6 +314,7 @@ msgstr "解除了覆盖物最多 255 个的数量限制"
 
 msgid "Keep Syringe open until the game exits (ported from Vinifera)"
 msgstr ""
+"在游戏退出前保持 Syringe 打开（移植自 Vinifera）"
 
 msgid "**Otamaa (Fahroni, BoredEXE)**:"
 msgstr "**Otamaa (Fahroni, BoredEXE)**："
