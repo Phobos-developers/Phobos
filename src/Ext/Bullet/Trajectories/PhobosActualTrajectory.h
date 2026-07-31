@@ -101,7 +101,7 @@ public:
 
 	bool BulletPrepareCheck();
 	CoordStruct GetOnlyStableOffsetCoords(const double rotateRadian);
-	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance);
+	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, std::pair<int, int> offsets);
 	void DisperseBurstSubstitution(const double baseRadian);
 
 private:

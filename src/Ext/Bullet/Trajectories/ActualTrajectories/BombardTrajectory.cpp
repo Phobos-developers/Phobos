@@ -326,7 +326,7 @@ void BombardTrajectory::CalculateTargetCoords()
 
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
-		target = this->GetInaccurateTargetCoords(target, source.DistanceFrom(target));
+		target = this->GetInaccurateTargetCoords(target, BulletExt::GetScatterOffsets(pBullet, source, target));
 }
 
 CoordStruct BombardTrajectory::CalculateBulletLeadTime()

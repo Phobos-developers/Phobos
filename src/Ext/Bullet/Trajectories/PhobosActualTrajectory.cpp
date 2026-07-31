@@ -165,20 +165,15 @@ CoordStruct ActualTrajectory::GetOnlyStableOffsetCoords(const double rotateRadia
 	return BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offsetCoord, rotateRadian));
 }
 
-CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance)
+CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseCoord, std::pair<int, int> offsets)
 {
-	const auto pBullet = this->Bullet;
-	const auto pWeapon = pBullet->WeaponType;
-	const auto pTypeExt = BulletTypeExt::Fetch(pBullet->Type);
-
-	// Don't know whether the weapon is correctly set, if not, a fixed value of 10 will be used
-	const double offsetMult = distance / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));
-	const int offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
-	const int offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
-	const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
+	const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsets.first, offsets.second);
+	const double offsetAngle = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
+	const int offsetX = offsetDistance * Math::cos(offsetAngle);
+	const int offsetY = offsetDistance * Math::sin(offsetAngle);
 
 	// Substitute to calculate random coordinates
-	return MapClass::GetRandomCoordsNear(baseCoord, offsetDistance, false);
+	return CoordStruct { baseCoord.X + offsetX, baseCoord.Y + offsetY, baseCoord.Z };
 }
 
 void ActualTrajectory::DisperseBurstSubstitution(const double baseRadian)

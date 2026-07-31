@@ -330,7 +330,7 @@ void MissileTrajectory::InitializeBulletNotCurve()
 
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
-		this->OffsetCoord = this->GetInaccurateTargetCoords((target + this->OffsetCoord), source.DistanceFrom(target)) - target;
+		this->OffsetCoord = this->GetInaccurateTargetCoords((target + this->OffsetCoord), BulletExt::GetScatterOffsets(pBullet, source, target)) - target;
 
 	// Without setting an initial direction, it will be launched directly towards the target
 	if (pType->PreAimCoord == CoordStruct::Empty)
@@ -369,6 +369,7 @@ CoordStruct MissileTrajectory::GetPreAimCoordsWithBurst()
 	const int offsetMin = static_cast<int>(pType->PreAimScatter_Min.Get());
 	const int offsetMax = static_cast<int>(pType->PreAimScatter_Max.Get());
 
+	// Scatter in the vertical direction
 	if (offsetMin > 0 || offsetMax > 0)
 	{
 		const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);

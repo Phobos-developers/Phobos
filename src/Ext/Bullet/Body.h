@@ -329,6 +329,18 @@ public:
 
 		return pFirer;
 	}
+	static inline std::pair<int, int> GetScatterOffsets(BulletClass* pBullet, const CoordStruct& sourceCoord, const CoordStruct& targetCoord)
+	{
+		const auto pWeapon = pBullet->WeaponType;
+		const auto pType = pBullet->Type;
+		const auto pTypeExt = BulletTypeExt::Fetch(pType);
+
+		if (!pType->FlakScatter)
+			return std::make_pair(static_cast<int>(pTypeExt->BallisticScatter_Min.Get(Leptons(RulesClass::Instance->BallisticScatter / 2))), static_cast<int>(pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter))));
+
+		const double offsetMult = sourceCoord.DistanceFrom(targetCoord) / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));
+		return std::make_pair(static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0))), static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter))));
+	}
 	static bool CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, BulletExt* pBulletExt = nullptr);
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
 };

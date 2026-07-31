@@ -412,7 +412,7 @@ void ParabolaTrajectory::FireTrajectory()
 
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
-		target = this->GetInaccurateTargetCoords(target, source.DistanceFrom(target));
+		target = this->GetInaccurateTargetCoords(target, BulletExt::GetScatterOffsets(pBullet, source, target));
 
 	// Non positive gravity is not accepted
 	const double gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);

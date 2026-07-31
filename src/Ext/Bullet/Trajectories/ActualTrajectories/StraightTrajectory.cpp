@@ -185,7 +185,7 @@ void StraightTrajectory::FireTrajectory()
 
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
-		target = this->GetInaccurateTargetCoords(target, source.DistanceFrom(target));
+		target = this->GetInaccurateTargetCoords(target, BulletExt::GetScatterOffsets(pBullet, source, target));
 
 	// Determine the distance that the bullet can travel
 	if (!pType->PassThrough)
