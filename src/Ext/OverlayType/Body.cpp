@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
+
 OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 
 bool OverlayTypeExt::CanPlaceBuildingOnOverlay(int overlayTypeIndex, BuildingTypeClass* pBuildingType, bool requireToBeRemovable)
@@ -7,13 +9,15 @@ bool OverlayTypeExt::CanPlaceBuildingOnOverlay(int overlayTypeIndex, BuildingTyp
 	auto const pOverlayType = OverlayTypeClass::Array[overlayTypeIndex];
 	auto const pTypeExt = OverlayTypeExt::Fetch(pOverlayType);
 
-	if (!pTypeExt->CanBeBuiltOn)
+	if (!pTypeExt->CanBeBuiltOn.Get(pOverlayType->Tiberium ? RulesExt::Global()->Tiberium_CanBeBuiltOn : false))
 		return false;
 
-	if (((pBuildingType && pBuildingType->Wall) || pOverlayType->Wall) && !pTypeExt->CanBeBuiltOn_Remove)
+	const bool remove = pTypeExt->CanBeBuiltOn_Remove.Get(RulesExt::Global()->CanBeBuiltOnOverlay_Remove);
+
+	if (((pBuildingType && pBuildingType->Wall) || pOverlayType->Wall) && !remove)
 		return false;
 
-	return requireToBeRemovable ? pTypeExt->CanBeBuiltOn_Remove : true;
+	return requireToBeRemovable ? remove : true;
 }
 
 void OverlayTypeExt::RemoveOverlayFromCell(int overlayTypeIndex, CellClass* pCell, HouseClass* pSource)

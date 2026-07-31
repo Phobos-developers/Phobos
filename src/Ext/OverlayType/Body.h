@@ -22,15 +22,15 @@ public:
 		return static_cast<OverlayTypeClass*>(this->GetAttachedObject());
 	}
 
-	Valueable<bool> CanBeBuiltOn;
-	Valueable<bool> CanBeBuiltOn_Remove;
+	Nullable<bool> CanBeBuiltOn;
+	Nullable<bool> CanBeBuiltOn_Remove;
 	Valueable<int> ZAdjust;
 	PhobosFixedString<32u> PaletteFile;
 	DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
 	OverlayTypeExt(OverlayTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
-		, CanBeBuiltOn { false }
-		, CanBeBuiltOn_Remove { true }
+		, CanBeBuiltOn {}
+		, CanBeBuiltOn_Remove {}
 		, ZAdjust { 0 }
 		, PaletteFile {}
 		, Palette {}
