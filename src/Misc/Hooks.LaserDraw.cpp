@@ -193,8 +193,11 @@ namespace LaserRT
 // IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
 DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 {
-	GET(LaserDrawClass*, pLaser, ECX);
-	LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+	if (WeaponTypeExt::LaserTrackingWeaponCount > 0)
+	{
+		GET(LaserDrawClass*, pLaser, ECX);
+		LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+	}
 	return 0;
 }
 

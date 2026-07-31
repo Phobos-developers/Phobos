@@ -3,6 +3,7 @@
 #include <Ext/Techno/Body.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+int WeaponTypeExt::LaserTrackingWeaponCount = 0;
 
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
@@ -118,6 +119,8 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
+	if (this->LaserPositionUpdate != PositionFollow::None)
+		++WeaponTypeExt::LaserTrackingWeaponCount;
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
@@ -505,6 +508,10 @@ DEFINE_HOOK(0x771EE9, WeaponTypeClass_CTOR, 0x5)
 DEFINE_HOOK(0x77311D, WeaponTypeClass_SDDTOR, 0x6)
 {
 	GET(WeaponTypeClass*, pItem, ESI);
+
+	auto pExt = WeaponTypeExt::ExtMap.Find(pItem);
+	if (pExt && pExt->LaserPositionUpdate != PositionFollow::None)
+		--WeaponTypeExt::LaserTrackingWeaponCount;
 
 	WeaponTypeExt::ExtMap.Remove(pItem);
 
