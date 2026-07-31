@@ -2473,6 +2473,7 @@ msgid ""
 "Remove the restriction that prohibits InfantryTypes from using the "
 "InitialPayload logic"
 msgstr ""
+"移除了禁止步兵使用初始载员逻辑的限制"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
