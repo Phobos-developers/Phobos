@@ -29,9 +29,10 @@
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 // NIGHTLY / PRERELEASE / RELEASE come from compiler option BuildType - used by GH Actions as well
 
-// Savegame compatibility is tied to the version alone: nightlies and pre-releases of a version
-// are expected to stay save-compatible with the stable release they lead up to.
-#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 16) | (VERSION_REVISION << 8) | VERSION_PATCH)
+// Savegame compatibility is tied to the version with the patch number left out: patch releases
+// only carry Phobos bugfixes and stay compatible with each other. Nightlies and pre-releases of
+// a version share the ID with the stable release they lead up to.
+#define SAVEGAME_ID ((VERSION_MAJOR << 24) | (VERSION_MINOR << 16) | (VERSION_REVISION << 8))
 
 #if defined(NIGHTLY)
 	#define STR_GIT_COMMIT _STR(GIT_COMMIT)
