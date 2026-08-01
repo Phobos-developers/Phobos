@@ -2,6 +2,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <BuildingTypeClass.h>
 
 class BuildingTypeExt final : public TechnoTypeExt
 {

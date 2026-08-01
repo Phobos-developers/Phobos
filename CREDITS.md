@@ -105,6 +105,7 @@ This page lists all the individual contributions to the project by their author.
   - Parts of Ares calling code
   - Original `Arcing` elevation inaccuracy fix
   - Dehardcode 255 limit of `OverlayType`
+  - Keep Syringe open until the game exits
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -597,6 +598,7 @@ This page lists all the individual contributions to the project by their author.
   - Voxel drawing invisible sections skip
   - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
+  - Keep Syringe open until the game exits
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -725,6 +727,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration
   - Fix the bug where landing direction cannot be correctly converted when set to a value exceeding 256
   - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
+  - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -903,7 +906,9 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **11EJDE11** - Prevent mpdebug number from being drawn when visibility toggled off
+- **11EJDE11**
+  - Prevent mpdebug number from being drawn when visibility toggled off
+  - Keep Syringe open until the game exits
 - **RAZER**:
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers

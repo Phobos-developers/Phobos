@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <MessageListClass.h>
 
 #include <Ext/House/Body.h>
 

@@ -1,8 +1,6 @@
 #include "Body.h"
 
-#include <MessageListClass.h>
 #include <TriggerTypeClass.h>
-
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <New/Entity/BannerClass.h>

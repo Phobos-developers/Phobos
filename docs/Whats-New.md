@@ -795,6 +795,7 @@ HideShakeEffects=false           ; boolean
 - Added the scenario where `Missile.Raise` can be applied by custom missiles (by Noble_Fish)
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
+- Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 ```
 
 ### 0.4.0.3
@@ -1233,6 +1234,7 @@ HideShakeEffects=false           ; boolean
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
+- Keep Syringe open until the game exits (by 11EJDE11, original by ZivDero & secsome)
 
 #### Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)

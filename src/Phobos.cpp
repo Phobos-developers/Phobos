@@ -1,10 +1,5 @@
 #include "Phobos.h"
 
-#include <Drawing.h>
-#include <HouseClass.h>
-#include <SessionClass.h>
-#include <Unsorted.h>
-
 #include <commctrl.h>
 
 #include <Misc/ExceptionHandler.h>
@@ -216,8 +211,7 @@ void Phobos::ExeRun()
 
 		L"To attach a debugger find the YR process in Process Hacker "
 		L"/ Visual Studio processes window and detach debuggers from it, "
-		L"then you can attach your own debugger. After this you should "
-		L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+		L"then you can attach your own debugger.\n\n"
 
 		L"Press OK to continue YR execution.",
 		L"Debugger Notice", MB_OK);
