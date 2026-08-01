@@ -1568,15 +1568,19 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 - It is now possible to make OverlayTypes allow buildings to be placed on them by setting `CanBeBuiltOn` to true. This still requires the tile's landtype (which is changed to overlay's land type unless OverlayType has `NoUseTileLandType=false`) to allow buildings to be placed.
   - If `CanBeBuiltOn.Remove=true`, the overlay will be removed (if it is a wall owned by the player placing the building, it is sold) upon the building being placed. If this is not set to true, buildings with `Wall=true` cannot be placed on the overlay and neither does overlay with `Wall=true` allow buildings to be placed on itself regardless of other settings.
   - `Tiberium.CanBeBuiltOn` can be used to set the global default value for overlays with `Tiberium=true`.
+  - `Wall.CanBeBuiltOn` can be used to set the global default value for overlays with `Wall=true`. This is checked after `Tiberium.CanBeBuiltOn`.
+  - `Rock.CanBeBuiltOn` can be used to set the global default value for overlays with `IsARock=true`. This is checked after `Tiberium.CanBeBuiltOn` and `Wall.CanBeBuiltOn`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 Tiberium.CanBeBuiltOn=false     ; boolean
+Wall.CanBeBuiltOn=false         ; boolean
+Rock.CanBeBuiltOn=false         ; boolean
 CanBeBuiltOnOverlay.Remove=true ; boolean
 
 [SOMEOVERLAY]                   ; OverlayType
-CanBeBuiltOn=                   ; boolean, default to [General] -> Tiberium.CanBeBuiltOn if it has Tiberium=true, and false otherwise
+CanBeBuiltOn=                   ; boolean, default to [General] -> Tiberium/Wall/Rock.CanBeBuiltOn depends on the overlay settings, and false otherwise
 CanBeBuiltOn.Remove=            ; boolean, default to [General] -> CanBeBuiltOnOverlay.Remove
 ```
 
