@@ -64,8 +64,11 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	{
 		double armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoExt->TypeExtData->OwnerObject(), pInvokerHouse);
 
-		if (!pType->RestrictedArmorMultiplier || (pType->ArmorMultiplier_Chance < ScenarioClass::Instance->Random.RandomDouble() && EnumFunctions::CanTargetHouse(pType->ArmorMultiplier_AffectsHouse, pTechno->Owner, pInvokerHouse)))
+		if (!pType->RestrictedArmorMultiplier || (pType->ArmorMultiplier_Chance >= ScenarioClass::Instance->Random.RandomDouble()
+			&& (!pInvokerHouse || EnumFunctions::CanTargetHouse(pType->ArmorMultiplier_AffectsHouse, pTechno->Owner, pInvokerHouse))))
+		{
 			armorMultiplier *= pType->ArmorMultiplier;
+		}
 
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
 	}
