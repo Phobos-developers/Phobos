@@ -710,6 +710,7 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ```
 
 ### `600` Configure Drop Crate
+
 - Set or overwrite the `DropCrate` of the affected objects.
 - Only functions when used as attached triggers within objects.
 

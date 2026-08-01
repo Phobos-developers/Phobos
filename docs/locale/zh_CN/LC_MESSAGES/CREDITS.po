@@ -460,9 +460,11 @@ msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
 
 msgid "Map Action 600 for overwriting DropCrate behaviour in attached Technos"
 msgstr ""
+"用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
 
 msgid "`DropCrate` for setting what crate drop when Techno is destroyed"
 msgstr ""
+"用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
 
 msgid "Warhead activation target health thresholds enhancements"
 msgstr "目标血量作为弹头生效条件的进一步改进"

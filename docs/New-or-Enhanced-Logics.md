@@ -1855,16 +1855,6 @@ UseDisguiseMovementSpeed=false
 UseDisguiseMovementSpeed=         ; boolean, default to [General] -> UseDisguiseMovementSpeed
 ```
 
-### Exclusion from base center calculations
-
-- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-IgnoreForBaseCenter=false  ; boolean
-```
-
 ### Drop crates on death
 
 ![image](_static/images/dropcrate-01.gif)
@@ -1876,6 +1866,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]  ; TechnoType
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+```
+
+### Exclusion from base center calculations
+
+- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+IgnoreForBaseCenter=false  ; boolean
 ```
 
 ### Extended gattling rate down logic

@@ -4207,17 +4207,20 @@ msgstr ""
 
 msgid "Drop crates on death"
 msgstr ""
+"死亡时掉落箱子"
 
 msgid ""
 "![image](_static/images/dropcrate-01.gif) *Drop crates on infantry and "
 "vehicles example in [C&C: "
 "Reloaded](https://www.moddb.com/mods/cncreloaded)*"
 msgstr ""
+"![image](_static/images/dropcrate-01.gif) *[C&C: Reloaded](https://www.moddb.com/mods/cncreloaded) 中的步兵和载具掉落箱子示例*"
 
 msgid ""
 "If `DropCrate` is declared then the specified crate will be spawned when "
 "the object is destroyed."
 msgstr ""
+"如果设置了 `DropCrate` 则对象被摧毁时会生成所指定的箱子。"
 
 msgid "Exclusion from base center calculations"
 msgstr "不参与基地中心计算"

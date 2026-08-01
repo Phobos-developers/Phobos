@@ -640,6 +640,8 @@ HideShakeEffects=false           ; boolean
 - [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
 - Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
+- [Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) (by FS-21)
+- [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

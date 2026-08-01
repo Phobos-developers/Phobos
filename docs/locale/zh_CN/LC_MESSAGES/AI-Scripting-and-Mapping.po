@@ -1410,24 +1410,31 @@ msgstr "非载具类对象无效。"
 
 msgid "`600` Configure Drop Crate"
 msgstr ""
+"`600` 配置掉落箱子行为"
 
 msgid "Set or overwrite the `DropCrate` of the affected objects."
 msgstr ""
+"设置或覆盖受影响对象的 `DropCrate`。"
 
 msgid "Only functions when used as attached triggers within objects."
 msgstr ""
+"仅通过关联标签附加到对象上时生效。"
 
 msgid "*Behaviour*"
 msgstr ""
+"*行为*"
 
 msgid "Use default Techno settings"
 msgstr ""
+"使用单位的默认设置"
 
 msgid "Clear `DropCrate` type"
 msgstr ""
+"清除 `DropCrate` 类型"
 
 msgid "Overwrite `DropCrate` type"
 msgstr ""
+"覆盖 `DropCrate` 类型"
 
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"

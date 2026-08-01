@@ -2340,9 +2340,11 @@ msgid ""
 "[Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) "
 "(by FS-21)"
 msgstr ""
+"[死亡时掉落箱子](New-or-Enhanced-Logics.md#drop-crates-on-death)（by FS-21）"
 
 msgid "[`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)"
 msgstr ""
+"[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by FS-21）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
