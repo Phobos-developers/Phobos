@@ -1,14 +1,8 @@
 #include "SelectCaptured.h"
 
-#include <BuildingTypeClass.h>
-#include <MessageListClass.h>
-#include <MapClass.h>
-#include <ObjectClass.h>
-#include <TacticalClass.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 
 const char* SelectCapturedCommandClass::GetName() const
 {

@@ -1,17 +1,12 @@
-#include "Body.h"
-
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
-#include <Ext/AircraftType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/InfantryType/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -639,8 +634,35 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
 
+	// Note: Some SW never had a "killer" or a "house" (hello "NukeSpecial"), probably never scored to the killer?
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
+
+	return 0;
+}
+
+// AFAIK, only used by the teleport of the Chronoshift SW
+DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(TechnoClass*, pVictim, ESI);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
 
 	return 0;
 }

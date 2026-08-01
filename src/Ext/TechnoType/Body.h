@@ -426,6 +426,8 @@ public:
 	Nullable<double> ExtraThreatCoefficient_Facing;
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
+	Nullable<Powerup> DropCrate;
+
 	Nullable<bool> Unsellable; // Ares 3.0
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
@@ -804,6 +806,8 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+		, DropCrate {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

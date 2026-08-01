@@ -1,10 +1,5 @@
 #include "Phobos.h"
 
-#include <CCINIClass.h>
-#include <ScenarioClass.h>
-#include <SessionClass.h>
-#include <MessageListClass.h>
-#include <HouseClass.h>
 #include <GameOptionsClass.h>
 
 #include <Utilities/Parser.h>

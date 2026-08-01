@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <EventClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
