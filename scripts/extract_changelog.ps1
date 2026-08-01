@@ -57,6 +57,7 @@ function New-Section([int]$Level, [string]$Title, $Parent) {
         Parent   = $Parent
         Lines    = [System.Collections.Generic.List[string]]::new()
         Children = [System.Collections.Generic.List[object]]::new()
+        Skip     = $false
     }
 }
 
@@ -177,10 +178,15 @@ function Get-AllSections($Node) {
 }
 
 # The version a section documents, or $null when it documents no particular version.
+# The whole title has to be the version, so that a section like "3 new trajectories" is contents.
 function Get-SectionVersion([string]$Title) {
     if ($Title -match '^\s*Version\s+TBD\b') { return 'TBD' }
-    if ($Title -match '^\s*[vV]?(?<version>\d+(\.\d+)*(-[0-9A-Za-z.]+)?)\b') { return $Matches.version }
+    if ($Title -match '^\s*[vV]?(?<version>\d+(\.\d+)+(-[0-9A-Za-z.]+)?)(\s+\(.*\))?\s*$') { return $Matches.version }
     return $null
+}
+
+function Test-HasContents($Node) {
+    return ($Node.Children.Count -gt 0) -or (@($Node.Lines | Where-Object { $_.Trim() }).Count -gt 0)
 }
 
 # ---- Render a matched section as "type of change -> contents" ----
@@ -189,10 +195,34 @@ function Add-SectionContents($Node, [int]$Shift, $Sink) {
     foreach ($line in $Node.Lines) { $Sink.Add($line) }
 
     foreach ($child in $Node.Children) {
+        if ($child.Skip) { continue }
+
         $level = [Math]::Min(6, [Math]::Max(1, $child.Level + $Shift))
         $Sink.Add('')
         $Sink.Add(('#' * $level) + ' ' + $child.Title)
         Add-SectionContents $child $Shift $Sink
+    }
+}
+
+# A pre-release is documented as a subsection of the version it leads up to, holding what changed
+# since the previous one, so those subsections are builds rather than kinds of change and are left
+# out by default. A pre-release build carries the fixes of every pre-release before it as well and
+# they are listed newest first, so the tagged subsection and everything below it are kept. Ones
+# without contents are dropped - such a pre-release is just the parent version as it stands.
+function Set-BuildSectionVisibility($Section, [string]$PreRelease) {
+    $builds = @($Section.Children | Where-Object { Get-SectionVersion $_.Title })
+    foreach ($build in $builds) { $build.Skip = $true }
+
+    if (-not $PreRelease) { return }
+
+    $tagged = -1
+    for ($i = 0; $i -lt $builds.Count; $i++) {
+        if ((Get-SectionVersion $builds[$i].Title) -eq $PreRelease) { $tagged = $i; break }
+    }
+    if ($tagged -lt 0) { return }
+
+    for ($i = $tagged; $i -lt $builds.Count; $i++) {
+        if (Test-HasContents $builds[$i]) { $builds[$i].Skip = $false }
     }
 }
 
@@ -220,19 +250,30 @@ $sections = @(Get-AllSections $root)
 $version = $Tag -replace '^[vV]', ''
 $baseVersion = $version -replace '-.*$', ''
 
-$matched = @($sections | Where-Object { (Get-SectionVersion $_.Title) -eq $version })
+$isPreRelease = $baseVersion -ne $version
+$preRelease = ''
 
-# Only a pre-release may document itself under another name: it shares the sections of the
-# version it leads up to (0.5-beta1 -> 0.5), which are still called "Version TBD" until the
-# release branch is cut. A stable or patch release documenting nothing is an oversight, and
-# publishing whatever else is at hand - the unreleased develop notes above all - would hide it.
-if (-not $matched -and $baseVersion -ne $version) {
+# A pre-release is released as its parent version plus whatever the pre-release subsections
+# below it record, so it is the parent sections that get rendered.
+$matched = @()
+if ($isPreRelease) {
     $matched = @($sections | Where-Object { (Get-SectionVersion $_.Title) -eq $baseVersion })
-    if ($matched) { Write-Host "No sections for '$version', using the ones for '$baseVersion'" }
+    if ($matched) { $preRelease = $version }
+}
 
-    if (-not $matched) {
-        $matched = @($sections | Where-Object { (Get-SectionVersion $_.Title) -eq 'TBD' })
-        if ($matched) { Write-Warning "No sections for '$version', falling back to 'Version TBD' - rename them to '$baseVersion' in $WhatsNewPath" }
+if (-not $matched) {
+    $matched = @($sections | Where-Object { (Get-SectionVersion $_.Title) -eq $version })
+}
+
+# Only a pre-release may document itself under another name: until the release branch is cut its
+# sections are still called "Version TBD". A stable or patch release documenting nothing is an
+# oversight, and publishing whatever else is at hand - the unreleased develop notes above all -
+# would hide it.
+if (-not $matched -and $isPreRelease) {
+    $matched = @($sections | Where-Object { (Get-SectionVersion $_.Title) -eq 'TBD' })
+    if ($matched) {
+        $preRelease = $version
+        Write-Warning "No sections for '$version', falling back to 'Version TBD' - rename them to '$baseVersion' in $WhatsNewPath"
     }
 }
 
@@ -248,6 +289,8 @@ foreach ($section in $matched) {
         $out.Add('')
         $out.Add("## $kind")
     }
+    Set-BuildSectionVisibility $section $preRelease
+
     # The matched section's own children start right below the type of change heading.
     Add-SectionContents $section (2 - $section.Level) $out
 }
