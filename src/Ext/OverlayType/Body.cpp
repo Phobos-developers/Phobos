@@ -9,8 +9,13 @@ bool OverlayTypeExt::CanPlaceBuildingOnOverlay(int overlayTypeIndex, BuildingTyp
 	auto const pOverlayType = OverlayTypeClass::Array[overlayTypeIndex];
 	auto const pTypeExt = OverlayTypeExt::Fetch(pOverlayType);
 
-	if (!pTypeExt->CanBeBuiltOn.Get(pOverlayType->Tiberium ? RulesExt::Global()->Tiberium_CanBeBuiltOn : false))
+	if (!pTypeExt->CanBeBuiltOn.Get(pOverlayType->Tiberium ? RulesExt::Global()->Tiberium_CanBeBuiltOn
+		: pOverlayType->Wall ? RulesExt::Global()->Wall_CanBeBuiltOn
+		: pOverlayType->IsARock ? RulesExt::Global()->Rock_CanBeBuiltOn
+		: false))
+	{
 		return false;
+	}
 
 	const bool remove = pTypeExt->CanBeBuiltOn_Remove.Get(RulesExt::Global()->CanBeBuiltOnOverlay_Remove);
 
