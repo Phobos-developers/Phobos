@@ -625,7 +625,7 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
 	// Drop crate if is dead
-	int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
 
 	if (nSelectedPowerup >= 0)
 	{
@@ -642,7 +642,7 @@ DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
 	GET(TechnoClass*, pVictim, ESI);
 
 	// Drop crate if is dead
-	int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
 
 	if (nSelectedPowerup >= 0)
 	{
