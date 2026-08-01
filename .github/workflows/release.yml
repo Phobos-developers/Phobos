@@ -45,13 +45,14 @@ jobs:
         build-config: ${{ env.BUILD_CONFIGURATION }}
         build-type: ${{ steps.info.outputs.build-type }}
 
-    - name: Extract Changelog
+    - name: Extract Release Notes
       shell: pwsh
       run: |
         .\scripts\extract_changelog.ps1 `
           -Tag "${{ github.ref_name }}" `
           -WhatsNewPath docs\Whats-New.md `
-          -OutputPath RELEASE_NOTES.md
+          -OutputPath RELEASE_NOTES.md `
+          -LinkBase "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs"
 
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
