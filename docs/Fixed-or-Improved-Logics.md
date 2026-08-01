@@ -214,6 +214,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
+- Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
@@ -1574,38 +1575,24 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 In `rulesmd.ini`:
 ```ini
 [General]
-Tiberium.CanBeBuiltOn=false     ; boolean
-Wall.CanBeBuiltOn=false         ; boolean
-Rock.CanBeBuiltOn=false         ; boolean
-CanBeBuiltOnOverlay.Remove=true ; boolean
+Tiberium.CanBeBuiltOn=false      ; boolean
+Wall.CanBeBuiltOn=false          ; boolean
+Rock.CanBeBuiltOn=false          ; boolean
+CanBeBuiltOnOverlay.Remove=true  ; boolean
 
-[SOMEOVERLAY]                   ; OverlayType
-CanBeBuiltOn=                   ; boolean, default to [General] -> Tiberium/Wall/Rock.CanBeBuiltOn depends on the overlay settings, and false otherwise
-CanBeBuiltOn.Remove=            ; boolean, default to [General] -> CanBeBuiltOnOverlay.Remove
+[SOMEOVERLAY]                    ; OverlayType
+CanBeBuiltOn=                    ; boolean, default to [General] -> Tiberium/Wall/Rock.CanBeBuiltOn depends on the overlay settings, and false otherwise
+CanBeBuiltOn.Remove=             ; boolean, default to [General] -> CanBeBuiltOnOverlay.Remove
 ```
 
-### More than 255 OverlayTypes
+### `ZAdjust` for OverlayTypes
 
-- Game now supports more than 255 distinct OverlayTypes, up to 65535. For map file/editor support, see [Increased Overlay Limit](AI-Scripting-and-Mapping.md#increased-overlay-limit).
-
-### Custom palette
-
-- You can now specify custom palette for OverlayTypes in similar manner as TechnoTypes can.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 
 In `artmd.ini`:
 ```ini
-[SOMETERRAINTYPE]  ; TerrainType
-Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
-```
-
-### ZAdjust
-
-- OverlayTypes now read and use `ZAdjust`.
-
-In `artmd.ini`:
-```ini
-[SOMEOVERLAY]  ; OverlayType image
-ZAdjust=0
+[SOMEOVERLAY]  ; OverlayType Image
+ZAdjust=0      ; integer
 ```
 
 ## Particle systems
