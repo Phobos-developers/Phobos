@@ -54,7 +54,7 @@ DEFINE_HOOK(0x47C9A7, CellClass_IsClearToBuild_Overlays, 0x5)
 	GET(CellClass*, pThis, EDI);
 	GET_STACK(BuildingTypeClass*, pBuildingType, STACK_OFFSET(0x18, 0x8));
 
-	int overlayTypeIndex = pThis->OverlayTypeIndex;
+	const int overlayTypeIndex = pThis->OverlayTypeIndex;
 
 	if (overlayTypeIndex != -1)
 	{
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x45EF11, BuildingTypeClass_FlushForPlacement_Overlays, 0x6)
 	enum { Continue = 0x45EF2C };
 
 	GET(BuildingTypeClass*, pThis, EBX);
-	GET(int, overlayTypeIndex, ECX);
+	GET(const int, overlayTypeIndex, ECX);
 
 	if (OverlayTypeExt::CanPlaceBuildingOnOverlay(overlayTypeIndex, pThis, false))
 		return Continue;

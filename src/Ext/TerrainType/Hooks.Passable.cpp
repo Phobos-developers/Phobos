@@ -144,7 +144,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 			}
 		}
 
-		int overlayTypeIndex = pCell->OverlayTypeIndex;
+		const int overlayTypeIndex = pCell->OverlayTypeIndex;
 
 		if (overlayTypeIndex != -1)
 		{
