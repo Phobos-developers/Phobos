@@ -73,7 +73,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
 	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
-		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::ExtMap.Find(pBuilding)->LimboID != -1;
+		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
 
 	auto& alphaExt = *AresFunctions::AlphaExtMap;
 
@@ -87,7 +87,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
 	{
-		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret()))
+		if (alphaExt.get_or_default(pSource) && pBuilding && pImage->Frames <= 1)
 			return;
 
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;

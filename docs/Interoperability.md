@@ -93,6 +93,10 @@ When an API is deprecated, its function stub is retained but with a fatal error 
 | EventExt     | EventExt_AddEvent                          | `[1.0.0, ∞)`  | Active |
 | TechnoExt    | ConvertToType_Phobos                       | `[1.0.0, ∞)`  | Active |
 | TechnoExt    | RegisterCalculateExtraThreatCallback       | `[1.0.0, ∞)`  | Active |
+| ScenarioExt  | Variables_GetLocal_Phobos                  | `[1.1.0, ∞)`  | Active |
+| ScenarioExt  | Variables_SetLocal_Phobos                  | `[1.1.0, ∞)`  | Active |
+| ScenarioExt  | Variables_GetGlobal_Phobos                 | `[1.1.0, ∞)`  | Active |
+| ScenarioExt  | Variables_SetGlobal_Phobos                 | `[1.1.0, ∞)`  | Active |
 
 ### AttachEffect
 
@@ -266,6 +270,74 @@ Updates the recorded firer house for a bullet extension.
 - Returns `S_OK` if the bullet extension is found and updated.
 - Fails with `E_POINTER` when: pBullet is null.
 - Fails with `E_UNEXPECTED` when: no BulletExt entry exists for pBullet.
+
+### ScenarioExt
+
+#### Variables_GetLocal_Phobos
+
+**Availability:** `[1.1.0, ∞)`
+
+```cpp
+HRESULT Variables_GetLocal_Phobos(int index, int* pValue)
+```
+
+Gets the value of a local variable by index. Does not create the variable if missing — pValue is set to 0 when the index is not found.
+
+- Parameters:
+  - index: Variable index.
+  - pValue: Receives the variable value.
+- Returns `S_OK` if the variable exists, `S_FALSE` if it does not.
+- Fails with `E_POINTER` when: pValue is null.
+- Fails with `E_FAIL` when: ScenarioExt is not initialized.
+
+#### Variables_SetLocal_Phobos
+
+**Availability:** `[1.1.0, ∞)`
+
+```cpp
+HRESULT Variables_SetLocal_Phobos(int index, int value)
+```
+
+Sets the value of a local variable by index. Creates the variable if the index does not exist.
+
+- Parameters:
+  - index: Variable index.
+  - value: New value for the variable.
+- Returns `S_OK` on success.
+- Fails with `E_FAIL` when: ScenarioExt is not initialized.
+
+#### Variables_GetGlobal_Phobos
+
+**Availability:** `[1.1.0, ∞)`
+
+```cpp
+HRESULT Variables_GetGlobal_Phobos(int index, int* pValue)
+```
+
+Gets the value of a global variable by index. Does not create the variable if missing — pValue is set to 0 when the index is not found.
+
+- Parameters:
+  - index: Variable index.
+  - pValue: Receives the variable value.
+- Returns `S_OK` if the variable exists, `S_FALSE` if it does not.
+- Fails with `E_POINTER` when: pValue is null.
+- Fails with `E_FAIL` when: ScenarioExt is not initialized.
+
+#### Variables_SetGlobal_Phobos
+
+**Availability:** `[1.1.0, ∞)`
+
+```cpp
+HRESULT Variables_SetGlobal_Phobos(int index, int value)
+```
+
+Sets the value of a global variable by index. Creates the variable if the index does not exist.
+
+- Parameters:
+  - index: Variable index.
+  - value: New value for the variable.
+- Returns `S_OK` on success.
+- Fails with `E_FAIL` when: ScenarioExt is not initialized.
 
 ### EventExt
 

@@ -39,16 +39,20 @@ public:
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
 
-	// WarheadTypeExt::ExtData
+	static void(__thiscall* SetSpotlight)(void*, BuildingLightClass* pSpotlight);
+
+	// WarheadTypeExt
 	static bool(__thiscall* ApplyPermaMC)(void*, HouseClass* pSourceHouse, AbstractClass* pTarget);
 
 	static bool (*DetailsCurrentlyEnabled)();
+
+	static void(*SendPDPlane)(HouseClass* pOwner, CellClass* pDestination, AircraftTypeClass* pPlaneType, Iterator<TechnoTypeClass*> Types, Iterator<int> Nums);
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
 
-	// BuildingTypeExt::ExtData
+	// BuildingTypeExt
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
 

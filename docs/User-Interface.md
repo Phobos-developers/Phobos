@@ -30,6 +30,16 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ## Battle screen UI/UX
 
+### Allow chat box in singleplayer
+
+- In vanilla, the in-game chat box is disabled in singleplayer scenarios. You can now enable it by setting `[General] -> AllowChatBoxInSinglePlayer` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AllowChatBoxInSinglePlayer=false  ; boolean
+```
+
 ### Allow draw SuperWeapon timer as percentage
 
 - Superweapon cd timer can now draw as percentage.
@@ -60,6 +70,21 @@ HealthBar.Hide=false                 ; boolean
 HealthBar.HidePips=false             ; boolean
 HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
+```
+
+### Customize the step limit of the credits indicator
+
+- In vanilla, the Credits Indicator in the sidebar increases by at most 143 points per frame, and now you can customize this limit.
+  - If set to a value less than or equal to 0, the upper limit will be removed.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.MaxStep=143  ; integer
+```
+
+```{note}
+The game first takes the absolute value of the difference between the actual credits and the current value, then divides it by 8, and then clamps this value to the limit set here. If you wish to disable this smoothing effect, set [`CreditsIndicator.Smooth=false`](User-Interface.md#disable-the-credits-indicator-smooth-transition).
 ```
 
 ### Digital display
@@ -124,6 +149,7 @@ Buildings.DefaultDigitalDisplayTypes=          ; List of DigitalDisplayTypes
 Infantry.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Vehicles.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Aircraft.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
@@ -157,7 +183,7 @@ Shape.PercentageFrame=false                    ; boolean
 [SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
-DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
+DigitalDisplay.Health.FakeAtDisguise=          ; boolean, default to [AudioVisual] -> DigitalDisplay.Health.FakeAtDisguise
 ```
 
 In `RA2MD.INI`:
@@ -184,6 +210,20 @@ The arrangement of static images on the plane is entirely up to you to draw free
 
 Of course, this is just the implementation method. To balance freedom with efficiency - that is, how to efficiently draw the patterns you need - you still need to independently explore a workflow that suits you.
 ````
+
+### Disable the credits indicator smooth transition
+
+- In vanilla, the Credits Indicator has a smooth transition effect when the displayed credit value approaches the actual credit value. Now you can disable this effect, allowing the change step to always follow the value of [`CreditsIndicator.MaxStep`](User-Interface.md#customize-the-step-limit-of-the-credits-indicator).
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CreditsIndicator.Smooth=true  ; boolean
+```
+
+```{hint}
+For example, if you want to make the credits update immediately without a transition process by setting `CreditsIndicator.MaxStep=0`, then you should also set `CreditsIndicator.Smooth=false`; otherwise, the displayed credit value will still change in the form of an exponential approximation function.
+```
 
 ### Flashing Technos on selecting
 
@@ -360,6 +400,20 @@ In `RA2MD.INI`:
 ShowDesignatorRange=false             ; boolean
 ```
 
+### Show game time
+
+- A timer can be displayed to show how many time has passed since game starts.
+  - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
+  - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.
+  - Observer can't see this timer since they've already gotten one on the top of sidebar.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowGameTime=false             ; boolean
+ShowGameTime.BoardOpacity=40   ; integer
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
@@ -487,6 +541,23 @@ In `RA2MD.INI`:
 ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
+### Set sidebar tab by selecting factory
+
+- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
+  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
+    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
+    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+SetTabBySelecting=-1            ; integer, index of tab
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -545,6 +616,18 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 
 - Deselect 1 or 5 object(s) from current selected objects.
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+### `[ ]` Select Captured Units
+- Select the units within the current screen that are captured by non-permanent mind-controller.
+- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
+- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
+- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SelectCapturedKeyEnabled=false    ; boolean
+```
 
 ## Loading screen
 

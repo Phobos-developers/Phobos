@@ -45,7 +45,7 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	for (const auto& pTechnoType : TechnoTypeClass::Array)
 	{
-		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType))
+		if (const auto pTechnoTypeExt = TechnoTypeExt::TryFetch(pTechnoType))
 		{
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
@@ -72,6 +72,8 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
+	this->LeptonMindControlOffset.Read(exINI, GameStrings::AudioVisual, "LeptonMindControlOffset");
+	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -160,12 +162,46 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
 	this->ExtendedAircraftMissions_UnlandDamage.Read(exINI, GameStrings::General, "ExtendedAircraftMissions.UnlandDamage");
+	this->AircraftSpawnFromEdge.Read(exINI, GameStrings::General, "AircraftSpawnFromEdge");
+	this->AircraftRetreatToEdge.Read(exINI, GameStrings::General, "AircraftRetreatToEdge");
 	this->AmphibiousEnter.Read(exINI, GameStrings::General, "AmphibiousEnter");
 	this->AmphibiousUnload.Read(exINI, GameStrings::General, "AmphibiousUnload");
 	this->NoQueueUpToEnter.Read(exINI, GameStrings::General, "NoQueueUpToEnter");
+	this->NoQueueUpToEnter_BoardDistance.Read(exINI, GameStrings::General, "NoQueueUpToEnter.BoardDistance");
 	this->NoQueueUpToUnload.Read(exINI, GameStrings::General, "NoQueueUpToUnload");
 	this->NoQueueUpToEnter_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToEnter.Buildings");
 	this->NoQueueUpToUnload_Buildings.Read(exINI, GameStrings::General, "NoQueueUpToUnload.Buildings");
+
+	this->JumpjetTilt.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt");
+	this->JumpjetTilt_ForwardAccelFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.ForwardAccelFactor");
+	this->JumpjetTilt_ForwardSpeedFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.ForwardSpeedFactor");
+	this->JumpjetTilt_SidewaysRotationFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.SidewaysRotationFactor");
+	this->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, GameStrings::AudioVisual, "JumpjetTilt.SidewaysSpeedFactor");
+	this->Spawner_AttackImmediately.Read(exINI, GameStrings::General, "Spawner.AttackImmediately");
+	this->Spawner_UseTurretFacing.Read(exINI, GameStrings::General, "Spawner.UseTurretFacing");
+	this->Spawner_RecycleRange.Read(exINI, GameStrings::General, "Spawner.RecycleRange");
+	this->Spawner_RecycleOnTurret.Read(exINI, GameStrings::General, "Spawner.RecycleOnTurret");
+	this->Promote_IncludeSpawns.Read(exINI, GameStrings::General, "Promote.IncludeSpawns");
+	this->RadarJamHouses.Read(exINI, GameStrings::General, "RadarJamHouses");
+	this->RadarJamDelay.Read(exINI, GameStrings::General, "RadarJamDelay");
+	this->MindControl_IgnoreSize.Read(exINI, GameStrings::General, "MindControl.IgnoreSize");
+	this->MultiMindControl_ReleaseVictim.Read(exINI, GameStrings::General, "MultiMindControl.ReleaseVictim");
+	this->MindControlLink_VisibleToHouse.Read(exINI, GameStrings::General, "MindControlLink.VisibleToHouse");
+	this->AlternateFLH_OnTurret.Read(exINI, GameStrings::General, "AlternateFLH.OnTurret");
+	this->AlternateFLH_ApplyVehicle.Read(exINI, GameStrings::General, "AlternateFLH.ApplyVehicle");
+	this->DestroyAnim_Random.Read(exINI, GameStrings::General, "DestroyAnim.Random");
+	this->UseDisguiseMovementSpeed.Read(exINI, GameStrings::General, "UseDisguiseMovementSpeed");
+	this->Convert_ResetMindControl.Read(exINI, GameStrings::General, "Convert.ResetMindControl");
+	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.ContentIfAnyMatch");
+	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.NotBuildableIfQueueMatch");
+	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
+	this->Overload_ParticleSysCount.Read(exINI, GameStrings::CombatDamage, "Overload.ParticleSysCount");
+	this->FallingDownDamage.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage");
+	this->FallingDownDamage_AllowEMP.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.AllowEMP");
+
+	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, GameStrings::General, "ForceWeapon.InRange.TechnoOnly");
+	this->ForceWeapon_InRange_ApplyRangeModifiers.Read(exINI, GameStrings::General, "ForceWeapon.InRange.ApplyRangeModifiers");
+	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, GameStrings::General, "ForceAAWeapon.InRange.ApplyRangeModifiers");
 
 	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
@@ -197,6 +233,19 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AirstrikeLineColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineColor");
 	this->AirstrikeLineZAdjust.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineZAdjust");
 
+	this->Strafing_SimulateBurst.Read(exINI, GameStrings::General, "Strafing.SimulateBurst");
+	this->Strafing_UseAmmoPerShot.Read(exINI, GameStrings::General, "Strafing.UseAmmoPerShot");
+	this->Strafing_TargetCell.Read(exINI, GameStrings::General, "Strafing.TargetCell");
+	this->OmniFire_TurnToTarget.Read(exINI, GameStrings::General, "OmniFire.TurnToTarget");
+	this->AmbientDamage_IgnoreTarget.Read(exINI, GameStrings::General, "AmbientDamage.IgnoreTarget");
+	this->KeepRange_AllowAI.Read(exINI, GameStrings::General, "KeepRange.AllowAI");
+	this->KeepRange_AllowPlayer.Read(exINI, GameStrings::General, "KeepRange.AllowPlayer");
+	this->KeepRange_EarlyStopFrame.Read(exINI, GameStrings::General, "KeepRange.EarlyStopFrame");
+	this->AircraftWeapon_KickOutPassengers.Read(exINI, GameStrings::General, "AircraftWeapon.KickOutPassengers");
+	this->CrushSlowdownMultiplier.Read(exINI, GameStrings::General, "CrushSlowdownMultiplier");
+	this->SkipCrushSlowdown.Read(exINI, GameStrings::General, "SkipCrushSlowdown");
+
+	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, GameStrings::AudioVisual, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, GameStrings::AudioVisual, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, GameStrings::AudioVisual, "EBoltZAdjust");
 	this->EBoltZAdjust_ClampInitialDepthForBuilding.Read(exINI, GameStrings::AudioVisual, "EBoltZAdjust.ClampInitialDepthForBuilding");
@@ -223,7 +272,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DrainMoneyDisplay_OnTarget_UseDisplayIncome.Read(exINI, GameStrings::AudioVisual, "DrainMoneyDisplay.OnTarget.UseDisplayIncome");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->SetTabBySelectingFactory.Read(exINI, GameStrings::General, "SetTabBySelectingFactory");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
+	this->SetRecruitableOnLiberate.Read(exINI, GameStrings::General, "SetRecruitableOnLiberate");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
 	this->DrawInsignia_AdjustPos_Infantry.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Infantry");
 	this->DrawInsignia_AdjustPos_Buildings.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Buildings");
@@ -335,6 +386,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
 
 	this->Parasite_GrappleAnim.Read(exINI, GameStrings::AudioVisual, "Parasite.GrappleAnim");
+	this->Parasite_AllowWaterExit.Read(exINI, GameStrings::General, "Parasite.AllowWaterExit");
 
 	this->AINormalTargetingDelay.Read(exINI, GameStrings::General, "AINormalTargetingDelay");
 	this->PlayerNormalTargetingDelay.Read(exINI, GameStrings::General, "PlayerNormalTargetingDelay");
@@ -359,14 +411,61 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
-	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
+
+	this->ReloadInTransport.Read(exINI, GameStrings::General, "ReloadInTransport");
+	this->OpenTopped_IgnoreRangefinding.Read(exINI, GameStrings::General, "OpenTopped.IgnoreRangefinding");
+	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfDeactivated");
 	this->OpenTopped_AllowFiringIfAttackedByLocomotor.Read(exINI, GameStrings::General, "OpenTopped.AllowFiringIfAttackedByLocomotor");
+	this->OpenTopped_ShareTransportTarget.Read(exINI, GameStrings::General, "OpenTopped.ShareTransportTarget");
+	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, GameStrings::General, "OpenTopped.UseTransportRangeModifiers");
+	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
+	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
+	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
+	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
+	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
+	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
+
+	this->Passengers_SyncOwner.Read(exINI, GameStrings::General, "Passengers.SyncOwner");
+	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, GameStrings::General, "Passengers.SyncOwner.RevertOnExit");
+
+	this->Explodes_KillPassengers.Read(exINI, GameStrings::General, "Explodes.KillPassengers");
+	this->Explodes_DuringBuildup.Read(exINI, GameStrings::General, "Explodes.DuringBuildup");
+
+	this->AircraftFiringForceScatter.Read(exINI, GameStrings::General, "AircraftFiringForceScatter");
+
+	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
+
+	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
+
+	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
+	this->Tibtree_IsPassable.Read(exINI, GameStrings::General, "Tibtree.IsPassable");
+	this->Terrain_CanBeBuiltOn.Read(exINI, GameStrings::General, "Terrain.CanBeBuiltOn");
+	this->Tibtree_CanBeBuiltOn.Read(exINI, GameStrings::General, "Tibtree.CanBeBuiltOn");
+
+	this->Sinkable.Read(exINI, GameStrings::General, "Sinkable");
+	this->Sinkable_SquidGrab.Read(exINI, GameStrings::General, "Sinkable.SquidGrab");
+	this->SinkSpeed.Read(exINI, GameStrings::General, "SinkSpeed");
+
+	this->CreateAnimsOnZeroDamage.Read(exINI, GameStrings::General, "CreateAnimsOnZeroDamage");
+	this->Conventional_IgnoreUnits.Read(exINI, GameStrings::General, "Conventional.IgnoreUnits");
+	this->DecloakDamagedTargets.Read(exINI, GameStrings::General, "DecloakDamagedTargets");
+	this->ShakeIsLocal.Read(exINI, GameStrings::General, "ShakeIsLocal");
+	this->ApplyModifiersOnNegativeDamage.Read(exINI, GameStrings::General, "ApplyModifiersOnNegativeDamage");
+	this->AllowDamageOnSelf.Read(exINI, GameStrings::General, "AllowDamageOnSelf");
+	this->Debris_Conventional.Read(exINI, GameStrings::General, "Debris.Conventional");
+	this->Parasite_DisableParticleSystem.Read(exINI, GameStrings::CombatDamage, "Parasite.DisableParticleSystem");
+
+	this->ProjectileInterceptable.Read(exINI, GameStrings::CombatDamage, "ProjectileInterceptable");
+	this->Interceptor_GuardRange_IsCylindrical.Read(exINI, GameStrings::CombatDamage, "Interceptor.GuardRange.IsCylindrical");
+	this->Interceptor_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Interceptor.ApplyFirepowerMult");
 
 	this->SortCameoByName.Read(exINI, GameStrings::General, "SortCameoByName");
 
 	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
 
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, GameStrings::CombatDamage, "ApplyPerTargetEffectsOnDetonate");
+
+	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, GameStrings::CombatDamage, "AffectsInvokerOnly.IgnoreInvokerState");
 
 	this->BuildingRadioLink_SyncOwner.Read(exINI, GameStrings::General, "BuildingRadioLink.SyncOwner");
 
@@ -381,6 +480,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ParadropMission.Read(exINI, GameStrings::General, "ParadropMission");
 	this->AIParadropMission.Read(exINI, GameStrings::General, "AIParadropMission");
+	this->ParadropDelay.Read(exINI, GameStrings::General, "ParadropDelay");
+	this->ParadropEndDelay.Read(exINI, GameStrings::General, "ParadropEndDelay");
 
 	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
 
@@ -390,6 +491,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
+	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
 	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
 	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
@@ -407,8 +509,35 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
 
+	this->Shrapnel_AffectsGround.Read(exINI, GameStrings::CombatDamage, "Shrapnel.AffectsGround");
+	this->Shrapnel_AffectsBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.AffectsBuildings");
+	this->Shrapnel_UseWeaponTargeting.Read(exINI, GameStrings::CombatDamage, "Shrapnel.UseWeaponTargeting");
 	this->Shrapnel_IgnoreHitBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.IgnoreHitBuildings");
+	this->Shrapnel_ObeyWarheadTriggerConditions.Read(exINI, GameStrings::CombatDamage, "Shrapnel.ObeyWarheadTriggerConditions");
+
+	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "ReturnWeapon.ApplyFirepowerMult");
+
+	this->Splits_TargetingDistance_Cylindrical.Read(exINI, GameStrings::CombatDamage, "Splits.TargetingDistance.Cylindrical");
+	this->Splits_AllowRepeatTargets.Read(exINI, GameStrings::CombatDamage, "Splits.AllowRepeatTargets");
+	this->Splits_UseWeaponTargeting.Read(exINI, GameStrings::CombatDamage, "Splits.UseWeaponTargeting");
+	this->Airburst_UseCluster.Read(exINI, GameStrings::CombatDamage, "Airburst.UseCluster");
+	this->Airburst_TargetAsSource_SkipHeight.Read(exINI, GameStrings::CombatDamage, "Airburst.TargetAsSource.SkipHeight");
+	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.ApplyFirepowerMult");
+	this->AirburstWeapon_UseFiringEffects.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.UseFiringEffects");
+	this->AirburstWeapon_HeadToTarget.Read(exINI, GameStrings::CombatDamage, "AirburstWeapon.HeadToTarget");
+
+	this->AnimDamage_DealtByInvoker.Read(exINI, GameStrings::CombatDamage, "AnimDamage.DealtByInvoker");
+	this->AnimDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "AnimDamage.ApplyFirepowerMult");
+
+	this->Crit_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "Crit.ApplyChancePerTarget");
+	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, GameStrings::CombatDamage, "Crit.ExtraDamage.ApplyFirepowerMult");
+	this->Crit_AnimOnAffectedTargets.Read(exINI, GameStrings::CombatDamage, "Crit.AnimOnAffectedTargets");
+	this->Crit_SuppressWhenIntercepted.Read(exINI, GameStrings::CombatDamage, "Crit.SuppressWhenIntercepted");
+	this->ReturnWarhead_ApplyChancePerTarget.Read(exINI, GameStrings::CombatDamage, "ReturnWarhead.ApplyChancePerTarget");
+
 	this->BuildingGuardRetryDelay.Read(exINI, GameStrings::General, "BuildingGuardRetryDelay");
+
+	this->Vertical_AircraftFix.Read(exINI, GameStrings::General, "Vertical.AircraftFix");
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
@@ -418,9 +547,48 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	pThis->DeploySound = deploySound;
 
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
+	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
+
+	this->FlyNoWobbles.Read(exINI, GameStrings::AudioVisual, "FlyNoWobbles");
+
+	this->DefaultLandingAnim.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim");
+	this->DefaultLandingAnim_Dropship.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Dropship");
+	this->DefaultLandingAnim_Carryall.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Carryall");
+
+	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
+
+	char tempBuffer[40];
+	for (size_t i = 0; i < 8; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TeamDelays.Count%d", i + 1);
+		this->TeamDelays_Count[i].Read(exINI, GameStrings::General, tempBuffer);
+	}
+
+	this->BerzerkMission.Read(exINI, GameStrings::CombatDamage, "BerzerkMission");
+
+	this->BunkerStateUpdateDelay.Read(exINI, GameStrings::General, "BunkerStateUpdateDelay");
+
+	this->AllowChatBoxInSinglePlayer.Read(exINI, GameStrings::General, "AllowChatBoxInSinglePlayer");
+
+	this->NotHuman_RandomDeathSequence.Read(exINI, GameStrings::General, "NotHuman.RandomDeathSequence");
+	this->OnlyUseLandSequences.Read(exINI, GameStrings::General, "OnlyUseLandSequences");
+	this->SecondaryFireSequenceLandOnly.Read(exINI, GameStrings::General, "SecondaryFireSequenceLandOnly");
+	this->AutoRemoveEarliestBeacon.Read(exINI, GameStrings::General, "AutoRemoveEarliestBeacon");
+	this->AllowBeaconHotKeyInSinglePlayer.Read(exINI, GameStrings::General, "AllowBeaconHotKeyInSinglePlayer");
+	this->StartFacing.Read(exINI, GameStrings::General, "BuildingStartFacing");
+	this->StartFacing_Random.Read(exINI, GameStrings::General, "BuildingStartFacing.Random");
+
+	this->AutoDeath_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.AllowLimboed");
+	this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Read(exINI, GameStrings::CombatDamage, "AutoDeath.OnOwnerChange.IgnoreRevertOnExit");
+	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.TechnosDontExist.AllowLimboed");
+	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, GameStrings::CombatDamage, "AutoDeath.TechnosExist.AllowLimboed");
+
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exINI, GameStrings::AudioVisual, "AircraftDockingDir.DefaultToPoseDir");
+	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
+	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -523,6 +691,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldApplyArmorMult)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->VeinholeWarhead)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
@@ -558,12 +727,44 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HeightShadowScaling_MinScale)
 		.Process(this->ExtendedAircraftMissions)
 		.Process(this->ExtendedAircraftMissions_UnlandDamage)
+		.Process(this->AircraftSpawnFromEdge)
+		.Process(this->AircraftRetreatToEdge)
 		.Process(this->AmphibiousEnter)
 		.Process(this->AmphibiousUnload)
 		.Process(this->NoQueueUpToEnter)
+		.Process(this->NoQueueUpToEnter_BoardDistance)
 		.Process(this->NoQueueUpToUnload)
 		.Process(this->NoQueueUpToEnter_Buildings)
 		.Process(this->NoQueueUpToUnload_Buildings)
+		.Process(this->JumpjetTilt)
+		.Process(this->JumpjetTilt_ForwardAccelFactor)
+		.Process(this->JumpjetTilt_ForwardSpeedFactor)
+		.Process(this->JumpjetTilt_SidewaysRotationFactor)
+		.Process(this->JumpjetTilt_SidewaysSpeedFactor)
+		.Process(this->Spawner_AttackImmediately)
+		.Process(this->Spawner_UseTurretFacing)
+		.Process(this->Spawner_RecycleRange)
+		.Process(this->Spawner_RecycleOnTurret)
+		.Process(this->Promote_IncludeSpawns)
+		.Process(this->RadarJamHouses)
+		.Process(this->RadarJamDelay)
+		.Process(this->MindControl_IgnoreSize)
+		.Process(this->MultiMindControl_ReleaseVictim)
+		.Process(this->MindControlLink_VisibleToHouse)
+		.Process(this->AlternateFLH_OnTurret)
+		.Process(this->AlternateFLH_ApplyVehicle)
+		.Process(this->DestroyAnim_Random)
+		.Process(this->UseDisguiseMovementSpeed)
+		.Process(this->Convert_ResetMindControl)
+		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
+		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
+		.Process(this->ForceWeapon_InRange_TechnoOnly)
+		.Process(this->ForceWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+		.Process(this->Overload_ParticleSysCount)
+		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_AllowEMP)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
@@ -587,6 +788,18 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->AirstrikeLineZAdjust)
+		.Process(this->Strafing_SimulateBurst)
+		.Process(this->Strafing_UseAmmoPerShot)
+		.Process(this->Strafing_TargetCell)
+		.Process(this->OmniFire_TurnToTarget)
+		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->KeepRange_AllowAI)
+		.Process(this->KeepRange_AllowPlayer)
+		.Process(this->KeepRange_EarlyStopFrame)
+		.Process(this->AircraftWeapon_KickOutPassengers)
+		.Process(this->CrushSlowdownMultiplier)
+		.Process(this->SkipCrushSlowdown)
+		.Process(this->LaserPositionUpdate_StopOnFirerConvert)
 		.Process(this->LaserZAdjust)
 		.Process(this->EBoltZAdjust)
 		.Process(this->EBoltZAdjust_ClampInitialDepthForBuilding)
@@ -608,7 +821,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->SetTabBySelectingFactory)
 		.Process(this->SelectionFlashDuration)
+		.Process(this->SetRecruitableOnLiberate)
 		.Process(this->DrawInsignia_OnlyOnSelected)
 		.Process(this->DrawInsignia_AdjustPos_Infantry)
 		.Process(this->DrawInsignia_AdjustPos_Buildings)
@@ -710,18 +925,55 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
+		.Process(this->Parasite_AllowWaterExit)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
 		.Process(this->IvanBombAttachToCenter)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
-		.Process(this->OpenTopped_DecloakToFire)
+		.Process(this->ReloadInTransport)
+		.Process(this->OpenTopped_IgnoreRangefinding)
+		.Process(this->OpenTopped_AllowFiringIfDeactivated)
 		.Process(this->OpenTopped_AllowFiringIfAttackedByLocomotor)
+		.Process(this->OpenTopped_ShareTransportTarget)
+		.Process(this->OpenTopped_UseTransportRangeModifiers)
+		.Process(this->OpenTopped_CheckTransportDisableWeapons)
+		.Process(this->OpenTopped_DecloakToFire)
+		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTransport_RangeBonus)
+		.Process(this->OpenTransport_DamageMultiplier)
+		.Process(this->OpenTransport_FireWhileMoving)
+		.Process(this->Passengers_SyncOwner)
+		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->Explodes_KillPassengers)
+		.Process(this->Explodes_DuringBuildup)
+		.Process(this->AircraftFiringForceScatter)
+		.Process(this->HoverDrownable)
+		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Terrain_IsPassable)
+		.Process(this->Tibtree_IsPassable)
+		.Process(this->Terrain_CanBeBuiltOn)
+		.Process(this->Tibtree_CanBeBuiltOn)
+		.Process(this->Sinkable)
+		.Process(this->Sinkable_SquidGrab)
+		.Process(this->SinkSpeed)
+		.Process(this->CreateAnimsOnZeroDamage)
+		.Process(this->Conventional_IgnoreUnits)
+		.Process(this->DecloakDamagedTargets)
+		.Process(this->ShakeIsLocal)
+		.Process(this->ApplyModifiersOnNegativeDamage)
+		.Process(this->AllowDamageOnSelf)
+		.Process(this->Debris_Conventional)
+		.Process(this->Parasite_DisableParticleSystem)
+		.Process(this->ProjectileInterceptable)
+		.Process(this->Interceptor_GuardRange_IsCylindrical)
+		.Process(this->Interceptor_ApplyFirepowerMult)
 		.Process(this->SortCameoByName)
 		.Process(this->MergeBuildingDamage)
 		.Process(this->BuildingRadioLink_SyncOwner)
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
+		.Process(this->AffectsInvokerOnly_IgnoreInvokerState)
 		.Process(this->ExtraRange_TargetMoving)
 		.Process(this->ExtraRange_TargetMoving_CloseRangeOnly)
 		.Process(this->ExtraRange_FirerMoving)
@@ -731,10 +983,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoTargetAI_NoThreatBuildings)
 		.Process(this->ParadropMission)
 		.Process(this->AIParadropMission)
+		.Process(this->ParadropDelay)
+		.Process(this->ParadropEndDelay)
 		.Process(this->DefaultToGuardArea)
+		.Process(this->LeptonMindControlOffset)
+		.Process(this->MindControlRingOffset)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
+		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
 		.Process(this->DisableOveroptimizationInTargeting)
 		.Process(this->ExtraThreat_IsThreat)
@@ -749,14 +1006,59 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
+		.Process(this->Shrapnel_AffectsGround)
+		.Process(this->Shrapnel_AffectsBuildings)
+		.Process(this->Shrapnel_UseWeaponTargeting)
 		.Process(this->Shrapnel_IgnoreHitBuildings)
+		.Process(this->Shrapnel_ObeyWarheadTriggerConditions)
+		.Process(this->ReturnWeapon_ApplyFirepowerMult)
+		.Process(this->Splits_TargetingDistance_Cylindrical)
+		.Process(this->Splits_AllowRepeatTargets)
+		.Process(this->Splits_UseWeaponTargeting)
+		.Process(this->Airburst_UseCluster)
+		.Process(this->Airburst_TargetAsSource_SkipHeight)
+		.Process(this->AirburstWeapon_ApplyFirepowerMult)
+		.Process(this->AirburstWeapon_UseFiringEffects)
+		.Process(this->AirburstWeapon_HeadToTarget)
+		.Process(this->AnimDamage_DealtByInvoker)
+		.Process(this->AnimDamage_ApplyFirepowerMult)
+		.Process(this->Crit_ApplyChancePerTarget)
+		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
+		.Process(this->Crit_AnimOnAffectedTargets)
+		.Process(this->Crit_SuppressWhenIntercepted)
+		.Process(this->ReturnWarhead_ApplyChancePerTarget)
 		.Process(this->BuildingGuardRetryDelay)
+		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
+		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
-		;
+		.Process(this->FlyNoWobbles)
+		.Process(this->DefaultLandingAnim)
+		.Process(this->DefaultLandingAnim_Dropship)
+		.Process(this->DefaultLandingAnim_Carryall)
+		.Process(this->TeamDelays_DynamicType)
+		.Process(this->TeamDelays_Count)
+		.Process(this->BerzerkMission)
+		.Process(this->BunkerStateUpdateDelay)
+		.Process(this->AllowChatBoxInSinglePlayer)
+		.Process(this->NotHuman_RandomDeathSequence)
+		.Process(this->OnlyUseLandSequences)
+		.Process(this->SecondaryFireSequenceLandOnly)
+		.Process(this->AutoRemoveEarliestBeacon)
+		.Process(this->AllowBeaconHotKeyInSinglePlayer)
+		.Process(this->StartFacing)
+		.Process(this->StartFacing_Random)
+		.Process(this->AutoDeath_AllowLimboed)
+		.Process(this->AutoDeath_OnOwnerChange_IgnoreRevertOnExit)
+		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
+		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
+		.Process(this->PoseDir_Production)
+		.Process(this->PoseDir_Field)
+    ;
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -940,6 +1242,7 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+	pRulesExt->JumpjetRotateOnCrash.Read(exINI, GameStrings::JumpjetControls, "RotateOnCrash");
 
 	return 0;
 }

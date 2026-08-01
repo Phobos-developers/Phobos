@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Building/Body.h>
 
@@ -17,12 +15,12 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+		auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-		if (!pTypeExt->OpenTopped_IgnoreRangefinding && pTypeExt->OwnerObject()->OpenTopped)
+		if (!pTypeExt->OpenTopped_IgnoreRangefinding.Get(RulesExt::Global()->OpenTopped_IgnoreRangefinding) && pTypeExt->OwnerObject()->OpenTopped)
 		{
 			int smallestRange = INT32_MAX;
-			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.GetFirstPassenger());
+			auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 			while (pPassenger)
 			{
@@ -75,13 +73,13 @@ static bool IsMovingFire(TechnoClass* pThis)
 
 static bool IsPrefiring(TechnoClass* pThis, WeaponTypeClass* pWeapon)
 {
-	const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pTypeExt = WeaponTypeExt::Fetch(pWeapon);
 	const int currentBurst = pThis->CurrentBurstIndex % pWeapon->Burst;
 
 	if (pTypeExt->ExtraRange_Prefiring_IncludeBurst.Get(RulesExt::Global()->ExtraRange_Prefiring_IncludeBurst) && currentBurst != 0)
 		return true;
 
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTechnoExt = TechnoExt::Fetch(pThis);
 
 	if (pTechnoExt->DelayedFireTimer.InProgress())
 		return true;
@@ -117,7 +115,7 @@ static bool IsPrefiring(TechnoClass* pThis, WeaponTypeClass* pWeapon)
 	case AbstractType::Building:
 	{
 		const auto pBuilding = static_cast<BuildingClass*>(pThis);
-		const auto pExt = BuildingExt::ExtMap.Find(pBuilding);
+		const auto pExt = BuildingExt::Fetch(pBuilding);
 		return pBuilding->DelayBeforeFiring || pExt->IsFiringNow;
 	}
 	case AbstractType::Infantry:
@@ -150,7 +148,7 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 
 		if (range != -512)
 		{
-			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pExt = WeaponTypeExt::Fetch(pWeapon);
 			const auto prefiringExtraRange = pExt->ExtraRange_Prefiring.Get(RulesExt::Global()->ExtraRange_Prefiring);
 
 			if (prefiringExtraRange && IsPrefiring(pThis, pWeapon))

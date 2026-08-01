@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 15:04+0800\n"
+"POT-Creation-Date: 2026-07-26 06:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,9 @@ msgstr "为地图光照重绘时的建筑光源问题修复添加开关"
 
 msgid "Voxel drawing invisible sections skip"
 msgstr "跳过 Voxel 不可见组件的绘制"
+
+msgid "Animatable template"
+msgstr "动画化模版"
 
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**Uranusian (Thrifinesma)**："
@@ -710,8 +713,8 @@ msgstr "在运输工具内重装填弹药"
 msgid "Straight projectile trajectory additions"
 msgstr "直线抛射体弹道补充"
 
-msgid "Airstrike & spy plane fixed spawn distance & height"
-msgstr "空袭与间谍飞机固定生成距离与高度"
+msgid "Reinforcement plane (paradrop, spy plane, airstrike) spawn customizations"
+msgstr "援军飞机（伞兵、间谍飞机、空袭）创建的自定义"
 
 msgid "Negative damage `Verses/PercentAtMax` toggle"
 msgstr "负值伤害 `Verses/PercentAtMax` 开关"
@@ -752,6 +755,9 @@ msgstr "Attach Effect"
 msgid "Air unit tracking fix for large range / `CellSpread`"
 msgstr "大范围目标检索和 `CellSpread` 对空中单位的追踪"
 
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 `ZAdjust`"
+
 msgid "Extra tint intensity for Iron Curtain & Force Shield"
 msgstr "铁幕和力场护盾的额外染色强度"
 
@@ -789,6 +795,9 @@ msgstr "重新实现 `Airburst` 与 `Splits` 逻辑以提供更多自定义选�
 
 msgid "Buildings considered as destroyable pathfinding obstacles"
 msgstr "建筑物视为可破坏的寻路障碍物"
+
+msgid "Animation transparency customization settings"
+msgstr "自定义动画透明度设置"
 
 msgid "Animation visibility customization settings"
 msgstr "自定义动画可见性设置"
@@ -852,8 +861,8 @@ msgstr "定义单位是否不参与基地中心计算"
 msgid "Deploy priority filtering"
 msgstr "低优先级部署"
 
-msgid "Customizable paradrop missions"
-msgstr "自定义空降单位任务"
+msgid "Customizable paradrop missions and delay"
+msgstr "自定义空降的任务和间隔"
 
 msgid "Guard range customizations"
 msgstr "自定义警戒范围"
@@ -879,8 +888,13 @@ msgid "Armed building guard mission retry delay customization"
 msgstr "武装建筑警戒任务重试间隔的自定义"
 
 msgid "Building turret idle/firing/low power animations"
-msgstr ""
-"建筑炮塔的闲置／开火／低功率动画"
+msgstr "建筑炮塔的闲置／开火／断电动画"
+
+msgid "Animation theater/tile palette toggle"
+msgstr "动画使用气候／地块色盘的开关"
+
+msgid "Tank Bunker improvements"
+msgstr "坦克碉堡改进"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1154,6 +1168,9 @@ msgstr "允许在战役模式中由其他被玩家控制的所属方拾取到的
 msgid "Misc code refactor & maintenance, CN doc fixes, bugfixes"
 msgstr "各种代码重构与维护、中文文档修正、错误修复"
 
+msgid "Show game time"
+msgstr "显示游戏时间"
+
 msgid "**FlyStar**:"
 msgstr "**FlyStar**："
 
@@ -1289,13 +1306,11 @@ msgid ""
 "bunker"
 msgstr "修复了矿车离开坦克碉堡后无法移动的问题"
 
-#, fuzzy
 msgid ""
 "Fix the bug in AI scripts 56 and 57 that forced the launch of "
 "superweapons with index numbers 3 and 4"
 msgstr "修复了 56 和 57 号 AI 动作脚本强制发射注册索引 3 和 4 的超武的 Bug"
 
-#, fuzzy
 msgid ""
 "Fix an issue where parachute units would die upon landing if bridges were"
 " destroyed during their descent"
@@ -1795,6 +1810,30 @@ msgstr "允许 `Temporal` 弹头应用比率和加成"
 msgid "Fix the bug that techno will get stuck if change owner in tunnel"
 msgstr "修复了科技类型在隧道中变更所属方会导致卡住的 Bug"
 
+msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
+msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug"
+
+msgid ""
+"Fix the issue that `NoQueueUpToEnter` will clear passenger's planning "
+"tokens when entered transport"
+msgstr "修复了 `NoQueueUpToEnter` 会在乘客进入载具时清除计划节点的问题"
+
+msgid ""
+"Fix incorrect shadow rendering positions for non-Aircraft units with "
+"`Locomotor=Fly`, and for Aircraft units being dragged by warheads with "
+"`IsLocomotor=yes`"
+msgstr ""
+"修复了 `Locomotor=Fly` 的非 Aircraft 单位与被 `IsLocomotor=yes` 弹头拖拽的 Aircraft "
+"单位阴影绘制位置不正确的问题"
+
+msgid "Customize crash spin multiplier"
+msgstr "自定义坠毁旋转倍率"
+
+msgid ""
+"Fix the bug that technos do not reset their link with the linked building"
+" when deactivated"
+msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1898,6 +1937,14 @@ msgid ""
 "Adjust the dehardcoding of the 255 `OverlayType` limit to a different "
 "format"
 msgstr "将 255 种覆盖物数量限制解编码方式调整为使用一种不同的格式"
+
+msgid "Extension system rework"
+msgstr "扩展系统重置"
+
+msgid ""
+"New exception handler with a crash dialog, crash report and minidumps "
+"(ported from Vinifera)"
+msgstr "带有崩溃对话框、崩溃报告和小型转储的新版异常处理程序（移植自 Vinifera）"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
@@ -2153,6 +2200,255 @@ msgid ""
 "techno lose 1 health"
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug"
 
+msgid "RA1-Style multi-turret and multi-barrel"
+msgstr "RA1 风格多炮塔与多炮管"
+
+msgid "**Noble Fish**:"
+msgstr "**Noble_Fish**："
+
+msgid "Documentation maintenance"
+msgstr "文档维护工作"
+
+msgid "Chinese documentation maintenance and translation"
+msgstr "中文文档维护和翻译"
+
+msgid "Established Community Chinese docs"
+msgstr "创建了社区中文文档"
+
+msgid "Took over and completely rewrite the Official Chinese docs during Build#46"
+msgstr "在 Build#46 接管并完全重写了官方中文文档"
+
+msgid ""
+"Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` "
+"instead of `TXT_DISPLAY_DAMAGE_DESC`"
+msgstr ""
+"修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
+"`TXT_FRAME_BY_FRAME_DESC` 的问题"
+
+msgid ""
+"Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that "
+"was erroneously introduced by Phobos"
+msgstr "移除 Phobos 错误引入的 `NoSecondaryWeaponFallback` 与墙交互硬编码"
+
+msgid "Fix a read bug when setting the SHP file name in INI"
+msgstr "修复了一个在 INI 中设置 SHP 文件名的读取 Bug"
+
+msgid ""
+"Unify the messy tag names such as "
+"`xxx.(AffectHouse/AffectsHouses/AffectedHouse)` and improve tag names "
+"like `AutoFire`"
+msgstr ""
+"统一 `xxx.(AffectHouse/AffectsHouses/AffectedHouse)` 等混乱的标签名并改进例如 "
+"`AutoFire` 等标签名"
+
+msgid ""
+"Add compatibility for deprecated tag names and output warnings to avoid "
+"breaking the normal operation of existing Mods"
+msgstr "为被弃用的标签名添加兼容并输出警告以避免破坏现有 Mod 的正常运行"
+
+msgid "Implement `CurleyShuffle` for AircraftTypes (ported from Vinifera)"
+msgstr "实现战机微观 `CurleyShuffle` 设置（移植自 Vinifera）"
+
+msgid "Fix the bug where warhead flags are read twice"
+msgstr "修复了弹头标签被读取两次的 Bug"
+
+msgid ""
+"Fix an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement"
+msgstr "修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题"
+
+msgid ""
+"Extend the Harvester counter color definition and standardize the "
+"variable names"
+msgstr "拓展矿车计数器颜色定义并标准化相关变量名"
+
+msgid ""
+"Fix a bug where a unit's turrets would also get locked when the unit "
+"became deactivated for reasons other than being under EMP"
+msgstr "修复了由于非 EMP 原因而进入瘫痪状态的单位其炮塔也同样会被锁死的 Bug"
+
+msgid ""
+"Allows defining whether passengers of an OpenTopped transport unit can "
+"fire when it is affected by a locomotor warhead"
+msgstr "允许定义 OpenTopped 运输工具被运动模式弹头牵引时其乘客能否开火"
+
+msgid "Customize `HarvesterLoadRate`"
+msgstr "自定义 `HarvesterLoadRate`"
+
+msgid ""
+"Fix the bug where the `.SubjectToGround` of the Trajectory type did not "
+"consider bridges"
+msgstr "修复了新类型弹道的 `.SubjectToGround` 未考虑桥梁的 Bug"
+
+msgid "Customize `HarvesterDumpRate`"
+msgstr "自定义 `HarvesterDumpRate`"
+
+msgid "Allow users to define the time interval of `DisplayIncome`"
+msgstr "允许用户定义 `DisplayIncome` 的时间间隔"
+
+msgid "Electric bolt Z-adjust"
+msgstr "自定义 EBolt 的 Z 深校正值"
+
+msgid ""
+"Allow disabling the processing of the Z-depth of EBolt drawn by "
+"BuildingType being clamped to non-positive numbers"
+msgstr "允许禁用由建筑绘制的 EBolt 其 Z 深被钳位到非正数的处理"
+
+msgid ""
+"Add the `Bolt.ZAdjust` setting item to the LaserTrailType with "
+"`DrawType=ebolt`"
+msgstr "为拥有 `DrawType=ebolt` 的激光尾迹类型添加 `Bolt.ZAdjust` 设置项"
+
+msgid ""
+"Fix the bug where `WeaponRange.AllowWeapons` and "
+"`WeaponRange.DisallowWeapons` only support weapons listed in the "
+"`[WeaponTypes]` list"
+msgstr ""
+"修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 "
+"`[WeaponTypes]` 注册的武器这一 Bug"
+
+msgid ""
+"Fix a bug where stationary vehicles would also block movement caused by "
+"external factors"
+msgstr "修复了 *静止的载具* 也会阻碍外部力量引发移动的 Bug"
+
+msgid ""
+"Fix the Phobos bug where visual effect drawing does not respect "
+"`[BuildingType] -> TargetCoordOffset`"
+msgstr "修复了视觉效果绘制不尊重 `[BuildingType] -> TargetCoordOffset` 的 Phobos bug"
+
+msgid ""
+"Allow *Harvester counter* to display only the total number or the number "
+"currently working"
+msgstr "允许 *矿车计数器* 只显示总数或正在工作的数量"
+
+msgid ""
+"Allow users to customize whether the movement state check depends on the "
+"destination for the `DiscardOn=move` condition of AE to support more "
+"usage scenarios"
+msgstr "允许用户自定义移动状态检查是否取决于有无目的地以允许 AE 的 `DiscardOn=move` 条件支持更多使用场景"
+
+msgid ""
+"Restore the original Tiberian Sun behavior of playing the `[AudioVisual] "
+"-> DeploySound=` sound effect when clicking the sidebar to execute "
+"`Deploy`"
+msgstr "复原了点击底边栏执行 `Deploy` 时播放 `[AudioVisual] -> DeploySound=` 音效的《泰伯利亚之日》原有行为"
+
+msgid ""
+"Allow `RemoveMindControl` and `MindControl.Permanent` warheads to mute "
+"`MindClearedSound`"
+msgstr "允许 `RemoveMindControl` 和 `MindControl.Permanent` 弹头屏蔽 `MindClearedSound`"
+
+msgid "Introduce weight selection rules for ExtraWarheads"
+msgstr "为额外弹头引入权重选取规则"
+
+msgid "Add action `512 Set Follower for Associated Unit...`"
+msgstr "添加触发结果 `512 设置关联单位的跟随目标...`"
+
+msgid "Dehardcode of parasites unlimboing after killing naval targets"
+msgstr "寄生击杀水上目标后刷出的自定义"
+
+msgid "Allow warhead to only affect invoker"
+msgstr "允许弹头仅影响调用者"
+
+msgid ""
+"Allow customizing whether the creation of shrapnel weapon is controlled "
+"by the new target check on the warhead of the parent weapon"
+msgstr "允许自定义溅射子武器的创建是否受上级武器弹头上的新增目标检查控制"
+
+msgid "Customize `Tiled` drawing interval and centering"
+msgstr "自定义 `Tiled` 绘制间隔和中心对齐"
+
+msgid "Customize whether technos with `Locomotor=Fly` wobble"
+msgstr "自定义 `Locomotor=Fly` 的单位是否上下浮动"
+
+msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
+msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
+
+msgid ""
+"Allow infantry to use `Convert.Deploy` without requiring "
+"`IsSimpleDeployer=true`"
+msgstr "允许了步兵使用 `Convert.Deploy` 而无需 `IsSimpleDeployer=true`"
+
+msgid "Allow infantry to perform type conversion when deploying and undeploying"
+msgstr "允许步兵在部署与反部署时执行类型转换"
+
+msgid "Custom cruise missiles"
+msgstr "自定义巡航导弹"
+
+msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
+msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+
+msgid "Customize the step limit of the credits indicator"
+msgstr "自定义资金示数器步长上限"
+
+msgid "Disable the credits indicator smooth transition"
+msgstr "禁用资金示数器平滑渐变"
+
+msgid "Add `selling`, `undeploying` and `harvesting` conditions to `DiscardOn`"
+msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
+
+msgid "`ZAdjust` for Projectiles"
+msgstr "抛射体的 `ZAdjust`"
+
+msgid "Allow Laser drawing position update"
+msgstr "允许激光绘制位置更新"
+
+msgid ""
+"Customize the distance for `NoQueueUpToEnter` transport units to board "
+"passengers"
+msgstr "自定义 `NoQueueUpToEnter` 运输工具搭载乘客的距离"
+
+msgid ""
+"Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
+" immediately when attacking"
+msgstr "修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
+
+msgid "Customize the initial facing of buildings"
+msgstr "自定义建筑初始方向"
+
+msgid ""
+"Global default value for `LeptonMindControlOffset` and "
+"`MindControlRingOffset`"
+msgstr "`LeptonMindControlOffset` 和 `MindControlRingOffset` 的全局默认值"
+
+msgid ""
+"Add a defining for the auto death effect on whether it can trigger when "
+"in Limbo state"
+msgstr "为自毁效果能否在虚拟化状态时触发的定义"
+
+msgid ""
+"Customize whether `Passengers.SyncOwner.RevertOnExit` triggers "
+"`AutoDeath.OnOwnerChange`"
+msgstr "自定义 `Passengers.SyncOwner.RevertOnExit` 是否触发 `AutoDeath.OnOwnerChange`"
+
+msgid ""
+"Fix a bug where passengers created by the InitialPayload logic or "
+"TeamType with `Full=true` would fail to execute the auto death logic"
+msgstr "修复了由初始载员逻辑或勾选了 `预装载小队` 的作战小队创建的乘客无法执行自毁逻辑的 Bug"
+
+msgid ""
+"Provide a toggle for whether the landing direction in default scenarios "
+"does not use the building direction but follows `[AudioVisual] -> "
+"PoseDir`"
+msgstr "为默认情景下的降落方向是否不使用建筑方向而是跟随 `[AudioVisual] -> PoseDir` 提供开关"
+
+msgid ""
+"Separate the definitions of default direction for aircraft production and"
+" landing in the field"
+msgstr "分离定义战机生产和在野地降落的默认方向"
+
+msgid ""
+"Fix the bug where incorrect calculation of `[AudioVisual] -> PoseDir` "
+"caused the landing direction of aircraft to behave incorrectly under "
+"vanilla configuration"
+msgstr "修复了对 `[AudioVisual] -> PoseDir` 计算错误导致原版配置下战机降落方向表现错误的 Bug"
+
+msgid ""
+"Fix the bug where landing direction cannot be correctly converted when "
+"set to a value exceeding 256"
+msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2225,6 +2521,14 @@ msgid ""
 "`ElectricAssault` weapons can now auto acquire allies' overpowerable "
 "defenses"
 msgstr "`ElectricAssault` 武器现在可以自动索敌盟友的可过载防御建筑"
+
+msgid "Dynamic team delays"
+msgstr "动态 `TeamDelays`"
+
+msgid ""
+"Customize whether or not passenger can fire out when the transport is "
+"moving"
+msgstr "自定义乘客能否在运输工具移动时向外开火"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -2482,12 +2786,6 @@ msgid ""
 "multiple targets with the same amount of threat"
 msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不断切换的问题"
 
-msgid ""
-"Fix an issue where units recruited by a team with "
-"`AreTeamMembersRecruitable=false` cannot be recruited even if they have "
-"been liberated by that team"
-msgstr "修复了单位被 `AreTeamMembersRecruitable=false` 的小队招募过则即便原小队解散也无法再被其他小队招募的 Bug"
-
 msgid "Global default value for `DefaultToGuardArea`"
 msgstr "`DefaultToGuardArea` 的全局默认值"
 
@@ -2529,6 +2827,9 @@ msgstr "额外威胁"
 
 msgid "Fix the incorrect mission switching in infantry EnterIdleMode"
 msgstr "修复了步兵进入闲置状态时的错误任务切换"
+
+msgid "Customizable Berzerk mission"
+msgstr "可自定义的混乱任务"
 
 msgid ""
 "Fix the issue that `BombSight` not being updated correctly in techno "
@@ -2572,6 +2873,24 @@ msgstr "修复了 Voxel 抛射体和动画的光照问题"
 msgid "Export interface for external call"
 msgstr "用于外部调用的导出接口"
 
+msgid "Allow chat box in singleplayer"
+msgstr "允许在单人模式使用聊天框"
+
+msgid "Auto-remove earliest beacon"
+msgstr "自动移除最早的信标"
+
+msgid "Allow beacon placement hotkey in single player"
+msgstr "允许在单人模式下使用信标放置快捷键"
+
+msgid "Adjust recruitable status on team member discharge"
+msgstr "小队成员解散时调整可招募性"
+
+msgid "Fix the issue that spawner or slave would execute some player commands"
+msgstr "修正子机或奴隶会执行部分玩家指令的问题"
+
+msgid "Customize whether aircraft is a cargo plane"
+msgstr "自定义飞机是否是cargo plane"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2589,6 +2908,9 @@ msgstr "为 AE 系统添加目标过滤选项"
 
 msgid "Add veterancy-based target filtering for weapons and warheads"
 msgstr "为武器和弹头添加基于经验等级的目标过滤"
+
+msgid "Recipient-specific message and EVA on superweapon activation"
+msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
@@ -2643,16 +2965,6 @@ msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
 
 msgid ""
-"**[Vinifera Contributors](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**:"
-msgstr ""
-"**[Vinifera 贡献者](https://github.com/Vinifera-"
-"developers/Vinifera/blob/develop/CREDITS.md)**："
-
-msgid "Implement `CurleyShuffle` for AircraftTypes"
-msgstr "实现战机微观 `CurleyShuffle` 设置"
-
-msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "Digital Display"
 msgstr ""
@@ -2670,14 +2982,6 @@ msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
-
-msgid ""
-"**Noble Fish** - some minor improvements and fixes, established Community"
-" Chinese docs, took over and completely rewrite the Official Chinese docs"
-" during Build#46"
-msgstr ""
-"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）"
 
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
@@ -2779,4 +3083,15 @@ msgid ""
 "Fix for units with Fly, Jumpjet or Rocket locomotors crashing off-map not"
 " being cleaned up"
 msgstr "修复了 `Locomotor` 为 `Fly`、`Jumpjet` 或 `Rocket` 的单位在地图外坠毁时未能清除的问题"
+
+msgid "**Chang_zhi**:"
+msgstr "**Chang_zhi**："
+
+msgid "Interop export interface for accessing scenario local/global variables"
+msgstr "用于访问扩展局部变量和全局变量的外部调用接口"
+
+msgid ""
+"Add `ClampToScreen` tag for `BannerType` to control whether banner "
+"position is clamped to the visible area"
+msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
 

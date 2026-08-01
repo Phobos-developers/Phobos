@@ -1,40 +1,45 @@
 #pragma once
 #include <TiberiumClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class TiberiumExt
+class TiberiumExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TiberiumClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TiberiumExt;
+
 	static constexpr DWORD Canary = 0xAABBCCDD;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<TiberiumClass>
+public:
+	// typed owner accessor
+	TiberiumClass* OwnerObject() const
 	{
-	public:
-		Nullable<ColorStruct> MinimapColor;
+		return static_cast<TiberiumClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(TiberiumClass* OwnerObject) : Extension<TiberiumClass>(OwnerObject)
-			, MinimapColor {}
-		{ }
+	Nullable<ColorStruct> MinimapColor;
 
-		virtual ~ExtData() = default;
+	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, MinimapColor {}
+	{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual ~TiberiumExt() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<TiberiumExt>
 	{
 	public:
@@ -44,6 +49,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static TiberiumExt* Fetch(const TiberiumClass* pThis)
+	{
+		return AbstractExt::Fetch<TiberiumExt>(pThis);
+	}
+
+	static TiberiumExt* TryFetch(const TiberiumClass* pThis)
+	{
+		return AbstractExt::TryFetch<TiberiumExt>(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+
