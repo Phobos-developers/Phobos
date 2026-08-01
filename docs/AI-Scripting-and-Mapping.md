@@ -709,6 +709,24 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `600` Configure Drop Crate
+- Set or overwrite the `DropCrate` of the affected objects.
+- Only functions when used as attached triggers within objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],600,0,[Behaviour],[index of the powerup],0,0,0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*               |
+| :---------: | :-------------------------: |
+| -1          | Use default Techno settings |
+| 0           | Clear `DropCrate` type      |
+| 1           | Overwrite `DropCrate` type  |
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
