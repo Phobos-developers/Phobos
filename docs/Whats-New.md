@@ -826,6 +826,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType (by Starkku)
+- Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 ```
 
 ### 0.4.0.3

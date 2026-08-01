@@ -381,6 +381,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
+- Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 
 ## Newly added global settings
 
