@@ -23,17 +23,19 @@ git submodule update --init --recursive
 | Config | Command | Output |
 |--------|---------|--------|
 | Debug (recommended for dev) | `scripts\build_debug.bat` | `Debug\Phobos.dll` + `.pdb` |
-| DevBuild (CI nightly) | `scripts\build_devbuild.bat` | `DevBuild\Phobos.dll` + `.pdb` |
 | Release | `scripts\build_release.bat` | `Release\Phobos.dll` + `.pdb` |
+| Release, stamped as a pre-release | `scripts\build_prerelease.bat` | `Release\Phobos.dll` + `.pdb` |
+
+There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly, pre-release or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY`, `PRERELEASE` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build.
 
 These scripts invoke `scripts\run_msbuild.bat`, which locates the VS Developer Command Prompt via `vswhere.exe` (bundled in `scripts/`), then runs `msbuild`. **VS 2022 or VS Build Tools 2022** with the components listed in `.vsconfig` must be installed:
 - `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`
 - `Microsoft.VisualStudio.Component.Windows10SDK.20348`
 - `Microsoft.VisualStudio.Component.VC.ATL`
 
-**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/DevBuild/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
+**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
 
-**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/DevBuild/Release). The batch scripts are not needed when building from VS.
+**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/Release). The batch scripts are not needed when building from VS.
 
 The build takes roughly 1–3 minutes for a full rebuild. Incremental builds are much faster. To clean:
 ```
@@ -42,16 +44,16 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **DevBuild** config with MSBuild, passing `/p:GitCommit=<sha> /p:GitBranch=<ref>` for version stamping. The agent should replicate the CI as:
+The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:GitCommit=<sha> /p:GitBranch=<ref>` for version stamping and `/p:BuildType=<type>` for the build type. The agent should replicate the CI as:
 ```
-msbuild /m /p:Configuration=DevBuild Phobos.sln
+msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```
 
 ## Tests & Validation
 
 There is **no automated test suite**. Validation is:
 1. **Successful compilation** with zero errors (warning level 4, but not treated as errors).
-2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds DevBuild config).
+2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds the Release config as a nightly).
 3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - unless the PR has the `No Documentation Needed` label, these files must be modified:
    - `docs/Whats-New.md` (changelog entry)
    - `CREDITS.md` (credit entry; skipped if the `Bugfix` label is set)
