@@ -49,6 +49,9 @@ This page describes all the engine features that are either new and introduced b
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
     - `ArmorMultiplier.AllowWarheads` and `ArmorMultiplier.DisallowWarheads` can be used to restrict which Warheads the armor multiplier is applied to when dealing damage.
+    - `ArmorMultiplier.Chance` can be used to set the chance of whether the armor multiplier will take effect or not when taking damage.
+    - `ArmorMultiplier.AffectsHouse` can be used to set which houses the armor multiplier will take effect.
+    - `ArmorMultiplier.HitAnim` can be used to set the animation that'll be played when taking damage. Won't be displayed if the armor multiplier doesn't take effect due to `ArmorMultiplier.Allow/DisallowWarheads`, `ArmorMultiplier.Chance` or `ArmorMultiplier.AffectsHouse` settings. If more than one animation is listed, a random one is selected.
     - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
@@ -137,6 +140,9 @@ FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
 ArmorMultiplier.AllowWarheads=                     ; List of WarheadTypes
 ArmorMultiplier.DisallowWarheads=                  ; List of WarheadTypes
+ArmorMultiplier.Chance=1.0                         ; floating point value
+ArmorMultiplier.AffectsHouse=all                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ArmorMultiplier.HitAnim=                           ; List of AnimationTypes
 SpeedMultiplier=1.0                                ; floating point value
 ROFMultiplier=1.0                                  ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
