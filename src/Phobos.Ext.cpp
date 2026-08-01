@@ -403,6 +403,14 @@ DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 	return 0;
 }
 
+std::unordered_map<void*, std::weak_ptr<void>> SavegameGlobal::GlobalSharedRegistry;
+
+DEFINE_HOOK(0x67F7C8, LoadGame_ClearShared, 0x5)
+{
+	SavegameGlobal::ClearSharedRegistry();
+	return 0;
+}
+
 DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));

@@ -14,6 +14,9 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
+	if (BulletExt::Fetch(pBullet)->Status & TrajectoryStatus::Vanish)
+		return GoToExtras;
+
 	auto const pExt = WarheadTypeExt::Fetch(pWarhead);
 
 	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))

@@ -109,6 +109,9 @@ This serves as a changelog for when you just need to drop the new version in wit
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
+- Units' `LaserTrails` will no longer lag behind by one frame, so it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
+- Aircraft's weapon with `Trajectory` projectile will no longer make `Strafing` default to true.
+- `Trajectory.Straight.TargetSnapDistance` and other similar keys have been renamed to some more universal name like `Trajectory.TargetSnapDistance`. You can view detailed content in [Projectile trajectories](New-or-Enhanced-Logics.md#Projectile-trajectories).
 ```
 
 ### 0.3
@@ -638,6 +641,12 @@ HideShakeEffects=false           ; boolean
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
+- New Missile trajectory (by CrimRecya)
+- New Engrave trajectory (by CrimRecya)
+- New Tracing trajectory (by CrimRecya)
+- New trajectory system with general functions (by CrimRecya)
+- Projectile life cycle logic and retargeting logic (by CrimRecya)
+- Projectile release warheads and weapons (by CrimRecya)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

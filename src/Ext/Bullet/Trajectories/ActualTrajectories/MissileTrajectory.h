@@ -1,0 +1,124 @@
+#pragma once
+
+#include "../PhobosActualTrajectory.h"
+
+#include <Ext/WeaponType/Body.h>
+
+class MissileTrajectoryType final : public ActualTrajectoryType
+{
+public:
+	MissileTrajectoryType() : ActualTrajectoryType()
+		, UniqueCurve { false }
+		, FacingCoord { false }
+		, ReduceCoord { true }
+		, PreAimCoord { { 0, 0, 0 } }
+		, PreAimScatter_Min { Leptons(0) }
+		, PreAimScatter_Max { Leptons(0) }
+		, LaunchSpeed { 0.001 }
+		, Acceleration { 10.0 }
+		, TurningSpeed { 10.0 }
+		, LockDirection { false }
+		, CruiseEnable { false }
+		, CruiseUnableRange { Leptons(1280) }
+		, CruiseAltitude { 800 }
+		, CruiseAltitudeRange { 200 }
+		, CruiseAlongLevel { false }
+		, CollisionDetection { false }
+		, SuicideShortOfROT { false }
+		, SuicideAboveRange { -3.0 }
+		, VolatilityRange { Leptons(0) }
+		, VolatilityPeriod { 4 }
+	{ }
+
+	Valueable<bool> UniqueCurve;
+	Valueable<bool> FacingCoord;
+	Valueable<bool> ReduceCoord;
+	Valueable<CoordStruct> PreAimCoord;
+	Valueable<Leptons> PreAimScatter_Min;
+	Valueable<Leptons> PreAimScatter_Max;
+	Valueable<double> LaunchSpeed;
+	Valueable<double> Acceleration;
+	Valueable<double> TurningSpeed;
+	Valueable<bool> LockDirection;
+	Valueable<bool> CruiseEnable;
+	Valueable<Leptons> CruiseUnableRange;
+	Valueable<int> CruiseAltitude;
+	int CruiseAltitudeRange;
+	Valueable<bool> CruiseAlongLevel;
+	Valueable<bool> CollisionDetection;
+	Valueable<bool> SuicideShortOfROT;
+	Valueable<double> SuicideAboveRange;
+	Valueable<Leptons> VolatilityRange;
+	Valueable<int> VolatilityPeriod;
+
+	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
+	virtual bool Save(PhobosStreamWriter& Stm) const override;
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance(BulletClass* pBullet) const override;
+	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Missile; }
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+};
+
+class MissileTrajectory final : public ActualTrajectory
+{
+public:
+	static constexpr double UniqueCurveSpeed = 192.0;
+	static constexpr double UniqueCurveAcceleration = 4.0;
+
+	MissileTrajectory(noinit_t) { }
+	MissileTrajectory(MissileTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: ActualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
+		, CruiseEnable { pTrajType->CruiseEnable && !pTrajType->UniqueCurve }
+		, InStraight { false }
+		, Accelerate { true }
+		, OriginalDistance { 0 }
+		, LastCruiseAltitude { 0 }
+		, OffsetCoord { CoordStruct::Empty }
+		, PreAimDistance { 0 }
+		, LastDotProduct { 0 }
+	{ }
+
+	const MissileTrajectoryType* Type;
+	bool CruiseEnable;
+	bool InStraight;
+	bool Accelerate;
+	union
+	{
+		int OriginalDistance;
+		int MaximumHeight;
+	};
+	int LastCruiseAltitude;
+	CoordStruct OffsetCoord;
+	double PreAimDistance;
+	double LastDotProduct;
+
+	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
+	virtual bool Save(PhobosStreamWriter& Stm) const override;
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Missile; }
+	virtual void OnUnlimbo() override;
+	virtual bool OnEarlyUpdate() override;
+	virtual bool OnVelocityCheck() override;
+	virtual TrajectoryCheckReturnType OnDetonateUpdate(const CoordStruct& position) override;
+	virtual const PhobosTrajectoryType* GetType() const override { return this->Type; }
+	virtual void OpenFire() override;
+	virtual CoordStruct GetRetargetCenter() const override;
+	virtual void SetBulletNewTarget(AbstractClass* const pTarget) override;
+	virtual bool CalculateBulletVelocity(const double speed) override;
+
+private:
+	void InitializeBulletNotCurve();
+	CoordStruct GetPreAimCoordsWithBurst();
+	bool CalculateReducedVelocity(const double rotateRadian);
+	bool CurveVelocityChange();
+	bool NotCurveVelocityChange();
+	bool StandardVelocityChange();
+	bool ChangeBulletVelocity(const CoordStruct& targetLocation);
+	int GetCruiseAltitude(bool collisionCheck, int lastCheckHeight);
+
+	template <typename T>
+	void Serialize(T& Stm);
+};

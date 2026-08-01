@@ -606,11 +606,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
-  - Enhanced Straight trajectory
   - Enable Building Production Queue
   - Fix for sidebar not updating queued unit numbers when on hold
-  - New Parabola trajectory
-  - Enhanced Bombard trajectory
   - No turret unit turn to the target
   - Damage multiplier for different houses
   - Extended gattling rate down logic
@@ -667,6 +664,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
+  - Enhanced Straight/Bombard trajectory
+  - New Parabola/Missile/Engrave/Tracing trajectory
+  - New trajectory system with general functions
+  - Projectile life cycle logic and retargeting logic
+  - Projectile release warheads and weapons
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation

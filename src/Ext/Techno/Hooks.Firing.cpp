@@ -308,7 +308,7 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 #pragma region TechnoClass_GetFireError
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
-	enum { CannotFire = 0x6FCB7E };
+	enum { CannotFire = 0x6FCB7E, TemporarilyCannotFire = 0x6FCD0E };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
@@ -323,9 +323,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 		return CannotFire;
 
+	const auto pBulletType = pWeapon->Projectile;
+	const auto pBulletTypeExt = BulletTypeExt::Fetch(pBulletType);
+
 	// AAOnly doesn't need to be checked if LandTargeting=1.
-	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA
-		&& pTarget && !pTarget->IsInAir() && BulletTypeExt::Fetch(pWeapon->Projectile)->AAOnly)
+	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pBulletType->AA
+		&& pTarget && !pTarget->IsInAir() && pBulletTypeExt->AAOnly)
 	{
 		return CannotFire;
 	}
@@ -389,6 +392,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				return CannotFire;
 		}
 	}
+
+	if (pBulletTypeExt->CreateCapacity >= 0 && BulletExt::CheckExceededCapacity(pThis, pBulletType))
+		return (pWeapon->Damage >= 0 || (pTargetTechno && pTargetTechno->GetHealthPercentage() < RulesClass::Instance->ConditionGreen)) ? TemporarilyCannotFire : CannotFire;
 
 	return 0;
 }
@@ -1026,6 +1032,8 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			if (pThis->CurrentBurstIndex % 2 != 0)
 				flh.Y = -flh.Y;
 		}
+
+		TechnoExt::Fetch(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
@@ -1036,6 +1044,14 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!pTypeExt->AlternateFLH_OnTurret.Get(RulesExt::Global()->AlternateFLH_OnTurret))
 			allowOnTurret = false;
+
+		auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
+
+		for (int i = 0; i < index && pCurrentPassenger; i++)
+			pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
+
+		if (pCurrentPassenger)
+			TechnoExt::Fetch(pCurrentPassenger)->LastWeaponFLH = flh;
 	}
 
 	int turIdx = -1;
