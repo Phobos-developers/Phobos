@@ -1104,9 +1104,6 @@ msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeplo
 msgid "Fixed the bug that ships can travel on elevated bridges."
 msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
-msgid "Dehardcoded 255 limit of `OverlayType`."
-msgstr "解除了覆盖物最多 255 个的数量限制。"
-
 msgid ""
 "Fixed an issue where airstrike flare line drawn to target at lower "
 "elevation would clip."
@@ -3682,6 +3679,16 @@ msgstr "原版中步兵匍匐前进的速度是硬编码的。现在你可以自
 
 msgid "Overlays"
 msgstr "覆盖物"
+
+msgid "More than 255 OverlayTypes"
+msgstr "覆盖物类型数量可超过 255"
+
+msgid ""
+"Game now supports more than 255 distinct OverlayTypes, up to 65535. For "
+"map file/editor support, see [Increased Overlay Limit](AI-Scripting-and-"
+"Mapping.md#increased-overlay-limit)."
+msgstr ""
+"游戏现在支持超过 255 种不同的覆盖物，最多可达 65535 种。有关地图文件／编辑器的支持，见 [更高的覆盖物数量上限](AI-Scripting-and-Mapping.md#increased-overlay-limit)。"
 
 msgid "`ZAdjust` for OverlayTypes"
 msgstr "覆盖物的 Z 深校正值"

@@ -214,7 +214,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
-- Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
@@ -1488,6 +1487,10 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 ```
 
 ## Overlays
+
+### More than 255 OverlayTypes
+
+- Game now supports more than 255 distinct OverlayTypes, up to 65535. For map file/editor support, see [Increased Overlay Limit](AI-Scripting-and-Mapping.md#increased-overlay-limit).
 
 ### `ZAdjust` for OverlayTypes
 
