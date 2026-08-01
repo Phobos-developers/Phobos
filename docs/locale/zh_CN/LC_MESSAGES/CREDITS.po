@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 10:06+0800\n"
+"POT-Creation-Date: 2026-08-01 18:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -313,8 +313,7 @@ msgid "Dehardcode 255 limit of `OverlayType`"
 msgstr "解除了覆盖物最多 255 个的数量限制"
 
 msgid "Keep Syringe open until the game exits (ported from Vinifera)"
-msgstr ""
-"在游戏退出前保持 Syringe 打开（移植自 Vinifera）"
+msgstr "在游戏退出前保持 Syringe 打开（移植自 Vinifera）"
 
 msgid "**Otamaa (Fahroni, BoredEXE)**:"
 msgstr "**Otamaa (Fahroni, BoredEXE)**："
@@ -458,6 +457,12 @@ msgstr "弹头击杀限制"
 
 msgid "`Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields"
 msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
+
+msgid "Map Action 600 for overwriting DropCrate behaviour in attached Technos"
+msgstr ""
+
+msgid "`DropCrate` for setting what crate drop when Techno is destroyed"
+msgstr ""
 
 msgid "Warhead activation target health thresholds enhancements"
 msgstr "目标血量作为弹头生效条件的进一步改进"
@@ -2473,8 +2478,7 @@ msgstr "根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBe
 msgid ""
 "Remove the restriction that prohibits InfantryTypes from using the "
 "InitialPayload logic"
-msgstr ""
-"移除了禁止步兵使用初始载员逻辑的限制"
+msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

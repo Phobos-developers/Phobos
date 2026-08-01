@@ -272,3 +272,32 @@ void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 		DisplayClass::Instance.Submit(pAnim);
 	}
 }
+
+int TechnoExt::GetDropCrateIndex(TechnoClass* pThis)
+{
+	if (!pThis)
+		return -1;
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (pExt->DropCrate >= 0 || pTypeExt->DropCrate.isset())
+	{
+		int nSelectedPowerup = -1;
+
+		if (pExt->DropCrate >= 0)
+		{
+			if (pExt->DropCrate == 1)
+				nSelectedPowerup = static_cast<int>(pExt->DropCrateType);
+		}
+		else if (pTypeExt->DropCrate.isset())
+		{
+			nSelectedPowerup = static_cast<int>(pTypeExt->DropCrate.Get());
+		}
+
+		if (nSelectedPowerup >= 0)
+			return nSelectedPowerup;
+	}
+
+	return -1;
+}
