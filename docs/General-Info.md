@@ -13,11 +13,11 @@ There are three main types of Phobos builds:
 You can find the downloads for these versions on the document's [main page](index.md#downloads).
 ```
 
-### Disabling development build warning
+### Disabling pre-release build warning
 
-**DISCLAIMER:** We understand that everyone wants to try and use the new features as soon as they're released, but we can't do all the testing ourselves, so we only test the functionality on a basic level. We ask everyone who uses the new development build first to **test the new changes in every possible way first before disabling the development build warning** and proceeding to include the build in your mod release. This would allow us to concentrate on implementing the actual features, which is the most complex task. Learn more on testing [here](Contributing.md#testing).
+**DISCLAIMER:** We understand that everyone wants to try and use the new features as soon as they're released, but we can't do all the testing ourselves, so we only test the functionality on a basic level. We ask everyone who uses the new pre-release build first to **test the new changes in every possible way first before disabling the pre-release build warning** and proceeding to include the build in your mod release. This would allow us to concentrate on implementing the actual features, which is the most complex task. Learn more on testing [here](Contributing.md#testing).
 
-You can hide the warning by specifying the build number after `-b=` as a command line argument (for example, `-b=1` would hide the warning for development build #1 of Phobos).
+You can hide the warning by specifying the exact version of the build you use after `-HideVersionWarning=` as a command line argument (for example, `-HideVersionWarning=0.5-beta1` would hide the warning for the `v0.5-beta1` pre-release of Phobos). The version is shown in the warning itself and in the title of the respective release; a build only accepts its own version, so the switch has to be updated whenever you update Phobos. Nightly builds don't support hiding the warning at all.
 
 ## Saved games filtering
 

@@ -30,10 +30,10 @@ bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
 
-#ifdef STR_GIT_COMMIT
+#ifdef NIGHTLY
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(RELEASE)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Phobos pre-release build v" FILE_VERSION_STR L". Please test the build before shipping.";
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
@@ -59,7 +59,11 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			Phobos::AppIconPath = ppArgs[++i];
 		}
 #ifndef RELEASE
-		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
+		// Suppresses the "please test this build" warning drawn over the game screen.
+		// The exact version of this very build has to be spelled out (it is printed in
+		// the warning itself and in the release title), so that the switch can't be set
+		// once and then silently carried over into a mod release with a newer build.
+		if (_stricmp(pArg, "-HideVersionWarning=" FILE_VERSION_STR) == 0)
 		{
 			HideWarning = true;
 		}
@@ -303,9 +307,9 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	int coordY = 0;
 
 #ifndef RELEASE
-#ifndef STR_GIT_COMMIT
+#ifndef NIGHTLY
 	if (!HideWarning)
-#endif // !STR_GIT_COMMIT
+#endif // !NIGHTLY
 	{
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
