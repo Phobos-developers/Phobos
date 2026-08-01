@@ -234,7 +234,7 @@ The styleguide is not exhaustive and may be adjusted in the future.
 
 Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases. The lifecycle of a version is as follows:
 
-1. **Development phase**: New features and changes are committed to the `develop` branch.
+1. **Development phase**: New features and changes are committed to the `develop` branch. `develop` always carries the version it is working towards: as soon as a release branch is cut, `VERSION_MINOR` (or `VERSION_MAJOR`) in `src/Phobos.version.h` is bumped and `VERSION_REVISION`/`VERSION_PATCH` are reset to 0, so that nightlies are stamped with the version they lead up to instead of one that has already been released.
 2. **Pre-release phase**: When enough features have accumulated on `develop`, a pre-release build (e.g., `v0.5-beta1`) is created. This build marks the start of a new *release branch* (e.g., `release/v0.5`) and signifies that active feature development for version 0.5 is complete. This branch will be used for all subsequent testing and the final stable release.
    - During this phase, multiple pre-release builds (which can be called beta, alpha, or release candidate) may be published for wider testing. Between pre-releases on the same branch, there shall be no changes that warrant a stable version changelog addition; in other words — only bug fixes, minor additions, and polish to the existing feature set are allowed.
 3. **Stable release**: When the pre-release builds are deemed stable enough, a stable release (e.g., `v0.5`) is published from the release's branch.
