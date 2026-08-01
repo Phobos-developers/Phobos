@@ -259,6 +259,6 @@ public:
 
 	// Misc/Hooks.LaserDraw.cpp
 	static void OnObjectRemoved(ObjectClass* pObject);
-	static int LaserTrackingWeaponCount;
+	static bool LaserTrackingWeaponSeen;
 };
 
