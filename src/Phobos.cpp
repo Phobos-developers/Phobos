@@ -30,12 +30,12 @@ bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
 
+// The leading L"" widens the narrow metadata literals it is concatenated with, so that the
+// name and the version are taken from Phobos.version.h rather than spelled out again.
 #ifdef NIGHTLY
-const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". DO NOT SHIP IN MODS!";
 #elif !defined(RELEASE)
-const wchar_t* Phobos::VersionDescription = L"Phobos pre-release build v" FILE_VERSION_STR L". Please test the build before shipping.";
-#else
-//const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". Please test the build before shipping.";
 #endif
 
 
@@ -63,7 +63,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		// The exact version of this very build has to be spelled out (it is printed in
 		// the warning itself and in the release title), so that the switch can't be set
 		// once and then silently carried over into a mod release with a newer build.
-		if (_stricmp(pArg, "-HideVersionWarning=" FILE_VERSION_STR) == 0)
+		if (_stricmp(pArg, "-HideVersionWarning=" FILE_VERSION_STR) == 0
+			|| _stricmp(pArg, "-HideVersionWarning=v" FILE_VERSION_STR) == 0) // as shown in the warning
 		{
 			HideWarning = true;
 		}
