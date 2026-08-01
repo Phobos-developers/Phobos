@@ -67,15 +67,16 @@ $matchedNode = $null
 # 1) Exact version match
 $matchedNode = $versionNodes | Where-Object { (Get-VersionText $_.Text) -eq $version } | Select-Object -First 1
 
-# 2) Strip trailing numeric components until found
+# 2) Drop the pre-release suffix (pre-releases share the section of the version they lead up to,
+#    e.g. 0.5-beta1 -> 0.5), then strip trailing numeric components until found (0.5.0.1 -> 0.5.0 -> 0.5)
 if (-not $matchedNode) {
-    $tryVersion = $version
-    $stripped = $tryVersion -replace '\.[0-9]+$', ''
-    while ($stripped -ne $tryVersion) {
-        $tryVersion = $stripped
+    $tryVersion = $version -replace '-.*$', ''
+    while ($true) {
         $matchedNode = $versionNodes | Where-Object { (Get-VersionText $_.Text) -eq $tryVersion } | Select-Object -First 1
         if ($matchedNode) { break }
         $stripped = $tryVersion -replace '\.[0-9]+$', ''
+        if ($stripped -eq $tryVersion) { break }
+        $tryVersion = $stripped
     }
 }
 
