@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 06:58+0800\n"
+"POT-Creation-Date: 2026-08-01 18:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -312,6 +312,9 @@ msgstr "部分 Ares 调用代码"
 msgid "Dehardcode 255 limit of `OverlayType`"
 msgstr "解除了覆盖物最多 255 个的数量限制"
 
+msgid "Keep Syringe open until the game exits (ported from Vinifera)"
+msgstr "在游戏退出前保持 Syringe 打开（移植自 Vinifera）"
+
 msgid "**Otamaa (Fahroni, BoredEXE)**:"
 msgstr "**Otamaa (Fahroni, BoredEXE)**："
 
@@ -454,6 +457,14 @@ msgstr "弹头击杀限制"
 
 msgid "`Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields"
 msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
+
+msgid "Map Action 600 for overwriting DropCrate behaviour in attached Technos"
+msgstr ""
+"用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
+
+msgid "`DropCrate` for setting what crate drop when Techno is destroyed"
+msgstr ""
+"用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
 
 msgid "Warhead activation target health thresholds enhancements"
 msgstr "目标血量作为弹头生效条件的进一步改进"
@@ -1829,6 +1840,9 @@ msgstr ""
 msgid "Customize crash spin multiplier"
 msgstr "自定义坠毁旋转倍率"
 
+msgid "Customize reveal radius of `RevealToAll`"
+msgstr "自定义 `RevealToAll` 揭示范围"
+
 msgid ""
 "Fix the bug that technos do not reset their link with the linked building"
 " when deactivated"
@@ -1914,6 +1928,12 @@ msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeplo
 
 msgid "Damaged aircraft image changes"
 msgstr "战机伤残更换图像"
+
+msgid "Change target Owner on warhead impact"
+msgstr "改所属弹头"
+
+msgid "Set sidebar tab by selecting factory"
+msgstr "通过选择建筑来切换侧边栏标签"
 
 msgid "**ZivDero**:"
 msgstr "**ZivDero**："
@@ -2203,6 +2223,9 @@ msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 �
 msgid "RA1-Style multi-turret and multi-barrel"
 msgstr "RA1 风格多炮塔与多炮管"
 
+msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
+msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2448,6 +2471,16 @@ msgid ""
 "Fix the bug where landing direction cannot be correctly converted when "
 "set to a value exceeding 256"
 msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug"
+
+msgid ""
+"Separately define the global default values of TerrainTypes' `IsPassable`"
+" and `CanBeBuiltOn` based on `SpawnsTiberium`"
+msgstr "根据 `SpawnsTiberium` 分离定义地形对象 `IsPassable` 和 `CanBeBuiltOn` 的全局默认值"
+
+msgid ""
+"Remove the restriction that prohibits InfantryTypes from using the "
+"InitialPayload logic"
+msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2885,7 +2918,12 @@ msgstr "允许在单人模式下使用信标放置快捷键"
 msgid "Adjust recruitable status on team member discharge"
 msgstr "小队成员解散时调整可招募性"
 
-msgid "Fix the issue that spawner or slave would execute some player commands"
+msgid ""
+"New hotkey to select the units within the current screen that are "
+"captured by non-permanent mind-controller"
+msgstr "用于选取当前屏幕内被非永久心控捕获的单位的新快捷键"
+
+msgid "Fix the issue that spawnee or slave would execute some player commands"
 msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 
 msgid "Customize whether aircraft is a cargo plane"
@@ -3065,10 +3103,11 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-msgid ""
-"**11EJDE11** - Prevent mpdebug number from being drawn when visibility "
-"toggled off"
-msgstr "**11EJDE11** - 阻止 MPDEBUG 数字在关闭可见时仍然绘制"
+msgid "**11EJDE11**:"
+msgstr "**11EJDE11**："
+
+msgid "Prevent mpdebug number from being drawn when visibility toggled off"
+msgstr "阻止 MPDEBUG 数字在关闭可见时仍然绘制"
 
 msgid "**RAZER**:"
 msgstr "**RAZER**："
