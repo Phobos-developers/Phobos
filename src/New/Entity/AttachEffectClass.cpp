@@ -689,6 +689,18 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 			}
 		}
 	}
+	
+	if ((discardOn & DiscardCondition::Mission) != DiscardCondition::None)
+	{
+		if (pType->DiscardOn_Missions.size() > 0)
+		{
+			if (pType->DiscardOn_Missions.Contains(pTechno->CurrentMission))
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+	}
 
 	if (pTechno->Target)
 	{
