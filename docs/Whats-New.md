@@ -63,6 +63,14 @@ This serves as a changelog for when you just need to drop the new version in wit
 - In v0.4, the landing direction of aircraft was clamped to `[0, 255]`. This has now been improved to allow correct calculation of values exceeding 255, just like the original `PoseDir`. Correspondingly, designs that previously relied on this clamping need to be manually adjusted to accommodate.
 - The extension system has been reworked to follow the game's own class model. Savegames made with earlier Phobos builds are incompatible with this version.
 - Phobos now requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) to run - under older Syringe versions the game will show an error and exit on startup. Replace `Syringe.exe` in your game folder with the one bundled with the Phobos package (also available separately on the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases)).
+- Some keys relating to `Interceptor` and `PassengerDeletion` did not have correctly set default values. The ones where fixing this issue changes behaviour are (old wrong default -> new fixed default):
+  - `Interceptor.CanTargetHouses`: `none` -> `enemies`
+  - `PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`.
+  - `PassengerDeletion.CostMultiplier`: `0.0` -> `1.0`
+  - `PassengerDeletion.AllowedHouses`: `none` -> `all`
+  - `PassengerDeletion.SoylentMultiplier`: `0.0` -> `1.0`
+  - `PassengerDeletion.SoylentAllowedHouses`: `none` -> `enemies`
+  - `PassengerDeletion.DisplaySoylentOffset`: `none` -> `all`
 
 #### Changes compared to inter-version builds / pre-releases
 
@@ -770,6 +778,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
 - Fixed the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration (by Noble_Fish)
 - Fixed the bug where landing direction cannot be correctly converted when set to a value exceeding 256 (by Noble_Fish)
+- Fixed a bug with some keys relating to `Interceptor` and `PassengerDeletion` not having correct default values (by Starkku)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 18:54+0800\n"
+"POT-Creation-Date: 2026-08-02 22:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -378,6 +378,33 @@ msgstr ""
 "下启动游戏将会显示错误并退出。请将游戏目录中的 `Syringe.exe` 替换为 Phobos 软件包中附带的那个（也可以从 "
 "[SyringeEx 发布页面](https://github.com/Phobos-developers/SyringeEx/releases)"
 " 单独下载）。"
+
+msgid ""
+"Some keys relating to `Interceptor` and `PassengerDeletion` did not have "
+"correctly set default values. The ones where fixing this issue changes "
+"behaviour are (old wrong default -> new fixed default):"
+msgstr ""
+
+msgid "`Interceptor.CanTargetHouses`: `none` -> `enemies`"
+msgstr ""
+
+msgid "`PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`."
+msgstr ""
+
+msgid "`PassengerDeletion.CostMultiplier`: `0.0` -> `1.0`"
+msgstr ""
+
+msgid "`PassengerDeletion.AllowedHouses`: `none` -> `all`"
+msgstr ""
+
+msgid "`PassengerDeletion.SoylentMultiplier`: `0.0` -> `1.0`"
+msgstr ""
+
+msgid "`PassengerDeletion.SoylentAllowedHouses`: `none` -> `enemies`"
+msgstr ""
+
+msgid "`PassengerDeletion.DisplaySoylentOffset`: `none` -> `all`"
+msgstr ""
 
 msgid "Changes compared to inter-version builds / pre-releases"
 msgstr "相较于版本间构建／预发布版本的更改"
@@ -2339,12 +2366,14 @@ msgstr "在游戏退出前保持 Syringe 打开（由 11EJDE11 移植自 Vinifer
 msgid ""
 "[Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) "
 "(by FS-21)"
-msgstr ""
-"[死亡时掉落箱子](New-or-Enhanced-Logics.md#drop-crates-on-death)（by FS-21）"
+msgstr "[死亡时掉落箱子](New-or-Enhanced-Logics.md#drop-crates-on-death)（by FS-21）"
 
-msgid "[`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)"
+msgid ""
+"[`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-"
+"crate) (by FS-21)"
 msgstr ""
-"[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by FS-21）"
+"[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by "
+"FS-21）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
@@ -3008,6 +3037,11 @@ msgid ""
 "set to a value exceeding 256 (by Noble_Fish)"
 msgstr "修复降落方向设为超出 256 的值时不能正确换算的 Bug（by Noble_Fish）"
 
+msgid ""
+"Fixed a bug with some keys relating to `Interceptor` and "
+"`PassengerDeletion` not having correct default values (by Starkku)"
+msgstr ""
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
@@ -3199,11 +3233,6 @@ msgid ""
 msgstr "修复了一个由于 `GapGenerator` 和 `SpySat` 交互导致黑幕状态不一致而引发的不同步问题（by Starkku）"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:809: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed vehicles disguised as trees incorrectly displaying veterancy "
 "insignia when they shouldn't (by Starkku)"
 msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题（by Starkku）"
@@ -3315,11 +3344,6 @@ msgid "0.4.0.2"
 msgstr "0.4.0.2"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:834: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed `AircraftDockingDirs` being reset if the BuildingType section is "
 "redefined in map file (by Starkku)"
 msgstr "修复了 `AircraftDockingDirs` 在地图内置了建筑节名时会重置的问题（by Starkku）"
@@ -3371,19 +3395,9 @@ msgid "0.4.0.1"
 msgstr "0.4.0.1"
 
 msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:850: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed preplaced aircraft outside visible map being incorrectly flagged as"
 " crashing under certain conditions (by Starkku)"
 msgstr "修复了处于可视地图范围外的预置战机某些情况下被错误标记为坠毁的问题（by Starkku）"
-
-msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:853: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
 
 msgid ""
 "AttachEffect `DisableWeapons` no longer interferes with 'can this "
@@ -3430,11 +3444,6 @@ msgid ""
 "Fixed an issue with parsing floating point numbers from INI that may have"
 " in some cases contributed to desyncs (by Starkku)"
 msgstr "修复了一个某些情况下从 INI 解析浮点值时可能导致不同步的问题（by Starkku）"
-
-msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:868: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
 
 msgid "`Crit.AffectsHouses` for critical hit system (by Starkku)"
 msgstr "暴击系统添加 `Crit.AffectsHouses`（by Starkku）"
@@ -4092,11 +4101,6 @@ msgid ""
 "Elite technos no longer scatter by default, behaviour is controlled by "
 "`SCATTER` veterancy ability now (by NetsuNegi & Starkku)"
 msgstr "精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制（by NetsuNegi 与 Starkku）"
-
-msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1036: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
 
 msgid ""
 "Allow AI to repair structures built from base nodes/trigger action 125/SW"
@@ -4862,11 +4866,6 @@ msgstr ""
 "CrimRecya）"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1182: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed a few errors of calling for superweapon launch by `LaunchSW` or "
 "building infiltration (by Trsdy)"
 msgstr "修复了通过 `LaunchSW` 或渗透建筑来调用超级武器发射相关的若干错误（by Trsdy）"
@@ -5146,13 +5145,6 @@ msgid ""
 msgstr "修复了触发结果 `125 将建筑建于...` 有时不能正确播放建造动画的 Bug（by Starkku）"
 
 msgid ""
-"Fixes / interactions with other "
-"extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1237: (INFO/1) Duplicate implicit target name: \"fixes / "
-"interactions with other extensions:\"."
-msgstr ""
-
-msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect "
 "the firing building's FLH (by Starkku)"
 msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器将完全遵照发射建筑的 FLH 设置（by Starkku）"
@@ -5264,18 +5256,8 @@ msgstr "移植了 XNA CnCNet Client 的多人游戏存档处理以解决保存�
 msgid "0.3.0.1"
 msgstr "0.3.0.1"
 
-msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1264: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
-
 msgid "Additional sync logging in case of desync errors occuring (by Starkku)"
 msgstr "现在发生 Reconnection Error 时所生成的 `SYNC#.txt` 将记录更多信息（by Starkku）"
-
-msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1267: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
 
 msgid "`AutoDeath` support for objects in limbo (by Trsdy)"
 msgstr "`AutoDeath` 也支持 Limbo 的对象了（by Trsdy）"
@@ -5377,11 +5359,6 @@ msgid ""
 "`AreaFire.Target` now takes cells with bridges into consideration "
 "depending on firer's elevation (by Starkku)"
 msgstr "现在 `AreaFire.Target` 会根据开火者所在高度处理桥梁所在的单元格（by Starkku）"
-
-msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1295: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
 
 msgid "LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)"
 msgstr "激光尾焰初始实现（by Kerbiter 与 ChrisLv_CN）"
@@ -5720,11 +5697,6 @@ msgid ""
 msgstr "开发者功能：现在可以通过命令行参数控制主循环的异常处理程序"
 
 msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1395: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
 "mode (by Kerbiter & ChrisLv_CN)"
 msgstr "修复了激光绘制代码以允许其可在所属方颜色模式下绘制更粗的激光（by Kerbiter 与 ChrisLv_CN）"
@@ -5889,11 +5861,6 @@ msgid "Allowed observers to see a selected building's radial indicator (by Trsdy
 msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1429: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
 "under effects of a `Temporal` Warhead (by Starkku)"
 msgstr "修复了单位被 `Temporal` 弹头冻结时其护盾仍可受伤的问题（by Starkku）"
@@ -6026,13 +5993,6 @@ msgid "Fixed GlobalVariables failed working among scenarios (by Trsdy)"
 msgstr "修复了全局变量在多个场景失效的问题（by Trsdy）"
 
 msgid ""
-"Fixes / interactions with other "
-"extensions:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1458: (INFO/1) Duplicate implicit target name: \"fixes / "
-"interactions with other extensions:\"."
-msgstr ""
-
-msgid ""
 "Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> "
 "AllowParallelAIQueues=no` is set (by FS-21)"
 msgstr ""
@@ -6057,11 +6017,6 @@ msgstr "做了一个 sed 脚本工具来半自动的更新 INI 内容为最新�
 msgid "0.2.2.2"
 msgstr "0.2.2.2"
 
-msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1471: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
 msgid "Fixed shield type info not saving properly (by Uranusian)"
 msgstr "修复了护盾类型信息未能正确保存的问题（by Uranusian）"
 
@@ -6080,11 +6035,6 @@ msgstr "修复了战机开火后 Burst 索引未能正确重置导致的游戏�
 
 msgid "0.2.2.1"
 msgstr "0.2.2.1"
-
-msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1483: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
 
 msgid "Fixed random crashes about `CameoPriority` (by Uranusian)"
 msgstr "修复了 `CameoPriority` 导致的随机崩溃（by Uranusian）"
@@ -6115,11 +6065,6 @@ msgid "0.2.2"
 msgstr "0.2.2"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1497: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
-
-msgid ""
 "Customizable producing progress \"bars\" like CnC:Remastered did (by "
 "Uranusian)"
 msgstr "自定义像 CNC 重置版那样的生产进度「条」（by Uranusian）"
@@ -6136,20 +6081,10 @@ msgid ""
 msgstr "允许设置单位无法被下达移动指令（by Uranusian）"
 
 msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1503: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (by Belonit)"
 msgstr "修复了非输入法键盘输入在基础拉丁或拉丁 -1 以外的语言／键盘布局中无法正常工作的问题（by Belonit）"
-
-msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1506: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
 
 msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
 msgstr "修复了暴击伤害逻辑无法正常工作的问题（by Uranusian）"
@@ -6161,11 +6096,6 @@ msgid "0.2.1.1"
 msgstr "0.2.1.1"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1516: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code"
 " (by Starkku)"
 msgstr "修复了由 `Speed=0` 静止载具代码引起的偶发性崩溃问题（by Starkku）"
@@ -6174,19 +6104,9 @@ msgid "0.2.1"
 msgstr "0.2.1"
 
 msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1525: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
-
-msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary "
 "(by Starkku)"
 msgstr "现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止（by Starkku）"
-
-msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1528: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
 
 msgid ""
 "Fixed the bug when after a failed placement the building/defence tab "
@@ -6201,19 +6121,9 @@ msgstr ""
 "secsome）"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1532: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed the bug when trigger action `125 Build At...` wasn't actually "
 "producing a building when the target cells were occupied (by secsome)"
 msgstr "修复了触发结果 `125 将建筑建于...` 在目标单元格被占用时无法生产建筑的问题（by secsome）"
-
-msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1542: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
 
 msgid ""
 "Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with "
@@ -6307,11 +6217,6 @@ msgid "Customizeable Missing Cameo file (by Uranusian)"
 msgstr "自定义缺省图标（by Uranusian）"
 
 msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1567: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
-
-msgid ""
 "Map previews with zero size won't crash the game anymore (by Kerbiter & "
 "Belonit)"
 msgstr "0 尺寸的地图预览图不再会导致游戏崩溃（by Kerbiter 与 Belonit）"
@@ -6367,11 +6272,6 @@ msgstr ""
 "Starkku）"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1580: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Properly rewritten a fix for mind-controlled vehicles deploying into "
 "buildings (by FS-21)"
 msgstr "彻底重写了被心控载具部署成建筑的修复方案（by FS-21）"
@@ -6390,22 +6290,12 @@ msgid "0.1.1"
 msgstr "0.1.1"
 
 msgid ""
-"Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1591: (INFO/1) Duplicate implicit target name: \"phobos fixes:\"."
-msgstr ""
-
-msgid ""
 "Fixed an occasional crash when selecting units with a selection box (by "
 "Kerbiter)"
 msgstr "修复了框选单位时偶尔崩溃的问题（by Kerbiter）"
 
 msgid "0.1"
 msgstr "0.1"
-
-msgid ""
-"New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-New.md:1600: "
-"(INFO/1) Duplicate implicit target name: \"new:\"."
-msgstr ""
 
 msgid "Full-color PCX graphics support (by Belonit)"
 msgstr "全彩 PCX 支持（by Belonit）"
@@ -6442,11 +6332,6 @@ msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
 msgstr "允许为任意阵营 UI 切换 GDI 式侧边栏布局（by Belonit）"
 
 msgid ""
-"Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-"New.md:1612: (INFO/1) Duplicate implicit target name: \"vanilla fixes:\"."
-msgstr ""
-
-msgid ""
 "Deploying mind-controlled TechnoTypes won't make them permanently mind-"
 "controlled anymore (unfinished fix by DCoder)"
 msgstr "部署被心灵控制的单位不再会时其永远处于被心控状态（实际上直接刷漆了）（DCoder 未完成的修复）"
@@ -6471,52 +6356,4 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
-
-#~ msgid ""
-#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:808: (INFO/1) Duplicate implicit"
-#~ " target name: \"phobos fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:833: (INFO/1) Duplicate implicit"
-#~ " target name: \"phobos fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:849: (INFO/1) Duplicate implicit"
-#~ " target name: \"vanilla fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:852: (INFO/1) Duplicate implicit"
-#~ " target name: \"phobos fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "New:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs\\Whats-"
-#~ "New.md:867: (INFO/1) Duplicate implicit target"
-#~ " name: \"new:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Vanilla fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:1035: (INFO/1) Duplicate implicit"
-#~ " target name: \"vanilla fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Phobos fixes:E:\\relax\\ModTools\\Other\\engine\\Phobos\\docs"
-#~ "\\Whats-New.md:1181: (INFO/1) Duplicate implicit"
-#~ " target name: \"phobos fixes:\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Keep Syringe open until the game "
-#~ "exits (by 11EJDE11, original by ZivDero"
-#~ " & secsome)"
-#~ msgstr ""
 
