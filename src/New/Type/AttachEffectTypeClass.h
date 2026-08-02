@@ -22,10 +22,10 @@ enum class DiscardCondition : unsigned short
 	Undeploying = 0x100,
 	Harvesting = 0x200,
 	InvokerDie = 0x400,
-	DiscardAmmo = 0x800,
-	DiscardHealth = 0x1000,
-	DiscardMission = 0x2000,
-	DiscardLandType = 0x4000
+	Ammo = 0x800,
+	Health = 0x1000,
+	Mission = 0x2000,
+	LandType = 0x4000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);

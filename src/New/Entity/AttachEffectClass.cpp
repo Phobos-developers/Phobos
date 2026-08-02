@@ -635,7 +635,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		return true;
 	}
 
-	if ((discardOn & DiscardCondition::DiscardAmmo) != DiscardCondition::None)
+	if ((discardOn & DiscardCondition::Ammo) != DiscardCondition::None)
 	{
 		bool trigger = false;
 		if (pType->DiscardOn_Ammo_Min.isset() || pType->DiscardOn_Ammo_Max.isset())
@@ -654,7 +654,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		}
 	}
 
-	if ((discardOn & DiscardCondition::DiscardHealth) != DiscardCondition::None)
+	if ((discardOn & DiscardCondition::Health) != DiscardCondition::None)
 	{
 		if (auto const pTypeData = pTechno->GetTechnoType())
 		{
@@ -674,7 +674,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		}
 	}
 
-	if ((discardOn & DiscardCondition::DiscardLandType) != DiscardCondition::None)
+	if ((discardOn & DiscardCondition::LandType) != DiscardCondition::None)
 	{
 		if (pType->DiscardOn_LandTypes != LandTypeFlags::None)
 		{
@@ -690,7 +690,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		}
 	}
 	
-	if ((discardOn & DiscardCondition::DiscardMission) != DiscardCondition::None)
+	if ((discardOn & DiscardCondition::Mission) != DiscardCondition::None)
 	{
 		if (pType->DiscardOn_Missions.size() > 0)
 		{
