@@ -65,7 +65,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - Phobos now requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) to run - under older Syringe versions the game will show an error and exit on startup. Replace `Syringe.exe` in your game folder with the one bundled with the Phobos package (also available separately on the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases)).
 - Some keys relating to `Interceptor` and `PassengerDeletion` did not have correctly set default values. The ones where fixing this issue changes behaviour are (old wrong default -> new fixed default):
   - `Interceptor.CanTargetHouses`: `none` -> `enemies`
-  - `PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`.
+  - `PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`
   - `PassengerDeletion.CostMultiplier`: `0.0` -> `1.0`
   - `PassengerDeletion.AllowedHouses`: `none` -> `all`
   - `PassengerDeletion.SoylentMultiplier`: `0.0` -> `1.0`
@@ -641,11 +641,15 @@ HideShakeEffects=false           ; boolean
 - [Show game time](User-Interface.md#show-game-time) (by Trsdy & Ollerus)
 - Provided a toggle for whether the landing direction in default scenarios does not use the building direction but follows `[AudioVisual] -> PoseDir` (by Noble_Fish)
 - [Separate the definitions of default direction for aircraft production and landing in the field](Fixed-or-Improved-Logics.md#separate-the-definitions-of-default-direction-for-aircraft-production-and-landing-in-the-field) (by Noble_Fish)
-- Change target Owner on warhead impact (by Fryone)
-- New hotkey to select the units within the current screen that are captured by non-permanent mind-controller. (by TaranDahl)
+- [Change target Owner on warhead impact](New-or-Enhanced-Logics.md#change-target-owner-on-impact) (by Fryone)
+- [New hotkey to select the units within the current screen that are captured by non-permanent mind-controller](User-Interface.md#select-captured-units) (by TaranDahl)
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
-- Customize reveal radius of `RevealToAll` (by NetsuNegi)
+- [Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
+- [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
+- Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
+- [Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) (by FS-21)
+- [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -732,7 +736,7 @@ HideShakeEffects=false           ; boolean
 - Fixed voxel projectile and animation lighting issues (by TaranDahl)
 - Fixed the bug that techno will get stuck if change owner in tunnel (by NetsuNegi)
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
-- Fixed the issue that spawner or slave would execute some player commands (by TaranDahl)
+- Fixed the issue that spawnee or slave would execute some player commands (by TaranDahl)
 - Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
 
 #### Phobos fixes:
@@ -1041,7 +1045,6 @@ HideShakeEffects=false           ; boolean
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
-- [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 
 #### Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -1243,7 +1246,6 @@ HideShakeEffects=false           ; boolean
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 - Fixed a read bug when setting the SHP file name in INI (By Noble_Fish)
 - Fixed map trigger action `125 Build At...` not always playing buildups correctly (by Starkku)
-- Keep Syringe open until the game exits (by 11EJDE11, original by ZivDero & secsome)
 
 #### Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
