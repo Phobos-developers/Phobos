@@ -846,18 +846,18 @@ In `rulesmd.ini`:
 [BannerTypes]
 0=SOMEBANNER
 
-[SOMEBANNER]                ; BannerType
-PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - including the .shp extension
-SHP.Palette=palette.pal     ; filename - including the .pal extension
-SHP.RefreshAfterDelay=false ; boolean
-CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
-CSF.Background=false        ; boolean
-CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
-Duration=-1                 ; integer
-Delay=-1                    ; integer
-ClampToScreen=true          ; boolean
+[SOMEBANNER]                 ; BannerType
+PCX=                         ; filename - including the .pcx extension
+SHP=                         ; filename - including the .shp extension
+SHP.Palette=palette.pal      ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false  ; boolean
+CSF=                         ; CSF entry key
+CSF.Color=                   ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
+CSF.Background=false         ; boolean
+CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                  ; integer
+Delay=-1                     ; integer
+ClampToScreen=true           ; boolean
 ```
 
 In `mycampaign.map`:

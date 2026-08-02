@@ -913,14 +913,14 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 In `rulesmd.ini`:
 ```ini
 [General]
-AircraftSpawnFromEdge=owner ; Edge type enumeration (owner|closest|random)
-AircraftRetreatToEdge=owner ; Edge type enumeration (owner|closest|random)
+AircraftSpawnFromEdge=owner  ; Edge type enumeration (owner|closest|random)
+AircraftRetreatToEdge=owner  ; Edge type enumeration (owner|closest|random)
 
-[SOMEAIRCRAFT]              ; AircraftType
-SpawnFromEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
-RetreatToEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
-SpawnDistanceFromTarget=    ; floating point value, distance in cells
-SpawnHeight=                ; integer, height in leptons
+[SOMEAIRCRAFT]               ; AircraftType
+SpawnFromEdge=               ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
+RetreatToEdge=               ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
+SpawnDistanceFromTarget=     ; floating point value, distance in cells
+SpawnHeight=                 ; integer, height in leptons
 ```
 
 ## Animations
@@ -956,15 +956,15 @@ TheaterPalette=                 ; boolean
 In `artmd.ini`:
 ```ini
 [CombatDamage]
-AnimDamage.DealtByInvoker=false     ; boolean
-AnimDamage.ApplyFirepowerMult=false ; boolean
+AnimDamage.DealtByInvoker=false      ; boolean
+AnimDamage.ApplyFirepowerMult=false  ; boolean
 
-[SOMEANIM]                          ; AnimationType
-Weapon=                             ; WeaponType
-Damage.Delay=0                      ; integer, animation frames
-Damage.DealtByInvoker=              ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
-Damage.ApplyOncePerLoop=false       ; boolean
-Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
+[SOMEANIM]                           ; AnimationType
+Weapon=                              ; WeaponType
+Damage.Delay=0                       ; integer, animation frames
+Damage.DealtByInvoker=               ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
+Damage.ApplyOncePerLoop=false        ; boolean
+Damage.ApplyFirepowerMult=           ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
 ```
 
 ```{note}
@@ -980,8 +980,8 @@ Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> Anim
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                   ; AnimationType
-AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
+[SOMEANIM]                    ; AnimationType
+AttachedAnimPosition=default  ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable animation transparency settings
@@ -1224,10 +1224,10 @@ BarracksExitCell=  ; X,Y - cell offset
 In `rulesmd.ini`:
 ```ini
 [General]
-BuildingRadioLink.SyncOwner=true ; boolean
+BuildingRadioLink.SyncOwner=true  ; boolean
 
-[SOMEBUILDING]                   ; BuildingType
-BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
+[SOMEBUILDING]                    ; BuildingType
+BuildingRadioLink.SyncOwner=      ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
 ```
 
 ### Customizable garrison and bunker properties
@@ -1633,9 +1633,9 @@ VerticalInitialFacing=  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]      ; Projectile
-BallisticScatter.Min= ; floating point value, distance in cells
-BallisticScatter.Max= ; floating point value, distance in cells
+[SOMEPROJECTILE]       ; Projectile
+BallisticScatter.Min=  ; floating point value, distance in cells
+BallisticScatter.Max=  ; floating point value, distance in cells
 ```
 
 ### Shrapnel enhancements
@@ -1791,12 +1791,12 @@ SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (nohea
 In `rulesmd.ini`:
 ```ini
 [General]
-ChronoSphereDelay=0     ; integer, game frames
-ChronoSpherePreDelay=60 ; integer, game frames
+ChronoSphereDelay=0      ; integer, game frames
+ChronoSpherePreDelay=60  ; integer, game frames
 
-[SOMETECHNO]            ; TechnoType
-ChronoSphereDelay=      ; integer, game frames, default to [General] -> ChronoSphereDelay
-ChronoSpherePreDelay=   ; integer, game frames, default to [General] -> ChronoSpherePreDelay
+[SOMETECHNO]             ; TechnoType
+ChronoSphereDelay=       ; integer, game frames, default to [General] -> ChronoSphereDelay
+ChronoSpherePreDelay=    ; integer, game frames, default to [General] -> ChronoSpherePreDelay
 ```
 
 ```{warning}
@@ -2115,14 +2115,14 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 In `rulesmd.ini`:
 ```ini
 [General]
-Explodes.KillPassengers=true ; boolean
-Explodes.DuringBuildup=true  ; boolean
+Explodes.KillPassengers=true  ; boolean
+Explodes.DuringBuildup=true   ; boolean
 
-[SOMETECHNO]                 ; TechnoType
-Explodes.KillPassengers=     ; boolean, default to [General] -> Explodes.KillPassengers
+[SOMETECHNO]                  ; TechnoType
+Explodes.KillPassengers=      ; boolean, default to [General] -> Explodes.KillPassengers
 
-[SOMEBUILDING]               ; BuildingType
-Explodes.DuringBuildup=      ; boolean, default to [General] -> Explodes.DuringBuildup
+[SOMEBUILDING]                ; BuildingType
+Explodes.DuringBuildup=       ; boolean, default to [General] -> Explodes.DuringBuildup
 ```
 
 ### Forbid parallel AI queues
@@ -2208,8 +2208,8 @@ This may subject to further changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]          ; BuildingType
-Powered.KillSpawns=false ; boolean
+[SOMESTRUCTURE]           ; BuildingType
+Powered.KillSpawns=false  ; boolean
 ```
 
 ### PipScale pip customizations
@@ -2334,9 +2334,9 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]     ; TechnoType
-MaxGuardRange=16 ; floating point value, distance in cells
-AreaGuardRange=  ; floating point value, distance in cells
+[SOMETECHNO]      ; TechnoType
+MaxGuardRange=16  ; floating point value, distance in cells
+AreaGuardRange=   ; floating point value, distance in cells
 ```
 
 ### Voxel body multi-section shadows
@@ -2412,12 +2412,12 @@ This palette behaves like an object palette and does not use tint etc. that have
 
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]             ; TerrainType
-SpawnsTiberium.Type=0         ; tiberium/ore type index
-SpawnsTiberium.Range=1        ; integer, range in cells
-SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
-SpawnsTiberium.Particle=      ; Particle
+[SOMETERRAINTYPE]              ; TerrainType
+SpawnsTiberium.Type=0          ; tiberium/ore type index
+SpawnsTiberium.Range=1         ; integer, range in cells
+SpawnsTiberium.GrowthStage=3   ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1  ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=       ; Particle
 ```
 
 ### Damaged frames and crumbling animation
