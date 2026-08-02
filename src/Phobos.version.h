@@ -19,9 +19,9 @@
 #define VERSION_PATCH 0
 
 // The current pre-release being prepared, spelled out in full rather than as a number, so that
-// it can be anything semantic versioning allows - "alpha1", "beta2", "rc3". Its presence is
-// what makes a release build a pre-release; comment it out it for a stable release.
-#define PRERELEASE_SUFFIX "beta1"
+// it can be anything semantic versioning allows - "alpha5", "beta1", "rc3", etc. Its presence is
+// what makes a release build a pre-release; comment it out for a stable release.
+#define PRERELEASE_SUFFIX "alpha1"
 
 #pragma endregion
 
@@ -70,8 +70,8 @@
 #define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH
 
 #if defined(RELEASE)
-	// A RELEASE build whose PRERELEASE_SUFFIX is still defined is a pre-release; without it, a
-	// stable release.
+	// A RELEASE build whose PRERELEASE_SUFFIX is still defined is a pre-release;
+	// without it, a stable release.
 	#ifdef PRERELEASE_SUFFIX
 		#define BUILD_TYPE_NAME "pre-release build"
 		#define FILE_VERSION_STR VERSION_LONG_STR "-" PRERELEASE_SUFFIX
@@ -82,12 +82,12 @@
 		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
 	#endif
 #else
-	// Nightly (CI) and local builds are one unified development build differing only in the
+	// Nightly (CI) and local builds are one mostly unified build differing in warning and in
 	// build type name; the version string carries the Git commit and branch when available.
 	#ifdef NIGHTLY
 		#define BUILD_TYPE_NAME "nightly build"
 	#else
-		#define BUILD_TYPE_NAME "development build"
+		#define BUILD_TYPE_NAME "local build"
 	#endif
 	#ifdef GIT_COMMIT
 		#define FILE_VERSION_STR VERSION_LONG_STR "+" STR_GIT_COMMIT STR_GIT_DIRTY

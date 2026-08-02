@@ -54,10 +54,26 @@ jobs:
           -OutputPath RELEASE_NOTES.md `
           -LinkBase "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs"
 
+    - name: Append Changelog to the Release Notes
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        $tag = "${{ github.ref_name }}"
+        # Fetch the text the release author wrote, so the changelog can be appended to it
+        # instead of replacing it.
+        $existing = (gh api "repos/${{ github.repository }}/releases/tags/$tag" --jq '.body // ""' 2>$null) -join "`n"
+        if ($LASTEXITCODE -ne 0) { $existing = '' }
+        $changelog = (Get-Content -Raw -Path RELEASE_NOTES.md).TrimStart("`r", "`n")
+        $existing = $existing.TrimEnd("`r", "`n")
+        $combined = if ([string]::IsNullOrWhiteSpace($existing)) { $changelog } else { "$existing`n`n$changelog" }
+        Set-Content -Path RELEASE_NOTES.md -Value $combined -Encoding utf8
+
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ steps.info.outputs.release-name }}
+        update_release_body: true
         files: |
           ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
           ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb

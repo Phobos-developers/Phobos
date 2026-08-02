@@ -24,7 +24,6 @@ git submodule update --init --recursive
 |--------|---------|--------|
 | Debug (recommended for dev) | `scripts\build_debug.bat` | `Debug\Phobos.dll` + `.pdb` |
 | Release | `scripts\build_release.bat` | `Release\Phobos.dll` + `.pdb` |
-| Release, stamped as a pre-release | `scripts\build_prerelease.bat` | `Release\Phobos.dll` + `.pdb` |
 
 There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build. A pre-release is a `RELEASE` build whose `PRERELEASE_SUFFIX` (hardcoded in `src/Phobos.version.h`) is still defined; remove the suffix there to build a stable release.
 

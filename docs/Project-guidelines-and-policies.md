@@ -232,18 +232,54 @@ The styleguide is not exhaustive and may be adjusted in the future.
 
 ## Git branching model / Version lifecycle and release strategy
 
-Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases. The lifecycle of a version is as follows:
+Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases.
+
+```{hint}
+A brief summary compared to old style:
+- devbuilds are now called pre-releases (alpha, beta, RC etc.) and are almost a proper version with docs, all changes tracked in a special changelog subsection, released on the same cadence;
+- each pre-release (new devbuild) materializes a version branch, bugfix followups committed to develop get ported to it;
+- when enough bugs are fixed - a stable version is created;
+- if some critical change that warrants a version bump needs to be applied (e.g. forgot to serialize a field, or fixed a critical bug from a feature released before upcoming version) - we introduce a new version (with docs, version change etc.) on the same branch;
+- the new stable release is not the old stable: after 0.5 a stable version is "a devbuild with enough bug fixes", released on a faster cadence with less time spent per version.
+```
+
+The lifecycle of a version is as follows:
 
 1. **Development phase**: New features and changes are committed to the `develop` branch. `develop` always carries the version it is working towards: as soon as a release branch is cut, `VERSION_MINOR` (or `VERSION_MAJOR`) in `src/Phobos.version.h` is bumped and `VERSION_REVISION`/`VERSION_PATCH` are reset to 0, so that nightlies are stamped with the version they lead up to instead of one that has already been released.
 2. **Pre-release phase**: When enough features have accumulated on `develop`, a pre-release build (e.g., `v0.5-beta1`) is created. This build marks the start of a new *release branch* (e.g., `release/v0.5`) and signifies that active feature development for version 0.5 is complete. This branch will be used for all subsequent testing and the final stable release.
-   - During this phase, multiple pre-release builds (which can be called beta, alpha, or release candidate) may be published for wider testing. Between pre-releases on the same branch, there shall be no changes that warrant a stable version changelog addition; in other words — only bug fixes, minor additions, and polish to the existing feature set are allowed.
+   - During this phase, multiple pre-release builds (which can be called beta, alpha, or release candidate) may be published for wider testing. Between pre-releases on the same version number, there shall be no changes that warrant a stable version changelog addition; in other words — only bug fixes, minor additions, and polish to the existing new version feature set are allowed.
+     - If there's an urgent need to introduce a feature that would warrant new changelog addition on the same branch - it is allowed to **reset the pre-release prefix and increment the appropriate version number**, while also creating the corresponding doc changelog section.
 3. **Stable release**: When the pre-release builds are deemed stable enough, a stable release (e.g., `v0.5`) is published from the release's branch.
 4. **Maintenance phase**: After the stable release, the release branch enters maintenance mode, where only bug fixes are applied, resulting in patch releases (e.g., `v0.5.0.1`, `v0.5.0.2`).
-5. **End of maintenance**: When a new stable release is published (e.g., `v0.6`), the previous minor version branch (e.g., `v0.5.0.x`) is officially deprecated and enters end-of-life, ceasing to receive any further updates, including bug fixes. Concurrently, the new stable release (e.g., `v0.6`) enters its own maintenance phase, and a new release branch for the next version (e.g., `release/v0.7`) may already have been created from the `develop` branch, initiating its pre-release cycle.
+5. **End of maintenance**: When a new stable release is published (e.g., `v0.6`), the previous minor version branch (e.g., `v0.5.x.y`) is officially deprecated and enters end-of-life, ceasing to receive any further updates, including bug fixes. Concurrently, the new stable release (e.g., `v0.6`) enters its own maintenance phase, and a new release branch for the next version (e.g., `release/v0.7`) may already have been created from the `develop` branch, initiating its pre-release cycle.
+
+```{hint}
+If needed, a new release branch may be started even before the previous one has had a stable release. Doing so will temporarily increase the burden of upkeeping multiple branches, so do it only when there's a valid reason for such.
+```
 
 ```{important}
 The `master` branch is deprecated; all development occurs in `develop`, and each version branches off from it.
+
+**`develop` is the source of truth! Always apply your changes to `develop` first, then cherry-pick them onto the correct branch!**
 ```
+
+### How to publish a release
+
+Publishing a release is done from a release branch (see the lifecycle above). The steps are:
+
+1. **Set the version** in `src/Phobos.version.h`. When a release branch is cut, bump `VERSION_MINOR` (or `VERSION_MAJOR`) and reset `VERSION_REVISION` and `VERSION_PATCH` to 0; patch releases only bump `VERSION_PATCH`.
+2. **Decide whether it is a pre-release or a stable release.** The pre-release suffix is the knob: as long as `PRERELEASE_SUFFIX` is defined (e.g. `#define PRERELEASE_SUFFIX "beta1"`), a release build is a pre-release; remove the define entirely for a stable release. The suffix can be anything semantic versioning allows (e.g. `alpha5`, `beta1`, `rc3`).
+3. **Create a GitHub release and tag** using the short user-facing version you've set in steps 1 and 2 (e.g. `v0.5-alpha1`). The `release.yml` workflow builds the DLL with `BuildType=RELEASE`;
+   - The changelog is extracted from `docs/Whats-New.md` automatically. **Do not write the changelog yourself!** It will be appended to the text you wrote after you publish the release. Also **do not use GitHub's "Generate release notes" button!** It can't be configured to provide correct output.
+   - The build is built and attached automatically. **Do not build Phobos releases manually!**
+   - **GitHub "pre-release" checkbox doesn't affect the produced build type**, it only affects the release's display status for GitHub.
+4. **Verify the artifacts** once the build finishes and the artifacts are attached, then announce the release.
+
+The release tag and name use the short user-facing version (e.g. `v0.5-alpha1`); the DLL reports the full version with trailing zeros (e.g. `0.5.0.0-alpha1`) internally, so that is what appears in the file properties and what the `-HideVersionWarning` switch expects.
+
+If you want to build a pre-release locally for testing, run `scripts\build.bat Release RELEASE` with the suffix still defined in `version.h`. A plain `scripts\build_debug.bat` or `scripts\build_release.bat` always produces a local build instead.
+
+### Useful Git config
 
 These commands will do the following for all repositories on your PC:
 1) remove the automatic merge upon pull and replace it with a rebase;
