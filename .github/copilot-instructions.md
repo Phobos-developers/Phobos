@@ -44,7 +44,7 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:GitCommit=<sha> /p:GitBranch=<ref>` for version stamping and `/p:BuildType=<type>` for the build type. The agent should replicate the CI as:
+The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=<type>` for the build type. Git commit/branch info is not passed from CI: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the branch (as a full ref, e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate the CI as:
 ```
 msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```

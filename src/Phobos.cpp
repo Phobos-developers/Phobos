@@ -135,6 +135,12 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		ExceptionHandler::Init();
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
+#ifdef STR_GIT_COMMIT
+	Debug::Log("Git commit: " STR_GIT_COMMIT "\n");
+#endif
+#ifdef STR_GIT_BRANCH
+	Debug::Log("Git branch: " STR_GIT_BRANCH "\n");
+#endif
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 

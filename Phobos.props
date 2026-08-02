@@ -87,24 +87,57 @@
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <!-- GitCommit -->
-  <ItemDefinitionGroup Condition="'$(GitCommit)' != ''">
-    <ClCompile>
-      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
-  <!-- GitBranch -->
-  <ItemDefinitionGroup Condition="'$(GitBranch)' != ''">
-    <ClCompile>
-      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
+  <!--
+    Git stamping. GitCommit / GitBranch / GitDirty are derived from the local repository at
+    build time (the branch as the full ref, e.g. refs/heads/develop), so local and CI builds
+    are stamped alike with no external input. The properties can still be overridden from the
+    command line. The defines are applied in a target rather than an ItemDefinitionGroup
+    because the values are only known after the props are evaluated. stderr is redirected to
+    nul so a missing or failing git cannot fail the build nor leak error text into the version
+    - it only results in an unstamped build with an informational message.
+  -->
+  <Target Name="ComputeGitInfo" BeforeTargets="ClCompile;ResourceCompile">
+    <Exec Command="git rev-parse --short HEAD 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitCommit)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+    </Exec>
+    <Exec Command="git symbolic-ref HEAD 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitBranch)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
+    </Exec>
+    <Exec Command="git status --porcelain 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitDirty)' == '' and '$(GitCommit)' != ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitStatusPorcelain" />
+    </Exec>
+    <PropertyGroup>
+      <GitDirty Condition="'$(GitDirty)' == '' and '$(GitStatusPorcelain)' != ''">true</GitDirty>
+    </PropertyGroup>
+    <Message Condition="'$(GitCommit)' == '' and '$(GitBranch)' == ''" Importance="High"
+      Text="Could not determine the Git commit/branch - this build will not be stamped with Git info." />
+    <ItemGroup>
+      <ClCompile Condition="'$(GitCommit)' != ''">
+        <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(ClCompile.AdditionalOptions)</AdditionalOptions>
+      </ClCompile>
+      <ClCompile Condition="'$(GitBranch)' != ''">
+        <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(ClCompile.AdditionalOptions)</AdditionalOptions>
+      </ClCompile>
+      <ClCompile Condition="'$(GitDirty)' == 'true'">
+        <AdditionalOptions>/DGIT_DIRTY %(ClCompile.AdditionalOptions)</AdditionalOptions>
+      </ClCompile>
+      <ResourceCompile Condition="'$(GitCommit)' != ''">
+        <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
+      </ResourceCompile>
+      <ResourceCompile Condition="'$(GitBranch)' != ''">
+        <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
+      </ResourceCompile>
+      <ResourceCompile Condition="'$(GitDirty)' == 'true'">
+        <AdditionalOptions>/DGIT_DIRTY %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
+      </ResourceCompile>
+    </ItemGroup>
+  </Target>
   <!-- BuildType -->
   <ItemDefinitionGroup Condition="'$(BuildType)' == 'NIGHTLY'">
     <ClCompile>
