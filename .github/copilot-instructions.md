@@ -53,9 +53,7 @@ msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 There is **no automated test suite**. Validation is:
 1. **Successful compilation** with zero errors (warning level 4, but not treated as errors).
 2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds the Release config as a nightly).
-3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - unless the PR has the `No Documentation Needed` label, these files must be modified:
-   - `docs/Whats-New.md` (changelog entry)
-   - `CREDITS.md` (credit entry; skipped if the `Bugfix` label is set)
+3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - its three checks (changelog, credits, docs) each pass when the corresponding file is modified, and are skipped individually when the matching label is applied (`Skip Changelog`, `Skip Docs`, `Skip Credits`). Labels are applied by maintainers; see the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 Always verify your changes compile by running `scripts\build_debug.bat` before committing.
 
@@ -402,12 +400,12 @@ Many contributors are non-native English speakers, so the existing documentation
 
 ## PR Checklist
 
-For non-trivial changes (unless labeled `No Documentation Needed`):
+For non-trivial changes:
 1. Update `docs/Whats-New.md` with a changelog entry.
 2. Update `CREDITS.md` with your contribution.
 3. Update relevant documentation pages in `docs/`.
 
-Use `[Minor]` in the PR title for small changes that don't need documentation updates.
+If one of these doesn't apply to your change, ask a maintainer to apply the matching label (`Skip Changelog`, `Skip Docs` or `Skip Credits`) so the corresponding check is skipped. See the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 ## Trust These Instructions
 
