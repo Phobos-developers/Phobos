@@ -1867,6 +1867,25 @@ inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char*
 	}
 }
 
+template <>
+inline void ValueableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			auto mission = MissionControlClass::FindIndex(cur);
+			if (mission != Mission::None)
+				this->push_back(mission);
+			else if (!INIClass::IsBlank(cur))
+				Debug::INIParseFailed(pSection, pKey, cur, "Invalid Mission name");
+		}
+	}
+}
+
 template <typename T>
 bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -1966,6 +1985,31 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 
 		if (non_default)
 			detail::parse_values<T>(*this, parser, pSection, pKey);
+	}
+}
+
+template <>
+inline void NullableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		auto const non_default = _strcmpi(parser.value(), "<default>");
+		this->hasValue = non_default;
+
+		if (non_default)
+		{
+			char* str = parser.value();
+			char* context = nullptr;
+			for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				auto mission = MissionControlClass::FindIndex(cur);
+				if (mission != Mission::None)
+					this->push_back(mission);
+				else if (!INIClass::IsBlank(cur))
+					Debug::INIParseFailed(pSection, pKey, cur, "Invalid Mission name");
+			}
+		}
 	}
 }
 

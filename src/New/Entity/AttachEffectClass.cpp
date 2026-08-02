@@ -692,13 +692,16 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	
 	if ((discardOn & DiscardCondition::Mission) != DiscardCondition::None)
 	{
-		if (pType->DiscardOn_Missions.size() > 0)
+		auto const& missions = pTechno->Owner->IsControlledByHuman()
+			? pType->DiscardOn_Missions
+			: (pType->DiscardOn_AIMissions.HasValue()
+				? static_cast<ValueableVector<Mission>&>(pType->DiscardOn_AIMissions)
+				: pType->DiscardOn_Missions);
+
+		if (missions.size() > 0 && missions.Contains(pTechno->CurrentMission))
 		{
-			if (pType->DiscardOn_Missions.Contains(pTechno->CurrentMission))
-			{
-				this->LastDiscardCheckValue = true;
-				return true;
-			}
+			this->LastDiscardCheckValue = true;
+			return true;
 		}
 	}
 

@@ -26,7 +26,7 @@ This page describes all the engine features that are either new and introduced b
     - `invokerdie`: Discard when the invoker of the effect is destroyed.
     - `ammo`: Discard when the ammo of the object the effect is attached to is within the interval `[DiscardOn.Ammo.Min, DiscardOn.Ammo.Max]`.
     - `health`: Discard when the health ratio of the object the effect is attached to is within the interval `[DiscardOn.Health.Min, DiscardOn.Health.Max]`.
-    - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list.
+    - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list (or `DiscardOn.AIMissions` for AI-controlled objects, if set).
     - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
@@ -121,7 +121,8 @@ DiscardOn.Ammo.Min=                                ; integer
 DiscardOn.Ammo.Max=                                ; integer
 DiscardOn.Health.Min=                              ; integer
 DiscardOn.Health.Max=                              ; integer
-DiscardOn.Missions=                                ; List of MissionType
+DiscardOn.Missions=                                ; List of MissionTypes
+DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination

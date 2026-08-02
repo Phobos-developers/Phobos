@@ -61,6 +61,7 @@ public:
 	Nullable<double> DiscardOn_Health_Min;
 	Nullable<double> DiscardOn_Health_Max;
 	ValueableVector<Mission> DiscardOn_Missions;
+	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
@@ -137,6 +138,7 @@ public:
 		, DiscardOn_Health_Min {}
 		, DiscardOn_Health_Max {}
 		, DiscardOn_Missions {}
+		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
