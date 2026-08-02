@@ -2539,6 +2539,26 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Unit image changes in various theater types
+
+- Units on maps of different theater types can now change their models to the corresponding theater-specific models.
+- The INI tags are shown below.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; VehicleType
+Image.Temperate=                      ; VehicleType entry
+Image.Snow=                           ; VehicleType entry
+Image.Urban=                          ; VehicleType entry
+Image.Desert=                         ; VehicleType entry
+Image.NewUrban=                       ; VehicleType entry
+Image.Lunar=                          ; VehicleType entry
+```
+
+```{warning}
+Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
 ### Default mirage disguise for individual VehicleTypes
 
 - Vehicle can now have its `DefaultMirageDisguises` overridden per-type.
