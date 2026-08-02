@@ -430,6 +430,10 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
+	Nullable<TechnoTypeClass*> Convert_GreenHP;
+	Nullable<TechnoTypeClass*> Convert_YellowHP;
+	Nullable<TechnoTypeClass*> Convert_RedHP;
+
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -798,6 +802,10 @@ public:
 		, JumpjetClimbIgnoreBuilding {}
 
 		, Unsellable {}
+
+		, Convert_GreenHP {}
+		, Convert_YellowHP {}
+		, Convert_RedHP {}
 
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}

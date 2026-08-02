@@ -160,6 +160,33 @@ void TechnoExt::AmmoAutoConvertActions()
 	}
 }
 
+void TechnoExt::AutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+	const auto pFoot = abstract_cast<FootClass*, true>(this->OwnerObject());
+	if (pFoot->IsGreenHP())
+	{
+		if (const auto convertType = pTypeExt->Convert_GreenHP)
+		{
+			TechnoExt::ConvertToType(pFoot, convertType);
+		}
+	}
+	else if (pFoot->IsYellowHP())
+	{
+		if (const auto convertType = pTypeExt->Convert_YellowHP)
+		{
+			TechnoExt::ConvertToType(pFoot, convertType);
+		}
+	}
+	else if (pFoot->IsRedHP())
+	{
+		if (const auto convertType = pTypeExt->Convert_RedHP)
+		{
+			TechnoExt::ConvertToType(pFoot, convertType);
+		}
+	}
+}
+
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {

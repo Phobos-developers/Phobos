@@ -179,6 +179,7 @@ public:
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
 
+	void AutoConvertActions();
 	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
 	int GetSight();

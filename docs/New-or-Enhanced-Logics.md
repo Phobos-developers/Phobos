@@ -1535,6 +1535,29 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
+### Automatic conversion based on HP
+
+- Units can now be converted into another unit by HP.
+- When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may be converted to a different techno set by `Convert.YellowHP` VehicleType.
+- Similar, `Convert.RedHP` is the new techno after the conversion if unit health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+- `Convert.GreenHP` is the new techno after the conversion if unit health points percentage is higher than `[AudioVisual] -> ConditionYellow` percentage.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; TechnoType, before conversion
+Convert.GreenHP=                      ; TechnoType, after conversion
+Convert.YellowHP=                     ; TechnoType, after conversion
+Convert.RedHP=                        ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
