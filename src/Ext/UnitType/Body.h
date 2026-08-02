@@ -83,6 +83,13 @@ public:
 	std::vector<CoordStruct> ExtraTurretOffsets;
 	Valueable<int> BurstPerTurret;
 
+	Nullable<UnitTypeClass*> Image_Temperate;
+	Nullable<UnitTypeClass*> Image_Snow;
+	Nullable<UnitTypeClass*> Image_Urban;
+	Nullable<UnitTypeClass*> Image_Desert;
+	Nullable<UnitTypeClass*> Image_NewUrban;
+	Nullable<UnitTypeClass*> Image_Lunar;
+
 	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, SinkSpeed {}
 		, Sinkable {}
@@ -143,6 +150,12 @@ public:
 		, ExtraTurretCount { 0 }
 		, ExtraTurretOffsets { }
 		, BurstPerTurret { 0 }
+		, Image_Temperate {}
+		, Image_Snow {}
+		, Image_Urban {}
+		, Image_Desert {}
+		, Image_NewUrban {}
+		, Image_Lunar {}
 	{ }
 
 	UnitTypeClass* OwnerObject() const

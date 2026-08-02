@@ -342,6 +342,52 @@ bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultV
 	return canDeploy;
 }
 
+UnitTypeClass* UnitExt::GetUnitType(UnitClass* pUnit, UnitTypeExt* pData)
+{
+	switch (ScenarioClass::Instance->Theater)
+	{
+	case TheaterType::Temperate:
+		if (const auto image = pData->Image_Temperate)
+		{
+			return image;
+		}
+		break;
+	case TheaterType::Snow:
+		if (const auto image = pData->Image_Snow)
+		{
+			return image;
+		}
+		break;
+	case TheaterType::Urban:
+		if (const auto image = pData->Image_Urban)
+		{
+			return image;
+		}
+		break;
+	case TheaterType::Desert:
+		if (const auto image = pData->Image_Desert)
+		{
+			return image;
+		}
+		break;
+	case TheaterType::NewUrban:
+		if (const auto image = pData->Image_NewUrban)
+		{
+			return image;
+		}
+		break;
+	case TheaterType::Lunar:
+		if (const auto image = pData->Image_Lunar)
+		{
+			return image;
+		}
+		break;
+	default:
+		break;
+	}
+	return nullptr;
+}
+
 UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)
 {
 	if (pUnit->IsGreenHP())

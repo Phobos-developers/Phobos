@@ -88,6 +88,13 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
 	this->HoverDrownable.Read(exINI, pSection, "HoverDrownable");
 
+	this->Image_Temperate.Read(exINI, pSection, "Image.Temperate");
+	this->Image_Snow.Read(exINI, pSection, "Image.Snow");
+	this->Image_Urban.Read(exINI, pSection, "Image.Urban");
+	this->Image_Desert.Read(exINI, pSection, "Image.Desert");
+	this->Image_NewUrban.Read(exINI, pSection, "Image.NewUrban");
+	this->Image_Lunar.Read(exINI, pSection, "Image.Lunar");
+
 	const auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exArtINI(pArtINI);
 	auto pArtSection = pThis->ImageFile;
@@ -192,6 +199,12 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->Deploy_NoPassenger)
 		.Process(this->Deploy_NoTiberium)
 		.Process(this->HoverDrownable)
+		.Process(this->Image_Temperate)
+		.Process(this->Image_Snow)
+		.Process(this->Image_Urban)
+		.Process(this->Image_Desert)
+		.Process(this->Image_NewUrban)
+		.Process(this->Image_Lunar)
 		.Process(this->TurretShape)
 		.Process(this->BarrelOverTurret)
 		.Process(this->BarrelOffset)
