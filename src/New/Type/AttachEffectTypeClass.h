@@ -24,8 +24,7 @@ enum class DiscardCondition : unsigned short
 	InvokerDie = 0x400,
 	Ammo = 0x800,
 	Health = 0x1000,
-	Mission = 0x2000,
-	LandType = 0x4000
+	LandType = 0x2000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -60,7 +59,6 @@ public:
 	Nullable<int> DiscardOn_Ammo_Max;
 	Nullable<double> DiscardOn_Health_Min;
 	Nullable<double> DiscardOn_Health_Max;
-	ValueableVector<Mission> DiscardOn_Missions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
@@ -136,7 +134,6 @@ public:
 		, DiscardOn_Ammo_Max {}
 		, DiscardOn_Health_Min {}
 		, DiscardOn_Health_Max {}
-		, DiscardOn_Missions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
