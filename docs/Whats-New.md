@@ -646,7 +646,7 @@ HideShakeEffects=false           ; boolean
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
 - Customize reveal radius of `RevealToAll` (by NetsuNegi)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
-- [Automatic conversion based on HP](New-or-Enhanced-Logics.md#automatic-conversion-based-on-hp) (by obsidianus)
+- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
