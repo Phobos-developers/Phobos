@@ -637,8 +637,8 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if ((discardOn & DiscardCondition::Ammo) != DiscardCondition::None)
 	{
-		const int min = pType->DiscardOn_Ammo_Min;
-		const int max = pType->DiscardOn_Ammo_Max;
+		const int min = pType->DiscardOn_Ammo_MinimumAmount;
+		const int max = pType->DiscardOn_Ammo_MaximumAmount;
 		const int ammo = pTechno->Ammo;
 
 		if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
@@ -652,18 +652,12 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	{
 		if (auto const pTypeData = pTechno->GetTechnoType())
 		{
-			const double hp = pTechno->GetHealthPercentage();
-
-			if (pType->DiscardOn_Health_Min.isset() || pType->DiscardOn_Health_Max.isset())
+			const double min = pType->DiscardOn_Health_AbovePercent;
+			const double max = pType->DiscardOn_Health_BelowPercent;
+			if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
 			{
-				const double min = pType->DiscardOn_Health_Min.Get(0.0);
-				const double max = pType->DiscardOn_Health_Max.Get(1.0);
-
-				if (hp >= min && hp <= max)
-				{
-					this->LastDiscardCheckValue = true;
-					return true;
-				}
+				this->LastDiscardCheckValue = true;
+				return true;
 			}
 		}
 	}

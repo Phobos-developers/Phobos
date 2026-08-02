@@ -57,10 +57,10 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
-	Valueable<int> DiscardOn_Ammo_Min;
-	Valueable<int> DiscardOn_Ammo_Max;
-	Nullable<double> DiscardOn_Health_Min;
-	Nullable<double> DiscardOn_Health_Max;
+	Valueable<int> DiscardOn_Ammo_MinimumAmount;
+	Valueable<int> DiscardOn_Ammo_MaximumAmount;
+	Nullable<double> DiscardOn_Health_BelowPercent;
+	Nullable<double> DiscardOn_Health_AbovePercent;
 	ValueableVector<Mission> DiscardOn_Missions;
 	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
@@ -135,10 +135,10 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
-		, DiscardOn_Ammo_Min { -1 }
-		, DiscardOn_Ammo_Max { -1 }
-		, DiscardOn_Health_Min {}
-		, DiscardOn_Health_Max {}
+		, DiscardOn_Ammo_MinimumAmount { -1 }
+		, DiscardOn_Ammo_MaximumAmount { -1 }
+		, DiscardOn_Health_BelowPercent { -1 }
+		, DiscardOn_Health_AbovePercent { -1 }
 		, DiscardOn_Missions {}
 		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }

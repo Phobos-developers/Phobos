@@ -24,8 +24,8 @@ This page describes all the engine features that are either new and introduced b
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
     - `invokerdie`: Discard when the invoker of the effect is destroyed.
-    - `ammo`: Discard when the ammo of the object the effect is attached to is within the interval `[DiscardOn.Ammo.Min, DiscardOn.Ammo.Max]`.
-    - `health`: Discard when the health ratio of the object the effect is attached to is within the interval `[DiscardOn.Health.Min, DiscardOn.Health.Max]`.
+    - `ammo`: Discard when the ammo of the object the effect is attached to is within the interval `[DiscardOn.Ammo.MinimumAmount, DiscardOn.Ammo.MaximumAmount]` (set to `-1` to ignore either bound).
+    - `health`: Discard when the health percentage of the object the effect is attached to is within the interval `(DiscardOn.Health.AbovePercent, DiscardOn.Health.BelowPercent]` (set to `-1` to ignore either bound).
     - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list (or `DiscardOn.AIMissions` for AI-controlled objects, if set).
     - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
     - `sequence`: Discard when the infantry to which the effect is attached is playing a sequence that matches any one in the `DiscardOn.Sequences` list.
@@ -118,10 +118,10 @@ Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
-DiscardOn.Ammo.Min=                                ; integer
-DiscardOn.Ammo.Max=                                ; integer
-DiscardOn.Health.Min=                              ; integer
-DiscardOn.Health.Max=                              ; integer
+DiscardOn.Ammo.MinimumAmount=                      ; integer
+DiscardOn.Ammo.MaximumAmount=                      ; integer
+DiscardOn.Health.BelowPercent=                     ; floating point value
+DiscardOn.Health.AbovePercent=                     ; floating point value
 DiscardOn.Missions=                                ; List of MissionTypes
 DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
