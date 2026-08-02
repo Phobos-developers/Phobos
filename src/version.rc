@@ -41,8 +41,8 @@ BEGIN
 #ifdef STR_GIT_COMMIT
   VALUE "GitCommit", STR_GIT_COMMIT
 #endif
-#ifdef STR_GIT_BRANCH
-  VALUE "GitBranch", STR_GIT_BRANCH
+#ifdef STR_GIT_REF
+  VALUE "GitRef", STR_GIT_REF
 #endif
  END
 END

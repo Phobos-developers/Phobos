@@ -36,9 +36,9 @@
 
 // NIGHTLY / RELEASE come from the BuildType compiler option - used by GH Actions as well - and
 // none of them being set means a local build. A pre-release is a RELEASE build that still has
-// the PRERELEASE_SUFFIX defined above. GIT_COMMIT / GIT_BRANCH / GIT_DIRTY are defined by
-// Phobos.props whenever Git info is available (derived from the repository at build time; the
-// branch is the full ref, e.g. refs/heads/develop). Pre-releases and releases embed
+// the PRERELEASE_SUFFIX defined above. GIT_COMMIT / GIT_REF / GIT_DIRTY are defined by
+// Phobos.props whenever Git info is available (derived from the repository at build time as
+// the full ref, e.g. refs/heads/develop). Pre-releases and releases embed
 // that info as auxiliary metadata (crash reports, logs, file resources) while keeping a clean
 // version string; nightly and local builds carry the Git info in the version itself and differ
 // only in the build type name. Everything below is derived from those inputs so that the product
@@ -50,15 +50,15 @@
 #define PRODUCT_SUMMARY "Ares-compatible YR engine extension"
 
 // The "v" prefix is a human-facing convention for version numbers and is only ever applied in
-// front of a numeric version - never in front of a branch or commit. It is applied exactly once
+// front of a numeric version - never in front of a ref or commit. It is applied exactly once
 // here in PRODUCT_VERSION and no other macro in this header prepends it.
 #define VERSION_PREFIX "v"
 
 #ifdef GIT_COMMIT
 	#define STR_GIT_COMMIT _STR(GIT_COMMIT)
 #endif
-#ifdef GIT_BRANCH
-	#define STR_GIT_BRANCH _STR(GIT_BRANCH)
+#ifdef GIT_REF
+	#define STR_GIT_REF _STR(GIT_REF)
 #endif
 #ifdef GIT_DIRTY
 	#define STR_GIT_DIRTY "-dirty"
@@ -83,7 +83,7 @@
 	#endif
 #else
 	// Nightly (CI) and local builds are one mostly unified build differing in warning and in
-	// build type name; the version string carries the Git commit and branch when available.
+	// build type name; the version string carries the Git commit and ref when available.
 	#ifdef NIGHTLY
 		#define BUILD_TYPE_NAME "nightly build"
 	#else
@@ -94,8 +94,8 @@
 	#else
 		#define FILE_VERSION_STR VERSION_LONG_STR
 	#endif
-	#ifdef GIT_BRANCH
-		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR " @ " STR_GIT_BRANCH
+	#ifdef GIT_REF
+		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR " @ " STR_GIT_REF
 	#else
 		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
 	#endif

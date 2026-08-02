@@ -88,8 +88,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <!--
-    Git stamping. GitCommit / GitBranch / GitDirty are derived from the local repository at
-    build time (the branch as the full ref, e.g. refs/heads/develop), so local and CI builds
+    Git stamping. GitCommit / GitRef / GitDirty are derived from the local repository at
+    build time (the ref, e.g. refs/heads/develop), so local and CI builds
     are stamped alike with no external input. The properties can still be overridden from the
     command line. The defines are applied in a target rather than an ItemDefinitionGroup
     because the values are only known after the props are evaluated. stderr is redirected to
@@ -104,8 +104,8 @@
     </Exec>
     <Exec Command="git symbolic-ref HEAD 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
       ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
-      Condition="'$(GitBranch)' == ''">
-      <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
+      Condition="'$(GitRef)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitRef" />
     </Exec>
     <Exec Command="git status --porcelain 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
       ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
@@ -115,14 +115,14 @@
     <PropertyGroup>
       <GitDirty Condition="'$(GitDirty)' == '' and '$(GitStatusPorcelain)' != ''">true</GitDirty>
     </PropertyGroup>
-    <Message Condition="'$(GitCommit)' == '' and '$(GitBranch)' == ''" Importance="High"
-      Text="Could not determine the Git commit/branch - this build will not be stamped with Git info." />
+    <Message Condition="'$(GitCommit)' == '' and '$(GitRef)' == ''" Importance="High"
+      Text="Could not determine the Git commit/ref - this build will not be stamped with Git info." />
     <ItemGroup>
       <ClCompile Condition="'$(GitCommit)' != ''">
         <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(ClCompile.AdditionalOptions)</AdditionalOptions>
       </ClCompile>
-      <ClCompile Condition="'$(GitBranch)' != ''">
-        <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(ClCompile.AdditionalOptions)</AdditionalOptions>
+      <ClCompile Condition="'$(GitRef)' != ''">
+        <AdditionalOptions>/DGIT_REF="$(GitRef)" %(ClCompile.AdditionalOptions)</AdditionalOptions>
       </ClCompile>
       <ClCompile Condition="'$(GitDirty)' == 'true'">
         <AdditionalOptions>/DGIT_DIRTY %(ClCompile.AdditionalOptions)</AdditionalOptions>
@@ -130,8 +130,8 @@
       <ResourceCompile Condition="'$(GitCommit)' != ''">
         <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
       </ResourceCompile>
-      <ResourceCompile Condition="'$(GitBranch)' != ''">
-        <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
+      <ResourceCompile Condition="'$(GitRef)' != ''">
+        <AdditionalOptions>/DGIT_REF="$(GitRef)" %(ResourceCompile.AdditionalOptions)</AdditionalOptions>
       </ResourceCompile>
       <ResourceCompile Condition="'$(GitDirty)' == 'true'">
         <AdditionalOptions>/DGIT_DIRTY %(ResourceCompile.AdditionalOptions)</AdditionalOptions>

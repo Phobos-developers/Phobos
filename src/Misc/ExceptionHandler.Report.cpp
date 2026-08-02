@@ -470,8 +470,8 @@ namespace
 #ifdef STR_GIT_COMMIT
 		ExceptionHandler::Append("Git commit: " STR_GIT_COMMIT "\r\n");
 #endif
-#ifdef STR_GIT_BRANCH
-		ExceptionHandler::Append("Git branch: " STR_GIT_BRANCH "\r\n");
+#ifdef STR_GIT_REF
+		ExceptionHandler::Append("Git ref: " STR_GIT_REF "\r\n");
 #endif
 		ExceptionHandler::Append("Phobos base address: 0x%08X\r\n", AresHelper::PhobosBaseAddress);
 

@@ -9,7 +9,7 @@ There are three main types of Phobos builds:
 - *pre-release builds* - previously known as *development builds*, these builds mark the start of a new release branch and are used for testing new features before they are finalized. They are numbered with a version and a pre-release suffix (e.g., 0.5-beta1, 0.5-rc2). Mod authors can include these versions with their mods to access the latest features, but we cannot guarantee the absence of bugs;
 - *nightly builds* - bleeding edge versions which can include prototypes, proofs of concepts, scrapped features etc., in other words - we can't guarantee anything in those builds and they absolutely should NOT be used in mod releases and should only be used to help with development and testing.
 
-Besides the published builds above, any build you make locally (from Visual Studio, VS Code or the build scripts) is marked as a *local build*: like nightly, it is stamped with the git commit and branch it was built from (plus a `-dirty` marker when the working tree has uncommitted changes) and shows a hideable "please test" warning.
+Besides the published builds above, any build you make locally (from Visual Studio, VS Code or the build scripts) is marked as a *local build*: like nightly, it is stamped with the git commit and ref it was built from (plus a `-dirty` marker when the working tree has uncommitted changes) and shows a hideable "please test" warning.
 
 ```{hint}
 You can find the downloads for these versions on the document's [main page](index.md#downloads).

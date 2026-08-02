@@ -43,7 +43,7 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=RELEASE`. Whether that build is a pre-release is decided by `PRERELEASE_SUFFIX` in `src/Phobos.version.h`, not by the workflow. Git commit/branch info is not passed from CI: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the branch (as a full ref, e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate the CI as:
+The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=RELEASE`. Whether that build is a pre-release is decided by `PRERELEASE_SUFFIX` in `src/Phobos.version.h`, not by the workflow. Git commit/ref info is not passed from CI: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the ref (e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate the CI as:
 ```
 msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```
