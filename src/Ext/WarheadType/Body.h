@@ -264,6 +264,13 @@ public:
 
 	Valueable<bool> Taunt;
 
+	Valueable<int> RadarOutage_Duration;
+	Valueable<int> RadarOutage_Cap;
+	Valueable<AffectedHouse> RadarOutage_AffectsHouse;
+	Valueable<int> PowerOutage_Duration;
+	Valueable<int> PowerOutage_Cap;
+	Valueable<AffectedHouse> PowerOutage_AffectsHouse;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -552,6 +559,13 @@ public:
 		, ApplyPerTargetEffectsOnDetonate {}
 
 		, Taunt { false }
+
+		, RadarOutage_Duration { 0 }
+		, RadarOutage_Cap { 0 }
+		, RadarOutage_AffectsHouse { AffectedHouse::Enemies }
+		, PowerOutage_Duration { 0 }
+		, PowerOutage_Cap { 0 }
+		, PowerOutage_AffectsHouse { AffectedHouse::Enemies }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

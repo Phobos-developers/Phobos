@@ -118,6 +118,46 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 				MapClass::Instance.PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
 		}
 
+        if (this->RadarOutage_Duration)
+        {
+            for (const auto pTargetHouse : HouseClass::Array)
+            {
+                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver()
+                    && !pTargetHouse->Type->MultiplayPassive
+                    && EnumFunctions::CanTargetHouse(this->RadarOutage_AffectsHouse, pHouse, pTargetHouse))
+                {
+                    int newLeft = Helpers::Alex::getCappedDuration(
+                        pTargetHouse->RadarBlackoutTimer.GetTimeLeft(),
+                        this->RadarOutage_Duration,
+                        this->RadarOutage_Cap
+                    );
+                    newLeft = Math::max(newLeft, 0);
+                    pTargetHouse->RadarBlackoutTimer.Start(newLeft);
+                    pTargetHouse->RecheckRadar = true;
+                }
+            }
+        }
+
+        if (this->PowerOutage_Duration)
+        {
+            for (const auto pTargetHouse : HouseClass::Array)
+            {
+                if (!pTargetHouse->Defeated && !pTargetHouse->IsObserver()
+                    && !pTargetHouse->Type->MultiplayPassive
+                    && EnumFunctions::CanTargetHouse(this->PowerOutage_AffectsHouse, pHouse, pTargetHouse))
+                {
+                    int newLeft = Helpers::Alex::getCappedDuration(
+                        pTargetHouse->PowerBlackoutTimer.GetTimeLeft(),
+                        this->PowerOutage_Duration,
+                        this->PowerOutage_Cap
+                    );
+                    newLeft = Math::max(newLeft, 0);
+                    pTargetHouse->PowerBlackoutTimer.Start(newLeft);
+                    pTargetHouse->RecheckPower = true;
+                }
+            }
+		}
+
 		for (const int swIdx : this->LaunchSW)
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))

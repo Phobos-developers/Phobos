@@ -2295,6 +2295,11 @@ msgstr ""
 "[自定义飞机是否是cargo plane](Fixed-or-Improved-Logics.md#customize-whether-"
 "aircraft-is-a-cargo-plane)（by TaranDahl）"
 
+msgid ""
+"[Radar / Power Outage warhead](New-or-Enhanced-Logics.md#radar--power-"
+"outage-warhead) (by WingHwy)"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
