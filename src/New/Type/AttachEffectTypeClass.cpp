@@ -100,6 +100,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
+	this->DiscardOn_Ammo_Min.Read(exINI, pSection, "DiscardOn.Ammo.Min");
+	this->DiscardOn_Ammo_Max.Read(exINI, pSection, "DiscardOn.Ammo.Max");
+	this->DiscardOn_Health_Min.Read(exINI, pSection, "DiscardOn.Health.Min");
+	this->DiscardOn_Health_Max.Read(exINI, pSection, "DiscardOn.Health.Max");
+	this->DiscardOn_Missions.Read(exINI, pSection, "DiscardOn.Missions");
+	this->DiscardOn_LandTypes.Read(exINI, pSection, "DiscardOn.LandTypes");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
@@ -218,6 +224,12 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
+		.Process(this->DiscardOn_Ammo_Min)
+		.Process(this->DiscardOn_Ammo_Max)
+		.Process(this->DiscardOn_Health_Min)
+		.Process(this->DiscardOn_Health_Max)
+		.Process(this->DiscardOn_Missions)
+		.Process(this->DiscardOn_LandTypes)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
@@ -352,6 +364,22 @@ namespace detail
 				else if (!_strcmpi(cur, "invokerdie"))
 				{
 					parsed |= DiscardCondition::InvokerDie;
+				}
+				else if (!_strcmpi(cur, "ammo"))
+				{
+					parsed |= DiscardCondition::Ammo;
+				}
+				else if (!_strcmpi(cur, "health"))
+				{
+					parsed |= DiscardCondition::Health;
+				}
+				else if (!_strcmpi(cur, "mission"))
+				{
+					parsed |= DiscardCondition::Mission;
+				}
+				else if (!_strcmpi(cur, "landtype"))
+				{
+					parsed |= DiscardCondition::LandType;
 				}
 				else
 				{

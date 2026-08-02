@@ -21,7 +21,11 @@ enum class DiscardCondition : unsigned short
 	Selling = 0x80,
 	Undeploying = 0x100,
 	Harvesting = 0x200,
-	InvokerDie = 0x400
+	InvokerDie = 0x400,
+	Ammo = 0x800,
+	Health = 0x1000,
+	Mission = 0x2000,
+	LandType = 0x4000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -52,6 +56,12 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
+	Nullable<int> DiscardOn_Ammo_Min;
+	Nullable<int> DiscardOn_Ammo_Max;
+	Nullable<double> DiscardOn_Health_Min;
+	Nullable<double> DiscardOn_Health_Max;
+	ValueableVector<Mission> DiscardOn_Missions;
+	Valueable<LandTypeFlags> DiscardOn_LandTypes;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
@@ -122,6 +132,12 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
+		, DiscardOn_Ammo_Min {}
+		, DiscardOn_Ammo_Max {}
+		, DiscardOn_Health_Min {}
+		, DiscardOn_Health_Max {}
+		, DiscardOn_Missions {}
+		, DiscardOn_LandTypes { LandTypeFlags::None }
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
 		, DiscardOn_ConsiderHarvestingAsStationary {}
