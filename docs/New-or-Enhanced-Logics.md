@@ -23,7 +23,11 @@ This page describes all the engine features that are either new and introduced b
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
-    - `invokerdie`: Discard when the invoker of the effect is destroyed. 
+    - `invokerdie`: Discard when the invoker of the effect is destroyed.
+    - `ammo`: Discard when the ammo of the object the effect is attached to is within the interval `[DiscardOn.Ammo.Min, DiscardOn.Ammo.Max]`.
+    - `health`: Discard when the health ratio of the object the effect is attached to is within the interval `[DiscardOn.Health.Min, DiscardOn.Health.Max]`.
+    - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list.
+    - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
