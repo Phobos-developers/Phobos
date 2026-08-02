@@ -18,9 +18,9 @@
 // Indicates Phobos-related bugfixes only
 #define VERSION_PATCH 0
 
-// Identifier of the pre-release being prepared, spelled out in full rather than as a number,
-// so that it can be anything semantic versioning allows - "alpha1", "beta2", "rc3".
-// Only ever used by PRERELEASE builds; bump it on each pre-release.
+// The current pre-release being prepared, spelled out in full rather than as a number, so that
+// it can be anything semantic versioning allows - "alpha1", "beta2", "rc3". Its presence is
+// what makes a release build a pre-release; comment it out it for a stable release.
 #define PRERELEASE_SUFFIX "beta1"
 
 #pragma endregion
@@ -34,10 +34,11 @@
 
 #pragma region Build metadata
 
-// NIGHTLY / PRERELEASE / RELEASE come from the BuildType compiler option - used by GH Actions as
-// well - and none of them being set means a local build. GIT_COMMIT / GIT_BRANCH / GIT_DIRTY are
-// defined by Phobos.props whenever Git info is available (derived from the repository at build
-// time; the branch is the full ref, e.g. refs/heads/develop). Pre-releases and releases embed
+// NIGHTLY / RELEASE come from the BuildType compiler option - used by GH Actions as well - and
+// none of them being set means a local build. A pre-release is a RELEASE build that still has
+// the PRERELEASE_SUFFIX defined above. GIT_COMMIT / GIT_BRANCH / GIT_DIRTY are defined by
+// Phobos.props whenever Git info is available (derived from the repository at build time; the
+// branch is the full ref, e.g. refs/heads/develop). Pre-releases and releases embed
 // that info as auxiliary metadata (crash reports, logs, file resources) while keeping a clean
 // version string; nightly and local builds carry the Git info in the version itself and differ
 // only in the build type name. Everything below is derived from those inputs so that the product
@@ -68,14 +69,18 @@
 // The numeric file version is the full four-part version for every build type.
 #define FILE_VERSION VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH
 
-#if defined(PRERELEASE)
-	#define BUILD_TYPE_NAME "pre-release build"
-	#define FILE_VERSION_STR VERSION_LONG_STR "-" PRERELEASE_SUFFIX
-	#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
-#elif defined(RELEASE)
-	#define BUILD_TYPE_NAME "release build"
-	#define FILE_VERSION_STR VERSION_LONG_STR
-	#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
+#if defined(RELEASE)
+	// A RELEASE build whose PRERELEASE_SUFFIX is still defined is a pre-release; without it, a
+	// stable release.
+	#ifdef PRERELEASE_SUFFIX
+		#define BUILD_TYPE_NAME "pre-release build"
+		#define FILE_VERSION_STR VERSION_LONG_STR "-" PRERELEASE_SUFFIX
+		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
+	#else
+		#define BUILD_TYPE_NAME "release build"
+		#define FILE_VERSION_STR VERSION_LONG_STR
+		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
+	#endif
 #else
 	// Nightly (CI) and local builds are one unified development build differing only in the
 	// build type name; the version string carries the Git commit and branch when available.
@@ -94,6 +99,13 @@
 	#else
 		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
 	#endif
+#endif
+
+// A testing build carries the on-screen "please test the build before shipping" warning and the
+// SpecialBuild file flags: everything that is not a stable release - local dev, nightly and
+// pre-release builds. A pre-release is a RELEASE build that still has PRERELEASE_SUFFIX defined.
+#if !defined(RELEASE) || defined(PRERELEASE_SUFFIX)
+	#define TESTING_BUILD
 #endif
 
 #define FILE_DESCRIPTION PRODUCT_NAME ", " PRODUCT_SUMMARY " (" BUILD_TYPE_NAME ")"

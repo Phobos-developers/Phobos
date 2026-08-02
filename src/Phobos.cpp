@@ -11,7 +11,7 @@
 #include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
-#ifndef RELEASE
+#ifdef TESTING_BUILD
 bool HideWarning = false;
 #endif
 
@@ -34,7 +34,7 @@ bool Phobos::Optimizations::DisableSyncLogging = false;
 // name and the version are taken from Phobos.version.h rather than spelled out again.
 #ifdef NIGHTLY
 const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". DO NOT SHIP IN MODS!";
-#elif !defined(RELEASE)
+#elif defined(TESTING_BUILD)
 const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". Please test the build before shipping.";
 #endif
 
@@ -58,7 +58,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef RELEASE
+#ifdef TESTING_BUILD
 		// Suppresses the "please test this build" warning drawn over the game screen.
 		// The exact version of this very build has to be spelled out (it is printed in
 		// the warning itself and in the release title), so that the switch can't be set
@@ -313,7 +313,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
 	int coordY = 0;
 
-#ifndef RELEASE
+#ifdef TESTING_BUILD
 #ifndef NIGHTLY
 	if (!HideWarning)
 #endif // !NIGHTLY

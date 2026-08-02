@@ -147,14 +147,6 @@
       <PreprocessorDefinitions>NIGHTLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(BuildType)' == 'PRERELEASE'">
-    <ClCompile>
-      <PreprocessorDefinitions>PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>PRERELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(BuildType)' == 'RELEASE'">
     <ClCompile>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>

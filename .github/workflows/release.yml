@@ -27,14 +27,14 @@ jobs:
         $tag = "${{ github.ref_name }}"
         $version = $tag.TrimStart('v')
         $isPrerelease = "${{ github.event.release.prerelease }}"
+        # Whether the build is a pre-release is decided by Phobos.version.h's PRERELEASE_SUFFIX;
+        # here we only build a release-family build and keep the display name distinct.
         if ($isPrerelease -eq "true") {
-          $buildType = "PRERELEASE"
           $releaseName = "Phobos $tag (Pre-release)"
         } else {
-          $buildType = "RELEASE"
           $releaseName = "Phobos $tag"
         }
-        echo "build-type=$buildType" >> $env:GITHUB_OUTPUT
+        echo "build-type=RELEASE" >> $env:GITHUB_OUTPUT
         echo "version=$version" >> $env:GITHUB_OUTPUT
         echo "release-name=$releaseName" >> $env:GITHUB_OUTPUT
 

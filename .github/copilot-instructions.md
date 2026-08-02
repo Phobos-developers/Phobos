@@ -26,7 +26,7 @@ git submodule update --init --recursive
 | Release | `scripts\build_release.bat` | `Release\Phobos.dll` + `.pdb` |
 | Release, stamped as a pre-release | `scripts\build_prerelease.bat` | `Release\Phobos.dll` + `.pdb` |
 
-There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly, pre-release or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY`, `PRERELEASE` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build.
+There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build. A pre-release is a `RELEASE` build whose `PRERELEASE_SUFFIX` (hardcoded in `src/Phobos.version.h`) is still defined; remove the suffix there to build a stable release.
 
 These scripts invoke `scripts\run_msbuild.bat`, which locates the VS Developer Command Prompt via `vswhere.exe` (bundled in `scripts/`), then runs `msbuild`. **VS 2022 or VS Build Tools 2022** with the components listed in `.vsconfig` must be installed:
 - `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`
@@ -44,7 +44,7 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=<type>` for the build type. Git commit/branch info is not passed from CI: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the branch (as a full ref, e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate the CI as:
+The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=RELEASE`. Whether that build is a pre-release is decided by `PRERELEASE_SUFFIX` in `src/Phobos.version.h`, not by the workflow. Git commit/branch info is not passed from CI: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the branch (as a full ref, e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate the CI as:
 ```
 msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```
