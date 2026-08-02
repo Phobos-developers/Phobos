@@ -367,19 +367,19 @@ namespace detail
 				}
 				else if (!_strcmpi(cur, "ammo"))
 				{
-					parsed |= DiscardCondition::Ammo;
+					parsed |= DiscardCondition::DiscardAmmo;
 				}
 				else if (!_strcmpi(cur, "health"))
 				{
-					parsed |= DiscardCondition::Health;
+					parsed |= DiscardCondition::DiscardHealth;
 				}
 				else if (!_strcmpi(cur, "mission"))
 				{
-					parsed |= DiscardCondition::Mission;
+					parsed |= DiscardCondition::DiscardMission;
 				}
 				else if (!_strcmpi(cur, "landtype"))
 				{
-					parsed |= DiscardCondition::LandType;
+					parsed |= DiscardCondition::DiscardLandType;
 				}
 				else
 				{
