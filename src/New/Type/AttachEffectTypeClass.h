@@ -25,7 +25,8 @@ enum class DiscardCondition : unsigned short
 	Ammo = 0x800,
 	Health = 0x1000,
 	Mission = 0x2000,
-	LandType = 0x4000
+	LandType = 0x4000,
+	Sequence = 0x8000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -63,6 +64,7 @@ public:
 	ValueableVector<Mission> DiscardOn_Missions;
 	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
+	ValueableVector<Sequence> DiscardOn_Sequences;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
@@ -140,6 +142,7 @@ public:
 		, DiscardOn_Missions {}
 		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }
+		, DiscardOn_Sequences {}
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
 		, DiscardOn_ConsiderHarvestingAsStationary {}

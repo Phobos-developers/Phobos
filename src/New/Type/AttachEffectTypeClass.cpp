@@ -107,6 +107,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_Missions.Read(exINI, pSection, "DiscardOn.Missions");
 	this->DiscardOn_AIMissions.Read(exINI, pSection, "DiscardOn.AIMissions");
 	this->DiscardOn_LandTypes.Read(exINI, pSection, "DiscardOn.LandTypes");
+	this->DiscardOn_Sequences.Read(exINI, pSection, "DiscardOn.Sequences");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
@@ -232,6 +233,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_Missions)
 		.Process(this->DiscardOn_AIMissions)
 		.Process(this->DiscardOn_LandTypes)
+		.Process(this->DiscardOn_Sequences)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
@@ -382,6 +384,10 @@ namespace detail
 				else if (!_strcmpi(cur, "landtype"))
 				{
 					parsed |= DiscardCondition::LandType;
+				}
+				else if (!_strcmpi(cur, "sequence"))
+				{
+					parsed |= DiscardCondition::Sequence;
 				}
 				else
 				{

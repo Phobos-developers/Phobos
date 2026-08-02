@@ -560,6 +560,48 @@ namespace detail
 		return false;
 	}
 
+	inline bool parse_sequence(const char* str, Sequence& seq)
+	{
+		static const auto Sequences = {
+				"Ready", "Guard", "Prone", "Walk", "FireUp", "Down", "Crawl", "Up",
+				"FireProne", "Idle1", "Idle2", "Die1", "Die2", "Die3", "Die4", "Die5",
+				"Tread", "Swim", "WetIdle1", "WetIdle2", "WetDie1", "WetDie2", "WetAttack",
+				"Hover", "Fly", "Tumble", "FireFly", "Deploy", "Deployed", "DeployedFire",
+				"DeployedIdle", "Undeploy", "Cheer", "Paradrop", "AirDeathStart",
+				"AirDeathFalling", "AirDeathFinish", "Panic", "Shovel", "Carry",
+				"SecondaryFire", "SecondaryProne"
+		};
+		auto it = Sequences.begin();
+		for (auto i = 0u; i < Sequences.size(); ++i)
+		{
+			if (_strcmpi(str, *it++) == 0)
+			{
+				seq = static_cast<Sequence>(i);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<Sequence>(Sequence& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			Sequence seq;
+			if (detail::parse_sequence(parser.value(), seq))
+			{
+				value = seq;
+				return true;
+			}
+			else if (!parser.empty())
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a Sequence animation name");
+			}
+		}
+		return false;
+	}
+
 	template <>
 	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1882,6 +1924,25 @@ inline void ValueableVector<Mission>::Read(INI_EX& parser, const char* pSection,
 				this->push_back(mission);
 			else if (!INIClass::IsBlank(cur))
 				Debug::INIParseFailed(pSection, pKey, cur, "Invalid Mission name");
+		}
+	}
+}
+
+template <>
+inline void ValueableVector<Sequence>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			Sequence seq;
+			if (detail::parse_sequence(cur, seq))
+				this->push_back(seq);
+			else if (!INIClass::IsBlank(cur))
+				Debug::INIParseFailed(pSection, pKey, cur, "Invalid Sequence name");
 		}
 	}
 }

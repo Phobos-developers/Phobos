@@ -705,6 +705,18 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		}
 	}
 
+	if ((discardOn & DiscardCondition::Sequence) != DiscardCondition::None)
+	{
+		if (auto const pInf = abstract_cast<InfantryClass*, true>(pTechno))
+		{
+			if (pType->DiscardOn_Sequences.size() > 0 && pType->DiscardOn_Sequences.Contains(pInf->SequenceAnim))
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+	}
+
 	if (pTechno->Target)
 	{
 		const bool inRange = (discardOn & DiscardCondition::InRange) != DiscardCondition::None;

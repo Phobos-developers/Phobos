@@ -28,6 +28,7 @@ This page describes all the engine features that are either new and introduced b
     - `health`: Discard when the health ratio of the object the effect is attached to is within the interval `[DiscardOn.Health.Min, DiscardOn.Health.Max]`.
     - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list (or `DiscardOn.AIMissions` for AI-controlled objects, if set).
     - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
+    - `sequence`: Discard when the infantry to which the effect is attached is playing a sequence that matches any one in the `DiscardOn.Sequences` list.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
@@ -116,7 +117,7 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
 DiscardOn.Ammo.Min=                                ; integer
 DiscardOn.Ammo.Max=                                ; integer
 DiscardOn.Health.Min=                              ; integer
@@ -124,6 +125,7 @@ DiscardOn.Health.Max=                              ; integer
 DiscardOn.Missions=                                ; List of MissionTypes
 DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+DiscardOn.Sequences=                               ; List of Sequences (ready | guard | prone | walk | fireup | fireprone | secondaryfire | secondaryprone | down | crawl | up | idle1 | idle2 | die1 | die2 | die3 | die4 | die5 | deploy | deployed | deployedfire | deployedidle | undeploy | paradrop | cheer | panic | shovel | carry | fly | hover | firefly | tumble | airdeathstart | airdeathfalling | airdeathfinish | tread | swim | wetattack | wetidle1 | wetidle2 | wetdie1 | wetdie2)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
 DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
