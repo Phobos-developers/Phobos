@@ -134,62 +134,6 @@ void TechnoExt::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::AmmoAutoConvertActions()
-{
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt->Ammo_AutoConvertType.isset())
-		return;
-
-	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	if (pTypeExt->OwnerObject()->Ammo <= 0)
-		return;
-
-	const auto pThis = this->OwnerObject();
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-	{
-		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
-		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
-	}
-}
-
-void TechnoExt::AutoConvertActions()
-{
-	const auto pTypeExt = this->TypeExtData;
-	const auto pFoot = abstract_cast<FootClass*, true>(this->OwnerObject());
-
-	if (!pTypeExt->Convert_HP.isset())
-	{
-		return;
-	}
-
-	const double min = pTypeExt->Convert_HP_Min;
-	const double max = pTypeExt->Convert_HP_Max;
-
-	if (min < 0.0 && max < 0.0)
-	{
-		return;
-	}
-
-	const auto hp = pFoot->GetHealthPercentage();
-	if (hp <= 0.0)
-	{
-		return;
-	}
-
-	if ((min < 0.0 || hp >= min) && (max < 0.0 || hp <= max))
-	{
-		TechnoExt::ConvertToType(pFoot, pTypeExt->Convert_HP);
-	}
-}
-
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {

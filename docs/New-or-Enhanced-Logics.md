@@ -1535,20 +1535,20 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
-### Automatic conversion based on HP
+### Automatic conversion based on health
 
-- Units can now be converted into another unit by HP.
-- `Convert.HP.Min`determines the minimal HP at which a unit converts automatically after the HP update.
-- `Convert.HP.Max`determines the maximum HP at which a unit converts automatically after the HP update.
-- `Convert.HP` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Units can now be converted into another unit by health percentage.
+- `Convert.Health.AbovePercent`determines the minimal health percentage at which a unit converts automatically.
+- `Convert.Health.BelowPercent`determines the maximum health percentage at which a unit converts automatically.
+- `Convert.Health` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
 - Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                         ; TechnoType, before conversion
-Convert.HP.Min=                       ; floating point value, percents or absolute
-Convert.HP.Max=                       ; floating point value, percents or absolute
-Convert.HP=                           ; TechnoType, after conversion
+[SOMETECHNO]                         ; TechnoType, before conversion
+Convert.Health.AbovePercent=-1.0     ; floating point value, percents or absolute
+Convert.Health.BelowPercent=-1.0     ; floating point value, percents or absolute
+Convert.Health=                      ; TechnoType, after conversion
 ```
 
 ```{warning}

@@ -428,11 +428,11 @@ public:
 
 	Nullable<Powerup> DropCrate;
 
-	Nullable<bool> Unsellable; // Ares 3.0
+	Valueable<double> Convert_Health_AbovePercent;
+	Valueable<double> Convert_Health_BelowPercent;
+	Nullable<TechnoTypeClass*> Convert_Health;
 
-	Valueable<double> Convert_HP_Min;
-	Valueable<double> Convert_HP_Max;
-	Nullable<TechnoTypeClass*> Convert_HP;
+	Nullable<bool> Unsellable; // Ares 3.0
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
@@ -803,10 +803,6 @@ public:
 
 		, Unsellable {}
 
-		, Convert_HP_Min {-1}
-		, Convert_HP_Max {-1}
-		, Convert_HP {}
-
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
 		, AlwaysConsideredThreat { false }
@@ -816,6 +812,10 @@ public:
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
 
 		, DropCrate {}
+
+		, Convert_Health_AbovePercent { -1 }
+		, Convert_Health_BelowPercent { -1 }
+		, Convert_Health {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
