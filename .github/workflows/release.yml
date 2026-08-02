@@ -61,19 +61,23 @@ jobs:
       run: |
         $tag = "${{ github.ref_name }}"
         # Fetch the text the release author wrote, so the changelog can be appended to it
-        # instead of replacing it.
+        # instead of replacing it. Re-running the workflow must not append a second copy,
+        # so the changelog is wrapped in a marker block that is stripped before re-appending.
         $existing = (gh api "repos/${{ github.repository }}/releases/tags/$tag" --jq '.body // ""' 2>$null) -join "`n"
         if ($LASTEXITCODE -ne 0) { $existing = '' }
-        $changelog = (Get-Content -Raw -Path RELEASE_NOTES.md).TrimStart("`r", "`n")
-        $existing = $existing.TrimEnd("`r", "`n")
-        $combined = if ([string]::IsNullOrWhiteSpace($existing)) { $changelog } else { "$existing`n`n$changelog" }
+        $changelog = (Get-Content -Raw -Path RELEASE_NOTES.md).Trim()
+        $markerStart = '<!-- Phobos changelog start -->'
+        $markerEnd = '<!-- Phobos changelog end -->'
+        $block = "$markerStart`n$changelog`n$markerEnd"
+        # Drop any previously appended changelog block so re-runs replace rather than duplicate
+        $existing = [regex]::Replace($existing, "(?s)$markerStart.*$markerEnd", '').TrimEnd("`r", "`n")
+        $combined = if ([string]::IsNullOrWhiteSpace($existing)) { $block } else { "$existing`n`n$block" }
         Set-Content -Path RELEASE_NOTES.md -Value $combined -Encoding utf8
 
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ steps.info.outputs.release-name }}
-        update_release_body: true
         files: |
           ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
           ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb
