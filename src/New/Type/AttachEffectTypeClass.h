@@ -57,8 +57,8 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
-	Nullable<int> DiscardOn_Ammo_Min;
-	Nullable<int> DiscardOn_Ammo_Max;
+	Valueable<int> DiscardOn_Ammo_Min;
+	Valueable<int> DiscardOn_Ammo_Max;
 	Nullable<double> DiscardOn_Health_Min;
 	Nullable<double> DiscardOn_Health_Max;
 	ValueableVector<Mission> DiscardOn_Missions;
@@ -135,8 +135,8 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
-		, DiscardOn_Ammo_Min {}
-		, DiscardOn_Ammo_Max {}
+		, DiscardOn_Ammo_Min { -1 }
+		, DiscardOn_Ammo_Max { -1 }
 		, DiscardOn_Health_Min {}
 		, DiscardOn_Health_Max {}
 		, DiscardOn_Missions {}

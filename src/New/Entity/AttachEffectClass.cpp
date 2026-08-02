@@ -637,17 +637,11 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if ((discardOn & DiscardCondition::Ammo) != DiscardCondition::None)
 	{
-		bool trigger = false;
-		if (pType->DiscardOn_Ammo_Min.isset() || pType->DiscardOn_Ammo_Max.isset())
-		{
-			const int min = pType->DiscardOn_Ammo_Min.Get(-1);
-			const int max = pType->DiscardOn_Ammo_Max.Get(-1);
-			const int ammo = pTechno->Ammo;
+		const int min = pType->DiscardOn_Ammo_Min;
+		const int max = pType->DiscardOn_Ammo_Max;
+		const int ammo = pTechno->Ammo;
 
-			trigger = (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
-		}
-
-		if (trigger)
+		if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
 		{
 			this->LastDiscardCheckValue = true;
 			return true;
@@ -665,7 +659,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 				const double min = pType->DiscardOn_Health_Min.Get(0.0);
 				const double max = pType->DiscardOn_Health_Max.Get(1.0);
 
-				if ((hp > 0.0 ? hp > min : hp >= min) && hp <= max)
+				if (hp >= min && hp <= max)
 				{
 					this->LastDiscardCheckValue = true;
 					return true;
