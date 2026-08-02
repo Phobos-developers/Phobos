@@ -234,6 +234,10 @@ The styleguide is not exhaustive and may be adjusted in the future.
 
 Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases.
 
+![Versioning scheme from 0.5 onward](_static/images/versioning-past-0.5.excalidraw.png)
+
+*Image editable in [Excalidraw](https://excalidraw.com)*
+
 ```{hint}
 A brief summary compared to old style:
 - devbuilds are now called pre-releases (alpha, beta, RC etc.) and are almost a proper version with docs, all changes tracked in a special changelog subsection, released on the same cadence;
