@@ -1146,9 +1146,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
 
-	this->Convert_GreenHP.Read(exINI, pSection, "Convert.GreenHP");
-	this->Convert_YellowHP.Read(exINI, pSection, "Convert.YellowHP");
-	this->Convert_RedHP.Read(exINI, pSection, "Convert.RedHP");
+	this->Convert_HP_Min.Read(exINI, pSection, "Convert.HP.Min");
+	this->Convert_HP_Max.Read(exINI, pSection, "Convert.HP.Max");
+	this->Convert_HP.Read(exINI, pSection, "Convert.HP");
 
 	if (pThis->Gunner)
 	{
@@ -1743,9 +1743,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->Unsellable)
 
-		.Process(this->Convert_GreenHP)
-		.Process(this->Convert_YellowHP)
-		.Process(this->Convert_RedHP)
+		.Process(this->Convert_HP_Min)
+		.Process(this->Convert_HP_Max)
+		.Process(this->Convert_HP)
 
 		.Process(this->ExtraThreat_Enabled)
 		.Process(this->ExtraThreat_IsThreat)

@@ -1538,16 +1538,17 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ### Automatic conversion based on HP
 
 - Units can now be converted into another unit by HP.
-- When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may be converted to a different techno set by `Convert.YellowHP` VehicleType.
-- Similar, `Convert.RedHP` is the new techno after the conversion if unit health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
-- `Convert.GreenHP` is the new techno after the conversion if unit health points percentage is higher than `[AudioVisual] -> ConditionYellow` percentage.
+- `Convert.HP.Min`determines the minimal HP at which a unit converts automatically after the HP update.
+- `Convert.HP.Max`determines the maximum HP at which a unit converts automatically after the HP update.
+- `Convert.HP` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                         ; TechnoType, before conversion
-Convert.GreenHP=                      ; TechnoType, after conversion
-Convert.YellowHP=                     ; TechnoType, after conversion
-Convert.RedHP=                        ; TechnoType, after conversion
+Convert.HP.Min=                       ; floating point value, percents or absolute
+Convert.HP.Max=                       ; floating point value, percents or absolute
+Convert.HP=                           ; TechnoType, after conversion
 ```
 
 ```{warning}

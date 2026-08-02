@@ -430,9 +430,9 @@ public:
 
 	Nullable<bool> Unsellable; // Ares 3.0
 
-	Nullable<TechnoTypeClass*> Convert_GreenHP;
-	Nullable<TechnoTypeClass*> Convert_YellowHP;
-	Nullable<TechnoTypeClass*> Convert_RedHP;
+	Valueable<double> Convert_HP_Min;
+	Valueable<double> Convert_HP_Max;
+	Nullable<TechnoTypeClass*> Convert_HP;
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
@@ -803,9 +803,9 @@ public:
 
 		, Unsellable {}
 
-		, Convert_GreenHP {}
-		, Convert_YellowHP {}
-		, Convert_RedHP {}
+		, Convert_HP_Min {-1}
+		, Convert_HP_Max {-1}
+		, Convert_HP {}
 
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}

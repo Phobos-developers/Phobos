@@ -164,26 +164,29 @@ void TechnoExt::AutoConvertActions()
 {
 	const auto pTypeExt = this->TypeExtData;
 	const auto pFoot = abstract_cast<FootClass*, true>(this->OwnerObject());
-	if (pFoot->IsGreenHP())
+
+	if (!pTypeExt->Convert_HP.isset())
 	{
-		if (const auto convertType = pTypeExt->Convert_GreenHP)
-		{
-			TechnoExt::ConvertToType(pFoot, convertType);
-		}
+		return;
 	}
-	else if (pFoot->IsYellowHP())
+
+	const double min = pTypeExt->Convert_HP_Min;
+	const double max = pTypeExt->Convert_HP_Max;
+
+	if (min < 0.0 && max < 0.0)
 	{
-		if (const auto convertType = pTypeExt->Convert_YellowHP)
-		{
-			TechnoExt::ConvertToType(pFoot, convertType);
-		}
+		return;
 	}
-	else if (pFoot->IsRedHP())
+
+	const auto hp = pFoot->GetHealthPercentage();
+	if (hp <= 0.0)
 	{
-		if (const auto convertType = pTypeExt->Convert_RedHP)
-		{
-			TechnoExt::ConvertToType(pFoot, convertType);
-		}
+		return;
+	}
+
+	if ((min < 0.0 || hp >= min) && (max < 0.0 || hp <= max))
+	{
+		TechnoExt::ConvertToType(pFoot, pTypeExt->Convert_HP);
 	}
 }
 
