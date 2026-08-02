@@ -101,6 +101,8 @@ In `rulesmd.ini`:
 [General]
 DiscardOn.MoveBasedOnDestination=false             ; boolean
 DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -171,10 +173,6 @@ DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
-
-[General]
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.CheckTransportDisableWeapons=false      ; boolean
 
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
