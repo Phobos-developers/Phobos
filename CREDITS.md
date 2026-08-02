@@ -304,6 +304,7 @@ This page lists all the individual contributions to the project by their author.
   - Animation theater/tile palette toggle
   - Animatable template
   - Tank Bunker improvements
+  - `ProjectileRange` weapon range modifiers interaction fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
