@@ -27,6 +27,7 @@ public:
 	std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 	Nullable<bool> InfantryAutoDeploy;
+	Valueable<bool> FiringByPassMovingCheck;
 
 	explicit InfantryTypeExt(InfantryTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
@@ -41,6 +42,7 @@ public:
 		, DeployedPrimaryFireFLH {}
 		, DeployedSecondaryFireFLH {}
 		, InfantryAutoDeploy {}
+		, FiringByPassMovingCheck { false }
 	{ }
 
 	InfantryTypeClass* OwnerObject() const
