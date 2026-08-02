@@ -5029,30 +5029,27 @@ msgstr "变形后重置心控效果"
 msgid "After the unit conversion is completed, its mind control can be reset."
 msgstr "单位变形完毕后其心控效果可被重置。"
 
-#, fuzzy
 msgid ""
 "If all warheads don't have `MindControl=true`, then "
 "`Convert.ResetMindControl=true` will release all controlled units."
 msgstr ""
-"如果变形后的单位所有弹头都没有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` "
+"如果变形后的单位所有弹头都没有 `MindControl=true`，那么 `Convert.ResetMindControl=true` "
 "将释放所有被心控的单位。"
 
-#, fuzzy
 msgid ""
 "If any warhead has `MindControl=true`, then "
 "`Convert.ResetMindControl=true` resets its maximum number of controls."
 msgstr ""
-"如果变形后的单位任意弹头拥有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` "
+"如果变形后的单位任意弹头拥有 `MindControl=true`，那么 `Convert.ResetMindControl=true` "
 "将重置最大控制数量上限。"
 
-#, fuzzy
 msgid ""
 "If all weapons don't have `InfiniteMindControl=true`, then "
 "`Convert.ResetMindControl=true` release controlled units that exceed the "
 "limit."
 msgstr ""
-"如果变形后的单位所有武器都没有 `InfiniteMindControl=yes`，那么 "
-"`Convert.ResetMindControl=yes` 将释放超出上限的被心控单位。"
+"如果变形后的单位所有武器都没有 `InfiniteMindControl=true`，那么 "
+"`Convert.ResetMindControl=true` 将释放超出上限的被心控单位。"
 
 msgid "Revenge weapon"
 msgstr "复仇武器"
