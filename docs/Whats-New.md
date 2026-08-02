@@ -65,7 +65,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - Phobos now requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx) (v0.1.0.2 or newer) to run - under older Syringe versions the game will show an error and exit on startup. Replace `Syringe.exe` in your game folder with the one bundled with the Phobos package (also available separately on the [SyringeEx releases page](https://github.com/Phobos-developers/SyringeEx/releases)).
 - Some keys relating to `Interceptor` and `PassengerDeletion` did not have correctly set default values. The ones where fixing this issue changes behaviour are (old wrong default -> new fixed default):
   - `Interceptor.CanTargetHouses`: `none` -> `enemies`
-  - `PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`.
+  - `PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`
   - `PassengerDeletion.CostMultiplier`: `0.0` -> `1.0`
   - `PassengerDeletion.AllowedHouses`: `none` -> `all`
   - `PassengerDeletion.SoylentMultiplier`: `0.0` -> `1.0`

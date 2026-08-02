@@ -384,27 +384,35 @@ msgid ""
 "correctly set default values. The ones where fixing this issue changes "
 "behaviour are (old wrong default -> new fixed default):"
 msgstr ""
+"某些 `Interceptor` 和 `PassengerDeletion` 相关语句没有正确默认值。修复该问题导致的行为变更如下（旧有错误默认值→修复后的新默认值）："
 
 msgid "`Interceptor.CanTargetHouses`: `none` -> `enemies`"
 msgstr ""
+"`Interceptor.CanTargetHouses`：`none`→`enemies`"
 
-msgid "`PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`."
+msgid "`PassengerDeletion.Rate.SizeMultiply`: `false` -> `true`"
 msgstr ""
+"`PassengerDeletion.Rate.SizeMultiply`：`false`→`true`"
 
 msgid "`PassengerDeletion.CostMultiplier`: `0.0` -> `1.0`"
 msgstr ""
+"`PassengerDeletion.CostMultiplier`：`0.0`→`1.0`"
 
 msgid "`PassengerDeletion.AllowedHouses`: `none` -> `all`"
 msgstr ""
+"`PassengerDeletion.AllowedHouses`：`none`→`all`"
 
 msgid "`PassengerDeletion.SoylentMultiplier`: `0.0` -> `1.0`"
 msgstr ""
+"`PassengerDeletion.SoylentMultiplier`：`0.0`→`1.0`"
 
 msgid "`PassengerDeletion.SoylentAllowedHouses`: `none` -> `enemies`"
 msgstr ""
+"`PassengerDeletion.SoylentAllowedHouses`：`none`→`enemies`"
 
 msgid "`PassengerDeletion.DisplaySoylentOffset`: `none` -> `all`"
 msgstr ""
+"`PassengerDeletion.DisplaySoylentOffset`：`none`→`all`"
 
 msgid "Changes compared to inter-version builds / pre-releases"
 msgstr "相较于版本间构建／预发布版本的更改"
@@ -3041,6 +3049,7 @@ msgid ""
 "Fixed a bug with some keys relating to `Interceptor` and "
 "`PassengerDeletion` not having correct default values (by Starkku)"
 msgstr ""
+"修复了某些 `Interceptor` 和 `PassengerDeletion` 相关语句没有正确默认值的 Bug（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
