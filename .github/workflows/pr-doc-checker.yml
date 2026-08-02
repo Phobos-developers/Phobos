@@ -102,12 +102,12 @@ jobs:
           # Check if any files in src/Interop/ were modified (excluding Version.h itself for initial checks)
           CHANGED_FILES=$(git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD))
           INTEROP_MODIFIED=$(echo "$CHANGED_FILES" | grep -E "^src/Interop/.*\.(h|cpp)$" | grep -v "^src/Interop/Version\." || true)
-          
+
           if [ -z "$INTEROP_MODIFIED" ]; then
             echo "No Interop files modified. Skipping version check."
             exit 0
           fi
-          
+
           # If Interop files were modified, check if Version.h was also modified
           if echo "$CHANGED_FILES" | grep -q "^src/Interop/Version\.h$"; then
             echo "Thank you for updating the Interop API version! 😋"
