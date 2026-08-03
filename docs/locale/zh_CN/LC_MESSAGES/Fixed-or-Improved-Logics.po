@@ -1988,6 +1988,17 @@ msgstr ""
 msgid "`[General] -> AutoRemoveEarliestBeacon` controls this behavior."
 msgstr "`[General] -> AutoRemoveEarliestBeacon` 控制此行为。"
 
+msgid "Berzerk on allies"
+msgstr "友军狂暴效果"
+
+msgid ""
+"In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target."
+" Now you can turn this off."
+msgstr "在原版中，`Psychedelic` 弹头硬编码忽略友军目标。现在你可以关闭这个。"
+
+msgid "No per-warhead setting because `AffectsAllies` etc. is respected."
+msgstr "没有弹头微观语句，因为生效与否仍会遵守 `AffectsAllies` 等设置。"
+
 msgid "Chrono sparkle animation customization & improvements"
 msgstr "超时空闪光动画的自定义与改进"
 
@@ -5772,17 +5783,6 @@ msgid ""
 " still fail to apply on the firer as it does not affect any objects "
 "belonging to same house as the firer, including itself."
 msgstr "注意尽管 `Psychedelic=true` 的效果与杀伤相关但由于其不会影响任何包括开火者在内所有与开火者同一所属的对象因此仍然无法生效。"
-
-msgid "Berzerk on allies"
-msgstr "友军狂暴效果"
-
-msgid ""
-"In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target."
-" Now you can turn this off."
-msgstr "在原版中，`Psychedelic` 弹头硬编码忽略友军目标。现在你可以关闭这个。"
-
-msgid "No per-warhead setting because `AffectsAllies` etc. is respected."
-msgstr "没有弹头微观语句，因为生效与否仍会遵守 `AffectsAllies` 等设置。"
 
 msgid "Combat light customizations"
 msgstr "自定义战斗闪光"

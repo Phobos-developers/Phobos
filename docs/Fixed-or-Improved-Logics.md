@@ -425,6 +425,20 @@ In `rulesmd.ini`:
 AutoRemoveEarliestBeacon=no   ; boolean
 ```
 
+### Berzerk on allies
+
+- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AllowBerzerkOnAllies=false  ; boolean
+```
+
+```{note}
+No per-warhead setting because `AffectsAllies` etc. is respected.
+```
+
 ### Chrono sparkle animation customization & improvements
 
 - It is now possible to customize the frame delay between instances of `[General] -> ChronoSparkle1` animations created on objects being warped by setting `[General] -> ChronoSparkleDisplayDelay`.
@@ -2868,20 +2882,6 @@ AllowDamageOnSelf=false  ; boolean
 
 [SOMEWARHEAD]            ; WarheadType
 AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
-```
-
-### Berzerk on allies
-
-- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-AllowBerzerkOnAllies=false  ; boolean
-```
-
-```{note}
-No per-warhead setting because `AffectsAllies` etc. is respected.
 ```
 
 ### Combat light customizations
