@@ -1536,8 +1536,8 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ### Automatic conversion based on health
 
 - Units can now be converted into another unit by health percentage.
-- `Convert.Health.AbovePercent`determines the minimal health percentage at which a unit converts automatically.
-- `Convert.Health.BelowPercent`determines the maximum health percentage at which a unit converts automatically.
+- `Convert.Health.AbovePercent` determines the minimal health percentage at which a unit converts automatically.
+- `Convert.Health.BelowPercent` determines the maximum health percentage at which a unit converts automatically.
 - `Convert.Health` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
 - Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
 
