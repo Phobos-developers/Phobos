@@ -178,8 +178,6 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
-
-	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
 	int GetSight();
 

@@ -428,6 +428,10 @@ public:
 
 	Nullable<Powerup> DropCrate;
 
+	Valueable<double> Convert_Health_AbovePercent;
+	Valueable<double> Convert_Health_BelowPercent;
+	Nullable<TechnoTypeClass*> Convert_Health;
+
 	Nullable<bool> Unsellable; // Ares 3.0
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
@@ -808,6 +812,10 @@ public:
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
 
 		, DropCrate {}
+
+		, Convert_Health_AbovePercent { -1.0 }
+		, Convert_Health_BelowPercent { -1.0 }
+		, Convert_Health {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

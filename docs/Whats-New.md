@@ -651,6 +651,9 @@ HideShakeEffects=false           ; boolean
 - Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
 - [Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) (by FS-21)
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
+- [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
+- `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
+- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -739,6 +742,7 @@ HideShakeEffects=false           ; boolean
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
 - Fixed the issue that spawnee or slave would execute some player commands (by TaranDahl)
 - Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
+- Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -126,6 +126,8 @@ public:
 
 	Nullable<int> RevealToAll_Radius;
 
+	Nullable<int> DeployFireDelay;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -219,6 +221,7 @@ public:
 		, StartFacing_Random{}
 		, SetTabBySelecting { -1 }
 		, RevealToAll_Radius {}
+		, DeployFireDelay {}
 
 		// Ares 0.2
 		, CloningFacility { false }
