@@ -207,6 +207,8 @@ void Apply_Ares3_0_Patches()
 	// Redirect Ares's RemoveCameo to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02BDD0, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
+	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x491B8, AresHelper::AresBaseAddress + 0x491C4);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayloadFix));
@@ -274,6 +276,9 @@ void Apply_Ares3_0_Patches()
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA8D94, &UnitDeliveryStateMachine_Update_Wrapper);
 
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1ACA3, AresHelper::AresBaseAddress + 0x1AD20);
+
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x745B8, &SendPDPlane);
 
@@ -313,6 +318,8 @@ void Apply_Ares3_0p1_Patches()
 	// Redirect Ares's RemoveCameo to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02C910, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
+	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x49E08, AresHelper::AresBaseAddress + 0x49E14);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayloadFix));
@@ -379,6 +386,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA9F28, &UnitDeliveryStateMachine_Update_Wrapper);
+
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1B393, AresHelper::AresBaseAddress + 0x1B410);
 
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x75668, &SendPDPlane);

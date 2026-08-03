@@ -6,16 +6,10 @@
 #include "Constructs.h"
 
 #include <optional>
-#include <vector>
-#include <map>
 #include <bitset>
-#include <memory>
 
-#include <ArrayClasses.h>
 #include <FileSystem.h>
 #include <FileFormats/SHP.h>
-#include <RulesClass.h>
-#include <SidebarClass.h>
 
 #include "Swizzle.h"
 #include "Debug.h"

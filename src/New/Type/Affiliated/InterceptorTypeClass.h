@@ -8,18 +8,18 @@ public:
 
 	InterceptorTypeClass() = default;
 
-	Valueable<int> TargetingDelay;
-	Valueable<AffectedHouse> CanTargetHouses;
-	Promotable<Leptons> GuardRange;
-	Promotable<Leptons> MinimumGuardRange;
-	Nullable<bool> GuardRange_IsCylindrical;
-	Valueable<int> Weapon;
-	Nullable<WeaponTypeClass*> WeaponOverride;
-	Valueable<bool> WeaponReplaceProjectile;
-	Valueable<bool> WeaponCumulativeDamage;
-	Valueable<bool> KeepIntact;
-	Nullable<bool> ApplyFirepowerMult;
-	Nullable<bool> DeleteOnIntercept;
+	Valueable<int> TargetingDelay { 1 };
+	Valueable<AffectedHouse> CanTargetHouses { AffectedHouse::Enemies };
+	Promotable<Leptons> GuardRange { Leptons(0) };
+	Promotable<Leptons> MinimumGuardRange { Leptons(0) };
+	Nullable<bool> GuardRange_IsCylindrical {};
+	Valueable<int> Weapon { 0 };
+	Nullable<WeaponTypeClass*> WeaponOverride {};
+	Valueable<bool> WeaponReplaceProjectile { false };
+	Valueable<bool> WeaponCumulativeDamage { false };
+	Valueable<bool> KeepIntact { false };
+	Nullable<bool> ApplyFirepowerMult {};
+	Nullable<bool> DeleteOnIntercept {};
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
