@@ -79,6 +79,9 @@ public:
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
+	Valueable<double> ArmorMultiplier_Chance;
+	Valueable<AffectedHouse> ArmorMultiplier_AffectsHouse;
+	ValueableVector<AnimTypeClass*> ArmorMultiplier_HitAnim;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -109,6 +112,7 @@ public:
 
 	std::vector<std::string> Groups;
 	bool RequiresRecalculation;
+	bool RestrictedArmorMultiplier;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -145,6 +149,9 @@ public:
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}
 		, ArmorMultiplier_DisallowWarheads {}
+		, ArmorMultiplier_Chance { 1.0 }
+		, ArmorMultiplier_AffectsHouse { AffectedHouse::All }
+		, ArmorMultiplier_HitAnim {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -174,6 +181,7 @@ public:
 		, LaserTrail_Type { -1 }
 		, Groups {}
 		, RequiresRecalculation { false }
+		, RestrictedArmorMultiplier { false }
 	{};
 
 	bool HasTint() const

@@ -709,6 +709,25 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `600` Configure Drop Crate
+
+- Set or overwrite the `DropCrate` of the affected objects.
+- Only functions when used as attached triggers within objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],600,0,[Behaviour],[index of the powerup],0,0,0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*               |
+| :---------: | :-------------------------: |
+| -1          | Use default Techno settings |
+| 0           | Clear `DropCrate` type      |
+| 1           | Overwrite `DropCrate` type  |
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -827,18 +846,18 @@ In `rulesmd.ini`:
 [BannerTypes]
 0=SOMEBANNER
 
-[SOMEBANNER]                ; BannerType
-PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - including the .shp extension
-SHP.Palette=palette.pal     ; filename - including the .pal extension
-SHP.RefreshAfterDelay=false ; boolean
-CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
-CSF.Background=false        ; boolean
-CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
-Duration=-1                 ; integer
-Delay=-1                    ; integer
-ClampToScreen=true          ; boolean
+[SOMEBANNER]                 ; BannerType
+PCX=                         ; filename - including the .pcx extension
+SHP=                         ; filename - including the .shp extension
+SHP.Palette=palette.pal      ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false  ; boolean
+CSF=                         ; CSF entry key
+CSF.Color=                   ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
+CSF.Background=false         ; boolean
+CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                  ; integer
+Delay=-1                     ; integer
+ClampToScreen=true           ; boolean
 ```
 
 In `mycampaign.map`:

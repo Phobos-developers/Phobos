@@ -105,7 +105,7 @@ This page lists all the individual contributions to the project by their author.
   - Parts of Ares calling code
   - Original `Arcing` elevation inaccuracy fix
   - Dehardcode 255 limit of `OverlayType`
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -153,6 +153,8 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Map Action 600 for overwriting DropCrate behaviour in attached Technos
+  - `DropCrate` for setting what crate drop when Techno is destroyed
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
@@ -302,6 +304,7 @@ This page lists all the individual contributions to the project by their author.
   - Animation theater/tile palette toggle
   - Animatable template
   - Tank Bunker improvements
+  - `ProjectileRange` weapon range modifiers interaction fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -596,7 +599,7 @@ This page lists all the individual contributions to the project by their author.
   - Voxel drawing invisible sections skip
   - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -858,7 +861,7 @@ This page lists all the individual contributions to the project by their author.
   - Adjust recruitable status on team member discharge
   - RA1-Style multi-turret and multi-barrel
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
-  - Fix the issue that spawner or slave would execute some player commands
+  - Fix the issue that spawnee or slave would execute some player commands
   - Customize whether aircraft is a cargo plane
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
@@ -905,9 +908,9 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **11EJDE11**
+- **11EJDE11**:
   - Prevent mpdebug number from being drawn when visibility toggled off
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **RAZER**:
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers
