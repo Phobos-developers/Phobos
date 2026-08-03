@@ -109,10 +109,10 @@ InsigniaType.PassengersN=                ; InsigniaType
 In `rulesmd.ini`:
 ```ini
 [General]
-CustomGS=false              ; boolean
-CustomGSN.ChangeInterval=-1 ; integer >= 1
-CustomGSN.ChangeDelay=N     ; integer between 0 and 6
-CustomGSN.DefaultDelay=N    ; integer between 0 and 6
+CustomGS=false               ; boolean
+CustomGSN.ChangeInterval=-1  ; integer >= 1
+CustomGSN.ChangeDelay=N      ; integer between 0 and 6
+CustomGSN.DefaultDelay=N     ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
 ```
 

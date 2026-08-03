@@ -101,6 +101,8 @@ In `rulesmd.ini`:
 [General]
 DiscardOn.MoveBasedOnDestination=false             ; boolean
 DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -171,10 +173,6 @@ DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
-
-[General]
-OpenTopped.UseTransportRangeModifiers=false        ; boolean
-OpenTopped.CheckTransportDisableWeapons=false      ; boolean
 
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
@@ -668,7 +666,19 @@ NoBuildAreaOnBuildup=false              ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                  ; BuildingType
-RevealToAll.Radius=             ; integer
+RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
+```
+
+### DeployFire supports
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Destroyable pathfinding obstacles
@@ -710,9 +720,9 @@ EngineerRepairAmount=0             ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]      ; BuildingType, as an upgrade
-PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-PowersUp.Buildings= ; List of BuildingTypes
+[SOMEBUILDING]       ; BuildingType, as an upgrade
+PowersUp.Owner=Self  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PowersUp.Buildings=  ; List of BuildingTypes
 ```
 
 ```{note}
@@ -1535,6 +1545,30 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
+### Automatic conversion based on health
+
+- Units can now be converted into another unit by health percentage.
+- `Convert.Health.AbovePercent` determines the minimal health percentage at which a unit converts automatically.
+- `Convert.Health.BelowPercent` determines the maximum health percentage at which a unit converts automatically.
+- `Convert.Health` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType, before conversion
+Convert.Health.AbovePercent=-1.0     ; floating point value, percents or absolute
+Convert.Health.BelowPercent=-1.0     ; floating point value, percents or absolute
+Convert.Health=                      ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
@@ -1861,16 +1895,6 @@ UseDisguiseMovementSpeed=false
 UseDisguiseMovementSpeed=         ; boolean, default to [General] -> UseDisguiseMovementSpeed
 ```
 
-### Exclusion from base center calculations
-
-- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-IgnoreForBaseCenter=false  ; boolean
-```
-
 ### Drop crates on death
 
 ![image](_static/images/dropcrate-01.gif)
@@ -1882,6 +1906,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]  ; TechnoType
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+```
+
+### Exclusion from base center calculations
+
+- It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+IgnoreForBaseCenter=false  ; boolean
 ```
 
 ### Extended gattling rate down logic
@@ -1971,31 +2005,31 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 In `rulesmd.ini`:
 ```ini
 [General]
-ForceWeapon.InRange.TechnoOnly=true             ; boolean
-ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceWeapon.InRange.TechnoOnly=true              ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false    ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false  ; boolean
 
-[SOMETECHNO]                                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
-ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
-ForceWeapon.Disguised=-1                        ; integer, -1 to disable
-ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
-ForceWeapon.InRange=                            ; List of integers
-ForceWeapon.InRange.TechnoOnly=                 ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
-ForceWeapon.InRange.Overrides=                  ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=        ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
-ForceAAWeapon.InRange=                          ; List of integers
-ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=      ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
-ForceWeapon.Buildings=-1                        ; integer, -1 to disable
-ForceWeapon.Defenses=-1                         ; integer, -1 to disable
-ForceWeapon.Infantry=-1                         ; integer, -1 to disable
-ForceWeapon.Naval.Units=-1                      ; integer, -1 to disable
-ForceWeapon.Units=-1                            ; integer, -1 to disable
-ForceWeapon.Aircraft=-1                         ; integer, -1 to disable
-ForceAAWeapon.Infantry=-1                       ; integer, -1 to disable
-ForceAAWeapon.Units=-1                          ; integer, -1 to disable
-ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
+[SOMETECHNO]                                     ; TechnoType
+ForceWeapon.Naval.Decloaked=-1                   ; integer, -1 to disable
+ForceWeapon.Cloaked=-1                           ; integer, -1 to disable
+ForceWeapon.Disguised=-1                         ; integer, -1 to disable
+ForceWeapon.UnderEMP=-1                          ; integer, -1 to disable
+ForceWeapon.InRange=                             ; List of integers
+ForceWeapon.InRange.TechnoOnly=                  ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
+ForceWeapon.InRange.Overrides=                   ; List of floating-point values
+ForceWeapon.InRange.ApplyRangeModifiers=         ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
+ForceAAWeapon.InRange=                           ; List of integers
+ForceAAWeapon.InRange.Overrides=                 ; List of floating-point values
+ForceAAWeapon.InRange.ApplyRangeModifiers=       ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
+ForceWeapon.Buildings=-1                         ; integer, -1 to disable
+ForceWeapon.Defenses=-1                          ; integer, -1 to disable
+ForceWeapon.Infantry=-1                          ; integer, -1 to disable
+ForceWeapon.Naval.Units=-1                       ; integer, -1 to disable
+ForceWeapon.Units=-1                             ; integer, -1 to disable
+ForceWeapon.Aircraft=-1                          ; integer, -1 to disable
+ForceAAWeapon.Infantry=-1                        ; integer, -1 to disable
+ForceAAWeapon.Units=-1                           ; integer, -1 to disable
+ForceAAWeapon.Aircraft=-1                        ; integer, -1 to disable
 ```
 
 ```{note}
@@ -3047,7 +3081,7 @@ RemoveParasite.Disallow=  ; List of TechnoTypes
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-PenetratesTransport.Level=10                    ; integer, default value of [TechnoType] -> PenetratesTransport.Level
+PenetratesTransport.Level=10                    ; integer
 
 [SOMEWARHEAD]                                   ; WarheadType
 PenetratesTransport.Level=0                     ; integer
@@ -3284,11 +3318,11 @@ For a sub-weapon created by `ShrapnelWeapon` or `AirburstWeapon`, its start poin
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-LaserPositionUpdate.StopOnFirerConvert=false ; boolean
+LaserPositionUpdate.StopOnFirerConvert=false  ; boolean
 
-[SOMEWEAPON]                                 ; WeaponType with IsLaser=yes or DiskLaser=yes
-LaserPositionUpdate=none                     ; Position Follow Enumeration (none|firer|target|all)
-LaserPositionUpdate.StopOnFirerConvert=false ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
+[SOMEWEAPON]                                  ; WeaponType with IsLaser=yes or DiskLaser=yes
+LaserPositionUpdate=none                      ; Position Follow Enumeration (none|firer|target|all)
+LaserPositionUpdate.StopOnFirerConvert=false  ; boolean, default to [AudioVisual] -> LaserPositionUpdate.StopOnFirerConvert
 ```
 
 ```{warning}
@@ -3303,8 +3337,8 @@ If the weapon sets this logic to a non-`None` value while also using other logic
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]         ; WeaponType
-AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
+[SOMEWEAPON]          ; WeaponType
+AreaFire.Target=base  ; AreaFire Target Enumeration (base|self|random)
 ```
 
 ### Attack non-threatening structures (Weapon)
