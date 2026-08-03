@@ -843,8 +843,8 @@ void FootExt::HealthAutoConvertActions()
 	if (!pTypeExt->Convert_Health.isset())
 		return;
 
-	const int min = pTypeExt->Convert_Health_AbovePercent;
-	const int max = pTypeExt->Convert_Health_BelowPercent;
+	const double min = pTypeExt->Convert_Health_AbovePercent;
+	const double max = pTypeExt->Convert_Health_BelowPercent;
 
 	if (min < 0 && max < 0)
 		return;
