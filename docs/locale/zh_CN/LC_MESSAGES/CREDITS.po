@@ -3153,4 +3153,5 @@ msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置�
 
 msgid "**obsidianus** - Automatic conversion based on health"
 msgstr ""
+"**obsidianus** - 自动根据血量变形"
 

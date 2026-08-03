@@ -2394,6 +2394,7 @@ msgid ""
 "[Automatic conversion based on health](New-or-Enhanced-Logics.md"
 "#automatic-conversion-based-on-health) (by obsidianus)"
 msgstr ""
+"[自动根据血量变形](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health)（by obsidianus）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

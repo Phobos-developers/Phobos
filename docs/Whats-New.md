@@ -652,7 +652,7 @@ HideShakeEffects=false           ; boolean
 - [Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) (by FS-21)
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 - [`DeployFire` supports buildings](Fixed-or-Improved-Logics.md#deployfire-supports-buildings) (By FlyStar)
-- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
+- [Automatic conversion based on health](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health) (by obsidianus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

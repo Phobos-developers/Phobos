@@ -3630,28 +3630,28 @@ msgid "Automatic conversion based on health"
 msgstr "自动根据血量变形"
 
 msgid "Units can now be converted into another unit by health percentage."
-msgstr "单位可以现在可以基于HP变为其他单位"
+msgstr "单位可以现在可以基于生命值百分比变为其他单位。"
 
 msgid ""
 "`Convert.Health.AbovePercent` determines the minimal health percentage at"
 " which a unit converts automatically."
-msgstr "`Convert.Health.AbovePercent`决定了触发单位自动变身的最小HP值"
+msgstr "`Convert.Health.AbovePercent` 决定了触发单位自动变身的最小生命值百分比。"
 
 msgid ""
 "`Convert.Health.BelowPercent` determines the maximum health percentage at"
 " which a unit converts automatically."
-msgstr "`Convert.Health.BelowPercent`决定了触发单位自动变身的最大HP值"
+msgstr "`Convert.Health.BelowPercent` 决定了触发单位自动变身的最大生命值百分比。"
 
 msgid ""
 "`Convert.Health` specify the new techno after the conversion. This unit "
 "must be of the same type of the original (infantry -> infantry, vehicle "
 "-> vehicle or aircraft -> aircraft)."
-msgstr "`Convert.Health` 指定变身后的单位. 类型需要和原单位相同 (步兵 → 步兵, 载具 → 载具 或 飞机 → 飞机)"
+msgstr "`Convert.Health` 指定变形成哪个新单位。该单位必须与原单位同属一类（载具变载具，步兵变步兵，战机变战机）。"
 
 msgid ""
 "Setting a negative number will disable the HP check, and when both checks"
 " are disabled, conversion will not occur."
-msgstr "设置为负值会关闭对应的HP检查，当两项检查都被关闭则不会触发变身."
+msgstr "设置为负值会关闭对应的生命值检查，当两项检查都被关闭则不会触发变身。"
 
 msgid "Automatic passenger deletion"
 msgstr "自动删除乘客"
