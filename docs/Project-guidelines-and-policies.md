@@ -238,6 +238,10 @@ Starting from version 0.5, Phobos adopts a new release strategy to enable faster
 
 *Image editable in [Excalidraw](https://excalidraw.com)*
 
+```{important}
+All changes are to be made **exclusively** to `develop` as the source of truth, and then cherry-picked to other branches!
+```
+
 ```{hint}
 A brief summary compared to old style:
 - devbuilds are now called pre-releases (alpha, beta, RC etc.) and are almost a proper version with docs, all changes tracked in a special changelog subsection, released on the same cadence;
