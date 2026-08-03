@@ -23,9 +23,9 @@ You can use the improved vanilla font which can be found on [Phobos supplementar
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]             ; Side
-IngameScore.WinTheme=  ; Soundtrack theme ID
-IngameScore.LoseTheme= ; Soundtrack theme ID
+[SOMESIDE]              ; Side
+IngameScore.WinTheme=   ; Soundtrack theme ID
+IngameScore.LoseTheme=  ; Soundtrack theme ID
 ```
 
 ## Battle screen UI/UX
@@ -513,16 +513,16 @@ HideShakeEffects=false       ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-DisplayIncome=false       ; boolean
-DisplayIncome.Delay=15    ; integer
-DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisplayIncome.AllowAI=yes ; boolean
+DisplayIncome=false        ; boolean
+DisplayIncome.Delay=15     ; integer
+DisplayIncome.Houses=all   ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes  ; boolean
 
-[SOMEBUILDING]            ; BuildingType
-DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
-DisplayIncome.Delay=15    ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
-DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
-DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+[SOMEBUILDING]             ; BuildingType
+DisplayIncome=             ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Delay=15     ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
+DisplayIncome.Houses=      ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
+DisplayIncome.Offset=0,0   ; X,Y, pixels relative to default
 ```
 
 ### Show power plant enhancer range
@@ -618,6 +618,7 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
 
 ### `[ ]` Select Captured Units
+
 - Select the units within the current screen that are captured by non-permanent mind-controller.
 - Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
 - If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
@@ -655,7 +656,7 @@ When starting a new campaign, the game automatically saves the game. Now you can
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-SaveGameOnScenarioStart=true ; boolean
+SaveGameOnScenarioStart=true  ; boolean
 ```
 
 ## Sidebar / Battle UI

@@ -136,6 +136,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
 	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
 	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
+	this->ArmorMultiplier_Chance.Read(exINI, pSection, "ArmorMultiplier.Chance");
+	this->ArmorMultiplier_AffectsHouse.Read(exINI, pSection, "ArmorMultiplier.AffectsHouse");
+	this->ArmorMultiplier_HitAnim.Read(exINI, pSection, "ArmorMultiplier.HitAnim");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
@@ -196,6 +199,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	{
 		this->RequiresRecalculation = false;
 	}
+
+	// RestrictedArmorMultiplier
+	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
+		this->RestrictedArmorMultiplier = true;
+	else
+		this->RestrictedArmorMultiplier = false;
 }
 
 template <typename T>
@@ -236,6 +245,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
 		.Process(this->ArmorMultiplier_DisallowWarheads)
+		.Process(this->ArmorMultiplier_Chance)
+		.Process(this->ArmorMultiplier_AffectsHouse)
+		.Process(this->ArmorMultiplier_HitAnim)
 		.Process(this->SpeedMultiplier)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)

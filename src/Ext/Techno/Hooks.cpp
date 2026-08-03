@@ -493,19 +493,31 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
 
 	if (pExt->AE.HasRestrictedArmorMultipliers)
 	{
+		auto& random = ScenarioClass::Instance->Random;
+		auto const pOwner = pThis->Owner;
+
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
 				continue;
 
 			auto const type = attachEffect->GetType();
+
+			if (!type->RestrictedArmorMultiplier)
+				continue;
+
+			if (type->ArmorMultiplier_Chance < random.RandomDouble())
+				continue;
+
+			if (pOwner && !EnumFunctions::CanTargetHouse(type->ArmorMultiplier_AffectsHouse, pSourceHouse, pOwner))
+				continue;
 
 			if (pWarhead)
 			{
@@ -515,12 +527,12 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 				if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
 					continue;
 			}
-			else if (type->ArmorMultiplier_DisallowWarheads.size() <= 0 && type->ArmorMultiplier_AllowWarheads.size() <= 0) // already calculated
-			{
-				continue;
-			}
 
 			mult *= type->ArmorMultiplier;
+
+			// HitAnim
+			if (hitAnim)
+				AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
 		}
 	}
 
@@ -529,11 +541,12 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EDI);
 	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead, pThis->Owner)));
 
 	return 0;
 }
@@ -542,9 +555,10 @@ DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(const int, damage, EAX);
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse, true)));
 
 	return 0;
 }
@@ -620,8 +634,35 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
 
+	// Note: Some SW never had a "killer" or a "house" (hello "NukeSpecial"), probably never scored to the killer?
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
+
+	return 0;
+}
+
+// AFAIK, only used by the teleport of the Chronoshift SW
+DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(TechnoClass*, pVictim, ESI);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
 
 	return 0;
 }
@@ -2291,7 +2332,7 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 				double multiplier = 1.0;
 
 				if (applyMultiplier)
-					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
+					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pThis->Owner->Owner, pWarhead);
 
 				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
 				{
