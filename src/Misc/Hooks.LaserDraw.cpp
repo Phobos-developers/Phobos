@@ -191,7 +191,7 @@ namespace LaserRT
 // IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
 DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 {
-	if (WeaponTypeExt::LaserTrackingWeaponSeen)
+	if (!Phobos::Optimizations::DisableLaserTracking)
 	{
 		GET(LaserDrawClass*, pLaser, ECX);
 		LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
@@ -263,6 +263,9 @@ void WeaponTypeExt::OnObjectRemoved(ObjectClass* pObject)
 
 DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(TechnoClass*, pShooter, ECX);
 	GET_STACK(ObjectClass*, pTarget, 0x4);
 	GET_STACK(const int, weaponIdx, 0x8);
@@ -287,6 +290,9 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(WeaponTypeClass*, pWeapon, ECX);
 	GET(LaserDrawClass*, pLaser, EAX);
 	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
@@ -324,6 +330,9 @@ DEFINE_FUNCTION_JUMP(CALL, 0x46AD81, Shrapnel_CreateLaser_Wrapper)
 // DiskLaser main beam activation
 DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(LaserDrawClass*, pLaser, EAX);
 
 	if (!pLaser)

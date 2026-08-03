@@ -3,7 +3,6 @@
 #include <Ext/Techno/Body.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
-bool WeaponTypeExt::LaserTrackingWeaponSeen = false;
 
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
@@ -120,7 +119,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
 	if (this->LaserPositionUpdate != PositionFollow::None)
-		WeaponTypeExt::LaserTrackingWeaponSeen = true;
+		Phobos::Optimizations::DisableLaserTracking = false;
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
