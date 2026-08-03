@@ -42,6 +42,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, LastSequenceCheck { Sequence::Nothing }
 {
 	this->HasInitialized = false;
 
@@ -697,12 +698,29 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	{
 		if (auto const pInf = abstract_cast<InfantryClass*, true>(pTechno))
 		{
-			if (pType->DiscardOn_Sequences.size() > 0 && pType->DiscardOn_Sequences.Contains(pInf->SequenceAnim))
+			if (pType->DiscardOn_Sequences.size() > 0)
 			{
-				this->LastDiscardCheckValue = true;
-				return true;
+				if (pType->DiscardOn_Sequences_Immediate.Get(RulesExt::Global()->DiscardOn_Sequences_Immediate))
+				{
+					if (pType->DiscardOn_Sequences.Contains(pInf->SequenceAnim))
+					{
+						this->LastDiscardCheckValue = true;
+						return true;
+					}
+				}
+				else
+				{
+					if (this->LastSequenceCheck != pInf->SequenceAnim && pType->DiscardOn_Sequences.Contains(this->LastSequenceCheck))
+					{
+						this->LastDiscardCheckValue = true;
+						return true;
+					}
+					this->LastSequenceCheck = pInf->SequenceAnim;
+				}
 			}
 		}
+		else
+			this->LastSequenceCheck = Sequence::Nothing;
 	}
 
 	if (pTechno->Target)
@@ -1254,6 +1272,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
 		.Process(this->ShouldRecalculateStats)
+		.Process(this->LastSequenceCheck)
 		.Success();
 }
 

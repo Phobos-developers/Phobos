@@ -65,6 +65,7 @@ public:
 	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
 	ValueableVector<Sequence> DiscardOn_Sequences;
+	Nullable<bool>DiscardOn_Sequences_Immediate;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
@@ -143,6 +144,7 @@ public:
 		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }
 		, DiscardOn_Sequences {}
+		, DiscardOn_Sequences_Immediate {}
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
 		, DiscardOn_ConsiderHarvestingAsStationary {}
