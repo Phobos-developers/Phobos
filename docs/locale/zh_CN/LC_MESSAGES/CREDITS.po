@@ -1349,16 +1349,19 @@ msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在�
 
 msgid "`DeployFire` supports buildings"
 msgstr ""
+"`DeployFire` 支持建筑"
 
 msgid ""
 "Fix an issue where `OmniFire` was ineffective on buildings with "
 "`Turret=yes`"
 msgstr ""
+"修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题"
 
 msgid ""
 "Fix an issue where setting a production building as `Primary` could cause"
 " it to enter an unload state"
 msgstr ""
+"修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

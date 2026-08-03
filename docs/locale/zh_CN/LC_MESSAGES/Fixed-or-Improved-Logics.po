@@ -1673,11 +1673,13 @@ msgid ""
 "Fixed an issue where `OmniFire` was ineffective on buildings with "
 "`Turret=yes`."
 msgstr ""
+"修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题。"
 
 msgid ""
 "Fixed an issue where setting a production building as `Primary` could "
 "cause it to enter an unload state."
 msgstr ""
+"修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
@@ -3468,21 +3470,25 @@ msgstr "不同于《泰伯利亚之日》中的同名语句，此处语句使用
 
 msgid "`DeployFire` supports buildings"
 msgstr ""
+"`DeployFire` 支持建筑"
 
 msgid "Building types now also support using `DeployFire` and `DeployFireWeapon`."
 msgstr ""
+"现在建筑同样支持使用 `DeployFire` 和 `DeployFireWeapon`。"
 
 msgid ""
 "If a building has other configurations such as `Factory`, `GapGenerator`,"
 " or `Passengers`, it will prioritize executing those deployment actions "
 "instead."
 msgstr ""
+"如果建筑拥有例如 `Factory`、`GapGenerator` 或 `Passengers` 的其他配置，它将优先执行这些部署动作。"
 
 msgid ""
 "`DeployFireDelay` specifies the frame interval at which deployed weapons "
 "attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, "
 "or other reasons, the deployed weapon will not fire."
 msgstr ""
+"`DeployFireDelay` 指定部署武器尝试开火的帧间隔。如果由于 `ROF`、`CanTarget` 或其他原因导致武器不可用，部署武器同样不会开火。"
 
 msgid "Disable `DamageSound`"
 msgstr "禁用 `DamageSound`"

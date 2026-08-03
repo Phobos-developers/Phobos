@@ -324,6 +324,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
 - Fixed the issue that spawnee or slave would execute some player commands.
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
+- Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`.
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 
 ## Fixes / interactions with other extensions
@@ -1322,6 +1323,18 @@ StartFacing.Random=               ; boolean, defaults to [General] -> BuildingSt
 
 ```{note}
 Unlike the identically named INI flag in Tiberian Sun, this flag uses a 256-point circle rather than an 8-point circle.
+```
+
+### DeployFire supports buildings
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Disable `DamageSound`
