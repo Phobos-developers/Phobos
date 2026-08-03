@@ -813,8 +813,8 @@ public:
 
 		, DropCrate {}
 
-		, Convert_Health_AbovePercent { -1 }
-		, Convert_Health_BelowPercent { -1 }
+		, Convert_Health_AbovePercent { -1.0 }
+		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
 	{ }
 

@@ -63,6 +63,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
+
 	virtual ~BuildingExt() = default;
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -116,5 +117,6 @@ public:
 	static void __stdcall UpdateFactoryQueues(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
+	static bool BuildingOnline(BuildingClass* pThis);
 };
 
