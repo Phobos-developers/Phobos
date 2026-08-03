@@ -1,6 +1,3 @@
-#include <AlphaShapeClass.h>
-#include <TacticalClass.h>
-
 #include <Ext/Building/Body.h>
 #include <Utilities/AresFunctions.h>
 
@@ -52,7 +49,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 			point.Y += cellDimensions.Y / 2;
 			point += off;
 
-			RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
+			const RectangleStruct dirty = { point.X - tacticalPos->X - cellDimensions.X,
 				point.Y - tacticalPos->Y - cellDimensions.Y,
 				pImage->Width + cellDimensions.X * 2,
 				pImage->Height + cellDimensions.Y * 2 };
@@ -75,13 +72,8 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
-	if (pBuilding)
-	{
-		const auto currMission = pBuilding->GetCurrentMission();
-
-		if (currMission != Mission::Construction && currMission != Mission::Selling)
-			inactive |= !pBuilding->IsPowerOnline() || BuildingExt::ExtMap.Find(pBuilding)->LimboID != -1;
-	}
+	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
+		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
 
 	auto& alphaExt = *AresFunctions::AlphaExtMap;
 
@@ -95,7 +87,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
 	{
-		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret() || !pBuilding->TurretIsRotating))
+		if (alphaExt.get_or_default(pSource) && pBuilding && pImage->Frames <= 1)
 			return;
 
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;
@@ -105,8 +97,8 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		GameCreate<AlphaShapeClass>(pSource, point.X, point.Y);
 		--Unsorted::ScenarioInit;
 		//int Margin = 40;
-		RectangleStruct Dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
-		TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
+		const RectangleStruct dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
+		TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 	}
 }
 

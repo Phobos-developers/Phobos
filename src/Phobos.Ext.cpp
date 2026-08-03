@@ -3,34 +3,24 @@
 #include <LoadOptionsClass.h>
 
 #include <Ext/Aircraft/Body.h>
-#include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
+#include <Ext/Infantry/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
-#include <Ext/House/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
-#include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
-#include <Ext/SWType/Body.h>
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
-#include <Ext/Team/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/Tiberium/Body.h>
 #include <Ext/VoxelAnim/Body.h>
-#include <Ext/VoxelAnimType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
 
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -39,6 +29,8 @@
 
 #include <New/Entity/BannerClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+
+#include <Utilities/Detach.h>
 
 #include <utility>
 
@@ -56,11 +48,6 @@ concept DerivedFromSpecializationOf =
 
 template<typename TExt>
 concept HasExtMap = requires { { TExt::ExtMap } -> DerivedFromSpecializationOf<Container>; };
-
-template<typename TExt>
-concept ExtDataConsiderPointerInvalidation = HasExtMap<TExt> && requires{
-	{ TExt::ShouldConsiderInvalidatePointer }->std::convertible_to<const bool>;
-}&& TExt::ShouldConsiderInvalidatePointer == true;
 
 template <typename T>
 concept Clearable = requires { T::Clear(); };
@@ -101,7 +88,6 @@ struct ClearAction
 
 // calls:
 // T::PointerGotInvalid(void*, bool)
-// T::ExtMap.PointerGotInvalid(void*, bool)
 struct InvalidatePointerAction
 {
 	template <typename T>
@@ -109,8 +95,6 @@ struct InvalidatePointerAction
 	{
 		if constexpr (PointerInvalidationSubscribable<T>)
 			T::PointerGotInvalid(ptr, removed);
-		else if constexpr (ExtDataConsiderPointerInvalidation<T>)
-			T::ExtMap.PointerGotInvalid(ptr, removed);
 
 		return true;
 	}
@@ -159,6 +143,69 @@ struct SaveGlobalsAction
 	}
 };
 
+// calls:
+// T::ExtMap.SaveAllToStream(IStream*)
+struct SaveExtensionsAction
+{
+	template <typename T>
+	static bool Process(IStream* pStm)
+	{
+		if constexpr (HasExtMap<T>)
+			return T::ExtMap.SaveAllToStream(pStm);
+		else
+			return true;
+	}
+};
+
+// calls:
+// T::ExtMap.LoadAllFromStream(IStream*)
+struct LoadExtensionsAction
+{
+	template <typename T>
+	static bool Process(IStream* pStm)
+	{
+		if constexpr (HasExtMap<T>)
+			return T::ExtMap.LoadAllFromStream(pStm);
+		else
+			return true;
+	}
+};
+
+// calls:
+// T::ExtMap.RelinkExtensionPointers()
+struct RelinkExtensionsAction
+{
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+			T::ExtMap.RelinkExtensionPointers();
+
+		return true;
+	}
+};
+
+// calls:
+// T::ExtMap.AllocatePendingExtensions()
+struct AllocatePendingExtensionsAction
+{
+	// whether the last sweep created anything; the dispatch folds with && and would
+	// short-circuit on a false result, so the outcome travels out of band
+	static inline bool AllocatedAny = false;
+
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+		{
+			if (T::ExtMap.AllocatePendingExtensions())
+				AllocatedAny = true;
+		}
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -185,6 +232,33 @@ struct TypeRegistry
 		return dispatch_mass_action<SaveGlobalsAction>(pStm);
 	}
 
+	__forceinline static bool SaveExtensions(IStream* pStm)
+	{
+		return dispatch_mass_action<SaveExtensionsAction>(pStm);
+	}
+
+	__forceinline static bool LoadExtensions(IStream* pStm)
+	{
+		return dispatch_mass_action<LoadExtensionsAction>(pStm);
+	}
+
+	__forceinline static void RelinkExtensions()
+	{
+		dispatch_mass_action<RelinkExtensionsAction>();
+	}
+
+	__forceinline static void AllocatePendingExtensions()
+	{
+		// a sweep can make the game create objects tracked by a container that was
+		// already swept, so repeat until one full pass turns up nothing new
+		do
+		{
+			AllocatePendingExtensionsAction::AllocatedAny = false;
+			dispatch_mass_action<AllocatePendingExtensionsAction>();
+		}
+		while (AllocatePendingExtensionsAction::AllocatedAny);
+	}
+
 private:
 	// TAction: the method dispatcher class to call with each type
 	// ArgTypes: the argument types to call the method dispatcher's Process() method
@@ -201,9 +275,11 @@ private:
 #pragma endregion
 
 // Add more class names as you like
+// NOTE: the order of extension classes with containers is the savegame stream order - append-only!
 using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
 	AircraftExt,
+	AircraftTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
@@ -212,7 +288,11 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CellExt,
 	EBoltExt,
+	FootExt,
 	HouseExt,
+	HouseTypeExt,
+	InfantryExt,
+	InfantryTypeExt,
 	OverlayTypeExt,
 	ParticleSystemTypeExt,
 	RadSiteExt,
@@ -223,14 +303,19 @@ using PhobosTypeRegistry = TypeRegistry <
 	SWTypeExt,
 	TActionExt,
 	TeamExt,
+	TeamTypeExt,
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TEventExt,
 	TiberiumExt,
+	UnitExt,
+	UnitTypeExt,
 	VoxelAnimExt,
 	VoxelAnimTypeExt,
 	WarheadTypeExt,
 	WeaponTypeExt,
+	ParticleTypeExt,
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
@@ -251,7 +336,14 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	GET(AbstractClass* const, pInvalid, ECX);
 	GET(bool const, removed, EDX);
 
+	Detach::NotifyAbstract(pInvalid, removed);
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
+
+	if (removed)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*>(static_cast<AbstractClass*>(pInvalid)))
+			WeaponTypeExt::OnObjectRemoved(pObject);
+	}
 
 	return 0;
 }
@@ -269,14 +361,45 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	PhobosTypeRegistry::SaveGlobals(pStm);
+
+	if (!PhobosTypeRegistry::SaveGlobals(pStm) || !PhobosTypeRegistry::SaveExtensions(pStm))
+		Debug::FatalErrorAndExit("SaveGame - Failed to save Phobos data!\n");
+
 	return 0;
 }
 
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	PhobosTypeRegistry::LoadGlobals(pStm);
+
+	if (!PhobosTypeRegistry::LoadGlobals(pStm) || !PhobosTypeRegistry::LoadExtensions(pStm))
+		Debug::FatalErrorAndExit("LoadGame - Failed to load Phobos data!\n");
+
+	return 0;
+}
+
+// AbstractClass::Load restores the object image from the savegame as-is, including the
+// save-time extension pointer in the inline slot. Clear the slot right after the image
+// is read, so anything fetching an extension during the load window (before the
+// post-swizzle relink below) sees "no extension" instead of a stale pointer.
+DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
+{
+	GET(AbstractClass*, pThis, ESI);
+
+	AbstractExt::Attach(pThis, nullptr);
+
+	return 0;
+}
+
+// First instruction after SwizzleManagerClass::Process has remapped every registered
+// pointer: extension owners are valid again, write the extensions back into their
+// owners' inline slots (cleared when the owners were loaded).
+DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
+{
+	PhobosTypeRegistry::RelinkExtensions();
+	// with the restored extensions in place, the owners left over are the objects the
+	// game created itself while loading; they get their extensions now
+	PhobosTypeRegistry::AllocatePendingExtensions();
 	return 0;
 }
 
@@ -308,6 +431,35 @@ DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 
 #include <Dbghelp.h>
 #include <tlhelp32.h>
+
+/**
+ *  Sets up to close Syringe when the game exits.
+ *  We don't do it immediately so that the client doesn't think
+ *  the game has exited once Syringe closes.
+ *
+ *  Ported from Vinifera
+ *  @author: ZivDero, secsome
+ */
+static DWORD DebuggerPID = 0;
+
+void _cdecl Kill_Debugger()
+{
+	if (DebuggerPID != 0)
+	{
+		HANDLE handle = OpenProcess(PROCESS_TERMINATE, FALSE, DebuggerPID);
+		if (handle)
+		{
+			TerminateProcess(handle, EXIT_SUCCESS);
+			CloseHandle(handle);
+		}
+	}
+}
+
+void Setup_Kill_Debugger(DWORD pid)
+{
+	DebuggerPID = pid;
+	atexit(Kill_Debugger);
+}
 
 bool Phobos::DetachFromDebugger()
 {
@@ -362,13 +514,8 @@ bool Phobos::DetachFromDebugger()
 				status = NtRemoveProcessDebug(hCurrentProcess, hDebug);
 				if (0 <= status)
 				{
-					HANDLE hDbgProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-					if (INVALID_HANDLE_VALUE != hDbgProcess)
-					{
-						BOOL ret = TerminateProcess(hDbgProcess, EXIT_SUCCESS);
-						CloseHandle(hDbgProcess);
-						return ret;
-					}
+					Setup_Kill_Debugger(pid);
+					return true;
 				}
 			}
 			NtClose(hDebug);

@@ -1,8 +1,5 @@
 #include "TiberiumEaterTypeClass.h"
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/TemplateDef.h>
-
 void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
