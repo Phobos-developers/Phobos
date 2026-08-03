@@ -134,32 +134,6 @@ void TechnoExt::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::AmmoAutoConvertActions()
-{
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt->Ammo_AutoConvertType.isset())
-		return;
-
-	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	if (pTypeExt->OwnerObject()->Ammo <= 0)
-		return;
-
-	const auto pThis = this->OwnerObject();
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-	{
-		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
-		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
-	}
-}
-
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {
