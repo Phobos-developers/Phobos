@@ -378,6 +378,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
+- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType
 
 ## Newly added global settings
 
