@@ -681,7 +681,7 @@ DEFINE_HOOK(0x701D6B, TechnoClass_ReceiveDamage_Psychedelic, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WarheadTypeClass*, pWH, EBP);
-	GET(int, damage, EAX);
+	GET(const int, damage, EAX);
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
 	auto const stackingMode = pWHExt->Psychedelic_StackingMode.Get(RulesExt::Global()->Psychedelic_StackingMode);
