@@ -3457,6 +3457,14 @@ msgstr ""
 "Ares 的 [电池超武](https://ares-developers.github.io/Ares-"
 "docs/new/superweapons/types/battery.html) 不受此影响。"
 
+msgid "Customize reveal radius of `RevealToAll`"
+msgstr "自定义 `RevealToAll` 揭示范围"
+
+msgid ""
+"In vanilla, `RevealToAll` is hardcoded to reveal area in radius is "
+"`Sight`. Now you can customize it."
+msgstr "在原版中，`RevealToAll` 硬编码揭示半径为 `Sight` 的区域。现在你可以自定义了。"
+
 msgid "Customize the initial facing of buildings"
 msgstr "自定义建筑初始方向"
 

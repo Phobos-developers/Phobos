@@ -1710,14 +1710,6 @@ msgid ""
 "displaying its buildup animation."
 msgstr "如果 `NoBuildAreaOnBuildup` 设为 true 则任何建筑类型都不能当其在播放建造动画时在其附近建造。"
 
-msgid "Customize reveal radius of `RevealToAll`"
-msgstr "自定义 `RevealToAll` 揭示范围"
-
-msgid ""
-"In vanilla, `RevealToAll` is hardcoded to reveal area in radius is "
-"`Sight`. Now you can customize it."
-msgstr "在原版中，`RevealToAll` 硬编码揭示半径为 `Sight` 的区域。现在你可以自定义了。"
-
 msgid "Destroyable pathfinding obstacles"
 msgstr "可摧毁的寻路障碍"
 

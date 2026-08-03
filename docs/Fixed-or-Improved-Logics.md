@@ -1306,6 +1306,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Customize reveal radius of `RevealToAll`
+
+- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                  ; BuildingType
+RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
+```
+
 ### Customize the initial facing of buildings
 
 - In vanilla, buildings always face due north (0). Now you can customize it.

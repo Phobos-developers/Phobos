@@ -645,7 +645,7 @@ HideShakeEffects=false           ; boolean
 - [Change target Owner on warhead impact](New-or-Enhanced-Logics.md#change-target-owner-on-impact) (by Fryone)
 - [New hotkey to select the units within the current screen that are captured by non-permanent mind-controller](User-Interface.md#select-captured-units) (by TaranDahl)
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
-- [Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
+- [Customize reveal radius of `RevealToAll`](Fixed-or-Improved-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
 - [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
 - Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
