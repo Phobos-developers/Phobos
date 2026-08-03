@@ -2,15 +2,15 @@
 
 This page lists the history of changes across stable Phobos releases and also all the stuff that requires modders to change something in their mods to accommodate.
 
-## Migrating
+## Migrating from vanilla
+
+This serves as a changelog for when you just need to drop the new version in without reading into every version you're skipping (be sure to read Phobos migration one below too), so you can simply read up on this log of breaking changes and apply whatever you might need to apply.
 
 ```{hint}
 You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
 ```
 
-### From vanilla
-
-#### Version TBD (develop branch nightly builds)
+### 0.5
 
 - Vehicles paradropped by AI players now default to `Hunt` mission instead of `Guard`, matching what infantry do. This can be customized by setting `AIParadropMission` on the VehicleType, defaults to `[General] -> AIParadropMission`.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation if `DeployDir` is explicitly set on the unit.
@@ -19,7 +19,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
 - The default direction for aircraft landing on an airfield will use the direction specified by `[AudioVisual] -> PoseDir=` instead of the building's direction, which can be reverted by setting `AircraftDockingDir.DefaultToPoseDir=false`.
 
-#### 0.4
+### 0.4
 
 - `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
 - Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`.
@@ -27,14 +27,18 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
-#### 0.3
+### 0.3
 
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
 
-## Breaking changes
+## Breaking Phobos changes
 
-This serves as a changelog for when you just need to drop the new version in without reading into every version you're skipping, so you can simply read up on this log of breaking changes and apply whatever you might need to apply.
+This serves as a changelog for when you just need to drop the new version in without reading into every version you're skipping (be sure to read vanilla migration one above too), so you can simply read up on this log of breaking changes and apply whatever you might need to apply.
+
+```{hint}
+You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
+```
 
 ### 0.5
 
@@ -403,7 +407,7 @@ HideShakeEffects=false           ; boolean
 
 ## Changelog
 
-### Version TBD (develop branch nightly builds)
+### 0.5
 
 ```{dropdown} Click to show
 :open:
@@ -813,6 +817,13 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
+
+```
+
+```{dropdown} Pre-release changes
+
+#### 0.5-alpha1
+
 ```
 
 ### 0.4.0.3
