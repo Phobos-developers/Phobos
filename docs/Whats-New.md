@@ -653,6 +653,7 @@ HideShakeEffects=false           ; boolean
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 - [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
 - `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
+- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
