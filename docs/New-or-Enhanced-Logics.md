@@ -669,6 +669,18 @@ In `rulesmd.ini`:
 RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
 ```
 
+### DeployFire supports
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
+```
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.

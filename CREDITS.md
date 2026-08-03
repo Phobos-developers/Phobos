@@ -436,6 +436,9 @@ This page lists all the individual contributions to the project by their author.
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
+  - DeployFire supports buildings
+  - `OmniFire` supports buildings with `Turret=yes`
+  - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

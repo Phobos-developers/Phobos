@@ -568,6 +568,19 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 	return baseOffset + (shapeFacing * framesPerFacing) + animFrame;
 }
 
+bool BuildingExt::BuildingOnline(BuildingClass* pThis)
+{
+	const Mission currentMission = pThis->CurrentMission;
+
+	if (currentMission == Mission::Construction || currentMission == Mission::Selling
+		|| pThis->EMPLockRemaining > 0 || !pThis->WasOnline || pThis->BunkerLinkedItem)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
