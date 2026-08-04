@@ -69,7 +69,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	GET(UnitClass* const, pThis, EBP);
 	GET(UnitTypeClass* const, pDrawType, EBX);
 	GET_STACK(const bool, haveTurretCache, STACK_OFFSET(0x1C4, -0x1B3));
-	GET_STACK(const bool, haveBar, STACK_OFFSET(0x1C4, -0x1B2));
+	GET_STACK(const bool, gameHaveBar, STACK_OFFSET(0x1C4, -0x1B2));
 	GET(const bool, haveBarrelCache, EAX);
 	REF_STACK(Matrix3D, drawMatrix, STACK_OFFSET(0x1C4, -0x130));
 	GET_STACK(const int, flags, STACK_OFFSET(0x1C4, -0x198));
@@ -85,34 +85,94 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 	const auto pExt = UnitExt::Fetch(pThis);
 	const auto pDrawTypeExt = UnitTypeExt::Fetch(pDrawType);
 	const bool notChargeTurret = pThis->Type->TurretCount <= 0 || pThis->Type->IsGattling;
+	const bool isMultiWeaponTurret = pDrawTypeExt->IsMultiWeaponTurretEnabled();
 
-	auto getTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
+	// The vanilla / charge-turret selection. When TurretCount > 0 the game keeps
+	// the turret model in ChargerTurrets instead of TurretVoxel, so the fallback
+	// for the MultiWeapon switching must reuse this exact logic.
+	auto getVanillaTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
 		{
-			if (notChargeTurret)
-				return &pDrawType->TurretVoxel;
+			auto pResult = &pDrawType->TurretVoxel;
 
-			// Not considering the situation where there is no Ares and the limit is exceeded
-			if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
-				return &pDrawType->ChargerTurrets[currentTurretNumber];
+			if (!notChargeTurret)
+			{
+				const int index = Math::clamp(currentTurretNumber, 0, Math::max(pDrawType->TurretCount - 1, 0));
 
-			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-			return &aresTypeExt->ChargerTurrets[currentTurretNumber - 18];
+				// Not considering the situation where there is no Ares and the limit is exceeded
+				if (index < 18 || !AresHelper::CanUseAres)
+					pResult = &pDrawType->ChargerTurrets[index];
+				else
+				{
+					auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+					pResult = &aresTypeExt->ChargerTurrets[index - 18];
+				}
+
+				// The game may only keep the model in the first slot; always fall
+				// back to it so a visible turret is guaranteed.
+				if (!(pResult->VXL && pResult->HVA)
+					&& pDrawType->ChargerTurrets[0].VXL && pDrawType->ChargerTurrets[0].HVA)
+				{
+					pResult = &pDrawType->ChargerTurrets[0];
+				}
+			}
+
+			return (pResult->VXL && pResult->HVA) ? pResult : &pDrawType->TurretVoxel;
 		};
-	const auto pTurretVoxel = getTurretVoxel();
+	const auto pVanillaTurret = getVanillaTurretVoxel();
+	const auto pTurretVoxel = isMultiWeaponTurret
+		? pDrawTypeExt->GetMultiWeaponTurret(currentTurretNumber, pVanillaTurret)
+		: pVanillaTurret;
 
-	auto getBarrelVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
+	auto getVanillaBarrelVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
 		{
-			if (notChargeTurret)
-				return &pDrawType->BarrelVoxel;
+			auto pResult = &pDrawType->BarrelVoxel;
 
-			// Not considering the situation where there is no Ares and the limit is exceeded
-			if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
-				return &pDrawType->ChargerBarrels[currentTurretNumber];
+			if (!notChargeTurret)
+			{
+				const int index = Math::clamp(currentTurretNumber, 0, Math::max(pDrawType->TurretCount - 1, 0));
 
-			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-			return &aresTypeExt->ChargerBarrels[currentTurretNumber - 18];
+				// Not considering the situation where there is no Ares and the limit is exceeded
+				if (index < 18 || !AresHelper::CanUseAres)
+					pResult = &pDrawType->ChargerBarrels[index];
+				else
+				{
+					auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+					pResult = &aresTypeExt->ChargerBarrels[index - 18];
+				}
+
+				if (!(pResult->VXL && pResult->HVA)
+					&& pDrawType->ChargerBarrels[0].VXL && pDrawType->ChargerBarrels[0].HVA)
+				{
+					pResult = &pDrawType->ChargerBarrels[0];
+				}
+			}
+
+			return (pResult->VXL && pResult->HVA) ? pResult : &pDrawType->BarrelVoxel;
 		};
-	const auto pBarrelVoxel = haveBar ? getBarrelVoxel() : nullptr;
+	const auto pVanillaBarrel = getVanillaBarrelVoxel();
+	const auto pBarrelVoxel = (gameHaveBar || isMultiWeaponTurret)
+		? (isMultiWeaponTurret
+			? pDrawTypeExt->GetMultiWeaponBarrel(currentTurretNumber, pVanillaBarrel)
+			: pVanillaBarrel)
+		: nullptr;
+	const bool haveBar = isMultiWeaponTurret
+		? (pBarrelVoxel && pBarrelVoxel->VXL && pBarrelVoxel->HVA)
+		: gameHaveBar;
+
+	// The frame index needs to be recalculated when the custom turret / barrel
+	// HVA frame counts differ from the vanilla ones. The vanilla voxels keep the
+	// frame index the game already computed.
+	const bool customTurret = isMultiWeaponTurret && pTurretVoxel != pVanillaTurret;
+	const bool customBarrel = isMultiWeaponTurret && pBarrelVoxel != pVanillaBarrel;
+
+	int turretHvaFrame = hvaFrameIdx;
+	int barrelHvaFrame = hvaFrameIdx;
+
+	if (customTurret && pTurretVoxel && pTurretVoxel->HVA)
+		turretHvaFrame = pThis->TurretAnimFrame % pTurretVoxel->HVA->FrameCount;
+
+	if (customBarrel && pBarrelVoxel && pBarrelVoxel->HVA)
+		barrelHvaFrame = pThis->TurretAnimFrame % pBarrelVoxel->HVA->FrameCount;
 
 	constexpr BlitterFlags blit = BlitterFlags::Alpha | BlitterFlags::Flat;
 	// When in recoiling or have no cache, need to recalculate drawing matrix
@@ -127,8 +187,9 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 			const auto pTurData = pDrawType->TurretRecoil ? ((turIdx < 0) ? &pThis->TurretRecoil : &pExt->ExtraTurretRecoil[turIdx]) : nullptr;
 			const bool turretInRecoil = pTurData && pTurData->State != RecoilData::RecoilState::Inactive;
 
-			// When in recoiling or is not main turret, need to bypass cache and draw without saving
-			const bool turShouldRedraw = turretInRecoil || turIdx >= 0;
+			// When in recoiling, is not main turret, or the turret VXL switches
+			// per weapon, need to bypass cache and draw without saving
+			const bool turShouldRedraw = turretInRecoil || turIdx >= 0 || isMultiWeaponTurret;
 			const auto turKey = turShouldRedraw ? -1 : flags;
 			const auto turCache = turShouldRedraw ? nullptr : &pDrawType->VoxelTurretWeaponCache;
 
@@ -161,8 +222,9 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 					const auto pBrlData = pDrawType->TurretRecoil ? ((idx < 0) ? &pThis->BarrelRecoil : &pExt->ExtraBarrelRecoil[idx]) : nullptr;
 					const bool barrelInRecoil = pBrlData && pBrlData->State != RecoilData::RecoilState::Inactive;
 
-					// When in recoiling or is not main barrel, need to bypass cache and draw without saving
-					const bool brlShouldRedraw = turretInRecoil || barrelInRecoil || idx >= 0;
+					// When in recoiling, is not main barrel, or the barrel VXL
+					// switches per weapon, need to bypass cache and draw without saving
+					const bool brlShouldRedraw = turretInRecoil || barrelInRecoil || idx >= 0 || isMultiWeaponTurret;
 					const auto brlKey = brlShouldRedraw ? -1 : flags;
 					const auto brlCache = brlShouldRedraw ? nullptr : &pDrawType->VoxelTurretBarrelCache;
 
@@ -183,7 +245,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 					auto mtx_barrel = (shouldRedraw || brlShouldRedraw) ? getBarrelMatrix() : mtx;
 
 					// draw barrel
-					pThis->Draw_A_VXL(pBarrelVoxel, hvaFrameIdx, brlKey, brlCache, rect, center, &mtx_barrel, brightness, blit, 0);
+					pThis->Draw_A_VXL(pBarrelVoxel, barrelHvaFrame, brlKey, brlCache, rect, center, &mtx_barrel, brightness, blit, 0);
 				};
 
 			auto drawBarrels = [&drawBarrel, pDrawTypeExt, turretDir]()
@@ -220,7 +282,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 			if (barrelOverTechno)
 			{
 				// draw turret
-				pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
+				pThis->Draw_A_VXL(pTurretVoxel, turretHvaFrame, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
 
 				if (haveBar)
 					drawBarrels();
@@ -231,7 +293,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 					drawBarrels();
 
 				// draw turret
-				pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
+				pThis->Draw_A_VXL(pTurretVoxel, turretHvaFrame, turKey, turCache, rect, center, &mtx_turret, brightness, blit, 0);
 			}
 		};
 
@@ -803,21 +865,41 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (main_vxl == &pDrawType->TurretVoxel || (notUseTurretShadow && !pDrawTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
 		return SkipDrawing;
 
-	auto getTurretVoxel = [pDrawType](int idx) ->VoxelStruct*
+	// The vanilla / charge-turret selection. When TurretCount > 0 the game keeps
+	// the turret model in ChargerTurrets instead of TurretVoxel, so the fallback
+	// for the MultiWeapon switching must reuse this exact logic.
+	auto getVanillaTurretVoxel = [pDrawType](int idx) ->VoxelStruct*
 		{
-			if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
-				return &pDrawType->TurretVoxel;
+			auto pResult = &pDrawType->TurretVoxel;
 
-			if (idx < 18)
-				return &pDrawType->ChargerTurrets[idx];
-
-			if (AresHelper::CanUseAres)
+			if (pDrawType->TurretCount > 0 && !pDrawType->IsGattling)
 			{
-				auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-				return &aresTypeExt->ChargerTurrets[idx - 18];
+				const int index = Math::clamp(idx, 0, Math::max(pDrawType->TurretCount - 1, 0));
+
+				if (index < 18)
+					pResult = &pDrawType->ChargerTurrets[index];
+				else if (AresHelper::CanUseAres)
+				{
+					auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+					pResult = &aresTypeExt->ChargerTurrets[index - 18];
+				}
+
+				// The game may only keep the model in the first slot; always fall
+				// back to it so a visible turret is guaranteed.
+				if (!(pResult->VXL && pResult->HVA)
+					&& pDrawType->ChargerTurrets[0].VXL && pDrawType->ChargerTurrets[0].HVA)
+				{
+					pResult = &pDrawType->ChargerTurrets[0];
+				}
 			}
 
-			return nullptr;
+			return (pResult->VXL && pResult->HVA) ? pResult : &pDrawType->TurretVoxel;
+		};
+	auto getTurretVoxel = [pDrawTypeExt, getVanillaTurretVoxel](int idx) ->VoxelStruct*
+		{
+			return pDrawTypeExt->IsMultiWeaponTurretEnabled()
+				? pDrawTypeExt->GetMultiWeaponTurret(idx, getVanillaTurretVoxel(idx))
+				: getVanillaTurretVoxel(idx);
 		};
 	const auto pTurretVoxel = getTurretVoxel(pThis->CurrentTurretNumber);
 
@@ -827,25 +909,44 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (vxlIndexKey.Is_Valid_Key())
 		vxlIndexKey.MinorVoxel.TurretFacing = pThis->SecondaryFacing.Current().GetFacing<32>();
 
-	auto getBarrelVoxel = [pDrawType](int idx)->VoxelStruct*
+	auto getVanillaBarrelVoxel = [pDrawType](int idx)->VoxelStruct*
 		{
-			if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
-				return &pDrawType->BarrelVoxel;
+			auto pResult = &pDrawType->BarrelVoxel;
 
-			if (idx < 18)
-				return &pDrawType->ChargerBarrels[idx];
-
-			if (AresHelper::CanUseAres)
+			if (pDrawType->TurretCount > 0 && !pDrawType->IsGattling)
 			{
-				auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
-				return &aresTypeExt->ChargerBarrels[idx - 18];
+				const int index = Math::clamp(idx, 0, Math::max(pDrawType->TurretCount - 1, 0));
+
+				if (index < 18)
+					pResult = &pDrawType->ChargerBarrels[index];
+				else if (AresHelper::CanUseAres)
+				{
+					auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+					pResult = &aresTypeExt->ChargerBarrels[index - 18];
+				}
+
+				if (!(pResult->VXL && pResult->HVA)
+					&& pDrawType->ChargerBarrels[0].VXL && pDrawType->ChargerBarrels[0].HVA)
+				{
+					pResult = &pDrawType->ChargerBarrels[0];
+				}
 			}
 
-			return nullptr;
+			return (pResult->VXL && pResult->HVA) ? pResult : &pDrawType->BarrelVoxel;
+		};
+	auto getBarrelVoxel = [pDrawTypeExt, getVanillaBarrelVoxel](int idx)->VoxelStruct*
+		{
+			return pDrawTypeExt->IsMultiWeaponTurretEnabled()
+				? pDrawTypeExt->GetMultiWeaponBarrel(idx, getVanillaBarrelVoxel(idx))
+				: getVanillaBarrelVoxel(idx);
 		};
 	const auto pBarrelVoxel = getBarrelVoxel(pThis->CurrentTurretNumber);
 
-	const auto haveBar = pBarrelVoxel && pBarrelVoxel->VXL && pBarrelVoxel->HVA && !pBarrelVoxel->VXL->Initialized;
+	// When the turret VXL switches per weapon the turret shadow is always drawn
+	// standalone (no cache), so the barrel shadow has to be drawn on its own.
+	const bool isMultiWeaponShadow = pDrawTypeExt->IsMultiWeaponTurretEnabled();
+	const auto haveBar = pBarrelVoxel && pBarrelVoxel->VXL && pBarrelVoxel->HVA
+		&& (isMultiWeaponShadow || !pBarrelVoxel->VXL->Initialized);
 	auto pCache = &pDrawType->VoxelShadowCache;
 	const auto pExt = UnitExt::Fetch(pThis);
 

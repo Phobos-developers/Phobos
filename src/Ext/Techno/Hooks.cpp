@@ -12,6 +12,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
+#include <Utilities/Debug.h>
 #include <Misc/FlyingStrings.h>
 
 #pragma region GetTechnoType
@@ -76,6 +77,35 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 			animCounter = -1;
 
 		pThis->CurrentFiringFrame = animCounter;
+	}
+
+	// Make the displayed VXL turret / barrel follow the currently selected
+	// weapon for MultiWeapon + TurretCount units. When the unit has no target
+	// (e.g. after issuing an order with a mouse click) the turret stays on the
+	// last used weapon instead of snapping back to the default turret.
+	if (pThis->IsAlive && pExt->GetTypeExtData()->IsMultiWeaponTurretEnabled())
+	{
+		if (pThis->Target)
+		{
+			const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+			const auto pType = pThis->GetTechnoType();
+
+			// Keep the raw weapon index. Weapons beyond the loaded turret count
+			// (min(WeaponCount, TurretCount)) are handled by the drawing code and
+			// fall back to the default turret, so they must not be clamped onto the
+			// last valid turret here.
+			const int turret = Math::clamp(weaponIndex, 0, Math::max(pType->WeaponCount - 1, 0));
+
+			if (pThis->CurrentTurretNumber != turret)
+			{
+				Debug::Log("[MultiWeaponTurret] %s SelectWeapon=%d Target=%p -> CurrentTurretNumber=%d (WeaponCount=%d TurretCount=%d).\n",
+					pType->ID, weaponIndex, static_cast<void*>(pThis->Target), turret, pType->WeaponCount, pType->TurretCount);
+			}
+
+			pThis->CurrentTurretNumber = turret;
+		}
+		// No target: keep the last used weapon's turret (CurrentTurretNumber is
+		// left untouched so the displayed turret does not jump around).
 	}
 
 	return 0;
@@ -227,6 +257,14 @@ DEFINE_HOOK(0x6FA540, TechnoClass_AI_ChargeTurret, 0x6)
 	enum { SkipGameCode = 0x6FA5BE };
 
 	GET(TechnoClass*, pThis, ESI);
+
+	// Do not let the charge turret logic touch CurrentTurretNumber for units
+	// that use the MultiWeapon turret switching feature.
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*>(pThis->GetTechnoType()))
+	{
+		if (UnitTypeExt::Fetch(pUnitType)->IsMultiWeaponTurretEnabled())
+			return SkipGameCode;
+	}
 
 	if (pThis->ChargeTurretDelay <= 0)
 	{

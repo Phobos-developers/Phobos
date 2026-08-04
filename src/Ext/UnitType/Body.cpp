@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Utilities/Debug.h>
+
 UnitTypeExt::ExtContainer UnitTypeExt::ExtMap;
 
 void UnitTypeExt::ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx)
@@ -11,6 +13,139 @@ void UnitTypeExt::ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx
 	const float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
+}
+
+// =============================
+// MultiWeapon VXL turret / barrel
+
+static VoxelStruct LoadMultiWeaponVoxelStruct(const char* pBaseName)
+{
+	char vxlFile[0x100];
+	char hvaFile[0x100];
+	_snprintf_s(vxlFile, _TRUNCATE, "%s.vxl", pBaseName);
+	_snprintf_s(hvaFile, _TRUNCATE, "%s.hva", pBaseName);
+
+	CCFileClass vxlCC(vxlFile);
+	CCFileClass hvaCC(hvaFile);
+
+	if (!vxlCC.Exists() || !hvaCC.Exists())
+		return { nullptr, nullptr };
+
+	auto pVXL = GameCreate<VoxLib>(&vxlCC, false);
+	auto pHVA = GameCreate<MotLib>(&hvaCC);
+
+	// Match the game's own LoadVoxel behaviour: Initialized is only set once the
+	// voxel has gone through lighting setup at first draw, so it cannot be used
+	// here to validate the freshly loaded file.
+	if (!pVXL || !pHVA || pHVA->LoadedFailed)
+	{
+		if (pVXL)
+			GameDelete(pVXL);
+		if (pHVA)
+			GameDelete(pHVA);
+		return { nullptr, nullptr };
+	}
+
+	return { pVXL, pHVA };
+}
+
+void UnitTypeExt::LoadMultiWeaponTurrets()
+{
+	auto pThis = this->OwnerObject();
+	const bool enabled = this->MultiWeapon.Get() && pThis->TurretCount > 0;
+	const int count = enabled ? Math::min(pThis->WeaponCount, pThis->TurretCount) : 0;
+
+	if (enabled)
+	{
+		// Keep the native turret -> weapon mapping consistent with the weapon
+		// index used as CurrentTurretNumber, so GetTurretWeapon() returns the
+		// weapon that the currently displayed turret corresponds to.
+		const int weaponCount = Math::min(count, TechnoTypeClass::MaxWeapons);
+
+		for (int i = 0; i < weaponCount; ++i)
+			pThis->TurretWeapon[i] = i;
+	}
+
+	if (this->MultiWeaponTurrets.size() != (count > 0 ? static_cast<size_t>(count - 1) : 0))
+	{
+		for (auto& vs : this->MultiWeaponTurrets)
+		{
+			if (vs.VXL)
+				GameDelete(vs.VXL);
+			if (vs.HVA)
+				GameDelete(vs.HVA);
+		}
+
+		this->MultiWeaponTurrets.clear();
+		this->MultiWeaponBarrels.clear();
+
+		for (int i = 1; i < count; ++i)
+		{
+			char turretName[0x100];
+			char barrelName[0x100];
+			_snprintf_s(turretName, _TRUNCATE, "%stur%u", pThis->ImageFile, i);
+			_snprintf_s(barrelName, _TRUNCATE, "%sbarl%u", pThis->ImageFile, i);
+
+			this->MultiWeaponTurrets.emplace_back(LoadMultiWeaponVoxelStruct(turretName));
+			this->MultiWeaponBarrels.emplace_back(LoadMultiWeaponVoxelStruct(barrelName));
+		}
+
+		if (enabled)
+			Debug::Log("UnitTypeExt: Loaded %zu extra VXL turrets / %zu barrels for %s.\n",
+				this->MultiWeaponTurrets.size(), this->MultiWeaponBarrels.size(), pThis->ID);
+	}
+}
+
+bool UnitTypeExt::IsMultiWeaponTurretEnabled() const
+{
+	return this->MultiWeapon.Get() && this->OwnerObject()->TurretCount > 0;
+}
+
+VoxelStruct* UnitTypeExt::GetMultiWeaponTurret(int weaponIndex, VoxelStruct* pFallback)
+{
+	if (weaponIndex <= 0)
+		return pFallback;
+
+	const size_t index = static_cast<size_t>(weaponIndex - 1);
+
+	if (index >= this->MultiWeaponTurrets.size())
+		return pFallback;
+
+	auto& vs = this->MultiWeaponTurrets[index];
+	return (vs.VXL && vs.HVA) ? &vs : pFallback;
+}
+
+VoxelStruct* UnitTypeExt::GetMultiWeaponBarrel(int weaponIndex, VoxelStruct* pFallback)
+{
+	if (weaponIndex <= 0)
+		return pFallback;
+
+	const size_t index = static_cast<size_t>(weaponIndex - 1);
+
+	if (index >= this->MultiWeaponBarrels.size())
+		return pFallback;
+
+	auto& vs = this->MultiWeaponBarrels[index];
+	return (vs.VXL && vs.HVA) ? &vs : pFallback;
+}
+
+UnitTypeExt::~UnitTypeExt()
+{
+	for (auto& vs : this->MultiWeaponTurrets)
+	{
+		if (vs.VXL)
+			GameDelete(vs.VXL);
+		if (vs.HVA)
+			GameDelete(vs.HVA);
+	}
+
+	for (auto& vs : this->MultiWeaponBarrels)
+	{
+		if (vs.VXL)
+			GameDelete(vs.VXL);
+		if (vs.HVA)
+			GameDelete(vs.HVA);
+	}
 }
 
 // =============================
@@ -135,6 +270,9 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->ExtraTurretCount = 0;
 	}
+
+	// Load the extra VXL turrets / barrels for MultiWeapon + TurretCount units.
+	this->LoadMultiWeaponTurrets();
 }
 
 template <typename T>
@@ -207,6 +345,9 @@ void UnitTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	TechnoTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	// Reload the extra VXL turrets / barrels after a savegame load.
+	this->LoadMultiWeaponTurrets();
 }
 
 void UnitTypeExt::SaveToStream(PhobosStreamWriter& Stm)
