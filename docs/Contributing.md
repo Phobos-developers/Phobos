@@ -43,13 +43,13 @@ If you contribute something, please make sure:
 
 Not every change needs all of the above. The table below shows what each kind of change is expected to cover (a checkmark means that kind of entry is required):
 
-| Change type | Changelog | Docs | Credits |
-|---|---|---|---|
-| New feature, vanilla bugfix, enhancement of a released feature | ✓ | ✓ | ✓ |
-| Improvement to a new (unreleased) feature | ✗ | ✓ | ✓ |
-| Bugfix to a new (unreleased) feature | ✗ | ✗ | ✓ |
-| Bugfix to an old (released) feature | ✓ | ✗ | ✓ |
-| Completely minor change (e.g. a typo fix) | ✗ | ✗ | ✗ |
+|                          Change type                           | Changelog | Docs | Credits |
+|----------------------------------------------------------------|-----------|------|---------|
+| New feature, vanilla bugfix, enhancement of a released feature |     ✓    |  ✓  |    ✓   |
+| Improvement to a new (unreleased) feature                      |     ✗    |  ✓  |    ✓   |
+| Bugfix to a new (unreleased) feature                           |     ✗    |  ✗  |    ✓   |
+| Bugfix to an old (released) feature                            |     ✓    |  ✗  |    ✓   |
+| Completely minor change (e.g. a typo fix)                      |     ✗    |  ✗  |    ✗   |
 
 ```{warning}
 If editing this table - also edit the PR template.
