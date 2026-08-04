@@ -29,17 +29,9 @@ the ``rawsource`` that ``ApplySourceWorkaround`` polluted with the message text.
 
 from __future__ import annotations
 
-import re
-
 from docutils import nodes
 
-__version__ = '1.0.0'
-
-# Matches the leading part of the message that docutils appends to ``rawsource``
-# via ``system_message.astext()``: "<source>:<line>: (LEVEL/N) <message>".
-_MESSAGE_START = re.compile(
-    r'(?:[A-Za-z]:)?[\\/][^\r\n:]+:\d+: \((?:INFO|WARNING|ERROR|SEVERE)/\d+\) '
-)
+__version__ = '1.1.0'
 
 
 def _repair(app, doctree) -> None:
@@ -51,13 +43,23 @@ def _repair(app, doctree) -> None:
 
     # 2. Restore rawsource that ApplySourceWorkaround polluted with the
     #    system-message text.
+    #
+    #    docutils prepends the node's own source path when it formats the
+    #    system message, so the appended segment always starts with that path.
+    #    Strip everything from the path onwards instead of matching the message
+    #    format - this survives smart-quote transforms and changes to how
+    #    docutils words the message.
+    #
+    #    Reading the source with getattr() is deliberate: MyST stores it as a
+    #    plain attribute, so the docutils attribute-map lookup would return None.
     for node in doctree.findall(nodes.TextElement):
         raw = node.rawsource
-        if not raw:
+        src = getattr(node, 'source', None)
+        if not raw or not src or src not in raw:
             continue
-        match = _MESSAGE_START.search(raw)
-        if match:
-            node.rawsource = raw[:match.start()].rstrip()
+        idx = raw.find(src)
+        if idx > 0:
+            node.rawsource = raw[:idx].rstrip()
 
 
 def setup(app):
