@@ -2399,11 +2399,10 @@ msgstr ""
 "[自动根据血量变形](New-or-Enhanced-Logics.md#automatic-conversion-based-on-"
 "health)（by obsidianus）"
 
-#, fuzzy
 msgid ""
 "Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to "
 "`DiscardOn` (by Noble_Fish)"
-msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件（by Noble_Fish）"
+msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件（by Noble_Fish）"
 
 msgid ""
 "[Berzerk / `Psychedelic` duration stacking customization](Fixed-or-"

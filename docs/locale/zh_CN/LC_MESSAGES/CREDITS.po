@@ -2499,11 +2499,10 @@ msgid ""
 "InitialPayload logic"
 msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
-#, fuzzy
 msgid ""
 "Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to "
 "`DiscardOn`"
-msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
+msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
