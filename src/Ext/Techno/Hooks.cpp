@@ -796,10 +796,19 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
-	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitType(pThis, pTypeExt))
+		{
 			R->EBX<ObjectTypeClass*>(pCustomType);
+		}
+		if (pTypeExt->NeedDamagedImage)
+		{
+			if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
+			{
+				R->EBX<ObjectTypeClass*>(pCustomType);
+			}
+		}
 	}
 
 	return 0;
@@ -814,12 +823,24 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	const auto pType = pThis->Type;
 	const auto pTypeExt = UnitTypeExt::Fetch(pType);
 
-	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitType(pThis, pTypeExt))
 		{
 			if (const auto Image = pCustomType->GetImage())
+			{
 				R->EAX<SHPStruct*>(Image);
+			}
+		}
+		if (pTypeExt->NeedDamagedImage)
+		{
+			if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
+			{
+				if (const auto Image = pCustomType->GetImage())
+				{
+					R->EAX<SHPStruct*>(Image);
+				}
+			}
 		}
 	}
 

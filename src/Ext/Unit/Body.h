@@ -58,6 +58,7 @@ public:
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData);
+	static UnitTypeClass* GetUnitType(UnitClass* pUnit, UnitTypeExt* pData);
 
 	UnitClass* OwnerObject() const
 	{
