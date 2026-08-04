@@ -418,7 +418,7 @@ public:
 		Valueable<bool> FiringAnim_Update;
 
 		Valueable<bool> ExtendedPlayerRepair;
-		
+
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -432,7 +432,7 @@ public:
 		Valueable<int> MindControlRingOffset;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
-    
+
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
@@ -452,6 +452,8 @@ public:
 		Valueable<bool> DriveLocomotorMakesWake;
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<StackingMode> Psychedelic_StackingMode;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
@@ -499,7 +501,7 @@ public:
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
-    
+
 		Valueable<Mission> BerzerkMission;
 
 		Valueable<int> BunkerStateUpdateDelay;
@@ -908,15 +910,17 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
 			, ExtraThreatCoefficient_Facing { 0.0 }
 			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
-			
+
 			, BalloonHoverPathingFix { false }
-			
+
 			, WalkLocomotorMakesWake { false }
 			, DriveLocomotorMakesWake { true }
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+
+			, Psychedelic_StackingMode { StackingMode::Override }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }
@@ -960,7 +964,7 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
-				
+
 			, AllowChatBoxInSinglePlayer { false }
 
 			, NotHuman_RandomDeathSequence { false }

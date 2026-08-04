@@ -2863,6 +2863,23 @@ AllowBerzerkOnAllies=false  ; boolean
 No per-warhead setting because `AffectsAllies` etc. is respected.
 ```
 
+### Berzerk (`Psychedelic`) duration stacking customization
+
+- By default `Psychedelic` warheads override the current duration of the berzerk effect regardless of if the new duration is higher or lower than the current one. This can now be customized with `Psychedelic.StackingMode`, with both global setting under `[CombatDamage]` and per-Warhead customization.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Psychedelic.StackingMode=override  ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide)
+
+[SOMEWARHEAD]                      ; WarheadType, with Psychedelic=yes
+Psychedelic.StackingMode=          ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide), defaults to [CombatDamage] -> Psychedelic.StackingMode
+```
+
+```{note}
+`min`/`subtract`/`multiply`/`divide` stacking mode will make berzerk effect can't be applied on the target when there's not an existing one. Pay attention to that when setting them as global default values.
+```
+
 ### Combat light customizations
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.

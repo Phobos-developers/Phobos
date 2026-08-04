@@ -305,6 +305,7 @@ This page lists all the individual contributions to the project by their author.
   - Animatable template
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
+  - Berzerk duration stacking behaviour customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
