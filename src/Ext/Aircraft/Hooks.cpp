@@ -1317,7 +1317,7 @@ DEFINE_HOOK(0x4143A8, AircraftClass_UnLimbo_CargoPlane, 0x6)
 
 	if (pTypeExt->IsALoaner.isset())
 	{
-		pThis->IsALoaner = pTypeExt->IsALoaner.Get(false);
+		pThis->IsALoaner = pTypeExt->IsALoaner.Get();
 		return SkipGameCode;
 	}
 

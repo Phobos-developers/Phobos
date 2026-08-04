@@ -669,6 +669,18 @@ In `rulesmd.ini`:
 RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
 ```
 
+### DeployFire supports
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
+```
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
@@ -1523,6 +1535,30 @@ In `rulesmd.ini`:
 Ammo.AutoConvertMinimumAmount=-1  ; integer
 Ammo.AutoConvertMaximumAmount=-1  ; integer
 Ammo.AutoConvertType=             ; TechnoType, after conversion
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+### Automatic conversion based on health
+
+- Units can now be converted into another unit by health percentage.
+- `Convert.Health.AbovePercent` determines the minimal health percentage at which a unit converts automatically.
+- `Convert.Health.BelowPercent` determines the maximum health percentage at which a unit converts automatically.
+- `Convert.Health` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType, before conversion
+Convert.Health.AbovePercent=-1.0     ; floating point value, percents or absolute
+Convert.Health.BelowPercent=-1.0     ; floating point value, percents or absolute
+Convert.Health=                      ; TechnoType, after conversion
 ```
 
 ```{warning}
