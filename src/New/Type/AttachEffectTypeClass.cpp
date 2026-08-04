@@ -100,6 +100,23 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
+	this->DiscardOn_Ammo_MinimumAmount.Read(exINI, pSection, "DiscardOn.Ammo.MinimumAmount");
+	this->DiscardOn_Ammo_MaximumAmount.Read(exINI, pSection, "DiscardOn.Ammo.MaximumAmount");
+
+	if (this->DiscardOn_Ammo_MinimumAmount > this->DiscardOn_Ammo_MaximumAmount)
+		Debug::Log("[Developer warning][%s] DiscardOn.Ammo.MinimumAmount is greater than DiscardOn.Ammo.MaximumAmount, the ammo discard condition cannot be established.\n", pSection);
+
+	this->DiscardOn_Health_BelowPercent.Read(exINI, pSection, "DiscardOn.Health.BelowPercent");
+	this->DiscardOn_Health_AbovePercent.Read(exINI, pSection, "DiscardOn.Health.AbovePercent");
+
+	if (this->DiscardOn_Health_AbovePercent > this->DiscardOn_Health_BelowPercent)
+		Debug::Log("[Developer warning][%s] DiscardOn.Health.AbovePercent is greater than DiscardOn.Health.BelowPercent, the health discard condition cannot be established.\n", pSection);
+
+	this->DiscardOn_Missions.Read(exINI, pSection, "DiscardOn.Missions");
+	this->DiscardOn_AIMissions.Read(exINI, pSection, "DiscardOn.AIMissions");
+	this->DiscardOn_LandTypes.Read(exINI, pSection, "DiscardOn.LandTypes");
+	this->DiscardOn_Sequences.Read(exINI, pSection, "DiscardOn.Sequences");
+	this->DiscardOn_Sequences_Immediate.Read(exINI, pSection, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
@@ -218,6 +235,15 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
+		.Process(this->DiscardOn_Ammo_MinimumAmount)
+		.Process(this->DiscardOn_Ammo_MaximumAmount)
+		.Process(this->DiscardOn_Health_BelowPercent)
+		.Process(this->DiscardOn_Health_AbovePercent)
+		.Process(this->DiscardOn_Missions)
+		.Process(this->DiscardOn_AIMissions)
+		.Process(this->DiscardOn_LandTypes)
+		.Process(this->DiscardOn_Sequences)
+		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
@@ -352,6 +378,26 @@ namespace detail
 				else if (!_strcmpi(cur, "invokerdie"))
 				{
 					parsed |= DiscardCondition::InvokerDie;
+				}
+				else if (!_strcmpi(cur, "ammo"))
+				{
+					parsed |= DiscardCondition::Ammo;
+				}
+				else if (!_strcmpi(cur, "health"))
+				{
+					parsed |= DiscardCondition::Health;
+				}
+				else if (!_strcmpi(cur, "mission"))
+				{
+					parsed |= DiscardCondition::Mission;
+				}
+				else if (!_strcmpi(cur, "landtype"))
+				{
+					parsed |= DiscardCondition::LandType;
+				}
+				else if (!_strcmpi(cur, "sequence"))
+				{
+					parsed |= DiscardCondition::Sequence;
 				}
 				else
 				{

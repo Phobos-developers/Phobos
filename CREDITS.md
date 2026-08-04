@@ -733,6 +733,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where landing direction cannot be correctly converted when set to a value exceeding 256
   - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
+  - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

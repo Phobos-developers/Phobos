@@ -548,6 +548,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
 	pThis->DeploySound = deploySound;
 
+	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
 
@@ -1034,6 +1035,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
 		.Process(this->RemoveMindControl_Silent)
