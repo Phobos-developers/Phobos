@@ -986,11 +986,13 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
+		auto const pType = pUnit->Type;
+
 		// issue #112 Make FireOnce=yes work on other TechnoType
 		// Author: Starkku
-		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		if (pUnit->CurrentMission == Mission::Unload && pType->DeployFire && !pType->IsSimpleDeployer)
 		{
 			pUnit->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
@@ -1000,6 +1002,17 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 		auto const pExt = UnitExt::Fetch(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
 		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+	else if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		auto const pType = pBuilding->Type;
+
+		if (pBuilding->CurrentMission == Mission::Unload
+			&& pType->DeployFire && pType->Factory == AbstractType::None)
+		{
+			pBuilding->SetTarget(nullptr);
+			pBuilding->ForceMission(Mission::Guard);
+		}
 	}
 
 	return 0;

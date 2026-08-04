@@ -1124,6 +1124,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0.0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0.0;
 
+	this->Convert_Health_AbovePercent.Read(exINI, pSection, "Convert.Health.AbovePercent");
+	this->Convert_Health_BelowPercent.Read(exINI, pSection, "Convert.Health.BelowPercent");
+	this->Convert_Health.Read(exINI, pSection, "Convert.Health");
+
+	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
+		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1746,6 +1753,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+
+		.Process(this->Convert_Health_AbovePercent)
+		.Process(this->Convert_Health_BelowPercent)
+		.Process(this->Convert_Health)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)

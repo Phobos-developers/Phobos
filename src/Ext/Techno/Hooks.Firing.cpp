@@ -557,6 +557,18 @@ DEFINE_HOOK(0x6FC7EB, TechnoClass_CanFire_InterceptBullet, 0x7)
 	return ContinueCheck;
 }
 
+DEFINE_HOOK(0x447FED, BuildingClass_CanFire_OmniFire, 0x7)
+{
+	enum { SkipGameCode = 0x448052 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0xC, 0x8));
+
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	return pWeapon->OmniFire ? SkipGameCode : 0;
+}
+
 #pragma endregion
 
 #pragma region TechnoClass_Fire

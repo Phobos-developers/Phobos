@@ -105,7 +105,7 @@ This page lists all the individual contributions to the project by their author.
   - Parts of Ares calling code
   - Original `Arcing` elevation inaccuracy fix
   - Dehardcode 255 limit of `OverlayType`
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -304,6 +304,7 @@ This page lists all the individual contributions to the project by their author.
   - Animation theater/tile palette toggle
   - Animatable template
   - Tank Bunker improvements
+  - `ProjectileRange` weapon range modifiers interaction fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -435,6 +436,9 @@ This page lists all the individual contributions to the project by their author.
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
+  - DeployFire supports buildings
+  - `OmniFire` supports buildings with `Turret=yes`
+  - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -598,7 +602,7 @@ This page lists all the individual contributions to the project by their author.
   - Voxel drawing invisible sections skip
   - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -859,7 +863,7 @@ This page lists all the individual contributions to the project by their author.
   - Adjust recruitable status on team member discharge
   - RA1-Style multi-turret and multi-barrel
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
-  - Fix the issue that spawner or slave would execute some player commands
+  - Fix the issue that spawnee or slave would execute some player commands
   - Customize whether aircraft is a cargo plane
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
@@ -906,9 +910,9 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **11EJDE11**
+- **11EJDE11**:
   - Prevent mpdebug number from being drawn when visibility toggled off
-  - Keep Syringe open until the game exits
+  - Keep Syringe open until the game exits (ported from Vinifera)
 - **RAZER**:
   - Wall overlay unit sell exploit fix
   - Multiplayer gamespeed fix for RealTimeTimers
@@ -917,5 +921,6 @@ This page lists all the individual contributions to the project by their author.
 - **Chang_zhi**:
   - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
+- **obsidianus** - Automatic conversion based on health
 - **obsidianus**
   - Unit image changes in various theater types

@@ -276,6 +276,9 @@ void Apply_Ares3_0_Patches()
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA8D94, &UnitDeliveryStateMachine_Update_Wrapper);
 
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1ACA3, AresHelper::AresBaseAddress + 0x1AD20);
+
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x745B8, &SendPDPlane);
 
@@ -383,6 +386,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA9F28, &UnitDeliveryStateMachine_Update_Wrapper);
+
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1B393, AresHelper::AresBaseAddress + 0x1B410);
 
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x75668, &SendPDPlane);
