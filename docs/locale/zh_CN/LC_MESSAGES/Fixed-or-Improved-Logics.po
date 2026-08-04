@@ -1672,7 +1672,7 @@ msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的
 msgid ""
 "Fixed an issue where setting a production building as `Primary` could "
 "cause it to enter an unload state."
-msgstr ""
+msgstr "修复了将生产建筑设为 `Primary` 时可能使其进入卸载状态的问题。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
@@ -1934,6 +1934,8 @@ msgid ""
 " than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on "
 "the WeaponType"
 msgstr ""
+"`ProjectileRange` 现在在大于 0 时会应用武器射程修正，除非在 WeaponType 上将 "
+"`ProjectileRange.ApplyModifiers` 设置为 false"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"

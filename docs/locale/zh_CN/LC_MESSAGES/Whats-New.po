@@ -114,6 +114,8 @@ msgid ""
 "to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is "
 "set to false on the WeaponType."
 msgstr ""
+"`ProjectileRange`（Ares 功能）现在在大于 0 时会应用武器射程修正，除非在 "
+"WeaponType 上将 `ProjectileRange.ApplyModifiers` 设置为 false。"
 
 msgid ""
 "`Splits.TargetCellRange` < 0 now applies special behaviour where the "
@@ -2389,23 +2391,18 @@ msgstr ""
 "[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by "
 "FS-21）"
 
-#, fuzzy
 msgid ""
 "[DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-"
 "supports) (By FlyStar)"
-msgstr "[延迟开火](New-or-Enhanced-Logics.md#delayed-firing)（by Starkku）"
+msgstr "[`DeployFire` 支持建筑](New-or-Enhanced-Logics.md#deployfire-supports)（by FlyStar）"
 
-#, fuzzy
 msgid "`OmniFire` supports buildings with `Turret=yes` (by FlyStar)"
-msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑（by FlyStar）"
+msgstr "`OmniFire` 支持拥有 `Turret=yes` 的建筑（by FlyStar）"
 
-#, fuzzy
 msgid ""
 "[Automatic conversion based on heallth](New-or-Enhanced-Logics.md"
 "#automatic-conversion-based-on-heallth) (by obsidianus)"
-msgstr ""
-"[基于弹药量的自动变形](New-or-Enhanced-Logics.md#automatic-conversion-based-on-"
-"ammo)（by FS-21）"
+msgstr "[自动根据血量变形](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth)（by obsidianus）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
@@ -2880,7 +2877,7 @@ msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的
 msgid ""
 "Fixed an issue where setting a production building as `Primary` could "
 "cause it to enter an unload state (by FlyStar)"
-msgstr ""
+msgstr "修复了将生产建筑设为 `Primary` 时可能使其进入卸载状态的问题（by FlyStar）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
@@ -3261,6 +3258,8 @@ msgid ""
 " than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on "
 "the WeaponType (by Starkku)"
 msgstr ""
+"`ProjectileRange` 现在在大于 0 时会应用武器射程修正，除非在 WeaponType 上将 "
+"`ProjectileRange.ApplyModifiers` 设置为 false（by Starkku）"
 
 msgid "Pre-release changes"
 msgstr "预发布版本更改"

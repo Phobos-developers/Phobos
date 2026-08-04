@@ -94,7 +94,6 @@ msgstr "API 版本跟踪"
 msgid "Semantic Versioning Rules"
 msgstr "语义化版本规则"
 
-#, fuzzy
 msgid ""
 "**Major (X)**: Increment for breaking changes (backward incompatible API "
 "modifications).\\ Example: Deleting an API, changing function parameters,"
@@ -104,7 +103,6 @@ msgstr ""
 "**主版本号 (X)**：递增表示发生了破坏性变更（向后不兼容的 API 修改）。<br>示例：删除 "
 "API、更改函数参数、修改数据结构导致现有代码损坏。<br>当此版本号递增时，次版本号和修订号重置为 0（例如 1.2.3 → 2.0.0）。"
 
-#, fuzzy
 msgid ""
 "**Minor (Y)**: Increment for backward-compatible new features.\\ Example:"
 " Adding a new API function, new parameters that don't break existing "
@@ -113,7 +111,6 @@ msgstr ""
 "**次版本号 (Y)**：递增表示增加了向后兼容的新功能。<br>示例：添加新的 API "
 "函数、增加不破坏现有代码的新参数。<br>当此版本号递增时，修订号重置为 0（例如 1.2.3 → 1.3.0）。"
 
-#, fuzzy
 msgid ""
 "**Patch (Z)**: Increment for backward-compatible miscs (no API "
 "changes).\\ Example: Fixing crashes, correcting calculations, optimizing "
