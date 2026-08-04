@@ -910,6 +910,7 @@ msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
 
 msgid "Berzerk duration stacking behaviour customization"
 msgstr ""
+"狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

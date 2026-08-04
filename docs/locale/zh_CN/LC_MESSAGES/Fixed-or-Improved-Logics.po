@@ -5794,6 +5794,7 @@ msgstr "注意尽管 `Psychedelic=true` 的效果与杀伤相关但由于其不�
 
 msgid "Berzerk (`Psychedelic`) duration stacking customization"
 msgstr ""
+"狂暴（ `Psychedelic`）持续时间叠加的自定义"
 
 msgid ""
 "By default `Psychedelic` warheads override the current duration of the "
@@ -5802,12 +5803,14 @@ msgid ""
 "`Psychedelic.StackingMode`, with both global setting under "
 "`[CombatDamage]` and per-Warhead customization."
 msgstr ""
+"默认情况下 `Psychedelic` 弹头会覆盖狂暴效果的当前持续时间，无论新持续时间比当前值高还是低。现在这可以通过 `Psychedelic.StackingMode` 自定义，既有 `[CombatDamage]` 下的全局设置，也有每个弹头的独立设置。"
 
 msgid ""
 "`min`/`subtract`/`multiply`/`divide` stacking mode will make berzerk "
 "effect can't be applied on the target when there's not an existing one. "
 "Pay attention to that when setting them as global default values."
 msgstr ""
+"`min`／`subtract`／`multiply`／`divide` 叠加模式将导致目标上不存在狂暴效果时无法对其施加狂暴效果。将它们设为全局默认值时请要注意这点。"
 
 msgid "Combat light customizations"
 msgstr "自定义战斗闪光"
