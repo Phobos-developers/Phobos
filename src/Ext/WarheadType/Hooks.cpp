@@ -677,7 +677,7 @@ DEFINE_HOOK(0x48DC90, MapClass_UnselectAll_ClearLimboLaunchers, 0x5)
 
 DEFINE_HOOK(0x701D6B, TechnoClass_ReceiveDamage_Psychedelic, 0x6)
 {
-	enum { SkipGameCode = 0x701D71 };
+	enum { SkipGameCode = 0x701D71, StopBerzerk = 0x701DBA };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WarheadTypeClass*, pWH, EBP);
@@ -686,6 +686,11 @@ DEFINE_HOOK(0x701D6B, TechnoClass_ReceiveDamage_Psychedelic, 0x6)
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
 	auto const stackingMode = pWHExt->Psychedelic_StackingMode.Get(RulesExt::Global()->Psychedelic_StackingMode);
 	EnumFunctions::CalcValueWithStackingMode(pThis->BerzerkDurationLeft, damage, stackingMode);
+
+	// Prevent berzerk if the duration is not positive after the calculation
+	// 0 Damage can't trigger a berzerk already, so it's save to bail out like this
+	if (pThis->BerzerkDurationLeft <= 0)
+		return StopBerzerk;
 
 	return SkipGameCode;
 }
