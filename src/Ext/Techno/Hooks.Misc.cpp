@@ -1075,6 +1075,10 @@ DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // P
 	GET(EventClass* const, pThis, ESI);
 
 	auto const pTechno = pThis->MegaMission.Whom.As_Techno();
+
+	if (!pTechno)
+		return SkipGameCode;
+
 	auto const pHouse = pTechno->GetOwningHouse();
 
 	if (!TechnoExt::CanReceiveEvent(pTechno, pHouse))
