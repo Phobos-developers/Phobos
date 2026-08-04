@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-04 10:03+0800\n"
+"POT-Creation-Date: 2026-08-04 17:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "What's New"
 msgstr "版本更新说明"
@@ -33,8 +33,7 @@ msgid ""
 "New Phobos user? Read the \"Changes to vanilla behavior\" subsections in "
 "every version below to know what you might need to adjust when installing"
 " Phobos"
-msgstr ""
-"Phobos 新用户？请阅读以下每个版本中的“原版行为更改”小节，以了解安装 Phobos 时可能需要调整的内容。"
+msgstr "Phobos 新用户？请阅读以下每个版本中的“原版行为更改”小节，以了解安装 Phobos 时可能需要调整的内容。"
 
 msgid ""
 "This serves as a changelog for when you just need to drop the new version"
@@ -109,6 +108,12 @@ msgstr ""
 
 msgid "Changes to Phobos behavior"
 msgstr "Phobos 行为更改"
+
+msgid ""
+"`ProjectileRange` (Ares feature) now has weapon range modifiers applied "
+"to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is "
+"set to false on the WeaponType."
+msgstr ""
 
 msgid ""
 "`Splits.TargetCellRange` < 0 now applies special behaviour where the "
@@ -2384,6 +2389,24 @@ msgstr ""
 "[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by "
 "FS-21）"
 
+#, fuzzy
+msgid ""
+"[DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-"
+"supports) (By FlyStar)"
+msgstr "[延迟开火](New-or-Enhanced-Logics.md#delayed-firing)（by Starkku）"
+
+#, fuzzy
+msgid "`OmniFire` supports buildings with `Turret=yes` (by FlyStar)"
+msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑（by FlyStar）"
+
+#, fuzzy
+msgid ""
+"[Automatic conversion based on heallth](New-or-Enhanced-Logics.md"
+"#automatic-conversion-based-on-heallth) (by obsidianus)"
+msgstr ""
+"[基于弹药量的自动变形](New-or-Enhanced-Logics.md#automatic-conversion-based-on-"
+"ammo)（by FS-21）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2854,6 +2877,11 @@ msgid ""
 "building when deactivated (by NetsuNegi)"
 msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug（by NetsuNegi）"
 
+msgid ""
+"Fixed an issue where setting a production building as `Primary` could "
+"cause it to enter an unload state (by FlyStar)"
+msgstr ""
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -3227,6 +3255,12 @@ msgid ""
 "Removed the restriction that prohibits InfantryTypes from using the "
 "InitialPayload logic (by Noble_Fish)"
 msgstr "移除了禁止步兵使用初始载员逻辑的限制（by Noble_Fish）"
+
+msgid ""
+"`ProjectileRange` now has weapon range modifiers applied to it if greater"
+" than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on "
+"the WeaponType (by Starkku)"
+msgstr ""
 
 msgid "Pre-release changes"
 msgstr "预发布版本更改"

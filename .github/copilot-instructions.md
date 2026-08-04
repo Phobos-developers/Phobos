@@ -372,6 +372,8 @@ scripts\build_docs.bat
 
 Output goes to `docs/_build/html/`. Pull requests are automatically built and served by Read the Docs - check the PR status checks for a preview link.
 
+**Local extension `docs/_ext/`**: a small local Sphinx extension (`sanitize_system_messages`, registered as `_ext.sanitize_system_messages` in `docs/conf.py`) strips docutils `system_message` nodes and repairs the `rawsource` that Sphinx's `ApplySourceWorkaround` pollutes with them. Without it, the "Duplicate implicit target name" warnings caused by repeated sub-headings (e.g. the many `#### Vanilla fixes:` blocks inside `{dropdown}`s in `Whats-New.md`) leak into the gettext `.pot`/`.po` files as bogus translatable strings. Do not remove it or drop `sys.path.insert(0, os.path.abspath('.'))` from `conf.py` - the extension is only importable because of that path insert. A standalone reproduction of the underlying Sphinx/MyST bug is in this [gist](https://gist.github.com/Metadorius/ee435861903ba132cd70563c2bdffec1).
+
 ### Translations
 
 The project uses Sphinx internationalization with `.po` files. Currently only **zh_CN** (Chinese) is maintained. The translation workflow:
