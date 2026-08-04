@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-05 00:08+0800\n"
+"POT-Creation-Date: 2026-08-05 00:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -907,6 +907,9 @@ msgstr "坦克碉堡改进"
 
 msgid "`ProjectileRange` weapon range modifiers interaction fix"
 msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
+
+msgid "Berzerk duration stacking behaviour customization"
+msgstr ""
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
