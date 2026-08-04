@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <OverlayTypeClass.h>
+#include <Ext/Rules/Body.h>
 
 TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 
@@ -87,27 +88,45 @@ DEFINE_HOOK(0x721888, TiberiumClass_DTOR, 0x6)
 
 //DEFINE_HOOK_AGAIN(0x721CE9, TiberiumClass_LoadFromINI, 0xA)// Section dont exist!
 
-// Helper function to apply CustomImage to a TiberiumClass
 static void ApplyCustomImage(TiberiumClass* pItem)
 {
-	if (auto pExt = TiberiumExt::TryFetch(pItem))
+	auto pExt = TiberiumExt::TryFetch(pItem);
+	if (!pExt)
+		return;
+
+	auto apply = [](Nullable<int>& val, int& target)
 	{
-		if (pExt->CustomImageName)
+		if (val.isset())
+			target = val.Get();
+	};
+
+	int idx = pItem->ArrayIndex;
+
+	// Apply global Tiberium.ImageX config
+	if (idx >= 0 && idx < 4)
+	{
+		auto& g = RulesExt::Global()->TiberiumImages[idx];
+
+		if (g.DefaultImage)
 		{
-			auto pOverlayType = OverlayTypeClass::Find(pExt->CustomImageName);
-			if (pOverlayType)
-			{
-				pItem->Image = pOverlayType;
+			if (auto pImg = OverlayTypeClass::Find(g.DefaultImage))
+				pItem->Image = pImg;
+		}
 
-				pItem->NumFrames = pExt->CustomImageNumFrames.isset()
-					? pExt->CustomImageNumFrames.Get() : 12;
+		apply(g.NumFrames, pItem->NumFrames);
+		apply(g.NumImages, pItem->NumImages);
+		apply(g.NumSlopes, pItem->NumSlopes);
+	}
 
-				pItem->NumImages = pExt->CustomImageNumImages.isset()
-					? pExt->CustomImageNumImages.Get() : 12;
-
-				pItem->NumSlopes = pExt->CustomImageNumSlopes.isset()
-					? pExt->CustomImageNumSlopes.Get() : 0;
-			}
+	// Override with per-Tiberium CustomImage
+	if (pExt->CustomImageName)
+	{
+		if (auto pImg = OverlayTypeClass::Find(pExt->CustomImageName))
+		{
+			pItem->Image = pImg;
+			apply(pExt->CustomImageNumFrames, pItem->NumFrames);
+			apply(pExt->CustomImageNumImages, pItem->NumImages);
+			apply(pExt->CustomImageNumSlopes, pItem->NumSlopes);
 		}
 	}
 }
