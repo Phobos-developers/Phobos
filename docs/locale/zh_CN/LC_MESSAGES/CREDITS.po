@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 23:22+0800\n"
+"POT-Creation-Date: 2026-08-05 00:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -906,8 +906,7 @@ msgid "Tank Bunker improvements"
 msgstr "坦克碉堡改进"
 
 msgid "`ProjectileRange` weapon range modifiers interaction fix"
-msgstr ""
-"`ProjectileRange` 武器射程修正交互修复"
+msgstr "`ProjectileRange` 武器射程修正交互修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1349,20 +1348,17 @@ msgid ""
 msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置"
 
 msgid "`DeployFire` supports buildings"
-msgstr ""
-"`DeployFire` 支持建筑"
+msgstr "`DeployFire` 支持建筑"
 
 msgid ""
 "Fix an issue where `OmniFire` was ineffective on buildings with "
 "`Turret=yes`"
-msgstr ""
-"修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题"
+msgstr "修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题"
 
 msgid ""
 "Fix an issue where setting a production building as `Primary` could cause"
 " it to enter an unload state"
-msgstr ""
-"修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题"
+msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -2500,6 +2496,12 @@ msgid ""
 "InitialPayload logic"
 msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
+#, fuzzy
+msgid ""
+"Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to "
+"`DiscardOn`"
+msgstr "为 `DiscardOn` 添加 `selling`、`undeploying` 和 `harvesting` 条件"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -3153,6 +3155,5 @@ msgid ""
 msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
 
 msgid "**obsidianus** - Automatic conversion based on health"
-msgstr ""
-"**obsidianus** - 自动根据血量变形"
+msgstr "**obsidianus** - 自动根据血量变形"
 
