@@ -2325,8 +2325,8 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
 - Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used.
-  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
   - This speed value uses the same algorithm as `Speed`. The global default value `7.5` in the INI block is an approximation of the converted value of the vanilla internal value `19` (`7.5 ≈ 19 * 100 / 256`).
+  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
