@@ -24,8 +24,18 @@ public:
 
 	Nullable<ColorStruct> MinimapColor;
 
+	// CustomImage extension
+	PhobosFixedString<32u> CustomImageName;
+	Nullable<int> CustomImageNumFrames;
+	Nullable<int> CustomImageNumImages;
+	Nullable<int> CustomImageNumSlopes;
+
 	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, MinimapColor {}
+		, CustomImageName {}
+		, CustomImageNumFrames {}
+		, CustomImageNumImages {}
+		, CustomImageNumSlopes {}
 	{ }
 
 	virtual ~TiberiumExt() = default;
