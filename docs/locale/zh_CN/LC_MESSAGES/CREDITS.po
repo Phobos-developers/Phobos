@@ -907,6 +907,7 @@ msgstr "坦克碉堡改进"
 
 msgid "`ProjectileRange` weapon range modifiers interaction fix"
 msgstr ""
+"`ProjectileRange` 武器射程修正交互修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
