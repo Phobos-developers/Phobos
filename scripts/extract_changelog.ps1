@@ -261,9 +261,7 @@ foreach ($line in $lines) {
     # in dropdown
     if ($inDropdown) {
         $trimmed = $line.Trim()
-        # !empty, !list, !title, :$
-        if ($trimmed -ne '' -and $trimmed -notmatch '^[-*+]' -and $trimmed -notmatch '^#' -and $trimmed -match ':$') {
-            # transform 4-level title
+if ($trimmed -ne '' -and $trimmed -notmatch '^[-*+]' -and $trimmed -notmatch '^#' -and $trimmed -notmatch '^:[A-Za-z]' -and $trimmed -match ':$') {
             $resultLines.Add("#### " + $trimmed)
             continue
         }
