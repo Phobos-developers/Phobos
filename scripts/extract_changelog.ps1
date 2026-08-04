@@ -238,6 +238,42 @@ if (-not (Test-Path -LiteralPath $WhatsNewPath)) {
 }
 
 $content = (Get-Content -LiteralPath $WhatsNewPath -Raw -Encoding utf8) -replace "`r`n", "`n"
+
+$lines = $content -split "`n"
+$resultLines = [System.Collections.Generic.List[string]]::new()
+$inDropdown = $false
+
+foreach ($line in $lines) {
+    # dropdown start
+    if ($line -match '^\s*```\{dropdown\}') {
+        $inDropdown = $true
+        $resultLines.Add($line)
+        continue
+    }
+
+    # dropdown end
+    if ($inDropdown -and $line -match '^\s*```\s*$') {
+        $inDropdown = $false
+        $resultLines.Add($line)
+        continue
+    }
+
+    # in dropdown
+    if ($inDropdown) {
+        $trimmed = $line.Trim()
+        # !empty, !list, !title, :$
+        if ($trimmed -ne '' -and $trimmed -notmatch '^[-*+]' -and $trimmed -notmatch '^#' -and $trimmed -match ':$') {
+            # transform 4-level title
+            $resultLines.Add("#### " + $trimmed)
+            continue
+        }
+    }
+
+    $resultLines.Add($line)
+}
+
+$content = $resultLines -join "`n"
+
 $root = Read-SectionTree ($content -split "`n")
 $sections = @(Get-AllSections $root)
 
