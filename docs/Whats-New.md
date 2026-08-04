@@ -653,7 +653,7 @@ HideShakeEffects=false           ; boolean
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 - [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
 - `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
-- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
+- [Automatic conversion based on health](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health) (by obsidianus)
 - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
 
 #### Vanilla fixes:
