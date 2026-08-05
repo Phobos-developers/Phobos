@@ -79,6 +79,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
 - The following tags were renamed:
   - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+- `AttackMove.StopWhenTargetAcquired` and `AttackMove.PursuitTarget` have been replaced by a new design; please use `ApproachTarget.StopWhenInRange`.
 ```
 
 ### 0.4

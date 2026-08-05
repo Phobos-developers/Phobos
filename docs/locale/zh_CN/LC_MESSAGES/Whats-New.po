@@ -441,6 +441,11 @@ msgstr ""
 "`[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> "
 "Crit.AffectsAbovePercent`."
 
+msgid ""
+"`AttackMove.StopWhenTargetAcquired` and `AttackMove.PursuitTarget` have been replaced by a new design; please use `ApproachTarget.StopWhenInRange`."
+msgstr ""
+"`AttackMove.StopWhenTargetAcquired` 与 `AttackMove.PursuitTarget` 已被新的设计替代，请使用 `ApproachTarget.StopWhenInRange`。"
+
 msgid "0.4"
 msgstr "0.4"
 

@@ -513,8 +513,6 @@ public:
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
 		
-		Valueable<bool> ApproachTarget_StopWhenInRange;
-
 		Valueable<int> StartFacing;
 		Valueable<bool> StartFacing_Random;
 
@@ -526,6 +524,8 @@ public:
 		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
 		Nullable<int> PoseDir_Production;
 		Nullable<int> PoseDir_Field;
+
+		Valueable<bool> ApproachTarget_StopWhenInRange;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
