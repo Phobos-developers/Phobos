@@ -551,35 +551,46 @@ CustomImage.NumSlopes=8        ; integer, number of slopes
 
 ; Global configuration - placed under [General]
 [General]
-Tiberium.Image1=                ; OverlayType for Type 1 (Riparius)
+Tiberium.Image1=TIB01          ; OverlayType for Type 1 (Riparius), default: TIB01
 Tiberium.Image1.NumFrames=12    ; integer
 Tiberium.Image1.NumImages=12    ; integer
 Tiberium.Image1.NumSlopes=8     ; integer
 
-Tiberium.Image2=                ; OverlayType for Type 2 (Cruentus)
+Tiberium.Image2=GEM01          ; OverlayType for Type 2 (Cruentus), default: GEM01
 Tiberium.Image2.NumFrames=12    ; integer
 Tiberium.Image2.NumImages=12    ; integer
 Tiberium.Image2.NumSlopes=0     ; integer
 
-Tiberium.Image3=                ; OverlayType for Type 3 (Vinifera)
+Tiberium.Image3=TIB2_01        ; OverlayType for Type 3 (Vinifera), default: TIB2_01
 Tiberium.Image3.NumFrames=12    ; integer
 Tiberium.Image3.NumImages=12    ; integer
 Tiberium.Image3.NumSlopes=8     ; integer
 
-Tiberium.Image4=                ; OverlayType for Type 4 (Aboreus)
+Tiberium.Image4=TIB3_01        ; OverlayType for Type 4 (Aboreus), default: TIB3_01
 Tiberium.Image4.NumFrames=12    ; integer
 Tiberium.Image4.NumImages=12    ; integer
 Tiberium.Image4.NumSlopes=8     ; integer
 ```
 
-Default values per Tiberium type:
+Default values:
 
-| Tiberium Type | NumFrames | NumImages | NumSlopes |
-|---------------|-----------|-----------|-----------|
-| Type 1 (Riparius) | 12 | 12 | 8 |
-| Type 2 (Cruentus) | 12 | 12 | 0 |
-| Type 3 (Vinifera) | 12 | 12 | 8 |
-| Type 4 (Aboreus) | 12 | 12 | 8 |
+- `CustomImage` / `Tiberium.ImageX` (OverlayType name): Defaults to the game's hardcoded image for that Tiberium type if not set. The default OverlayType assigned to each Tiberium type by the game engine is listed below.
+- `NumFrames`, `NumImages`, `NumSlopes`: Defaults to the game's hardcoded values per Tiberium type as listed below.
+
+| Tiberium Type | Default Image | Default ID | NumFrames | NumImages | NumSlopes |
+|---------------|---------------|------------|-----------|-----------|-----------|
+| Type 1 (Riparius) | `TIB01` | 105 | 12 | 12 | 8 |
+| Type 2 (Cruentus) | `GEM01` | 28 | 12 | 12 | 0 |
+| Type 3 (Vinifera) | `TIB2_01` | 130 | 12 | 12 | 8 |
+| Type 4 (Aboreus) | `TIB3_01` | 150 | 12 | 12 | 8 |
+
+```{note}
+The `Default ID` column refers to the ID number in `rulesmd.ini` under the `[OverlayTypes]` section. Due to IDs 40 and 41 being skipped, the `ArrayIndex` (used internally by the game engine) is calculated differently:
+- For IDs 1-39: `ArrayIndex = ID - 1`
+- For IDs >= 42: `ArrayIndex = ID - 3`
+
+For example, `GEM01` has ID 28 in `[OverlayTypes]`, but its `ArrayIndex` is 27 (28 - 1). Similarly, `TIB01` has ID 105, but its `ArrayIndex` is 102 (105 - 3).
+```
 
 ```{note}
 The `Tiberium.ImageX` numbering uses 1-based indexing (Image1 = Riparius, Image2 = Cruentus, Image3 = Vinifera, Image4 = Aboreus), matching the game's internal Tiberium type numbering.
