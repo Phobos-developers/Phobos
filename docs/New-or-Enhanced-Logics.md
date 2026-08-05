@@ -557,7 +557,7 @@ In `rulesmd.ini`:
 ; [Riparius] - Tiberium Type 1
 [Riparius]
 Image=1                         ; native game setting, 1-4 refers to Tiberium type
-CustomImage=TIB01               ; Phobos enhanced: OverlayType name, default: TIB01
+CustomImage=TIB01               ; Custom: OverlayType name, default: TIB01
 CustomImage.NumFrames=12        ; integer, default: 12
 CustomImage.NumImages=12        ; integer, default: 12
 CustomImage.NumSlopes=8         ; integer, default: 8
@@ -565,7 +565,7 @@ CustomImage.NumSlopes=8         ; integer, default: 8
 ; [Cruentus] - Tiberium Type 2
 [Cruentus]
 Image=2                         ; native game setting
-CustomImage=GEM01               ; Phobos enhanced: OverlayType name, default: GEM01
+CustomImage=GEM01               ; Custom: OverlayType name, default: GEM01
 CustomImage.NumFrames=12        ; integer, default: 12
 CustomImage.NumImages=12        ; integer, default: 12
 CustomImage.NumSlopes=0         ; integer, default: 0
@@ -573,7 +573,7 @@ CustomImage.NumSlopes=0         ; integer, default: 0
 ; [Vinifera] - Tiberium Type 3
 [Vinifera]
 Image=3                         ; native game setting
-CustomImage=TIB2_01             ; Phobos enhanced: OverlayType name, default: TIB2_01
+CustomImage=TIB2_01             ; Custom: OverlayType name, default: TIB2_01
 CustomImage.NumFrames=12        ; integer, default: 12
 CustomImage.NumImages=12        ; integer, default: 12
 CustomImage.NumSlopes=8         ; integer, default: 8
@@ -581,7 +581,7 @@ CustomImage.NumSlopes=8         ; integer, default: 8
 ; [Aboreus] - Tiberium Type 4
 [Aboreus]
 Image=4                         ; native game setting
-CustomImage=TIB3_01             ; Phobos enhanced: OverlayType name, default: TIB3_01
+CustomImage=TIB3_01             ; Custom: OverlayType name, default: TIB3_01
 CustomImage.NumFrames=12        ; integer, default: 12
 CustomImage.NumImages=12        ; integer, default: 12
 CustomImage.NumSlopes=8         ; integer, default: 8
