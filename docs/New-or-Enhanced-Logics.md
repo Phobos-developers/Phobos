@@ -1436,30 +1436,6 @@ AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Agg
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
-### Attack move - behavior when target acquired
-
-- Now you can make attack-moving units stop moving when they spot an enemy using `AttackMove.StopWhenTargetAcquired`. This is more like the attack move behavior in Starcraft and Warcraft.
-  - This feature is used to prevent units from charging forward and taking more damage during an attack move command.
-- You can also make them keep chasing on the spotted target using `AttackMove.PursuitTarget`.
-  - This feature should be useful for close range units like ZEP.
-
-
-In `rulesmd.ini`:
-```ini
-[General]
-AttackMove.StopWhenTargetAcquired=         ; boolean
-
-[SOMETECHNO]                               ; TechnoType
-AttackMove.StopWhenTargetAcquired=         ; boolean, default to [General] -> AttackMove.StopWhenTargetAcquired if set, inverse of OpportunityFire otherwise.
-AttackMove.PursuitTarget=                  ; boolean
-```
-
-```{note}
-1. Many units would have stopped when they found an enemy during an attack move command already. This behavior is independent from `AttackMove.StopWhenTargetAcquired`.
-2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move command. The exact reason is not clear, but this feature can fix this problem.
-3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
-```
-
 ### Attack move - follow
 
 - Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`[Ctrl]+[Alt]`).
