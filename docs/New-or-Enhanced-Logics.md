@@ -543,11 +543,37 @@ Shield.InheritStateOnReplace=false          ; boolean
 In `rulesmd.ini`:
 ```ini
 ; Per-Tiberium configuration - placed under individual Tiberium section
+; First register the Tiberium type in [Tiberiums], then configure under its ID name
+
+[Tiberiums]
+0=Riparius
+1=Cruentus
+2=Vinifera
+3=Aboreus
+
 [Riparius]
-CustomImage=SOME_OVERLAY       ; OverlayType image to use
-CustomImage.NumFrames=12       ; integer, number of frames
-CustomImage.NumImages=12       ; integer, number of images
-CustomImage.NumSlopes=8        ; integer, number of slopes
+CustomImage=TIB01              ; OverlayType image to use, default: TIB01
+CustomImage.NumFrames=12       ; integer, number of frames, default: 12
+CustomImage.NumImages=12       ; integer, number of images, default: 12
+CustomImage.NumSlopes=8        ; integer, number of slopes, default: 8
+
+[Cruentus]
+CustomImage=GEM01              ; OverlayType image to use, default: GEM01
+CustomImage.NumFrames=12       ; integer, default: 12
+CustomImage.NumImages=12       ; integer, default: 12
+CustomImage.NumSlopes=0        ; integer, default: 0
+
+[Vinifera]
+CustomImage=TIB2_01            ; OverlayType image to use, default: TIB2_01
+CustomImage.NumFrames=12       ; integer, default: 12
+CustomImage.NumImages=12       ; integer, default: 12
+CustomImage.NumSlopes=8        ; integer, default: 8
+
+[Aboreus]
+CustomImage=TIB3_01            ; OverlayType image to use, default: TIB3_01
+CustomImage.NumFrames=12       ; integer, default: 12
+CustomImage.NumImages=12       ; integer, default: 12
+CustomImage.NumSlopes=8        ; integer, default: 8
 
 ; Global configuration - placed under [General]
 [General]
