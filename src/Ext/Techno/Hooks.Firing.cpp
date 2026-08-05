@@ -1257,7 +1257,7 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	{
 		GET(FootClass*, pThis, EBX);
 		pThis->StopMoving();
-		pThis->SetDestination(nullptr, true);
+		pThis->AbortMotion();
 	}
 
 	return 0;
