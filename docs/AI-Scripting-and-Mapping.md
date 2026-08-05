@@ -830,7 +830,7 @@ Team delay change will take effect for a house after its next AI team is created
 ### `611` Set Next Scenario
 
 - Set the next campaign to load after winning the current one.
-  - Works only in `Campaign Mode` and requires setting `[Basic]>SkipMapSelect=yes`.
+  - Works only in `Campaign Mode` and requires setting `[Basic] -> SkipMapSelect=yes`.
 
 In `mycampaign.map`:
 ```ini
