@@ -7,7 +7,7 @@ DEFINE_HOOK(0x4FCD66, HouseClass_WinLoseTheme, 0x5)        // HouseClass::Flag_T
 {
 	const auto pThis = HouseClass::CurrentPlayer;
 	const auto pSide = SideClass::Array.GetItemOrDefault(pThis->SideIndex);
-	const auto pSideExt = SideExt::ExtMap.TryFind(pSide);
+	const auto pSideExt = SideExt::TryFetch(pSide);
 
 	if (pSideExt)
 	{

@@ -1,41 +1,46 @@
 #pragma once
 #include <TeamTypeClass.h>
 
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class TeamTypeExt
+class TeamTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = TeamTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TeamTypeExt;
+
 	static constexpr DWORD Canary = 0xABCDEF01;
-	static constexpr size_t ExtPointerOffset = 0xBC;
 
-	class ExtData final : public Extension<TeamTypeClass>
+public:
+	// typed owner accessor
+	TeamTypeClass* OwnerObject() const
 	{
-	public:
-		ExtData(TeamTypeClass* OwnerObject) : Extension<TeamTypeClass>(OwnerObject)
-			, SetRecruitableOnLiberate { }
-		{ }
+		return static_cast<TeamTypeClass*>(this->GetAttachedObject());
+	}
 
-		virtual ~ExtData() = default;
+	TeamTypeExt(TeamTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, SetRecruitableOnLiberate { }
+	{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		// virtual void Initialize() override;
+	virtual ~TeamTypeExt() = default;
 
-		Nullable<int> SetRecruitableOnLiberate;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	// virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	Nullable<int> SetRecruitableOnLiberate;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<TeamTypeExt>
 	{
 	public:
@@ -44,4 +49,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TeamTypeExt* Fetch(const TeamTypeClass* pThis)
+	{
+		return AbstractExt::Fetch<TeamTypeExt>(pThis);
+	}
+
+	static TeamTypeExt* TryFetch(const TeamTypeClass* pThis)
+	{
+		return AbstractExt::TryFetch<TeamTypeExt>(pThis);
+	}
 };
+

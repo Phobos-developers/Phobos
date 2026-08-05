@@ -3,82 +3,87 @@
 #include <RadSiteClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/WeaponType/Body.h>
 
 class RadTypeClass;
 
-class RadSiteExt
+class RadSiteExt final : public AbstractExt, public Detach::Listener<TechnoClass>
 {
 public:
 	using base_type = RadSiteClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = RadSiteExt;
+
 	static constexpr DWORD Canary = 0x88446622;
-	static constexpr size_t ExtPointerOffset = 0x18;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
-	class ExtData final : public Extension<RadSiteClass>
+public:
+	// typed owner accessor
+	RadSiteClass* OwnerObject() const
 	{
-	public:
-		WeaponTypeClass* Weapon;
-		RadTypeClass* Type;
-		HouseClass* RadHouse;
-		TechnoClass* RadInvoker;
+		return static_cast<RadSiteClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
-			, RadHouse { nullptr }
-			, RadInvoker { nullptr }
-			, Type {}
-			, Weapon { nullptr }
-		{ }
+	WeaponTypeClass* Weapon;
+	RadTypeClass* Type;
+	HouseClass* RadHouse;
+	TechnoClass* RadInvoker;
 
-		virtual ~ExtData() = default;
+	RadSiteExt(RadSiteClass* OwnerObject) : AbstractExt(OwnerObject)
+		, RadHouse { nullptr }
+		, RadInvoker { nullptr }
+		, Type {}
+		, Weapon { nullptr }
+	{ }
 
-		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage);
-		void Add(int amount);
-		void SetRadLevel(int amount);
-		// double GetRadLevelAt(CellStruct const& cell) const;
-		void CreateLight();
+	virtual ~RadSiteExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-		virtual void Initialize() override;
+	bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage);
+	void Add(int amount);
+	void SetRadLevel(int amount);
+	// double GetRadLevelAt(CellStruct const& cell) const;
+	void CreateLight();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			if (bRemoved)
-				AnnounceInvalidPointer(this->RadInvoker, ptr);
-		}
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void Initialize() override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+	virtual void OnDetach(TechnoClass* pTarget, bool removed) override
+	{
+		if (removed)
+			AnnounceInvalidPointer(this->RadInvoker, pTarget);
+	}
 
-	static void CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
+
+	static void CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
+
+public:
 	class ExtContainer final : public Container<RadSiteExt>
 	{
 	public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-			switch (abs)
-			{
-			case AbstractType::Aircraft:
-			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;
+
+	static RadSiteExt* Fetch(const RadSiteClass* pThis)
+	{
+		return AbstractExt::Fetch<RadSiteExt>(pThis);
+	}
+
+	static RadSiteExt* TryFetch(const RadSiteClass* pThis)
+	{
+		return AbstractExt::TryFetch<RadSiteExt>(pThis);
+	}
 };
+
