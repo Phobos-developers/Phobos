@@ -821,6 +821,19 @@ ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 Team delay change will take effect for a house after its next AI team is created.
 ```
 
+### `611` Set Next Scenario
+
+- Set the next campaign to load after winning the current one.
+  - Works only in `Campaign Mode` and requires setting `[Basic]>SkipMapSelect=yes`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],611,-4,[FileName],0,0,0,0,A,[ActionX]
+...
+```
+
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
