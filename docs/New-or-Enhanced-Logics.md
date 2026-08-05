@@ -542,8 +542,11 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 In `rulesmd.ini`:
 ```ini
-; Per-Tiberium configuration - placed under individual Tiberium section
-; First register the Tiberium type in [Tiberiums], then configure under its ID name
+; ============================================================
+; Per-Tiberium configuration
+; First register the Tiberium type in [Tiberiums]
+; Then configure under its ID name
+; ============================================================
 
 [Tiberiums]
 0=Riparius
@@ -551,29 +554,37 @@ In `rulesmd.ini`:
 2=Vinifera
 3=Aboreus
 
+; [Riparius] - Tiberium Type 1
 [Riparius]
-CustomImage=TIB01              ; OverlayType image to use, default: TIB01
-CustomImage.NumFrames=12       ; integer, number of frames, default: 12
-CustomImage.NumImages=12       ; integer, number of images, default: 12
-CustomImage.NumSlopes=8        ; integer, number of slopes, default: 8
+Image=1                         ; native game setting, 1-4 refers to Tiberium type
+CustomImage=TIB01               ; Phobos enhanced: OverlayType name, default: TIB01
+CustomImage.NumFrames=12        ; integer, default: 12
+CustomImage.NumImages=12        ; integer, default: 12
+CustomImage.NumSlopes=8         ; integer, default: 8
 
+; [Cruentus] - Tiberium Type 2
 [Cruentus]
-CustomImage=GEM01              ; OverlayType image to use, default: GEM01
-CustomImage.NumFrames=12       ; integer, default: 12
-CustomImage.NumImages=12       ; integer, default: 12
-CustomImage.NumSlopes=0        ; integer, default: 0
+Image=2                         ; native game setting
+CustomImage=GEM01               ; Phobos enhanced: OverlayType name, default: GEM01
+CustomImage.NumFrames=12        ; integer, default: 12
+CustomImage.NumImages=12        ; integer, default: 12
+CustomImage.NumSlopes=0         ; integer, default: 0
 
+; [Vinifera] - Tiberium Type 3
 [Vinifera]
-CustomImage=TIB2_01            ; OverlayType image to use, default: TIB2_01
-CustomImage.NumFrames=12       ; integer, default: 12
-CustomImage.NumImages=12       ; integer, default: 12
-CustomImage.NumSlopes=8        ; integer, default: 8
+Image=3                         ; native game setting
+CustomImage=TIB2_01             ; Phobos enhanced: OverlayType name, default: TIB2_01
+CustomImage.NumFrames=12        ; integer, default: 12
+CustomImage.NumImages=12        ; integer, default: 12
+CustomImage.NumSlopes=8         ; integer, default: 8
 
+; [Aboreus] - Tiberium Type 4
 [Aboreus]
-CustomImage=TIB3_01            ; OverlayType image to use, default: TIB3_01
-CustomImage.NumFrames=12       ; integer, default: 12
-CustomImage.NumImages=12       ; integer, default: 12
-CustomImage.NumSlopes=8        ; integer, default: 8
+Image=4                         ; native game setting
+CustomImage=TIB3_01             ; Phobos enhanced: OverlayType name, default: TIB3_01
+CustomImage.NumFrames=12        ; integer, default: 12
+CustomImage.NumImages=12        ; integer, default: 12
+CustomImage.NumSlopes=8         ; integer, default: 8
 
 ; Global configuration - placed under [General]
 [General]
@@ -620,6 +631,10 @@ For example, `GEM01` has ID 28 in `[OverlayTypes]`, but its `ArrayIndex` is 27 (
 
 ```{note}
 The `Tiberium.ImageX` numbering uses 1-based indexing (Image1 = Riparius, Image2 = Cruentus, Image3 = Vinifera, Image4 = Aboreus), matching the game's internal Tiberium type numbering.
+```
+
+```{note}
+**How `CustomImage` overrides the image**: When `CustomImage` is set in a per-Tiberium section, Phobos looks up the OverlayType by name (via `OverlayTypeClass::Find()`). If found, it replaces the `Image` pointer with the new OverlayType. If the name is invalid (not found in `[OverlayTypes]`), the image will **not** be overridden and the original image is preserved. The same logic applies to the global `Tiberium.ImageX` configuration.
 ```
 
 ## Aircraft
