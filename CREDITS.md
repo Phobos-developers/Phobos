@@ -440,6 +440,7 @@ This page lists all the individual contributions to the project by their author.
   - DeployFire supports buildings
   - `OmniFire` supports buildings with `Turret=yes`
   - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
+  - SkipMapSelect Enhancement
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

@@ -159,6 +159,12 @@ In `RA2MD.INI`:
 ShowBriefing=true  ; boolean
 ```
 
+### SkipMapSelect Enhancement
+
+- Using `SkipMapSelect=yes` in the map file allows you to bypass the restriction in mapselmd.ini—which requires that the player's faction in the current campaign must match the faction in the next new campaign.
+  - You can use `NextScenario` and `AltNextScenario` to specify the map names required to enter a new campaign, thereby forcing the game to proceed to the next campaign.
+
+
 ## Script Actions
 
 ### `10000-10999` Ingame Actions
