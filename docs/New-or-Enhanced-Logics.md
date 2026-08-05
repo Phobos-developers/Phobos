@@ -534,6 +534,57 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### Tiberium Custom Image
+
+- Tiberium types (Riparius, Cruentus, Vinifera, Aboreus) can now have custom overlay images and override `NumFrames`, `NumImages`, and `NumSlopes` settings.
+- Supports both per-Tiberium (micro) configuration and global configuration via `[General]`.
+- Priority: Per-Tiberium `CustomImage` > Global `Tiberium.ImageX` > Game engine defaults.
+
+In `rulesmd.ini`:
+```ini
+; Per-Tiberium configuration - placed under individual Tiberium section
+[Riparius]
+CustomImage=SOME_OVERLAY       ; OverlayType image to use
+CustomImage.NumFrames=12       ; integer, number of frames
+CustomImage.NumImages=12       ; integer, number of images
+CustomImage.NumSlopes=8        ; integer, number of slopes
+
+; Global configuration - placed under [General]
+[General]
+Tiberium.Image1=                ; OverlayType for Type 1 (Riparius)
+Tiberium.Image1.NumFrames=12    ; integer
+Tiberium.Image1.NumImages=12    ; integer
+Tiberium.Image1.NumSlopes=8     ; integer
+
+Tiberium.Image2=                ; OverlayType for Type 2 (Cruentus)
+Tiberium.Image2.NumFrames=12    ; integer
+Tiberium.Image2.NumImages=12    ; integer
+Tiberium.Image2.NumSlopes=0     ; integer
+
+Tiberium.Image3=                ; OverlayType for Type 3 (Vinifera)
+Tiberium.Image3.NumFrames=12    ; integer
+Tiberium.Image3.NumImages=12    ; integer
+Tiberium.Image3.NumSlopes=8     ; integer
+
+Tiberium.Image4=                ; OverlayType for Type 4 (Aboreus)
+Tiberium.Image4.NumFrames=12    ; integer
+Tiberium.Image4.NumImages=12    ; integer
+Tiberium.Image4.NumSlopes=8     ; integer
+```
+
+Default values per Tiberium type:
+
+| Tiberium Type | NumFrames | NumImages | NumSlopes |
+|---------------|-----------|-----------|-----------|
+| Type 1 (Riparius) | 12 | 12 | 8 |
+| Type 2 (Cruentus) | 12 | 12 | 0 |
+| Type 3 (Vinifera) | 12 | 12 | 8 |
+| Type 4 (Aboreus) | 12 | 12 | 8 |
+
+```{note}
+The `Tiberium.ImageX` numbering uses 1-based indexing (Image1 = Riparius, Image2 = Cruentus, Image3 = Vinifera, Image4 = Aboreus), matching the game's internal Tiberium type numbering.
+```
+
 ## Aircraft
 
 ### Custom cruise missiles

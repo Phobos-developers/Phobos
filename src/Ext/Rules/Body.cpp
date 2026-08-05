@@ -74,6 +74,28 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
 	this->LeptonMindControlOffset.Read(exINI, GameStrings::AudioVisual, "LeptonMindControlOffset");
 	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
+
+	// Load global Tiberium image config (Image1-4)
+	char imgBuf[64];
+	for (int i = 0; i < 4; i++)
+	{
+		_snprintf_s(imgBuf, sizeof(imgBuf), "Tiberium.Image%d", i + 1);
+		this->TiberiumImages[i].DefaultImage.Read(pINI, GameStrings::General, imgBuf);
+
+		auto readField = [&](Nullable<int>& field, const char* suffix)
+		{
+			_snprintf_s(imgBuf, sizeof(imgBuf), "Tiberium.Image%d.%s", i + 1, suffix);
+			Phobos::readBuffer[0] = '\0';
+			if (pINI->ReadString(GameStrings::General, imgBuf, "", Phobos::readBuffer) > 0)
+				field.Read(exINI, GameStrings::General, imgBuf);
+			else
+				field.Reset();
+		};
+
+		readField(this->TiberiumImages[i].NumFrames, "NumFrames");
+		readField(this->TiberiumImages[i].NumImages, "NumImages");
+		readField(this->TiberiumImages[i].NumSlopes, "NumSlopes");
+	}
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -1063,7 +1085,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
-    ;
+		;
+
+	for (int i = 0; i < 4; i++)
+	{
+		Stm
+			.Process(this->TiberiumImages[i].DefaultImage)
+			.Process(this->TiberiumImages[i].NumFrames)
+			.Process(this->TiberiumImages[i].NumImages)
+			.Process(this->TiberiumImages[i].NumSlopes)
+			;
+	}
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
