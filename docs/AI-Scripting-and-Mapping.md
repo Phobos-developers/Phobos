@@ -163,7 +163,7 @@ ShowBriefing=true  ; boolean
 
 - Using `SkipMapSelect=yes` in the map file allows you to bypass the restriction in mapselmd.ini—which requires that the player's faction in the current campaign must match the faction in the next new campaign.
   - You can use `NextScenario` and `AltNextScenario` to specify the map names required to enter a new campaign, thereby forcing the game to proceed to the next campaign.
-
+  - Now, setting a local variable named `<Alternate Next Scenario>` will also trigger `AltNextScenario`.
 
 ## Script Actions
 
