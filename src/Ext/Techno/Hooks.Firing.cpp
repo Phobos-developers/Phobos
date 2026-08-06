@@ -1253,11 +1253,17 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 {
 	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
 
-	if (RulesExt::Global()->ApproachTarget_StopWhenInRange && closeEnough)
+	if (closeEnough)
 	{
 		GET(FootClass*, pThis, EBX);
-		pThis->StopMoving();
-		pThis->AbortMotion();
+		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+		// Per-type setting takes priority, falls back to the global one.
+		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
+		{
+			pThis->StopMoving();
+			pThis->AbortMotion();
+		}
 	}
 
 	return 0;

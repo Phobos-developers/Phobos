@@ -1032,6 +1032,10 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
 
+	this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "ApproachTarget.StopWhenInRange");
+	if (!exINI.ReadString(pSection, "ApproachTarget.StopWhenInRange"))
+		this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
+
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_Weapon.Read(exINI, pSection, "KeepTargetOnMove.Weapon");
 	this->KeepTargetOnMove_NoMorePursuit.Read(exINI, pSection, "KeepTargetOnMove.NoMorePursuit");
@@ -1647,6 +1651,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->AttackMove_Aggressive)
 		.Process(this->AttackMove_UpdateTarget)
+
+		.Process(this->ApproachTarget_StopWhenInRange)
 
 		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)

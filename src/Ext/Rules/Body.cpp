@@ -593,6 +593,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
 
 	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
+	if (!exINI.ReadString(GameStrings::General, "ApproachTarget.StopWhenInRange"))
+		this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
