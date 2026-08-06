@@ -2386,8 +2386,7 @@ namespace CrewTemp
 		{
 			const auto pThis = static_cast<const TechnoClass*>(this);
 			const auto pExt = TechnoExt::Fetch(pThis);
-			const auto GetCrewCount = reinterpret_cast<int(__thiscall*)(const TechnoClass*)>(0x6F3950);
-			return pExt->PreventCrew ? 0 : GetCrewCount(pThis);
+			return pExt->PreventCrew ? 0 : pThis->TechnoClass::GetCrewCount();
 		}
 	};
 
@@ -2397,8 +2396,7 @@ namespace CrewTemp
 		{
 			const auto pThis = static_cast<const BuildingClass*>(this);
 			const auto pExt = TechnoExt::Fetch(pThis);
-			const auto GetCrewCount = reinterpret_cast<int(__thiscall*)(const TechnoClass*)>(0x451330);
-			return pExt->PreventCrew ? 0 : GetCrewCount(pThis);
+			return pExt->PreventCrew ? 0 : pThis->BuildingClass::GetCrewCount();
 		}
 	};
 }
