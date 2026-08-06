@@ -536,105 +536,49 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Tiberium Custom Image
 
-- Tiberium types (Riparius, Cruentus, Vinifera, Aboreus) can now have custom overlay images and override `NumFrames`, `NumImages`, and `NumSlopes` settings.
-- Supports both per-Tiberium (micro) configuration and global configuration via `[General]`.
-- Priority: Per-Tiberium `CustomImage` > Global `Tiberium.ImageX` > Game engine defaults.
+Tiberium types can now use custom overlay images and override `NumFrames`, `NumImages`, and `NumSlopes` values.
 
-In `rulesmd.ini`:
+**Priority**: Per-Tiberium `CustomImage` > Global `Tiberium.ImageX` > Game engine defaults.
+
+**Per-Tiberium configuration** (in `rulesmd.ini`):
 ```ini
-; ============================================================
-; Per-Tiberium configuration
-; First register the Tiberium type in [Tiberiums]
-; Then configure under its ID name
-; ============================================================
+[SOMETIBERIUM]  ; Tiberium type name
+CustomImage=                   ; OverlayType name, default: game engine default
+CustomImage.NumFrames=         ; integer, default: game engine default
+CustomImage.NumImages=         ; integer, default: game engine default
+CustomImage.NumSlopes=         ; integer, default: game engine default
+```
 
-[Tiberiums]
-0=Riparius
-1=Cruentus
-2=Vinifera
-3=Aboreus
-
-; [Riparius] - Tiberium Type 1
-[Riparius]
-Image=1                         ; native game setting, 1-4 refers to Tiberium type
-CustomImage=TIB01               ; Custom: OverlayType name, default: TIB01
-CustomImage.NumFrames=12        ; integer, default: 12
-CustomImage.NumImages=12        ; integer, default: 12
-CustomImage.NumSlopes=8         ; integer, default: 8
-
-; [Cruentus] - Tiberium Type 2
-[Cruentus]
-Image=2                         ; native game setting
-CustomImage=GEM01               ; Custom: OverlayType name, default: GEM01
-CustomImage.NumFrames=12        ; integer, default: 12
-CustomImage.NumImages=12        ; integer, default: 12
-CustomImage.NumSlopes=0         ; integer, default: 0
-
-; [Vinifera] - Tiberium Type 3
-[Vinifera]
-Image=3                         ; native game setting
-CustomImage=TIB2_01             ; Custom: OverlayType name, default: TIB2_01
-CustomImage.NumFrames=12        ; integer, default: 12
-CustomImage.NumImages=12        ; integer, default: 12
-CustomImage.NumSlopes=8         ; integer, default: 8
-
-; [Aboreus] - Tiberium Type 4
-[Aboreus]
-Image=4                         ; native game setting
-CustomImage=TIB3_01             ; Custom: OverlayType name, default: TIB3_01
-CustomImage.NumFrames=12        ; integer, default: 12
-CustomImage.NumImages=12        ; integer, default: 12
-CustomImage.NumSlopes=8         ; integer, default: 8
-
-; Global configuration - placed under [General]
+**Global configuration** (only applies to built-in Tiberium types Image1-4, in `[General]` section):
+```ini
 [General]
-Tiberium.Image1=TIB01          ; OverlayType for Type 1 (Riparius), default: TIB01
-Tiberium.Image1.NumFrames=12    ; integer
-Tiberium.Image1.NumImages=12    ; integer
-Tiberium.Image1.NumSlopes=8     ; integer
+Tiberium.Image1=               ; OverlayType name, default: game engine default
+Tiberium.Image1.NumFrames=     ; integer, default: game engine default
+Tiberium.Image1.NumImages=     ; integer, default: game engine default
+Tiberium.Image1.NumSlopes=     ; integer, default: game engine default
 
-Tiberium.Image2=GEM01          ; OverlayType for Type 2 (Cruentus), default: GEM01
-Tiberium.Image2.NumFrames=12    ; integer
-Tiberium.Image2.NumImages=12    ; integer
-Tiberium.Image2.NumSlopes=0     ; integer
+Tiberium.Image2=               ; OverlayType name, default: game engine default
+Tiberium.Image2.NumFrames=     ; integer, default: game engine default
+Tiberium.Image2.NumImages=     ; integer, default: game engine default
+Tiberium.Image2.NumSlopes=     ; integer, default: game engine default
 
-Tiberium.Image3=TIB2_01        ; OverlayType for Type 3 (Vinifera), default: TIB2_01
-Tiberium.Image3.NumFrames=12    ; integer
-Tiberium.Image3.NumImages=12    ; integer
-Tiberium.Image3.NumSlopes=8     ; integer
+Tiberium.Image3=               ; OverlayType name, default: game engine default
+Tiberium.Image3.NumFrames=     ; integer, default: game engine default
+Tiberium.Image3.NumImages=     ; integer, default: game engine default
+Tiberium.Image3.NumSlopes=     ; integer, default: game engine default
 
-Tiberium.Image4=TIB3_01        ; OverlayType for Type 4 (Aboreus), default: TIB3_01
-Tiberium.Image4.NumFrames=12    ; integer
-Tiberium.Image4.NumImages=12    ; integer
-Tiberium.Image4.NumSlopes=8     ; integer
-```
-
-Default values:
-
-- `CustomImage` / `Tiberium.ImageX` (OverlayType name): Defaults to the game's hardcoded image for that Tiberium type if not set. The default OverlayType assigned to each Tiberium type by the game engine is listed below.
-- `NumFrames`, `NumImages`, `NumSlopes`: Defaults to the game's hardcoded values per Tiberium type as listed below.
-
-| Tiberium Type | Default Image | Default ID | NumFrames | NumImages | NumSlopes |
-|---------------|---------------|------------|-----------|-----------|-----------|
-| Type 1 (Riparius) | `TIB01` | 105 | 12 | 12 | 8 |
-| Type 2 (Cruentus) | `GEM01` | 28 | 12 | 12 | 0 |
-| Type 3 (Vinifera) | `TIB2_01` | 130 | 12 | 12 | 8 |
-| Type 4 (Aboreus) | `TIB3_01` | 150 | 12 | 12 | 8 |
-
-```{note}
-The `Default ID` column refers to the ID number in `rulesmd.ini` under the `[OverlayTypes]` section. Due to IDs 40 and 41 being skipped, the `ArrayIndex` (used internally by the game engine) is calculated differently:
-- For IDs 1-39: `ArrayIndex = ID - 1`
-- For IDs >= 42: `ArrayIndex = ID - 3`
-
-For example, `GEM01` has ID 28 in `[OverlayTypes]`, but its `ArrayIndex` is 27 (28 - 1). Similarly, `TIB01` has ID 105, but its `ArrayIndex` is 102 (105 - 3).
+Tiberium.Image4=               ; OverlayType name, default: game engine default
+Tiberium.Image4.NumFrames=     ; integer, default: game engine default
+Tiberium.Image4.NumImages=     ; integer, default: game engine default
+Tiberium.Image4.NumSlopes=     ; integer, default: game engine default
 ```
 
 ```{note}
-The `Tiberium.ImageX` numbering uses 1-based indexing (Image1 = Riparius, Image2 = Cruentus, Image3 = Vinifera, Image4 = Aboreus), matching the game's internal Tiberium type numbering.
-```
-
-```{note}
-**How `CustomImage` overrides the image**: When `CustomImage` is set in a per-Tiberium section, Phobos looks up the OverlayType by name (via `OverlayTypeClass::Find()`). If found, it replaces the `Image` pointer with the new OverlayType. If the name is invalid (not found in `[OverlayTypes]`), the image will **not** be overridden and the original image is preserved. The same logic applies to the global `Tiberium.ImageX` configuration.
+**About global vs. per-Tiberium configuration**:
+- Global `Tiberium.ImageX` settings only apply to the 4 built-in Tiberium types (Image1-4).
+- For custom Tiberium types, use `CustomImage` under the individual type's section.
+- `Image=1-4` is the game's native setting that refers to a built-in Tiberium type.
+- `CustomImage=Name` is a Phobos feature that replaces the image with a custom OverlayType by name.
 ```
 
 ## Aircraft

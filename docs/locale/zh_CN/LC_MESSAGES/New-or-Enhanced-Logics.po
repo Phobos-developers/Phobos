@@ -1405,44 +1405,6 @@ msgstr ""
 "如果设置 `Shield.InheritStateOnReplace` 则通过 `Shield.ReplaceOnly` "
 "替换的护盾将继承前一个护盾的当前强度（护盾类型的 `Strength`）以及是否已被击碎的状态。恢复和重生计时器将始终被重置。"
 
-msgid "Tiberium Custom Image"
-msgstr "泰矿自定义图像"
-
-msgid ""
-"Tiberium types (Riparius, Cruentus, Vinifera, Aboreus) can now have custom "
-"overlay images and override `NumFrames`, `NumImages`, and `NumSlopes` settings."
-msgstr "泰矿类型（Riparius、Cruentus、Vinifera、Aboreus）现在可以自定义覆盖图像并覆盖 `NumFrames`、`NumImages` 和 `NumSlopes` 设置。"
-
-msgid ""
-"Supports both per-Tiberium (micro) configuration and global configuration via `[General]`."
-msgstr "支持单个泰矿（微观）配置和通过 `[General]` 进行的全局配置。"
-
-msgid ""
-"Priority: Per-Tiberium `CustomImage` > Global `Tiberium.ImageX` > Game engine defaults."
-msgstr "优先级：单个泰矿 `CustomImage` > 全局 `Tiberium.ImageX` > 游戏引擎默认值。"
-
-msgid ""
-"In `rulesmd.ini`:"
-msgstr "在 `rulesmd.ini` 中："
-
-msgid ""
-"; Per-Tiberium configuration - placed under individual Tiberium section"
-msgstr "; 单个泰矿配置 - 放在对应泰矿的独立小节下"
-
-msgid ""
-"; Global configuration - placed under [General]"
-msgstr "; 全局配置 - 放在 [General] 下"
-
-msgid ""
-"Default values per Tiberium type:"
-msgstr "每种泰矿类型的默认值："
-
-msgid ""
-"The `Tiberium.ImageX` numbering uses 1-based indexing (Image1 = Riparius, "
-"Image2 = Cruentus, Image3 = Vinifera, Image4 = Aboreus), matching the game's "
-"internal Tiberium type numbering."
-msgstr "`Tiberium.ImageX` 编号采用从 1 开始的索引（Image1 = Riparius，Image2 = Cruentus，Image3 = Vinifera，Image4 = Aboreus），与游戏内部的泰矿类型编号一致。"
-
 msgid "Aircraft"
 msgstr "战机"
 
