@@ -486,7 +486,7 @@ HideShakeEffects=false           ; boolean
 - [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
-- [Several attackmove related enhancement](New-or-Enhanced-Logics.md#attack-move-behavior-when-target-acquired) (by TaranDahl)
+- [Attack move - follow](New-or-Enhanced-Logics.md#attack-move-follow) and [attack move - without weapon](New-or-Enhanced-Logics.md#attack-move-without-weapon) (by TaranDahl)
 - Ground line for select box (by NetsuNegi)
 - [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
 - [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
@@ -653,7 +653,9 @@ HideShakeEffects=false           ; boolean
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
 - [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
 - `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
-- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
+- [Automatic conversion based on health](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health) (by obsidianus)
+- Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
+- [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 - ScriptType action `Play speech` (by FS-21)
 
 #### Vanilla fixes:

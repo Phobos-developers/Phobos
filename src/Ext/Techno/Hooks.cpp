@@ -1,5 +1,4 @@
 #include <TunnelLocomotionClass.h>
-#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
@@ -1221,55 +1220,6 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 }
 
 #pragma region AttackMove
-
-DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
-{
-	GET(FootClass* const, pThis, ESI);
-
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	if (pThis->IsCloseEnoughToAttack(pThis->Target)
-		&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pTypeExt->OwnerObject()->OpportunityFire)))
-	{
-		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-		{
-			auto const crd = pThis->GetCoords();
-			pJumpjetLoco->DestinationCoords.X = crd.X;
-			pJumpjetLoco->DestinationCoords.Y = crd.Y;
-			pJumpjetLoco->CurrentSpeed = 0;
-			pJumpjetLoco->MaxSpeed = 0;
-			pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
-			pThis->AbortMotion();
-		}
-		else
-		{
-			pThis->StopMoving();
-			pThis->AbortMotion();
-		}
-	}
-
-	if (pTypeExt->AttackMove_PursuitTarget)
-		pThis->SetDestination(pThis->Target, true);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
-{
-	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
-
-	GET(FootClass* const, pThis, ESI);
-
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-	auto const mission = pThis->GetCurrentMission();
-	const bool stopWhenTargetAcquired = pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pTypeExt->OwnerObject()->OpportunityFire));
-	bool clearMegaMission = mission != Mission::Guard;
-
-	if (stopWhenTargetAcquired && clearMegaMission)
-		clearMegaMission = !(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256);
-
-	return clearMegaMission ? ClearMegaMission : ContinueMegaMission;
-}
 
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {

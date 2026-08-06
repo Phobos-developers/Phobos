@@ -2287,13 +2287,15 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
-- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used.
+  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
+  - This speed value uses the same algorithm as `Speed`. The global default value `7.5` in the INI block is an approximation of the converted value of the vanilla internal value `19` (`7.5 ≈ 19 * 100 / 256`).
 
 In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-SubterraneanSpeed=19     ; floating point value
+SubterraneanSpeed=7.5    ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
@@ -2301,7 +2303,7 @@ SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
+`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above `-50`.
 ```
 
 ### Target scanning delay optimization
@@ -2859,6 +2861,23 @@ AllowBerzerkOnAllies=false  ; boolean
 
 ```{note}
 No per-warhead setting because `AffectsAllies` etc. is respected.
+```
+
+### Berzerk (`Psychedelic`) duration stacking customization
+
+- By default `Psychedelic` warheads override the current duration of the berzerk effect regardless of if the new duration is higher or lower than the current one. This can now be customized with `Psychedelic.StackingMode`, with both global setting under `[CombatDamage]` and per-Warhead customization.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Psychedelic.StackingMode=override  ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide)
+
+[SOMEWARHEAD]                      ; WarheadType, with Psychedelic=yes
+Psychedelic.StackingMode=          ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide), defaults to [CombatDamage] -> Psychedelic.StackingMode
+```
+
+```{note}
+`min`/`subtract`/`multiply`/`divide` stacking mode will make berzerk effect can't be applied on the target when there's not an existing one. Pay attention to that when setting them as global default values.
 ```
 
 ### Combat light customizations

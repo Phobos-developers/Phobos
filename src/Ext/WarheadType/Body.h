@@ -264,6 +264,8 @@ public:
 
 	Valueable<bool> Taunt;
 
+	Nullable<StackingMode> Psychedelic_StackingMode;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -552,6 +554,8 @@ public:
 		, ApplyPerTargetEffectsOnDetonate {}
 
 		, Taunt { false }
+
+		, Psychedelic_StackingMode {}
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

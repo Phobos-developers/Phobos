@@ -158,7 +158,7 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 
 	if ((this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0) && this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
-		if (!this->Crit_ApplyChancePerTarget)
+		if (!this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget))
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 		if (!this->ReturnWarhead_ApplyChancePerTarget.Get(RulesExt::Global()->ReturnWarhead_ApplyChancePerTarget))

@@ -443,6 +443,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
 
+	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -788,6 +790,8 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		.Process(this->Taunt)
+
+		.Process(this->Psychedelic_StackingMode)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
