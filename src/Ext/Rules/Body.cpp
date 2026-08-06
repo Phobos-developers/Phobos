@@ -76,26 +76,26 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
 
 	// Load global Tiberium image config (Image1-4)
-	char imgBuf[64];
-	for (int i = 0; i < 4; i++)
-	{
-		_snprintf_s(imgBuf, sizeof(imgBuf), "Tiberium.Image%d", i + 1);
-		this->TiberiumImages[i].DefaultImage.Read(pINI, GameStrings::General, imgBuf);
+	// Must be loaded here (earliest stage) because Tiberium types need these configs when they are loaded
+	this->TiberiumImage1.DefaultImage.Read(pINI, GameStrings::General, "Tiberium.Image1");
+	this->TiberiumImage1.NumFrames.Read(exINI, GameStrings::General, "Tiberium.Image1.NumFrames");
+	this->TiberiumImage1.NumImages.Read(exINI, GameStrings::General, "Tiberium.Image1.NumImages");
+	this->TiberiumImage1.NumSlopes.Read(exINI, GameStrings::General, "Tiberium.Image1.NumSlopes");
 
-		auto readField = [&](Nullable<int>& field, const char* suffix)
-		{
-			_snprintf_s(imgBuf, sizeof(imgBuf), "Tiberium.Image%d.%s", i + 1, suffix);
-			Phobos::readBuffer[0] = '\0';
-			if (pINI->ReadString(GameStrings::General, imgBuf, "", Phobos::readBuffer) > 0)
-				field.Read(exINI, GameStrings::General, imgBuf);
-			else
-				field.Reset();
-		};
+	this->TiberiumImage2.DefaultImage.Read(pINI, GameStrings::General, "Tiberium.Image2");
+	this->TiberiumImage2.NumFrames.Read(exINI, GameStrings::General, "Tiberium.Image2.NumFrames");
+	this->TiberiumImage2.NumImages.Read(exINI, GameStrings::General, "Tiberium.Image2.NumImages");
+	this->TiberiumImage2.NumSlopes.Read(exINI, GameStrings::General, "Tiberium.Image2.NumSlopes");
 
-		readField(this->TiberiumImages[i].NumFrames, "NumFrames");
-		readField(this->TiberiumImages[i].NumImages, "NumImages");
-		readField(this->TiberiumImages[i].NumSlopes, "NumSlopes");
-	}
+	this->TiberiumImage3.DefaultImage.Read(pINI, GameStrings::General, "Tiberium.Image3");
+	this->TiberiumImage3.NumFrames.Read(exINI, GameStrings::General, "Tiberium.Image3.NumFrames");
+	this->TiberiumImage3.NumImages.Read(exINI, GameStrings::General, "Tiberium.Image3.NumImages");
+	this->TiberiumImage3.NumSlopes.Read(exINI, GameStrings::General, "Tiberium.Image3.NumSlopes");
+
+	this->TiberiumImage4.DefaultImage.Read(pINI, GameStrings::General, "Tiberium.Image4");
+	this->TiberiumImage4.NumFrames.Read(exINI, GameStrings::General, "Tiberium.Image4.NumFrames");
+	this->TiberiumImage4.NumImages.Read(exINI, GameStrings::General, "Tiberium.Image4.NumImages");
+	this->TiberiumImage4.NumSlopes.Read(exINI, GameStrings::General, "Tiberium.Image4.NumSlopes");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -718,6 +718,22 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->VeinholeWarhead)
+		.Process(this->TiberiumImage1.DefaultImage)
+		.Process(this->TiberiumImage1.NumFrames)
+		.Process(this->TiberiumImage1.NumImages)
+		.Process(this->TiberiumImage1.NumSlopes)
+		.Process(this->TiberiumImage2.DefaultImage)
+		.Process(this->TiberiumImage2.NumFrames)
+		.Process(this->TiberiumImage2.NumImages)
+		.Process(this->TiberiumImage2.NumSlopes)
+		.Process(this->TiberiumImage3.DefaultImage)
+		.Process(this->TiberiumImage3.NumFrames)
+		.Process(this->TiberiumImage3.NumImages)
+		.Process(this->TiberiumImage3.NumSlopes)
+		.Process(this->TiberiumImage4.DefaultImage)
+		.Process(this->TiberiumImage4.NumFrames)
+		.Process(this->TiberiumImage4.NumImages)
+		.Process(this->TiberiumImage4.NumSlopes)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
@@ -1086,16 +1102,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
 		;
-
-	for (int i = 0; i < 4; i++)
-	{
-		Stm
-			.Process(this->TiberiumImages[i].DefaultImage)
-			.Process(this->TiberiumImages[i].NumFrames)
-			.Process(this->TiberiumImages[i].NumImages)
-			.Process(this->TiberiumImages[i].NumSlopes)
-			;
-	}
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -105,17 +105,26 @@ static void ApplyCustomImage(TiberiumClass* pItem)
 	// Apply global Tiberium.ImageX config
 	if (idx >= 0 && idx < 4)
 	{
-		auto& g = RulesExt::Global()->TiberiumImages[idx];
+		auto pGlobal = RulesExt::Global();
+		TiberiumImageConfig* g = nullptr;
 
-		if (g.DefaultImage)
+		switch (idx)
 		{
-			if (auto pImg = OverlayTypeClass::Find(g.DefaultImage))
-				pItem->Image = pImg;
+		case 0: g = &pGlobal->TiberiumImage1; break;
+		case 1: g = &pGlobal->TiberiumImage2; break;
+		case 2: g = &pGlobal->TiberiumImage3; break;
+		case 3: g = &pGlobal->TiberiumImage4; break;
 		}
 
-		apply(g.NumFrames, pItem->NumFrames);
-		apply(g.NumImages, pItem->NumImages);
-		apply(g.NumSlopes, pItem->NumSlopes);
+		if (g && g->DefaultImage)
+		{
+			if (auto pImg = OverlayTypeClass::Find(g->DefaultImage))
+				pItem->Image = pImg;
+
+			apply(g->NumFrames, pItem->NumFrames);
+			apply(g->NumImages, pItem->NumImages);
+			apply(g->NumSlopes, pItem->NumSlopes);
+		}
 	}
 
 	// Override with per-Tiberium CustomImage

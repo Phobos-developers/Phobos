@@ -13,6 +13,7 @@ class DigitalDisplayTypeClass;
 class SelectBoxTypeClass;
 
 // Tiberium global image configuration struct
+// Used to manage 4 Tiberium types (Image1-4) with the same structure
 struct TiberiumImageConfig
 {
 	PhobosFixedString<32u> DefaultImage;
@@ -188,8 +189,11 @@ public:
 		Valueable<ColorStruct> AirstrikeLineColor;
 		Valueable<int> AirstrikeLineZAdjust;
 
-		// Global Tiberium image configuration (Image1-4, mapped by ArrayIndex+1)
-		TiberiumImageConfig TiberiumImages[4];
+		// Global Tiberium image configuration (Image1-4)
+		TiberiumImageConfig TiberiumImage1;
+		TiberiumImageConfig TiberiumImage2;
+		TiberiumImageConfig TiberiumImage3;
+		TiberiumImageConfig TiberiumImage4;
 
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
@@ -569,6 +573,10 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetRotateOnCrash { true }
 			, VeinholeWarhead {}
+			, TiberiumImage1 {}
+			, TiberiumImage2 {}
+			, TiberiumImage3 {}
+			, TiberiumImage4 {}
 			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
@@ -917,7 +925,6 @@ public:
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
 			, DisableOveroptimizationInTargeting { false }
-			, TiberiumImages {}
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }
 			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
