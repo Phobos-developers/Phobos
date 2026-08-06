@@ -657,6 +657,7 @@ HideShakeEffects=false           ; boolean
 - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
 - [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 - ScriptType action `Play speech` (by FS-21)
+- Customize whether warhead can prevent crew escape from techno (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

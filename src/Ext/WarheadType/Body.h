@@ -266,6 +266,8 @@ public:
 
 	Nullable<StackingMode> Psychedelic_StackingMode;
 
+	Valueable<bool> PreventCrew { false };
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;

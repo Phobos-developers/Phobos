@@ -1848,6 +1848,10 @@ msgid ""
 " when deactivated"
 msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug"
 
+msgid ""
+"Customize whether warhead can prevent crew escape from techno"
+msgstr "自定义弹头是否阻止生还者逃出"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

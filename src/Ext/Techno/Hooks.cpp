@@ -2375,3 +2375,37 @@ void DeactivateTemp::TechnoClassFake::_Deactivate()
 	}
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x70FC90, DeactivateTemp::TechnoClassFake::_Deactivate)
+
+#pragma region Crew
+
+namespace CrewTemp
+{
+	class TechnoClassFake final : public TechnoClass
+	{
+		int _GetCrewCount() const
+		{
+			const auto pThis = static_cast<const TechnoClass*>(this);
+			const auto pExt = TechnoExt::Fetch(pThis);
+			const auto GetCrewCount = reinterpret_cast<int(__thiscall*)(const TechnoClass*)>(0x6F3950);
+			return pExt->PreventCrew ? 0 : GetCrewCount(pThis);
+		}
+	};
+
+	class BuildingClassFake final : public BuildingClass
+	{
+		int _GetCrewCount() const
+		{
+			const auto pThis = static_cast<const BuildingClass*>(this);
+			const auto pExt = TechnoExt::Fetch(pThis);
+			const auto GetCrewCount = reinterpret_cast<int(__thiscall*)(const TechnoClass*)>(0x451330);
+			return pExt->PreventCrew ? 0 : GetCrewCount(pThis);
+		}
+	};
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2574, CrewTemp::TechnoClassFake::_GetCrewCount) // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB328, CrewTemp::TechnoClassFake::_GetCrewCount) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F40, CrewTemp::TechnoClassFake::_GetCrewCount) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCount) // BuildingClass
+
+#pragma endregion

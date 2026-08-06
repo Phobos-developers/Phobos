@@ -1206,6 +1206,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
+		.Process(this->PreventCrew)
 		;
 }
 

@@ -3289,6 +3289,14 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
+### Customize whether warhead can prevent crew escape from techno
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                          ; WarheadType
+PreventCrew=false                      ; boolean
+```
+
 ## Weapons
 
 ### Allow Laser drawing position update

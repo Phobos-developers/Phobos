@@ -2383,6 +2383,11 @@ msgstr ""
 "[`600` 配置掉落箱子行为](AI-Scripting-and-Mapping.md#configure-drop-crate)（by "
 "FS-21）"
 
+msgid ""
+"Customize whether warhead can prevent crew escape from techno (by NetsuNegi)"
+msgstr ""
+"自定义弹头是否阻止生还者逃出（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

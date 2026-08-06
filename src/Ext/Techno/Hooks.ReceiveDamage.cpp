@@ -256,6 +256,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
 
+	if (WarheadTypeExt::Fetch(pWarhead)->PreventCrew)
+		TechnoExt::Fetch(pThis)->PreventCrew = true;
+
 	return 0;
 }
 
