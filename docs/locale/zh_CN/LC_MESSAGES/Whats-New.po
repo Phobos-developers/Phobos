@@ -2417,9 +2417,10 @@ msgstr ""
 "psychedelic-duration-stacking-customization) （by Starkku）"
 
 msgid ""
-"[ScriptType action `Play speech`](AI-Scripting-and-Mapping.md#play-"
-"speech) (by FS-21)"
+"Restored the ScriptType action#24 `Play speech` from Tiberian Sun (by "
+"FS-21)"
 msgstr ""
+"复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`（by FS-21）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

@@ -98,6 +98,10 @@ msgstr ""
 msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
 msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
 
+msgid "Restored the ScriptType action#24 `Play speech` from Tiberian Sun."
+msgstr ""
+"复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
+
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"
 
@@ -296,23 +300,6 @@ msgstr "在 `RA2MD.INI`："
 msgid "Script Actions"
 msgstr "动作脚本"
 
-msgid "Below `10000`"
-msgstr ""
-
-msgid "`24` Play speech"
-msgstr ""
-
-msgid "Restored functionality."
-msgstr ""
-
-msgid ""
-"Given a speech index, the game will play it. Just like action 24 from "
-"Tiberian Sun."
-msgstr ""
-
-msgid "In `aimd.ini`:"
-msgstr "在 `aimd.ini`："
-
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
 
@@ -349,6 +336,9 @@ msgid ""
 msgstr ""
 "`AITargetTypes` 动作通过第二个参数指示小队类型使用特遣部队接近并攻击目标，该参数是 `AITargetTypes` 中一个由 "
 "modder 自行定义的组的索引。请参阅下表以了解可能的行为（第一个参数）和参量（第二个参数值）。"
+
+msgid "In `aimd.ini`:"
+msgstr "在 `aimd.ini`："
 
 msgid "*Action*"
 msgstr "*行为*"
