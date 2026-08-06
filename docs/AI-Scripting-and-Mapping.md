@@ -836,7 +836,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],611,-4,[FileName],0,0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],611,4,[FileName],0,0,0,0,A,[ActionX]
 ...
 ```
 
