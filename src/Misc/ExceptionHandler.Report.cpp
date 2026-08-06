@@ -688,8 +688,11 @@ bool ExceptionHandler::WriteMinidump(EXCEPTION_POINTERS* pExs, DWORD crashedTid,
 	_snprintf_s(pPathOut, pathOutSize, _TRUNCATE, "%s\\%s",
 		SnapshotDirectory, fullMemory ? "fulldump.dmp" : "crashdump.dmp");
 
+	// Cached I/O: write-through would force each of MiniDumpWriteDump's many
+	// small writes synchronously to disk, stretching a full-memory dump from
+	// seconds into minutes of apparent hang.
 	HANDLE file = CreateFileA(pPathOut, GENERIC_WRITE, FILE_SHARE_READ, nullptr,
-		CREATE_ALWAYS, FILE_FLAG_WRITE_THROUGH, nullptr);
+		CREATE_ALWAYS, FILE_FLAG_RANDOM_ACCESS, nullptr);
 
 	if (file == INVALID_HANDLE_VALUE)
 	{
@@ -698,12 +701,12 @@ bool ExceptionHandler::WriteMinidump(EXCEPTION_POINTERS* pExs, DWORD crashedTid,
 		return false;
 	}
 
-	MINIDUMP_TYPE flags = static_cast<MINIDUMP_TYPE>(MiniDumpNormal
-		| MiniDumpWithDataSegs
-		| MiniDumpWithIndirectlyReferencedMemory);
-
-	if (fullMemory)
-		flags = static_cast<MINIDUMP_TYPE>(flags | MiniDumpWithFullMemory);
+	// A full-memory dump already contains everything indirectly-referenced
+	// chasing would add - keeping that flag only buys an extra pointer-chasing
+	// pass over every thread stack.
+	const MINIDUMP_TYPE flags = static_cast<MINIDUMP_TYPE>(fullMemory
+		? MiniDumpNormal | MiniDumpWithDataSegs | MiniDumpWithFullMemory
+		: MiniDumpNormal | MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory);
 
 	MINIDUMP_EXCEPTION_INFORMATION info = { };
 	// ThreadId must be the CRASHING thread - when the dump runs on the dumper
