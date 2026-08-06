@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 18:48+0800\n"
+"POT-Creation-Date: 2026-08-06 23:03+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -296,6 +296,23 @@ msgstr "在 `RA2MD.INI`："
 msgid "Script Actions"
 msgstr "动作脚本"
 
+msgid "Below `10000`"
+msgstr ""
+
+msgid "`24` Play speech"
+msgstr ""
+
+msgid "Restored functionality."
+msgstr ""
+
+msgid ""
+"Given a speech index, the game will play it. Just like action 24 from "
+"Tiberian Sun."
+msgstr ""
+
+msgid "In `aimd.ini`:"
+msgstr "在 `aimd.ini`："
+
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
 
@@ -332,9 +349,6 @@ msgid ""
 msgstr ""
 "`AITargetTypes` 动作通过第二个参数指示小队类型使用特遣部队接近并攻击目标，该参数是 `AITargetTypes` 中一个由 "
 "modder 自行定义的组的索引。请参阅下表以了解可能的行为（第一个参数）和参量（第二个参数值）。"
-
-msgid "In `aimd.ini`:"
-msgstr "在 `aimd.ini`："
 
 msgid "*Action*"
 msgstr "*行为*"
@@ -1409,32 +1423,25 @@ msgid "Invalid for non-vehicle objects."
 msgstr "非载具类对象无效。"
 
 msgid "`600` Configure Drop Crate"
-msgstr ""
-"`600` 配置掉落箱子行为"
+msgstr "`600` 配置掉落箱子行为"
 
 msgid "Set or overwrite the `DropCrate` of the affected objects."
-msgstr ""
-"设置或覆盖受影响对象的 `DropCrate`。"
+msgstr "设置或覆盖受影响对象的 `DropCrate`。"
 
 msgid "Only functions when used as attached triggers within objects."
-msgstr ""
-"仅通过关联标签附加到对象上时生效。"
+msgstr "仅通过关联标签附加到对象上时生效。"
 
 msgid "*Behaviour*"
-msgstr ""
-"*行为*"
+msgstr "*行为*"
 
 msgid "Use default Techno settings"
-msgstr ""
-"使用单位的默认设置"
+msgstr "使用单位的默认设置"
 
 msgid "Clear `DropCrate` type"
-msgstr ""
-"清除 `DropCrate` 类型"
+msgstr "清除 `DropCrate` 类型"
 
 msgid "Overwrite `DropCrate` type"
-msgstr ""
-"覆盖 `DropCrate` 类型"
+msgstr "覆盖 `DropCrate` 类型"
 
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"

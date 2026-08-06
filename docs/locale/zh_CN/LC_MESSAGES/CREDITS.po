@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-05 00:16+0800\n"
+"POT-Creation-Date: 2026-08-06 23:03+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -476,6 +476,9 @@ msgstr "联动超武"
 msgid "Unit & infantry auto-conversion on ammo change"
 msgstr "基于弹药量的自动变形"
 
+msgid "ScriptType action `Play speech`"
+msgstr ""
+
 msgid "**Starkku**:"
 msgstr "**Starkku**："
 
@@ -909,8 +912,7 @@ msgid "`ProjectileRange` weapon range modifiers interaction fix"
 msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
 
 msgid "Berzerk duration stacking behaviour customization"
-msgstr ""
-"狂暴／ `Psychedelic` 持续时间叠加的自定义"
+msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
