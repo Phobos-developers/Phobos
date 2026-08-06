@@ -257,8 +257,8 @@ HideShakeEffects=false           ; boolean
   607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
   609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
-  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
-  611=Set next scenario... (Phobos),-4,105,0,0,0,0,0,0,0, Set the next campaign to load after winning the current one. Works only in `Campaign Mode` and requires setting `[Basic]>SkipMapSelect=yes`.,0,1,611
+  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in [General] ->TeamDelays.,0,1,610
+  611=Set next scenario... (Phobos),-4,105,0,0,0,0,0,0,0, Set the next campaign to load after winning the current one. Works only in Campaign Mode and requires setting [Basic] -> SkipMapSelect=yes.,0,1,611
   800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
   801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
@@ -658,6 +658,7 @@ HideShakeEffects=false           ; boolean
 - [Automatic conversion based on health](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health) (by obsidianus)
 - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
 - [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
+- ScriptType action `Play speech` (by FS-21)
 - SkipMapSelect Enhancement (by FlyStar)
 
 #### Vanilla fixes:

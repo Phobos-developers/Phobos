@@ -167,6 +167,19 @@ ShowBriefing=true  ; boolean
 
 ## Script Actions
 
+### Below `10000`
+
+#### `24` Play speech
+
+- Restored functionality.
+- Given a speech index, the game will play it. Just like action 24 from Tiberian Sun.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=24,n
+```
+
 ### `10000-10999` Ingame Actions
 
 #### `10000-10049` Attack Actions
@@ -830,7 +843,7 @@ Team delay change will take effect for a house after its next AI team is created
 ### `611` Set Next Scenario
 
 - Set the next campaign to load after winning the current one.
-  - Works only in `Campaign Mode` and requires setting `[Basic]>SkipMapSelect=yes`.
+  - Works only in `Campaign Mode` and requires setting `[Basic] -> SkipMapSelect=yes`.
 
 In `mycampaign.map`:
 ```ini
