@@ -890,3 +890,4 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **Igor Kolchinskii (leosnake2208)**:
   - Right-click to command
+  - Type selection by double/triple-click

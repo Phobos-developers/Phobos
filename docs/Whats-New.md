@@ -141,6 +141,9 @@ DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
 RightClickCommand=false          ; boolean
+TypeSelectByMultiClick=false     ; boolean
+TypeSelectByMultiClick.Range=-1  ; integer, cells
+TypeSelectByMultiClick.DeployDelay=500  ; integer, milliseconds
 PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
@@ -388,6 +391,7 @@ HideShakeEffects=false           ; boolean
 
 #### New:
 - [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)

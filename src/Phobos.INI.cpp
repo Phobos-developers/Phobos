@@ -7,6 +7,7 @@
 #include <HouseClass.h>
 #include <GameOptionsClass.h>
 
+#include <Utilities/Debug.h>
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
@@ -50,6 +51,9 @@ bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::PriorityDeployFiltering = true;
 bool Phobos::Config::RightClickCommand = false;
+bool Phobos::Config::TypeSelectByMultiClick = false;
+int Phobos::Config::TypeSelectByMultiClick_Range = -1;
+int Phobos::Config::TypeSelectByMultiClick_DeployDelay = 500;
 bool Phobos::Config::TypeSelectUseIFVMode = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
@@ -96,6 +100,19 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PrioritySelectionFiltering", true);
 	Phobos::Config::PriorityDeployFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PriorityDeployFiltering", true);
 	Phobos::Config::RightClickCommand = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RightClickCommand", false);
+	Phobos::Config::TypeSelectByMultiClick = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectByMultiClick", false);
+	Phobos::Config::TypeSelectByMultiClick_Range = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "TypeSelectByMultiClick.Range", -1);
+	Phobos::Config::TypeSelectByMultiClick_DeployDelay = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "TypeSelectByMultiClick.DeployDelay", 500);
+
+	// Multi-click type select only works when the left button is select-only. With vanilla
+	// controls the second click already commands the unit, so it would deploy an MCV or an
+	// Allied GI instead of selecting the group.
+	if (Phobos::Config::TypeSelectByMultiClick && !Phobos::Config::RightClickCommand)
+	{
+		Debug::Log("[Phobos] TypeSelectByMultiClick requires RightClickCommand=true, disabling it.\n");
+		Phobos::Config::TypeSelectByMultiClick = false;
+	}
+
 	Phobos::Config::TypeSelectUseIFVMode = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectUseIFVMode", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
 	Phobos::Config::MessageApplyHoverState = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageApplyHoverState", false);

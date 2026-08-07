@@ -43,9 +43,13 @@ namespace RightClickCommand
 
 	// Set by the RBUTTONUP command hook right before it jumps into the shared LMB-up command
 	// dispatch (0x69323E), which flows through the LBUTTONUP neutralise hook at 0x693276.
-	// Without this flag that hook would downgrade the RMB-issued order to None; the LBUTTONUP
-	// hook consumes (clears) it.
-	static bool RmbCommandInProgress = false;
+	// Without this flag that hook would downgrade the RMB-issued order to None. Not static:
+	// MultiClickTypeSelect.cpp reads and clears it at 0x693290, the last point the redirect
+	// passes through.
+	bool RmbCommandInProgress = false;
+
+	// Tick of the click that last selected something, used by HoldsOffDeploy below.
+	static DWORD LastSelectTick = 0;
 
 	// Actions the LEFT button may still perform: selection and self-deploy only. Everything
 	// else (Move/Attack/Enter/Harvest/Capture/Guard/...) is a command and belongs to the
@@ -79,6 +83,55 @@ namespace RightClickCommand
 			}
 		}
 		return false;
+	}
+
+	// A deployable unit is deployed by clicking it again once it is selected, which collides
+	// with the double-click type select: the second click would unpack the MCV instead. So
+	// for a short while after a click selected something, the left button does not deploy.
+	// Same trick Emperor: Battle for Dune uses. Only active with TypeSelectByMultiClick on.
+	static bool HoldsOffDeploy(Action action)
+	{
+		const int delay = Phobos::Config::TypeSelectByMultiClick_DeployDelay;
+
+		if (action != Action::Self_Deploy || !Phobos::Config::TypeSelectByMultiClick || delay <= 0)
+			return false;
+
+		return GetTickCount() - LastSelectTick <= static_cast<DWORD>(delay);
+	}
+
+	// Mouse flags RadarClass::GetMouseAction (0x6539D0) is called with, in its first stack
+	// argument. The "up" bits mean the button is not down, i.e. the cursor is just hovering.
+	enum RadarInput : BYTE
+	{
+		LeftPress = 0x01, LeftHeld = 0x02, LeftRelease = 0x04, LeftUp = 0x08,
+		RightPress = 0x10, RightHeld = 0x20, RightRelease = 0x40, RightUp = 0x80,
+	};
+
+	// Swap the two buttons for the minimap, keeping the hover bits as they are so the cursor
+	// still updates while moving over the radar.
+	static BYTE SwapRadarButtons(BYTE flags)
+	{
+		const BYTE left = flags & (LeftPress | LeftHeld | LeftRelease);
+		const BYTE right = flags & (RightPress | RightHeld | RightRelease);
+
+		return static_cast<BYTE>((flags & (LeftUp | RightUp)) | (left << 4) | (right >> 4));
+	}
+
+	// Runs after DecideAction on both left button hooks. Returns true if the action was
+	// downgraded to a command-less None because of the deploy hold-off, which unlike a
+	// neutralised command must NOT deselect - the unit stays selected and waits.
+	static bool ApplyDeployHoldOff(REGISTERS* R)
+	{
+		const auto action = static_cast<Action>(R->EAX());
+
+		if (action == Action::Select || action == Action::ToggleSelect)
+			LastSelectTick = GetTickCount();
+
+		if (!HoldsOffDeploy(action))
+			return false;
+
+		R->EAX(static_cast<DWORD>(Action::None));
+		return true;
 	}
 }
 
@@ -121,12 +174,31 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_RightClickCommand, 0x6)
 	return 0;
 }
 
+// The minimap needs the same treatment. RadarClass::GetMouseAction (0x6539D0) decides what a
+// click on the radar does, and vanilla already commands from there: the LEFT button runs the
+// same applier the tactical view uses (0x4AB9B0, called at 0x653D58) and only moves the view
+// when there is nothing to command, while the RIGHT button just moves the view. The whole
+// function reads the buttons out of its flags argument, so swapping the button bits there
+// once turns it around: right commands, left moves the view.
+//
+// Hooked right at the top, before the first read of the argument. Stolen bytes: mov dl,
+// byte ptr [esp+0x48] (the flags we just rewrote) + push ebx.
+DEFINE_HOOK(0x6539D3, RadarClass_GetMouseAction_RightClickCommand, 0x5)
+{
+	if (Phobos::Config::RightClickCommand && !RightClickCommand::InSpecialLeftClickMode())
+		R->Stack8(0x48, RightClickCommand::SwapRadarButtons(R->Stack8(0x48)));
+
+	return 0;
+}
+
 // LBUTTONDOWN: neutralise a command action right after DecideAction so button-down does not
 // preview/issue a command. Stolen bytes: mov reg,[esp+..] + push eax (the possibly-modified
 // EAX is what the following push forwards to the applier).
 DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_RightClickSelectOnly, 0x5)
 {
-	RightClickCommand::NeutraliseLeftCommand(R);
+	if (!RightClickCommand::ApplyDeployHoldOff(R))
+		RightClickCommand::NeutraliseLeftCommand(R);
+
 	return 0;
 }
 
@@ -137,12 +209,14 @@ DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_RightClickSelectOnly, 0x5)
 // 0x693408), so deselecting on a neutralised command is always correct.
 DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 {
-	// If we arrived here via the RMB command redirect (0x69323E), let the order stand.
+	// If we arrived here via the RMB command redirect (0x69323E), let the order stand. The
+	// flag is cleared further along the same path, at 0x693290 in MultiClickTypeSelect.cpp.
 	if (RightClickCommand::RmbCommandInProgress)
-	{
-		RightClickCommand::RmbCommandInProgress = false;
 		return 0;
-	}
+
+	// A held-off deploy leaves the unit selected, so no deselect here.
+	if (RightClickCommand::ApplyDeployHoldOff(R))
+		return 0;
 
 	if (RightClickCommand::NeutraliseLeftCommand(R))
 		MapClass::UnselectAll();

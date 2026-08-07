@@ -323,7 +323,9 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - An optional control scheme matching modern RTS games: the **right mouse button** issues orders to the current selection (move, attack, enter, capture, etc.), while the **left mouse button** only selects, box-selects and self-deploys, and deselects when clicking empty ground. It reuses the game's own command dispatch, so all order and network logic is unchanged.
   - Special left-click modes are preserved on both buttons: while placing a building, repairing, selling, toggling power, planting a beacon, planning a path or targeting a superweapon, the left button performs that action and the right button cancels it, exactly as in vanilla.
+- The minimap follows the same scheme: the right button orders the current selection to the clicked spot, the left button moves the view there. In vanilla it is the other way around, the left button commands and only moves the view when there is nothing to command.
 - Enable it with `RightClickCommand=true`.
+- Because the left button no longer commands, double and triple clicks are free for [type selection](#type-selection-by-multi-click).
 
 ```{note}
 This only changes mouse behaviour; keyboard hotkeys are unaffected. It does not rebind any keys.
@@ -464,6 +466,25 @@ BuildingTypeSelectable=false  ; boolean
 
 ```{warning}
 Due to technical limitations, this feature is forcibly disabled without Ares.
+```
+
+### Type selection by multi-click
+
+- Double-clicking a unit selects every unit of the same selection group near it; triple-clicking selects every unit of that group across the whole map. This adds the double/triple-click gesture common to modern RTS games next to the vanilla type-select hotkey (hold `T` and click). Only your own selectable units are affected, and the selection group is the same one the hotkey uses (the `[TechnoType] -> GroupAs` tag, falling back to the type's ID).
+- Enable it with `TypeSelectByMultiClick=true`. It requires [right-click to command](#right-click-to-command) and is ignored without it, see the note below.
+- `TypeSelectByMultiClick.Range` is how far a double-click reaches, in cells around the clicked unit. A negative value means everything currently drawn on screen.
+- `TypeSelectByMultiClick.DeployDelay` is how long, in milliseconds, the left button refuses to deploy a unit after a click selected it. Without this delay the second click of a double-click would unpack an MCV instead of selecting its group. Set it to `0` to turn the delay off.
+
+```{note}
+This needs the left mouse button to be select-only, so it only works together with `RightClickCommand=true`. With vanilla controls a click on an already selected unit is a command, so a double-click would deploy an MCV or an Allied GI rather than select the group. If you enable it anyway, it is turned off and a line is written to the debug log.
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+TypeSelectByMultiClick=false        ; boolean
+TypeSelectByMultiClick.Range=-1     ; integer, cells
+TypeSelectByMultiClick.DeployDelay=500  ; integer, milliseconds
 ```
 
 ### Visual effects toggling
