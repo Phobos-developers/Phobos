@@ -116,13 +116,7 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 
 #pragma region MapSelectExtension
 
-// It might be the function for moving on to the next level. I'm not sure about the details, but it works.
-static bool __fastcall sub_5AE100(void* pThis, void* _, ScenarioClass* pItem)
-{
-	JMP_STD(0x5AE100);
-}
-
-static bool __fastcall sub_5AE100_CustomMission(void* pThis, void* _, ScenarioClass* pItem)
+static bool __fastcall MapSelectClass_SetNextScenario_CustomMission(MapSelectClass* pThis, void* _, ScenarioClass* pItem)
 {
 	// It can be directly filled in the map file name without being restricted by mapselmd.ini.
 	if (pItem->SkipMapSelect)
@@ -190,10 +184,10 @@ static bool __fastcall sub_5AE100_CustomMission(void* pThis, void* _, ScenarioCl
 	}
 
 	// Return to the original function.
-	return sub_5AE100(pThis, _, pItem);
+	return pThis->SetNextScenario(pItem);
 }
 
 DEFINE_JUMP(LJMP, 0x685A38, 0x685A63)	// Skip the original code
-DEFINE_FUNCTION_JUMP(CALL, 0x5ADD63, sub_5AE100_CustomMission)
+DEFINE_FUNCTION_JUMP(CALL, 0x5ADD63, MapSelectClass_SetNextScenario_CustomMission)
 
 #pragma endregion
