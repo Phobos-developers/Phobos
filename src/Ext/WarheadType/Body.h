@@ -268,6 +268,7 @@ public:
 
 	Valueable<bool> PreventCrew;
 	Valueable<bool> PreventPassengerEscape;
+	Valueable<bool> PreventOccupantEscape;
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -562,6 +563,7 @@ public:
 
 		, PreventCrew { false }
 		, PreventPassengerEscape { false }
+		, PreventOccupantEscape { false }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

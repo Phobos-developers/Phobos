@@ -3295,7 +3295,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                          ; WarheadType
 PreventCrew=false                      ; boolean
-KillPassengers=false                   ; boolean
+PreventPassengerEscape=false           ; boolean
+PreventOccupantEscape=false            ; boolean
 ```
 
 ## Weapons
