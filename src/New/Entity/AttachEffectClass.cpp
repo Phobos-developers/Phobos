@@ -176,9 +176,6 @@ void AttachEffectClass::AI()
 {
 	auto const pTechno = this->Techno;
 
-	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
-		return;
-
 	if (this->InitialDelay > 0)
 	{
 		this->InitialDelay--;

@@ -144,8 +144,13 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
-	if (pThis->InLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
-		return false;
+	if (pThis->InLimbo)
+	{
+		if (!pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+			return false;
+
+		isInLimbo = true;
+	}
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
@@ -871,6 +876,10 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || pThis->IsImmobilized)
+		return;
+
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
