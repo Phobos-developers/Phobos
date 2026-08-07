@@ -209,7 +209,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			if (pType->ApplyArmorMult.Get(RulesExt::Global()->ShieldApplyArmorMult))
 			{
-				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, pWH);
+				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, args->SourceHouse, pWH);
 				nDamage = Math::max(static_cast<int>(nDamage / armorMultiplier), 0);
 			}
 
@@ -263,7 +263,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (!pWHExt->Nonprovocative)
 			this->ResponseAttack();
 
-		if (pWHExt->DecloakDamagedTargets)
+		if (pWHExt->DecloakDamagedTargets.Get(RulesExt::Global()->DecloakDamagedTargets))
 			pTechno->Uncloak(false);
 
 		const int residueDamage = shieldDamage - health;
@@ -446,7 +446,7 @@ void ShieldClass::AI()
 {
 	auto const pTechno = this->Techno;
 
-	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
+	if (pTechno->InLimbo || pTechno->IsImmobilized)
 		return;
 
 	auto const pTechnoExt = TechnoExt::Fetch(pTechno);

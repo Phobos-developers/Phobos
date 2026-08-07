@@ -9,23 +9,38 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
+	// No extension while a savegame is loading: either it comes from the extension
+	// stream, or the bullet is one the game is creating as part of the load and its
+	// extension - and this initialization with it - follows once the load settles.
 	if (auto const pExt = BulletExt::TryFetch(pThis))
-	{
-		if (pThis->Owner)
-		{
-			pExt->FirerHouse = pThis->Owner->Owner;
-			pExt->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
-		}
-
-		auto const pType = pThis->Type;
-		pExt->CurrentStrength = pType->Strength;
-		pExt->TypeExtData = BulletTypeExt::Fetch(pType);
-
-		if (!pType->Inviso)
-			pExt->InitializeLaserTrails();
-	}
+		pExt->InitializeState();
 
 	return 0;
+}
+
+// The state a bullet's extension gets when the bullet itself is initialized. Also run
+// for extensions allocated after the fact, for bullets the game created while a
+// savegame was loading.
+void BulletExt::InitializeState()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->Owner)
+	{
+		this->FirerHouse = pThis->Owner->Owner;
+		this->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pThis->Owner);
+	}
+
+	auto const pType = pThis->Type;
+
+	if (!pType)
+		return;
+
+	this->CurrentStrength = pType->Strength;
+	this->TypeExtData = BulletTypeExt::Fetch(pType);
+
+	if (!pType->Inviso)
+		this->InitializeLaserTrails();
 }
 
 // Set in BulletClass::AI and guaranteed to be valid within it.
@@ -252,13 +267,13 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 		{
 			return Shrapnel;
 		}
-		else if (pTypeExt->Shrapnel_AffectsBuildings)
+		else if (pTypeExt->Shrapnel_AffectsBuildings.Get(RulesExt::Global()->Shrapnel_AffectsBuildings))
 		{
 			ShrapnelTemp::InitialTargetBuilding = static_cast<BuildingClass*>(pObject);
 			return Shrapnel;
 		}
 	}
-	else if (pTypeExt->Shrapnel_AffectsGround)
+	else if (pTypeExt->Shrapnel_AffectsGround.Get(RulesExt::Global()->Shrapnel_AffectsGround))
 	{
 		return Shrapnel;
 	}
@@ -291,7 +306,7 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 
 	auto const pOwner = pSource->Owner;
 
-	if (pTypeExt->Shrapnel_UseWeaponTargeting)
+	if (pTypeExt->Shrapnel_UseWeaponTargeting.Get(RulesExt::Global()->Shrapnel_UseWeaponTargeting))
 	{
 		auto const pWeaponExt = WeaponTypeExt::Fetch(pShrapnelWeapon);
 		auto const pType = pObject->GetType();
@@ -504,7 +519,7 @@ DEFINE_HOOK(0x6FF008, TechnoClass_Fire_BeforeMoveTo, 0x8)
 
 	const auto pBulletType = pBullet->Type;
 
-	if (pBulletType->Arcing && !BulletTypeExt::Fetch(pBulletType)->Arcing_AllowElevationInaccuracy)
+	if (pBulletType->Arcing && !BulletTypeExt::Fetch(pBulletType)->Arcing_AllowElevationInaccuracy.Get(RulesExt::Global()->Arcing_AllowElevationInaccuracy))
 	{
 		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xB0, -0x60));
 		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xB0, -0x6C));
@@ -524,7 +539,7 @@ DEFINE_HOOK(0x44D46E, BuildingClass_Mission_Missile_BeforeMoveTo, 0x8)
 
 	const auto pBulletType = pBullet->Type;
 
-	if (pBulletType->Arcing && !BulletTypeExt::Fetch(pBulletType)->Arcing_AllowElevationInaccuracy)
+	if (pBulletType->Arcing && !BulletTypeExt::Fetch(pBulletType)->Arcing_AllowElevationInaccuracy.Get(RulesExt::Global()->Arcing_AllowElevationInaccuracy))
 	{
 		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xE8, -0xD0));
 		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xE8, -0x8C));
@@ -609,11 +624,37 @@ DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
 DEFINE_HOOK(0x4683F2, BulletClass_Draw_ZAdjust, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
-	GET(int, height, ECX);
+	GET(const int, height, ECX);
 
 	auto const pTypeExt = BulletTypeExt::Fetch(pThis->Type);
 
 	R->EAX(TacticalClass::AdjustForZ(height) - pTypeExt->ZAdjust);
 
 	return 0x4683F7;
+}
+
+// Replaces Ares' handling of Ranged=true projectiles.
+DEFINE_HOOK(0x467B8E, BulletClass_AI_Ranged, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	REF_STACK(CoordStruct, coordNew, STACK_OFFSET(0x1AC, -0x184));
+	REF_STACK(bool, shouldExplode, STACK_OFFSET(0x1AC, -0x190));
+
+	if (pThis->Type->Ranged)
+	{
+		auto const pExt = BulletExt::Fetch(pThis);
+		pExt->DistanceTraveled += Game::F2I(coordNew.DistanceFrom(pThis->GetCoords()));
+		int maxRange = pThis->Range;
+
+		if (maxRange > 0 && pThis->WeaponType && pThis->Owner
+			&& WeaponTypeExt::Fetch(pThis->WeaponType)->ProjectileRange_ApplyModifiers)
+		{
+			maxRange = WeaponTypeExt::GetRangeWithModifiers(pThis->WeaponType, pThis->Owner, maxRange);
+		}
+
+		shouldExplode |= pExt->DistanceTraveled >= maxRange;
+	}
+
+	pThis->SetLocation(coordNew);
+	return 0;
 }

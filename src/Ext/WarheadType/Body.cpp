@@ -428,6 +428,10 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
+	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
+	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
+	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
+
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
@@ -438,6 +442,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
+
+	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -489,8 +495,11 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Shield_RemoveTypes.size() > 0
 		|| this->Shield_RemoveAll
 		|| this->Convert_Pairs.size() > 0
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+#endif
+		|| this->ChangeOwner
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
@@ -703,10 +712,10 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 		.Process(this->PenetratesTransport_DamageAll)
 		.Process(this->PenetratesTransport_CleanSound)
-
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
-
+#endif
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
@@ -774,9 +783,15 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->AnimZAdjust)
 
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_SetAsMindControl)
+		.Process(this->ChangeOwner_MindControlAnim)
+
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		.Process(this->Taunt)
+
+		.Process(this->Psychedelic_StackingMode)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

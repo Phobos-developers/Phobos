@@ -1,4 +1,5 @@
-#include "Body.h"
+#include <Ext/Foot/Body.h>
+#include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
 
@@ -24,7 +25,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
-			auto const pKillerTechnoData = TechnoExt::Fetch(pObjectKiller);
+			auto const pKillerTechnoData = FootExt::Fetch(pFootKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 		}
 	}
@@ -100,10 +101,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	{
 		if (pInf)
 		{
-			if (pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-			else if (pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
-				pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+			if (pInf->IsDeployed() && pInfTypeExt->EliteDeployedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteDeployedWeaponBurstFLHs;
+			else if (pInf->Crawling && pInfTypeExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
+				pickedFLHs = pInfTypeExt->EliteCrouchedWeaponBurstFLHs;
 			else
 				pickedFLHs = pExt->EliteWeaponBurstFLHs;
 		}
@@ -114,50 +117,17 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	}
 	else if (pInf)
 	{
-		if (pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
-			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+		auto const pInfTypeExt = InfantryTypeExt::Fetch(pInf->Type);
+
+		if (pInf->IsDeployed() && pInfTypeExt->DeployedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->DeployedWeaponBurstFLHs;
+		else if (pInf->Crawling && pInfTypeExt->CrouchedWeaponBurstFLHs.size() > 0)
+			pickedFLHs = pInfTypeExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
 		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
-	}
-
-	return FLH;
-}
-
-CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
-{
-	FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
-	Nullable<CoordStruct> pickedFLH;
-
-	if (pThis->IsDeployed())
-	{
-		if (weaponIndex == 0)
-			pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
-		else if (weaponIndex == 1)
-			pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
-	}
-	else
-	{
-		if (pThis->Crawling)
-		{
-			if (weaponIndex == 0)
-				pickedFLH = pTypeExt->PronePrimaryFireFLH;
-			else if (weaponIndex == 1)
-				pickedFLH = pTypeExt->ProneSecondaryFireFLH;
-		}
-	}
-
-	if (pickedFLH.isset())
-	{
-		FLH = pickedFLH.Get();
-		FLHFound = true;
 	}
 
 	return FLH;
@@ -185,57 +155,6 @@ void TechnoExt::InitializeAttachEffects()
 
 	auto const pThis = this->OwnerObject();
 	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
-}
-
-void TechnoExt::InitializeRecoilData()
-{
-	const auto pTypeExt = this->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
-
-	if (!pType->TurretRecoil)
-		return;
-
-	// Always resize to match the current type's count so that type conversions
-	// (e.g. 9 turrets -> 2) do not leave stale elements that waste memory and
-	// inflate the save file.
-	this->ExtraTurretRecoil.resize(pTypeExt->ExtraTurretCount);
-
-	if (pTypeExt->ExtraTurretCount)
-	{
-		const auto& refData = pType->TurretAnimData;
-
-		for (auto& data : this->ExtraTurretRecoil)
-		{
-			data.Turret.Travel = refData.Travel;
-			data.Turret.CompressFrames = refData.CompressFrames;
-			data.Turret.RecoverFrames = refData.RecoverFrames;
-			data.Turret.HoldFrames = refData.HoldFrames;
-			data.TravelPerFrame = 0.0;
-			data.TravelSoFar = 0.0;
-			data.State = RecoilData::RecoilState::Inactive;
-			data.TravelFramesLeft = 0;
-		}
-	}
-
-	const auto dataCount = (pTypeExt->ExtraBarrelCount + 1) * (pTypeExt->ExtraTurretCount + 1) - 1;
-	this->ExtraBarrelRecoil.resize(dataCount);
-
-	if (dataCount)
-	{
-		const auto& refData = pType->BarrelAnimData;
-
-		for (auto& data : this->ExtraBarrelRecoil)
-		{
-			data.Turret.Travel = refData.Travel;
-			data.Turret.CompressFrames = refData.CompressFrames;
-			data.Turret.RecoverFrames = refData.RecoverFrames;
-			data.Turret.HoldFrames = refData.HoldFrames;
-			data.TravelPerFrame = 0.0;
-			data.TravelSoFar = 0.0;
-			data.State = RecoilData::RecoilState::Inactive;
-			data.TravelFramesLeft = 0;
-		}
-	}
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
@@ -352,4 +271,33 @@ void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 
 		DisplayClass::Instance.Submit(pAnim);
 	}
+}
+
+int TechnoExt::GetDropCrateIndex(TechnoClass* pThis)
+{
+	if (!pThis)
+		return -1;
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (pExt->DropCrate >= 0 || pTypeExt->DropCrate.isset())
+	{
+		int nSelectedPowerup = -1;
+
+		if (pExt->DropCrate >= 0)
+		{
+			if (pExt->DropCrate == 1)
+				nSelectedPowerup = static_cast<int>(pExt->DropCrateType);
+		}
+		else if (pTypeExt->DropCrate.isset())
+		{
+			nSelectedPowerup = static_cast<int>(pTypeExt->DropCrate.Get());
+		}
+
+		if (nSelectedPowerup >= 0)
+			return nSelectedPowerup;
+	}
+
+	return -1;
 }

@@ -1,12 +1,12 @@
-#include "Body.h"
-
 #include <TunnelLocomotionClass.h>
-#include <JumpjetLocomotionClass.h>
 
+#include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/BuildingType/Body.h>
+#include <Ext/InfantryType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Unit/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/Helpers.Alex.h>
@@ -41,14 +41,14 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
-
-	if (pExt->PreviousType)
-		pExt->UpdateTypeData_Foot();
-
+	auto const pExt = FootExt::Fetch(pThis);
 	pExt->UpdateWarpInDelay();
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
+	pExt->HealthAutoConvertActions();
+
+	if (pExt->AttackMoveFollowerTempCount)
+		pExt->AttackMoveFollowerTempCount--;
 
 	return 0;
 }
@@ -61,10 +61,11 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = UnitExt::Fetch(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
 	pExt->UpdateSubterraneanHarvester();
+	pExt->UpdateRecoilData();
 
 	// Replace vanilla animation counter code in UnitClass::AI.
 	if (pThis->IsAlive && !pExt->DelayedFireSequencePaused && !((pThis->IsWarpingIn() && pThis->TemporalTargetingMe) || pThis->IsBeingWarpedOut()))
@@ -106,7 +107,7 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = FootExt::Fetch(pThis);
 	pExt->UpdateOnTunnelEnter();
 
 	const auto pType = pThis->GetTechnoType();
@@ -136,7 +137,7 @@ DEFINE_HOOK(0x736005, FootClass_TunnelAI_Exit, 0x6)       // UnitClass_TunnelAI
 {
 	GET(FootClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::Fetch(pThis);
+	auto const pExt = FootExt::Fetch(pThis);
 	pExt->UpdateOnTunnelExit();
 
 	return 0;
@@ -261,16 +262,30 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	if (!pThis->GetTechnoType()) // Critical sanity check in s/l
+		return 0;
+
+	// No extension while a savegame is loading: either it comes from the extension
+	// stream, or the object is one the game is creating as part of the load and its
+	// extension - and this initialization with it - follows once the load settles.
+	if (auto const pExt = TechnoExt::TryFetch(pThis))
+		pExt->InitializeState();
+
+	return 0;
+}
+
+// The state a techno's extension gets when the techno itself is initialized. Also run
+// for extensions allocated after the fact, for technos the game created while a
+// savegame was loading.
+void TechnoExt::InitializeState()
+{
+	auto const pThis = this->OwnerObject();
 	auto const pType = pThis->GetTechnoType();
 
-	if (!pType) // Critical sanity check in s/l
-		return 0;
+	if (!pType)
+		return;
 
-	auto const pExt = TechnoExt::TryFetch(pThis);
-
-	if (!pExt) // constructed during savegame load; state comes from the stream instead
-		return 0;
-
+	auto const pExt = this;
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	pExt->TypeExtData = pTypeExt;
 
@@ -283,7 +298,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
-	pExt->InitializeRecoilData();
+
+	if (pType->WhatAmI() == AbstractType::UnitType)
+		static_cast<UnitExt*>(pExt)->InitializeRecoilData();
 
 	if (!pExt->AE.HasTint) // already updated when initializing attach effect
 		pExt->UpdateTintValues();
@@ -299,23 +316,24 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
-
-	return 0;
 }
 
 DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
-
 	// mirage is not here yet
-	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
+	if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 	{
-		pThis->Disguise = pExt->DefaultDisguise;
-		pThis->DisguisedAsHouse = pThis->Owner;
-		pThis->Disguised = true;
-		return 0x6F4277;
+		auto const pExt = InfantryTypeExt::Fetch(pInf->Type);
+
+		if (pExt->DefaultDisguise)
+		{
+			pThis->Disguise = pExt->DefaultDisguise;
+			pThis->DisguisedAsHouse = pThis->Owner;
+			pThis->Disguised = true;
+			return 0x6F4277;
+		}
 	}
 
 	pThis->Disguised = false;
@@ -376,7 +394,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
@@ -386,8 +404,8 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 		if ((pType->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -406,7 +424,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		pExt->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -475,19 +493,31 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
 
 	if (pExt->AE.HasRestrictedArmorMultipliers)
 	{
+		auto& random = ScenarioClass::Instance->Random;
+		auto const pOwner = pThis->Owner;
+
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
 				continue;
 
 			auto const type = attachEffect->GetType();
+
+			if (!type->RestrictedArmorMultiplier)
+				continue;
+
+			if (type->ArmorMultiplier_Chance < random.RandomDouble())
+				continue;
+
+			if (pOwner && !EnumFunctions::CanTargetHouse(type->ArmorMultiplier_AffectsHouse, pSourceHouse, pOwner))
+				continue;
 
 			if (pWarhead)
 			{
@@ -497,12 +527,12 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 				if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
 					continue;
 			}
-			else if (type->ArmorMultiplier_DisallowWarheads.size() <= 0 && type->ArmorMultiplier_AllowWarheads.size() <= 0) // already calculated
-			{
-				continue;
-			}
 
 			mult *= type->ArmorMultiplier;
+
+			// HitAnim
+			if (hitAnim)
+				AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
 		}
 	}
 
@@ -511,11 +541,12 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTarget, EDI);
 	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pTarget, pWeapon->Warhead, pThis->Owner)));
 
 	return 0;
 }
@@ -524,9 +555,10 @@ DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(const int, damage, EAX);
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead)));
+	R->EAX(static_cast<int>(damage / TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse, true)));
 
 	return 0;
 }
@@ -602,8 +634,35 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
 
+	// Note: Some SW never had a "killer" or a "house" (hello "NukeSpecial"), probably never scored to the killer?
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
+
+	return 0;
+}
+
+// AFAIK, only used by the teleport of the Chronoshift SW
+DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(TechnoClass*, pVictim, ESI);
+
+	// Drop crate if is dead
+	const int nSelectedPowerup = TechnoExt::GetDropCrateIndex(pVictim);
+
+	if (nSelectedPowerup >= 0)
+	{
+		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
+		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
+	}
 
 	return 0;
 }
@@ -708,7 +767,7 @@ DEFINE_HOOK(0x44F62B, BuildingClass_CanPlayerMove_NoManualMove, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
+DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x0)
 {
 	enum { SkipGameCode = 0x70EFF2 };
 
@@ -718,7 +777,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	auto const pThisType = pTypeExt->OwnerObject();
 	int maxSpeed = pThisType->Speed;
 
-	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+	if (pTypeExt->UseDisguiseMovementSpeed.Get(RulesExt::Global()->UseDisguiseMovementSpeed) && pThis->IsDisguised())
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 			maxSpeed = pType->Speed;
@@ -734,11 +793,11 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = TechnoExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
 			R->EBX<ObjectTypeClass*>(pCustomType);
 	}
 
@@ -752,11 +811,11 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	GET(UnitClass*, pThis, EBP);
 
 	const auto pType = pThis->Type;
-	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExt = UnitTypeExt::Fetch(pType);
 
 	if (pTypeExt->NeedDamagedImage && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (const auto pCustomType = TechnoExt::GetUnitTypeExtra(pThis, pTypeExt))
+		if (const auto pCustomType = UnitExt::GetUnitTypeExtra(pThis, pTypeExt))
 		{
 			if (const auto Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -773,7 +832,7 @@ DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	R->ESI<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+	R->ESI<AircraftTypeClass*>(AircraftExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }
@@ -784,7 +843,7 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+	R->EAX<AircraftTypeClass*>(AircraftExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }
@@ -795,7 +854,7 @@ DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 	GET(int, currentSpeed, ECX);
 
 	const auto pType = pThis->Type;
-	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExt = InfantryTypeExt::Fetch(pType);
 	const double multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
 	currentSpeed = static_cast<int>(static_cast<double>(currentSpeed) * multiplier);
 	R->ECX(currentSpeed);
@@ -806,7 +865,7 @@ DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)
 DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
+	const auto pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 
 	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
@@ -833,7 +892,7 @@ DEFINE_HOOK(0x62A0D3, ParasiteClass_AI_ParticleSystem, 0x5)
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x4C, -0x2C));
 	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (pWHExt->Parasite_DisableParticleSystem)
+	if (pWHExt->Parasite_DisableParticleSystem.Get(RulesExt::Global()->Parasite_DisableParticleSystem))
 		return SkipGameCode;
 
 	if (const auto pParticleSysType = pWHExt->Parasite_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
@@ -862,7 +921,7 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
@@ -934,7 +993,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 			if (hoverShutdown)
 			{
-				if (pExt->TypeExtData->HoverDrownable)
+				if (static_cast<UnitExt*>(pExt)->GetTypeExtData()->HoverDrownable.Get(RulesExt::Global()->HoverDrownable))
 				{
 					int damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -965,7 +1024,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 			{
 				const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-				if (!pTypeExt->FallingDownDamage_AllowEMP && pTechno->EMPLockRemaining > 0)
+				if (!pTypeExt->FallingDownDamage_AllowEMP.Get(RulesExt::Global()->FallingDownDamage_AllowEMP) && pTechno->EMPLockRemaining > 0)
 				{
 					damage = pThis->Health;
 					pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
@@ -976,9 +1035,9 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
 				else
-					ratio = pTypeExt->FallingDownDamage.Get();
+					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 
 				if (ratio < 0.0)
 					damage = static_cast<int>(pThis->Health * std::abs(ratio));
@@ -1084,7 +1143,7 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	{
 		if (!pUnit->Type->Turret && pUnit->CurrentFiringFrame != -1)
 		{
-			if (pExt->TypeExtData->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			if (UnitExt::Fetch(pUnit)->GetTypeExtData()->FireUp_ResetInRetarget || !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 			{
 				pUnit->CurrentFiringFrame = -1;
 			}
@@ -1162,55 +1221,6 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 
 #pragma region AttackMove
 
-DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
-{
-	GET(FootClass* const, pThis, ESI);
-
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	if (pThis->IsCloseEnoughToAttack(pThis->Target)
-		&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pTypeExt->OwnerObject()->OpportunityFire)))
-	{
-		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-		{
-			auto const crd = pThis->GetCoords();
-			pJumpjetLoco->DestinationCoords.X = crd.X;
-			pJumpjetLoco->DestinationCoords.Y = crd.Y;
-			pJumpjetLoco->CurrentSpeed = 0;
-			pJumpjetLoco->MaxSpeed = 0;
-			pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
-			pThis->AbortMotion();
-		}
-		else
-		{
-			pThis->StopMoving();
-			pThis->AbortMotion();
-		}
-	}
-
-	if (pTypeExt->AttackMove_PursuitTarget)
-		pThis->SetDestination(pThis->Target, true);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
-{
-	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
-
-	GET(FootClass* const, pThis, ESI);
-
-	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-	auto const mission = pThis->GetCurrentMission();
-	const bool stopWhenTargetAcquired = pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pTypeExt->OwnerObject()->OpportunityFire));
-	bool clearMegaMission = mission != Mission::Guard;
-
-	if (stopWhenTargetAcquired && clearMegaMission)
-		clearMegaMission = !(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256);
-
-	return clearMegaMission ? ClearMegaMission : ContinueMegaMission;
-}
-
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
@@ -1254,7 +1264,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
 			pThis->GetGuardRange(2) / (double)Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
 
-		TechnoClass* pClosestTarget = nullptr;
+		FootClass* pClosestTarget = nullptr;
 		int closestRange = 65536;
 		const auto pMegaMissionTarget = pThis->MegaDestination ? pThis->MegaDestination : (pThis->MegaTarget ? pThis->MegaTarget : pThis);
 		const auto pOwner = pThis->Owner;
@@ -1265,7 +1275,8 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				&& pTechno != pThis && pTechno->Owner == pOwner
 				&& pTechno->MegaMissionIsAttackMove())
 			{
-				auto const pTargetExt = TechnoExt::Fetch(pTechno);
+				auto const pFoot = static_cast<FootClass*>(pTechno);
+				auto const pTargetExt = FootExt::Fetch(pFoot);
 
 				// Check this to prevent the followed techno from being surrounded
 				if (pTargetExt->AttackMoveFollowerTempCount >= 6)
@@ -1275,11 +1286,11 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 				if (!pTargetTypeExt->AttackMove_Follow)
 				{
-					auto const dist = pTechno->DistanceFrom(pMegaMissionTarget);
+					auto const dist = pFoot->DistanceFrom(pMegaMissionTarget);
 
 					if (dist < closestRange)
 					{
-						pClosestTarget = pTechno;
+						pClosestTarget = pFoot;
 						closestRange = dist;
 					}
 				}
@@ -1288,7 +1299,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 		if (pClosestTarget)
 		{
-			auto const pTargetExt = TechnoExt::Fetch(pClosestTarget);
+			auto const pTargetExt = FootExt::Fetch(pClosestTarget);
 			pTargetExt->AttackMoveFollowerTempCount += pThis->WhatAmI() == AbstractType::Infantry ? 1 : 3;
 			pThis->SetDestination(pClosestTarget, false);
 			pThis->SetArchiveTarget(pClosestTarget);
@@ -1329,7 +1340,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 		if (pType->Carryall && pAircraft->HasAnyLink()
 			&& generic_cast<FootClass*>(pAircraft->Destination))
 		{
-			auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+			auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
 			if (pTypeExt->VoicePickup.isset())
 			{
@@ -1344,7 +1355,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	{
 		auto const pUnit = static_cast<UnitClass*>(pThis);
 
-		if (TechnoExt::CannotMove(pUnit))
+		if (UnitExt::CannotMove(pUnit))
 			return SkipResponse;
 	}
 
@@ -1366,11 +1377,11 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 			return 0;
 
 		// Ammo-based deploy blocking.
-		if (!TechnoExt::HasAmmoToDeploy(pUnit))
+		if (!UnitExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
 		// IsSimpleDeployer and type conversion
-		if (!TechnoExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+		if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
 			return DoNotAllowDeploy;
 	}
 
@@ -1423,7 +1434,7 @@ DEFINE_HOOK(0x728F9A, TunnelLocomotionClass_Process_Track, 0x7)
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
 	const auto pTechno = pLoco->LinkedTo;
 	ScenarioExt::Global()->UndergroundTracker.AddUnique(pTechno);
-	TechnoExt::Fetch(pTechno)->UndergroundTracked = true;
+	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = true;
 
 	return 0;
 }
@@ -1433,7 +1444,7 @@ DEFINE_HOOK(0x7297F6, TunnelLocomotionClass_ProcessDigging_Track, 0x7)
 	GET(FootClass*, pTechno, ECX);
 
 	ScenarioExt::Global()->UndergroundTracker.Remove(pTechno);
-	TechnoExt::Fetch(pTechno)->UndergroundTracked = false;
+	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = false;
 
 	return 0;
 }
@@ -2082,7 +2093,7 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
 {
 	auto const pType = pTechno->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
 
 	if (pTypeExt->LandingAnim.isset())
 		return pTypeExt->LandingAnim.Get();
@@ -2109,7 +2120,7 @@ DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
 {
 	GET(FlyLocomotionClass*, pLoco, ESI);
 	auto const pType = pLoco->LinkedTo->GetTechnoType();
-	const bool force = TechnoTypeExt::Fetch(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+	const bool force = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType))->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
 
 	R->CL(force || pType->IsDropship);
 	return 0x4CEB5F;
@@ -2136,7 +2147,7 @@ DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
     enum { Continue = 0x4CF8B7 };
     GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
     R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
 
 	return Continue;
@@ -2153,7 +2164,7 @@ DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 	if (pTypeExt->Missile_Cruise)
 		return 0x662369;
 
@@ -2169,7 +2180,7 @@ DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 
 	R->ECX(pTypeExt->Missile_TakeOffSeparation);
 	return 0x662401;
@@ -2189,7 +2200,7 @@ DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
 	if (pLoco->TrailerTimer.HasTimeLeft())
 		return SkipAnimation;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 
 	if (pTypeExt->Missile_TakeOffAnim)
 	{
@@ -2210,7 +2221,7 @@ DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
 	if (!pLinkedTo)
 		return 0;
 
-	const auto pTypeExt = TechnoTypeExt::Fetch(pLinkedTo->Type);
+	const auto pTypeExt = AircraftTypeExt::Fetch(pLinkedTo->Type);
 	if (pTypeExt->Missile_Cruise)
 		return 0x6624C8;
 
@@ -2272,7 +2283,7 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 				double multiplier = 1.0;
 
 				if (applyMultiplier)
-					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pWarhead);
+					multiplier /= TechnoExt::GetCurrentArmorMultiplier(pTarget, pTarget->GetTechnoType(), pThis->Owner->Owner, pWarhead);
 
 				if (pWHExt->Temporal_ApplyVersus.Get(RulesExt::Global()->Temporal_ApplyVersus))
 				{
@@ -2302,3 +2313,65 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 }
 DEFINE_FUNCTION_JUMP(LJMP, 0x71AB10, WarpPerStep::TemporalClassFake::_GetWarpPerStep)
 
+namespace DeactivateTemp
+{
+	class TechnoClassFake final : public TechnoClass
+	{
+		void _Deactivate();
+	};
+}
+
+void DeactivateTemp::TechnoClassFake::_Deactivate()
+{
+	const auto pThis = static_cast<TechnoClass*>(this);
+
+	if (pThis->IsTether)
+	{
+		const auto pLink = pThis->GetNthLink();
+
+		if (pLink && pThis->GetCell()->GetBuilding() == pLink)
+			return;
+	}
+
+	pThis->Guard();
+	pThis->Deselect();
+
+	const auto pFoot = abstract_cast<FootClass*, true>(pThis);
+
+	if (pFoot)
+		pFoot->Locomotor->Power_Off();
+
+	const bool wasDeactivated = std::exchange(pThis->Deactivated, true);
+
+	if (wasDeactivated)
+		return;
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (!Unsorted::ScenarioInit && pType->DeactivateSound != -1)
+		VocClass::PlayAt(pType->DeactivateSound, pThis->Location);
+
+	if (AresFunctions::SetSpotlight)
+	{
+		struct DummyTypeExtHere
+		{
+			char _[0x77];
+			bool HasSpotlight;
+		};
+
+		if (reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC)->HasSpotlight)
+			AresFunctions::SetSpotlight(reinterpret_cast<void*>(pThis->align_154), nullptr);
+	}
+
+	if (pFoot)
+	{
+		if (abstract_cast<BuildingClass*>(pThis->GetNthLink()))
+			pThis->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+	else
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+		BuildingExt::UpdateFactoryQueues(pBuilding);
+	}
+}
+DEFINE_FUNCTION_JUMP(LJMP, 0x70FC90, DeactivateTemp::TechnoClassFake::_Deactivate)

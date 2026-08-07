@@ -14,6 +14,11 @@ public:
 
 	static constexpr DWORD Canary = 0x13371337;
 
+	// cell extensions live in the cell's own savegame block, not in the centralized
+	// extension stream: while a savegame is loading they are created by LoadInline
+	// rather than by the cell constructor, which the game re-runs in place
+	static constexpr bool SavedInline = true;
+
 	struct RadLevel
 	{
 		RadSiteClass* Rad { nullptr };

@@ -54,9 +54,9 @@ All findings are classified into three severity levels. YOU MUST follow this whe
 
 | Level | Emoji | Label | Criteria | Examples |
 |-------|-------|-------|----------|----------|
-| Error | ❌ | ERROR | Causes incorrect behavior at runtime — MUST be fixed | Size < 5 with non-NOP trailing bytes, address conflict, instruction misalignment, wrong macro (GET_STACK vs GET_BASE), relative instruction with return 0 |
+| Error | ❌ | ERROR | Causes incorrect behavior at runtime — MUST be fixed | Size < 5 with non-NOP trailing bytes, address conflict, instruction misalignment, wrong macro (GET_STACK vs GET_BASE) |
 | Warning | ⚠️ | WARNING | May indicate incorrect behavior — should be reviewed | Type mismatch in GET_STACK, stacked hook (exact overlap with another hook) |
-| Note | ℹ️ | NOTE | Informational, not necessarily a bug | All-clear confirmation |
+| Note | ℹ️ | NOTE | Informational, not necessarily a bug | All-clear confirmation, return-0 hook covering a relative instruction (relocated by SyringeEx) |
 
 ---
 
@@ -413,9 +413,9 @@ Then mark the TodoList item as complete and move to Step 5.
 
 ### Check
 
-For each new hook, disassemble the full address range `[addr, addr + size)` using IDA MCP and check for any relative-offset instructions. These instructions encode their target as `current_address + instruction_length + relative_offset`. When Syringe copies these bytes to a trampoline at a different address, the relative offset points to the wrong location.
+For each new hook, disassemble the full address range `[addr, addr + size)` using IDA MCP and check for any relative-offset instructions. These instructions encode their target as `current_address + instruction_length + relative_offset`.
 
-Hooks that cover any of the following instructions MUST return a fixed value (not 0):
+**SyringeEx note:** Phobos requires [SyringeEx](https://github.com/Phobos-developers/SyringeEx), which relocates relative-offset instructions when copying stolen bytes to its trampoline (`ReladdrInstructionFixup` feature flag; Phobos verifies it at startup and refuses to run without it). A `return 0` hook covering such instructions is therefore **safe** — report it as an informational note, NOT an error. (Under pre-SyringeEx launchers this was a crash; that scenario can no longer occur.)
 
 Relative jump/call instructions:
 - `jmp short`, `jmp near`, `jz`, `jnz`, `je`, `jne`, `jg`, `jge`, `jl`, `jle`
@@ -425,14 +425,9 @@ Relative jump/call instructions:
 - `loop`, `loope`, `loopne`, `loopz`, `loopnz`
 - `xbegin`
 
-EIP-relative addressing instructions:
-- `mov`, `lea`, `cmp`, `add`, `sub`, `and`, `or`, `xor`, `test`
-- `push`, `pop`, `movsxd`, `movzx`, `movsx`
-- When any of the above uses EIP-relative addressing mode
-
-Check the `returns` field from Step 0. If the hook returns `"0"` but covers any of these instructions:
-> ❌ **Problem 4: Hook covers relative-offset instruction but returns 0**
-> Hook `HookName` at `0x<addr>` covers instruction `<mnemonic>` at `0x<instruction_addr>` which uses relative addressing (encoded relative offset `<encoded_value>` → target `<computed_target>`). This hook MUST return a fixed value (e.g. `return 0x<fixed_addr>` or `return R->Origin() + <offset>`), not `return 0`.
+Check the `returns` field from Step 0. If the hook returns `"0"` and covers any of these instructions:
+> ℹ️ **Problem 4: Hook covers relative-offset instruction (relocated by SyringeEx)**
+> Hook `HookName` at `0x<addr>` covers instruction `<mnemonic>` at `0x<instruction_addr>` which uses relative addressing (encoded relative offset `<encoded_value>` → target `<computed_target>`) and returns 0. SyringeEx relocates the offset when copying the stolen bytes to its trampoline, so this is safe. No action needed; returning an explicit address past the instruction remains a valid alternative.
 
 If no relative-offset instructions are found, or the hook already returns a fixed value: "✓ No relative instruction issues found."
 
@@ -443,20 +438,20 @@ After completing Step 5, YOU MUST output the per-hook detail blocks AND the upda
 ```
 [Step 5 Complete]
 - Hooks checked: <count>
-- Problem 4 errors (relative instruction): <count>
+- Problem 4 notes (relative instruction, relocated by SyringeEx): <count>
 
 Details for hooks with P4 findings:
 
 ### TEST7 (0x4D56B1, size 0x6, range [0x4D56B1, 0x4D56B7))
 4D56B1  jz      loc_4D5A42      ; 6 bytes (0F 84 8B 03 00 00) — near conditional jump, 32-bit relative offset
 
-❌ Problem 4: Hook covers relative-offset instruction but returns 0 — The hooked `jz` encodes a 32-bit relative offset (0x38B → target = 0x4D56B7 + 0x38B = 0x4D5A42). When copied to a trampoline, the offset points to the wrong address. MUST return a fixed address (e.g. `return R->Origin() + 6`), not `return 0`.
+ℹ️ Problem 4: Hook covers relative-offset instruction (relocated by SyringeEx) — The hooked `jz` encodes a 32-bit relative offset (0x38B → target = 0x4D56B7 + 0x38B = 0x4D5A42) and the hook returns 0. SyringeEx relocates the offset in its trampoline, so this is safe; no action needed.
 
 Updated matrix (P4 filled — matrix now complete):
 | Hook | Address | P0 | P1 | P2 | P3 | P4 |
 |------|---------|----|----|----|----|----|
 | A    | 0x...   | ✓  | ❌ | ❌ | ✓  | ✓  |
-| B    | 0x...   | ❌ | ✓  | ✓  | ⚠️ | ❌ |
+| B    | 0x...   | ❌ | ✓  | ✓  | ⚠️ | ℹ️ |
 ```
 
 DO NOT omit any hook with a finding.
@@ -488,7 +483,7 @@ Total hooks checked: <N>
 | Hook | Address | P0 | P1 | P2 | P3 | P4 |
 |------|---------|----|----|----|----|----|
 | A    | 0x...   | ✓  | ❌ | ❌ | ✓  | ✓  |
-| B    | 0x...   | ℹ️ | ✓  | ✓  | ⚠️ | ❌ |
+| B    | 0x...   | ℹ️ | ✓  | ✓  | ⚠️ | ℹ️ |
 | C    | 0x...   | ❌ | ✓  | ✓  | ✓  | ✓  |
 
 ### Issues by hook
@@ -498,7 +493,7 @@ Total hooks checked: <N>
 
 ### HookB (0x...)
 - **P3b — Variable type mismatch:** declared <type>, IDA suggests <other_type>
-- **P4 — Relative instruction:** covers `call rel32` at 0x... but returns 0
+- **P4 — Relative instruction (note):** covers `call rel32` at 0x... with return 0 — relocated by SyringeEx, safe
 
 ### HookC (0x...)
 - **P0 — Insufficient stolen bytes:** size is 0x3, trailing bytes `[0x... + 3, 0x... + 5)` are not NOP padding, increase to at least 5

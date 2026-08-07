@@ -8,6 +8,7 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -24,10 +25,33 @@ static ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*
 	return instance;
 }
 
-static void __fastcall InitialPayload_OpenToppedFix(TechnoClass* pThis)
+static void __fastcall InitialPayloadFix(TechnoClass* pThis)
 {
 	pThis->IsInPlayfield = true;
+	ScenarioExt::Global()->RegisterAutoDeath(pThis);
 	pThis->Limbo();
+}
+
+static void __fastcall InitialPayloadFix_Building(FootClass* pPassenger)
+{
+	ScenarioExt::Global()->RegisterAutoDeath(pPassenger);
+	pPassenger->AbortMotion();
+}
+
+static void __fastcall UpdateThreatInCell_InitOccupant(TechnoClass* pBuilding, void*, CellClass* pCell)
+{
+	pBuilding->UpdateThreatInCell(pCell);
+
+	if (auto* pBld = abstract_cast<BuildingClass*>(pBuilding))
+	{
+		const int count = pBld->GetOccupantCount();
+		if (count > 0)
+		{
+			FootClass* pLast = pBld->Occupants.GetItem(count - 1);
+			if (pLast)
+				ScenarioExt::Global()->RegisterAutoDeath(pLast);
+		}
+	}
 }
 
 static void __fastcall LetGo(TemporalClass* pTemporal)
@@ -183,9 +207,13 @@ void Apply_Ares3_0_Patches()
 	// Redirect Ares's RemoveCameo to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02BDD0, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
+	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x491B8, AresHelper::AresBaseAddress + 0x491C4);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayload_OpenToppedFix));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43E4F, GET_OFFSET(InitialPayloadFix));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43DBC, &UpdateThreatInCell_InitOccupant);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x43E33, &InitialPayloadFix_Building);
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
@@ -220,7 +248,7 @@ void Apply_Ares3_0_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x68500, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x112D0, &BuildingExt::KickOutClone);
 
@@ -248,6 +276,9 @@ void Apply_Ares3_0_Patches()
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA8D94, &UnitDeliveryStateMachine_Update_Wrapper);
 
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1ACA3, AresHelper::AresBaseAddress + 0x1AD20);
+
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x745B8, &SendPDPlane);
 
@@ -256,6 +287,11 @@ void Apply_Ares3_0_Patches()
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x742AC, &ParadropPlaneUnlimbo);
+
+	// Replace Ares factory update logic with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x13FA7, &BuildingExt::UpdateFactoryQueues);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CD9E, &BuildingExt::UpdateFactoryQueues);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &BuildingExt::UpdateFactoryQueues);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -282,9 +318,13 @@ void Apply_Ares3_0p1_Patches()
 	// Redirect Ares's RemoveCameo to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02C910, GET_OFFSET(SidebarExt::AresTabCameo_RemoveCameo));
 
+	// Remove Ares' WhatAmI() != AbstractType::Infantry check.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x49E08, AresHelper::AresBaseAddress + 0x49E14);
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayload_OpenToppedFix));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4492F, GET_OFFSET(InitialPayloadFix));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4489C, &UpdateThreatInCell_InitOccupant);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x44913, &InitialPayloadFix_Building);
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
@@ -319,7 +359,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Redirect Ares's RadarJammerClass::Update to our implementation
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x69470, AresRadarJammerClass_Update_GetAddr());
-  
+
 	// Redirect Ares's function to our implementation:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x11860, &BuildingExt::KickOutClone);
 
@@ -347,6 +387,9 @@ void Apply_Ares3_0p1_Patches()
 	// Fix building direction of Ares's UnitDelivery
 	Patch::Apply_VTABLE(AresHelper::AresBaseAddress + 0xA9F28, &UnitDeliveryStateMachine_Update_Wrapper);
 
+	// Skip Ares' ProjectileRange handling - our replacement hooked at 0x467BA4 (BulletClass_AI_Ranged).
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x1B393, AresHelper::AresBaseAddress + 0x1B410);
+
 	// Replace Ares paradrop plane send function call with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x75668, &SendPDPlane);
 
@@ -355,4 +398,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x7535C, &ParadropPlaneUnlimbo);
+
+	// Replace Ares factory update logic with our wrapper.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x14537, &BuildingExt::UpdateFactoryQueues);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DA0E, &BuildingExt::UpdateFactoryQueues);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &BuildingExt::UpdateFactoryQueues);
 }

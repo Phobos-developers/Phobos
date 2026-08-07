@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 
@@ -92,7 +90,7 @@ static int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass con
 
 }
 
-DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
+DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 {
 	GET(HouseClass const* const, pThis, ECX);
 	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
@@ -100,18 +98,13 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
+	if (resultOfAres != CanBuildResult::Buildable)
+		return 0;
+
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
-		if (resultOfAres == CanBuildResult::Buildable && BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
-			R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
-	}
-
-	if (resultOfAres == CanBuildResult::Buildable)
-	{
-		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
-
-		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
-			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+		if (BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
+			R->EAX(HouseExt::BuildLimitGroupUpgradeCheck(pThis, pItem, buildLimitOnly, includeInProduction));
 	}
 
 	return 0;

@@ -100,6 +100,23 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
+	this->DiscardOn_Ammo_MinimumAmount.Read(exINI, pSection, "DiscardOn.Ammo.MinimumAmount");
+	this->DiscardOn_Ammo_MaximumAmount.Read(exINI, pSection, "DiscardOn.Ammo.MaximumAmount");
+
+	if (this->DiscardOn_Ammo_MinimumAmount > this->DiscardOn_Ammo_MaximumAmount)
+		Debug::Log("[Developer warning][%s] DiscardOn.Ammo.MinimumAmount is greater than DiscardOn.Ammo.MaximumAmount, the ammo discard condition cannot be established.\n", pSection);
+
+	this->DiscardOn_Health_BelowPercent.Read(exINI, pSection, "DiscardOn.Health.BelowPercent");
+	this->DiscardOn_Health_AbovePercent.Read(exINI, pSection, "DiscardOn.Health.AbovePercent");
+
+	if (this->DiscardOn_Health_AbovePercent > this->DiscardOn_Health_BelowPercent)
+		Debug::Log("[Developer warning][%s] DiscardOn.Health.AbovePercent is greater than DiscardOn.Health.BelowPercent, the health discard condition cannot be established.\n", pSection);
+
+	this->DiscardOn_Missions.Read(exINI, pSection, "DiscardOn.Missions");
+	this->DiscardOn_AIMissions.Read(exINI, pSection, "DiscardOn.AIMissions");
+	this->DiscardOn_LandTypes.Read(exINI, pSection, "DiscardOn.LandTypes");
+	this->DiscardOn_Sequences.Read(exINI, pSection, "DiscardOn.Sequences");
+	this->DiscardOn_Sequences_Immediate.Read(exINI, pSection, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
@@ -136,6 +153,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
 	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
 	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
+	this->ArmorMultiplier_Chance.Read(exINI, pSection, "ArmorMultiplier.Chance");
+	this->ArmorMultiplier_AffectsHouse.Read(exINI, pSection, "ArmorMultiplier.AffectsHouse");
+	this->ArmorMultiplier_HitAnim.Read(exINI, pSection, "ArmorMultiplier.HitAnim");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
@@ -184,18 +204,24 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
 
-	// NeedCalculate
+	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
 		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
 		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
 	{
-		this->NeedCalculate = true;
+		this->RequiresRecalculation = true;
 	}
 	else
 	{
-		this->NeedCalculate = false;
+		this->RequiresRecalculation = false;
 	}
+
+	// RestrictedArmorMultiplier
+	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
+		this->RestrictedArmorMultiplier = true;
+	else
+		this->RestrictedArmorMultiplier = false;
 }
 
 template <typename T>
@@ -209,6 +235,15 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
+		.Process(this->DiscardOn_Ammo_MinimumAmount)
+		.Process(this->DiscardOn_Ammo_MaximumAmount)
+		.Process(this->DiscardOn_Health_BelowPercent)
+		.Process(this->DiscardOn_Health_AbovePercent)
+		.Process(this->DiscardOn_Missions)
+		.Process(this->DiscardOn_AIMissions)
+		.Process(this->DiscardOn_LandTypes)
+		.Process(this->DiscardOn_Sequences)
+		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
@@ -236,6 +271,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
 		.Process(this->ArmorMultiplier_DisallowWarheads)
+		.Process(this->ArmorMultiplier_Chance)
+		.Process(this->ArmorMultiplier_AffectsHouse)
+		.Process(this->ArmorMultiplier_HitAnim)
 		.Process(this->SpeedMultiplier)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
@@ -264,7 +302,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
-		.Process(this->NeedCalculate)
+		.Process(this->RequiresRecalculation)
 		;
 }
 
@@ -336,6 +374,30 @@ namespace detail
 				else if (!_strcmpi(cur, "harvesting"))
 				{
 					parsed |= DiscardCondition::Harvesting;
+				}
+				else if (!_strcmpi(cur, "invokerdie"))
+				{
+					parsed |= DiscardCondition::InvokerDie;
+				}
+				else if (!_strcmpi(cur, "ammo"))
+				{
+					parsed |= DiscardCondition::Ammo;
+				}
+				else if (!_strcmpi(cur, "health"))
+				{
+					parsed |= DiscardCondition::Health;
+				}
+				else if (!_strcmpi(cur, "mission"))
+				{
+					parsed |= DiscardCondition::Mission;
+				}
+				else if (!_strcmpi(cur, "landtype"))
+				{
+					parsed |= DiscardCondition::LandType;
+				}
+				else if (!_strcmpi(cur, "sequence"))
+				{
+					parsed |= DiscardCondition::Sequence;
 				}
 				else
 				{

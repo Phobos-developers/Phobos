@@ -1,6 +1,8 @@
 #pragma once
 #include <HouseClass.h>
 
+#include <Ext/HouseType/Body.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/Detach.h>
 #include <Utilities/TemplateDef.h>
@@ -209,7 +211,7 @@ public:
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
 
-	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
+	static CanBuildResult BuildLimitGroupUpgradeCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 
 	static void CalculatePowerSurplus(HouseClass* pThis);

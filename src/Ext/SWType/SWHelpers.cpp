@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <MessageListClass.h>
 
 #include <Ext/House/Body.h>
 
@@ -146,11 +145,11 @@ bool SWTypeExt::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pB
 
 	const auto coords = pBuilding->GetCenterCoords();
 	const auto center = CellClass::Coord2Cell(coords);
-	const int distance = static_cast<int>(Coords.DistanceFrom(center));
+	const double distanceSq = Coords.DistanceFromSquared(center);
 
 	// negative range values just pass the test
-	return (minRange < 0.0 || (double)distance >= minRange)
-		&& (maxRange < 0.0 || (double)distance <= maxRange);
+	return (minRange < 0.0 || distanceSq >= minRange * minRange)
+		&& (maxRange < 0.0 || distanceSq <= maxRange * maxRange);
 }
 
 bool SWTypeExt::IsLaunchSite(BuildingClass* pBuilding) const

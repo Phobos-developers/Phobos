@@ -30,8 +30,8 @@ public:
 	ValueableVector<AnimTypeClass*> DestroyAnim;
 	ValueableIdx<VocClass> DestroySound;
 	Nullable<ColorStruct> MinimapColor;
-	Valueable<bool> IsPassable;
-	Valueable<bool> CanBeBuiltOn;
+	Nullable<bool> IsPassable;
+	Nullable<bool> CanBeBuiltOn;
 	Valueable<bool> HasDamagedFrames;
 	Valueable<bool> HasCrumblingFrames;
 	ValueableIdx<VocClass> CrumblingSound;
@@ -49,8 +49,8 @@ public:
 		, DestroyAnim {}
 		, DestroySound {}
 		, MinimapColor {}
-		, IsPassable { false }
-		, CanBeBuiltOn { false }
+		, IsPassable {}
+		, CanBeBuiltOn {}
 		, HasDamagedFrames { false }
 		, HasCrumblingFrames { false }
 		, CrumblingSound {}

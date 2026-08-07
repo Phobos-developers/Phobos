@@ -23,9 +23,9 @@ You can use the improved vanilla font which can be found on [Phobos supplementar
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]             ; Side
-IngameScore.WinTheme=  ; Soundtrack theme ID
-IngameScore.LoseTheme= ; Soundtrack theme ID
+[SOMESIDE]              ; Side
+IngameScore.WinTheme=   ; Soundtrack theme ID
+IngameScore.LoseTheme=  ; Soundtrack theme ID
 ```
 
 ## Battle screen UI/UX
@@ -149,6 +149,7 @@ Buildings.DefaultDigitalDisplayTypes=          ; List of DigitalDisplayTypes
 Infantry.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Vehicles.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 Aircraft.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
@@ -182,7 +183,7 @@ Shape.PercentageFrame=false                    ; boolean
 [SOMETECHNO]                                   ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
-DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
+DigitalDisplay.Health.FakeAtDisguise=          ; boolean, default to [AudioVisual] -> DigitalDisplay.Health.FakeAtDisguise
 ```
 
 In `RA2MD.INI`:
@@ -417,6 +418,20 @@ In `RA2MD.INI`:
 ShowDesignatorRange=false             ; boolean
 ```
 
+### Show game time
+
+- A timer can be displayed to show how many time has passed since game starts.
+  - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
+  - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.
+  - Observer can't see this timer since they've already gotten one on the top of sidebar.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowGameTime=false             ; boolean
+ShowGameTime.BoardOpacity=40   ; integer
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
@@ -535,16 +550,16 @@ HideShakeEffects=false       ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-DisplayIncome=false       ; boolean
-DisplayIncome.Delay=15    ; integer
-DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisplayIncome.AllowAI=yes ; boolean
+DisplayIncome=false        ; boolean
+DisplayIncome.Delay=15     ; integer
+DisplayIncome.Houses=all   ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes  ; boolean
 
-[SOMEBUILDING]            ; BuildingType
-DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
-DisplayIncome.Delay=15    ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
-DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
-DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
+[SOMEBUILDING]             ; BuildingType
+DisplayIncome=             ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Delay=15     ; integer, defaults to [AudioVisual] -> DisplayIncome.Delay
+DisplayIncome.Houses=      ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
+DisplayIncome.Offset=0,0   ; X,Y, pixels relative to default
 ```
 
 ### Show power plant enhancer range
@@ -561,6 +576,23 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowPowerPlantEnhancerRange=false  ; boolean
+```
+
+### Set sidebar tab by selecting factory
+
+- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
+  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
+    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
+    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+SetTabBySelecting=-1            ; integer, index of tab
 ```
 
 ## Hotkey Commands
@@ -622,6 +654,19 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - Deselect 1 or 5 object(s) from current selected objects.
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
 
+### `[ ]` Select Captured Units
+
+- Select the units within the current screen that are captured by non-permanent mind-controller.
+- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
+- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
+- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SelectCapturedKeyEnabled=false    ; boolean
+```
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -648,7 +693,7 @@ When starting a new campaign, the game automatically saves the game. Now you can
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-SaveGameOnScenarioStart=true ; boolean
+SaveGameOnScenarioStart=true  ; boolean
 ```
 
 ## Sidebar / Battle UI

@@ -34,29 +34,15 @@ public:
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 	AttachEffectTechnoProperties AE;
-	TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 	std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 	int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
-	int SubterraneanHarvStatus; // 0 = none, 1 = created, 2 = out from factory
-	AbstractClass* SubterraneanHarvRallyPoint;
-	bool ReceiveDamage;
-	bool LastKillWasTeamTarget;
 	CDTimerClass PassengerDeletionTimer;
 	ShieldTypeClass* CurrentShieldType;
-	double LastWarpDistance;
-	int JumpjetSpeed;
 	CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 	CDTimerClass AutoDeathTimer;
 	AnimTypeClass* MindControlRingAnimType;
 	int DamageNumberOffset;
-	int Strafe_BombsDroppedThisRound;
-	CellClass* Strafe_TargetCell;
-	int CurrentAircraftWeaponIndex;
-	bool IsInTunnel;
-	bool IsBurrowed;
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
-	CDTimerClass DeployFireTimer;
-	bool SkipTargetChangeResetSequence;
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
 	bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
@@ -70,15 +56,6 @@ public:
 	bool ShouldUpdateGattlingValue;
 	int AttachedEffectInvokerCount;
 
-	// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
-	// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
-	HouseClass* OriginalPassengerOwner;
-	bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
-	int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
-	bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
-	bool KeepTargetOnMove;
-	CellStruct LastSensorsMapCoords;
-	CDTimerClass TiberiumEater_Timer;
 	bool DelayedFireSequencePaused;
 	int DelayedFireWeaponIndex;
 	CDTimerClass DelayedFireTimer;
@@ -87,11 +64,6 @@ public:
 	AirstrikeClass* AirstrikeTargetingMe;
 
 	bool IsSelected;
-	bool ResetLocomotor;
-
-	// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
-	// the deploy animation timer calcs and eliminate possibility of outside interference.
-	CDTimerClass SimpleDeployerAnimationTimer;
 
 	// cache tint values
 	int TintColorOwner;
@@ -101,23 +73,18 @@ public:
 	int TintIntensityAllies;
 	int TintIntensityEnemies;
 
-	int AttackMoveFollowerTempCount;
-
-	bool UndergroundTracked;
 	bool SpecialTracked;
 	bool FallingDownTracked;
-
-	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 
 	bool OnParachuted; // This is just a temporary patch. TODO: fully check HasParachuted and correct its maintenance method.
 	bool HoverShutdown;
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	bool HasDeployConverted;
-	bool HasUndeployConverted;
-	std::vector<RecoilData> ExtraTurretRecoil;
-	std::vector<RecoilData> ExtraBarrelRecoil;
+	bool ShouldBeDead;
+
+	int DropCrate; // Drop crate on death, modified by map action
+	Powerup DropCrateType;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
@@ -125,29 +92,15 @@ public:
 		, LaserTrails {}
 		, AttachedEffects {}
 		, AE {}
-		, PreviousType { nullptr }
 		, ElectricBolts {}
 		, AnimRefCount { 0 }
-		, SubterraneanHarvStatus { 0 }
-		, SubterraneanHarvRallyPoint { nullptr }
-		, ReceiveDamage { false }
-		, LastKillWasTeamTarget { false }
 		, PassengerDeletionTimer {}
 		, CurrentShieldType { nullptr }
-		, LastWarpDistance {}
-		, JumpjetSpeed { 14 } // 0x7115B8
 		, ChargeTurretTimer {}
 		, AutoDeathTimer {}
 		, MindControlRingAnimType { nullptr }
 		, DamageNumberOffset { INT32_MIN }
-		, Strafe_BombsDroppedThisRound { 0 }
-		, Strafe_TargetCell { nullptr }
-		, CurrentAircraftWeaponIndex {}
-		, IsInTunnel { false }
-		, IsBurrowed { false }
 		, HasBeenPlacedOnMap { false }
-		, DeployFireTimer {}
-		, SkipTargetChangeResetSequence { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
 		, CanCloakDuringRearm { false }
@@ -159,63 +112,56 @@ public:
 		, LastTargetID { 0xFFFFFFFF }
 		, AccumulatedGattlingValue { 0 }
 		, ShouldUpdateGattlingValue { false }
-		, OriginalPassengerOwner {}
-		, HasRemainingWarpInDelay { false }
-		, LastWarpInDelay { 0 }
-		, IsBeingChronoSphered { false }
-		, KeepTargetOnMove { false }
-		, LastSensorsMapCoords { CellStruct::Empty }
-		, TiberiumEater_Timer {}
 		, AirstrikeTargetingMe { nullptr }
-		, SimpleDeployerAnimationTimer {}
 		, DelayedFireSequencePaused { false }
 		, DelayedFireWeaponIndex { -1 }
 		, DelayedFireTimer {}
 		, CurrentDelayedFireAnim { nullptr }
 		, AttachedEffectInvokerCount { 0 }
 		, IsSelected { false }
-		, ResetLocomotor { false }
 		, TintColorOwner { 0 }
 		, TintColorAllies { 0 }
 		, TintColorEnemies { 0 }
 		, TintIntensityOwner { 0 }
 		, TintIntensityAllies { 0 }
 		, TintIntensityEnemies { 0 }
-		, AttackMoveFollowerTempCount { 0 }
-		, UndergroundTracked { false }
 		, SpecialTracked { false }
 		, FallingDownTracked { false }
-		, JumpjetStraightAscend { false }
 		, OnParachuted { false }
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, HasDeployConverted { false }
-		, HasUndeployConverted { false }
-		, ExtraTurretRecoil {}
-		, ExtraBarrelRecoil {}
+		, ShouldBeDead { false }
+		, DropCrate { -1 }
+		, DropCrateType { Powerup::Money }
 	{ }
 
 	void OnEarlyUpdate();
 
+	// the extension state that goes with TechnoClass::Init
+	void InitializeState();
+
+	// the techno was created while a savegame was loading, so TechnoClass::Init found
+	// no extension to initialize; catch up now that there is one
+	virtual void OnDeferredAllocation() override { this->InitializeState(); }
+
+	// True while the object is hidden underground (subterranean units); false for
+	// everything else. Overridden by UnitExt, which owns the burrow state.
+	virtual bool IsBurrowedState() const { return false; }
+
+	// True while the object is inside a tunnel (foot units); false for everything
+	// else. Overridden by FootExt, which owns the tunnel state.
+	virtual bool IsInTunnelState() const { return false; }
+
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
-	void DepletedAmmoActions();
-	void UpdateSubterraneanHarvester();
 	void EatPassengers();
-	void UpdateTiberiumEater();
 	void UpdateShield();
-	void UpdateOnTunnelEnter();
-	void UpdateOnTunnelExit();
 	void ApplySpawnLimitRange();
-	void UpdateTypeData(TechnoTypeClass* pCurrentType);
-	void UpdateTypeData_Foot();
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateKeepTargetOnMove();
-	void UpdateWarpInDelay();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
+	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();
 	void UpdateMindControlAnim();
@@ -232,13 +178,10 @@ public:
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
-	void InitializeRecoilData();
-	void UpdateRecoilData();
-	void RecordRecoilData();
-
-	void AmmoAutoConvertActions();
 	void UpdateLastTargetCrd();
 	int GetSight();
+
+	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
@@ -266,13 +209,10 @@ public:
 	// deprecated stand-in for the pre-rework container of all TechnoClass extensions
 	static inline CompatExtMap<TechnoExt, TechnoClass> ExtMap {};
 
-	static UnitClass* Deployer;
-
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool IsActive(TechnoClass* pThis);
-	static bool IsActiveIgnoreEMP(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
@@ -285,7 +225,6 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret = false, int turIdx = -1);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
-	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
@@ -293,8 +232,8 @@ public:
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
-	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead = nullptr);
-	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead = nullptr);
+	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);
+	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim = false);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
@@ -303,7 +242,6 @@ public:
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
-	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
 	static int GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk);
 	static int GetCustomTintColor(TechnoClass* pThis);
@@ -314,18 +252,12 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static int GetDropCrateIndex(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
-	static bool IsVeterancyInThreshold(TechnoClass* pObject, double min, double max);
-	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, TechnoTypeExt* pData);
-	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
-	static bool CannotMove(UnitClass* pThis);
-	static bool HasAmmoToDeploy(TechnoClass* pThis);
-	static void HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride = -1);
-	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
@@ -346,6 +278,7 @@ public:
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static bool TryToCreateCrate(CoordStruct location, Powerup selectedPowerup = Powerup::Money, int maxCellRange = 10);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
 	static bool HasWeaponsDisabled(TechnoClass* pThis);
 	static FireError GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange);
