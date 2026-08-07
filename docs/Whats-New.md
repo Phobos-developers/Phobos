@@ -658,6 +658,7 @@ HideShakeEffects=false           ; boolean
 - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
 - [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 - [Allow the unit to stop immediately if the target enters the range during ApproachTarget](Fixed-or-Improved-Logics.md#stop-immediately-if-the-target-enters-the-range-during-approachtarget) (by TaranDahl)
+- [Allow the unit to keep pursuing the target during ApproachTarget](Fixed-or-Improved-Logics.md#keep-pursuing-the-target-during-approachtarget) (by TaranDahl)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

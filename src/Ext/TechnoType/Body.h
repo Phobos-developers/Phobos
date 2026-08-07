@@ -313,6 +313,7 @@ public:
 	Nullable<bool> AttackMove_UpdateTarget;
 
 	Nullable<bool> ApproachTarget_StopWhenInRange;
+	Valueable<bool> ApproachTarget_PursuitTarget;
 
 	Valueable<bool> BunkerableAnyway;
 	Valueable<bool> KeepTargetOnMove;
@@ -710,6 +711,7 @@ public:
 		, AttackMove_UpdateTarget {}
 
 		, ApproachTarget_StopWhenInRange {}
+		, ApproachTarget_PursuitTarget { false }
 
 		, BunkerableAnyway { false }
 		, KeepTargetOnMove { false }
