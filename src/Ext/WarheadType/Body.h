@@ -267,6 +267,7 @@ public:
 	Nullable<StackingMode> Psychedelic_StackingMode;
 
 	Valueable<bool> PreventCrew { false };
+	Valueable<bool> KillPassengers { false };
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
