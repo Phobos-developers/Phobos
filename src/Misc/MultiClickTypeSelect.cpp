@@ -133,7 +133,8 @@ DEFINE_HOOK(0x693290, TacticalMsgHandler_LButtonUp_MultiClickTypeSelect, 0x6)
 	// DecideAction and the applier were given it. ESP here equals ESP at the start of the
 	// command dispatch (0x69323E), which is where that output slot is addressed from.
 	// Not CurrentObjects[0]: with several units selected that is not the clicked one.
-	const auto pClicked = abstract_cast<FootClass*, true>(R->Stack<ObjectClass*>(0x2C));
+	// Null when the click landed on empty ground, so this cast must keep its null check.
+	const auto pClicked = abstract_cast<FootClass*>(R->Stack<ObjectClass*>(0x2C));
 
 	MultiClickTypeSelect::HandleClick(pClicked);
 

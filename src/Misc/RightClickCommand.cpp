@@ -89,14 +89,17 @@ namespace RightClickCommand
 	// with the double-click type select: the second click would unpack the MCV instead. So
 	// for a short while after a click selected something, the left button does not deploy.
 	// Same trick Emperor: Battle for Dune uses. Only active with TypeSelectByMultiClick on.
-	static bool HoldsOffDeploy(Action action)
+	static bool DeployHoldOffEnabled()
 	{
-		const int delay = Phobos::Config::TypeSelectByMultiClick_DeployDelay;
+		return Phobos::Config::TypeSelectByMultiClick
+			&& Phobos::Config::TypeSelectByMultiClick_DeployDelay > 0;
+	}
 
-		if (action != Action::Self_Deploy || !Phobos::Config::TypeSelectByMultiClick || delay <= 0)
-			return false;
+	static bool HoldsOffDeploy()
+	{
+		const auto delay = static_cast<DWORD>(Phobos::Config::TypeSelectByMultiClick_DeployDelay);
 
-		return GetTickCount() - LastSelectTick <= static_cast<DWORD>(delay);
+		return GetTickCount() - LastSelectTick <= delay;
 	}
 
 	// Mouse flags RadarClass::GetMouseAction (0x6539D0) is called with, in its first stack
@@ -124,10 +127,33 @@ namespace RightClickCommand
 	{
 		const auto action = static_cast<Action>(R->EAX());
 
-		if (action == Action::Select || action == Action::ToggleSelect)
+		// The object the click landed on, as ProcessClickCoords resolved it - the same slot the
+		// game itself reads at 0x693276 to hand it to the applier. Both left button hooks sit at
+		// the same stack depth, so the offset holds for either. Null on empty ground.
+		const auto pClicked = R->Stack<ObjectClass*>(0x30);
+
+		// Whether this click (re)selects the clicked unit: either it was not selected yet, or it
+		// was part of a bigger selection which now narrows down to it. DecideAction reports that
+		// as Select, but also as NoMove or Self_Deploy depending on what sits under the cursor,
+		// so the action alone is not a usable signal - go by the clicked object. Getting this
+		// wrong leaves the hold-off unarmed and the next click unpacks the unit.
+		const bool reselects = pClicked
+			&& (!pClicked->IsSelected || ObjectClass::CurrentObjects.Count > 1);
+
+		if (reselects)
 			LastSelectTick = GetTickCount();
 
-		if (!HoldsOffDeploy(action))
+		if (action != Action::Self_Deploy || !DeployHoldOffEnabled())
+			return false;
+
+		// A click that reselects is the first click of a possible double click, never a deploy.
+		if (reselects)
+		{
+			R->EAX(static_cast<DWORD>(Action::Select));
+			return true;
+		}
+
+		if (!HoldsOffDeploy())
 			return false;
 
 		R->EAX(static_cast<DWORD>(Action::None));
