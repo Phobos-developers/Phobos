@@ -237,10 +237,7 @@ void TechnoExt::EatPassengers()
 
 	auto const pThis = this->OwnerObject();
 
-	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
-		return;
-
-	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	if (pThis->InLimbo || (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
 	{
 		if (this->PassengerDeletionTimer.InProgress())
 			this->PassengerDeletionTimer.StartTime++;
