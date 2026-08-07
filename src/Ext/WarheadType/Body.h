@@ -266,8 +266,8 @@ public:
 
 	Nullable<StackingMode> Psychedelic_StackingMode;
 
-	Valueable<bool> PreventCrew { false };
-	Valueable<bool> KillPassengers { false };
+	Valueable<bool> PreventCrew;
+	Valueable<bool> PreventPassengerEscape;
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -559,6 +559,9 @@ public:
 		, Taunt { false }
 
 		, Psychedelic_StackingMode {}
+
+		, PreventCrew { false }
+		, PreventPassengerEscape { false }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

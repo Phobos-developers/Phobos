@@ -261,7 +261,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	if (pWHExt->PreventCrew)
 		TechnoExt::Fetch(pThis)->PreventCrew = true;
 
-	if (pWHExt->KillPassengers)
+	if (pWHExt->PreventPassengerEscape)
 		pThis->KillPassengers(pSource);
 
 	return 0;
