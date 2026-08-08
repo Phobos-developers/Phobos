@@ -1368,6 +1368,7 @@ msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入�
 
 msgid "SkipMapSelect Enhancement"
 msgstr ""
+"`SkipMapSelect` 增强"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

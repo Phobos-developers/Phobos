@@ -658,7 +658,7 @@ HideShakeEffects=false           ; boolean
 - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
 - [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 - Restored the ScriptType action#24 `Play speech` from Tiberian Sun (by FS-21)
-- SkipMapSelect Enhancement (by FlyStar)
+- [SkipMapSelect Enhancement](AI-Scripting-and-Mapping.md#skipmapselect-enhancement) (by FlyStar)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

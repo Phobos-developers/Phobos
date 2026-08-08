@@ -2425,6 +2425,8 @@ msgid ""
 "[SkipMapSelect Enhancement](AI-Scripting-and-Mapping.md#skipmapselect-"
 "enhancement) (by FlyStar)"
 msgstr ""
+"[`SkipMapSelect` 增强](AI-Scripting-and-Mapping.md#skipmapselect-"
+"enhancement) (by FlyStar)"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
