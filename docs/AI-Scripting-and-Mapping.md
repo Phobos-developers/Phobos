@@ -160,6 +160,12 @@ In `RA2MD.INI`:
 ShowBriefing=true  ; boolean
 ```
 
+### SkipMapSelect Enhancement
+
+- Using `SkipMapSelect=yes` in the map file allows you to bypass the restriction in mapselmd.ini—which requires that the player's faction in the current campaign must match the faction in the next new campaign.
+  - You can use `NextScenario` and `AltNextScenario` to specify the map names required to enter a new campaign, thereby forcing the game to proceed to the next campaign.
+  - Now, setting a local variable named `<Alternate Next Scenario>` will also trigger `AltNextScenario`.
+
 ## Script Actions
 
 ### `10000-10999` Ingame Actions
@@ -820,6 +826,19 @@ ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 
 ```{note}
 Team delay change will take effect for a house after its next AI team is created.
+```
+
+### `611` Set Next Scenario
+
+- Set the next campaign to load after winning the current one.
+  - Works only in `Campaign Mode` and requires setting `[Basic] -> SkipMapSelect=yes`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
+...
 ```
 
 ### `800-802` Display Banner

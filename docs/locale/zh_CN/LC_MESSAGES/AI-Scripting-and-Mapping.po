@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-06 23:03+0800\n"
+"POT-Creation-Date: 2026-08-09 00:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,8 +99,7 @@ msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
 msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
 
 msgid "Restored the ScriptType action#24 `Play speech` from Tiberian Sun."
-msgstr ""
-"复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
+msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
 
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"
@@ -296,6 +295,26 @@ msgstr "在 `uimd.ini`："
 
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
+
+msgid "SkipMapSelect Enhancement"
+msgstr ""
+
+msgid ""
+"Using `SkipMapSelect=yes` in the map file allows you to bypass the "
+"restriction in mapselmd.ini—which requires that the player's faction in "
+"the current campaign must match the faction in the next new campaign."
+msgstr ""
+
+msgid ""
+"You can use `NextScenario` and `AltNextScenario` to specify the map names"
+" required to enter a new campaign, thereby forcing the game to proceed to"
+" the next campaign."
+msgstr ""
+
+msgid ""
+"Now, setting a local variable named `<Alternate Next Scenario>` will also"
+" trigger `AltNextScenario`."
+msgstr ""
 
 msgid "Script Actions"
 msgstr "动作脚本"
@@ -1491,6 +1510,17 @@ msgid ""
 msgstr ""
 "若该值小于 0 则使用 `[General] -> TeamDelays` 的值，或遭遇战中通过 [动态 `TeamDelays`](AI-"
 "Scripting-and-Mapping.md#dynamic-team-delays) 设置的值"
+
+msgid "`611` Set Next Scenario"
+msgstr ""
+
+msgid "Set the next campaign to load after winning the current one."
+msgstr ""
+
+msgid ""
+"Works only in `Campaign Mode` and requires setting `[Basic] -> "
+"SkipMapSelect=yes`."
+msgstr ""
 
 msgid "`800-802` Display Banner"
 msgstr "`800-802` 显示横幅"
