@@ -534,6 +534,53 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### Tiberium Custom Image
+
+Tiberium types can now use custom overlay images and override `NumFrames`, `NumImages`, and `NumSlopes` values.
+
+**Priority**: Per-Tiberium `CustomImage` > Global `Tiberium.ImageX` > Game engine defaults.
+
+**Per-Tiberium configuration** (in `rulesmd.ini`):
+```ini
+[SOMETIBERIUM]  ; Tiberium type name
+CustomImage=                   ; OverlayType name, default: game engine default
+CustomImage.NumFrames=         ; integer, default: game engine default
+CustomImage.NumImages=         ; integer, default: game engine default
+CustomImage.NumSlopes=         ; integer, default: game engine default
+```
+
+**Global configuration** (only applies to built-in Tiberium types Image1-4, in `[General]` section):
+```ini
+[General]
+Tiberium.Image1=               ; OverlayType name, default: game engine default
+Tiberium.Image1.NumFrames=     ; integer, default: game engine default
+Tiberium.Image1.NumImages=     ; integer, default: game engine default
+Tiberium.Image1.NumSlopes=     ; integer, default: game engine default
+
+Tiberium.Image2=               ; OverlayType name, default: game engine default
+Tiberium.Image2.NumFrames=     ; integer, default: game engine default
+Tiberium.Image2.NumImages=     ; integer, default: game engine default
+Tiberium.Image2.NumSlopes=     ; integer, default: game engine default
+
+Tiberium.Image3=               ; OverlayType name, default: game engine default
+Tiberium.Image3.NumFrames=     ; integer, default: game engine default
+Tiberium.Image3.NumImages=     ; integer, default: game engine default
+Tiberium.Image3.NumSlopes=     ; integer, default: game engine default
+
+Tiberium.Image4=               ; OverlayType name, default: game engine default
+Tiberium.Image4.NumFrames=     ; integer, default: game engine default
+Tiberium.Image4.NumImages=     ; integer, default: game engine default
+Tiberium.Image4.NumSlopes=     ; integer, default: game engine default
+```
+
+```{note}
+**About global vs. per-Tiberium configuration**:
+- Global `Tiberium.ImageX` settings only apply to the 4 built-in Tiberium types (Image1-4).
+- For custom Tiberium types, use `CustomImage` under the individual type's section.
+- `Image=1-4` is the game's native setting that refers to a built-in Tiberium type.
+- `CustomImage=Name` is a Phobos feature that replaces the image with a custom OverlayType by name.
+```
+
 ## Aircraft
 
 ### Custom cruise missiles
