@@ -489,6 +489,7 @@ Due to technical limitations, this feature is forcibly disabled without Ares.
 - Enable it with `TypeSelectByMultiClick=true`. It requires [right-click to command](#right-click-to-command) and is ignored without it, see the note below.
 - `TypeSelectByMultiClick.Range` is how far a double-click reaches, in cells around the clicked unit. A negative value means everything currently drawn on screen.
 - `TypeSelectByMultiClick.DeployDelay` is how long, in milliseconds, the left button refuses to deploy a unit after a click selected it. Without this delay the second click of a double-click would unpack an MCV instead of selecting its group. Set it to `0` to turn the delay off.
+  - The delay starts when a click selects something, so it does not cover a unit that is already selected on its own. Double-clicking such a unit still deploys it on the first click, because at that moment nothing tells the game that a second click is coming.
 
 ```{note}
 This needs the left mouse button to be select-only, so it only works together with `RightClickCommand=true`. With vanilla controls a click on an already selected unit is a command, so a double-click would deploy an MCV or an Allied GI rather than select the group. If you enable it anyway, it is turned off and a line is written to the debug log.

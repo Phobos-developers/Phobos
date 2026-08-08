@@ -89,6 +89,11 @@ namespace RightClickCommand
 	// with the double-click type select: the second click would unpack the MCV instead. So
 	// for a short while after a click selected something, the left button does not deploy.
 	// Same trick Emperor: Battle for Dune uses. Only active with TypeSelectByMultiClick on.
+	//
+	// Known limit: the delay is armed by a click that selects, so a unit that is already
+	// selected on its own is not covered - it deploys on the first click of a double click.
+	// Covering that means holding the deploy back for the delay and cancelling it on the
+	// second click, which needs a per-frame hook to fire the deploy afterwards.
 	static bool DeployHoldOffEnabled()
 	{
 		return Phobos::Config::TypeSelectByMultiClick
