@@ -2384,9 +2384,9 @@ msgstr ""
 "FS-21）"
 
 msgid ""
-"Customize whether warhead can prevent crew escape from techno (by NetsuNegi)"
+"[Customize whether warhead can prevent crew escape from techno](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno) (by NetsuNegi)"
 msgstr ""
-"自定义弹头是否阻止生还者逃出（by NetsuNegi）"
+"[自定义弹头是否阻止生还者逃出](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
