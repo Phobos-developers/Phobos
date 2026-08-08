@@ -5225,6 +5225,7 @@ msgid ""
 "If `TiberiumEater.UnderEMP` is set to true, the eating will be processed "
 "when the TechnoType is under EMP or deactivated."
 msgstr ""
+"如果 `TiberiumEater.UnderEMP` 设为 true 则在单位受 EMP 影响或瘫痪时继续执行吃矿操作。"
 
 msgid "Weapons fired on warping in / out"
 msgstr "武器在传送时开火"
