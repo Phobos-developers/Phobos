@@ -632,3 +632,29 @@ DEFINE_HOOK(0x4683F2, BulletClass_Draw_ZAdjust, 0x5)
 
 	return 0x4683F7;
 }
+
+// Replaces Ares' handling of Ranged=true projectiles.
+DEFINE_HOOK(0x467B8E, BulletClass_AI_Ranged, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	REF_STACK(CoordStruct, coordNew, STACK_OFFSET(0x1AC, -0x184));
+	REF_STACK(bool, shouldExplode, STACK_OFFSET(0x1AC, -0x190));
+
+	if (pThis->Type->Ranged)
+	{
+		auto const pExt = BulletExt::Fetch(pThis);
+		pExt->DistanceTraveled += Game::F2I(coordNew.DistanceFrom(pThis->GetCoords()));
+		int maxRange = pThis->Range;
+
+		if (maxRange > 0 && pThis->WeaponType && pThis->Owner
+			&& WeaponTypeExt::Fetch(pThis->WeaponType)->ProjectileRange_ApplyModifiers)
+		{
+			maxRange = WeaponTypeExt::GetRangeWithModifiers(pThis->WeaponType, pThis->Owner, maxRange);
+		}
+
+		shouldExplode |= pExt->DistanceTraveled >= maxRange;
+	}
+
+	pThis->SetLocation(coordNew);
+	return 0;
+}

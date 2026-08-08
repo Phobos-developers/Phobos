@@ -214,7 +214,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
-- Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 - Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
@@ -325,6 +324,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
 - Fixed the issue that spawnee or slave would execute some player commands.
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
+- Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 
 ## Fixes / interactions with other extensions
 
@@ -377,8 +377,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Allowed infantry to use `Convert.Deploy` without requiring `IsSimpleDeployer=true`.
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
-- Fix the issue of Ares' EMP not suspending the production of AI factories.
+- Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
+- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType
 
 ## Newly added global settings
 
@@ -856,7 +857,7 @@ FiringForceScatter=                 ; boolean, default to [General] -> AircraftF
 In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]      ; AircraftType
-IsALoaner=       ; boolean
+IsALoaner=          ; boolean
 ```
 
 ### Extended Aircraft Missions
@@ -914,14 +915,14 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 In `rulesmd.ini`:
 ```ini
 [General]
-AircraftSpawnFromEdge=owner ; Edge type enumeration (owner|closest|random)
-AircraftRetreatToEdge=owner ; Edge type enumeration (owner|closest|random)
+AircraftSpawnFromEdge=owner  ; Edge type enumeration (owner|closest|random)
+AircraftRetreatToEdge=owner  ; Edge type enumeration (owner|closest|random)
 
-[SOMEAIRCRAFT]              ; AircraftType
-SpawnFromEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
-RetreatToEdge=              ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
-SpawnDistanceFromTarget=    ; floating point value, distance in cells
-SpawnHeight=                ; integer, height in leptons
+[SOMEAIRCRAFT]               ; AircraftType
+SpawnFromEdge=               ; Edge type enumeration (owner|closest|random), default to [General] -> SpawnFromEdge
+RetreatToEdge=               ; Edge type enumeration (owner|closest|random), default to [General] -> RetreatToEdge
+SpawnDistanceFromTarget=     ; floating point value, distance in cells
+SpawnHeight=                 ; integer, height in leptons
 ```
 
 ## Animations
@@ -957,15 +958,15 @@ TheaterPalette=                 ; boolean
 In `artmd.ini`:
 ```ini
 [CombatDamage]
-AnimDamage.DealtByInvoker=false     ; boolean
-AnimDamage.ApplyFirepowerMult=false ; boolean
+AnimDamage.DealtByInvoker=false      ; boolean
+AnimDamage.ApplyFirepowerMult=false  ; boolean
 
-[SOMEANIM]                          ; AnimationType
-Weapon=                             ; WeaponType
-Damage.Delay=0                      ; integer, animation frames
-Damage.DealtByInvoker=              ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
-Damage.ApplyOncePerLoop=false       ; boolean
-Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
+[SOMEANIM]                           ; AnimationType
+Weapon=                              ; WeaponType
+Damage.Delay=0                       ; integer, animation frames
+Damage.DealtByInvoker=               ; boolean, default to [CombatDamage] -> AnimDamage.DealtByInvoker
+Damage.ApplyOncePerLoop=false        ; boolean
+Damage.ApplyFirepowerMult=           ; boolean, default to [CombatDamage] -> AnimDamage.ApplyFirepowerMult
 ```
 
 ```{note}
@@ -981,8 +982,8 @@ Damage.ApplyFirepowerMult=          ; boolean, default to [CombatDamage] -> Anim
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                   ; AnimationType
-AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
+[SOMEANIM]                    ; AnimationType
+AttachedAnimPosition=default  ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable animation transparency settings
@@ -1225,10 +1226,10 @@ BarracksExitCell=  ; X,Y - cell offset
 In `rulesmd.ini`:
 ```ini
 [General]
-BuildingRadioLink.SyncOwner=true ; boolean
+BuildingRadioLink.SyncOwner=true  ; boolean
 
-[SOMEBUILDING]                   ; BuildingType
-BuildingRadioLink.SyncOwner=     ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
+[SOMEBUILDING]                    ; BuildingType
+BuildingRadioLink.SyncOwner=      ; boolean, default to [General] -> BuildingRadioLink.SyncOwner
 ```
 
 ### Customizable garrison and bunker properties
@@ -1489,6 +1490,10 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 ## Overlays
 
+### More than 255 OverlayTypes
+
+- Game now supports more than 255 distinct OverlayTypes, up to 65535. For map file/editor support, see [Increased Overlay Limit](AI-Scripting-and-Mapping.md#increased-overlay-limit).
+
 ### `ZAdjust` for OverlayTypes
 
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
@@ -1630,9 +1635,9 @@ VerticalInitialFacing=  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]      ; Projectile
-BallisticScatter.Min= ; floating point value, distance in cells
-BallisticScatter.Max= ; floating point value, distance in cells
+[SOMEPROJECTILE]       ; Projectile
+BallisticScatter.Min=  ; floating point value, distance in cells
+BallisticScatter.Max=  ; floating point value, distance in cells
 ```
 
 ### Shrapnel enhancements
@@ -1788,12 +1793,12 @@ SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (nohea
 In `rulesmd.ini`:
 ```ini
 [General]
-ChronoSphereDelay=0     ; integer, game frames
-ChronoSpherePreDelay=60 ; integer, game frames
+ChronoSphereDelay=0      ; integer, game frames
+ChronoSpherePreDelay=60  ; integer, game frames
 
-[SOMETECHNO]            ; TechnoType
-ChronoSphereDelay=      ; integer, game frames, default to [General] -> ChronoSphereDelay
-ChronoSpherePreDelay=   ; integer, game frames, default to [General] -> ChronoSpherePreDelay
+[SOMETECHNO]             ; TechnoType
+ChronoSphereDelay=       ; integer, game frames, default to [General] -> ChronoSphereDelay
+ChronoSpherePreDelay=    ; integer, game frames, default to [General] -> ChronoSpherePreDelay
 ```
 
 ```{warning}
@@ -2112,14 +2117,14 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 In `rulesmd.ini`:
 ```ini
 [General]
-Explodes.KillPassengers=true ; boolean
-Explodes.DuringBuildup=true  ; boolean
+Explodes.KillPassengers=true  ; boolean
+Explodes.DuringBuildup=true   ; boolean
 
-[SOMETECHNO]                 ; TechnoType
-Explodes.KillPassengers=     ; boolean, default to [General] -> Explodes.KillPassengers
+[SOMETECHNO]                  ; TechnoType
+Explodes.KillPassengers=      ; boolean, default to [General] -> Explodes.KillPassengers
 
-[SOMEBUILDING]               ; BuildingType
-Explodes.DuringBuildup=      ; boolean, default to [General] -> Explodes.DuringBuildup
+[SOMEBUILDING]                ; BuildingType
+Explodes.DuringBuildup=       ; boolean, default to [General] -> Explodes.DuringBuildup
 ```
 
 ### Forbid parallel AI queues
@@ -2205,8 +2210,8 @@ This may subject to further changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]          ; BuildingType
-Powered.KillSpawns=false ; boolean
+[SOMESTRUCTURE]           ; BuildingType
+Powered.KillSpawns=false  ; boolean
 ```
 
 ### PipScale pip customizations
@@ -2282,13 +2287,15 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
-- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used.
+  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
+  - This speed value uses the same algorithm as `Speed`. The global default value `7.5` in the INI block is an approximation of the converted value of the vanilla internal value `19` (`7.5 ≈ 19 * 100 / 256`).
 
 In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-SubterraneanSpeed=19     ; floating point value
+SubterraneanSpeed=7.5    ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
@@ -2296,7 +2303,7 @@ SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
+`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above `-50`.
 ```
 
 ### Target scanning delay optimization
@@ -2331,9 +2338,9 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]     ; TechnoType
-MaxGuardRange=16 ; floating point value, distance in cells
-AreaGuardRange=  ; floating point value, distance in cells
+[SOMETECHNO]      ; TechnoType
+MaxGuardRange=16  ; floating point value, distance in cells
+AreaGuardRange=   ; floating point value, distance in cells
 ```
 
 ### Voxel body multi-section shadows
@@ -2409,12 +2416,12 @@ This palette behaves like an object palette and does not use tint etc. that have
 
 In `rulesmd.ini`:
 ```ini
-[SOMETERRAINTYPE]             ; TerrainType
-SpawnsTiberium.Type=0         ; tiberium/ore type index
-SpawnsTiberium.Range=1        ; integer, range in cells
-SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
-SpawnsTiberium.Particle=      ; Particle
+[SOMETERRAINTYPE]              ; TerrainType
+SpawnsTiberium.Type=0          ; tiberium/ore type index
+SpawnsTiberium.Range=1         ; integer, range in cells
+SpawnsTiberium.GrowthStage=3   ; integer - single or comma-sep. range
+SpawnsTiberium.CellsPerAnim=1  ; integer - single or comma-sep. range
+SpawnsTiberium.Particle=       ; Particle
 ```
 
 ### Damaged frames and crumbling animation
@@ -2854,6 +2861,23 @@ AllowBerzerkOnAllies=false  ; boolean
 
 ```{note}
 No per-warhead setting because `AffectsAllies` etc. is respected.
+```
+
+### Berzerk (`Psychedelic`) duration stacking customization
+
+- By default `Psychedelic` warheads override the current duration of the berzerk effect regardless of if the new duration is higher or lower than the current one. This can now be customized with `Psychedelic.StackingMode`, with both global setting under `[CombatDamage]` and per-Warhead customization.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Psychedelic.StackingMode=override  ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide)
+
+[SOMEWARHEAD]                      ; WarheadType, with Psychedelic=yes
+Psychedelic.StackingMode=          ; Stacking mode enum (override|setifzero|min|max|add|subtract|multiply|divide), defaults to [CombatDamage] -> Psychedelic.StackingMode
+```
+
+```{note}
+`min`/`subtract`/`multiply`/`divide` stacking mode will make berzerk effect can't be applied on the target when there's not an existing one. Pay attention to that when setting them as global default values.
 ```
 
 ### Combat light customizations

@@ -1081,8 +1081,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
 	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
-	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
-	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
 	this->Ammo_AutoConvertMinimumAmount.Read(exINI, pSection, "Ammo.AutoConvertMinimumAmount");
 	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
@@ -1123,6 +1121,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance) != 0.0
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0.0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0.0;
+
+	this->Convert_Health_AbovePercent.Read(exINI, pSection, "Convert.Health.AbovePercent");
+	this->Convert_Health_BelowPercent.Read(exINI, pSection, "Convert.Health.BelowPercent");
+	this->Convert_Health.Read(exINI, pSection, "Convert.Health");
+
+	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
+		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1355,6 +1360,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
+
+	DropCrate.Read(exINI, pSection, "DropCrate");
 
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
@@ -1688,6 +1695,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		//.Process(this->SecondaryFire)
 
+		.Process(this->DropCrate)
+
 		.Process(this->DebrisTypes_Limit)
 		.Process(this->DebrisMinimums)
 
@@ -1696,8 +1705,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AttackMove_Follow)
 		.Process(this->AttackMove_Follow_IncludeAir)
 		.Process(this->AttackMove_Follow_IfMindControlIsFull)
-		.Process(this->AttackMove_StopWhenTargetAcquired)
-		.Process(this->AttackMove_PursuitTarget)
 
 		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)
@@ -1742,6 +1749,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+
+		.Process(this->Convert_Health_AbovePercent)
+		.Process(this->Convert_Health_BelowPercent)
+		.Process(this->Convert_Health)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)

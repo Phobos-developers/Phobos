@@ -17,11 +17,19 @@ void FootExt::UpdateTiberiumEater()
 		return;
 
 	const int transDelay = pEaterType->TransDelay;
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || (!pEaterType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
+	{
+		if (transDelay && this->TiberiumEater_Timer.InProgress())
+			this->TiberiumEater_Timer.StartTime++;
+
+		return;
+	}
 
 	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
@@ -811,6 +819,48 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
 			GameDelete(pAlpha);
 	}
+}
+
+void FootExt::AmmoAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Ammo_AutoConvertType.isset())
+		return;
+
+	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Ammo_AutoConvertType);
+}
+
+void FootExt::HealthAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Convert_Health.isset())
+		return;
+
+	const double min = pTypeExt->Convert_Health_AbovePercent;
+	const double max = pTypeExt->Convert_Health_BelowPercent;
+
+	if (min < 0 && max < 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	if (TechnoExt::IsHealthInThreshold(pThis, min, max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
 }
 
 // =============================

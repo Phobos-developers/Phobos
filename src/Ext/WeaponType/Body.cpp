@@ -81,6 +81,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
+	this->ProjectileRange_ApplyModifiers.Read(exINI, pSection, "ProjectileRange.ApplyModifiers");
 
 	for (int idx = 0; idx < 3; ++idx)
 	{
@@ -222,6 +223,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->ProjectileRange)
+		.Process(this->ProjectileRange_ApplyModifiers)
 		.Process(this->Bolt_Color)
 		.Process(this->Bolt_Disable)
 		.Process(this->Bolt_ParticleSystem)
@@ -412,7 +414,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 		if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
 			continue;
 
-		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
+		range = GeneralUtils::SafeMultiply(range, Math::max(type->WeaponRange_Multiplier, 0.0));
 		extraRange += type->WeaponRange_ExtraRange;
 	}
 

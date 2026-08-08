@@ -27,6 +27,7 @@ public:
 
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
+		Valueable<bool> ProjectileRange_ApplyModifiers;
 	Valueable<RadTypeClass*> RadType;
 	Nullable<ColorStruct> Bolt_Color[3];
 	Valueable<bool> Bolt_Disable[3];
@@ -120,6 +121,7 @@ public:
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }
 		, ProjectileRange { Leptons(100000) }
+			, ProjectileRange_ApplyModifiers { true }
 		, RadType {}
 		, Bolt_Color {}
 		, Bolt_Disable { Valueable<bool>(false) }

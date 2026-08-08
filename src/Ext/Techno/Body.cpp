@@ -63,7 +63,7 @@ TechnoExt::~TechnoExt()
 		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
-bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
+bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -71,12 +71,6 @@ bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
 		&& !pThis->BeingWarpedOut
-		;
-}
-
-bool TechnoExt::IsActive(TechnoClass* pThis)
-{
-	return TechnoExt::IsActiveIgnoreEMP(pThis)
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
@@ -225,9 +219,9 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	return mult;
 }
 
-double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse, WarheadTypeClass* pWarhead)
 {
-	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse) *
 		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
 }
 
@@ -578,6 +572,87 @@ int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEf
 	}
 
 	return foundCount;
+}
+
+// Check adjacent cells from the center
+// The current MapClass::Instance.PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
+{
+	CellStruct centerCell = CellClass::Coord2Cell(location);
+	short currentRange = 0;
+	bool placed = false;
+
+	do
+	{
+		short x = -currentRange;
+		short y = -currentRange;
+
+		CellStruct checkedCell;
+		checkedCell.Y = centerCell.Y + y;
+
+		// Check upper line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.Y = centerCell.Y + (short)std::abs(y);
+
+		// Check lower line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + x;
+
+		// Check left line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + (short)std::abs(x);
+
+		// Check right line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		currentRange++;
+	}
+	while (!placed && currentRange < (short)maxCellRange);
+
+	if (!placed)
+		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
+
+	return placed;
 }
 
 void TechnoExt::ResetDelayedFireTimer()
@@ -1108,6 +1183,8 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->DropCrate)
+		.Process(this->DropCrateType)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
 		.Process(this->TintColorOwner)

@@ -98,6 +98,7 @@ private:
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
 	LaserTrailClass* LaserTrail;
+	Sequence LastSequenceCheck;
 
 public:
 	bool HasCumulativeAnim;
