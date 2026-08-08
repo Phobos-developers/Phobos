@@ -1517,17 +1517,17 @@ msgstr ""
 
 msgid "`611` Set Next Scenario"
 msgstr ""
-"`611` 设置下一个场景"
+"`611` 设置下一战役关卡"
 
 msgid "Set the next campaign to load after winning the current one."
 msgstr ""
-"设置当前场景胜利后加载的下一个战役。"
+"设置当前战役胜利后加载的下一关战役关卡。"
 
 msgid ""
 "Works only in `Campaign Mode` and requires setting `[Basic] -> "
 "SkipMapSelect=yes`."
 msgstr ""
-"仅在 `战役模式` 生效且需要设置 `[Basic] -> SkipMapSelect=yes`。"
+"仅战役模式且存在 `[Basic] -> SkipMapSelect=yes` 时生生效。"
 
 msgid "`800-802` Display Banner"
 msgstr "`800-802` 显示横幅"
