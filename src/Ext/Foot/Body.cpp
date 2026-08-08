@@ -17,11 +17,19 @@ void FootExt::UpdateTiberiumEater()
 		return;
 
 	const int transDelay = pEaterType->TransDelay;
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || (!pEaterType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
+	{
+		if (transDelay && this->TiberiumEater_Timer.InProgress())
+			this->TiberiumEater_Timer.StartTime++;
+
+		return;
+	}
 
 	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);

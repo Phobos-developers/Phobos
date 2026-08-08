@@ -2454,6 +2454,7 @@ BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|
 - An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
   - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
   - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
+  - If `TiberiumEater.UnderEMP` is set to true, the eating will be processed when the TechnoType is under EMP or deactivated.
 
 In `rulesmd.ini`:
 ```ini
@@ -2470,6 +2471,7 @@ TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
+TiberiumEater.UnderEMP=false      ; boolean
 ```
 
 ### Weapons fired on warping in / out

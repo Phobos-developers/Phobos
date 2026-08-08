@@ -446,7 +446,7 @@ void ShieldClass::AI()
 {
 	auto const pTechno = this->Techno;
 
-	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
+	if (pTechno->InLimbo || pTechno->IsImmobilized)
 		return;
 
 	auto const pTechnoExt = TechnoExt::Fetch(pTechno);
