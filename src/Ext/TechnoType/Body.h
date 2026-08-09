@@ -312,6 +312,9 @@ public:
 	Nullable<bool> AttackMove_Aggressive;
 	Nullable<bool> AttackMove_UpdateTarget;
 
+	Nullable<bool> ApproachTarget_StopWhenInRange;
+	Valueable<bool> ApproachTarget_PursuitTarget;
+
 	Valueable<bool> BunkerableAnyway;
 	Valueable<bool> KeepTargetOnMove;
 	Valueable<int> KeepTargetOnMove_Weapon;
@@ -706,6 +709,9 @@ public:
 
 		, AttackMove_Aggressive {}
 		, AttackMove_UpdateTarget {}
+
+		, ApproachTarget_StopWhenInRange {}
+		, ApproachTarget_PursuitTarget { false }
 
 		, BunkerableAnyway { false }
 		, KeepTargetOnMove { false }

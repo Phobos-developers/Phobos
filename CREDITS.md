@@ -870,6 +870,8 @@ This page lists all the individual contributions to the project by their author.
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
   - Fix the issue that spawnee or slave would execute some player commands
   - Customize whether aircraft is a cargo plane
+  - Allow the unit to stop immediately if the target enters the range during ApproachTarget
+  - Allow the unit to keep pursuing the target during ApproachTarget
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

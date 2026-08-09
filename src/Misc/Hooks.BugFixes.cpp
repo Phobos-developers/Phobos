@@ -1,5 +1,6 @@
 #include <AircraftTrackerClass.h>
 #include <EventClass.h>
+#include <HoverLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 #include <FileFormats/HVA.h>
@@ -3311,7 +3312,7 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 {
 	GET(FootClass*, pThis, ESI);
 	const auto pLoco = pThis->Locomotor.GetInterfacePtr();
-	R->AL(!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && pLoco->Is_Moving_Now());
+	R->AL(!locomotion_cast<JumpjetLocomotionClass*>(pLoco) && !locomotion_cast<HoverLocomotionClass*>(pLoco) && pLoco->Is_Moving_Now());
 	return R->Origin() + 0xF;
 }
 
