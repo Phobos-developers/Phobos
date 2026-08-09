@@ -324,6 +324,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes`.
 - Fixed the issue that spawnee or slave would execute some player commands.
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
+- Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`.
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 
 ## Fixes / interactions with other extensions
@@ -379,7 +380,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed adding custom cruise missiles, so that Ares' `Missile.RaiseRate` is no longer meaningless.
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
-- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType
+- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 
 ## Newly added global settings
 
@@ -422,6 +423,20 @@ In `rulesmd.ini`:
 ```ini
 [General]
 AutoRemoveEarliestBeacon=no   ; boolean
+```
+
+### Berzerk on allies
+
+- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AllowBerzerkOnAllies=false  ; boolean
+```
+
+```{note}
+No per-warhead setting because `AffectsAllies` etc. is respected.
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -660,34 +675,6 @@ AIFireSale=true           ; boolean
 AIFireSaleDelay=0         ; integer, number of frames
 AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
-```
-
-### Stop immediately if the target enters the range during ApproachTarget
-
-- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
-  - Now you can change this behavior by the following flag.
-  - The setting can be customized per techno type; if not set on a type, the global setting is used as the fallback.
-  - `AttackMove.StopWhenTargetAcquired` is read as a compatibility alias for `ApproachTarget.StopWhenInRange` (in both `[General]` and techno type sections).
-
-In `rulesmd.ini`:
-```ini
-[General]
-ApproachTarget.StopWhenInRange=false  ; boolean
-
-[SOMETECHNO]
-ApproachTarget.StopWhenInRange=       ; boolean, default to the same key in [General]
-```
-
-### Keep pursuing the target during ApproachTarget
-
-- Now you can make a unit approach its target with the target itself as the destination, just like ZEP, instead of a point on the arc around the target whose radius is the unit's own weapon range.
-  - If `ApproachTarget.StopWhenInRange` is set to `true`, the unit will stop as soon as the target enters its range and will not chase it further.
-  - `AttackMove.PursuitTarget` is read as a compatibility alias for `ApproachTarget.PursuitTarget`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                   ; TechnoType
-ApproachTarget.PursuitTarget=  ; boolean, default to false
 ```
 
 ### Use 8-bit RGB parameters for `[ColorAdd]`
@@ -1333,6 +1320,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Customize reveal radius of `RevealToAll`
+
+- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                  ; BuildingType
+RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
+```
+
 ### Customize the initial facing of buildings
 
 - In vanilla, buildings always face due north (0). Now you can customize it.
@@ -1350,6 +1347,18 @@ StartFacing.Random=               ; boolean, defaults to [General] -> BuildingSt
 
 ```{note}
 Unlike the identically named INI flag in Tiberian Sun, this flag uses a 256-point circle rather than an 8-point circle.
+```
+
+### DeployFire supports buildings
+
+- Building types now also support using `DeployFire` and `DeployFireWeapon`.
+  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
+  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
+DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Disable `DamageSound`
@@ -2231,6 +2240,18 @@ JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRot
 This may subject to further changes.
 ```
 
+### Keep pursuing the target during ApproachTarget
+
+- Now you can make a unit approach its target with the target itself as the destination, just like ZEP, instead of a point on the arc around the target whose radius is the unit's own weapon range.
+  - If `ApproachTarget.StopWhenInRange` is set to `true`, the unit will stop as soon as the target enters its range and will not chase it further.
+  - `AttackMove.PursuitTarget` is read as a compatibility alias for `ApproachTarget.PursuitTarget`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType
+ApproachTarget.PursuitTarget=  ; boolean, default to false
+```
+
 ### Kill spawns on low power
 
 - `Powered=yes` structures that spawn aircraft like Aircraft Carriers will stop targeting the enemy if low power.
@@ -2312,12 +2333,26 @@ In `rulesmd.ini`:
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
+### Stop immediately if the target enters the range during ApproachTarget
+
+- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily. Now you can change this behavior by the following flag.
+  - `AttackMove.StopWhenTargetAcquired` is read as a compatibility alias for `ApproachTarget.StopWhenInRange` (in both `[General]` and techno type sections).
+
+In `rulesmd.ini`:
+```ini
+[General]
+ApproachTarget.StopWhenInRange=false  ; boolean
+
+[SOMETECHNO]                          ; TechnoType
+ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
+```
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
 - Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used.
-  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
   - This speed value uses the same algorithm as `Speed`. The global default value `7.5` in the INI block is an approximation of the converted value of the vanilla internal value `19` (`7.5 ≈ 19 * 100 / 256`).
+  - This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2607,7 +2642,7 @@ TypeSelectUseIFVMode=true   ; boolean
 
 ### Customizing crushing tilt and slowdown
 
-- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
+- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrushes.Vehicles` and `TiltsWhenCrushes.Overlays`, which both default to `TiltsWhenCrushes`.
 - `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
 - `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
 - It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
@@ -2875,20 +2910,6 @@ AllowDamageOnSelf=false  ; boolean
 
 [SOMEWARHEAD]            ; WarheadType
 AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
-```
-
-### Berzerk on allies
-
-- In vanilla, `Psychedelic` warheads is hardcoded to ignore allies' target. Now you can turn this off.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-AllowBerzerkOnAllies=false  ; boolean
-```
-
-```{note}
-No per-warhead setting because `AffectsAllies` etc. is respected.
 ```
 
 ### Berzerk (`Psychedelic`) duration stacking customization

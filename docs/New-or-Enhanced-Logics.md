@@ -272,6 +272,8 @@ RadHasInvoker=false                ; boolean
 
 ```{warning}
 Due to performance concerns, unless any radiation type has `RadApplicationDelay.Building` set to above 0, all functionality related to it is completely disabled in game. This decision is made at earliest available opportunity (at end of initial scenario start or after loading saved game) and will **not** update with further scenario changes or save game loadings during same game session.
+
+Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should remain `true`, because not doing so will be very resource-intensive.
 ```
 
 ### Laser Trails
@@ -673,28 +675,6 @@ Adjacent.Disallowed=                    ; List of BuildingTypes
 Adjacent.Disallowed.Prohibit=false      ; boolean
 Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
 NoBuildAreaOnBuildup=false              ; boolean
-```
-
-### Customize reveal radius of `RevealToAll`
-
-- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]                  ; BuildingType
-RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
-```
-
-### DeployFire supports
-
-- Building types now also support using `DeployFire` and `DeployFireWeapon`.
-  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
-  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
-DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Destroyable pathfinding obstacles

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 18:48+0800\n"
+"POT-Creation-Date: 2026-08-09 20:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -459,12 +459,10 @@ msgid "`Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
 msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
 
 msgid "Map Action 600 for overwriting DropCrate behaviour in attached Technos"
-msgstr ""
-"用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
+msgstr "用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
 
 msgid "`DropCrate` for setting what crate drop when Techno is destroyed"
-msgstr ""
-"用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
+msgstr "用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
 
 msgid "Warhead activation target health thresholds enhancements"
 msgstr "目标血量作为弹头生效条件的进一步改进"
@@ -477,6 +475,9 @@ msgstr "联动超武"
 
 msgid "Unit & infantry auto-conversion on ammo change"
 msgstr "基于弹药量的自动变形"
+
+msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
+msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -906,6 +907,12 @@ msgstr "动画使用气候／地块色盘的开关"
 
 msgid "Tank Bunker improvements"
 msgstr "坦克碉堡改进"
+
+msgid "`ProjectileRange` weapon range modifiers interaction fix"
+msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
+
+msgid "Berzerk duration stacking behaviour customization"
+msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1345,6 +1352,22 @@ msgid ""
 "`EVA.Tag` already supports being set for specific countries, and "
 "`EVAIndex` is no longer reset after load game"
 msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置"
+
+msgid "`DeployFire` supports buildings"
+msgstr "`DeployFire` 支持建筑"
+
+msgid ""
+"Fix an issue where `OmniFire` was ineffective on buildings with "
+"`Turret=yes`"
+msgstr "修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题"
+
+msgid ""
+"Fix an issue where setting a production building as `Primary` could cause"
+" it to enter an unload state"
+msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题"
+
+msgid "SkipMapSelect Enhancement"
+msgstr "`SkipMapSelect` 增强"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1848,8 +1871,7 @@ msgid ""
 " when deactivated"
 msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug"
 
-msgid ""
-"Customize whether warhead can prevent crew escape from techno"
+msgid "Customize whether warhead can prevent crew escape from techno"
 msgstr "自定义弹头是否阻止生还者逃出"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -2486,6 +2508,11 @@ msgid ""
 "InitialPayload logic"
 msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
+msgid ""
+"Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to "
+"`DiscardOn`"
+msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2933,6 +2960,16 @@ msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 msgid "Customize whether aircraft is a cargo plane"
 msgstr "自定义飞机是否是cargo plane"
 
+msgid ""
+"Allow the unit to stop immediately if the target enters the range during "
+"ApproachTarget"
+msgstr ""
+"允许单位在接近目标期间若目标进入射程则立即停止"
+
+msgid "Allow the unit to keep pursuing the target during ApproachTarget"
+msgstr ""
+"允许单位在接近目标期间持续追踪目标"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -3137,4 +3174,7 @@ msgid ""
 "Add `ClampToScreen` tag for `BannerType` to control whether banner "
 "position is clamped to the visible area"
 msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
+
+msgid "**obsidianus** - Automatic conversion based on health"
+msgstr "**obsidianus** - 自动根据血量变形"
 

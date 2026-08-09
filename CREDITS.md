@@ -159,7 +159,7 @@ This page lists all the individual contributions to the project by their author.
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
-  - ScriptType action `Play speech`
+  - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -438,9 +438,9 @@ This page lists all the individual contributions to the project by their author.
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
-  - DeployFire supports buildings
-  - `OmniFire` supports buildings with `Turret=yes`
-  - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
+  - `DeployFire` supports buildings
+  - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
+  - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
