@@ -512,7 +512,7 @@ public:
 		Valueable<bool> SecondaryFireSequenceLandOnly;
 		Valueable<bool> AutoRemoveEarliestBeacon;
 		Valueable<bool> AllowBeaconHotKeyInSinglePlayer;
-		
+
 		Valueable<int> StartFacing;
 		Valueable<bool> StartFacing_Random;
 
