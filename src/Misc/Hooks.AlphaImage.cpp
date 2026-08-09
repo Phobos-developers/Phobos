@@ -80,7 +80,11 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	if (inactive)
 	{
 		if (const auto pAlpha = alphaExt.get_or_default(pSource))
+		{
+			const RectangleStruct dirty = { pAlpha->Rect.X - tacticalPos->X, pAlpha->Rect.Y - tacticalPos->Y, pAlpha->Rect.Width, pAlpha->Rect.Height };
+			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 			GameDelete(pAlpha);
+		}
 
 		return;
 	}
