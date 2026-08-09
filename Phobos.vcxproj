@@ -89,6 +89,7 @@
     <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Refinery.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Selling.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.Unload.cpp" />
     <!-- src\Ext\BuildingType -->
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />

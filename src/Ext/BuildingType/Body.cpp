@@ -294,6 +294,8 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
+	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -441,6 +443,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->StartFacing_Random)
 		.Process(this->SetTabBySelecting)
 		.Process(this->RevealToAll_Radius)
+		.Process(this->DeployFireDelay)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

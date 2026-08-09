@@ -42,6 +42,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, LastSequenceCheck { Sequence::Nothing }
 {
 	this->HasInitialized = false;
 
@@ -174,9 +175,6 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 void AttachEffectClass::AI()
 {
 	auto const pTechno = this->Techno;
-
-	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
-		return;
 
 	if (this->InitialDelay > 0)
 	{
@@ -633,6 +631,93 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	{
 		this->LastDiscardCheckValue = true;
 		return true;
+	}
+
+	if ((discardOn & DiscardCondition::Ammo) != DiscardCondition::None)
+	{
+		const int min = pType->DiscardOn_Ammo_MinimumAmount;
+		const int max = pType->DiscardOn_Ammo_MaximumAmount;
+		const int ammo = pTechno->Ammo;
+
+		if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		{
+			this->LastDiscardCheckValue = true;
+			return true;
+		}
+	}
+
+	if ((discardOn & DiscardCondition::Health) != DiscardCondition::None)
+	{
+		if (auto const pTypeData = pTechno->GetTechnoType())
+		{
+			const double min = pType->DiscardOn_Health_AbovePercent;
+			const double max = pType->DiscardOn_Health_BelowPercent;
+			if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
+			{
+				this->LastDiscardCheckValue = true;
+				return true;
+			}
+		}
+	}
+
+	if ((discardOn & DiscardCondition::LandType) != DiscardCondition::None)
+	{
+		if (pType->DiscardOn_LandTypes != LandTypeFlags::None)
+		{
+			if (auto const pCell = pTechno->GetCell())
+			{
+				LandTypeFlags landFlags = pType->DiscardOn_LandTypes;
+				if (IsLandTypeInFlags(landFlags, pCell->LandType))
+				{
+					this->LastDiscardCheckValue = true;
+					return true;
+				}
+			}
+		}
+	}
+	
+	if ((discardOn & DiscardCondition::Mission) != DiscardCondition::None)
+	{
+		auto const& missions = pTechno->Owner->IsControlledByHuman()
+			? pType->DiscardOn_Missions
+			: (pType->DiscardOn_AIMissions.HasValue()
+				? static_cast<ValueableVector<Mission>&>(pType->DiscardOn_AIMissions)
+				: pType->DiscardOn_Missions);
+
+		if (missions.size() > 0 && missions.Contains(pTechno->CurrentMission))
+		{
+			this->LastDiscardCheckValue = true;
+			return true;
+		}
+	}
+
+	if ((discardOn & DiscardCondition::Sequence) != DiscardCondition::None)
+	{
+		if (auto const pInf = abstract_cast<InfantryClass*, true>(pTechno))
+		{
+			if (pType->DiscardOn_Sequences.size() > 0)
+			{
+				if (pType->DiscardOn_Sequences_Immediate.Get(RulesExt::Global()->DiscardOn_Sequences_Immediate))
+				{
+					if (pType->DiscardOn_Sequences.Contains(pInf->SequenceAnim))
+					{
+						this->LastDiscardCheckValue = true;
+						return true;
+					}
+				}
+				else
+				{
+					if (this->LastSequenceCheck != pInf->SequenceAnim && pType->DiscardOn_Sequences.Contains(this->LastSequenceCheck))
+					{
+						this->LastDiscardCheckValue = true;
+						return true;
+					}
+					this->LastSequenceCheck = pInf->SequenceAnim;
+				}
+			}
+		}
+		else
+			this->LastSequenceCheck = Sequence::Nothing;
 	}
 
 	if (pTechno->Target)
@@ -1184,6 +1269,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
 		.Process(this->ShouldRecalculateStats)
+		.Process(this->LastSequenceCheck)
 		.Success();
 }
 

@@ -134,32 +134,6 @@ void TechnoExt::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::AmmoAutoConvertActions()
-{
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt->Ammo_AutoConvertType.isset())
-		return;
-
-	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	if (pTypeExt->OwnerObject()->Ammo <= 0)
-		return;
-
-	const auto pThis = this->OwnerObject();
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-	{
-		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
-		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
-	}
-}
-
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {
@@ -170,8 +144,13 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
-	if (pThis->InLimbo && !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
-		return false;
+	if (pThis->InLimbo)
+	{
+		if (!pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+			return false;
+
+		isInLimbo = true;
+	}
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
@@ -263,10 +242,7 @@ void TechnoExt::EatPassengers()
 
 	auto const pThis = this->OwnerObject();
 
-	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
-		return;
-
-	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	if (pThis->InLimbo || (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
 	{
 		if (this->PassengerDeletionTimer.InProgress())
 			this->PassengerDeletionTimer.StartTime++;
@@ -900,6 +876,10 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || pThis->IsImmobilized)
+		return;
+
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
