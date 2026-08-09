@@ -1248,3 +1248,46 @@ DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
+{
+	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
+
+	if (closeEnough)
+	{
+		GET(FootClass*, pThis, EBX);
+		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+		// Per-type setting takes priority, falls back to the global one.
+		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
+		{
+			pThis->StopMoving();
+			pThis->AbortMotion();
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
+{
+	enum { Return = 0x4D5A34 };
+
+	GET(FootClass*, pThis, EBX);
+	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	if (closeEnough && pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
+		return 0;
+
+	if (pTypeExt->ApproachTarget_PursuitTarget)
+	{
+		pThis->SetDestination(pThis->Target, true);
+		R->EDI(0);
+		R->Stack(STACK_OFFSET(0x158, -0x130), 0);
+		return Return;
+	}
+
+	return 0;
+}

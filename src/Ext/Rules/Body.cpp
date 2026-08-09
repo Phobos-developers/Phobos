@@ -487,7 +487,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PenetratesTransport_Level.Read(exINI, GameStrings::CombatDamage, "PenetratesTransport.Level");
 
 	this->UnitsUnsellable.Read(exINI, GameStrings::General, "UnitsUnsellable");
-	
+
 	this->DisableOveroptimizationInTargeting.Read(exINI, GameStrings::General, "DisableOveroptimizationInTargeting");
 
 	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
@@ -504,9 +504,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
 	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
 	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
-	
+
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
+
+	this->Psychedelic_StackingMode.Read(exINI, GameStrings::CombatDamage, "Psychedelic.StackingMode");
 
 	this->Shrapnel_AffectsGround.Read(exINI, GameStrings::CombatDamage, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, GameStrings::CombatDamage, "Shrapnel.AffectsBuildings");
@@ -545,6 +547,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
 	pThis->DeploySound = deploySound;
 
+	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
 
@@ -588,6 +591,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AircraftDockingDir_DefaultToPoseDir.Read(exINI, GameStrings::AudioVisual, "AircraftDockingDir.DefaultToPoseDir");
 	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
+
+	if (exINI.ReadString(GameStrings::General, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", GameStrings::General);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -1004,6 +1014,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShipLocomotorMakesWake)
 		.Process(this->FiringAnim_Update)
 		.Process(this->ExtendedPlayerRepair)
+		.Process(this->Psychedelic_StackingMode)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
@@ -1029,6 +1040,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
 		.Process(this->RemoveMindControl_Silent)
@@ -1056,6 +1068,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
+		.Process(this->ApproachTarget_StopWhenInRange)
     ;
 }
 

@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <ScenarioClass.h>
 #include <TriggerTypeClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -81,6 +82,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetTeamDelay:
 		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextScanario:
+		return TActionExt::SetNextScanario(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::CreateBannerLocal:
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
@@ -751,6 +754,24 @@ bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHous
 	else if (Timer.InProgress())
 	{
 		Timer.Start(time);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (SessionClass::Instance.IsCampaign())
+	{
+		const char* pText = pThis->Text;
+
+		if (strcmp(pText, "") && strcmp(pText, "0"))
+		{
+			// When you can customize it as you like, there’s no longer a need for additional branches.
+			ScenarioClass* const pScenario = ScenarioClass::Instance;
+			_snprintf_s(pScenario->AltNextScenario, sizeof(pScenario->AltNextScenario), pText);
+			_snprintf_s(pScenario->NextScenario, sizeof(pScenario->NextScenario), pText);
+		}
 	}
 
 	return true;

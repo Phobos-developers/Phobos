@@ -23,7 +23,13 @@ This page describes all the engine features that are either new and introduced b
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
-    - `invokerdie`: Discard when the invoker of the effect is destroyed. 
+    - `invokerdie`: Discard when the invoker of the effect is destroyed.
+    - `ammo`: Discard when the ammo of the object the effect is attached to is within the interval `[DiscardOn.Ammo.MinimumAmount, DiscardOn.Ammo.MaximumAmount]` (set to `-1` to ignore either bound).
+    - `health`: Discard when the health percentage of the object the effect is attached to is within the interval `(DiscardOn.Health.AbovePercent, DiscardOn.Health.BelowPercent]` (set to `-1` to ignore either bound).
+    - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list (or `DiscardOn.AIMissions` for AI-controlled objects, if set).
+    - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
+    - `sequence`: Discard when the infantry to which the effect is attached is playing a sequence that matches any one in the `DiscardOn.Sequences` list.
+  - `DiscardOn.Sequences.Immediate` defines whether the `sequence` discard condition triggers immediately while the infantry is playing a matching sequence, or only when the infantry starts playing its next sequence after finishing that sequence.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
@@ -99,6 +105,7 @@ This page describes all the engine features that are either new and introduced b
 In `rulesmd.ini`:
 ```ini
 [General]
+DiscardOn.Sequences.Immediate=true                 ; boolean
 DiscardOn.MoveBasedOnDestination=false             ; boolean
 DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
 OpenTopped.UseTransportRangeModifiers=false        ; boolean
@@ -114,7 +121,16 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
+DiscardOn.Ammo.MinimumAmount=-1                    ; integer
+DiscardOn.Ammo.MaximumAmount=-1                    ; integer
+DiscardOn.Health.BelowPercent=-1                   ; floating point value
+DiscardOn.Health.AbovePercent=-1                   ; floating point value
+DiscardOn.Missions=                                ; List of MissionTypes
+DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
+DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+DiscardOn.Sequences=                               ; List of Sequences (ready | guard | prone | walk | fireup | fireprone | secondaryfire | secondaryprone | down | crawl | up | idle1 | idle2 | die1 | die2 | die3 | die4 | die5 | deploy | deployed | deployedfire | deployedidle | undeploy | paradrop | cheer | panic | shovel | carry | fly | hover | firefly | tumble | airdeathstart | airdeathfalling | airdeathfinish | tread | swim | wetattack | wetidle1 | wetidle2 | wetdie1 | wetdie2)
+DiscardOn.Sequences.Immediate=                     ; boolean, default to [General] -> DiscardOn.Sequences.Immediate
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
 DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
@@ -256,6 +272,8 @@ RadHasInvoker=false                ; boolean
 
 ```{warning}
 Due to performance concerns, unless any radiation type has `RadApplicationDelay.Building` set to above 0, all functionality related to it is completely disabled in game. This decision is made at earliest available opportunity (at end of initial scenario start or after loading saved game) and will **not** update with further scenario changes or save game loadings during same game session.
+
+Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should remain `true`, because not doing so will be very resource-intensive.
 ```
 
 ### Laser Trails
@@ -657,28 +675,6 @@ Adjacent.Disallowed=                    ; List of BuildingTypes
 Adjacent.Disallowed.Prohibit=false      ; boolean
 Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
 NoBuildAreaOnBuildup=false              ; boolean
-```
-
-### Customize reveal radius of `RevealToAll`
-
-- In vanilla, `RevealToAll` is hardcoded to reveal area in radius is `Sight`. Now you can customize it.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]                  ; BuildingType
-RevealToAll.Radius=             ; integer, defaults to [BuildingType] -> Sight
-```
-
-### DeployFire supports
-
-- Building types now also support using `DeployFire` and `DeployFireWeapon`.
-  - If a building has other configurations such as `Factory`, `GapGenerator`, or `Passengers`, it will prioritize executing those deployment actions instead.
-  - `DeployFireDelay` specifies the frame interval at which deployed weapons attempt to fire. If the weapon is unavailable due to `ROF`, `CanTarget`, or other reasons, the deployed weapon will not fire.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]      ; BuildingType, with DeployFire=yes
-DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
 ### Destroyable pathfinding obstacles
@@ -2438,6 +2434,7 @@ BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|
 - An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
   - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
   - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
+  - If `TiberiumEater.UnderEMP` is set to true, the eating will be processed when the TechnoType is under EMP or deactivated.
 
 In `rulesmd.ini`:
 ```ini
@@ -2454,6 +2451,7 @@ TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
+TiberiumEater.UnderEMP=false      ; boolean
 ```
 
 ### Weapons fired on warping in / out
@@ -3271,6 +3269,16 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 
 ```{warning}
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
+```
+
+### Customize whether warhead can prevent crew escape from techno
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                          ; WarheadType
+PreventCrew=false                      ; boolean
+PreventPassengerEscape=false           ; boolean
+PreventOccupantEscape=false            ; boolean
 ```
 
 ## Weapons

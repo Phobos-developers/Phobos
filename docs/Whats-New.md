@@ -76,6 +76,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
 - The following tags were renamed:
   - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+- `AttackMove.StopWhenTargetAcquired` and `AttackMove.PursuitTarget` have been replaced by new designs; please use `ApproachTarget.StopWhenInRange` and `ApproachTarget.PursuitTarget` instead. The old key is still read as a compatibility alias.
 ```
 
 ### 0.4
@@ -208,6 +209,7 @@ HideShakeEffects=false           ; boolean
   102=Horizontal position,0
   103=Vertical position,0
   104=Banner ID,0
+  105=Map Filename,0
 
   [EventsRA2]
   500=Local variable is greater than...,48,6,0,0,[LONG DESC],0,1,500,1
@@ -270,7 +272,8 @@ HideShakeEffects=false           ; boolean
   607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
   609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
-  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in `[General]>TeamDelays`.,0,1,610
+  610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in [General] ->TeamDelays.,0,1,610
+  611=Set next scenario... (Phobos),-4,105,0,0,0,0,0,0,0, Set the next campaign to load after winning the current one. Works only in Campaign Mode and requires setting [Basic] -> SkipMapSelect=yes.,0,1,611
   800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
   801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
@@ -659,15 +662,21 @@ HideShakeEffects=false           ; boolean
 - [Change target Owner on warhead impact](New-or-Enhanced-Logics.md#change-target-owner-on-impact) (by Fryone)
 - [New hotkey to select the units within the current screen that are captured by non-permanent mind-controller](User-Interface.md#select-captured-units) (by TaranDahl)
 - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium` (by Noble_Fish)
-- [Customize reveal radius of `RevealToAll`](New-or-Enhanced-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
+- [Customize reveal radius of `RevealToAll`](Fixed-or-Improved-Logics.md#customize-reveal-radius-of-revealtoall) (by NetsuNegi)
 - [Set sidebar tab by selecting factory](User-Interface.md#set-sidebar-tab-by-selecting-factory) (by Fryone)
 - [Customize whether aircraft is a cargo plane](Fixed-or-Improved-Logics.md#customize-whether-aircraft-is-a-cargo-plane) (by TaranDahl)
 - Keep Syringe open until the game exits (by 11EJDE11, ported from Vinifera, original by ZivDero & secsome)
 - [Drop crates on death](New-or-Enhanced-Logics.md#drop-crates-on-death) (by FS-21)
 - [`600` Configure Drop Crate](AI-Scripting-and-Mapping.md#configure-drop-crate) (by FS-21)
-- [DeployFire supports buildings](New-or-Enhanced-Logics.md#deployfire-supports) (By FlyStar)
-- `OmniFire` supports buildings with `Turret=yes` (by FlyStar)
-- [Automatic conversion based on heallth](New-or-Enhanced-Logics.md#automatic-conversion-based-on-heallth) (by obsidianus)
+- [`DeployFire` supports buildings](Fixed-or-Improved-Logics.md#deployfire-supports-buildings) (By FlyStar)
+- [Automatic conversion based on health](New-or-Enhanced-Logics.md#automatic-conversion-based-on-health) (by obsidianus)
+- Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn` (by Noble_Fish)
+- [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
+- Restored the ScriptType action#24 `Play speech` from Tiberian Sun (by FS-21)
+- [SkipMapSelect Enhancement](AI-Scripting-and-Mapping.md#skipmapselect-enhancement) (by FlyStar)
+- [Allow the unit to stop immediately if the target enters the range during ApproachTarget](Fixed-or-Improved-Logics.md#stop-immediately-if-the-target-enters-the-range-during-approachtarget) (by TaranDahl)
+- [Allow the unit to keep pursuing the target during ApproachTarget](Fixed-or-Improved-Logics.md#keep-pursuing-the-target-during-approachtarget) (by TaranDahl)
+- [Customize whether warhead can prevent crew escape from techno](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno) (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -756,6 +765,7 @@ HideShakeEffects=false           ; boolean
 - Fixed incorrect shadow rendering positions for non-Aircraft units with `Locomotor=Fly`, and for Aircraft units being dragged by warheads with `IsLocomotor=yes` (by NetsuNegi)
 - Fixed the issue that spawnee or slave would execute some player commands (by TaranDahl)
 - Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
+- Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 
 #### Phobos fixes:

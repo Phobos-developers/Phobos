@@ -417,7 +417,7 @@ public:
 		Valueable<bool> FiringAnim_Update;
 
 		Valueable<bool> ExtendedPlayerRepair;
-		
+
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -431,7 +431,7 @@ public:
 		Valueable<int> MindControlRingOffset;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
-    
+
 		Valueable<bool> CylinderRangefinding;
 
 		Valueable<int> PenetratesTransport_Level;
@@ -451,6 +451,8 @@ public:
 		Valueable<bool> DriveLocomotorMakesWake;
 		Valueable<bool> HoverLocomotorMakesWake;
 		Valueable<bool> ShipLocomotorMakesWake;
+
+		Valueable<StackingMode> Psychedelic_StackingMode;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
@@ -485,6 +487,7 @@ public:
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
 
+		Valueable<bool> DiscardOn_Sequences_Immediate;
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 		Valueable<bool> RemoveMindControl_Silent;
@@ -497,7 +500,7 @@ public:
 
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
-    
+
 		Valueable<Mission> BerzerkMission;
 
 		Valueable<int> BunkerStateUpdateDelay;
@@ -521,6 +524,8 @@ public:
 		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
 		Nullable<int> PoseDir_Production;
 		Nullable<int> PoseDir_Field;
+
+		Valueable<bool> ApproachTarget_StopWhenInRange;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -905,15 +910,17 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
 			, ExtraThreatCoefficient_Facing { 0.0 }
 			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
-			
+
 			, BalloonHoverPathingFix { false }
-			
+
 			, WalkLocomotorMakesWake { false }
 			, DriveLocomotorMakesWake { true }
 			, HoverLocomotorMakesWake { true }
 			, ShipLocomotorMakesWake { true }
 			, FiringAnim_Update { false }
 			, ExtendedPlayerRepair { false }
+
+			, Psychedelic_StackingMode { StackingMode::Override }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }
@@ -939,6 +946,7 @@ public:
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
+			, DiscardOn_Sequences_Immediate { true }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, DiscardOn_ConsiderHarvestingAsStationary { true }
 			, RemoveMindControl_Silent { false }
@@ -956,7 +964,7 @@ public:
 			, BerzerkMission { Mission::Hunt }
 
 			, BunkerStateUpdateDelay { 15 }
-				
+
 			, AllowChatBoxInSinglePlayer { false }
 
 			, NotHuman_RandomDeathSequence { false }
@@ -978,6 +986,8 @@ public:
 			, AircraftDockingDir_DefaultToPoseDir{ true }
 			, PoseDir_Production {}
 			, PoseDir_Field{}
+
+			, ApproachTarget_StopWhenInRange { false }
 		{ }
 
 		virtual ~ExtData() = default;

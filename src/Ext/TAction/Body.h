@@ -26,6 +26,7 @@ enum class PhobosTriggerAction : unsigned int
 	SetForceEnemy = 608,
 	SetFreeRadar = 609,
 	SetTeamDelay = 610,
+	SetNextScanario = 611,
 
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
@@ -89,6 +90,7 @@ public:
 	ACTION_FUNC(SetForceEnemy);
 	ACTION_FUNC(SetFreeRadar);
 	ACTION_FUNC(SetTeamDelay);
+	ACTION_FUNC(SetNextScanario);
 
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);

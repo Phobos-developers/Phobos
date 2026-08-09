@@ -29,6 +29,7 @@ bool Phobos::Optimizations::Applied = false;
 bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
+bool Phobos::Optimizations::DisableLaserTracking = true;
 
 // The leading L"" widens the narrow metadata literals it is concatenated with, so that the
 // name and the version are taken from Phobos.version.h rather than spelled out again.
