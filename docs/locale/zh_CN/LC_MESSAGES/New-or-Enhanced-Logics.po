@@ -3431,50 +3431,6 @@ msgid ""
 " select a higher threat target when in attack move mission (Ctrl+Shift)."
 msgstr "`AttackMove.UpdateTarget` 允许你的单位在执行移动攻击（Ctrl+Shift）任务时自动切换威胁值更高的目标。"
 
-msgid "Attack move - behavior when target acquired"
-msgstr "移动攻击 - 获取目标时的行为"
-
-msgid ""
-"Now you can make attack-moving units stop moving when they spot an enemy "
-"using `AttackMove.StopWhenTargetAcquired`. This is more like the attack "
-"move behavior in Starcraft and Warcraft."
-msgstr ""
-"现在你可以用 `AttackMove.StopWhenTargetAcquired` "
-"来让移动攻击的单位在发现敌人后停止移动，就像《星际》和《魔兽》中那样。"
-
-msgid ""
-"This feature is used to prevent units from charging forward and taking "
-"more damage during an attack move command."
-msgstr "此功能用于避免单位在执行移动攻击命令时冲锋过猛而暴毙。"
-
-msgid ""
-"You can also make them keep chasing on the spotted target using "
-"`AttackMove.PursuitTarget`."
-msgstr "你也可以使用 `AttackMove.PursuitTarget` 来让它们继续追击已锁定的单个目标。"
-
-msgid "This feature should be useful for close range units like ZEP."
-msgstr "此功能对于基洛夫空艇这样的近战单位很有用。"
-
-msgid ""
-"Many units would have stopped when they found an enemy during an attack "
-"move command already. This behavior is independent from "
-"`AttackMove.StopWhenTargetAcquired`."
-msgstr "许多单位在执行移动攻击命令时本就有一个发现敌人后停止移动的行为，这与 `AttackMove.StopWhenTargetAcquired` 无关。"
-
-msgid ""
-"Some units (f.ex. jumpjets) will not fire correctly under the vanilla "
-"attack move command. The exact reason is not clear, but this feature can "
-"fix this problem."
-msgstr "一些单位（例如 Jumpjet 类）在原版移动攻击命令下无法正常开火。具体原因不明，但该功能可以解决此问题。"
-
-msgid ""
-"Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop "
-"immediatly and not scatter to a cell. This is designed for practical "
-"reason."
-msgstr ""
-"设置了 `AttackMove.StopWhenTargetAcquired=true` 的 Jumpjet "
-"单位会立即停止并且不会分散到某个单元格上。这是有意如此设计的。"
-
 msgid "Attack move - follow"
 msgstr "移动攻击 - 跟随"
 

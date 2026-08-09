@@ -2357,6 +2357,18 @@ msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有部
 msgid "`[General] -> GatherWhenMCVDeploy` controls this behavior."
 msgstr "`[General] -> GatherWhenMCVDeploy` 控制这一行为。"
 
+msgid "Stop immediately if the target enters the range during ApproachTarget"
+msgstr ""
+
+msgid ""
+"In vanilla, the ApproachTarget will simply exit and do nothing if the "
+"target is in range. This will cause your units to approach the target "
+"unnecessarily."
+msgstr ""
+
+msgid "Now you can change this behavior by the following flag."
+msgstr ""
+
 msgid "Use 8-bit RGB parameters for `[ColorAdd]`"
 msgstr "为 `[ColorAdd]` 使用 8 位 RGB 参数"
 

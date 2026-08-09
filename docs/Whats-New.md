@@ -79,6 +79,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
 - The following tags were renamed:
   - `[WarheadType] -> Crit.AffectAbovePercent` -> `[WarheadType] -> Crit.AffectsAbovePercent`.
+- `AttackMove.StopWhenTargetAcquired` and `AttackMove.PursuitTarget` have been replaced by new designs; please use `ApproachTarget.StopWhenInRange` and `ApproachTarget.PursuitTarget` instead. The old key is still read as a compatibility alias.
 ```
 
 ### 0.4
@@ -660,6 +661,8 @@ HideShakeEffects=false           ; boolean
 - [Berzerk / `Psychedelic` duration stacking customization](Fixed-or-Improved-Logics.md#berzerk-psychedelic-duration-stacking-customization) (by Starkku)
 - ScriptType action `Play speech` (by FS-21)
 - SkipMapSelect Enhancement (by FlyStar)
+- [Allow the unit to stop immediately if the target enters the range during ApproachTarget](Fixed-or-Improved-Logics.md#stop-immediately-if-the-target-enters-the-range-during-approachtarget) (by TaranDahl)
+- [Allow the unit to keep pursuing the target during ApproachTarget](Fixed-or-Improved-Logics.md#keep-pursuing-the-target-during-approachtarget) (by TaranDahl)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

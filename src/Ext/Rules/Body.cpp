@@ -592,6 +592,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
 
+	if (exINI.ReadString(GameStrings::General, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", GameStrings::General);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -1061,6 +1068,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
+		.Process(this->ApproachTarget_StopWhenInRange)
     ;
 }
 
