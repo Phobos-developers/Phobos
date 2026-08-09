@@ -6515,6 +6515,10 @@ msgstr "`UnlimboDetonate.KeepSelected` 允许单位进出 Limbo 状态前保留�
 msgid "`UnlimboDetonate` cannot be used in conjunction with `Parasite`."
 msgstr "`UnlimboDetonate` 不能与 `Parasite` 共用。"
 
+msgid ""
+"Customize whether warhead can prevent crew escape from techno"
+msgstr "自定义弹头是否阻止生还者逃出"
+
 msgid "Weapons"
 msgstr "武器"
 

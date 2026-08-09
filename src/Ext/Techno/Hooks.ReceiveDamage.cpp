@@ -248,13 +248,38 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 
 	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
 
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
+
+	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
+
+	if (pWHExt->PreventCrew)
+		TechnoExt::Fetch(pThis)->PreventCrew = true;
+
+	if (pWHExt->PreventPassengerEscape)
+		pThis->KillPassengers(pSource);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x442635, BuildingClass_ReceiveDamage_PreventOccupantEscape, 0x6)
+{
+	enum { SkipClearOccupants = 0x442640 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	if (WarheadTypeExt::Fetch(pWarhead)->PreventOccupantEscape)
+	{
+		GET(BuildingClass*, pThis, ESI);
+		GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x9C, 0x10));
+		pThis->KillOccupants(pSource);
+		return SkipClearOccupants;
+	}
 
 	return 0;
 }
