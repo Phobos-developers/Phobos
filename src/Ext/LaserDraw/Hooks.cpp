@@ -1,95 +1,18 @@
-#include <Ext/WeaponType/Body.h>
+#include <Ext/LaserDraw/Body.h>
+
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <DiskLaserClass.h>
 #include <Helpers/Macro.h>
-#include <Utilities/Enum.h>
-#include <unordered_map>
 
 namespace LaserRT
 {
-	struct TrackingData
-	{
-		TechnoClass* Shooter { nullptr };
-		ObjectClass* Target { nullptr };
-		int WeaponIndex { 0 };
-		PositionFollow FollowMode { PositionFollow::None };
-		CoordStruct SavedOffset { CoordStruct::Empty };
-		CoordStruct LocalFLH { CoordStruct::Empty };
-		int FrozenBurstIndex { 0 };
-		bool StopOnFirerConvert { false };
-		const TechnoTypeClass* OriginalType { nullptr };
-
-		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex, bool stopOnFirerConvert)
-		{
-			const auto pShooterBuilding = abstract_cast<BuildingClass*>(pShooter);
-
-			if (pShooterBuilding && pShooterBuilding->Type->MaxNumberOccupants > 0)
-				mode &= ~PositionFollow::Firer;
-
-			if (pShooter && (mode & PositionFollow::Firer))
-			{
-				this->Shooter = pShooter;
-				this->LocalFLH = localFLH;
-				this->FrozenBurstIndex = burstIndex;
-				this->StopOnFirerConvert = stopOnFirerConvert;
-
-				if (stopOnFirerConvert)
-					this->OriginalType = pShooter->GetTechnoType();
-
-				const int savedBurstIndex = pShooter->CurrentBurstIndex;
-				pShooter->CurrentBurstIndex = burstIndex;
-				const CoordStruct worldFLH = pShooter->GetFLH(weaponIdx, localFLH);
-				pShooter->CurrentBurstIndex = savedBurstIndex;
-
-				this->SavedOffset = initialSource - worldFLH;
-			}
-
-			if (mode & PositionFollow::Target)
-				this->Target = abstract_cast<ObjectClass*>(pTarget);
-
-			this->WeaponIndex = weaponIdx;
-			this->FollowMode = mode;
-		}
-	};
-
-	std::unordered_map<LaserDrawClass*, TrackingData> TrackingMap;
-
-	std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> ShooterToLasers;
-	std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> TargetToLasers;
-
-	static void RegisterTracking(LaserDrawClass* pLaser, const TrackingData& data)
-	{
-		if (data.Shooter && (data.FollowMode & PositionFollow::Firer))
-			ShooterToLasers[data.Shooter].push_back(pLaser);
-		if (data.Target && (data.FollowMode & PositionFollow::Target))
-			TargetToLasers[data.Target].push_back(pLaser);
-	}
-
-	static void UnregisterTracking(LaserDrawClass* pLaser, const TrackingData& data)
-	{
-		if (data.Shooter)
-		{
-			auto it = ShooterToLasers.find(data.Shooter);
-			if (it != ShooterToLasers.end())
-			{
-				auto& vec = it->second;
-				vec.erase(std::remove(vec.begin(), vec.end(), pLaser), vec.end());
-				if (vec.empty())
-					ShooterToLasers.erase(it);
-			}
-		}
-		if (data.Target)
-		{
-			auto it = TargetToLasers.find(data.Target);
-			if (it != TargetToLasers.end())
-			{
-				auto& vec = it->second;
-				vec.erase(std::remove(vec.begin(), vec.end(), pLaser), vec.end());
-				if (vec.empty())
-					TargetToLasers.erase(it);
-			}
-		}
-	}
+	TechnoClass* Shooter = nullptr;
+	AbstractClass* Target = nullptr;
+	int WeaponIndex = 0;
+	bool IgnoreShooter = false;
+	CoordStruct SavedLocalFLH = CoordStruct::Empty;
+	int SavedBurstIndex = 0;
 
 	void SetLaserTrackingData(LaserDrawClass* pLaser, TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode, bool ignoreShooter)
 	{
@@ -114,35 +37,31 @@ namespace LaserRT
 			}
 		}
 
-		TrackingData data;
-		data.Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
+		auto* pExt = LaserDrawExt::Find(pLaser);
+		if (!pExt)
+			pExt = LaserDrawExt::Allocate(pLaser);
+		if (!pExt)
+			return;
 
-		auto it = TrackingMap.find(pLaser);
-		if (it != TrackingMap.end())
-			UnregisterTracking(pLaser, it->second);
-
-		TrackingMap[pLaser] = data;
-		RegisterTracking(pLaser, data);
+		pExt->Unregister();
+		pExt->Initialize(ignoreShooter ? nullptr : pShooter, pTarget, weaponIdx, mode, pLaser->Source, localFLH, burstIndex, stopOnFirerConvert);
+		pExt->Register();
 	}
-
-	TechnoClass* Shooter = nullptr;
-	AbstractClass* Target = nullptr;
-	int WeaponIndex = 0;
-	bool IgnoreShooter = false;
-	CoordStruct SavedLocalFLH = CoordStruct::Empty;
-	int SavedBurstIndex = 0;
 }
 
 // container hooks
 
-// IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
+// The CTOR must attach an extension even with empty tracking data - removing it
+// would break DiskLaser's charging ring (start point on ring A, end point on ring B).
 DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 {
+	GET(LaserDrawClass*, pLaser, ECX);
+
+	LaserDrawExt::ResetPointer(pLaser);
+
 	if (!Phobos::Optimizations::DisableLaserTracking)
-	{
-		GET(LaserDrawClass*, pLaser, ECX);
-		LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
-	}
+		LaserDrawExt::Allocate(pLaser);
+
 	return 0;
 }
 
@@ -153,11 +72,10 @@ DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 {
 	GET(LaserDrawClass*, pLaser, ECX);
 
-	auto it = LaserRT::TrackingMap.find(pLaser);
-	if (it != LaserRT::TrackingMap.end())
+	if (auto* pExt = LaserDrawExt::Find(pLaser))
 	{
-		LaserRT::UnregisterTracking(pLaser, it->second);
-		LaserRT::TrackingMap.erase(it);
+		pExt->Unregister();
+		LaserDrawExt::Release(pLaser);
 	}
 
 	return 0;
@@ -165,45 +83,41 @@ DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 
 void WeaponTypeExt::OnObjectRemoved(ObjectClass* pObject)
 {
-	auto itShoot = LaserRT::ShooterToLasers.find(pObject);
-	if (itShoot != LaserRT::ShooterToLasers.end())
+	auto itShoot = LaserDrawExt::ShooterToLasers.find(pObject);
+	if (itShoot != LaserDrawExt::ShooterToLasers.end())
 	{
 		for (auto pLaser : itShoot->second)
 		{
-			auto dataIt = LaserRT::TrackingMap.find(pLaser);
-			if (dataIt != LaserRT::TrackingMap.end())
+			if (auto* pExt = LaserDrawExt::Find(pLaser))
 			{
-				auto& data = dataIt->second;
-				if (data.Shooter == pObject)
-					data.Shooter = nullptr;
-				if (!data.Shooter && !data.Target)
-				{
-					LaserRT::TrackingMap.erase(dataIt);
-				}
+				if (pExt->Shooter == pObject)
+					pExt->Shooter = nullptr;
+
+				if (!pExt->Shooter && !pExt->Target)
+					LaserDrawExt::Release(pLaser);
 			}
 		}
-		LaserRT::ShooterToLasers.erase(itShoot);
+		LaserDrawExt::ShooterToLasers.erase(itShoot);
 	}
-	LaserRT::ShooterToLasers.erase(pObject);
+	LaserDrawExt::ShooterToLasers.erase(pObject);
 
-	auto itTarget = LaserRT::TargetToLasers.find(pObject);
-	if (itTarget != LaserRT::TargetToLasers.end())
+	auto itTarget = LaserDrawExt::TargetToLasers.find(pObject);
+	if (itTarget != LaserDrawExt::TargetToLasers.end())
 	{
 		for (auto pLaser : itTarget->second)
 		{
-			auto dataIt = LaserRT::TrackingMap.find(pLaser);
-			if (dataIt != LaserRT::TrackingMap.end())
+			if (auto* pExt = LaserDrawExt::Find(pLaser))
 			{
-				auto& data = dataIt->second;
-				if (data.Target == pObject)
-					data.Target = nullptr;
-				if (!data.Shooter && !data.Target)
-					LaserRT::TrackingMap.erase(dataIt);
+				if (pExt->Target == pObject)
+					pExt->Target = nullptr;
+
+				if (!pExt->Shooter && !pExt->Target)
+					LaserDrawExt::Release(pLaser);
 			}
 		}
-		LaserRT::TargetToLasers.erase(itTarget);
+		LaserDrawExt::TargetToLasers.erase(itTarget);
 	}
-	LaserRT::TargetToLasers.erase(pObject);
+	LaserDrawExt::TargetToLasers.erase(pObject);
 }
 
 // hooks
@@ -306,39 +220,36 @@ DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 // Per‑frame coordinate update
 DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 {
-	if (LaserRT::TrackingMap.empty())
+	if (LaserDrawExt::ExtMap.size() == 0)
 		return 0;
 
 	GET(LaserDrawClass*, pLaser, ESI);
-	const auto it = LaserRT::TrackingMap.find(pLaser);
+	auto* pExt = LaserDrawExt::Find(pLaser);
 
-	if (it == LaserRT::TrackingMap.cend())
+	if (!pExt)
 		return 0;
 
-	auto& data = it->second;
-
-	if (const auto pShooter = data.Shooter)
+	if (const auto pShooter = pExt->Shooter)
 	{
-		if (data.StopOnFirerConvert && data.OriginalType)
+		if (pExt->StopOnFirerConvert && pExt->OriginalType)
 		{
-			if (pShooter->GetTechnoType() != data.OriginalType)
-				data.Shooter = nullptr;
+			if (pShooter->GetTechnoType() != pExt->OriginalType)
+				pExt->Shooter = nullptr;
 		}
 
-		if (data.Shooter)
+		if (pExt->Shooter)
 		{
 			const int savedBurstIndex = pShooter->CurrentBurstIndex;
-			pShooter->CurrentBurstIndex = data.FrozenBurstIndex;
-			const CoordStruct worldFLH = pShooter->GetFLH(data.WeaponIndex, data.LocalFLH);
+			pShooter->CurrentBurstIndex = pExt->FrozenBurstIndex;
+			const CoordStruct worldFLH = pShooter->GetFLH(pExt->WeaponIndex, pExt->LocalFLH);
 			pShooter->CurrentBurstIndex = savedBurstIndex;
 
-			pLaser->Source = worldFLH + data.SavedOffset;
+			pLaser->Source = worldFLH + pExt->SavedOffset;
 		}
 	}
 
-	if (const auto pTarget = data.Target)
+	if (const auto pTarget = pExt->Target)
 		pLaser->Target = pTarget->GetTargetCoords();
 
 	return 0;
 }
-
