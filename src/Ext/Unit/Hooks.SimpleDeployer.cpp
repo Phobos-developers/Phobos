@@ -11,7 +11,7 @@ static __forceinline bool HasDeployingAnim(UnitTypeClass* pType)
 	return pType->DeployingAnim || UnitTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
 }
 
-static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
+static inline bool CheckRestrictions(UnitClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
 	const ILocomotionPtr pLoco = pUnit->Locomotor;
@@ -34,7 +34,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pUnit))->GetTypeExtData();
+	auto const pTypeExt = UnitExt::Fetch(pUnit)->GetTypeExtData();
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
@@ -241,8 +241,8 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pLinkedTo = pThis->LinkedTo;
-	CheckRestrictions(pLinkedTo, false);
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo))
+		CheckRestrictions(pUnit, false);
 
 	return SkipGameCode;
 }
@@ -332,7 +332,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 				pLinkedTo->SetDestination(nullptr, true);
 			}
 
-			CheckRestrictions(pLinkedTo, false);
+			CheckRestrictions(pUnit, false);
 
 			if (pLinkedTo->GetHeight() <= 0)
 			{
