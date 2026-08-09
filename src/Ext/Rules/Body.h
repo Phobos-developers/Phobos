@@ -525,6 +525,8 @@ public:
 		Nullable<int> PoseDir_Production;
 		Nullable<int> PoseDir_Field;
 
+		Valueable<bool> ApproachTarget_StopWhenInRange;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -984,6 +986,8 @@ public:
 			, AircraftDockingDir_DefaultToPoseDir{ true }
 			, PoseDir_Production {}
 			, PoseDir_Field{}
+
+			, ApproachTarget_StopWhenInRange { false }
 		{ }
 
 		virtual ~ExtData() = default;

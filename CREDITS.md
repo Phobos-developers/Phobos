@@ -563,6 +563,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize crash spin multiplier
   - Customize reveal radius of `RevealToAll`
   - Fix the bug that technos do not reset their link with the linked building when deactivated
+  - Customize whether warhead can prevent crew escape from techno
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -869,6 +870,8 @@ This page lists all the individual contributions to the project by their author.
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
   - Fix the issue that spawnee or slave would execute some player commands
   - Customize whether aircraft is a cargo plane
+  - Allow the unit to stop immediately if the target enters the range during ApproachTarget
+  - Allow the unit to keep pursuing the target during ApproachTarget
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

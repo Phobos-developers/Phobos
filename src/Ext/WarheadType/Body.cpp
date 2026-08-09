@@ -445,6 +445,10 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
 
+	this->PreventCrew.Read(exINI, pSection, "PreventCrew");
+	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
+	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -792,6 +796,10 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Taunt)
 
 		.Process(this->Psychedelic_StackingMode)
+
+		.Process(this->PreventCrew)
+		.Process(this->PreventPassengerEscape)
+		.Process(this->PreventOccupantEscape)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

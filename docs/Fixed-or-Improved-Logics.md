@@ -2240,6 +2240,18 @@ JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRot
 This may subject to further changes.
 ```
 
+### Keep pursuing the target during ApproachTarget
+
+- Now you can make a unit approach its target with the target itself as the destination, just like ZEP, instead of a point on the arc around the target whose radius is the unit's own weapon range.
+  - If `ApproachTarget.StopWhenInRange` is set to `true`, the unit will stop as soon as the target enters its range and will not chase it further.
+  - `AttackMove.PursuitTarget` is read as a compatibility alias for `ApproachTarget.PursuitTarget`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                   ; TechnoType
+ApproachTarget.PursuitTarget=  ; boolean, default to false
+```
+
 ### Kill spawns on low power
 
 - `Powered=yes` structures that spawn aircraft like Aircraft Carriers will stop targeting the enemy if low power.
@@ -2319,6 +2331,22 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                         ; TechnoType
 RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
+```
+
+### Stop immediately if the target enters the range during ApproachTarget
+
+- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
+  - Now you can change this behavior by the following flag.
+  - The setting can be customized per techno type; if not set on a type, the global setting is used as the fallback.
+  - `AttackMove.StopWhenTargetAcquired` is read as a compatibility alias for `ApproachTarget.StopWhenInRange` (in both `[General]` and techno type sections).
+
+In `rulesmd.ini`:
+```ini
+[General]
+ApproachTarget.StopWhenInRange=false  ; boolean
+
+[SOMETECHNO]
+ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
 ```
 
 ### Subterranean unit travel height and speed
