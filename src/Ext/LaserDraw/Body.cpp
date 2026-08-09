@@ -39,7 +39,7 @@ void LaserDrawExt::ExtData::Initialize(TechnoClass* pShooter, AbstractClass* pTa
 
 		const int savedBurstIndex = pShooter->CurrentBurstIndex;
 		pShooter->CurrentBurstIndex = burstIndex;
-		const CoordStruct worldFLH = pShooter->GetFLH(weaponIdx, localFLH);
+		const CoordStruct worldFLH = pShooter->GetFLH(weaponIdx, CoordStruct::Empty);
 		pShooter->CurrentBurstIndex = savedBurstIndex;
 
 		this->SavedOffset = initialSource - worldFLH;
@@ -99,8 +99,11 @@ static void SetPadHalf(LaserDrawClass* pLaser, uintptr_t offset, uint16_t value)
 	*reinterpret_cast<uint16_t*>(reinterpret_cast<char*>(pLaser) + offset) = value;
 }
 
-static void ClearPointer(LaserDrawClass* pLaser)
+void LaserDrawExt::ClearPointer(LaserDrawClass* pLaser)
 {
+	if (!pLaser)
+		return;
+
 	SetPadHalf(pLaser, LaserDrawExt::PadHighOffset, 0);
 	SetPadHalf(pLaser, LaserDrawExt::PadLowOffset, 0);
 }
@@ -108,6 +111,9 @@ static void ClearPointer(LaserDrawClass* pLaser)
 LaserDrawExt::ExtData* LaserDrawExt::Find(LaserDrawClass* pLaser)
 {
 	if (!pLaser)
+		return nullptr;
+
+	if (reinterpret_cast<uintptr_t>(pLaser) < 0x10000)
 		return nullptr;
 
 	const uintptr_t address = (static_cast<uintptr_t>(GetPadHalf(pLaser, PadHighOffset)) << 16)

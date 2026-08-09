@@ -4,6 +4,20 @@
 #include <Ext/WeaponType/Body.h>
 #include <DiskLaserClass.h>
 #include <Helpers/Macro.h>
+#include <Utilities/Patch.h>
+
+static void NukeTrackingHooks()
+{
+	Patch::Apply_RAW(0x54FE60, { 0x56, 0x8B, 0xF1, 0x33, 0xC0 }); // LaserDrawClass_CTOR_Update
+	Patch::Apply_RAW(0x550016, { 0x8B, 0x15, 0x78, 0xC8, 0xAB, 0x00 }); // LaserDrawClass_RemoveTracking
+	Patch::Apply_RAW(0x5501D7, { 0xA1, 0x78, 0xC8, 0xAB, 0x00 }); // LaserDrawClass_RemoveTracking
+	Patch::Apply_RAW(0x6FD210, { 0x83, 0xEC, 0x38, 0x8B, 0x44, 0x24, 0x44 }); // TechnoClass_LaserZap_SetTrackingContext
+	Patch::Apply_RAW(0x6FD446, { 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x38 }); // TechnoClass_LaserZap_Tracking
+	Patch::Apply_RAW(0x46A8AC, { 0xE8, 0x5F, 0x29, 0x29, 0x00 }); // Shrapnel_CreateLaser_Wrapper
+	Patch::Apply_RAW(0x46AD81, { 0xE8, 0x8A, 0x24, 0x29, 0x00 }); // Shrapnel_CreateLaser_Wrapper
+	Patch::Apply_RAW(0x4A7696, { 0x8B, 0x46, 0x2C, 0x8B, 0x56, 0x24 }); // DiskLaser_Update_ActivateMainBeam_Tracking
+	Patch::Apply_RAW(0x550173, { 0x8B, 0x56, 0x08, 0x8B, 0x46, 0x10 }); // LaserDrawClass_Update_Tracking
+}
 
 namespace LaserRT
 {
@@ -59,25 +73,32 @@ DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 
 	LaserDrawExt::ResetPointer(pLaser);
 
-	if (!Phobos::Optimizations::DisableLaserTracking)
-		LaserDrawExt::Allocate(pLaser);
+	if (Phobos::Optimizations::DisableLaserTracking)
+	{
+		// no weapon uses LaserPositionUpdate: drop every tracking hook for good
+		NukeTrackingHooks();
+		return 0;
+	}
+
+	LaserDrawExt::Allocate(pLaser);
 
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x5501D7, LaserDrawClass_DTOR_Tracking, 0x5)
-DEFINE_HOOK_AGAIN(0x5500EF, LaserDrawClass_DTOR_Tracking, 0x5)
-DEFINE_HOOK_AGAIN(0x550016, LaserDrawClass_DTOR_Tracking, 0x6)
-DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
+static void RemoveLaserFromTracking(LaserDrawClass* pLaser)
 {
-	GET(LaserDrawClass*, pLaser, ECX);
-
 	if (auto* pExt = LaserDrawExt::Find(pLaser))
 	{
 		pExt->Unregister();
 		LaserDrawExt::Release(pLaser);
 	}
+}
 
+DEFINE_HOOK_AGAIN(0x5501D7, LaserDrawClass_RemoveTracking, 0x5)
+DEFINE_HOOK(0x550016, LaserDrawClass_RemoveTracking, 0x6)
+{
+	GET(LaserDrawClass*, pLaser, ESI);
+	RemoveLaserFromTracking(pLaser);
 	return 0;
 }
 
@@ -241,7 +262,7 @@ DEFINE_HOOK(0x550173, LaserDrawClass_Update_Tracking, 0x6)
 		{
 			const int savedBurstIndex = pShooter->CurrentBurstIndex;
 			pShooter->CurrentBurstIndex = pExt->FrozenBurstIndex;
-			const CoordStruct worldFLH = pShooter->GetFLH(pExt->WeaponIndex, pExt->LocalFLH);
+			const CoordStruct worldFLH = pShooter->GetFLH(pExt->WeaponIndex, CoordStruct::Empty);
 			pShooter->CurrentBurstIndex = savedBurstIndex;
 
 			pLaser->Source = worldFLH + pExt->SavedOffset;

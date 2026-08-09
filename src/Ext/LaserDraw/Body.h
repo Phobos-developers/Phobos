@@ -13,13 +13,6 @@
 #include <unordered_map>
 #include <vector>
 
-// O(1) per-laser tracking data for LaserPositionUpdate.
-//
-// The extension pointer is stored split across the two unused 16-bit padding
-// words of LaserDrawClass (align_22 @ 0x22 = high half, align_4A @ 0x4A = low
-// half), giving O(1) access on the per-frame hot path instead of the previous
-// std::unordered_map lookup. LaserDrawClass is not AbstractClass-derived, so it
-// has no unified 0x18 extension slot - the padding split is the only spare space.
 class LaserDrawExt
 {
 public:
@@ -27,8 +20,6 @@ public:
 
 	static constexpr DWORD Canary = 0x4C617365; // "Lase"
 
-	// reverse maps: an ObjectClass being removed -> the lasers tracking it, for
-	// pointer invalidation on object removal (not per-frame hot)
 	static std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> ShooterToLasers;
 	static std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> TargetToLasers;
 
@@ -47,7 +38,11 @@ public:
 
 		ExtData(LaserDrawClass* pOwner) : Extension<LaserDrawClass>(pOwner) { }
 
-		virtual ~ExtData() = default;
+		~ExtData() override
+		{
+			this->Unregister();
+			LaserDrawExt::ClearPointer(this->OwnerObject());
+		}
 
 		void Initialize(TechnoClass* pShooter, AbstractClass* pTarget, int weaponIdx, PositionFollow mode,
 			const CoordStruct& initialSource, const CoordStruct& localFLH, int burstIndex, bool stopOnFirerConvert);
@@ -56,7 +51,6 @@ public:
 		void Unregister();
 	};
 
-	// --- O(1) padding-pointer access (the per-frame hot path) ---
 	static constexpr uintptr_t PadHighOffset = 0x22; // align_22
 	static constexpr uintptr_t PadLowOffset = 0x4A;  // align_4A
 
@@ -64,6 +58,7 @@ public:
 	static ExtData* Allocate(LaserDrawClass* pLaser);
 	static void Release(LaserDrawClass* pLaser);
 	static void ResetPointer(LaserDrawClass* pLaser);
+	static void ClearPointer(LaserDrawClass* pLaser);
 
 	class ExtContainer final : public Container<LaserDrawExt>
 	{
