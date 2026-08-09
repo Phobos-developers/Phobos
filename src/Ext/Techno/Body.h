@@ -142,7 +142,7 @@ public:
 	void OnEarlyUpdate();
 
 	// the extension state that goes with TechnoClass::Init
-	void InitializeState();
+	void InitializeState(TechnoTypeClass* pType = nullptr);
 
 	// the techno was created while a savegame was loading, so TechnoClass::Init found
 	// no extension to initialize; catch up now that there is one

@@ -253,7 +253,7 @@ DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
+	auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo);
 
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 		return SkipGameCode;
@@ -291,7 +291,7 @@ DEFINE_HOOK(0x513D2C, HoverLocomotionClass_ProcessBobbing_DeployToLand2, 0x6)
 
 	GET(LocomotionClass*, pThis, ECX);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo))
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo))
 	{
 		if (pUnit->Deploying && pUnit->Type->DeployToLand)
 			return SkipBobbing;
@@ -312,7 +312,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	GET(bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
-	auto const pUnit = abstract_cast<UnitClass*>(pLinkedTo);
+	auto const pUnit = abstract_cast<UnitClass*, true>(pLinkedTo);
 
 	if (pUnit && pUnit->InAir)
 	{

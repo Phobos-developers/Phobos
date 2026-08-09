@@ -262,14 +262,16 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (!pThis->GetTechnoType()) // Critical sanity check in s/l
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType) // Critical sanity check in s/l
 		return 0;
 
 	// No extension while a savegame is loading: either it comes from the extension
 	// stream, or the object is one the game is creating as part of the load and its
 	// extension - and this initialization with it - follows once the load settles.
 	if (auto const pExt = TechnoExt::TryFetch(pThis))
-		pExt->InitializeState();
+		pExt->InitializeState(pType);
 
 	return 0;
 }
@@ -277,45 +279,50 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 // The state a techno's extension gets when the techno itself is initialized. Also run
 // for extensions allocated after the fact, for technos the game created while a
 // savegame was loading.
-void TechnoExt::InitializeState()
+void TechnoExt::InitializeState(TechnoTypeClass* pType)
 {
 	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
 
 	if (!pType)
-		return;
+	{
+		pType = pThis->GetTechnoType();
+		if (!pType) return;
+	}
 
-	auto const pExt = this;
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
-	pExt->TypeExtData = pTypeExt;
+	this->TypeExtData = pTypeExt;
 
 	auto const pShieldType = pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0 ? pTypeExt->ShieldType : nullptr;
-	pExt->CurrentShieldType = pShieldType;
+	this->CurrentShieldType = pShieldType;
 
 	if (pShieldType)
-		pExt->Shield = std::make_unique<ShieldClass>(pThis);
+		this->Shield = std::make_unique<ShieldClass>(pThis);
 
-	pExt->InitializeAttachEffects();
-	pExt->InitializeDisplayInfo();
-	pExt->InitializeLaserTrails();
+	this->InitializeAttachEffects();
+	this->InitializeDisplayInfo();
+	this->InitializeLaserTrails();
 
-	if (pType->WhatAmI() == AbstractType::UnitType)
-		static_cast<UnitExt*>(pExt)->InitializeRecoilData();
+	if (!this->AE.HasTint) // already updated when initializing attach effect
+		this->UpdateTintValues();
 
-	if (!pExt->AE.HasTint) // already updated when initializing attach effect
-		pExt->UpdateTintValues();
+	auto const pOwner = pThis->Owner;
+
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
+	{
+		pOwner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
+
+		if (pType->WhatAmI() == AbstractType::UnitType)
+			static_cast<UnitExt*>(this)->InitializeRecoilData();
+	}
 
 	if (pTypeExt->Harvester_Counted)
-		HouseExt::Fetch(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
+		HouseExt::Fetch(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 
-	if (!(pThis->Owner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
+	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
 		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
 	}
-
-	if (pThis->AbstractFlags & AbstractFlags::Foot)
-		pThis->Owner->RecheckTechTree = true; // for SW.AuxTechons and SW.NegTechnos
 }
 
 DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
@@ -2159,7 +2166,7 @@ DEFINE_HOOK(0x662354, RocketLocomotionClass_Process_CruiseMissileCheck, 0x6)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
-	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+	const auto pLinkedTo = abstract_cast<AircraftClass*, true>(pLoco->LinkedTo);
 
 	if (!pLinkedTo)
 		return 0;
@@ -2175,7 +2182,7 @@ DEFINE_HOOK(0x6623FC, RocketLocomotionClass_Process_CustomSmokeInterval, 0x5)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
-	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+	const auto pLinkedTo = abstract_cast<AircraftClass*, true>(pLoco->LinkedTo);
 
 	if (!pLinkedTo)
 		return 0;
@@ -2192,7 +2199,7 @@ DEFINE_HOOK(0x6624FB, RocketLocomotionClass_Process_CustomMissileTakeoff, 0x5)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
-	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+	const auto pLinkedTo = abstract_cast<AircraftClass*, true>(pLoco->LinkedTo);
 
 	if (!pLinkedTo)
 		return SkipAnimation;
@@ -2216,7 +2223,7 @@ DEFINE_HOOK(0x662720, RocketLocomotionClass_Process_CruiseMissileRaise, 0x6)
 {
 	GET(ILocomotion*, pThis, ESI);
 	const auto pLoco = static_cast<RocketLocomotionClass*>(pThis);
-	const auto pLinkedTo = abstract_cast<AircraftClass*>(pLoco->LinkedTo);
+	const auto pLinkedTo = abstract_cast<AircraftClass*, true>(pLoco->LinkedTo);
 
 	if (!pLinkedTo)
 		return 0;
