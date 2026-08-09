@@ -128,6 +128,8 @@
     <!-- src\Ext\Infantry -->
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
+    <!-- src\Ext\LaserDraw -->
+    <ClCompile Include="src\Ext\LaserDraw\Hooks.cpp" />
     <!-- src\Ext\OverlayType -->
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
