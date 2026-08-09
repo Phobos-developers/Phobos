@@ -1032,13 +1032,19 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
 
+	if (exINI.ReadString(pSection, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "ApproachTarget.StopWhenInRange");
-	if (!exINI.ReadString(pSection, "ApproachTarget.StopWhenInRange"))
-		this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 
+	if (exINI.ReadString(pSection, "AttackMove.PursuitTarget") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.PursuitTarget is deprecated and has been replaced by ApproachTarget.PursuitTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ApproachTarget_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 	this->ApproachTarget_PursuitTarget.Read(exINI, pSection, "ApproachTarget.PursuitTarget");
-	if (!exINI.ReadString(pSection, "ApproachTarget.PursuitTarget"))
-		this->ApproachTarget_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_Weapon.Read(exINI, pSection, "KeepTargetOnMove.Weapon");
