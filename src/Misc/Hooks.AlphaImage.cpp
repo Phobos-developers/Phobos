@@ -120,3 +120,19 @@ DEFINE_HOOK(0x5F3E78, ObjectClass_AI_UpdateAlphaShape, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5F5045, ObjectClass_Place_NoAlphaImageOnBuildup, 0x6)
+{
+	GET(ObjectClass* const, pObject, ESI);
+	GET(ObjectTypeClass* const, pType, EBX);
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType))
+	{
+		if (BuildingTypeExt::Fetch(pBuildingType)->NoAlphaImageOnBuildup.Get(RulesExt::Global()->NoAlphaImageOnBuildup))
+			return 0x5F514B; // jump past the AlphaShape creation block (the `jz` skip target)
+	}
+
+	R->EAX(pType ? pType->AlphaImage : nullptr);
+
+	return 0;
+}
