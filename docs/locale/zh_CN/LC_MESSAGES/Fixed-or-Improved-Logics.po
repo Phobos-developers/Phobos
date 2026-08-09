@@ -4837,22 +4837,26 @@ msgstr "这可能会在未来进一步更改。"
 
 msgid "Keep pursuing the target during ApproachTarget"
 msgstr ""
+"在接近目标期间持续追踪目标"
 
 msgid ""
 "Now you can make a unit approach its target with the target itself as the"
 " destination, just like ZEP, instead of a point on the arc around the "
 "target whose radius is the unit's own weapon range."
 msgstr ""
+"现在你可以让一个单位以目标自身而不再是以目标为中心半径为自身武器射程的弧线上一点为目的地来接近目标，就像 `[ZEP]` 那样。"
 
 msgid ""
 "If `ApproachTarget.StopWhenInRange` is set to `true`, the unit will stop "
 "as soon as the target enters its range and will not chase it further."
 msgstr ""
+"如果 `ApproachTarget.StopWhenInRange` 设为 `true`，单位会在目标进入其射程后立即停止而不会继续追击。"
 
 msgid ""
 "`AttackMove.PursuitTarget` is read as a compatibility alias for "
 "`ApproachTarget.PursuitTarget`."
 msgstr ""
+"`AttackMove.PursuitTarget` 被读取为一个 `ApproachTarget.PursuitTarget` 的兼容别名。"
 
 msgid "Kill spawns on low power"
 msgstr "断电时击杀子机"
@@ -4997,26 +5001,21 @@ msgstr "在原版游戏中 `RadarInvisible` 仅对当前非友军的玩家有效
 
 msgid "Stop immediately if the target enters the range during ApproachTarget"
 msgstr ""
+"接近目标期间若目标进入射程则立即停止"
 
 msgid ""
 "In vanilla, the ApproachTarget will simply exit and do nothing if the "
 "target is in range. This will cause your units to approach the target "
-"unnecessarily."
+"unnecessarily. Now you can change this behavior by the following flag."
 msgstr ""
-
-msgid "Now you can change this behavior by the following flag."
-msgstr ""
-
-msgid ""
-"The setting can be customized per techno type; if not set on a type, the "
-"global setting is used as the fallback."
-msgstr ""
+"在原版中，目标处于射程内时接近目标的处理会直接退出且什么也不做。这会导致你的单位不必要地接近目标。现在你可以使用下面的标签更改这一行为。"
 
 msgid ""
 "`AttackMove.StopWhenTargetAcquired` is read as a compatibility alias for "
 "`ApproachTarget.StopWhenInRange` (in both `[General]` and techno type "
 "sections)."
 msgstr ""
+"`AttackMove.StopWhenTargetAcquired` 被读取为一个 `ApproachTarget.StopWhenInRange` 的兼容别名（`[General]` 和单位微观部分都是如此）。"
 
 msgid "Subterranean unit travel height and speed"
 msgstr "潜地单位移动高度和速度"

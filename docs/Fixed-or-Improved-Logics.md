@@ -2335,9 +2335,7 @@ RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/se
 
 ### Stop immediately if the target enters the range during ApproachTarget
 
-- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily.
-  - Now you can change this behavior by the following flag.
-  - The setting can be customized per techno type; if not set on a type, the global setting is used as the fallback.
+- In vanilla, the ApproachTarget will simply exit and do nothing if the target is in range. This will cause your units to approach the target unnecessarily. Now you can change this behavior by the following flag.
   - `AttackMove.StopWhenTargetAcquired` is read as a compatibility alias for `ApproachTarget.StopWhenInRange` (in both `[General]` and techno type sections).
 
 In `rulesmd.ini`:
@@ -2345,7 +2343,7 @@ In `rulesmd.ini`:
 [General]
 ApproachTarget.StopWhenInRange=false  ; boolean
 
-[SOMETECHNO]
+[SOMETECHNO]                          ; TechnoType
 ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
 ```
 

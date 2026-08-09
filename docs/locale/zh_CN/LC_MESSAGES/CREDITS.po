@@ -2964,9 +2964,11 @@ msgid ""
 "Allow the unit to stop immediately if the target enters the range during "
 "ApproachTarget"
 msgstr ""
+"允许单位在接近目标期间若目标进入射程则立即停止"
 
 msgid "Allow the unit to keep pursuing the target during ApproachTarget"
 msgstr ""
+"允许单位在接近目标期间持续追踪目标"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
