@@ -294,16 +294,9 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &BuildingExt::UpdateFactoryQueues);
 
 	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x3962C, {
-		0x80, 0xB8, 0xE5, 0x01, 0x00, 0x00, 0x00, // cmp byte ptr [eax+0x1E5], 0 (SW_ShowCameo)
-		0x74, 0x2F, // jz -> skip AddCameo (hide)
-		0xEB, 0x07, // jmp -> AddCameo (show)
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x39635, AresHelper::AresBaseAddress + 0x39664);
 	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x34DD0, {
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 // nop cmp [esi+0x1E1],0; jz (AutoFire check)
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x34DD0, AresHelper::AresBaseAddress + 0x34DD9);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -417,14 +410,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &BuildingExt::UpdateFactoryQueues);
 
 	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x3A0AC, {
-		0x80, 0xB8, 0xE5, 0x01, 0x00, 0x00, 0x00, // cmp byte ptr [eax+0x1E5], 0 (SW_ShowCameo)
-		0x74, 0x2F, // jz -> skip AddCameo (hide)
-		0xEB, 0x07, // jmp -> AddCameo (show)
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3A0B5, AresHelper::AresBaseAddress + 0x3A0E4);
 	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x35810, {
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 // nop cmp [esi+0x1E1],0; jz (AutoFire check)
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x35810, AresHelper::AresBaseAddress + 0x35819);
 }
