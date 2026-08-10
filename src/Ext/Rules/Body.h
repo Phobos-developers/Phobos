@@ -350,6 +350,7 @@ public:
 		Valueable<int> WarheadAnimZAdjust;
 
 		Valueable<bool> IvanBombAttachToCenter;
+		Valueable<bool> MissileSpawnAttackCell;
 
 		Valueable<bool> FallingDownTargetingFix;
 		Valueable<bool> AIAirTargetingFix;
@@ -524,6 +525,10 @@ public:
 		Valueable<bool> AircraftDockingDir_DefaultToPoseDir;
 		Nullable<int> PoseDir_Production;
 		Nullable<int> PoseDir_Field;
+
+		Valueable<bool> ApproachTarget_StopWhenInRange;
+
+		Valueable<bool> NoAlphaImageOnBuildup;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -816,6 +821,7 @@ public:
 			, WarheadAnimZAdjust { -15 }
 
 			, IvanBombAttachToCenter { false }
+			, MissileSpawnAttackCell { true }
 
 			, FallingDownTargetingFix { false }
 			, AIAirTargetingFix { false }
@@ -984,6 +990,10 @@ public:
 			, AircraftDockingDir_DefaultToPoseDir{ true }
 			, PoseDir_Production {}
 			, PoseDir_Field{}
+
+			, ApproachTarget_StopWhenInRange { false }
+
+			, NoAlphaImageOnBuildup { false }
 		{ }
 
 		virtual ~ExtData() = default;

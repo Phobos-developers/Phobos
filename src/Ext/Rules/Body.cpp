@@ -407,6 +407,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
 	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+	this->MissileSpawnAttackCell.Read(exINI, GameStrings::CombatDamage, "MissileSpawnAttackCell");
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
@@ -591,6 +592,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AircraftDockingDir_DefaultToPoseDir.Read(exINI, GameStrings::AudioVisual, "AircraftDockingDir.DefaultToPoseDir");
 	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
+
+	if (exINI.ReadString(GameStrings::General, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", GameStrings::General);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
+
+	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -931,6 +941,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
 		.Process(this->IvanBombAttachToCenter)
+		.Process(this->MissileSpawnAttackCell)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->ReloadInTransport)
@@ -1061,6 +1072,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
+		.Process(this->ApproachTarget_StopWhenInRange)
+		.Process(this->NoAlphaImageOnBuildup)
     ;
 }
 

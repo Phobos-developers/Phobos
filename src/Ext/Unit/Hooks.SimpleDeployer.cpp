@@ -11,7 +11,7 @@ static __forceinline bool HasDeployingAnim(UnitTypeClass* pType)
 	return pType->DeployingAnim || UnitTypeExt::Fetch(pType)->DeployingAnims.size() > 0;
 }
 
-static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
+static inline bool CheckRestrictions(UnitClass* pUnit, bool isDeploying)
 {
 	// Movement restrictions.
 	const ILocomotionPtr pLoco = pUnit->Locomotor;
@@ -34,7 +34,7 @@ static inline bool CheckRestrictions(FootClass* pUnit, bool isDeploying)
 	}
 
 	// Facing restrictions.
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pUnit))->GetTypeExtData();
+	auto const pTypeExt = UnitExt::Fetch(pUnit)->GetTypeExtData();
 	auto const defaultFacing = (FacingType)(RulesClass::Instance->DeployDir >> 5);
 	auto const facing = pTypeExt->DeployDir.Get(defaultFacing);
 
@@ -241,8 +241,8 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pLinkedTo = pThis->LinkedTo;
-	CheckRestrictions(pLinkedTo, false);
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo))
+		CheckRestrictions(pUnit, false);
 
 	return SkipGameCode;
 }
@@ -253,7 +253,7 @@ DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo);
+	auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo);
 
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
 		return SkipGameCode;
@@ -291,7 +291,7 @@ DEFINE_HOOK(0x513D2C, HoverLocomotionClass_ProcessBobbing_DeployToLand2, 0x6)
 
 	GET(LocomotionClass*, pThis, ECX);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis->LinkedTo))
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo))
 	{
 		if (pUnit->Deploying && pUnit->Type->DeployToLand)
 			return SkipBobbing;
@@ -312,7 +312,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	GET(bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
-	auto const pUnit = abstract_cast<UnitClass*>(pLinkedTo);
+	auto const pUnit = abstract_cast<UnitClass*, true>(pLinkedTo);
 
 	if (pUnit && pUnit->InAir)
 	{
@@ -332,7 +332,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 				pLinkedTo->SetDestination(nullptr, true);
 			}
 
-			CheckRestrictions(pLinkedTo, false);
+			CheckRestrictions(pUnit, false);
 
 			if (pLinkedTo->GetHeight() <= 0)
 			{

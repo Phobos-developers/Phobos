@@ -86,6 +86,8 @@ public:
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
 
+	bool PreventCrew;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, Shield {}
@@ -134,12 +136,13 @@ public:
 		, ShouldBeDead { false }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
+		, PreventCrew { false }
 	{ }
 
 	void OnEarlyUpdate();
 
 	// the extension state that goes with TechnoClass::Init
-	void InitializeState();
+	void InitializeState(TechnoTypeClass* pType = nullptr);
 
 	// the techno was created while a savegame was loading, so TechnoClass::Init found
 	// no extension to initialize; catch up now that there is one
