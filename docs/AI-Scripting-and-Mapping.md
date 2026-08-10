@@ -14,6 +14,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 - Fixed AI team recruitment inconsistency causing underfilled teams.
+- Restored the ScriptType action#24 `Play speech` from Tiberian Sun.
 
 ### Dynamic Team Delays
 
@@ -166,19 +167,6 @@ ShowBriefing=true  ; boolean
   - Now, setting a local variable named `<Alternate Next Scenario>` will also trigger `AltNextScenario`.
 
 ## Script Actions
-
-### Below `10000`
-
-#### `24` Play speech
-
-- Restored functionality.
-- Given a speech index, the game will play it. Just like action 24 from Tiberian Sun.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=24,n
-```
 
 ### `10000-10999` Ingame Actions
 
