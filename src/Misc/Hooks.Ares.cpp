@@ -191,7 +191,7 @@ namespace SuperWeaponStatusTemp
 	// Re-implements Ares' GetSuperWeaponStatuses()
 	std::vector<Status> GetStatuses(HouseClass* pHouse)
 	{
-		std::vector<Status> statuses(pHouse->Supers.Count, { false, false, false });
+		std::vector<Status> Statuses(pHouse->Supers.Count, { false, false, false });
 
 		if (!pHouse->Defeated && !pHouse->IsObserver())
 		{
@@ -199,23 +199,23 @@ namespace SuperWeaponStatusTemp
 			{
 				const auto pData = SWTypeExt::Fetch(pHouse->Supers[i]->Type);
 				if (pData->SW_AlwaysGranted && pData->IsAvailable(pHouse))
-					statuses[i] = { true, true, true };
+					Statuses[i] = { true, true, true };
 			}
 
-			for (const auto pBld : pHouse->Buildings)
+			for (auto pBld : pHouse->Buildings)
 			{
 				if (pBld->IsAlive && !pBld->InLimbo)
 				{
-					auto UpdateStatus = [pBld, pHouse, &statuses](int idxSW)
+					auto UpdateStatus = [pBld, pHouse, &Statuses](int idxSW)
 					{
-						if (idxSW > -1 && !statuses[idxSW].Charging)
+						if (idxSW > -1 && !Statuses[idxSW].Charging)
 						{
 							const auto pData = SWTypeExt::Fetch(pHouse->Supers[idxSW]->Type);
 
 							if (!pData->IsAvailable(pHouse))
 								return;
 
-							auto& status = statuses[idxSW];
+							auto& status = Statuses[idxSW];
 							status.Available = true;
 
 							if (!status.Charging && pBld->HasPower && !pBld->IsUnderEMP())
@@ -234,7 +234,7 @@ namespace SuperWeaponStatusTemp
 						}
 					};
 
-					for (const auto pUpgrade : pBld->Upgrades)
+					for (auto pUpgrade : pBld->Upgrades)
 					{
 						if (const auto pUpgradeExt = BuildingTypeExt::TryFetch(pUpgrade))
 						{
@@ -251,10 +251,10 @@ namespace SuperWeaponStatusTemp
 
 			const bool hasPower = pHouse->HasFullPower();
 
-			for (const auto pSuper : pHouse->Supers)
+			for (auto pSuper : pHouse->Supers)
 			{
-				const auto index = pSuper->Type->ArrayIndex;
-				auto& status = statuses[index];
+				auto index = pSuper->Type->ArrayIndex;
+				auto& status = Statuses[index];
 
 				if (SessionClass::Instance.GameMode != GameMode::Campaign && !Unsorted::SWAllowed)
 				{
@@ -267,7 +267,7 @@ namespace SuperWeaponStatusTemp
 			}
 		}
 
-		return statuses;
+		return Statuses;
 	}
 }
 
@@ -278,14 +278,14 @@ static int __cdecl Ares_HouseClass_UpdateSuperWeaponsUnavailable(REGISTERS* R)
 
 	if (!pThis->Defeated)
 	{
-		auto statuses = SuperWeaponStatusTemp::GetStatuses(pThis);
+		auto Statuses = SuperWeaponStatusTemp::GetStatuses(pThis);
 
-		for (const auto pSuper : pThis->Supers)
+		for (auto pSuper : pThis->Supers)
 		{
 			if (!pSuper->IsPresent || pSuper->IsOneTime)
 			{
-				const auto index = pSuper->Type->ArrayIndex;
-				auto& status = statuses[index];
+				auto index = pSuper->Type->ArrayIndex;
+				auto& status = Statuses[index];
 
 				if (status.Available)
 				{
@@ -297,7 +297,7 @@ static int __cdecl Ares_HouseClass_UpdateSuperWeaponsUnavailable(REGISTERS* R)
 						if (pExt->SW_ShowCameo)
 						{
 							MouseClass::Instance.AddCameo(AbstractType::Special, index);
-							const int idxTab = SidebarClass::GetObjectTabIdx(SuperClass::AbsID, index, 0);
+							int idxTab = SidebarClass::GetObjectTabIdx(SuperClass::AbsID, index, 0);
 							MouseClass::Instance.RepaintSidebar(idxTab);
 						}
 					}
@@ -316,6 +316,7 @@ static int __cdecl Ares_SidebarClass_ProcessCameoClick_SuperWeapons(REGISTERS* R
 	const auto pSuper = HouseClass::CurrentPlayer->Supers[idxSW];
 	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
+	// Decoupled: manual is decided by SW.ManualFire alone.
 	const bool manual = !pExt->SW_ManualFire;
 	const bool unstoppable = pSuper->Type->UseChargeDrain
 		&& pSuper->ChargeDrainState == ChargeDrainState::Draining
