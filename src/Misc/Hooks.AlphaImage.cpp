@@ -123,7 +123,6 @@ DEFINE_HOOK(0x5F3E78, ObjectClass_AI_UpdateAlphaShape, 0x6)
 
 DEFINE_HOOK(0x5F5045, ObjectClass_Place_NoAlphaImageOnBuildup, 0x6)
 {
-	GET(ObjectClass* const, pObject, ESI);
 	GET(ObjectTypeClass* const, pType, EBX);
 
 	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType))
