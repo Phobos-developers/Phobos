@@ -527,6 +527,7 @@ public:
 		Nullable<int> PoseDir_Field;
 
 		Valueable<bool> ApproachTarget_StopWhenInRange;
+		Valueable<bool> ReadyToNextMission_MovingCheck;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -990,6 +991,7 @@ public:
 			, PoseDir_Field{}
 
 			, ApproachTarget_StopWhenInRange { false }
+			, ReadyToNextMission_MovingCheck { false }
 		{ }
 
 		virtual ~ExtData() = default;
