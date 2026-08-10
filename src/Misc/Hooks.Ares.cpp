@@ -1,14 +1,16 @@
-﻿#include <Utilities/AresHelper.h>
+#include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Helpers/Macro.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -175,6 +177,186 @@ static bool __fastcall ParadropPlaneUnlimbo(AircraftClass* pThis, void* _, const
 
 #pragma endregion
 
+#pragma region AresAutoFireDecoupling
+
+namespace SuperWeaponStatusTemp
+{
+	struct Status
+	{
+		bool Available;
+		bool PowerSourced;
+		bool Charging;
+	};
+
+	// Re-implements Ares' GetSuperWeaponStatuses()
+	std::vector<Status> GetStatuses(HouseClass* pHouse)
+	{
+		std::vector<Status> Statuses(pHouse->Supers.Count, { false, false, false });
+
+		if (!pHouse->Defeated && !pHouse->IsObserver())
+		{
+			for (int i = 0; i < pHouse->Supers.Count; ++i)
+			{
+				const auto pData = SWTypeExt::Fetch(pHouse->Supers[i]->Type);
+				if (pData->SW_AlwaysGranted && pData->IsAvailable(pHouse))
+					Statuses[i] = { true, true, true };
+			}
+
+			for (auto pBld : pHouse->Buildings)
+			{
+				if (pBld->IsAlive && !pBld->InLimbo)
+				{
+					auto UpdateStatus = [pBld, pHouse, &Statuses](int idxSW)
+					{
+						if (idxSW > -1 && !Statuses[idxSW].Charging)
+						{
+							const auto pData = SWTypeExt::Fetch(pHouse->Supers[idxSW]->Type);
+
+							if (!pData->IsAvailable(pHouse))
+								return;
+
+							auto& status = Statuses[idxSW];
+							status.Available = true;
+
+							if (!status.Charging && pBld->HasPower && !pBld->IsUnderEMP())
+							{
+								status.PowerSourced = true;
+
+								if (!pBld->IsBeingWarpedOut()
+									&& pBld->CurrentMission != Mission::Construction
+									&& pBld->CurrentMission != Mission::Selling
+									&& pBld->QueuedMission != Mission::Construction
+									&& pBld->QueuedMission != Mission::Selling)
+								{
+									status.Charging = true;
+								}
+							}
+						}
+					};
+
+					for (auto pUpgrade : pBld->Upgrades)
+					{
+						if (const auto pUpgradeExt = BuildingTypeExt::TryFetch(pUpgrade))
+						{
+							for (int i = 0; i < 2 + (int)pUpgradeExt->SuperWeapons.size(); ++i)
+								UpdateStatus(pUpgradeExt->GetSuperWeaponIndex(i, pHouse));
+						}
+					}
+
+					const auto pTypeExt = BuildingTypeExt::Fetch(pBld->Type);
+					for (int i = 0; i < 2 + (int)pTypeExt->SuperWeapons.size(); ++i)
+						UpdateStatus(pTypeExt->GetSuperWeaponIndex(i));
+				}
+			}
+
+			const bool hasPower = pHouse->HasFullPower();
+
+			for (auto pSuper : pHouse->Supers)
+			{
+				auto index = pSuper->Type->ArrayIndex;
+				auto& status = Statuses[index];
+
+				if (SessionClass::Instance.GameMode != GameMode::Campaign && !Unsorted::SWAllowed)
+				{
+					if (pSuper->Type->DisableableFromShell)
+						status.Available = false;
+				}
+
+				if (pSuper->IsPowered())
+					status.PowerSourced &= hasPower;
+			}
+		}
+
+		return Statuses;
+	}
+}
+
+// Decoupled: SW.ShowCameo now hides the cameo regardless of SW.AutoFire.
+static int __cdecl Ares_HouseClass_UpdateSuperWeaponsUnavailable(REGISTERS* R)
+{
+	GET(HouseClass*, pThis, ECX);
+
+	if (!pThis->Defeated)
+	{
+		auto Statuses = SuperWeaponStatusTemp::GetStatuses(pThis);
+
+		for (auto pSuper : pThis->Supers)
+		{
+			if (!pSuper->IsPresent || pSuper->IsOneTime)
+			{
+				auto index = pSuper->Type->ArrayIndex;
+				auto& status = Statuses[index];
+
+				if (status.Available)
+				{
+					pSuper->Grant(false, pThis->IsCurrentPlayer(), !status.PowerSourced);
+
+					if (pThis->IsCurrentPlayer())
+					{
+						const auto pExt = SWTypeExt::Fetch(pSuper->Type);
+						if (pExt->SW_ShowCameo)
+						{
+							MouseClass::Instance.AddCameo(AbstractType::Special, index);
+							int idxTab = SidebarClass::GetObjectTabIdx(SuperClass::AbsID, index, 0);
+							MouseClass::Instance.RepaintSidebar(idxTab);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return 0x50B36E;
+}
+
+// Decoupled: SW.ManualFire now disallows manual firing regardless of SW.AutoFire.
+static int __cdecl Ares_SidebarClass_ProcessCameoClick_SuperWeapons(REGISTERS* R)
+{
+	GET(int, idxSW, ESI);
+	const auto pSuper = HouseClass::CurrentPlayer->Supers[idxSW];
+	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
+
+	// Decoupled: manual is decided by SW.ManualFire alone.
+	const bool manual = !pExt->SW_ManualFire;
+	const bool unstoppable = pSuper->Type->UseChargeDrain
+		&& pSuper->ChargeDrainState == ChargeDrainState::Draining
+		&& pExt->SW_Unstoppable;
+
+	if (!manual && !pSuper->CanFire())
+	{
+		VoxClass::PlayIndex(pExt->EVA_Impatient);
+		return 0x6AAFB1;
+	}
+
+	if (!HouseClass::CurrentPlayer->CanTransactMoney(pExt->Money_Amount))
+	{
+		VoxClass::PlayIndex(pExt->EVA_InsufficientFunds);
+		pExt->PrintMessage(pExt->Message_InsufficientFunds, HouseClass::CurrentPlayer);
+		return 0x6AAFB1;
+	}
+
+	if (!pExt->SW_UseAITargeting
+		|| (AresFunctions::IsTargetConstraintsEligible
+			&& AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
+	{
+		if (manual || unstoppable)
+			return 0x6AAFB1;
+
+		if (pSuper->Type->Action == Action::None || pExt->SW_UseAITargeting)
+		{
+			R->EAX(HouseClass::CurrentPlayer);
+			return 0x6AAF10;
+		}
+
+		return 0x6AAF46;
+	}
+
+	pExt->PrintMessage(pExt->Message_CannotFire, HouseClass::CurrentPlayer);
+	return 0x6AAFB1;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -294,16 +476,9 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &BuildingExt::UpdateFactoryQueues);
 
 	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x3962C, {
-		0x80, 0xB8, 0xE5, 0x01, 0x00, 0x00, 0x00, // cmp byte ptr [eax+0x1E5], 0 (SW_ShowCameo)
-		0x74, 0x2F, // jz -> skip AddCameo (hide)
-		0xEB, 0x07, // jmp -> AddCameo (show)
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x39580, GET_OFFSET(Ares_HouseClass_UpdateSuperWeaponsUnavailable));
 	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x34DD0, {
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 // nop cmp [esi+0x1E1],0; jz (AutoFire check)
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x34DA0, GET_OFFSET(Ares_SidebarClass_ProcessCameoClick_SuperWeapons));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -417,14 +592,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &BuildingExt::UpdateFactoryQueues);
 
 	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x3A0AC, {
-		0x80, 0xB8, 0xE5, 0x01, 0x00, 0x00, 0x00, // cmp byte ptr [eax+0x1E5], 0 (SW_ShowCameo)
-		0x74, 0x2F, // jz -> skip AddCameo (hide)
-		0xEB, 0x07, // jmp -> AddCameo (show)
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3A000, GET_OFFSET(Ares_HouseClass_UpdateSuperWeaponsUnavailable));
 	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
-	Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x35810, {
-		0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 // nop cmp [esi+0x1E1],0; jz (AutoFire check)
-	});
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x357E0, GET_OFFSET(Ares_SidebarClass_ProcessCameoClick_SuperWeapons));
 }
