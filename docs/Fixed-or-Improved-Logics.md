@@ -1361,6 +1361,19 @@ In `rulesmd.ini`:
 DeployFireDelay=    ; integer, default value ranges from 14 to 16
 ```
 
+### Disable AlphaImage during Buildup
+
+- Now you can disable AlphaImage before the building is completed.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+NoAlphaImageOnBuildup=false  ; boolean
+
+[SOMEBUILDING]               ; BuildingType
+NoAlphaImageOnBuildup=       ; boolean, defaults to [AudioVisual] -> NoAlphaImageOnBuildup
+```
+
 ### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.

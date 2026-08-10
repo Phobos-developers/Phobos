@@ -600,6 +600,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
 	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
 
+	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -1071,6 +1073,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
 		.Process(this->ApproachTarget_StopWhenInRange)
+		.Process(this->NoAlphaImageOnBuildup)
     ;
 }
 
