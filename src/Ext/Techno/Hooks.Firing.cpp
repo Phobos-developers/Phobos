@@ -1147,12 +1147,24 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 
-// Update ammo rounds
+// Update ammo rounds and mark the next reload timer for veterancy scaling.
 DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 {
 	GET(TechnoClass* const, pThis, ECX);
 
 	TechnoExt::UpdateSharedAmmo(pThis);
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (pType->Ammo <= 0)
+		return 0;
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+
+	pExt->PendingReloadVeterancyAdjustment =
+		(pThis->Ammo == 0 && pType->EmptyReload > 0)
+		? PendingReloadVeterancy::EmptyReload
+		: PendingReloadVeterancy::Reload;
 
 	return 0;
 }

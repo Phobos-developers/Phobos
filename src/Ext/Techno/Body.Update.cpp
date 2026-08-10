@@ -7,13 +7,17 @@
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
+#include <Utilities/GeneralUtils.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
+
+#include <cmath>
 
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::OnEarlyUpdate()
 {
+	this->ApplyPendingReloadVeterancy();
 	this->UpdateShield();
 	this->UpdateAttachEffects();
 	this->EatPassengers();
@@ -27,6 +31,45 @@ void TechnoExt::OnEarlyUpdate()
 		return;
 
 	this->ApplyInterceptor();
+}
+
+void TechnoExt::ApplyPendingReloadVeterancy()
+{
+	const auto pending = this->PendingReloadVeterancyAdjustment;
+
+	if (pending == PendingReloadVeterancy::None)
+		return;
+
+	// Clear first so that any early return cannot re-apply the scaling next frame.
+	this->PendingReloadVeterancyAdjustment = PendingReloadVeterancy::None;
+
+	const auto pThis = this->OwnerObject();
+	auto& timer = pThis->ReloadTimer;
+
+	if (!timer.HasStarted() || timer.TimeLeft <= 0)
+		return;
+
+	const bool isEmptyReload = pending == PendingReloadVeterancy::EmptyReload;
+
+	const auto ability = isEmptyReload
+		? AdditionalAbility::EmptyReload
+		: AdditionalAbility::Reload;
+
+	if (!TechnoExt::HasAdditionalAbility(pThis, ability))
+		return;
+
+	const auto pTypeExt = this->TypeExtData;
+	const auto pRulesExt = RulesExt::Global();
+
+	const double multiplier = isEmptyReload
+		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload)
+		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+
+	// A non-positive or non-finite multiplier must not create an invalid timer.
+	if (!std::isfinite(multiplier) || multiplier <= 0.0)
+		return;
+
+	timer.TimeLeft = Math::max(1, GeneralUtils::SafeMultiply(timer.TimeLeft, multiplier));
 }
 
 void TechnoExt::ApplyInterceptor()

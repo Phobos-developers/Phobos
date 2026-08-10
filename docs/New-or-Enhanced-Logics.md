@@ -2454,6 +2454,32 @@ TiberiumEater.AnimMove=true       ; boolean
 TiberiumEater.UnderEMP=false      ; boolean
 ```
 
+### Veteran reload time customization
+
+- In vanilla, veteran and elite technos only support the predefined ability list. Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
+  - `RELOAD` scales the duration of normal reload cycles.
+  - `EMPTY_RELOAD` scales the duration of the reload cycle that starts when the clip is completely empty, which is only used when the TechnoType has a positive `EmptyReload`.
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranReload` and `VeteranEmptyReload` are multipliers applied to the final reload duration computed by the game, so other reload modifiers such as `ReloadIncrement` are still taken into account.
+  - Values greater than `1.0` lengthen the reload, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
+
+```{note}
+For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeteranReload=1.0        ; floating point value, multiplier
+VeteranEmptyReload=1.0   ; floating point value, multiplier
+
+[SOMETECHNO]             ; TechnoType
+VeteranReload=           ; floating point value, multiplier, defaults to [General] -> VeteranReload
+VeteranEmptyReload=      ; floating point value, multiplier, defaults to [General] -> VeteranEmptyReload
+VeteranAbilities=RELOAD  ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
+EliteAbilities=EMPTY_RELOAD ; Ability
+```
+
 ### Weapons fired on warping in / out
 
 - It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.

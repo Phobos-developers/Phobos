@@ -45,6 +45,7 @@ public:
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
+	PendingReloadVeterancy PendingReloadVeterancyAdjustment;
 	bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 	int WHAnimRemainingCreationInterval;
 	WeaponTypeClass* LastWeaponType;
@@ -105,6 +106,7 @@ public:
 		, HasBeenPlacedOnMap { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
+		, PendingReloadVeterancyAdjustment { PendingReloadVeterancy::None }
 		, CanCloakDuringRearm { false }
 		, WHAnimRemainingCreationInterval { 0 }
 		, LastWeaponType {}
@@ -140,6 +142,7 @@ public:
 	{ }
 
 	void OnEarlyUpdate();
+	void ApplyPendingReloadVeterancy();
 
 	// the extension state that goes with TechnoClass::Init
 	void InitializeState(TechnoTypeClass* pType = nullptr);
@@ -233,6 +236,7 @@ public:
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
+	static bool HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);

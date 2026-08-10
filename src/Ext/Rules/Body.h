@@ -288,6 +288,8 @@ public:
 		Valueable<bool> NoRearm_Temporal;
 		Valueable<bool> NoReload_UnderEMP;
 		Valueable<bool> NoReload_Temporal;
+		Valueable<double> VeteranReload;
+		Valueable<double> VeteranEmptyReload;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
@@ -771,6 +773,8 @@ public:
 			, NoRearm_Temporal { false }
 			, NoReload_UnderEMP { false }
 			, NoReload_Temporal { false }
+			, VeteranReload { 1.0 }
+			, VeteranEmptyReload { 1.0 }
 			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }

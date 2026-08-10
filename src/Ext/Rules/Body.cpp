@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <cmath>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -352,6 +354,22 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
 	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, GameStrings::General, "NoReload.Temporal");
+
+	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+
+	const auto validateReloadMultiplier = [](const char* pKey, Valueable<double>& value)
+	{
+		if (!std::isfinite(value.Get()) || value.Get() <= 0.0)
+		{
+			Debug::INIParseFailed(GameStrings::General, pKey, "<invalid>", "Expected a finite value greater than 0.0");
+			value = 1.0;
+		}
+	};
+
+	validateReloadMultiplier("VeteranReload", this->VeteranReload);
+	validateReloadMultiplier("VeteranEmptyReload", this->VeteranEmptyReload);
+
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
 	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
@@ -901,6 +919,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)

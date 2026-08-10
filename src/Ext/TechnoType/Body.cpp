@@ -12,6 +12,46 @@
 
 #include <Utilities/AresHelper.h>
 
+namespace
+{
+	void ReadAdditionalAbilities(
+		INI_EX& parser,
+		const char* section,
+		const char* key,
+		std::bitset<AdditionalAbilityCount>& result)
+	{
+		std::vector<std::string> values;
+
+		if (!parser.ParseStringList(values, section, key))
+			return;
+
+		// When the key is present, fully replace the previous value with this
+		// list so that map INIs can override rules values.
+		result.reset();
+
+		for (const auto& value : values)
+		{
+			if (!_stricmp(value.c_str(), "RELOAD"))
+			{
+				result.set(static_cast<size_t>(AdditionalAbility::Reload));
+			}
+			else if (!_stricmp(value.c_str(), "EMPTY_RELOAD"))
+			{
+				result.set(static_cast<size_t>(AdditionalAbility::EmptyReload));
+			}
+		}
+	}
+
+	void ValidateReloadMultiplier(const char* pSection, const char* pKey, Nullable<double>& value)
+	{
+		if (value.isset() && (!std::isfinite(value.Get()) || value.Get() <= 0.0))
+		{
+			Debug::INIParseFailed(pSection, pKey, "<invalid>", "Expected a finite value greater than 0.0");
+			value.Reset();
+		}
+	}
+}
+
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -1010,6 +1050,15 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoReload_UnderEMP.Read(exINI, pSection, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
 
+	ReadAdditionalAbilities(exINI, pSection, "VeteranAbilities", this->AdditionalVeteranAbilities);
+	ReadAdditionalAbilities(exINI, pSection, "EliteAbilities", this->AdditionalEliteAbilities);
+
+	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+
+	ValidateReloadMultiplier(pSection, "VeteranReload", this->VeteranReload);
+	ValidateReloadMultiplier(pSection, "VeteranEmptyReload", this->VeteranEmptyReload);
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -1641,6 +1690,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->AdditionalVeteranAbilities)
+		.Process(this->AdditionalEliteAbilities)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
