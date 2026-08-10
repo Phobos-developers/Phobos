@@ -1256,6 +1256,10 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	if (closeEnough)
 	{
 		GET(FootClass*, pThis, EBX);
+
+		if (pThis->InLimbo)
+			return 0;
+
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 		// Per-type setting takes priority, falls back to the global one.
