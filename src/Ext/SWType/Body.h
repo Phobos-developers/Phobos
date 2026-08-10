@@ -36,7 +36,6 @@ public:
 	Valueable<bool> SW_Unstoppable;
 	Valueable<bool> SW_AllowPlayer;
 	Valueable<bool> SW_AllowAI;
-	Valueable<bool> SW_AlwaysGranted;
 	ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 	Valueable<bool> SW_AnyInhibitor;
 	ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -139,7 +138,6 @@ public:
 		, SW_Unstoppable { false }
 		, SW_AllowPlayer { true }
 		, SW_AllowAI { true }
-		, SW_AlwaysGranted { false }
 		, SW_Inhibitors {}
 		, SW_AnyInhibitor { false }
 		, SW_Designators { }

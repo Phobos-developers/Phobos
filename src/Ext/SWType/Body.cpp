@@ -31,7 +31,6 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->SW_Unstoppable)
 		.Process(this->SW_AllowPlayer)
 		.Process(this->SW_AllowAI)
-		.Process(this->SW_AlwaysGranted)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
@@ -130,7 +129,6 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");
 	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
-	this->SW_AlwaysGranted.Read(exINI, pSection, "SW.AlwaysGranted");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
