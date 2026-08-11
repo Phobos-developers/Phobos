@@ -1278,6 +1278,10 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 	enum { Return = 0x4D5A34 };
 
 	GET(FootClass*, pThis, EBX);
+
+	if (pThis->InLimbo)
+		return 0;
+
 	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;

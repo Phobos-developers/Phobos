@@ -737,6 +737,7 @@ This page lists all the individual contributions to the project by their author.
   - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
+  - Disable AlphaImage during Buildup
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

@@ -529,6 +529,8 @@ public:
 		Valueable<bool> ApproachTarget_StopWhenInRange;
 		Valueable<bool> ReadyToNextMission_MovingCheck;
 
+		Valueable<bool> NoAlphaImageOnBuildup;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -991,6 +993,8 @@ public:
 			, PoseDir_Field{}
 
 			, ApproachTarget_StopWhenInRange { false }
+
+			, NoAlphaImageOnBuildup { false }
 			, ReadyToNextMission_MovingCheck { false }
 		{ }
 
