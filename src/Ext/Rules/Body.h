@@ -527,6 +527,7 @@ public:
 		Nullable<int> PoseDir_Field;
 
 		Valueable<bool> ApproachTarget_StopWhenInRange;
+		Valueable<bool> ReadyToNextMission_MovingCheck;
 
 		Valueable<bool> NoAlphaImageOnBuildup;
 
@@ -994,6 +995,7 @@ public:
 			, ApproachTarget_StopWhenInRange { false }
 
 			, NoAlphaImageOnBuildup { false }
+			, ReadyToNextMission_MovingCheck { false }
 		{ }
 
 		virtual ~ExtData() = default;

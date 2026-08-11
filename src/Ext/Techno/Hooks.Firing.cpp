@@ -1,3 +1,5 @@
+#include <JumpjetLocomotionClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -1256,13 +1258,30 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	if (closeEnough)
 	{
 		GET(FootClass*, pThis, EBX);
+
+		if (pThis->InLimbo)
+			return 0;
+
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 		// Per-type setting takes priority, falls back to the global one.
 		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
 		{
-			pThis->StopMoving();
-			pThis->AbortMotion();
+			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			{
+				auto const crd = pThis->GetCoords();
+				pJumpjetLoco->DestinationCoords.X = crd.X;
+				pJumpjetLoco->DestinationCoords.Y = crd.Y;
+				pJumpjetLoco->CurrentSpeed = 0;
+				pJumpjetLoco->MaxSpeed = 0;
+				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pThis->AbortMotion();
+			}
+			else
+			{
+				pThis->StopMoving();
+				pThis->AbortMotion();
+			}
 		}
 	}
 
@@ -1274,6 +1293,10 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 	enum { Return = 0x4D5A34 };
 
 	GET(FootClass*, pThis, EBX);
+
+	if (pThis->InLimbo)
+		return 0;
+
 	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
