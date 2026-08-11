@@ -95,11 +95,10 @@ void RadSiteExt::CreateLight()
 
 	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
-	bool update = false;
 
 	if (pThis->LightSource)
 	{
-		//pThis->LightSource->ChangeLevels(Game::F2I(lightFactor), nTintBuffer, update);
+		//pThis->LightSource->ChangeLevels(Game::F2I(lightFactor), nTintBuffer, false);
 		this->LightDirty = true;
 	}
 	else if (const auto pCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell))
@@ -107,7 +106,7 @@ void RadSiteExt::CreateLight()
 		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(lightFactor), nTintBuffer);
 		pThis->LightSource = pLight;
 		pLight->DetailLevel = 0;
-		pLight->Activate(update);
+		pLight->Activate(false);
 	}
 
 	pThis->Radiate();

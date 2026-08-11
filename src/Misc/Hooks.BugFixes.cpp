@@ -3619,7 +3619,7 @@ DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
 	enum { ContinueIn = 0x554AC0, ReturnFromFunction = 0x554AE1 };
 
 	GET(LightSourceClass*, pThis, ECX);
-	GET(int, intensity, ESI);
+	GET(const int, intensity, ESI);
 	REF_STACK(const TintStruct, tint, STACK_OFFSET(0x8, 0x8));
 
 	return pThis->LightIntensity == intensity && pThis->LightTint == tint ? ReturnFromFunction : ContinueIn;
