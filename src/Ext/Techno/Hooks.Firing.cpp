@@ -4,9 +4,13 @@
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/GeneralUtils.h>
+
+#include <cmath>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -1147,24 +1151,58 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 
-// Update ammo rounds and mark the next reload timer for veterancy scaling.
+// Update ammo rounds
 DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 {
 	GET(TechnoClass* const, pThis, ECX);
 
 	TechnoExt::UpdateSharedAmmo(pThis);
 
-	const auto pType = pThis->GetTechnoType();
+	return 0;
+}
 
-	if (pType->Ammo <= 0)
-		return 0;
+namespace
+{
+	int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int duration, AdditionalAbility ability)
+	{
+		if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
+			return duration;
 
-	const auto pExt = TechnoExt::Fetch(pThis);
+		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+		const auto pRulesExt = RulesExt::Global();
 
-	pExt->PendingReloadVeterancyAdjustment =
-		(pThis->Ammo == 0 && pType->EmptyReload > 0)
-		? PendingReloadVeterancy::EmptyReload
-		: PendingReloadVeterancy::Reload;
+		const double multiplier = ability == AdditionalAbility::EmptyReload
+			? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload)
+			: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+
+		// A non-positive or non-finite multiplier must not create an invalid timer.
+		if (!std::isfinite(multiplier) || multiplier <= 0.0)
+			return duration;
+
+		return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
+	}
+}
+
+// Scale the reload cycle that uses the EmptyReload duration (clip empty and `EmptyReload` is set).
+// Hooked at `add esi, 1FCh` in StartReloading: EAX holds the duration, ESI holds `this`.
+DEFINE_HOOK(0x6FB0CF, TechnoClass_StartReloading_EmptyReload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::EmptyReload));
+
+	return 0;
+}
+
+// Scale the normal reload cycle duration for veterancy. The duration in EAX is the final
+// value computed by the game, including the ReloadIncrement adjustment.
+DEFINE_HOOK(0x6FB14C, TechnoClass_StartReloading_Reload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::Reload));
 
 	return 0;
 }

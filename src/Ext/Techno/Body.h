@@ -45,7 +45,6 @@ public:
 	bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 	bool ForceFullRearmDelay;
 	bool LastRearmWasFullDelay;
-	PendingReloadVeterancy PendingReloadVeterancyAdjustment;
 	bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 	int WHAnimRemainingCreationInterval;
 	WeaponTypeClass* LastWeaponType;
@@ -106,7 +105,6 @@ public:
 		, HasBeenPlacedOnMap { false }
 		, ForceFullRearmDelay { false }
 		, LastRearmWasFullDelay { false }
-		, PendingReloadVeterancyAdjustment { PendingReloadVeterancy::None }
 		, CanCloakDuringRearm { false }
 		, WHAnimRemainingCreationInterval { 0 }
 		, LastWeaponType {}
@@ -142,7 +140,6 @@ public:
 	{ }
 
 	void OnEarlyUpdate();
-	void ApplyPendingReloadVeterancy();
 
 	// the extension state that goes with TechnoClass::Init
 	void InitializeState(TechnoTypeClass* pType = nullptr);

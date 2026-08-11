@@ -453,10 +453,3 @@ enum class AdditionalAbility : unsigned char
 };
 
 constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);
-
-enum class PendingReloadVeterancy : unsigned char
-{
-	None,
-	Reload,
-	EmptyReload
-};
