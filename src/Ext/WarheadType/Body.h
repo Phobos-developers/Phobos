@@ -266,7 +266,7 @@ public:
 
 	Nullable<StackingMode> Psychedelic_StackingMode;
 
-	Valueable<bool> PreventCrew;
+	Valueable<bool> PreventCrewEscape;
 	Valueable<bool> PreventPassengerEscape;
 	Valueable<bool> PreventOccupantEscape;
 
@@ -561,7 +561,7 @@ public:
 
 		, Psychedelic_StackingMode {}
 
-		, PreventCrew { false }
+		, PreventCrewEscape { false }
 		, PreventPassengerEscape { false }
 		, PreventOccupantEscape { false }
 	{ }

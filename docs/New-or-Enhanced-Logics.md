@@ -3276,7 +3276,7 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                          ; WarheadType
-PreventCrew=false                      ; boolean
+PreventCrewEscape=false                ; boolean
 PreventPassengerEscape=false           ; boolean
 PreventOccupantEscape=false            ; boolean
 ```

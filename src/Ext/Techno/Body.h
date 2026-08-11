@@ -86,7 +86,7 @@ public:
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
 
-	bool PreventCrew;
+	bool PreventCrewEscape;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
@@ -136,7 +136,7 @@ public:
 		, ShouldBeDead { false }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
-		, PreventCrew { false }
+		, PreventCrewEscape { false }
 	{ }
 
 	void OnEarlyUpdate();

@@ -445,7 +445,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
 
-	this->PreventCrew.Read(exINI, pSection, "PreventCrew");
+	this->PreventCrewEscape.Read(exINI, pSection, "PreventCrewEscape");
 	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
 	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
 
@@ -797,7 +797,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->Psychedelic_StackingMode)
 
-		.Process(this->PreventCrew)
+		.Process(this->PreventCrewEscape)
 		.Process(this->PreventPassengerEscape)
 		.Process(this->PreventOccupantEscape)
 
