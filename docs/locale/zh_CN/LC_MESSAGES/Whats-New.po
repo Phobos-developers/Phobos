@@ -2939,6 +2939,11 @@ msgid ""
 "cause it to enter an unload state (by FlyStar)"
 msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题（by FlyStar）"
 
+msgid ""
+"Fixed the issue of significant lagging caused by frequent lighting updates "
+"due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)"
+msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

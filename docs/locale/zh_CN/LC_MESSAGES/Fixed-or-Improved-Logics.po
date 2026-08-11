@@ -1679,6 +1679,11 @@ msgid ""
 "cause it to enter an unload state."
 msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题。"
 
+msgid ""
+"Fixed the issue of significant lagging caused by frequent lighting updates "
+"due to the accumulation of a large amount of radsite in a short time."
+msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

@@ -3612,3 +3612,15 @@ DEFINE_HOOK(0x701664, TechnoClass_SetOwningHouse_TunnelFix, 0x6)
 	R->AL(pThis->InLimbo || (abstract_cast<FootClass*>(pThis) && static_cast<FootClass*>(pThis)->TubeIndex != -1));
 	return R->Origin() + 0x6;
 }
+
+// Vanilla check logic is wrong, so we re-implement it
+DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
+{
+	enum { ContinueIn = 0x554AC0, ReturnFromFunction = 0x554AE1 };
+
+	GET(LightSourceClass*, pThis, ECX);
+	GET(int, intensity, ESI);
+	REF_STACK(const TintStruct, tint, STACK_OFFSET(0x8, 0x8));
+
+	return pThis->LightIntensity == intensity && pThis->LightTint == tint ? ReturnFromFunction : ContinueIn;
+}
