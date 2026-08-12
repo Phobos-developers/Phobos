@@ -1,6 +1,8 @@
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
 
+#include <format>
+
 class ExtSelection
 {
 public:
@@ -26,7 +28,7 @@ public:
 	} Array {};
 
 	static inline bool ProcessingIDMatches = false;
-	static inline std::vector<const char*> IFVGroups;
+	static inline std::vector<std::string> IFVGroups;
 
 	// Reversed from Is_Selectable, w/o Select call
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
@@ -135,12 +137,12 @@ public:
 
 			if (pTechnoType->Gunner && !ExtSelection::IFVGroups.empty())
 			{
-				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+				const char* pWeaponGroup = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+				const std::string gunnerID = GeneralUtils::IsValidString(pWeaponGroup)
+					? std::string(pWeaponGroup)
+					: std::format("{}", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
 
-				if (!GeneralUtils::IsValidString(gunnerID))
-					sprintf_s(gunnerID, 0x20, "%d", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
-
-				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
+				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const std::string& id) { return !_stricmp(id.c_str(), gunnerID.c_str()); }))
 					break;
 			}
 
@@ -203,12 +205,12 @@ DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 			continue;
 
 		const auto pTypeExt = TechnoTypeExt::Fetch(pTechnoType);
-		char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+		const char* pWeaponGroup = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+		const std::string gunnerID = GeneralUtils::IsValidString(pWeaponGroup)
+			? std::string(pWeaponGroup)
+			: std::format("{}", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
 
-		if (!GeneralUtils::IsValidString(gunnerID))
-			sprintf_s(gunnerID, 0x20, "%d", useIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
-
-		if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
+		if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const std::string& id) { return !_stricmp(id.c_str(), gunnerID.c_str()); }))
 			ExtSelection::IFVGroups.emplace_back(gunnerID);
 	}
 
