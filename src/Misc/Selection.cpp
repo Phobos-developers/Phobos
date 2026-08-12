@@ -200,8 +200,6 @@ const std::string TechnoTypeExt::GetGunnerID(int idx) const
 
 DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 {
-	const bool useIFVMode = RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode;
-
 	for (const auto pObject : ObjectClass::CurrentObjects)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
