@@ -2471,13 +2471,13 @@ In `rulesmd.ini`:
 ```ini
 [General]
 VeteranReload=1.0        ; floating point value, multiplier
-VeteranEmptyReload=1.0   ; floating point value, multiplier
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranReload
 
 [SOMETECHNO]             ; TechnoType
-VeteranReload=           ; floating point value, multiplier, defaults to [General] -> VeteranReload
-VeteranEmptyReload=      ; floating point value, multiplier, defaults to [General] -> VeteranEmptyReload
-VeteranAbilities=RELOAD  ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
-EliteAbilities=EMPTY_RELOAD ; Ability
+VeteranReload=           ; floating point value, multiplier, default to [General] -> VeteranReload
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranEmptyReload
+VeteranAbilities=        ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
+EliteAbilities=          ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
 ```
 
 ### Weapons fired on warping in / out

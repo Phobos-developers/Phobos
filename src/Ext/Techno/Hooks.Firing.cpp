@@ -1161,26 +1161,16 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
-namespace
+static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int duration, AdditionalAbility ability)
 {
-	int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int duration, AdditionalAbility ability)
-	{
-		if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
-			return duration;
+	if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
+		return duration;
 
-		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-		const auto pRulesExt = RulesExt::Global();
+	const double multiplier = ability == AdditionalAbility::EmptyReload
+		? TechnoExt::Fetch(pThis)->TypeExtData->VeteranEmptyReload.Get(RulesExt::Global()->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: TechnoExt::Fetch(pThis)->TypeExtData->VeteranReload.Get(RulesExt::Global()->VeteranReload);
 
-		const double multiplier = ability == AdditionalAbility::EmptyReload
-			? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload)
-			: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
-
-		// A non-positive or non-finite multiplier must not create an invalid timer.
-		if (!std::isfinite(multiplier) || multiplier <= 0.0)
-			return duration;
-
-		return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
-	}
+	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
 }
 
 // Scale the reload cycle that uses the EmptyReload duration (clip empty and `EmptyReload` is set).

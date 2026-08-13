@@ -289,7 +289,7 @@ public:
 		Valueable<bool> NoReload_UnderEMP;
 		Valueable<bool> NoReload_Temporal;
 		Valueable<double> VeteranReload;
-		Valueable<double> VeteranEmptyReload;
+		Nullable<double> VeteranEmptyReload;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;

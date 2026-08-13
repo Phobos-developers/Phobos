@@ -368,7 +368,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	};
 
 	validateReloadMultiplier("VeteranReload", this->VeteranReload);
-	validateReloadMultiplier("VeteranEmptyReload", this->VeteranEmptyReload);
+
+	if (this->VeteranEmptyReload.isset())
+		validateReloadMultiplier("VeteranEmptyReload", this->VeteranEmptyReload);
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
