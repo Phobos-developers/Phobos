@@ -2343,6 +2343,33 @@ RecountBurst=false  ; boolean
 RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ```
 
+### Reload speed adjustment on promotion
+
+- Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
+  - `RELOAD` scales the duration of normal reload cycles.
+  - `EMPTY_RELOAD` scales the duration of the reload cycle that starts when the clip is completely empty, which is only used when the TechnoType has a positive `EmptyReload`.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranReload` and `VeteranEmptyReload` are multipliers applied to the final reload duration computed by the game, so other reload modifiers such as `ReloadIncrement` are still taken into account.
+  - Values greater than `1.0` lengthen the reload, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeteranReload=1.0        ; floating point value, multiplier
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranReload
+
+[SOMETECHNO]             ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RELOAD or EMPTY_RELOAD.
+VeteranReload=           ; floating point value, multiplier, default to [General] -> VeteranReload
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranEmptyReload
+```
+
+```{note}
+For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
+```
+
 ### Reset MindControl after transformation
 
 - After the unit conversion is completed, its mind control can be reset.
@@ -2452,33 +2479,6 @@ TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
 TiberiumEater.UnderEMP=false      ; boolean
-```
-
-### Reload speed adjustment on promotion
-
-- Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
-  - `RELOAD` scales the duration of normal reload cycles.
-  - `EMPTY_RELOAD` scales the duration of the reload cycle that starts when the clip is completely empty, which is only used when the TechnoType has a positive `EmptyReload`.
-
-```{hint}
-- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
-- `VeteranReload` and `VeteranEmptyReload` are multipliers applied to the final reload duration computed by the game, so other reload modifiers such as `ReloadIncrement` are still taken into account.
-  - Values greater than `1.0` lengthen the reload, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
-```
-
-In `rulesmd.ini`:
-```ini
-[General]
-VeteranReload=1.0        ; floating point value, multiplier
-VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranReload
-
-[SOMETECHNO]             ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RELOAD or EMPTY_RELOAD.
-VeteranReload=           ; floating point value, multiplier, default to [General] -> VeteranReload
-VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranEmptyReload
-```
-
-```{note}
-For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
 ```
 
 ### Weapons fired on warping in / out
