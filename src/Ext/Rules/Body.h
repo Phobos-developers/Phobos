@@ -774,7 +774,7 @@ public:
 			, NoReload_UnderEMP { false }
 			, NoReload_Temporal { false }
 			, VeteranReload { 1.0 }
-			, VeteranEmptyReload { 1.0 }
+			, VeteranEmptyReload {}
 			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
