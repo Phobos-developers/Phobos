@@ -1166,9 +1166,12 @@ static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int durati
 	if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
 		return duration;
 
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pRulesExt = RulesExt::Global();
+
 	const double multiplier = ability == AdditionalAbility::EmptyReload
-		? TechnoExt::Fetch(pThis)->TypeExtData->VeteranEmptyReload.Get(RulesExt::Global()->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
-		: TechnoExt::Fetch(pThis)->TypeExtData->VeteranReload.Get(RulesExt::Global()->VeteranReload);
+		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
 
 	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
 }
