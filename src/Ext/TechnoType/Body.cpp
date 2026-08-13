@@ -46,15 +46,6 @@ namespace
 			}
 		}
 	}
-
-	void ValidateReloadMultiplier(const char* pSection, const char* pKey, Nullable<double>& value)
-	{
-		if (value.isset() && (!std::isfinite(value.Get()) || value.Get() <= 0.0))
-		{
-			Debug::INIParseFailed(pSection, pKey, "<invalid>", "Expected a finite value greater than 0.0");
-			value.Reset();
-		}
-	}
 }
 
 bool TechnoTypeExt::SelectWeaponMutex = false;
@@ -1060,9 +1051,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
-
-	ValidateReloadMultiplier(pSection, "VeteranReload", this->VeteranReload);
-	ValidateReloadMultiplier(pSection, "VeteranEmptyReload", this->VeteranEmptyReload);
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");

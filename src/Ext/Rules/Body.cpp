@@ -358,20 +358,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
 
-	const auto validateReloadMultiplier = [](const char* pKey, Valueable<double>& value)
-	{
-		if (!std::isfinite(value.Get()) || value.Get() <= 0.0)
-		{
-			Debug::INIParseFailed(GameStrings::General, pKey, "<invalid>", "Expected a finite value greater than 0.0");
-			value = 1.0;
-		}
-	};
-
-	validateReloadMultiplier("VeteranReload", this->VeteranReload);
-
-	if (this->VeteranEmptyReload.isset())
-		validateReloadMultiplier("VeteranEmptyReload", this->VeteranEmptyReload);
-
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
 	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
