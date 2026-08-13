@@ -31,7 +31,7 @@ public:
 	Valueable<bool> CanC4_AllowZeroDamage;
 	Valueable<bool> Refinery_UseStorage;
 	Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-	Valueable<bool> Cloning_Powered { true };
+	Valueable<bool> Cloning_Powered;
 	Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 	ValueableIdx<VocClass> Grinding_Sound;
@@ -152,6 +152,7 @@ public:
 		, Powered_KillSpawns { false }
 		, CanC4_AllowZeroDamage { false }
 		, InitialStrength_Cloning { { 1.0 } }
+		, Cloning_Powered { true }
 		, ExcludeFromMultipleFactoryBonus { false }
 		, Refinery_UseStorage { false }
 		, Grinding_AllowAllies { false }

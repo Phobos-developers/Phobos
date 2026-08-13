@@ -277,7 +277,7 @@ public:
 	Valueable<bool> EffectsRequireVerses;
 	Valueable<bool> Malicious;
 	Nullable<int> Flash_Duration;
-	Valueable<double> Damage_Deployed { 1.0 };
+	Valueable<double> Damage_Deployed;
 	Nullable<bool> PreventScatter;
 
 	double Crit_RandomBuffer;
@@ -514,6 +514,7 @@ public:
 		, EffectsRequireVerses { true }
 		, Malicious { true }
 		, Flash_Duration {}
+		, Damage_Deployed { 1.0 }
 		, PreventScatter {}
 
 		, Crit_RandomBuffer { 0.0 }
