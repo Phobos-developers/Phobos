@@ -84,6 +84,10 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool PriorityDeployFiltering;
+		static bool RightClickCommand;
+		static bool TypeSelectByMultiClick;
+		static int TypeSelectByMultiClick_Range;
+		static int TypeSelectByMultiClick_DeployDelay;
 		static bool TypeSelectUseIFVMode;
 		static bool DevelopmentCommands;
 		static bool SuperWeaponSidebarCommands;

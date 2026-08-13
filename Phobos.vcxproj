@@ -270,8 +270,10 @@
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
     <ClCompile Include="src\Misc\Hooks.VeinholeMonster.cpp" />
     <ClCompile Include="src\Misc\MessageColumn.cpp" />
+    <ClCompile Include="src\Misc\MultiClickTypeSelect.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
+    <ClCompile Include="src\Misc\RightClickCommand.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
