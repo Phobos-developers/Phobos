@@ -2367,7 +2367,7 @@ VeteranEmptyReload=      ; floating point value, multiplier, default to [General
 ```
 
 ```{note}
-For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
+For `EMPTY_RELOAD` to have any effect, the TechnoType must not set `EmptyReload` to `-1`, otherwise the empty clip uses the regular `Reload` duration instead. Note that `EmptyReload=0` still takes the empty-clip path and reloads the clip instantly.
 ```
 
 ### Reset MindControl after transformation

@@ -12,40 +12,48 @@
 
 #include <Utilities/AresHelper.h>
 
-void ReadAdditionalAbilities(
-		INI_EX& parser,
-		const char* section,
-		const char* key,
-		std::bitset<AdditionalAbilityCount>& result)
+namespace
 {
-	std::vector<std::string> values;
+	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
+		{ "RELOAD",       AdditionalAbility::Reload },
+		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+	};
 
-	if (!parser.ParseStringList(values, section, key))
-		return;
-
-	// When the key is present, fully replace the previous value with this
-	// list so that map INIs can override rules values.
-	result.reset();
-
-	for (const auto& value : values)
+	void ReadAdditionalAbilities(
+			INI_EX& parser,
+			const char* section,
+			const char* key,
+			std::bitset<AdditionalAbilityCount>& result)
 	{
-		if (!_stricmp(value.c_str(), "RELOAD"))
+		std::vector<std::string> values;
+
+		if (!parser.ParseStringList(values, section, key))
+			return;
+
+		// When the key is present, fully replace the previous value with this
+		// list so that map INIs can override rules values.
+		result.reset();
+
+		for (const auto& value : values)
 		{
-			result.set(static_cast<size_t>(AdditionalAbility::Reload));
-		}
-		else if (!_stricmp(value.c_str(), "EMPTY_RELOAD"))
-		{
-			result.set(static_cast<size_t>(AdditionalAbility::EmptyReload));
+			for (const auto& [name, ability] : AbilityTokens)
+			{
+				if (!_stricmp(value.c_str(), name))
+				{
+					result.set(static_cast<size_t>(ability));
+					break;
+				}
+			}
 		}
 	}
-}
 
-void ValidateReloadMultiplier(const char* pSection, const char* pKey, Nullable<double>& value)
-{
-	if (value.isset() && (!std::isfinite(value.Get()) || value.Get() <= 0.0))
+	void ValidateReloadMultiplier(const char* pSection, const char* pKey, Nullable<double>& value)
 	{
-		Debug::INIParseFailed(pSection, pKey, "<invalid>", "Expected a finite value greater than 0.0");
-		value.Reset();
+		if (value.isset() && (!std::isfinite(value.Get()) || value.Get() <= 0.0))
+		{
+			Debug::INIParseFailed(pSection, pKey, "<invalid>", "Expected a finite value greater than 0.0");
+			value.Reset();
+		}
 	}
 }
 
