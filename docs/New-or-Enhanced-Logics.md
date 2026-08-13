@@ -2454,17 +2454,16 @@ TiberiumEater.AnimMove=true       ; boolean
 TiberiumEater.UnderEMP=false      ; boolean
 ```
 
-### Veteran reload time customization
+### Reload speed adjustment on promotion
 
-- In vanilla, veteran and elite technos only support the predefined ability list. Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
+- Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
   - `RELOAD` scales the duration of normal reload cycles.
   - `EMPTY_RELOAD` scales the duration of the reload cycle that starts when the clip is completely empty, which is only used when the TechnoType has a positive `EmptyReload`.
+
+```{hint}
 - Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
 - `VeteranReload` and `VeteranEmptyReload` are multipliers applied to the final reload duration computed by the game, so other reload modifiers such as `ReloadIncrement` are still taken into account.
   - Values greater than `1.0` lengthen the reload, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
-
-```{note}
-For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
 ```
 
 In `rulesmd.ini`:
@@ -2473,11 +2472,13 @@ In `rulesmd.ini`:
 VeteranReload=1.0        ; floating point value, multiplier
 VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranReload
 
-[SOMETECHNO]             ; TechnoType
+[SOMETECHNO]             ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RELOAD or EMPTY_RELOAD.
 VeteranReload=           ; floating point value, multiplier, default to [General] -> VeteranReload
 VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranEmptyReload
-VeteranAbilities=        ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
-EliteAbilities=          ; Ability, `RELOAD` and `EMPTY_RELOAD` in addition to the vanilla abilities
+```
+
+```{note}
+For `EMPTY_RELOAD` to have any effect, the TechnoType must have a positive `EmptyReload` value, otherwise the empty clip uses the regular `Reload` duration instead.
 ```
 
 ### Weapons fired on warping in / out

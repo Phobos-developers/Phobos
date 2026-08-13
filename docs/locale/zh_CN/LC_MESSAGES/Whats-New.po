@@ -2460,12 +2460,9 @@ msgstr ""
 "prevent-crew-escape-from-techno)（by NetsuNegi）"
 
 msgid ""
-"[Veteran reload time customization](New-or-Enhanced-Logics.md#veteran-"
-"reload-time-customization) (by Nuke)"
+"[Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)"
 msgstr ""
-"[自定义老兵与精英装填时间](New-or-Enhanced-Logics.md#veteran-reload-time-"
-"customization)（by Nuke）"
-
+"[升级时调整装填速率](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion)（by Nuke）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
