@@ -382,6 +382,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
+- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 
 ## Newly added global settings
 
@@ -525,22 +526,25 @@ In `rulesmd.ini`:
 AdjacentWallDamage=200  ; integer
 ```
 
-### Customize the global default values of some vanilla flags
+### Customize the global default values of some vanilla/Ares flags
 
-- The following flags supplement definitions for flags that do not have global default values in vanilla.
+- The following flags supplement definitions for flags that do not have global default values in vanilla/Ares.
 
 ```{hint}
-Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+Unless otherwise specified, after removing the last dot and everything before it, the definition is the same as the name of the micro-level definition flag.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false    ; boolean
+DefaultToGuardArea=false      ; boolean
+
+[CombatDamage]
+Warhead.PreventScatter=false  ; boolean
 
 [AudioVisual]
-LeptonMindControlOffset=70  ; integer, in leptons
-MindControlRingOffset=140   ; integer, in leptons
+LeptonMindControlOffset=70    ; integer, in leptons
+MindControlRingOffset=140     ; integer, in leptons
 ```
 
 ### Customizing effect of level lighting on air units

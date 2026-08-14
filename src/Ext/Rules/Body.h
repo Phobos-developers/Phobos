@@ -533,6 +533,8 @@ public:
 
 		Valueable<bool> NoAlphaImageOnBuildup;
 
+		Valueable<bool> Warhead_PreventScatter;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1000,6 +1002,7 @@ public:
 
 			, NoAlphaImageOnBuildup { false }
 			, ReadyToNextMission_MovingCheck { false }
+			, Warhead_PreventScatter { false }
 		{ }
 
 		virtual ~ExtData() = default;

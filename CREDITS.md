@@ -739,6 +739,7 @@ This page lists all the individual contributions to the project by their author.
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
   - Disable AlphaImage during Buildup
+  - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

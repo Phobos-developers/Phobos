@@ -609,6 +609,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
 	this->ReadyToNextMission_MovingCheck.Read(exINI, GameStrings::General, "ReadyToNextMission.MovingCheck");
 
+	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -1084,6 +1086,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ApproachTarget_StopWhenInRange)
 		.Process(this->NoAlphaImageOnBuildup)
 		.Process(this->ReadyToNextMission_MovingCheck)
+		.Process(this->Warhead_PreventScatter)
     ;
 }
 
