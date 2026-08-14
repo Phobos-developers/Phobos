@@ -2305,9 +2305,12 @@ msgstr "范围指示环可见性"
 
 msgid ""
 "In vanilla game, a structure's radial indicator can be drawn only when it"
-" belongs to the player. Now it can also be visible to observer. On top of"
-" that, you can specify its visibility from other houses."
-msgstr "在原本的游戏中，建筑的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。此外，你还可以指定其他所属方的可见性。"
+" belongs to the player. Now it can also be visible to observer."
+msgstr "在原本的游戏中，建筑的范围指示环只有在玩家拥有时才绘制。现在它也对观察者可见。"
+
+msgid ""
+"On top of that, you can specify its visibility from other houses."
+msgstr "此外，你还可以指定其他所属方的可见性。"
 
 msgid "Re-enable obsolete `[JumpjetControls]`"
 msgstr "重启废弃的 `[JumpjetControls]`"
