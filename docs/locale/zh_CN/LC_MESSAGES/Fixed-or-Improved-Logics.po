@@ -3241,7 +3241,7 @@ msgid ""
 msgstr "在原版中矿场会根据其矿石存储量的不同播放不同的 `ActiveAnim`。现在你可以让它像其他建筑一样同时播放多个 `ActiveAnim`。"
 
 msgid "Apply ZShapePointMove during buildups"
-msgstr "在拔起期间应用 ZShapePointMove"
+msgstr "建筑拔起期间应用 ZShapePointMove"
 
 msgid ""
 "By default buildings do not apply `ZShapePointMove` (which offsets the 'z"
