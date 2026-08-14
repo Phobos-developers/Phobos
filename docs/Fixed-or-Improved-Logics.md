@@ -1990,6 +1990,15 @@ Insignia.ShowEnemy=                                         ; boolean, defaults 
 ```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
 ```
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=E1              ; InfantryType
+```
 
 ### Customizable wake anim
 
