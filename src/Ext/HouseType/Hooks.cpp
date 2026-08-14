@@ -1,5 +1,5 @@
 #include "Body.h"
-
+#include <TechnoClass.h>
 #include <Ext/Scenario/Body.h>
 
 DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
@@ -31,6 +31,26 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 
 		if (EVAIndex != -2)
 			VoxClass::EVAIndex = EVAIndex;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x707DCF, TechnoClass_GetCrew_NationalOverride, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if (!pThis)
+		return 0;
+
+	HouseClass* pHouse = pThis->Owner;
+	if (!pHouse)
+		return 0;
+
+	auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
+	if (pHouseTypeExt && pHouseTypeExt->Crew.isset())
+	{
+		R->EAX(pHouseTypeExt->Crew.Get());
 	}
 
 	return 0;
