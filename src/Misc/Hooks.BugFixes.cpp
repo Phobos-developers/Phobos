@@ -3622,5 +3622,9 @@ DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
 	GET(const int, intensity, ESI);
 	REF_STACK(const TintStruct, tint, STACK_OFFSET(0x8, 0x8));
 
-	return pThis->LightIntensity == intensity && pThis->LightTint == tint ? ReturnFromFunction : ContinueIn;
+	if (pThis->LightIntensity == intensity && pThis->LightTint == tint)
+		return ReturnFromFunction;
+
+	R->EDI(tint.Blue);
+	return ContinueIn;
 }

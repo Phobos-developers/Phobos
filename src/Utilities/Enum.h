@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -440,3 +441,15 @@ enum class EdgeType : BYTE
 	Closest = 1,
 	Random = 2
 };
+
+// Phobos extension abilities that augment the vanilla veteran/elite ability
+// lists (VeteranAbilities / EliteAbilities). Do not extend the vanilla Ability
+// enum, whose storage is a fixed-size AbilitiesStruct.
+enum class AdditionalAbility : unsigned char
+{
+	Reload = 0,
+	EmptyReload = 1,
+	Count
+};
+
+constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);

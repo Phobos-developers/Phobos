@@ -173,6 +173,23 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+bool TechnoExt::HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability)
+{
+	if (!pThis || (!pThis->Veterancy.IsVeteran() && !pThis->Veterancy.IsElite()))
+		return false;
+
+	const auto index = static_cast<size_t>(ability);
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	if (pThis->Veterancy.IsElite())
+	{
+		return pTypeExt->AdditionalVeteranAbilities.test(index)
+			|| pTypeExt->AdditionalEliteAbilities.test(index);
+	}
+
+	return pTypeExt->AdditionalVeteranAbilities.test(index);
+}
+
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;

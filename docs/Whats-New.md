@@ -664,6 +664,7 @@ HideShakeEffects=false           ; boolean
 - [Allow the unit to keep pursuing the target during ApproachTarget](Fixed-or-Improved-Logics.md#keep-pursuing-the-target-during-approachtarget) (by TaranDahl)
 - [Customize whether warhead can prevent crew escape from techno](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno) (by NetsuNegi)
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
+- [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 
 #### Vanilla fixes:
