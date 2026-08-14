@@ -638,6 +638,7 @@ msgid ""
 "Notice that this will affect the center of missile explosion, set "
 "`[CombatDamage] -> MissileSpawnAttackCell` to false to disable the fix."
 msgstr ""
+"修复了导弹子机目标设置不正确的问题。注意这会影响导弹爆炸中心，可通过将 `[CombatDamage] -> MissileSpawnAttackCell` 设为 false 以禁用修复。"
 
 msgid ""
 "Fixed [EIP "
