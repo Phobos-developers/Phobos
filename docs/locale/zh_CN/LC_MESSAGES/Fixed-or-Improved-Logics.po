@@ -1504,6 +1504,7 @@ msgid ""
 "moving, which is mostly problematic for jumpjet and hover techno. Set "
 "`[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix."
 msgstr ""
+"修复了移动任务无法在单位正在移动时结束的问题，它在 Jumpjet 和 Hover 单位上尤其突出。可通过将 `[General] -> ReadyToNextMission.MovingCheck` 设为 true 以禁用修复。"
 
 msgid ""
 "AI team garrison scripts now re-evaluate destination immediately instead "
