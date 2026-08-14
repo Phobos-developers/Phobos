@@ -2520,6 +2520,7 @@ msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `s
 
 msgid "Disable AlphaImage during Buildup"
 msgstr ""
+"建筑拔起期间关闭 AlphaImage"
 
 msgid ""
 "Allow customizing the default value of `[Warhead] -> PreventScatter` via "

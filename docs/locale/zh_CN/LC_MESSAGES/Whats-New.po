@@ -2465,6 +2465,7 @@ msgid ""
 "[Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-"
 "alphaimage-during-buildup) (by Noble_Fish)"
 msgstr ""
+"[建筑拔起期间关闭 AlphaImage](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup)（by Noble_Fish）"
 
 msgid ""
 "[Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-"

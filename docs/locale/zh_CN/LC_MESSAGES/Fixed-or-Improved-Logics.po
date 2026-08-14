@@ -3526,9 +3526,11 @@ msgstr ""
 
 msgid "Disable AlphaImage during Buildup"
 msgstr ""
+"建筑拔起期间关闭 AlphaImage"
 
 msgid "Now you can disable AlphaImage before the building is completed."
 msgstr ""
+"现在你可以在建筑建造完成前关闭 AlphaImage。"
 
 msgid "Disable `DamageSound`"
 msgstr "禁用 `DamageSound`"
