@@ -258,8 +258,8 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 
 	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
 
-	if (pWHExt->PreventCrew)
-		TechnoExt::Fetch(pThis)->PreventCrew = true;
+	if (pWHExt->PreventCrewEscape)
+		TechnoExt::Fetch(pThis)->PreventCrewEscape = true;
 
 	if (pWHExt->PreventPassengerEscape)
 		pThis->KillPassengers(pSource);

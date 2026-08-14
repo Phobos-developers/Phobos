@@ -31,7 +31,7 @@ public:
 	Valueable<bool> CanC4_AllowZeroDamage;
 	Valueable<bool> Refinery_UseStorage;
 	Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-	Valueable<bool> Cloning_Powered { true };
+	Valueable<bool> Cloning_Powered;
 	Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 	ValueableIdx<VocClass> Grinding_Sound;
@@ -81,6 +81,7 @@ public:
 	Nullable<bool> Units_UseRepairCost;
 
 	Valueable<bool> NoBuildAreaOnBuildup;
+	Nullable<bool> NoAlphaImageOnBuildup;
 	ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 	ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 	Valueable<bool> Adjacent_Disallowed_Prohibit;
@@ -151,6 +152,7 @@ public:
 		, Powered_KillSpawns { false }
 		, CanC4_AllowZeroDamage { false }
 		, InitialStrength_Cloning { { 1.0 } }
+		, Cloning_Powered { true }
 		, ExcludeFromMultipleFactoryBonus { false }
 		, Refinery_UseStorage { false }
 		, Grinding_AllowAllies { false }
@@ -190,6 +192,7 @@ public:
 		, Units_RepairPercent {}
 		, Units_UseRepairCost {}
 		, NoBuildAreaOnBuildup { false }
+		, NoAlphaImageOnBuildup {}
 		, Adjacent_Allowed {}
 		, Adjacent_Disallowed {}
 		, Adjacent_Disallowed_Prohibit { false }

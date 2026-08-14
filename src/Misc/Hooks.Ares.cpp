@@ -4,11 +4,13 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Rules/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -185,6 +187,17 @@ DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 
 _GET_FUNCTION_ADDRESS(RadarJammerClass::Update, AresRadarJammerClass_Update_GetAddr)
 
+static DWORD _cdecl AresPreventScatter_Override(REGISTERS* R)
+{
+	GET(FootClass* const, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, 0xD0);
+
+	if (!WarheadTypeExt::Fetch(pWarhead)->PreventScatter.Get(RulesExt::Global()->Warhead_PreventScatter))
+		pThis->Scatter(CoordStruct::Empty, true, false);
+
+	return 0x702D11;
+}
+
 void Apply_Ares3_0_Patches()
 {
 	// Abductor fix:
@@ -292,6 +305,8 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x13FA7, &BuildingExt::UpdateFactoryQueues);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CD9E, &BuildingExt::UpdateFactoryQueues);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &BuildingExt::UpdateFactoryQueues);
+
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4ADE0, GET_OFFSET(AresPreventScatter_Override));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -403,4 +418,6 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x14537, &BuildingExt::UpdateFactoryQueues);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DA0E, &BuildingExt::UpdateFactoryQueues);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &BuildingExt::UpdateFactoryQueues);
+
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4BA40, GET_OFFSET(AresPreventScatter_Override));
 }

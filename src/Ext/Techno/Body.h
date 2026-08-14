@@ -86,7 +86,7 @@ public:
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
 
-	bool PreventCrew;
+	bool PreventCrewEscape;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
@@ -136,7 +136,7 @@ public:
 		, ShouldBeDead { false }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
-		, PreventCrew { false }
+		, PreventCrewEscape { false }
 	{ }
 
 	void OnEarlyUpdate();
@@ -233,6 +233,7 @@ public:
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
+	static bool HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);

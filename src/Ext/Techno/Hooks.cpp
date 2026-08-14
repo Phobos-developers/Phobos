@@ -2393,7 +2393,7 @@ namespace CrewTemp
 		{
 			const auto pThis = static_cast<const TechnoClass*>(this);
 			const auto pExt = TechnoExt::Fetch(pThis);
-			return pExt->PreventCrew ? 0 : pThis->TechnoClass::GetCrewCount();
+			return pExt->PreventCrewEscape ? 0 : pThis->TechnoClass::GetCrewCount();
 		}
 	};
 
@@ -2403,7 +2403,7 @@ namespace CrewTemp
 		{
 			const auto pThis = static_cast<const BuildingClass*>(this);
 			const auto pExt = TechnoExt::Fetch(pThis);
-			return pExt->PreventCrew ? 0 : pThis->BuildingClass::GetCrewCount();
+			return pExt->PreventCrewEscape ? 0 : pThis->BuildingClass::GetCrewCount();
 		}
 	};
 }

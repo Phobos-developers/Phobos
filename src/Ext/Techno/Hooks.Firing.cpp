@@ -1,10 +1,16 @@
+#include <JumpjetLocomotionClass.h>
+
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/GeneralUtils.h>
+
+#include <cmath>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -1155,6 +1161,45 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
+static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int duration, AdditionalAbility ability)
+{
+	if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
+		return duration;
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pRulesExt = RulesExt::Global();
+
+	const double multiplier = ability == AdditionalAbility::EmptyReload
+		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+
+	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
+}
+
+// Scale the reload cycle that uses the EmptyReload duration (clip empty and `EmptyReload` is set).
+// Hooked at `add esi, 1FCh` in StartReloading: EAX holds the duration, ESI holds `this`.
+DEFINE_HOOK(0x6FB0CF, TechnoClass_StartReloading_EmptyReload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::EmptyReload));
+
+	return 0;
+}
+
+// Scale the normal reload cycle duration for veterancy. The duration in EAX is the final
+// value computed by the game, including the ReloadIncrement adjustment.
+DEFINE_HOOK(0x6FB14C, TechnoClass_StartReloading_Reload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::Reload));
+
+	return 0;
+}
+
 // Author: Otamaa
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
@@ -1256,13 +1301,30 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	if (closeEnough)
 	{
 		GET(FootClass*, pThis, EBX);
+
+		if (pThis->InLimbo)
+			return 0;
+
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 		// Per-type setting takes priority, falls back to the global one.
 		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
 		{
-			pThis->StopMoving();
-			pThis->AbortMotion();
+			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			{
+				auto const crd = pThis->GetCoords();
+				pJumpjetLoco->DestinationCoords.X = crd.X;
+				pJumpjetLoco->DestinationCoords.Y = crd.Y;
+				pJumpjetLoco->CurrentSpeed = 0;
+				pJumpjetLoco->MaxSpeed = 0;
+				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pThis->AbortMotion();
+			}
+			else
+			{
+				pThis->StopMoving();
+				pThis->AbortMotion();
+			}
 		}
 	}
 
@@ -1274,6 +1336,10 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 	enum { Return = 0x4D5A34 };
 
 	GET(FootClass*, pThis, EBX);
+
+	if (pThis->InLimbo)
+		return 0;
+
 	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;

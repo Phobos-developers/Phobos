@@ -12,6 +12,42 @@
 
 #include <Utilities/AresHelper.h>
 
+namespace
+{
+	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
+		{ "RELOAD",       AdditionalAbility::Reload },
+		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+	};
+
+	void ReadAdditionalAbilities(
+			INI_EX& parser,
+			const char* section,
+			const char* key,
+			std::bitset<AdditionalAbilityCount>& result)
+	{
+		std::vector<std::string> values;
+
+		if (!parser.ParseStringList(values, section, key))
+			return;
+
+		// When the key is present, fully replace the previous value with this
+		// list so that map INIs can override rules values.
+		result.reset();
+
+		for (const auto& value : values)
+		{
+			for (const auto& [name, ability] : AbilityTokens)
+			{
+				if (!_stricmp(value.c_str(), name))
+				{
+					result.set(static_cast<size_t>(ability));
+					break;
+				}
+			}
+		}
+	}
+}
+
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -1010,6 +1046,12 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoReload_UnderEMP.Read(exINI, pSection, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
 
+	ReadAdditionalAbilities(exINI, pSection, "VeteranAbilities", this->AdditionalVeteranAbilities);
+	ReadAdditionalAbilities(exINI, pSection, "EliteAbilities", this->AdditionalEliteAbilities);
+
+	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -1641,6 +1683,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->AdditionalVeteranAbilities)
+		.Process(this->AdditionalEliteAbilities)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

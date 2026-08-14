@@ -120,7 +120,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
-- Fixed a glitch related to incorrect target setting for missiles.
+- Fixed a glitch related to incorrect target setting for spawned missiles. Notice that this will affect the center of missile explosion, set `[CombatDamage] -> MissileSpawnAttackCell` to false to disable the fix.
 - Fixed [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
 - Jumpjets will no longer wobble under EMP.
@@ -292,7 +292,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
-- Fixed the issue that the move mission of the jumpjet does not end correctly.
+- Fixed the issue that the move mission doesn't end when the techno is moving, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission.
@@ -326,6 +326,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`.
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
+- Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 
 ## Fixes / interactions with other extensions
 
@@ -381,6 +382,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
+- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 
 ## Newly added global settings
 
@@ -524,22 +526,25 @@ In `rulesmd.ini`:
 AdjacentWallDamage=200  ; integer
 ```
 
-### Customize the global default values of some vanilla flags
+### Customize the global default values of some vanilla/Ares flags
 
-- The following flags supplement definitions for flags that do not have global default values in vanilla.
+- The following flags supplement definitions for flags that do not have global default values in vanilla/Ares.
 
 ```{hint}
-Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+Unless otherwise specified, after removing the last dot and everything before it, the definition is the same as the name of the micro-level definition flag.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false    ; boolean
+DefaultToGuardArea=false      ; boolean
+
+[CombatDamage]
+Warhead.PreventScatter=false  ; boolean
 
 [AudioVisual]
-LeptonMindControlOffset=70  ; integer, in leptons
-MindControlRingOffset=140   ; integer, in leptons
+LeptonMindControlOffset=70    ; integer, in leptons
+MindControlRingOffset=140     ; integer, in leptons
 ```
 
 ### Customizing effect of level lighting on air units
@@ -1359,6 +1364,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]      ; BuildingType, with DeployFire=yes
 DeployFireDelay=    ; integer, default value ranges from 14 to 16
+```
+
+### Disable AlphaImage during Buildup
+
+- Now you can disable AlphaImage before the building is completed.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+NoAlphaImageOnBuildup=false  ; boolean
+
+[SOMEBUILDING]               ; BuildingType
+NoAlphaImageOnBuildup=       ; boolean, defaults to [AudioVisual] -> NoAlphaImageOnBuildup
 ```
 
 ### Disable `DamageSound`

@@ -217,6 +217,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
 
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
+	this->NoAlphaImageOnBuildup.Read(exINI, pSection, "NoAlphaImageOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
 	this->Adjacent_Disallowed_Prohibit.Read(exINI, pSection, "Adjacent.Disallowed.Prohibit");
@@ -410,6 +411,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Units_RepairPercent)
 		.Process(this->Units_UseRepairCost)
 		.Process(this->NoBuildAreaOnBuildup)
+		.Process(this->NoAlphaImageOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->Adjacent_Disallowed_Prohibit)
