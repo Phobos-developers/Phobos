@@ -665,7 +665,6 @@ HideShakeEffects=false           ; boolean
 - [Customize whether warhead can prevent crew escape from techno](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno) (by NetsuNegi)
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
-- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -829,6 +828,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType (by Starkku)
+- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 ```
 
 ### 0.4.0.3

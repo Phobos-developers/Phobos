@@ -3346,6 +3346,7 @@ msgid ""
 "Allowed customizing the default value of `[Warhead] -> PreventScatter` "
 "via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)"
 msgstr ""
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> PreventScatter` 的默认值（by Noble_Fish）"
 
 msgid "0.4.0.3"
 msgstr "0.4.0.3"
