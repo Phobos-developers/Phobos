@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-25 14:06+0800\n"
+"POT-Creation-Date: 2026-08-14 18:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "Miscellanous"
 msgstr "杂项内容"
@@ -156,66 +156,77 @@ msgstr "*CLSID*"
 msgid "Drive"
 msgstr "Drive"
 
+#, python-brace-format
 msgid "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Hover"
 msgstr "Hover"
 
+#, python-brace-format
 msgid "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Tunnel"
 msgstr "Tunnel"
 
+#, python-brace-format
 msgid "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Walk"
 msgstr "Walk"
 
+#, python-brace-format
 msgid "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "DropPod"
 msgstr "DropPod"
 
+#, python-brace-format
 msgid "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Fly"
 msgstr "Fly"
 
+#, python-brace-format
 msgid "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Teleport"
 msgstr "Teleport"
 
+#, python-brace-format
 msgid "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
 msgstr "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
 
 msgid "Mech"
 msgstr "Mech"
 
+#, python-brace-format
 msgid "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
 msgstr "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
 
 msgid "Ship"
 msgstr "Ship"
 
+#, python-brace-format
 msgid "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
 msgstr "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
 
 msgid "Jumpjet"
 msgstr "Jumpjet"
 
+#, python-brace-format
 msgid "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
 msgstr "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
 
 msgid "Rocket"
 msgstr "Rocket"
 
+#, python-brace-format
 msgid "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
 msgstr "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
 
@@ -476,7 +487,9 @@ msgid ""
 "ported from [Vinifera](https://github.com/Vinifera-Developers/Vinifera). "
 "When the game crashes, it will:"
 msgstr ""
-"移植自 [Vinifera](https://github.com/Vinifera-Developers/Vinifera)：当异常处理程序启用时，Phobos 会使用自身的异常处理程序取代游戏（及 Ares）自带的崩溃处理。当游戏崩溃时，它会："
+"移植自 [Vinifera](https://github.com/Vinifera-"
+"Developers/Vinifera)：当异常处理程序启用时，Phobos 会使用自身的异常处理程序取代游戏（及 "
+"Ares）自带的崩溃处理。当游戏崩溃时，它会："
 
 msgid ""
 "create a per-crash folder `debug\\snapshot-<timestamp>\\` and write into "
@@ -486,7 +499,10 @@ msgid ""
 "layout Ares uses, so the CnCNet client will also fold `debug.log` and "
 "`syringe.log` into it;"
 msgstr ""
-"创建一个按崩溃时间命名的目录 `debug\\snapshot-<时间戳>\\` 并在里面写入一份包含寄存器、调用栈、栈转储和已加载模块列表的详细崩溃报告（`except.txt`）、一个小型转储文件（`crashdump.dmp`）以及一份 `debug.log` 副本（如果找得到）。该目录布局与 Ares 的相同，因此 CnCNet 客户端也会将 `debug.log` 和 `syringe.log` 置入其中。"
+"创建一个按崩溃时间命名的目录 `debug\\snapshot-<时间戳>\\` "
+"并在里面写入一份包含寄存器、调用栈、栈转储和已加载模块列表的详细崩溃报告（`except.txt`）、一个小型转储文件（`crashdump.dmp`）以及一份"
+" `debug.log` 副本（如果找得到）。该目录布局与 Ares 的相同，因此 CnCNet 客户端也会将 `debug.log` 和 "
+"`syringe.log` 置入其中。"
 
 msgid ""
 "show a dialog displaying the crash report, with buttons to quit, break "
@@ -494,18 +510,19 @@ msgid ""
 "(`fulldump.dmp`, into the same folder) - large, but the most useful to "
 "developers."
 msgstr ""
-"显示一个包含崩溃报告的对话框，提供退出、附加调试器中断或额外保存完整内存转储（同目录下名为 `fulldump.dmp`）的按钮。`fulldump.dmp` 文件较大，但对开发人员来说是最有用的。"
+"显示一个包含崩溃报告的对话框，提供退出、附加调试器中断或额外保存完整内存转储（同目录下名为 "
+"`fulldump.dmp`）的按钮。`fulldump.dmp` 文件较大，但对开发人员来说是最有用的。"
 
 msgid ""
 "Crash folders older than 5 days are cleaned up automatically. The "
 "`-FullCrashDump` command line arg makes the automatically written "
 "minidump a full memory dump (useful for unattended setups)."
 msgstr ""
-"超过 5 天的崩溃目录会自动清理。命令函参数 `-FullCrashDump` 可自动将完整内存转储写入小型转储中（适用于无需人工操作的自动运行环境）。"
+"超过 5 天的崩溃目录会自动清理。命令函参数 `-FullCrashDump` "
+"可自动将完整内存转储写入小型转储中（适用于无需人工操作的自动运行环境）。"
 
 msgid "Crash reports can be enriched with extra information:"
-msgstr ""
-"崩溃报告可以附加额外信息："
+msgstr "崩溃报告可以附加额外信息："
 
 msgid ""
 "If a `gamemd.pdb` file is present in the game directory, it is used to "
@@ -513,7 +530,8 @@ msgid ""
 "(shipped with devbuilds and nightlies) is picked up automatically for "
 "Phobos's own addresses."
 msgstr ""
-"如果游戏目录存在 `gamemd.pdb` 文件，它会被用于游戏地址解析调用栈中的符号名称。`Phobos.pdb`（开发构建和自动构建自带）会自动用于解析 Phobos 自身的地址。"
+"如果游戏目录存在 `gamemd.pdb` 文件，它会被用于游戏地址解析调用栈中的符号名称。`Phobos.pdb`（开发构建和自动构建自带）会自动用于解析"
+" Phobos 自身的地址。"
 
 msgid ""
 "If a `gamemd.edb` exception database file is present in the game "
@@ -521,7 +539,8 @@ msgid ""
 "in the report under \"Additional information\". The format is shared with"
 " Vinifera: one entry per line, `;` starts a comment."
 msgstr ""
-"如果游戏目录存在 `gamemd.edb` 异常数据库文件，其中对故障地址的描述（若存在）会包含在报告的“Additional information”下。该格式与 Vinifera 共享：每行一个条目，`;` 代表注释开始。"
+"如果游戏目录存在 `gamemd.edb` 异常数据库文件，其中对故障地址的描述（若存在）会包含在报告的“Additional "
+"information”下。该格式与 Vinifera 共享：每行一个条目，`;` 代表注释开始。"
 
 msgid ""
 "The exception handler is enabled by default in all builds, including "
@@ -529,7 +548,8 @@ msgid ""
 "this does not interfere with debugging; pass `-ExceptionHandler=false` if"
 " you want crashes to bypass the handler entirely."
 msgstr ""
-"异常处理程序在包括 Debug 版本的所有构建版本中默认启用。附加的调试器仍然优先接收异常，因此这不会干扰调试；你可以通过 `-ExceptionHandler=false` 使崩溃完全绕过该处理程序"
+"异常处理程序在包括 Debug 版本的所有构建版本中默认启用。附加的调试器仍然优先接收异常，因此这不会干扰调试；你可以通过 "
+"`-ExceptionHandler=false` 使崩溃完全绕过该处理程序"
 
 msgid ""
 "The CnCNet 5 spawner uses the main loop exception handler for fixes. If "
@@ -547,7 +567,8 @@ msgid ""
 "the process, so windows created by the game and Phobos - dialogs, message"
 " boxes and the crash dialog - render with modern visual styles."
 msgstr ""
-"gamemd.exe 在发布时没有应用程序清单，因此其窗口绑定旧的通用控件 v5 并以 Windows 9x 样式渲染。现在 Phobos 在进程生命周期内激活其内嵌的通用控件 v6 清单，以使游戏和 Phobos 创建的对话框、消息框和崩溃对话框使用现代视觉样式渲染。"
+"gamemd.exe 在发布时没有应用程序清单，因此其窗口绑定旧的通用控件 v5 并以 Windows 9x 样式渲染。现在 Phobos "
+"在进程生命周期内激活其内嵌的通用控件 v6 清单，以使游戏和 Phobos 创建的对话框、消息框和崩溃对话框使用现代视觉样式渲染。"
 
 msgid "Player colors"
 msgstr "玩家颜色"

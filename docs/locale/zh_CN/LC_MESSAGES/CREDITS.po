@@ -2527,6 +2527,13 @@ msgid ""
 "`[CombatDamage] -> Warhead.PreventScatter`"
 msgstr ""
 
+msgid ""
+"Allow `(Pre)ProductionAnim` animations to use `Powered` & "
+"`PoweredLight/Effect/Special` keys"
+msgstr ""
+"允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
+"类的标签"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

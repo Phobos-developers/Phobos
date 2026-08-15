@@ -1691,6 +1691,13 @@ msgid ""
 "time."
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题。"
 
+msgid ""
+"`(Pre)ProductionAnim` building animations can now use `Powered` & "
+"`PoweredLight/Effect/Special` keys."
+msgstr ""
+"`(Pre)ProductionAnim` 建筑动画现在可以使用 `Powered` 与 "
+"`PoweredLight/Effect/Special` 类的标签。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
