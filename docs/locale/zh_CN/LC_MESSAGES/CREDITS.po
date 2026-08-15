@@ -2526,6 +2526,7 @@ msgid ""
 "Allow customizing the default value of `[Warhead] -> PreventScatter` via "
 "`[CombatDamage] -> Warhead.PreventScatter`"
 msgstr ""
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> PreventScatter` 的默认值"
 
 msgid ""
 "Allow `(Pre)ProductionAnim` animations to use `Powered` & "
