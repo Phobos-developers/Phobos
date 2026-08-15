@@ -1072,9 +1072,7 @@ static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pT
 
 	// The roof anim needs its own placement and power values without affecting
 	// the plain line, so apply them only for the duration of this PlayAnim
-	// call. Swapping the Powered family also makes the vanilla powered-hide
-	// inside PlayAnim (0x451A44) read the Roof*Powered values, keeping the two
-	// lines independent.
+	// call.
 	auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
 
 	const Point2D savedPosition = prodAnim.Position;
@@ -1130,9 +1128,10 @@ DEFINE_HOOK(0x44B7AE, BuildingClass_Mission_Repair_ProductionAnim, 0x6)
 	return SkipGameCode;
 }
 
-static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged)
+// pUnit, when given, is the unit whose exit triggered this call.
+static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged, TechnoClass* pUnit = nullptr)
 {
-	if (!IsRoofExitBuildingUnit(pBuilding))
+	if (!(pUnit ? IsRoofExitTechno(pUnit->GetTechnoType()) : IsRoofExitBuildingUnit(pBuilding)))
 		return false;
 
 	auto pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
@@ -1171,6 +1170,8 @@ DEFINE_HOOK(0x44DDDE, BuildingClass_Unload_RoofProductionAnim_Damaged, 0x6)
 DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
+	// The roof check must use the unit that is actually leaving the factory.
+	GET(TechnoClass*, pUnit, EDI);
 
 	auto const pType = pThis->Type;
 
@@ -1178,10 +1179,10 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 	{
 		const bool isDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
-		if (IsRoofExitBuildingUnit(pThis))
+		if (pUnit && IsRoofExitTechno(pUnit->GetTechnoType()))
 		{
 			pThis->DestroyNthAnim(BuildingAnimSlot::Idle);
-			TryPlayRoofProductionAnim(pThis, isDamaged);
+			TryPlayRoofProductionAnim(pThis, isDamaged, pUnit);
 			return 0;
 		}
 
