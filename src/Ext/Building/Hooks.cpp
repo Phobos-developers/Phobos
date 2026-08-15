@@ -1062,27 +1062,51 @@ static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pT
 	}
 	else
 	{
-		const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
-		animName = garrisoned ? prodAnim.Garrisoned : (isDamaged ? prodAnim.Damaged : prodAnim.Anim);
+		// Fall back to the plain ProductionAnim only, so the roof line stays independent
+		// of the ProductionAnimDamaged/Garrisoned branches.
+		animName = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production).Anim;
 	}
 
 	if (!GeneralUtils::IsValidString(animName))
 		return;
+
+	// The roof anim needs its own placement values without affecting the plain line,
+	// so apply them only for the duration of this PlayAnim call.
+	auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+
+	const Point2D savedPosition = prodAnim.Position;
+	const int savedZAdjust = prodAnim.ZAdjust;
+	const int savedYSort = prodAnim.YSort;
+
+	prodAnim.Position.X = pTypeExt->RoofProductionAnimX.Get(savedPosition.X);
+	prodAnim.Position.Y = pTypeExt->RoofProductionAnimY.Get(savedPosition.Y);
+	prodAnim.ZAdjust = pTypeExt->RoofProductionAnimZAdjust.Get(savedZAdjust);
+	prodAnim.YSort = pTypeExt->RoofProductionAnimYSort.Get(savedYSort);
 
 	auto pExt = BuildingExt::Fetch(pBuilding);
 	pExt->IsPlayingRoofProductionAnim = true;
 	pBuilding->PlayAnim(animName, BuildingAnimSlot::Production, isDamaged, garrisoned, 0);
 	pExt->IsPlayingRoofProductionAnim = false;
 
-	if (auto pAnim = pBuilding->GetAnim(BuildingAnimSlot::Production))
-	{
-		const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+	prodAnim.Position = savedPosition;
+	prodAnim.ZAdjust = savedZAdjust;
+	prodAnim.YSort = savedYSort;
+}
 
-		pAnim->ZAdjust = pTypeExt->RoofProductionAnimZAdjust.Get(prodAnim.ZAdjust);
-		pAnim->YSortAdjust = pTypeExt->RoofProductionAnimYSort.Get(prodAnim.YSort);
-		pAnim->Location.X = pBuilding->Location.X + pTypeExt->RoofProductionAnimX.Get(prodAnim.Position.X);
-		pAnim->Location.Y = pBuilding->Location.Y + pTypeExt->RoofProductionAnimY.Get(prodAnim.Position.Y);
-	}
+// the vanilla powered-hide would also apply to roof anims, whose power
+// requirements are already enforced separately — skip it there so the
+// plain line's powered setting cannot affect the roof line.
+DEFINE_HOOK(0x451A44, BuildingClass_PlayAnim_SkipPoweredHideForRoof, 0x6)
+{
+	enum { SkipHide = 0x451A70 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (BuildingExt::Fetch(pThis)->IsPlayingRoofProductionAnim)
+		return SkipHide;
+
+	R->AL(pThis->IsPowerOnline());
+	return 0;
 }
 
 DEFINE_HOOK(0x43CC73, BuildingClass_ReceiveMessage_ProductionAnim, 0x6)
