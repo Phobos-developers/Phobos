@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
 #include <Ext/Rules/Body.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
@@ -510,4 +511,42 @@ DEFINE_HOOK(0x4ADE55, Sub_4ADCD0_RevealToAll_UpdateSight, 0x6)
 	const int radius = pTypeExt->RevealToAll_Radius.Get(pType->Sight);
 	pThis->UpdateSight(false, false, true, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
 	return SkipGameCode;
+}
+
+// Don't allow upgrade anims to be created if building is not upgraded or they require power to be shown and the building isn't powered.
+static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
+{
+	auto const pType = pBuilding->Type;
+
+	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->GetAnim(anim))
+	{
+		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
+
+		if (animIndex < 0 || (int)anim != animIndex)
+			return false;
+
+		auto const animData = pType->GetBuildingAnim(anim);
+
+		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect))
+			|| (pType->PoweredSpecial && animData.PoweredSpecial))
+			&& !(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+DEFINE_HOOK(0x45189D, BuildingClass_PlayAnim_BlockPoweredAnims, 0x6)
+{
+	enum { SkipAnim = 0x451B2C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(BuildingAnimSlot, anim, STACK_OFFSET(0x34, 0x8));
+
+	if (!AllowPoweredAnim(pThis, anim))
+		return SkipAnim;
+
+	return 0;
 }
