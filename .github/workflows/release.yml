@@ -1,0 +1,87 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+
+env:
+  SOLUTION_FILE_PATH: .
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
+
+    - name: Determine Build Type and Version Info
+      id: info
+      shell: pwsh
+      run: |
+        $tag = "${{ github.ref_name }}"
+        $version = $tag.TrimStart('v')
+        $isPrerelease = "${{ github.event.release.prerelease }}"
+        # Whether the build is a pre-release is decided by Phobos.version.h's PRERELEASE_SUFFIX;
+        # here we only build a release-family build and keep the display name distinct.
+        if ($isPrerelease -eq "true") {
+          $releaseName = "Phobos $tag (Pre-release)"
+        } else {
+          $releaseName = "Phobos $tag"
+        }
+        echo "build-type=RELEASE" >> $env:GITHUB_OUTPUT
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo "release-name=$releaseName" >> $env:GITHUB_OUTPUT
+
+    - name: Build Phobos
+      uses: ./.github/actions/build-phobos
+      with:
+        sln-path: ${{env.SOLUTION_FILE_PATH}}
+        build-config: ${{ env.BUILD_CONFIGURATION }}
+        build-type: ${{ steps.info.outputs.build-type }}
+
+    - name: Extract Release Notes
+      shell: pwsh
+      run: |
+        .\scripts\extract_changelog.ps1 `
+          -Tag "${{ github.ref_name }}" `
+          -WhatsNewPath docs\Whats-New.md `
+          -OutputPath RELEASE_NOTES.md `
+          -LinkBase "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs"
+
+    - name: Append Changelog to the Release Notes
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        $tag = "${{ github.ref_name }}"
+        # Fetch the text the release author wrote, so the changelog can be appended to it
+        # instead of replacing it. Re-running the workflow must not append a second copy,
+        # so the changelog is wrapped in a marker block that is stripped before re-appending.
+        $existing = (gh api "repos/${{ github.repository }}/releases/tags/$tag" --jq '.body // ""' 2>$null) -join "`n"
+        if ($LASTEXITCODE -ne 0) { $existing = '' }
+        $changelog = (Get-Content -Raw -Path RELEASE_NOTES.md).Trim()
+        $markerStart = '<!-- Phobos changelog start -->'
+        $markerEnd = '<!-- Phobos changelog end -->'
+        $block = "$markerStart`n$changelog`n$markerEnd"
+        # Drop any previously appended changelog block so re-runs replace rather than duplicate
+        $existing = [regex]::Replace($existing, "(?s)$markerStart.*$markerEnd", '').TrimEnd("`r", "`n")
+        $combined = if ([string]::IsNullOrWhiteSpace($existing)) { $block } else { "$existing`n`n$block" }
+        Set-Content -Path RELEASE_NOTES.md -Value $combined -Encoding utf8
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ steps.info.outputs.release-name }}
+        files: |
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb
+          ${{ env.BUILD_CONFIGURATION }}/gamemd.edb
+          ${{ env.BUILD_CONFIGURATION }}/Syringe.exe
+          ${{ env.BUILD_CONFIGURATION }}/Syringe.LICENSE.txt
+        body_path: RELEASE_NOTES.md

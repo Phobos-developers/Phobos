@@ -278,7 +278,7 @@ When the exception handler is enabled, Phobos replaces the game's own crash hand
 Crash folders older than 5 days are cleaned up automatically. The `-FullCrashDump` command line arg makes the automatically written minidump a full memory dump (useful for unattended setups).
 
 Crash reports can be enriched with extra information:
-- If a `gamemd.pdb` file is present in the game directory, it is used to resolve game addresses to symbol names in the call stacks. `Phobos.pdb` (shipped with devbuilds and nightlies) is picked up automatically for Phobos's own addresses.
+- If a `gamemd.pdb` file is present in the game directory, it is used to resolve game addresses to symbol names in the call stacks. `Phobos.pdb` (shipped with every build) is picked up automatically for Phobos's own addresses.
 - If a `gamemd.edb` exception database file is present in the game directory, its description for the faulting address (if any) is included in the report under "Additional information". The format is shared with Vinifera: one entry per line, `;` starts a comment.
 
 ```text
