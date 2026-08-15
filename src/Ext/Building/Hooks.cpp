@@ -1128,10 +1128,11 @@ DEFINE_HOOK(0x44B7AE, BuildingClass_Mission_Repair_ProductionAnim, 0x6)
 	return SkipGameCode;
 }
 
-// pUnit, when given, is the unit whose exit triggered this call.
-static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged, TechnoClass* pUnit = nullptr)
+// isRoofExit tells whether the produced unit leaves through the roof hatch;
+// each caller decides it from its own reliable source.
+static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged, bool isRoofExit)
 {
-	if (!(pUnit ? IsRoofExitTechno(pUnit->GetTechnoType()) : IsRoofExitBuildingUnit(pBuilding)))
+	if (!isRoofExit)
 		return false;
 
 	auto pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
@@ -1155,7 +1156,7 @@ DEFINE_HOOK(0x44DDF0, BuildingClass_Unload_RoofProductionAnim, 0x6)
 
 	GET(BuildingClass*, pBuilding, EBP);
 
-	return TryPlayRoofProductionAnim(pBuilding, false) ? SkipGameCode : 0;
+	return TryPlayRoofProductionAnim(pBuilding, false, IsRoofExitBuildingUnit(pBuilding)) ? SkipGameCode : 0;
 }
 
 DEFINE_HOOK(0x44DDDE, BuildingClass_Unload_RoofProductionAnim_Damaged, 0x6)
@@ -1164,7 +1165,7 @@ DEFINE_HOOK(0x44DDDE, BuildingClass_Unload_RoofProductionAnim_Damaged, 0x6)
 
 	GET(BuildingClass*, pBuilding, EBP);
 
-	return TryPlayRoofProductionAnim(pBuilding, true) ? SkipGameCode : 0;
+	return TryPlayRoofProductionAnim(pBuilding, true, IsRoofExitBuildingUnit(pBuilding)) ? SkipGameCode : 0;
 }
 
 DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory, 0x6)
@@ -1182,7 +1183,7 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 		if (pUnit && IsRoofExitTechno(pUnit->GetTechnoType()))
 		{
 			pThis->DestroyNthAnim(BuildingAnimSlot::Idle);
-			TryPlayRoofProductionAnim(pThis, isDamaged, pUnit);
+			TryPlayRoofProductionAnim(pThis, isDamaged, true);
 			return 0;
 		}
 
