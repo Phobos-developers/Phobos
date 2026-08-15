@@ -381,14 +381,14 @@ This page lists all the individual contributions to the project by their author.
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
   - Teleport, Tunnel and Fly loco visual tilt fix
-  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip units' turret rotation and jumpjets' wobbling under EMP
   - Droppod properties dehardcode
   - `Deployer = yes->no` infantry conversion sequence fix
   - Waypoint entering building together with engineer/agent bug fix
   - Skippable game save on scenario start
-  - `InfDeath=9` versus jumpjet infantry 0 damage fix
+  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip rally point line drawing when undeploying a building
+  - `InfDeath=9` versus jumpjet infantry 0 damage fix
   - Ares' `SW.Shots` hint on extended tooltips
   - Ares' Abductor weapon fix
   - Suppress Ares' swizzle warning when parsing tags and taskforces
