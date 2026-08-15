@@ -138,6 +138,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 #ifdef STR_GIT_COMMIT
 	Debug::Log("Git commit: " STR_GIT_COMMIT "\n");
+	Debug::Log("Git dirty: " GIT_DIRTY_FLAG "\n");
 #endif
 #ifdef STR_GIT_REF
 	Debug::Log("Git ref: " STR_GIT_REF "\n");

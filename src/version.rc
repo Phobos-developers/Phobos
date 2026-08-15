@@ -40,6 +40,7 @@ BEGIN
   VALUE "Translation", 0x0409, 1200
 #ifdef STR_GIT_COMMIT
   VALUE "GitCommit", STR_GIT_COMMIT
+  VALUE "GitDirty", GIT_DIRTY_FLAG
 #endif
 #ifdef STR_GIT_REF
   VALUE "GitRef", STR_GIT_REF

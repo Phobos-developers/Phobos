@@ -469,6 +469,7 @@ namespace
 		ExceptionHandler::Append("Phobos version: " PRODUCT_VERSION "\r\n");
 #ifdef STR_GIT_COMMIT
 		ExceptionHandler::Append("Git commit: " STR_GIT_COMMIT "\r\n");
+		ExceptionHandler::Append("Git dirty: " GIT_DIRTY_FLAG "\r\n");
 #endif
 #ifdef STR_GIT_REF
 		ExceptionHandler::Append("Git ref: " STR_GIT_REF "\r\n");

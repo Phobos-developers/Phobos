@@ -59,7 +59,14 @@
 #define VERSION_PREFIX "v"
 
 // STR_GIT_COMMIT / STR_GIT_REF are defined by the generated Phobos.Git.h when Git info is
-// available; STR_GIT_DIRTY falls back to empty when the working tree is clean.
+// available. STR_GIT_DIRTY is defined only when the working tree was dirty; expose that as an
+// explicit yes/no flag (for the "GitDirty" metadata field and the git log lines) before the
+// empty fallback below makes STR_GIT_DIRTY unconditional.
+#ifdef STR_GIT_DIRTY
+	#define GIT_DIRTY_FLAG "yes"
+#else
+	#define GIT_DIRTY_FLAG "no"
+#endif
 #ifndef STR_GIT_DIRTY
 	#define STR_GIT_DIRTY ""
 #endif
@@ -81,22 +88,28 @@
 	#endif
 #else
 	// Nightly (CI) and local builds are one mostly unified build differing in warning and in
-	// build type name; the version string carries the Git commit and ref when available.
+	// build type name; the version string appends the Git commit and ref when available.
 	#ifdef NIGHTLY
 		#define BUILD_TYPE_NAME "nightly build"
 	#else
 		#define BUILD_TYPE_NAME "local build"
 	#endif
+	// Bleeding-edge builds append git info as clearly labeled attributes separated by " @ ",
+	// never replacing the numeric version: e.g. v0.5.0.0 @ ab2b51615-dirty @ refs/heads/develop.
+	// The suffixes build on the raw STR_GIT_COMMIT / STR_GIT_REF / STR_GIT_DIRTY values from the
+	// generated Phobos.Git.h.
 	#ifdef STR_GIT_COMMIT
-		#define FILE_VERSION_STR VERSION_LONG_STR "+" STR_GIT_COMMIT STR_GIT_DIRTY
+		#define GIT_COMMIT_SUFFIX " @ " STR_GIT_COMMIT STR_GIT_DIRTY
 	#else
-		#define FILE_VERSION_STR VERSION_LONG_STR
+		#define GIT_COMMIT_SUFFIX ""
 	#endif
 	#ifdef STR_GIT_REF
-		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR " @ " STR_GIT_REF
+		#define GIT_REF_SUFFIX " @ " STR_GIT_REF
 	#else
-		#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR
+		#define GIT_REF_SUFFIX ""
 	#endif
+	#define FILE_VERSION_STR VERSION_LONG_STR
+	#define PRODUCT_VERSION VERSION_PREFIX FILE_VERSION_STR GIT_COMMIT_SUFFIX GIT_REF_SUFFIX
 #endif
 
 // A testing build carries the on-screen "please test the build before shipping" warning and the
