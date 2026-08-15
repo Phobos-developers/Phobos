@@ -129,6 +129,18 @@ public:
 
 	Nullable<int> DeployFireDelay;
 
+	Valueable<AnimTypeClass*> RoofProductionAnim;
+	Valueable<AnimTypeClass*> RoofProductionAnimDamaged;
+	Valueable<AnimTypeClass*> RoofProductionAnimGarrisoned;
+	Nullable<int> RoofProductionAnimX;
+	Nullable<int> RoofProductionAnimY;
+	Nullable<int> RoofProductionAnimZAdjust;
+	Nullable<int> RoofProductionAnimYSort;
+	Nullable<bool> RoofProductionAnimPowered;
+	Nullable<bool> RoofProductionAnimPoweredLight;
+	Nullable<bool> RoofProductionAnimPoweredEffect;
+	Nullable<bool> RoofProductionAnimPoweredSpecial;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -225,6 +237,18 @@ public:
 		, SetTabBySelecting { -1 }
 		, RevealToAll_Radius {}
 		, DeployFireDelay {}
+
+		, RoofProductionAnim { nullptr }
+		, RoofProductionAnimDamaged { nullptr }
+		, RoofProductionAnimGarrisoned { nullptr }
+		, RoofProductionAnimX {}
+		, RoofProductionAnimY {}
+		, RoofProductionAnimZAdjust {}
+		, RoofProductionAnimYSort {}
+		, RoofProductionAnimPowered { }
+		, RoofProductionAnimPoweredLight { }
+		, RoofProductionAnimPoweredEffect { }
+		, RoofProductionAnimPoweredSpecial { }
 
 		// Ares 0.2
 		, CloningFacility { false }

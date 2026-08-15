@@ -2471,6 +2471,13 @@ msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
 
+msgid ""
+"[`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim) "
+"(by Noble_Fish)"
+msgstr ""
+"[`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim)（by"
+" Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

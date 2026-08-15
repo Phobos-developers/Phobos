@@ -667,6 +667,7 @@ HideShakeEffects=false           ; boolean
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
+- [`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

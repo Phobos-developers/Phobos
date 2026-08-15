@@ -1024,10 +1024,65 @@ static __inline bool AllowBuildingProductionAnim(BuildingTypeClass* pType)
 	if (pType->ConstructionYard)
 		return true;
 
-	if (pType->Factory == AbstractType::BuildingType && GeneralUtils::IsValidString(pType->BuildingAnim[(int)BuildingAnimSlot::Production].Anim))
+	if (pType->Factory == AbstractType::BuildingType && GeneralUtils::IsValidString(pType->GetBuildingAnim(BuildingAnimSlot::Production).Anim))
 		return true;
 
 	return false;
+}
+
+static bool IsRoofExitTechno(TechnoTypeClass* pType)
+{
+	return pType->JumpJet || pType->BalloonHover;
+}
+
+static bool IsRoofExitBuildingUnit(BuildingClass* pBuilding)
+{
+	auto pUnit = pBuilding->GetNthLink();
+	return pUnit && IsRoofExitTechno(pUnit->GetTechnoType());
+}
+
+static AnimTypeClass* PickRoofProductionAnim(BuildingTypeExt* pTypeExt, bool isDamaged, bool garrisoned)
+{
+	if (garrisoned && pTypeExt->RoofProductionAnimGarrisoned.Get() != nullptr)
+		return pTypeExt->RoofProductionAnimGarrisoned.Get();
+
+	if (isDamaged && pTypeExt->RoofProductionAnimDamaged.Get() != nullptr)
+		return pTypeExt->RoofProductionAnimDamaged.Get();
+
+	return pTypeExt->RoofProductionAnim.Get();
+}
+
+static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pTypeExt, bool isDamaged, bool garrisoned)
+{
+	const char* animName = nullptr;
+
+	if (auto pAnimType = PickRoofProductionAnim(pTypeExt, isDamaged, garrisoned))
+	{
+		animName = pAnimType->get_ID();
+	}
+	else
+	{
+		const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+		animName = garrisoned ? prodAnim.Garrisoned : (isDamaged ? prodAnim.Damaged : prodAnim.Anim);
+	}
+
+	if (!GeneralUtils::IsValidString(animName))
+		return;
+
+	auto pExt = BuildingExt::Fetch(pBuilding);
+	pExt->IsPlayingRoofProductionAnim = true;
+	pBuilding->PlayAnim(animName, BuildingAnimSlot::Production, isDamaged, garrisoned, 0);
+	pExt->IsPlayingRoofProductionAnim = false;
+
+	if (auto pAnim = pBuilding->GetAnim(BuildingAnimSlot::Production))
+	{
+		const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+
+		pAnim->ZAdjust = pTypeExt->RoofProductionAnimZAdjust.Get(prodAnim.ZAdjust);
+		pAnim->YSortAdjust = pTypeExt->RoofProductionAnimYSort.Get(prodAnim.YSort);
+		pAnim->Location.X = pBuilding->Location.X + pTypeExt->RoofProductionAnimX.Get(prodAnim.Position.X);
+		pAnim->Location.Y = pBuilding->Location.Y + pTypeExt->RoofProductionAnimY.Get(prodAnim.Position.Y);
+	}
 }
 
 DEFINE_HOOK(0x43CC73, BuildingClass_ReceiveMessage_ProductionAnim, 0x6)
@@ -1052,6 +1107,44 @@ DEFINE_HOOK(0x44B7AE, BuildingClass_Mission_Repair_ProductionAnim, 0x6)
 	return SkipGameCode;
 }
 
+static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged)
+{
+	if (!IsRoofExitBuildingUnit(pBuilding))
+		return false;
+
+	auto pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
+	const bool garrisoned = pBuilding->GetOccupantCount() > 0;
+
+	const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+	if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding,
+		pTypeExt->RoofProductionAnimPowered.Get(prodAnim.Powered),
+		pTypeExt->RoofProductionAnimPoweredLight.Get(prodAnim.PoweredLight),
+		pTypeExt->RoofProductionAnimPoweredEffect.Get(prodAnim.PoweredEffect),
+		pTypeExt->RoofProductionAnimPoweredSpecial.Get(prodAnim.PoweredSpecial)))
+		return true;
+
+	PlayRoofProductionAnim(pBuilding, pTypeExt, isDamaged, garrisoned);
+	return true;
+}
+
+DEFINE_HOOK(0x44DDF0, BuildingClass_Unload_RoofProductionAnim, 0x6)
+{
+	enum { SkipGameCode = 0x44E267 };
+
+	GET(BuildingClass*, pBuilding, EBP);
+
+	return TryPlayRoofProductionAnim(pBuilding, false) ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x44DDDE, BuildingClass_Unload_RoofProductionAnim_Damaged, 0x6)
+{
+	enum { SkipGameCode = 0x44E267 };
+
+	GET(BuildingClass*, pBuilding, EBP);
+
+	return TryPlayRoofProductionAnim(pBuilding, true) ? SkipGameCode : 0;
+}
+
 DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
@@ -1060,14 +1153,19 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 
 	if (pType->Factory == AbstractType::InfantryType)
 	{
-		bool isDamaged = false;
-		auto anim = pType->BuildingAnim[(int)BuildingAnimSlot::Production].Anim;
+		const bool isDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
-		if (pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow)
+		if (IsRoofExitBuildingUnit(pThis))
 		{
-			isDamaged = true;
-			anim = pType->BuildingAnim[(int)BuildingAnimSlot::Production].Damaged;
+			pThis->DestroyNthAnim(BuildingAnimSlot::Idle);
+			PlayRoofProductionAnim(pThis, BuildingTypeExt::Fetch(pType), isDamaged, pThis->GetOccupantCount() > 0);
+			return 0;
 		}
+
+		auto anim = pType->GetBuildingAnim(BuildingAnimSlot::Production).Anim;
+
+		if (isDamaged)
+			anim = pType->GetBuildingAnim(BuildingAnimSlot::Production).Damaged;
 
 		if (GeneralUtils::IsValidString(anim))
 		{

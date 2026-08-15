@@ -321,6 +321,18 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	prodAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredEffect", prodAnim.PoweredEffect);
 	prodAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredSpecial", prodAnim.PoweredSpecial);
 
+	this->RoofProductionAnim.Read(exArtINI, pArtSection, "RoofProductionAnim");
+	this->RoofProductionAnimDamaged.Read(exArtINI, pArtSection, "RoofProductionAnimDamaged");
+	this->RoofProductionAnimGarrisoned.Read(exArtINI, pArtSection, "RoofProductionAnimGarrisoned");
+	this->RoofProductionAnimX.Read(exArtINI, pArtSection, "RoofProductionAnimX");
+	this->RoofProductionAnimY.Read(exArtINI, pArtSection, "RoofProductionAnimY");
+	this->RoofProductionAnimZAdjust.Read(exArtINI, pArtSection, "RoofProductionAnimZAdjust");
+	this->RoofProductionAnimYSort.Read(exArtINI, pArtSection, "RoofProductionAnimYSort");
+	this->RoofProductionAnimPowered.Read(exArtINI, pArtSection, "RoofProductionAnimPowered");
+	this->RoofProductionAnimPoweredLight.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredLight");
+	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
+	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -469,6 +481,17 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->SetTabBySelecting)
 		.Process(this->RevealToAll_Radius)
 		.Process(this->DeployFireDelay)
+		.Process(this->RoofProductionAnim)
+		.Process(this->RoofProductionAnimDamaged)
+		.Process(this->RoofProductionAnimGarrisoned)
+		.Process(this->RoofProductionAnimX)
+		.Process(this->RoofProductionAnimY)
+		.Process(this->RoofProductionAnimZAdjust)
+		.Process(this->RoofProductionAnimYSort)
+		.Process(this->RoofProductionAnimPowered)
+		.Process(this->RoofProductionAnimPoweredLight)
+		.Process(this->RoofProductionAnimPoweredEffect)
+		.Process(this->RoofProductionAnimPoweredSpecial)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
