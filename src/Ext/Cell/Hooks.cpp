@@ -12,6 +12,11 @@ DEFINE_HOOK(0x480EA8, CellClass_DamageWall_AdjacentWallDamage, 0x7)
 
 #pragma region LightSource Optimize
 
+namespace LightSourceTemp
+{
+	std::vector<TerrainClass*> RedrawTerrains {};
+}
+
 DEFINE_HOOK(0x5547C8, LightSourceClass_CTOR_SetInCells, 0x5)
 {
 	GET(LightSourceClass*, pThis, ESI);
@@ -23,7 +28,7 @@ DEFINE_HOOK(0x5547C8, LightSourceClass_CTOR_SetInCells, 0x5)
 		if (!pCell)
 			continue;
 
-		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		const auto pCellExt = CellExt::Fetch(pCell);
 		pCellExt->CoveringLights.emplace_back(pThis);
 	}
 
@@ -41,7 +46,7 @@ DEFINE_HOOK(0x555176, LightSourceClass_DTOR_ResetInCells, 0x6)
 		if (!pCell)
 			continue;
 
-		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		const auto pCellExt = CellExt::Fetch(pCell);
 		const auto it = std::ranges::find(pCellExt->CoveringLights, pThis);
 
 		if (it != pCellExt->CoveringLights.cend())
@@ -95,11 +100,41 @@ DEFINE_HOOK(0x554BF6, LightSourceClass_554AF0_Distance_Optimize, 0x5)
 
 		if (const auto pBuilding = pCell->GetBuilding())
 			pBuilding->MarkForRedraw();
+
+		auto& redrawTerrains = LightSourceTemp::RedrawTerrains;
+		const auto pCellExt = CellExt::Fetch(pCell);
+
+		for (const auto pCoveringTerrain : pCellExt->CoveringTerrains)
+		{
+			if (std::ranges::find(redrawTerrains, pCoveringTerrain) != redrawTerrains.cend())
+				continue;
+
+			redrawTerrains.emplace_back(pCoveringTerrain);
+		}
 	}
 
 	return InRange;
 }
 
-DEFINE_JUMP(LJMP, 0x554D0A, 0x554D16) // Skip GScreenClass::MarkNeedsRedraw(1);
+DEFINE_HOOK(0x554D0A, LightSourceClass_554AF0_CellRedraw, 0x7)
+{
+	enum { SkipGScreenRedraw = 0x554D16 };
+
+	auto& redrawTerrains = LightSourceTemp::RedrawTerrains;
+
+	if (!redrawTerrains.empty())
+	{
+		for (const auto pTerrain : redrawTerrains)
+		{
+			RectangleStruct rect;
+			pTerrain->GetRenderDimensions(&rect);
+			TacticalClass::Instance->RegisterDirtyArea(rect, false);
+		}
+
+		redrawTerrains.clear();
+	}
+
+	return SkipGScreenRedraw;
+}
 
 #pragma endregion

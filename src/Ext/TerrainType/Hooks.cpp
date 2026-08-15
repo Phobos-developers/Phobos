@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Rules/Body.h>
+#include <Ext/Cell/Body.h>
 
 namespace TerrainTypeTemp
 {
@@ -344,3 +345,130 @@ DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
 
 	return 0;
 }
+
+#pragma region LightSource Dirty
+
+static bool RectangleIntersectsDiamond(const RectangleStruct& rect, int cx, int cy, int rx, int ry)
+{
+	const int rl = rect.X;
+	const int rt = rect.Y;
+	const int rr = rect.X + rect.Width;
+	const int rb = rect.Y + rect.Height;
+
+	if (rr < cx - rx || rl > cx + rx || rb < cy - ry || rt > cy + ry)
+		return false;
+
+	auto InDiamond = [=](int x, int y)
+		{
+			return std::abs(static_cast<double>(x - cx) / rx) + std::abs(static_cast<double>(y - cy) / ry) <= 1.0;
+		};
+
+	auto InRect = [=](int x, int y)
+		{
+			return x >= rl && x <= rr && y >= rt && y <= rb;
+		};
+
+	if (InRect(cx, cy))
+		return true;
+
+	if (InDiamond(rl, rt)
+		|| InDiamond(rr, rt)
+		|| InDiamond(rl, rb)
+		|| InDiamond(rr, rb))
+		return true;
+
+	if (InRect(cx - rx, cy)
+		|| InRect(cx + rx, cy)
+		|| InRect(cx, cy - ry)
+		|| InRect(cx, cy + ry))
+		return true;
+
+	return false;
+}
+
+static std::vector<CellClass*> GetTerrainCoveredCells(TerrainClass* pThis)
+{
+	const auto baseCell = pThis->GetMapCoords();
+	RectangleStruct rect;
+	pThis->GetRenderDimensions(&rect);
+
+	const auto tacticalPos = TacticalClass::Instance->TacticalPos;
+	const auto anchor = TacticalClass::CoordsToScreen(pThis->GetCoords()) - tacticalPos;
+
+	const int leftW = anchor.X - rect.X;
+	const int rightW = rect.X + rect.Width - anchor.X;
+
+	if (rightW > leftW)
+		rect.Width = 2 * leftW;
+
+	const int range = std::max(4, (rect.Height + 60) / 30);
+	const int rx = Unsorted::CellWidthInPixels / 2;
+	const int ry = Unsorted::CellHeightInPixels / 2;
+	std::vector<CellClass*> result;
+
+	for (int cy = baseCell.Y - range; cy <= baseCell.Y + range; ++cy)
+	{
+		for (int cx = baseCell.X - range; cx <= baseCell.X + range; ++cx)
+		{
+			if (cx + cy > baseCell.X + baseCell.Y)
+				continue;
+
+			const CellStruct cell { static_cast<short>(cx), static_cast<short>(cy) };
+			const auto pCell = MapClass::Instance.TryGetCellAt(cell);
+
+			if (!pCell)
+				continue;
+
+			const auto cellClient = TacticalClass::CoordsToScreen(pCell->GetCoords()) - tacticalPos;
+
+			if (!RectangleIntersectsDiamond(rect, cellClient.X, cellClient.Y, rx, ry))
+				continue;
+
+			result.emplace_back(pCell);
+		}
+	}
+
+	return result;
+}
+
+DEFINE_HOOK(0x71D0E7, TerrainClass_Unlimbo_Covering, 0x6)
+{
+	enum { ReturnTrue = 0x71D132 };
+
+	GET_STACK(TerrainClass*, pThis, STACK_OFFSET(0x20, -0x10));
+	GET(CellClass*, pCell, EAX);
+	const auto covering = GetTerrainCoveredCells(pThis);
+
+	for (const auto pCovering : covering)
+		CellExt::Fetch(pCovering)->CoveringTerrains.emplace_back(pThis);
+
+	const int overlayIdx = pCell->OverlayTypeIndex;
+
+	if (overlayIdx != -1 && OverlayTypeClass::Array[overlayIdx]->Tiberium)
+	{
+		pCell->OverlayTypeIndex = -1;
+		pCell->OverlayData = 0;
+	}
+
+	return ReturnTrue;
+}
+
+DEFINE_HOOK(0x71CA1C, TerrainClass_Limbo_ResetCovering, 0x5)
+{
+	GET(TerrainClass*, pThis, EDI);
+	const auto covering = GetTerrainCoveredCells(pThis);
+
+	for (const auto pCovering : covering)
+	{
+		auto& coveringTerrains = CellExt::Fetch(pCovering)->CoveringTerrains;
+		const auto it = std::ranges::find(coveringTerrains, pThis);
+
+		if (it != coveringTerrains.cend())
+			coveringTerrains.erase(it);
+	}
+
+	return 0;
+}
+
+
+#pragma endregion
