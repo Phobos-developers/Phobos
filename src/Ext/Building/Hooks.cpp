@@ -1158,7 +1158,7 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 		if (IsRoofExitBuildingUnit(pThis))
 		{
 			pThis->DestroyNthAnim(BuildingAnimSlot::Idle);
-			PlayRoofProductionAnim(pThis, BuildingTypeExt::Fetch(pType), isDamaged, pThis->GetOccupantCount() > 0);
+			TryPlayRoofProductionAnim(pThis, isDamaged);
 			return 0;
 		}
 
