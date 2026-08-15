@@ -1070,18 +1070,29 @@ static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pT
 	if (!GeneralUtils::IsValidString(animName))
 		return;
 
-	// The roof anim needs its own placement values without affecting the plain line,
-	// so apply them only for the duration of this PlayAnim call.
+	// The roof anim needs its own placement and power values without affecting
+	// the plain line, so apply them only for the duration of this PlayAnim
+	// call. Swapping the Powered family also makes the vanilla powered-hide
+	// inside PlayAnim (0x451A44) read the Roof*Powered values, keeping the two
+	// lines independent.
 	auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
 
 	const Point2D savedPosition = prodAnim.Position;
 	const int savedZAdjust = prodAnim.ZAdjust;
 	const int savedYSort = prodAnim.YSort;
+	const bool savedPowered = prodAnim.Powered;
+	const bool savedPoweredLight = prodAnim.PoweredLight;
+	const bool savedPoweredEffect = prodAnim.PoweredEffect;
+	const bool savedPoweredSpecial = prodAnim.PoweredSpecial;
 
 	prodAnim.Position.X = pTypeExt->RoofProductionAnimX.Get(savedPosition.X);
 	prodAnim.Position.Y = pTypeExt->RoofProductionAnimY.Get(savedPosition.Y);
 	prodAnim.ZAdjust = pTypeExt->RoofProductionAnimZAdjust.Get(savedZAdjust);
 	prodAnim.YSort = pTypeExt->RoofProductionAnimYSort.Get(savedYSort);
+	prodAnim.Powered = pTypeExt->RoofProductionAnimPowered.Get(savedPowered);
+	prodAnim.PoweredLight = pTypeExt->RoofProductionAnimPoweredLight.Get(savedPoweredLight);
+	prodAnim.PoweredEffect = pTypeExt->RoofProductionAnimPoweredEffect.Get(savedPoweredEffect);
+	prodAnim.PoweredSpecial = pTypeExt->RoofProductionAnimPoweredSpecial.Get(savedPoweredSpecial);
 
 	auto pExt = BuildingExt::Fetch(pBuilding);
 	pExt->IsPlayingRoofProductionAnim = true;
@@ -1091,22 +1102,10 @@ static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pT
 	prodAnim.Position = savedPosition;
 	prodAnim.ZAdjust = savedZAdjust;
 	prodAnim.YSort = savedYSort;
-}
-
-// the vanilla powered-hide would also apply to roof anims, whose power
-// requirements are already enforced separately — skip it there so the
-// plain line's powered setting cannot affect the roof line.
-DEFINE_HOOK(0x451A44, BuildingClass_PlayAnim_SkipPoweredHideForRoof, 0x6)
-{
-	enum { SkipHide = 0x451A70 };
-
-	GET(BuildingClass*, pThis, ESI);
-
-	if (BuildingExt::Fetch(pThis)->IsPlayingRoofProductionAnim)
-		return SkipHide;
-
-	R->AL(pThis->IsPowerOnline());
-	return 0;
+	prodAnim.Powered = savedPowered;
+	prodAnim.PoweredLight = savedPoweredLight;
+	prodAnim.PoweredEffect = savedPoweredEffect;
+	prodAnim.PoweredSpecial = savedPoweredSpecial;
 }
 
 DEFINE_HOOK(0x43CC73, BuildingClass_ReceiveMessage_ProductionAnim, 0x6)
