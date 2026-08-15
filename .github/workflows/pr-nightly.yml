@@ -2,6 +2,27 @@ name: Pull Request Nightly Build
 
 on:
   pull_request:
+    # Only build when source code or project/build configuration files change.
+    paths:
+    - '**/*.c'
+    - '**/*.cc'
+    - '**/*.cpp'
+    - '**/*.cxx'
+    - '**/*.h'
+    - '**/*.hh'
+    - '**/*.hpp'
+    - '**/*.hxx'
+    - '**/*.inl'
+    - '**/*.inc'
+    - '**/*.rc'
+    - '**/*.sln'
+    - '**/*.vcxproj'
+    - '**/*.props'
+    - '**/*.targets'
+    - '.github/**'
+    - 'scripts/**'
+    - 'YRpp/**'
+    - '.gitmodules'
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -14,7 +35,6 @@ env:
 
 jobs:
   build:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no test needed') }}
     runs-on: windows-latest
 
     steps:
