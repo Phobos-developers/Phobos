@@ -513,7 +513,8 @@ DEFINE_HOOK(0x4ADE55, Sub_4ADCD0_RevealToAll_UpdateSight, 0x6)
 	return SkipGameCode;
 }
 
-// Don't allow upgrade anims to be created if building is not upgraded or they require power to be shown and the building isn't powered.
+// Don't allow anims to be created if they require power to be shown and the building isn't powered (Upgrade / Production / PreProduction).
+// Upgrade anims additionally require the building to be upgraded and the anim to be the current upgrade level.
 static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
 {
 	auto const pType = pBuilding->Type;
@@ -527,12 +528,15 @@ static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAni
 
 		auto const animData = pType->GetBuildingAnim(anim);
 
-		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect))
-			|| (pType->PoweredSpecial && animData.PoweredSpecial))
-			&& !(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
-		{
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
 			return false;
-		}
+	}
+	else if (anim == BuildingAnimSlot::Production || anim == BuildingAnimSlot::PreProduction)
+	{
+		auto const animData = pType->GetBuildingAnim(anim);
+
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
+			return false;
 	}
 
 	return true;

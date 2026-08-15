@@ -740,6 +740,7 @@ This page lists all the individual contributions to the project by their author.
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
   - Disable AlphaImage during Buildup
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
+  - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
