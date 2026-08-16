@@ -2,6 +2,8 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/AresFunctions.h>
+
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
@@ -96,6 +98,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
+	this->IvanBomb_Visibility.Read(exINI, pSection, "IvanBomb.Visibility");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -230,6 +233,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)
+		.Process(this->IvanBomb_Visibility)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
@@ -330,6 +334,7 @@ bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
 }
 
@@ -337,7 +342,16 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
+}
+
+WeaponTypeExt* WeaponTypeExt::GetBombExtData(BombClass* pBomb)
+{
+	if (const auto pAresMap = AresFunctions::BombExtMap)
+		return WeaponTypeExt::Fetch(*pAresMap->get_or_default(pBomb));
+
+	return WeaponTypeExt::BombExtMap.get_or_default(pBomb);
 }
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)

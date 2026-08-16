@@ -3626,6 +3626,20 @@ VisualScatter=false     ; boolean
 This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
 ```
 
+### Customize Ivan Bomb
+
+- Now you can customize who can see bomb image.
+    - This also affect on bomb detectors.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMEWEAPON]                ; WeaponType
+IvanBomb.Visibility=        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Weapon targeting filter
 
 ![image](_static/images/weaponfilter.gif)

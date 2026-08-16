@@ -352,6 +352,7 @@ public:
 		Valueable<int> WarheadAnimZAdjust;
 
 		Valueable<bool> IvanBombAttachToCenter;
+		Valueable<AffectedHouse> IvanBomb_Visibility;
 		Valueable<bool> MissileSpawnAttackCell;
 
 		Valueable<bool> FallingDownTargetingFix;
@@ -828,6 +829,7 @@ public:
 			, WarheadAnimZAdjust { -15 }
 
 			, IvanBombAttachToCenter { false }
+			, IvanBomb_Visibility { AffectedHouse::Owner }
 			, MissileSpawnAttackCell { true }
 
 			, FallingDownTargetingFix { false }
