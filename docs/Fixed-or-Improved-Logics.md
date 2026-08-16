@@ -543,7 +543,7 @@ DefaultToGuardArea=false            ; boolean
 KeepAlive.SupportInfantrys=false    ; boolean
 KeepAlive.SupportVehicles=false     ; boolean
 KeepAlive.SupportAircrafts=false    ; boolean
-KeepAlive.SupportBuildings=false    ; boolean
+KeepAlive.SupportBuildings=true    ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean
