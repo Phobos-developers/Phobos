@@ -445,7 +445,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
 
-	this->PreventCrew.Read(exINI, pSection, "PreventCrew");
+	this->PreventCrewEscape.Read(exINI, pSection, "PreventCrewEscape");
 	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
 	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
 
@@ -486,6 +486,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Malicious.Read(exINI, pSection, "Malicious");
 	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
+	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::Detonate
@@ -797,7 +798,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->Psychedelic_StackingMode)
 
-		.Process(this->PreventCrew)
+		.Process(this->PreventCrewEscape)
 		.Process(this->PreventPassengerEscape)
 		.Process(this->PreventOccupantEscape)
 
@@ -808,6 +809,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Malicious)
 		.Process(this->Flash_Duration)
 		.Process(this->Damage_Deployed)
+		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

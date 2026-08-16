@@ -30,9 +30,11 @@ Downloads
 
 You can choose one of the following:
 - [Latest stable branch build](https://github.com/Phobos-developers/Phobos/releases/latest) (most bug-free release but very slow on new features)
-- [Latest development branch builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less bug-free releases, devbuilds get new features when they are finished)
-- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased features that will be in next devbuild)
+- [Latest pre-release builds](https://github.com/Phobos-developers/Phobos/releases) (a bit less bug-free releases, pre-releases get new features when they are finished)
+- [Latest development branch nightly](https://nightly.link/Phobos-developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added unreleased features that will be in the next pre-release)
 - Individual new feature nightly builds for testing can be found in [pull requests](https://github.com/Phobos-developers/Phobos/pulls)
+
+To learn how these build types relate to each other and how versioning works, see the [release model and version lifecycle](docs/Project-guidelines-and-policies.md#git-branching-model-version-lifecycle-and-release-strategy).
 
 ### Note on nightly builds
 
@@ -45,6 +47,8 @@ Installation and Usage
 1. Obtain a Phobos "package" (official builds can be found on [releases page](https://github.com/Phobos-developers/Phobos/releases); read below to learn how to get nightly builds). You should end up with `Phobos.dll`, `Phobos.pdb` and the bundled SyringeEx `Syringe.exe`.
 2. Place those files in the game folder (where your `gamemd.exe` is located), replacing any existing `Syringe.exe` (for example the one shipped with Ares).
 3. To launch the game with Phobos (and all other installed Syringe-compatible engine extensions including Ares) you need to execute `Syringe.exe "gamemd.exe" [command line arguments for gamemd.exe]` in command line (omit arguments if you don't need any). `RunAres.bat` from Ares package does the same so you may use that as well.
+
+Be sure to read [migration and breaking changes](docs/Whats-New.md#migration-breaking-changes) to know if you need to adjust something in your mod after Phobos installation (or update).
 
 If you already use Ares in your mod, you just need to drop Phobos files mentioned above in your game folder, Syringe will load Phobos automatically. This also applies to mods using XNA client with Syringe; if your mod doesn't use Syringe and Ares (or you just haven't set up the client) yet we recommend to use [CnCNet client mod base by Starkku](https://github.com/Starkku/cncnet-client-mod-base) which is compatible with Ares and Phobos out of the box.
 
@@ -97,7 +101,7 @@ This project was founded by [@Belonit](https://github.com/Belonit) (Gluk-v48) an
 
 ### Interoperability
 
-Phobos has opened the external interfaces of some key components. If you are also developing your own engine extension and wish to use Phobos at the same time, please check out [Interoperability](Interoperability.md).
+Phobos has opened the external interfaces of some key components. If you are also developing your own engine extension and wish to use Phobos at the same time, please check out [Interoperability](docs/Interoperability.md).
 
 ### Maintenance crew
 

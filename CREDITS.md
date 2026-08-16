@@ -381,14 +381,14 @@ This page lists all the individual contributions to the project by their author.
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
   - Teleport, Tunnel and Fly loco visual tilt fix
-  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip units' turret rotation and jumpjets' wobbling under EMP
   - Droppod properties dehardcode
   - `Deployer = yes->no` infantry conversion sequence fix
   - Waypoint entering building together with engineer/agent bug fix
   - Skippable game save on scenario start
-  - `InfDeath=9` versus jumpjet infantry 0 damage fix
+  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip rally point line drawing when undeploying a building
+  - `InfDeath=9` versus jumpjet infantry 0 damage fix
   - Ares' `SW.Shots` hint on extended tooltips
   - Ares' Abductor weapon fix
   - Suppress Ares' swizzle warning when parsing tags and taskforces
@@ -564,6 +564,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize reveal radius of `RevealToAll`
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
+  - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -738,6 +739,8 @@ This page lists all the individual contributions to the project by their author.
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
   - Disable AlphaImage during Buildup
+  - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
+  - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
   - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
 - **Ollerus**:
   - Build limit group enhancement
@@ -931,3 +934,4 @@ This page lists all the individual contributions to the project by their author.
   - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
+- **Nuke** - Reload speed adjustment on promotion

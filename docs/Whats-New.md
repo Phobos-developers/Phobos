@@ -2,33 +2,30 @@
 
 This page lists the history of changes across stable Phobos releases and also all the stuff that requires modders to change something in their mods to accommodate.
 
-## Migrating
+## Migration (breaking changes)
+
+```{important}
+New Phobos user? Read the "Changes to vanilla behavior" subsections in every version below to know what you might need to adjust when installing Phobos
+```
+
+This serves as a changelog for when you just need to drop the new version in without reading into every version you're skipping, so you can simply read up on this log of breaking changes and apply whatever you might need to apply.
 
 ```{hint}
 You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
 ```
 
-### From vanilla
+### 0.5
+
+#### Changes to vanilla behavior
 
 - Vehicles paradropped by AI players now default to `Hunt` mission instead of `Guard`, matching what infantry do. This can be customized by setting `AIParadropMission` on the VehicleType, defaults to `[General] -> AIParadropMission`.
 - `IsSimpleDeployer` units now obey deploying facing constraint even without deploying animation if `DeployDir` is explicitly set on the unit.
 - `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
-- `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
-- Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`.
-- `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
-- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
-- The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
-- Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrushes.Vehicles` and `TiltsWhenCrushes.Overlays`, which both default to `TiltsWhenCrushes`.
 - The default direction for aircraft landing on an airfield will use the direction specified by `[AudioVisual] -> PoseDir=` instead of the building's direction, which can be reverted by setting `AircraftDockingDir.DefaultToPoseDir=false`.
 
-## Breaking changes
-
-This serves as a changelog for when you just need to drop the new version in without reading into every version you're skipping, so you can simply read up on this log of breaking changes and apply whatever you might need to apply.
-
-### Version TBD (develop branch nightly builds)
+#### Changes to Phobos behavior
 
 - `ProjectileRange` (Ares feature) now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
@@ -73,7 +70,7 @@ This serves as a changelog for when you just need to drop the new version in wit
   - `PassengerDeletion.SoylentAllowedHouses`: `none` -> `enemies`
   - `PassengerDeletion.DisplaySoylentOffset`: `none` -> `all`
 
-#### Changes compared to inter-version builds / pre-releases
+##### Changes compared to inter-version builds / pre-releases
 
 ```{dropdown} Click to show
 - Due to the format issue with `select.shp` in vanilla Yuri's Revenge that prevents the [Select box logic](User-Interface.md#select-box) from rendering correctly, `select.shp` no longer serves as the default value for `[SelectBoxType] -> Shape=`, and you need to manually specify a value for this flag.
@@ -83,6 +80,16 @@ This serves as a changelog for when you just need to drop the new version in wit
 ```
 
 ### 0.4
+
+#### Changes to vanilla behavior
+
+- `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly with `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
+- Elite technos no longer scatter by default, behaviour can be restored by including `SCATTER` in their `EliteAbilities`.
+- `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
+- The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
+- Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrushes.Vehicles` and `TiltsWhenCrushes.Overlays`, which both default to `TiltsWhenCrushes`.
+
+#### Changes to Phobos behavior
 
 - Phobos-introduced Warhead effects like shield modifiers, critical hits, disguise & mind control removal now require Warhead `Verses` to affect target to apply unless `EffectsRequireVerses` is set to false. Shield armor type is used if target has an active shield that cannot be penetrated by the Warhead.
 - `Trajectory=Straight` projectiles can now snap on targets within 0.5 cells from their detonation point, this distance can be customized via `Trajectory.Straight.TargetSnapDistance`.
@@ -97,7 +104,7 @@ This serves as a changelog for when you just need to drop the new version in wit
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes] -> 53` is deprecated.
 - `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
-#### Changes compared to inter-version builds / pre-releases
+##### Changes compared to inter-version builds / pre-releases
 
 ```{dropdown} Click to show
 - Ivan bombs no longer automatically center on building when attached. Set `[CombatDamage] -> IvanBombAttachToCenter` to true to restore this behaviour. Due to technical constraints this cannot be customized per WeaponType.
@@ -123,12 +130,19 @@ This serves as a changelog for when you just need to drop the new version in wit
 
 ### 0.3
 
+#### Changes to vanilla behavior
+
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
+
+#### Changes to Phobos behavior
+
 - Keys `rulesmd.ini -> [WarheadType] -> PenetratesShield` and `rulesmd.ini -> [WarheadType] -> BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation] -> UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
 - Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
-#### Changes compared to inter-version builds / pre-releases
+##### Changes compared to inter-version builds / pre-releases
 
 ```{dropdown} Click to show
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
@@ -399,7 +413,7 @@ HideShakeEffects=false           ; boolean
 
 ## Changelog
 
-### Version TBD (develop branch nightly builds)
+### 0.5
 
 ```{dropdown} Click to show
 :open:
@@ -664,6 +678,8 @@ HideShakeEffects=false           ; boolean
 - [Allow the unit to keep pursuing the target during ApproachTarget](Fixed-or-Improved-Logics.md#keep-pursuing-the-target-during-approachtarget) (by TaranDahl)
 - [Customize whether warhead can prevent crew escape from techno](New-or-Enhanced-Logics.md#customize-whether-warhead-can-prevent-crew-escape-from-techno) (by NetsuNegi)
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
+- [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
+- Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -754,6 +770,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that technos do not reset their link with the linked building when deactivated (by NetsuNegi)
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
+- Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -826,7 +843,14 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType (by Starkku)
+- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
+```
+
+```{dropdown} Pre-release changes
+
+#### 0.5-alpha1
+
 ```
 
 ### 0.4.0.3

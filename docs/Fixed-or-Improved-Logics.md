@@ -292,7 +292,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold.
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't.
 - Fixed the issue where the AI's regular targeting would also target garrisonable buildings.
-- Fixed the issue that the move mission of the jumpjet does not end correctly.
+- Fixed the issue that the move mission doesn't end when the techno is moving, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
 - Fixed the issue that the Jumpjet must end its movement before starting the next mission.
@@ -326,6 +326,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that technos do not reset their link with the linked building when deactivated.
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes`.
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
+- Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
+- `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 
 ## Fixes / interactions with other extensions
 
@@ -381,6 +383,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of Ares' EMP not suspending the production of AI factories.
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
+- Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 
 ## Newly added global settings
@@ -407,7 +410,7 @@ AllowBeaconHotKeyInSinglePlayer=false  ; boolean
 
 ### Allow deploy controlled MCV
 
-In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
+- In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
 
 In `rulesmd.ini`:
 ```ini
@@ -457,12 +460,12 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
 
 ### Crate improvements
 
-There are some improvements on goodie crate logic:
-- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
-- You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true.
-- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
-- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
-  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+- There are some improvements on goodie crate logic:
+  - The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+  - You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true.
+  - The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
+  - `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
+    - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
 
 In `rulesmd.ini`:
 ```ini
@@ -525,22 +528,25 @@ In `rulesmd.ini`:
 AdjacentWallDamage=200  ; integer
 ```
 
-### Customize the global default values of some vanilla flags
+### Customize the global default values of some vanilla/Ares flags
 
-- The following flags supplement definitions for flags that do not have global default values in vanilla.
+- The following flags supplement definitions for flags that do not have global default values in vanilla/Ares.
 
 ```{hint}
-Unless otherwise specified, the definition is the same as the name of the micro-level definition flag.
+Unless otherwise specified, after removing the last dot and everything before it, the definition is the same as the name of the micro-level definition flag.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false    ; boolean
+DefaultToGuardArea=false      ; boolean
+
+[CombatDamage]
+Warhead.PreventScatter=false  ; boolean
 
 [AudioVisual]
-LeptonMindControlOffset=70  ; integer, in leptons
-MindControlRingOffset=140   ; integer, in leptons
+LeptonMindControlOffset=70    ; integer, in leptons
+MindControlRingOffset=140     ; integer, in leptons
 ```
 
 ### Customizing effect of level lighting on air units
@@ -588,27 +594,9 @@ IronCurtain.ExtraTintIntensity=0.0  ; floating point value
 ForceShield.ExtraTintIntensity=0.0  ; floating point value
 ```
 
-### Jumpjet climbing logic enhancement
-
-- You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
-- You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
-  - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
-- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-JumpjetClimbPredictHeight=false   ; boolean
-JumpjetClimbWithoutCutOut=false   ; boolean
-JumpjetClimbIgnoreBuilding=false  ; boolean
-
-[SOMETECHNO]                      ; TechnoType
-JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
-```
-
 ### Move IvanBomb Position
 
-In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost cell of the building foundation instead of at the center of buildings. This can now be changed.
+- In vanilla, IvanBomb images display and the bombs detonate at the top-leftmost cell of the building foundation instead of at the center of buildings. This can now be changed.
 
 In `rulesmd.ini`:
 ```ini
@@ -622,8 +610,8 @@ Due to technical constraints this cannot be customized per WeaponType.
 
 ### RadialIndicator visibility
 
-In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
-On top of that, you can specify its visibility from other houses.
+- In vanilla game, a structure's radial indicator can be drawn only when it belongs to the player. Now it can also be visible to observer.
+- On top of that, you can specify its visibility from other houses.
 
 In `rulesmd.ini`:
 ```ini
@@ -2237,6 +2225,24 @@ ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invu
 ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> ForceShield.KillOrganicsWarhead
 ```
 
+### Jumpjet climbing logic enhancement
+
+- You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
+- You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
+  - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+- You can set `JumpjetClimbIgnoreBuilding` to true to make the jumpjet treat the building height as 0 when climbing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+JumpjetClimbPredictHeight=false   ; boolean
+JumpjetClimbWithoutCutOut=false   ; boolean
+JumpjetClimbIgnoreBuilding=false  ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+JumpjetClimbIgnoreBuilding=       ; boolean, default to [General] -> JumpjetClimbIgnoreBuilding
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -2631,11 +2637,11 @@ HarvesterLoadRate=                    ; integer, default to [General] -> Harvest
 
 ### Customize type selection for IFV
 
-In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
-- `WeaponGroupAsN` determines which group the IFV is in when enabling `WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same group will be selected together during type a selection, while not included those in different groups.
-- `TypeSelectUseIFVMode` determines whether all IFV modes will be considered as its own group by default during a type selection.
-  - If it's set to true, `WeaponGroupAsN` will be default to N for each `WeaponN`, which makes each of them become a standalone type during a type selection.
-  - If it's set to false, `WeaponGroupAsN` will be default to 0 for all weapons, which makes type selection on IFVs work the same as before.
+- In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.
+  - `WeaponGroupAsN` determines which group the IFV is in when enabling `WeaponN`, where N stands for 1-based weapon mode index. IFVs in the same group will be selected together during type a selection, while not included those in different groups.
+  - `TypeSelectUseIFVMode` determines whether all IFV modes will be considered as its own group by default during a type selection.
+    - If it's set to true, `WeaponGroupAsN` will be default to N for each `WeaponN`, which makes each of them become a standalone type during a type selection.
+    - If it's set to false, `WeaponGroupAsN` will be default to 0 for all weapons, which makes type selection on IFVs work the same as before.
 
 In `rulesmd.ini`:
 ```ini
