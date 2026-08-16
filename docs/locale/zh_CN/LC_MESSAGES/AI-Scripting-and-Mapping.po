@@ -1810,6 +1810,9 @@ msgstr "535"
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
+msgid "Springs when the shield of the attached object is broken."
+msgstr "当所附着对象的护盾被击碎时触发。"
+
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
 
