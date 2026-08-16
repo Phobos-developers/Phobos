@@ -2023,6 +2023,8 @@ FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> Fall
 
 ### Customize crash spin multiplier
 
+- To address the issue that larger planes look silly when crashing due to spinning, Ares allows customizing whether technos with `Locomotor=Fly` spin when crashing. Here we provide another approach: customizing the speed multiplier of the spin.
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType, with Locomotor=Fly

@@ -4562,6 +4562,14 @@ msgstr "若设置负百分比则会根据单位当前生命值按比例造成对
 msgid "Customize crash spin multiplier"
 msgstr "自定义坠毁旋转倍率"
 
+msgid ""
+"To address the issue that larger planes look silly when crashing due to "
+"spinning, Ares allows customizing whether technos with `Locomotor=Fly` "
+"spin when crashing. Here we provide another approach: customizing the "
+"speed multiplier of the spin."
+msgstr ""
+"为了应对像大型飞机坠毁时因为旋转而看起来滑稽的问题，Ares 允许自定义 `Locomotor=Fly` 的单位坠毁时是否旋转，这里给出另一种方案：自定义旋转的速度倍率。"
+
 msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
 msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
 
