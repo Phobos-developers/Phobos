@@ -108,8 +108,10 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="GitRef" />
     </Exec>
     <!-- On a detached HEAD (e.g. CI checkouts of a pull request merge or a tag), symbolic-ref
-         yields nothing, so fall back to the one ref pointing at HEAD instead. -->
-    <Exec Command="git for-each-ref --points-at HEAD --format=%25(refname) 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+         yields nothing, so fall back to the ref(s) pointing at HEAD. The %(refname) format string
+         lives in scripts\get_git_ref.cmd because the Exec task would re-expand a %(refname)
+         written inline - even %25-escaped - as item metadata, mangling it into `(refname)`. -->
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)scripts\get_git_ref.cmd&quot;" WorkingDirectory="$(MSBuildProjectDirectory)"
       ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
       Condition="'$(GitRef)' == ''">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitRef" />
