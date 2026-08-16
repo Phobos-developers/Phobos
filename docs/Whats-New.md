@@ -421,7 +421,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 
 #### Vanilla fixes:
-- Fixed the bug where the building with `Factory=BuildingType` does not play `ProductionAnim` when the AI side places a building (by Noble_Fish)
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 
 #### Phobos fixes:
 
