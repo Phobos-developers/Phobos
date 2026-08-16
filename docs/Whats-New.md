@@ -419,6 +419,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- [New `InfoType=EmptyReload` for digital display](User-Interface.md#digital-display) (by NukeAtty)
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)

@@ -624,6 +624,18 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, 
 		maxValue = timer.TimeLeft ? timer.TimeLeft : ((pThis->Ammo || pType->EmptyReload <= 0) ? pType->Reload : pType->EmptyReload);
 		break;
 	}
+	case DisplayInfoType::EmptyReload:
+	{
+		if (pType->Ammo <= 0)
+			return;
+
+		const auto& timer = pThis->ReloadTimer;
+		value = (pThis->Ammo == 0) ? timer.GetTimeLeft() : 0;
+		maxValue = timer.TimeLeft
+			? timer.TimeLeft
+			: (pType->EmptyReload > 0 ? pType->EmptyReload : pType->Reload);
+		break;
+	}
 	case DisplayInfoType::SpawnTimer:
 	{
 		const auto pSpawnManager = pThis->SpawnManager;

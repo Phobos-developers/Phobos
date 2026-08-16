@@ -1553,6 +1553,10 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				value = DisplayInfoType::Reload;
 			}
+			else if (_strcmpi(str, "emptyreload") == 0)
+			{
+				value = DisplayInfoType::EmptyReload;
+			}
 			else if (_strcmpi(str, "spawntimer") == 0)
 			{
 				value = DisplayInfoType::SpawnTimer;

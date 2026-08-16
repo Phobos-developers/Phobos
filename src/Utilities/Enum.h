@@ -331,7 +331,8 @@ enum class DisplayInfoType : BYTE
 	SuperWeapon = 17,
 	IronCurtain = 18,
 	TemporalLife = 19,
-	FactoryProcess = 20
+	FactoryProcess = 20,
+	EmptyReload = 21
 };
 
 enum class DisplayShowType : unsigned char

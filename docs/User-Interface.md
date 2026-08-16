@@ -120,6 +120,9 @@ The game first takes the absolute value of the difference between the actual cre
       - 1 - primary factory,
       - 2 - secondary factory.
       <br><br>
+    - `InfoType=EmptyReload` displays the empty reload timer while the Techno has no ammo left, and 0 otherwise.
+      If `EmptyReload` is not positive, the effective duration falls back to `Reload`.
+      <br><br>
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
@@ -153,7 +156,7 @@ DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
-InfoType=Health                                ; Displayed value enumeration (Health|Shield|Ammo|Mindcontrol|Spawns|Passengers|Tiberium|Experience|Occupants|GattlingStage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife|FactoryProcess)
+InfoType=Health                                ; Displayed value enumeration (Health|Shield|Ammo|Mindcontrol|Spawns|Passengers|Tiberium|Experience|Occupants|GattlingStage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife|FactoryProcess|EmptyReload)
 InfoIndex=                                     ; integer
 Offset=0,0                                     ; integers - horizontal, vertical
 Offset.ShieldDelta=                            ; integers - horizontal, vertical
