@@ -2934,6 +2934,15 @@ AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
 ### Berzerk (`Psychedelic`) duration stacking customization
 
 - By default `Psychedelic` warheads override the current duration of the berzerk effect regardless of if the new duration is higher or lower than the current one. This can now be customized with `Psychedelic.StackingMode`, with both global setting under `[CombatDamage]` and per-Warhead customization.
+  - Available stacking modes:
+    - `override`: Replace the current duration with the new one.
+    - `setifzero`: Only set the duration if the unit is not currently berzerk, otherwise the existing duration is kept.
+    - `min`: Keep the shorter of the current and new durations.
+    - `max`: Keep the longer of the current and new durations.
+    - `add`: Add the new duration to the current one.
+    - `subtract`: Subtract the new duration from the current one.
+    - `multiply`: Multiply the current duration by the new one.
+    - `divide`: Divide the current duration by the new one, no change if the new value is 0.
 
 In `rulesmd.ini`:
 ```ini

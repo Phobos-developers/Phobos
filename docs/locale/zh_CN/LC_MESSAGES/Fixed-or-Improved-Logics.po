@@ -5878,6 +5878,38 @@ msgstr ""
 "默认情况下 `Psychedelic` 弹头会覆盖狂暴效果的当前持续时间，无论新持续时间比当前值高还是低。现在这可以通过 "
 "`Psychedelic.StackingMode` 自定义，既有 `[CombatDamage]` 下的全局设置，也有每个弹头的独立设置。"
 
+msgid "Available stacking modes:"
+msgstr ""
+"可用的叠加模式"
+
+msgid "`override`: Replace the current duration with the new one."
+msgstr "`override`：用新持续时间替换当前持续时间。"
+
+msgid ""
+"`setifzero`: Only set the duration if the unit is not currently berzerk, "
+"otherwise the existing duration is kept."
+msgstr "`setifzero`：仅当单位当前未处于狂暴状态时才设置持续时间，否则保持现有持续时间。"
+
+msgid "`min`: Keep the shorter of the current and new durations."
+msgstr "`min`：取当前持续时间与新持续时间中较短的一个。"
+
+msgid "`max`: Keep the longer of the current and new durations."
+msgstr "`max`：取当前持续时间与新持续时间中较长的一个。"
+
+msgid "`add`: Add the new duration to the current one."
+msgstr "`add`：将新持续时间加到当前持续时间上。"
+
+msgid "`subtract`: Subtract the new duration from the current one."
+msgstr "`subtract`：从当前持续时间中减去新持续时间。"
+
+msgid "`multiply`: Multiply the current duration by the new one."
+msgstr "`multiply`：将当前持续时间乘以新持续时间。"
+
+msgid ""
+"`divide`: Divide the current duration by the new one, no change if the "
+"new value is 0."
+msgstr "`divide`：将当前持续时间除以新持续时间，新值为 0 时不改变。"
+
 msgid ""
 "`min`/`subtract`/`multiply`/`divide` stacking mode will make berzerk "
 "effect can't be applied on the target when there's not an existing one. "
