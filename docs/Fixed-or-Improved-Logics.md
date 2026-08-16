@@ -384,6 +384,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
+- Ares' `KeepAlive` adds global tags.
 
 ## Newly added global settings
 
@@ -538,7 +539,11 @@ Unless otherwise specified, after removing the last dot and everything before it
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false      ; boolean
+DefaultToGuardArea=false            ; boolean
+KeepAlive.SupportInfantrys=false    ; boolean
+KeepAlive.SupportVehicles=false     ; boolean
+KeepAlive.SupportAircrafts=false    ; boolean
+KeepAlive.SupportBuildings=false    ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean
