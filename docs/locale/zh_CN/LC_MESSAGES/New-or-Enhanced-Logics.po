@@ -6622,6 +6622,13 @@ msgid ""
 "Customize whether warhead can prevent crew escape from techno"
 msgstr "自定义弹头是否阻止生还者逃出"
 
+msgid ""
+"Now you can customize on warheads whether to prevent "
+"survivors/passengers/occupant infantry from appearing when destroying a "
+"target."
+msgstr ""
+"现在你可以在弹头上自定义在摧毁目标时是否阻止生还者／乘客／驻军步兵出现。"
+
 msgid "Weapons"
 msgstr "武器"
 
