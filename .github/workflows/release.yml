@@ -1,4 +1,4 @@
-name: Release Build
+name: Publish Release
 
 on:
   release:
@@ -12,6 +12,9 @@ permissions:
   contents: write
 
 jobs:
+  # Builds the DLL (also bundles SyringeEx) and uploads it as release assets. Runs in parallel
+  # with the changelog job; each updates a different field of the release (assets vs body), so
+  # no further coordination is needed.
   build:
     runs-on: windows-2022
 
@@ -20,30 +23,30 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Determine Build Type and Version Info
-      id: info
-      shell: pwsh
-      run: |
-        $tag = "${{ github.ref_name }}"
-        $version = $tag.TrimStart('v')
-        $isPrerelease = "${{ github.event.release.prerelease }}"
-        # Whether the build is a pre-release is decided by Phobos.version.h's PRERELEASE_SUFFIX;
-        # here we only build a release-family build and keep the display name distinct.
-        if ($isPrerelease -eq "true") {
-          $releaseName = "Phobos $tag (Pre-release)"
-        } else {
-          $releaseName = "Phobos $tag"
-        }
-        echo "build-type=RELEASE" >> $env:GITHUB_OUTPUT
-        echo "version=$version" >> $env:GITHUB_OUTPUT
-        echo "release-name=$releaseName" >> $env:GITHUB_OUTPUT
-
     - name: Build Phobos
       uses: ./.github/actions/build-phobos
       with:
-        sln-path: ${{env.SOLUTION_FILE_PATH}}
+        sln-path: ${{ env.SOLUTION_FILE_PATH }}
         build-config: ${{ env.BUILD_CONFIGURATION }}
-        build-type: ${{ steps.info.outputs.build-type }}
+        build-type: RELEASE
+
+    # No `name:` is set, so the title the release author chose is left untouched.
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
+          ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb
+          ${{ env.BUILD_CONFIGURATION }}/gamemd.edb
+          ${{ env.BUILD_CONFIGURATION }}/Syringe.exe
+          ${{ env.BUILD_CONFIGURATION }}/Syringe.LICENSE.txt
+
+  # Generates the release body (the author's text plus the changelog) in parallel with the build.
+  changelog:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v7
 
     - name: Extract Release Notes
       shell: pwsh
@@ -74,14 +77,8 @@ jobs:
         $combined = if ([string]::IsNullOrWhiteSpace($existing)) { $block } else { "$existing`n`n$block" }
         Set-Content -Path RELEASE_NOTES.md -Value $combined -Encoding utf8
 
-    - name: Upload Release Assets
+    # No `name:` is set, so the title the release author chose is left untouched.
+    - name: Update the Release Body
       uses: softprops/action-gh-release@v2
       with:
-        name: ${{ steps.info.outputs.release-name }}
-        files: |
-          ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
-          ${{ env.BUILD_CONFIGURATION }}/Phobos.pdb
-          ${{ env.BUILD_CONFIGURATION }}/gamemd.edb
-          ${{ env.BUILD_CONFIGURATION }}/Syringe.exe
-          ${{ env.BUILD_CONFIGURATION }}/Syringe.LICENSE.txt
         body_path: RELEASE_NOTES.md
