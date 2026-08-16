@@ -413,10 +413,24 @@ HideShakeEffects=false           ; boolean
 
 ## Changelog
 
-### 0.5
+### 0.6
 
 ```{dropdown} Click to show
 :open:
+
+#### New:
+
+#### Vanilla fixes:
+
+#### Phobos fixes:
+
+#### Fixes / interactions with other extensions:
+
+```
+
+### 0.5
+
+```{dropdown} Click to show
 
 #### New:
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
