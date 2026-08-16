@@ -844,6 +844,7 @@ HideShakeEffects=false           ; boolean
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType (by Starkku)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
+- Ares' `KeepAlive` adds global tags (by FlyStar)
 ```
 
 ```{dropdown} Pre-release changes

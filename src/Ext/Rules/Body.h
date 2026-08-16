@@ -534,6 +534,11 @@ public:
 		Valueable<bool> NoAlphaImageOnBuildup;
 
 		Valueable<bool> Warhead_PreventScatter;
+		
+		Valueable<bool> KeepAlive_SupportInfantrys;
+		Valueable<bool> KeepAlive_SupportVehicles;
+		Valueable<bool> KeepAlive_SupportAircrafts;
+		Valueable<bool> KeepAlive_SupportBuildings;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -1003,6 +1008,11 @@ public:
 			, NoAlphaImageOnBuildup { false }
 			, ReadyToNextMission_MovingCheck { false }
 			, Warhead_PreventScatter { false }
+
+			, KeepAlive_SupportInfantrys { false }
+			, KeepAlive_SupportVehicles { false }
+			, KeepAlive_SupportAircrafts { false }
+			, KeepAlive_SupportBuildings { true }
 		{ }
 
 		virtual ~ExtData() = default;
