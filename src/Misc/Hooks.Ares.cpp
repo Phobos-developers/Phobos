@@ -215,12 +215,9 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 		result = true;
 	}
 
-	const Nullable<bool>& keepAliveValue = TechnoTypeExt::Fetch(pType)->KeepAlive;
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
-	if (keepAliveValue.isset())
-		keepAlive = keepAliveValue.Get();
-
-	if (keepAlive)
+	if (pTypeExt->KeepAlive.Get(keepAlive))
 	{
 		const int number = add ? 1 : -1;
 		pExt_Ares->KeepAliveTechnos += number;
