@@ -1302,7 +1302,7 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	{
 		GET(FootClass*, pThis, EBX);
 
-		if (pThis->InLimbo)
+		if (pThis->InLimbo || !pThis->Locomotor->Is_Really_Moving_Now())
 			return 0;
 
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
