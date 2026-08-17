@@ -1,11 +1,11 @@
 #include <Helpers/Macro.h>
 #include <TunnelLocomotionClass.h>
 
-#include <Ext/TechnoType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 namespace UnitUnloadTemp
 {
-	TechnoTypeExt::ExtData* TypeExtData = nullptr;
+	UnitTypeExt* TypeExtData = nullptr;
 }
 
 // Prevent subterranean units from deploying while underground.
@@ -22,7 +22,7 @@ DEFINE_HOOK(0x73D63B, UnitClass_Mi_Unload_Subterranean, 0x6)
 	}
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 	UnitUnloadTemp::TypeExtData = pTypeExt;
 
 	// It should be the highest priority.
@@ -81,7 +81,7 @@ DEFINE_HOOK(0x740015, UnitClass_MouseOverObject_SkipPassengers, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 	GET(UnitTypeClass* const, pType, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 
 	return pTypeExt->Deploy_SkipPassengerUnload
 		|| (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0)

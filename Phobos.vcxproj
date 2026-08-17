@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ShowAllFiles>true</ShowAllFiles>
-  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Phobos</ProjectName>
     <RootNamespace>Phobos</RootNamespace>
@@ -18,6 +15,7 @@
   <Import Project="$(YRppDir)\YRpp.props" />
   <!-- Resource files -->
   <ItemGroup>
+    <ResourceCompile Include="src\Misc\ExceptionHandler.rc" />
     <ResourceCompile Include="src\version.rc" />
   </ItemGroup>
   <!-- Compiled files -->
@@ -43,6 +41,7 @@
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
+    <ClCompile Include="src\Commands\SelectCaptured.cpp" />
     <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
@@ -57,13 +56,22 @@
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <!-- src\Ext\AnimType -->
     <ClCompile Include="src\Ext\AnimType\Body.cpp" />
+    <!-- src\Ext\Beacon -->
+    <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
+    <ClCompile Include="src\Ext\Foot\Body.cpp" />
+    <ClCompile Include="src\Ext\Unit\Body.cpp" />
+    <ClCompile Include="src\Ext\Infantry\Body.cpp" />
+    <ClCompile Include="src\Ext\UnitType\Body.cpp" />
+    <ClCompile Include="src\Ext\InfantryType\Body.cpp" />
+    <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Refinery.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Selling.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.Unload.cpp" />
     <!-- src\Ext\BuildingType -->
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
@@ -151,6 +159,8 @@
     <!-- src\Ext\Team -->
     <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />
+    <!-- src\Ext\TeamType -->
+    <ClCompile Include="src\Ext\TeamType\Body.cpp" />
     <!-- src\Ext\Techno -->
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.Internal.cpp" />
@@ -223,6 +233,9 @@
     <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
     <!-- src\Misc -->
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.Dialog.cpp" />
+    <ClCompile Include="src\Misc\ExceptionHandler.Report.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
@@ -232,6 +245,7 @@
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.LightEffects.cpp" />
+    <ClCompile Include="src\Misc\Hooks.MessageList.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
@@ -272,6 +286,7 @@
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
+    <ClCompile Include="src\Utilities\Detach.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Utilities\Patch.cpp" />
@@ -303,6 +318,7 @@
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
+    <ClInclude Include="src\Commands\SelectCaptured.h" />
     <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\ToggleMessageList.h" />
@@ -312,6 +328,17 @@
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />
+    <ClInclude Include="src\Ext\Object\Body.h" />
+    <ClInclude Include="src\Ext\Mission\Body.h" />
+    <ClInclude Include="src\Ext\Radio\Body.h" />
+    <ClInclude Include="src\Ext\Foot\Body.h" />
+    <ClInclude Include="src\Ext\AbstractType\Body.h" />
+    <ClInclude Include="src\Ext\ObjectType\Body.h" />
+    <ClInclude Include="src\Ext\Unit\Body.h" />
+    <ClInclude Include="src\Ext\Infantry\Body.h" />
+    <ClInclude Include="src\Ext\UnitType\Body.h" />
+    <ClInclude Include="src\Ext\InfantryType\Body.h" />
+    <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\BuildingType\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Body.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
@@ -343,6 +370,7 @@
     <ClInclude Include="src\Ext\SWType\NewSWType\NewSWType.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
+    <ClInclude Include="src\Ext\TeamType\Body.h" />
     <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\TechnoType\Body.h" />
     <ClInclude Include="src\Ext\TerrainType\Body.h" />
@@ -363,6 +391,8 @@
     <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <!-- src\Misc -->
     <ClInclude Include="src\Misc\BlittersFix.h" />
+    <ClInclude Include="src\Misc\ExceptionHandler.h" />
+    <ClInclude Include="src\Misc\ExceptionHandler.Resource.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\MessageColumn.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
@@ -397,6 +427,7 @@
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Constructs.h" />
+    <ClInclude Include="src\Utilities\Detach.h" />
     <ClInclude Include="src\Utilities\Container.h" />
     <ClInclude Include="src\Utilities\Debug.h" />
     <ClInclude Include="src\Utilities\Enum.h" />

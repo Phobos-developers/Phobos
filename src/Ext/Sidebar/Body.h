@@ -21,8 +21,6 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 	private:
@@ -49,11 +47,6 @@ public:
 	static void Clear()
 	{
 		Allocate(&SidebarClass::Instance);
-	}
-
-	static void PointerGotInvalid(void* ptr, bool removed)
-	{
-		Global()->InvalidatePointer(ptr, removed);
 	}
 
 	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);

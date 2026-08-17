@@ -1,4 +1,4 @@
-#include <Ext/TechnoType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
 {
@@ -26,7 +26,7 @@ DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
 
 	pThis->Draw_A_SHP(pShape, bodyFrameIdx, &location, &bounds, 0, 256, zAdjust, zGradient, 0, extraLight, 0, 0, 0, 0, 0, 0);
 
-	const auto pTurretShape = TechnoTypeExt::ExtMap.Find(pType)->TurretShape;
+	const auto pTurretShape = UnitTypeExt::Fetch(pType)->TurretShape;
 	const int StartFrame = pTurretShape ? 0 : (pType->WalkFrames * pType->Facings);
 
 	if (pTurretShape)
@@ -61,7 +61,7 @@ DEFINE_HOOK(0x73CCF4, UnitClass_DrawSHP_FacingsB_TurretShape, 0xA)
 	GET(UnitClass*, pThis, EBP);
 	GET(UnitTypeClass*, pType, ECX);
 
-	const auto pTurretShape = TechnoTypeExt::ExtMap.Find(pType)->TurretShape;
+	const auto pTurretShape = UnitTypeExt::Fetch(pType)->TurretShape;
 	const int StartFrame = pTurretShape ? 0 : (pType->WalkFrames * pType->Facings);
 	const int frameIdx = pThis->SecondaryFacing.Current().GetFacing<32>(4) + StartFrame;
 
