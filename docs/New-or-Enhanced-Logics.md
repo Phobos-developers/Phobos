@@ -3255,6 +3255,7 @@ Taunt=false      ; boolean
     - [`ReverseEngineer`](#reverse-engineer-warhead)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
+    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
       - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
 
