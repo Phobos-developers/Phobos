@@ -861,6 +861,7 @@ msgid ""
 "Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of "
 "`SW.AutoFire` (by Noble_Fish)"
 msgstr ""
+"允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作（by Noble_Fish）"
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"

@@ -2539,6 +2539,7 @@ msgid ""
 "Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of "
 "`SW.AutoFire`"
 msgstr ""
+"允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作"
 
 msgid ""
 "Fix the bug where a building with `Factory=BuildingType` owned by the AI "

@@ -1979,6 +1979,7 @@ msgid ""
 "Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of "
 "`SW.AutoFire`."
 msgstr ""
+"允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
