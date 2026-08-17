@@ -741,6 +741,8 @@ This page lists all the individual contributions to the project by their author.
   - Disable AlphaImage during Buildup
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
+  - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -772,6 +774,7 @@ This page lists all the individual contributions to the project by their author.
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
+  - Fix a game crash when parsing string list with null entry
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 04:17+0800\n"
+"POT-Creation-Date: 2026-08-17 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -832,8 +832,34 @@ msgstr "在 `FAData.ini`："
 msgid "Changelog"
 msgstr "更新日志"
 
+msgid "0.6"
+msgstr "0.6"
+
 msgid "New:"
 msgstr "新增内容："
+
+msgid "Vanilla fixes:"
+msgstr "原版问题修复："
+
+msgid ""
+"Fixed the bug where a building with `Factory=BuildingType` owned by the "
+"AI did not play `ProductionAnim` when placing a produced building (by "
+"Noble_Fish)"
+msgstr ""
+
+msgid "Phobos fixes:"
+msgstr "Phobos 过往版本问题修复："
+
+msgid "Fixed a game crash when parsing string list with null entry (by Ollerus)"
+msgstr ""
+
+msgid "Fixes / interactions with other extensions:"
+msgstr "其他扩展引擎相关的修复／交互："
+
+msgid ""
+"Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of "
+"`SW.AutoFire` (by Noble_Fish)"
+msgstr ""
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
@@ -2495,9 +2521,6 @@ msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
 
-msgid "Vanilla fixes:"
-msgstr "原版问题修复："
-
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold (by CrimRecya)"
@@ -2981,9 +3004,6 @@ msgid ""
 "time (by NetsuNegi)"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
 
-msgid "Phobos fixes:"
-msgstr "Phobos 过往版本问题修复："
-
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it (by NetsuNegi)"
@@ -3177,9 +3197,6 @@ msgid ""
 "Fixed a bug with some keys relating to `Interceptor` and "
 "`PassengerDeletion` not having correct default values (by Starkku)"
 msgstr "修复了某些 `Interceptor` 和 `PassengerDeletion` 相关语句没有正确默认值的 Bug（by Starkku）"
-
-msgid "Fixes / interactions with other extensions:"
-msgstr "其他扩展引擎相关的修复／交互："
 
 msgid ""
 "Taking over Ares' AlphaImage respawn logic to reduce lags from it (by "

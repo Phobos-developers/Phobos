@@ -328,6 +328,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 
 ## Fixes / interactions with other extensions
 
@@ -384,6 +385,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
+- Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 
 ## Newly added global settings
 
