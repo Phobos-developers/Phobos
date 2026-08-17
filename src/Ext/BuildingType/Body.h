@@ -126,6 +126,7 @@ public:
 	Valueable<bool> Undeploy_Reverse;
 	Nullable<double> BuildupTime;
 	Nullable<double> SellTime;
+	Nullable<double> UndeployTime;
 	char SellFileName[0x20];
 	char UndeployFileName[0x20];
 
@@ -250,6 +251,7 @@ public:
 		, Undeploy_Reverse { true }
 		, BuildupTime {}
 		, SellTime {}
+		, UndeployTime {}
 	{
 		SellFileName[0] = '\0';
 		UndeployFileName[0] = '\0';
@@ -260,6 +262,9 @@ public:
 	{
 		return static_cast<BuildingTypeClass*>(this->TechnoTypeExt::OwnerObject());
 	}
+
+	double GetSellTime() const;
+	double GetUndeployTime() const;
 
 	// Ares 0.A functions
 	int GetSuperWeaponCount() const;

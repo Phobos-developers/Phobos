@@ -1498,12 +1498,8 @@ DEFINE_HOOK(0x43D2B5, BuildingClass_Draw_Sell, 0x6)
 
 		// BState is unreliable.
 		int effectiveFrames = pSHP->Frames / 2;
-		double sellTimeMinutes = pTypeExt->SellTime.isset()
-			? pTypeExt->SellTime.Get()
-			: (pTypeExt->BuildupTime.isset()
-				? pTypeExt->BuildupTime.Get()
-				: RulesClass::Instance->BuildupTime);
-		int totalDuration = static_cast<int>(sellTimeMinutes * 900);
+		double timeMinutes = pThis->ArchiveTarget ? pTypeExt->GetUndeployTime() : pTypeExt->GetSellTime();
+		int totalDuration = static_cast<int>(timeMinutes * 900);
 		int newRate = Math::max(1, totalDuration / effectiveFrames);
 
 		if (!pBldExt->UseCustomSellFrames)
@@ -1544,12 +1540,8 @@ DEFINE_HOOK(0x447AA7, BuildingClass_BeginMode_CustomSell, 0x6)
 		int effectiveFrames = pBldExt->CustomSellFrameCount;
 		if (effectiveFrames > 0)
 		{
-			double sellTime = pTypeExt->SellTime.isset()
-				? pTypeExt->SellTime.Get()
-				: (pTypeExt->BuildupTime.isset()
-					? pTypeExt->BuildupTime.Get()
-					: RulesClass::Instance->BuildupTime);
-			int rate = Math::max(1, static_cast<int>(sellTime * 900) / effectiveFrames);
+			double time = pThis->ArchiveTarget ? pTypeExt->GetUndeployTime() : pTypeExt->GetSellTime();
+			int rate = Math::max(1, static_cast<int>(time * 900) / effectiveFrames);
 
 			pThis->Animation.Rate = rate;
 			pThis->Animation.Timer.TimeLeft = rate;
@@ -1560,6 +1552,21 @@ DEFINE_HOOK(0x447AA7, BuildingClass_BeginMode_CustomSell, 0x6)
 	{
 		// Restore vanilla behavior: Animation.Value = BuildingAnimFrame[BState].dwUnknown
 		pThis->Animation.Value = R->EDX();
+
+		// Undeploy without a custom Sell/Undeploy image: Ares's BeginMode hook
+		// (0x447A63) feeds the SellFrames (SellTime-derived) rate to both sell
+		// and undeploy. Override it with the UndeployTime-derived rate instead.
+		if (pThis->ArchiveTarget && pThis->CurrentMission == Mission::Selling)
+		{
+			auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+			int frames = pThis->Type->BuildingAnimFrame[pThis->BState].FrameCount;
+			if (frames > 0)
+			{
+				int rate = Math::max(1, static_cast<int>(pTypeExt->GetUndeployTime() * 900) / frames);
+				pThis->Animation.Rate = rate;
+				pThis->Animation.Timer.TimeLeft = rate;
+			}
+		}
 	}
 
 	return 0;

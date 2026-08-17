@@ -1471,6 +1471,20 @@ BunkerableAnyway=false     ; boolean
 Skipping the bunkerable checks doesn't mean that vehicles and tank bunkers will interact correctly - actual bunkerability is mainly determined by `Locomotor`. Details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
 
+### Undeploy Time
+
+- By default the undeploy animation plays at the same speed as the sell animation (`SellTime`, which falls back to `BuildupTime` and finally the global `[General] -> BuildupTime`). `UndeployTime` gives the undeploy case its own, independent duration.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]       ; BuildingType
+UndeployTime=        ; floating point value, defaults to [BuildingType] -> SellTime
+```
+
+```{note}
+This pairs with the `Undeploy` sequence, just like `SellTime` drives the `Sell` sequence. See [Customize the images for building sell and undeploy](Fixed-or-Improved-Logics.md#customize-the-images-for-building-sell-and-undeploy).
+```
+
 ### Unit repair customization
 
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.

@@ -8,6 +8,22 @@ BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
 BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 
+double BuildingTypeExt::GetSellTime() const
+{
+	if (this->SellTime.isset())
+		return this->SellTime.Get();
+	if (this->BuildupTime.isset())
+		return this->BuildupTime.Get();
+	return RulesClass::Instance->BuildupTime;
+}
+
+double BuildingTypeExt::GetUndeployTime() const
+{
+	if (this->UndeployTime.isset())
+		return this->UndeployTime.Get();
+	return this->GetSellTime();
+}
+
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
 int BuildingTypeExt::GetSuperWeaponCount() const
 {
@@ -264,6 +280,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
 	this->BuildupTime.Read(exINI, pSection, "BuildupTime");
 	this->SellTime.Read(exINI, pSection, "SellTime");
+	this->UndeployTime.Read(exINI, pSection, "UndeployTime");
 
 	if (exArtINI.ReadString(pArtSection, "Sell") > 0)
 	{
@@ -498,6 +515,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Undeploy_Reverse)
 		.Process(this->BuildupTime)
 		.Process(this->SellTime)
+		.Process(this->UndeployTime)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
