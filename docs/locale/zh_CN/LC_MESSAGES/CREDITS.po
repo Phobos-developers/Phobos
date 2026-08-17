@@ -2545,6 +2545,7 @@ msgid ""
 "Fix the bug where a building with `Factory=BuildingType` owned by the AI "
 "did not play `ProductionAnim` when placing a produced building"
 msgstr ""
+"修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

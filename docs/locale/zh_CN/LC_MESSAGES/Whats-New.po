@@ -846,6 +846,7 @@ msgid ""
 "AI did not play `ProductionAnim` when placing a produced building (by "
 "Noble_Fish)"
 msgstr ""
+"修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug（by Noble_Fish）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
