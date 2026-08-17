@@ -852,6 +852,7 @@ msgstr "Phobos 过往版本问题修复："
 
 msgid "Fixed a game crash when parsing string list with null entry (by Ollerus)"
 msgstr ""
+"修复了解析含有空条目的字符串列表时发生的游戏崩溃（by Ollerus）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
