@@ -428,6 +428,7 @@ HideShakeEffects=false           ; boolean
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
+- Ares' `KeepAlive` adds global tags (by FlyStar)
 
 ```
 
@@ -861,7 +862,6 @@ HideShakeEffects=false           ; boolean
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 (by Starkku)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
-- Ares' `KeepAlive` adds global tags (by FlyStar)
 ```
 
 ```{dropdown} Pre-release changes
