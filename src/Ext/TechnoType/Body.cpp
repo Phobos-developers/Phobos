@@ -17,6 +17,7 @@ namespace
 	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
 		{ "RELOAD",       AdditionalAbility::Reload },
 		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+		{ "RANGE",		  AdditionalAbility::Range },
 		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune }
 	};
 
@@ -1052,6 +1053,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, pSection, "VeteranRange");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -1688,6 +1690,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AdditionalEliteAbilities)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
