@@ -449,6 +449,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
 	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
 
+	this->Ammo.Read(exINI, pSection, "Ammo");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -554,8 +556,6 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->SpawnsCrate_Weights.push_back(weight);
 	}
-
-	this->Ammo.Read(exINI, pSection, "Ammo");
 }
 
 template <typename T>
@@ -737,7 +737,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
-			
+
 		.Process(this->JumpjetTurnRate)
 		.Process(this->JumpjetSpeed)
 		.Process(this->JumpjetClimb)
