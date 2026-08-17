@@ -47,7 +47,7 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 	bool visible = false;
 
 	if (EnumFunctions::CanTargetHouse(visibility, pBomb->OwnerHouse, pCurrent)
-		|| std::ranges::find_if(pBombList->Detectors, [=](TechnoClass* pDetector)
+		|| std::ranges::any_of(pBombList->Detectors, [=](TechnoClass* pDetector)
 			{
 				if (!EnumFunctions::CanTargetHouse(visibility, pDetector->Owner, pCurrent))
 					return false;
