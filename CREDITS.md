@@ -742,6 +742,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
   - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

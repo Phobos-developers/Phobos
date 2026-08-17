@@ -328,6 +328,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 
 ## Fixes / interactions with other extensions
 
