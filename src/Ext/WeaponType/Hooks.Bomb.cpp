@@ -36,7 +36,7 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 
 	GET(BombListClass*, pBombList, EDI);
 	GET(BombClass*, pBomb, EBX);
-	AffectedHouse visibility = AffectedHouse::Owner;
+	AffectedHouse visibility = AffectedHouse::None;
 
 	if (const auto pWeaponExt = WeaponTypeExt::GetBombExtData(pBomb))
 		visibility = pWeaponExt->IvanBomb_Visibility.Get(RulesExt::Global()->IvanBomb_Visibility);
@@ -48,13 +48,13 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 
 	if (EnumFunctions::CanTargetHouse(visibility, pBomb->OwnerHouse, pCurrent)
 		|| std::ranges::any_of(pBombList->Detectors, [=](TechnoClass* pDetector)
-			{
-				if (!EnumFunctions::CanTargetHouse(visibility, pDetector->Owner, pCurrent))
-					return false;
+		{
+			if (!EnumFunctions::CanTargetHouse(visibility, pDetector->Owner, pCurrent))
+				return false;
 
-				const int sight = pDetector->GetTechnoType()->BombSight * Unsorted::LeptonsPerCell;
-				return pDetector->GetCoords().DistanceFromSquared(pBomb->Target->GetCoords()) <= static_cast<double>(sight) * sight;
-			})
+			const int sight = pDetector->GetTechnoType()->BombSight * Unsorted::LeptonsPerCell;
+			return pDetector->GetCoords().DistanceFromSquared(pBomb->Target->GetCoords()) <= static_cast<double>(sight) * sight;
+		})
 	)
 	{
 		visible = true;
@@ -62,4 +62,25 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 
 	R->AL(visible);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x51E478, InfantryClass_MouseOverObject_Bomb_Visibility, 0x5)
+{
+	enum { DisarmBomb = 0x51E48F, NotDisarmBomb = 0x51E49E };
+
+	GET(ObjectClass*, pObject, ESI);
+	const auto pBomb = pObject->AttachedBomb;
+
+	if (!pBomb || !pObject->BombVisible)
+		return NotDisarmBomb;
+
+	GET(HouseClass*, pOwner, ECX);
+	AffectedHouse visibility = AffectedHouse::None;
+
+	if (const auto pWeaponExt = WeaponTypeExt::GetBombExtData(pBomb))
+		visibility = pWeaponExt->IvanBomb_Visibility.Get(RulesExt::Global()->IvanBomb_Visibility);
+	else
+		visibility = RulesExt::Global()->IvanBomb_Visibility;
+
+	return EnumFunctions::CanTargetHouse(visibility, pOwner, HouseClass::CurrentPlayer) ? DisarmBomb : NotDisarmBomb;
 }
