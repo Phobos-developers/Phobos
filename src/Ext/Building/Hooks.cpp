@@ -1084,7 +1084,7 @@ DEFINE_HOOK(0x4501AF, AI_ConYard_CompleteProduction_ProductionAnim, 0x5)
 	GET(BuildingClass*, pBuilding, ESI);
 	GET(TechnoClass*, pObject, EDI);
 
-	if (pBuilding->Owner->IsHumanPlayer)
+	if (pBuilding->Owner->IsControlledByHuman())
 		return 0;
 
 	if (!pObject || pObject->WhatAmI() != AbstractType::Building)
