@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <cmath>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -352,6 +354,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
 	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, GameStrings::General, "NoReload.Temporal");
+
+	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
 	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
@@ -602,6 +608,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
 	this->ReadyToNextMission_MovingCheck.Read(exINI, GameStrings::General, "ReadyToNextMission.MovingCheck");
+
+	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
+
+	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -901,6 +911,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -1076,6 +1088,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ApproachTarget_StopWhenInRange)
 		.Process(this->NoAlphaImageOnBuildup)
 		.Process(this->ReadyToNextMission_MovingCheck)
+		.Process(this->Warhead_PreventScatter)
+		.Process(this->ProjectileRange_ApplyModifiers)
     ;
 }
 

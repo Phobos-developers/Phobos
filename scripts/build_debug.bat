@@ -1,6 +1,6 @@
 @if not defined _echo echo off
 
-rem Builds Phobos DevBuild.
+rem Builds Phobos Debug.
 
 rem Ensure we're in correct directory.
 cd /D "%~dp0"
