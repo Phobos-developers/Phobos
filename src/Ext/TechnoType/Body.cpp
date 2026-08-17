@@ -17,6 +17,7 @@ namespace
 	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
 		{ "RELOAD",       AdditionalAbility::Reload },
 		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune }
 	};
 
 	void ReadAdditionalAbilities(

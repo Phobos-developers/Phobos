@@ -2781,7 +2781,7 @@ AffectsGround=true         ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
-  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
+  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits. You can also add `CRITIMMUNE` to the TechnoTypes' `VeteranAbilities` and `EliteAbilities` to grant them immunity when promoting.
 
 In `rulesmd.ini`:
 ```ini

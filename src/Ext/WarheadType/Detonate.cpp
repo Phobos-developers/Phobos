@@ -534,7 +534,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 
-	if (pTargetExt->TypeExtData->ImmuneToCrit)
+	if (pTargetExt->TypeExtData->ImmuneToCrit || TechnoExt::HasAdditionalAbility(pTarget, AdditionalAbility::CritImmune))
 		return;
 
 	auto const pSld = pTargetExt->Shield.get();

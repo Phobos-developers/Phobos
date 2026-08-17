@@ -1170,7 +1170,7 @@ static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int durati
 	const auto pRulesExt = RulesExt::Global();
 
 	const double multiplier = ability == AdditionalAbility::EmptyReload
-		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(pRulesExt->VeteranReload))
 		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
 
 	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
