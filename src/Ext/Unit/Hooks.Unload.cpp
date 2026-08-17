@@ -1,7 +1,6 @@
 #include <Helpers/Macro.h>
 #include <TunnelLocomotionClass.h>
 
-#include <Ext/TechnoType/Body.h>
 #include <Ext/UnitType/Body.h>
 
 namespace UnitUnloadTemp

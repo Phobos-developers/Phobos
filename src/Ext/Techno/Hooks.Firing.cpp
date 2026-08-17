@@ -1,11 +1,16 @@
-#include "Body.h"
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/GeneralUtils.h>
+
+#include <cmath>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -434,7 +439,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pTypeExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 
-	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated.Get(RulesExt::Global()->OpenTopped_AllowFiringIfDeactivated))
 		return Illegal;
 
 	if (pTransport->Transporter)
@@ -442,7 +447,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons.Get(RulesExt::Global()->OpenTopped_CheckTransportDisableWeapons) && TechnoExt::HasWeaponsDisabled(pTransport) && pWeapon)
 		return OutOfRange;
 
 	if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
@@ -556,6 +561,18 @@ DEFINE_HOOK(0x6FC7EB, TechnoClass_CanFire_InterceptBullet, 0x7)
 
 	R->AL(pTarget->IsInAir());
 	return ContinueCheck;
+}
+
+DEFINE_HOOK(0x447FED, BuildingClass_CanFire_OmniFire, 0x7)
+{
+	enum { SkipGameCode = 0x448052 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0xC, 0x8));
+
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	return pWeapon->OmniFire ? SkipGameCode : 0;
 }
 
 #pragma endregion
@@ -700,7 +717,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 			nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
 		}
 
-		nDamageMult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier;
+		nDamageMult *= TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_DamageMultiplier.Get(RulesExt::Global()->OpenTransport_DamageMultiplier);
 
 		R->EAX(static_cast<int>(nDamage * nDamageMult));
 		return ApplyDamageMult;
@@ -796,7 +813,9 @@ DEFINE_HOOK(0x6FF0DD, TechnoClass_FireAt_TurretRecoil, 0x6)
 	if (!WeaponTypeExt::Fetch(pWeapon)->TurretRecoil_Suppress)
 	{
 		GET(TechnoClass* const, pThis, ESI);
-		TechnoExt::Fetch(pThis)->RecordRecoilData();
+
+		if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
+			UnitExt::Fetch(pUnit)->RecordRecoilData();
 	}
 
 	return SkipGameCode;
@@ -856,7 +875,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_LateLogic, 0x6)
 			pBulletExt->InterceptorTechnoType = pTypeExt;
 			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 
-			if (!pInterceptorType->ApplyFirepowerMult)
+			if (!pInterceptorType->ApplyFirepowerMult.Get(RulesExt::Global()->Interceptor_ApplyFirepowerMult))
 				pBullet->Health = pWeapon->Damage;
 		}
 	}
@@ -976,7 +995,7 @@ CoordStruct* GetFLHTemp::UnitClassFake::_GetFLH(CoordStruct* outBuffer, int weap
 	{
 		const auto pTransporter = pThis->Transporter;
 
-		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::Fetch(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle)
+		if (pThis->InOpenToppedTransport && pTransporter && TechnoExt::Fetch(pTransporter)->TypeExtData->AlternateFLH_ApplyVehicle.Get(RulesExt::Global()->AlternateFLH_ApplyVehicle))
 		{
 			if (const int idx = pTransporter->Passengers.IndexOf(pThis))
 			{
@@ -1033,14 +1052,19 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
 			flh = pTypeExt->AlternateFLHs[index];
 
-		if (!pTypeExt->AlternateFLH_OnTurret)
+		if (!pTypeExt->AlternateFLH_OnTurret.Get(RulesExt::Global()->AlternateFLH_OnTurret))
 			allowOnTurret = false;
 	}
 
-	auto turIdx = -1;
+	int turIdx = -1;
 
-	if (pTypeExt->BurstPerTurret > 0)
-		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+	{
+		const int burstPerTurret = UnitTypeExt::Fetch(pUnitType)->BurstPerTurret;
+
+		if (burstPerTurret > 0)
+			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (burstPerTurret + 1)) - 1;
+	}
 
 	flh += offset;
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);
@@ -1133,6 +1157,45 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	GET(TechnoClass* const, pThis, ECX);
 
 	TechnoExt::UpdateSharedAmmo(pThis);
+
+	return 0;
+}
+
+static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int duration, AdditionalAbility ability)
+{
+	if (duration <= 0 || !TechnoExt::HasAdditionalAbility(pThis, ability))
+		return duration;
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pRulesExt = RulesExt::Global();
+
+	const double multiplier = ability == AdditionalAbility::EmptyReload
+		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+
+	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
+}
+
+// Scale the reload cycle that uses the EmptyReload duration (clip empty and `EmptyReload` is set).
+// Hooked at `add esi, 1FCh` in StartReloading: EAX holds the duration, ESI holds `this`.
+DEFINE_HOOK(0x6FB0CF, TechnoClass_StartReloading_EmptyReload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::EmptyReload));
+
+	return 0;
+}
+
+// Scale the normal reload cycle duration for veterancy. The duration in EAX is the final
+// value computed by the game, including the ReloadIncrement adjustment.
+DEFINE_HOOK(0x6FB14C, TechnoClass_StartReloading_Reload_Veterancy, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, duration, EAX);
+
+	R->EAX(ScaleReloadDurationForVeterancy(pThis, duration, AdditionalAbility::Reload));
 
 	return 0;
 }
@@ -1230,3 +1293,67 @@ DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
+{
+	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
+
+	if (closeEnough)
+	{
+		GET(FootClass*, pThis, EBX);
+
+		if (pThis->InLimbo || !pThis->Locomotor->Is_Really_Moving_Now())
+			return 0;
+
+		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+		// Per-type setting takes priority, falls back to the global one.
+		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
+		{
+			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			{
+				auto const crd = pThis->GetCoords();
+				pJumpjetLoco->DestinationCoords.X = crd.X;
+				pJumpjetLoco->DestinationCoords.Y = crd.Y;
+				pJumpjetLoco->CurrentSpeed = 0;
+				pJumpjetLoco->MaxSpeed = 0;
+				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pThis->AbortMotion();
+			}
+			else
+			{
+				pThis->StopMoving();
+				pThis->AbortMotion();
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
+{
+	enum { Return = 0x4D5A34 };
+
+	GET(FootClass*, pThis, EBX);
+
+	if (pThis->InLimbo)
+		return 0;
+
+	GET_STACK(const bool, closeEnough, STACK_OFFSET(0x158, -0x146));
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	if (closeEnough && pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
+		return 0;
+
+	if (pTypeExt->ApproachTarget_PursuitTarget)
+	{
+		pThis->SetDestination(pThis->Target, true);
+		R->EDI(0);
+		R->Stack(STACK_OFFSET(0x158, -0x130), 0);
+		return Return;
+	}
+
+	return 0;
+}

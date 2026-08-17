@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/InfantryType/Body.h>
@@ -206,7 +204,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto const pExt = WarheadTypeExt::TryFetch(pWarhead))
 	{
-		if (pExt->DecloakDamagedTargets)
+		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}
 
@@ -237,11 +235,11 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+		if (!static_cast<BuildingExt*>(pExt)->GetTypeExtData()->Explodes_DuringBuildup.Get(RulesExt::Global()->Explodes_DuringBuildup) && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
 			return SkipExploding;
 	}
 
-	if (!pExt->TypeExtData->Explodes_KillPassengers)
+	if (!pExt->TypeExtData->Explodes_KillPassengers.Get(RulesExt::Global()->Explodes_KillPassengers))
 		return SkipKillingPassengers;
 
 	return 0;
@@ -250,13 +248,38 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 
 	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
 
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
+
+	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
+
+	if (pWHExt->PreventCrewEscape)
+		TechnoExt::Fetch(pThis)->PreventCrewEscape = true;
+
+	if (pWHExt->PreventPassengerEscape)
+		pThis->KillPassengers(pSource);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x442635, BuildingClass_ReceiveDamage_PreventOccupantEscape, 0x6)
+{
+	enum { SkipClearOccupants = 0x442640 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	if (WarheadTypeExt::Fetch(pWarhead)->PreventOccupantEscape)
+	{
+		GET(BuildingClass*, pThis, ESI);
+		GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x9C, 0x10));
+		pThis->KillOccupants(pSource);
+		return SkipClearOccupants;
+	}
 
 	return 0;
 }
@@ -292,7 +315,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	int resultSequence = Die(1);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
+	if (pTypeExt->NotHuman_RandomDeathSequence.Get(RulesExt::Global()->NotHuman_RandomDeathSequence))
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
 
 	if (receiveDamageArgs.WH)
@@ -315,7 +338,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<AEWeaponParams> expireWeapons;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -331,11 +354,13 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 				if (pType->ExpireWeapon_UseInvokerAsOwner)
 				{
 					if (auto const pInvoker = attachEffect->GetInvoker())
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+					else
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 				}
 				else
 				{
-					expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
 				}
 			}
 		}
@@ -343,10 +368,9 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
 	return 0;
@@ -416,6 +440,18 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
 					else
 						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
+
+					pWHExtRef->Reflected = false;
+				}
+				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
+				{
+					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+					pWHExtRef->Reflected = true;
+
+					if (pType->ReflectDamage_Warhead_Detonate)
+						WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
+					else
+						pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
 
 					pWHExtRef->Reflected = false;
 				}

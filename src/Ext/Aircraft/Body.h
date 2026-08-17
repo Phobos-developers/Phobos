@@ -1,5 +1,4 @@
 #pragma once
-#include <Ext/Techno/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/AircraftType/Body.h>
 #include <AircraftClass.h>
@@ -36,7 +35,7 @@ public:
 	static void FireWeapon(AircraftClass* pThis, AbstractClass* pTarget);
 	static bool PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords);
 	static CellStruct PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat = false);
-	static DirType GetLandingDir(AircraftClass* pThis, BuildingClass* pDock = nullptr);
+	static DirType GetLandingDir(AircraftClass* pThis, BuildingClass* pDock = nullptr, bool isProduction = false);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 
 	class ExtContainer final : public Container<AircraftExt>

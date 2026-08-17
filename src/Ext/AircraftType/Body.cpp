@@ -37,6 +37,7 @@ void AircraftTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParadropDelay.Read(exINI, pSection, "ParadropDelay");
 	this->ParadropEndDelay.Read(exINI, pSection, "ParadropEndDelay");
 	this->FlyNoWobbles.Read(exINI, pSection, "FlyNoWobbles");
+	this->IsALoaner.Read(exINI, pSection, "IsALoaner");
 	this->LandingAnim.Read(exINI, pSection, "LandingAnim");
 	this->Missile_Cruise.Read(exINI, pSection, "Missile.Cruise");
 	this->Missile_TakeOffSeparation.Read(exINI, pSection, "Missile.TakeOffSeparation");
@@ -64,6 +65,7 @@ void AircraftTypeExt::Serialize(T& Stm)
 		.Process(this->ParadropDelay)
 		.Process(this->ParadropEndDelay)
 		.Process(this->FlyNoWobbles)
+		.Process(this->IsALoaner)
 		.Process(this->LandingAnim)
 		.Process(this->Missile_Cruise)
 		.Process(this->Missile_TakeOffAnim)
@@ -97,6 +99,19 @@ DEFINE_HOOK(0x41C8C0, AircraftTypeClass_CTOR, 0x5)
 	GET(AircraftTypeClass*, pItem, ESI);
 
 	AircraftTypeExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+DEFINE_HOOK(0x41CD82, AircraftTypeClass_LoadFromINI, 0x7)
+{
+	GET(AircraftTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0x98);
+
+	if (auto const pExt = AircraftTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }

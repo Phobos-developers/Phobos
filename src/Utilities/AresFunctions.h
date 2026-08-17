@@ -39,6 +39,8 @@ public:
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
 
+	static void(__thiscall* SetSpotlight)(void*, BuildingLightClass* pSpotlight);
+
 	// WarheadTypeExt
 	static bool(__thiscall* ApplyPermaMC)(void*, HouseClass* pSourceHouse, AbstractClass* pTarget);
 

@@ -3,7 +3,6 @@
 
 #include "Body.h"
 
-#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
 
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)

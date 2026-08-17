@@ -1,7 +1,7 @@
 #include "Body.h"
 
-#include <MessageListClass.h>
-
+#include <ScenarioClass.h>
+#include <TriggerTypeClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <New/Entity/BannerClass.h>
@@ -65,6 +65,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetDropCrate:
+		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::UndeployToWaypoint:
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetFollowsIndexForVehicle:
@@ -80,6 +82,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetTeamDelay:
 		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextScanario:
+		return TActionExt::SetNextScanario(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::CreateBannerLocal:
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
@@ -665,6 +669,43 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	return true;
 }
 
+bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	for (auto pTechno : TechnoClass::Array)
+	{
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
+			continue;
+
+		// Overwrite the default techno's crate properties
+		const auto pExt = TechnoExt::Fetch(pTechno);
+		pExt->DropCrate = pThis->Value;
+
+		if (pExt->DropCrate == 1)
+			pExt->DropCrateType = static_cast<Powerup>(pThis->Param3);
+
+	}
+
+	return true;
+}
+
 bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	if (pHouse->IsControlledByHuman())
@@ -713,6 +754,24 @@ bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHous
 	else if (Timer.InProgress())
 	{
 		Timer.Start(time);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (SessionClass::Instance.IsCampaign())
+	{
+		const char* pText = pThis->Text;
+
+		if (strcmp(pText, "") && strcmp(pText, "0"))
+		{
+			// When you can customize it as you like, there’s no longer a need for additional branches.
+			ScenarioClass* const pScenario = ScenarioClass::Instance;
+			_snprintf_s(pScenario->AltNextScenario, sizeof(pScenario->AltNextScenario), pText);
+			_snprintf_s(pScenario->NextScenario, sizeof(pScenario->NextScenario), pText);
+		}
 	}
 
 	return true;

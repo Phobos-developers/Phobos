@@ -1,6 +1,7 @@
 #pragma once
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <BuildingClass.h>
 
 class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClass>
 {
@@ -62,6 +63,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
+
 	virtual ~BuildingExt() = default;
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -112,7 +114,9 @@ public:
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
+	static void __stdcall UpdateFactoryQueues(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
+	static bool BuildingOnline(BuildingClass* pThis);
 };
 

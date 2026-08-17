@@ -14,6 +14,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 - Fixed AI team recruitment inconsistency causing underfilled teams.
+- Restored the ScriptType action#24 `Play speech` from Tiberian Sun.
 
 ### Dynamic Team Delays
 
@@ -158,6 +159,12 @@ In `RA2MD.INI`:
 [Phobos]
 ShowBriefing=true  ; boolean
 ```
+
+### SkipMapSelect Enhancement
+
+- Using `SkipMapSelect=yes` in the map file allows you to bypass the restriction in mapselmd.ini—which requires that the player's faction in the current campaign must match the faction in the next new campaign.
+  - You can use `NextScenario` and `AltNextScenario` to specify the map names required to enter a new campaign, thereby forcing the game to proceed to the next campaign.
+  - Now, setting a local variable named `<Alternate Next Scenario>` will also trigger `AltNextScenario`.
 
 ## Script Actions
 
@@ -709,6 +716,25 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `600` Configure Drop Crate
+
+- Set or overwrite the `DropCrate` of the affected objects.
+- Only functions when used as attached triggers within objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],600,0,[Behaviour],[index of the powerup],0,0,0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*               |
+| :---------: | :-------------------------: |
+| -1          | Use default Techno settings |
+| 0           | Clear `DropCrate` type      |
+| 1           | Overwrite `DropCrate` type  |
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -802,6 +828,19 @@ ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
 Team delay change will take effect for a house after its next AI team is created.
 ```
 
+### `611` Set Next Scenario
+
+- Set the next campaign to load after winning the current one.
+  - Works only in `Campaign Mode` and requires setting `[Basic] -> SkipMapSelect=yes`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
+...
+```
+
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
@@ -827,18 +866,18 @@ In `rulesmd.ini`:
 [BannerTypes]
 0=SOMEBANNER
 
-[SOMEBANNER]                ; BannerType
-PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - including the .shp extension
-SHP.Palette=palette.pal     ; filename - including the .pal extension
-SHP.RefreshAfterDelay=false ; boolean
-CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
-CSF.Background=false        ; boolean
-CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
-Duration=-1                 ; integer
-Delay=-1                    ; integer
-ClampToScreen=true          ; boolean
+[SOMEBANNER]                 ; BannerType
+PCX=                         ; filename - including the .pcx extension
+SHP=                         ; filename - including the .shp extension
+SHP.Palette=palette.pal      ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false  ; boolean
+CSF=                         ; CSF entry key
+CSF.Color=                   ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
+CSF.Background=false         ; boolean
+CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                  ; integer
+Delay=-1                     ; integer
+ClampToScreen=true           ; boolean
 ```
 
 In `mycampaign.map`:
@@ -935,6 +974,8 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 | 535        | CurrentValue & GlobalVariableValue  | Yes      |
 
 ### `600` The shield of the attached object is broken
+
+- Springs when the shield of the attached object is broken.
 
 In `mycampaign.map`:
 ```ini

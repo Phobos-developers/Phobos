@@ -4,7 +4,7 @@
 
 ## Project Summary
 
-Phobos is a community C++ engine extension for Command & Conquer: Yuri's Revenge. It injects code into the game via [Syringe](https://github.com/Ares-Developers/Syringe) hooks and is designed to complement [Ares](https://github.com/Ares-Developers/Ares). The build output is a 32-bit Windows DLL (`Phobos.dll`). There are no unit tests - correctness is validated by successful compilation and manual in-game testing.
+Phobos is a community C++ engine extension for Command & Conquer: Yuri's Revenge. It injects code into the game via [SyringeEx](https://github.com/Phobos-developers/SyringeEx) hooks (the required launcher - Phobos verifies its `SyringeFeatures` flags at startup and refuses to run under older Syringe versions) and is designed to complement [Ares](https://github.com/Ares-Developers/Ares). The build output is a 32-bit Windows DLL (`Phobos.dll`). There are no unit tests - correctness is validated by successful compilation and manual in-game testing.
 
 - **Language:** C++20 (`/std:c++20`), Win32/x86 only
 - **Build system:** MSBuild via Visual Studio 2022 (MSVC v143 toolset)
@@ -23,17 +23,18 @@ git submodule update --init --recursive
 | Config | Command | Output |
 |--------|---------|--------|
 | Debug (recommended for dev) | `scripts\build_debug.bat` | `Debug\Phobos.dll` + `.pdb` |
-| DevBuild (CI nightly) | `scripts\build_devbuild.bat` | `DevBuild\Phobos.dll` + `.pdb` |
 | Release | `scripts\build_release.bat` | `Release\Phobos.dll` + `.pdb` |
+
+There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build. A pre-release is a `RELEASE` build whose `PRERELEASE_SUFFIX` (hardcoded in `src/Phobos.version.h`) is still defined; remove the suffix there to build a stable release.
 
 These scripts invoke `scripts\run_msbuild.bat`, which locates the VS Developer Command Prompt via `vswhere.exe` (bundled in `scripts/`), then runs `msbuild`. **VS 2022 or VS Build Tools 2022** with the components listed in `.vsconfig` must be installed:
 - `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`
 - `Microsoft.VisualStudio.Component.Windows10SDK.20348`
 - `Microsoft.VisualStudio.Component.VC.ATL`
 
-**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/DevBuild/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
+**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
 
-**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/DevBuild/Release). The batch scripts are not needed when building from VS.
+**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/Release). The batch scripts are not needed when building from VS.
 
 The build takes roughly 1–3 minutes for a full rebuild. Incremental builds are much faster. To clean:
 ```
@@ -42,19 +43,17 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **DevBuild** config with MSBuild, passing `/p:GitCommit=<sha> /p:GitBranch=<ref>` for version stamping. The agent should replicate the CI as:
+The release workflow (`.github/workflows/release.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=RELEASE`; whether that build is a pre-release is decided by `PRERELEASE_SUFFIX` in `src/Phobos.version.h`, not by the workflow. Nightly builds (`.github/workflows/nightly.yml` and the PR nightly) pass `/p:BuildType=NIGHTLY`. Git commit/ref info is not passed from CI in either case: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the ref (e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate a nightly CI build as:
 ```
-msbuild /m /p:Configuration=DevBuild Phobos.sln
+msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```
 
 ## Tests & Validation
 
 There is **no automated test suite**. Validation is:
 1. **Successful compilation** with zero errors (warning level 4, but not treated as errors).
-2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds DevBuild config).
-3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - unless the PR has the `No Documentation Needed` label, these files must be modified:
-   - `docs/Whats-New.md` (changelog entry)
-   - `CREDITS.md` (credit entry; skipped if the `Bugfix` label is set)
+2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds the Release config as a nightly).
+3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - its three checks (changelog, credits, docs) each pass when the corresponding file is modified, and are skipped individually when the matching label is applied (`Skip Changelog`, `Skip Docs`, `Skip Credits`). Labels are applied by maintainers; see the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 Always verify your changes compile by running `scripts\build_debug.bat` before committing.
 
@@ -190,8 +189,8 @@ Hook addresses must be determined by **disassembling `gamemd.exe`** (e.g., in ID
 1. **Instruction boundary** - The address must be the start of an x86 instruction. Hooking mid-instruction corrupts the code.
 2. **Size alignment** - `size` must cover complete instructions. Look at the disassembly to see which instructions span the 5-byte overwrite region and set size to the end of the last overlapping instruction.
 3. **Register/stack state** - Choose a point where the registers/stack contain the data you need. Determine which registers hold which values by reading the disassembly - do not assume a fixed calling convention or register assignment without verifying it at the specific address.
-4. **No EIP-relative stolen bytes** - Syringe does **not** fix up EIP-relative operands in stolen bytes. If you use `return 0` and the stolen instructions contain EIP-relative addressing (e.g., `CALL rel32`, `JMP rel32`, `Jcc rel8/rel32`, `LEA reg, [EIP+disp]`, maybe others), they will execute with a wrong target because they run from Syringe's buffer, not from their original location. Either avoid hooking at such instructions when you need `return 0`, or always return a nonzero address to skip the stolen bytes entirely.
-5. **Stack pointer is read-only** - Syringe currently does not support stack depth/pointer modifications inside hooks. Do not use `push`/`pop` or inline assembly that changes real ESP - it will corrupt the stack. Changes via `R->ESP()` are also ignored for the time being (Syringe version with fixes for that to be released in future). The hook must return at exactly the same stack depth it was entered with.
+4. **EIP-relative stolen bytes** - SyringeEx (the required launcher, `ReladdrInstructionFixup` feature flag) relocates EIP-relative operands (`CALL rel32`, `JMP rel32`, `Jcc rel8/rel32`) in stolen bytes when copying them to its trampoline, so `return 0` across such instructions is safe. Returning an explicit nonzero address to skip the stolen bytes entirely remains a valid defensive pattern.
+5. **Stack pointer modification** - SyringeEx (`ESPModification` feature flag) honors stack pointer changes made via `R->ESP()`, allowing a hook to exit at an address with a different stack depth than its entry point. Do not use `push`/`pop` or inline assembly that changes real ESP directly - it will corrupt the stack; go through `R->ESP()`.
 6. **Control flow** - Hook at or before a branch if you need to influence a conditional. Hook after if you only need to observe the result.
 7. **Avoid conflicts** - Check that no other hook (in Phobos or Ares) already occupies overlapping bytes.
 
@@ -373,6 +372,8 @@ scripts\build_docs.bat
 
 Output goes to `docs/_build/html/`. Pull requests are automatically built and served by Read the Docs - check the PR status checks for a preview link.
 
+**Local extension `docs/_ext/`**: a small local Sphinx extension (`sanitize_system_messages`, registered as `_ext.sanitize_system_messages` in `docs/conf.py`) strips docutils `system_message` nodes and repairs the `rawsource` that Sphinx's `ApplySourceWorkaround` pollutes with them. Without it, the "Duplicate implicit target name" warnings caused by repeated sub-headings (e.g. the many `#### Vanilla fixes:` blocks inside `{dropdown}`s in `Whats-New.md`) leak into the gettext `.pot`/`.po` files as bogus translatable strings. Do not remove it or drop `sys.path.insert(0, os.path.abspath('.'))` from `conf.py` - the extension is only importable because of that path insert. A standalone reproduction of the underlying Sphinx/MyST bug is in this [gist](https://gist.github.com/Metadorius/ee435861903ba132cd70563c2bdffec1).
+
 ### Translations
 
 The project uses Sphinx internationalization with `.po` files. Currently only **zh_CN** (Chinese) is maintained. The translation workflow:
@@ -401,12 +402,12 @@ Many contributors are non-native English speakers, so the existing documentation
 
 ## PR Checklist
 
-For non-trivial changes (unless labeled `No Documentation Needed`):
+For non-trivial changes:
 1. Update `docs/Whats-New.md` with a changelog entry.
 2. Update `CREDITS.md` with your contribution.
 3. Update relevant documentation pages in `docs/`.
 
-Use `[Minor]` in the PR title for small changes that don't need documentation updates.
+If one of these doesn't apply to your change, ask a maintainer to apply the matching label (`Skip Changelog`, `Skip Docs` or `Skip Credits`) so the corresponding check is skipped. See the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 ## Trust These Instructions
 

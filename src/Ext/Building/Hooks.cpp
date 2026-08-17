@@ -327,8 +327,18 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EBP);
 
-	AnimExt::Fetch(pAnim)->ParentBuilding = pThis;
-	TechnoExt::Fetch(pThis)->AnimRefCount++;
+	// This runs while a savegame is loading too, where neither extension exists yet:
+	// the building's is restored from the extension stream and attached once the load
+	// settles, and an animation the game creates along the way gets one then as well.
+	// The reference count only makes sense if both ends are there, so skip both.
+	auto const pAnimExt = AnimExt::TryFetch(pAnim);
+	auto const pExt = TechnoExt::TryFetch(pThis);
+
+	if (pAnimExt && pExt)
+	{
+		pAnimExt->ParentBuilding = pThis;
+		pExt->AnimRefCount++;
+	}
 
 	return 0;
 }
@@ -1305,11 +1315,11 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 
 static int GetBuildingStartFacing(BuildingClass* pThis)
 {
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->StartFacing_Random.Get(RulesExt::Global()->StartFacing_Random))
 	{
-		auto pExt = BuildingExt::ExtMap.Find(pThis);
+		auto pExt = BuildingExt::Fetch(pThis);
 		if (pExt->ConstructionStartFacing < 0)
 			pExt->ConstructionStartFacing = ScenarioClass::Instance->Random.RandomRanged(0, 255);
 		return pExt->ConstructionStartFacing;
@@ -1351,7 +1361,7 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 
 	const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
-	if (BuildingExt::ExtMap.Find(pBuilding)->IsCreatedFromMapFile)
+	if (BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
 		return 0;
 
 	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));

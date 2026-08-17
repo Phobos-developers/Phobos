@@ -50,6 +50,8 @@ public:
 
 		int EVAIndex;
 
+		int FiringAnimUpdateCount;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -68,6 +70,7 @@ public:
 			, SpecialTracker {}
 			, FallingDownTracker {}
 			, EVAIndex { -2 }
+			, FiringAnimUpdateCount { 0 }
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
@@ -84,6 +87,7 @@ public:
 
 		void UpdateAutoDeathObjectsInLimbo();
 		void UpdateTransportReloaders();
+		void RegisterAutoDeath(TechnoClass* pTechno);
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

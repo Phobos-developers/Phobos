@@ -286,6 +286,8 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 
 			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouse, pInvoker->Owner, pSourceOwner))
 				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
+			else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceOwner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, nullptr, attachEffect->GetInvokerHouse());
 		}
 		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouse, pThisOwner, pSourceOwner))
 		{
@@ -303,7 +305,8 @@ int TechnoExt::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	const bool useAASetting = !pTypeExt->ForceAAWeapon_InRange.empty() && pTarget->IsInAir();
 	auto const& weaponIndices = useAASetting ? pTypeExt->ForceAAWeapon_InRange : pTypeExt->ForceWeapon_InRange;
 	auto const& rangeOverrides = useAASetting ? pTypeExt->ForceAAWeapon_InRange_Overrides : pTypeExt->ForceWeapon_InRange_Overrides;
-	const bool applyRangeModifiers = useAASetting ? pTypeExt->ForceAAWeapon_InRange_ApplyRangeModifiers : pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
+	const bool applyRangeModifiers = useAASetting ? pTypeExt->ForceAAWeapon_InRange_ApplyRangeModifiers.Get(RulesExt::Global()->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		: pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers.Get(RulesExt::Global()->ForceWeapon_InRange_ApplyRangeModifiers);
 
 	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
 	const int currentDistance = pThis->DistanceFrom(pTarget);

@@ -2,6 +2,17 @@
 
 UnitTypeExt::ExtContainer UnitTypeExt::ExtMap;
 
+void UnitTypeExt::ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx)
+{
+	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
+	const auto offset = turIdx < 0 ? static_cast<CoordStruct*>(this->TurretOffset.GetEx()) : &this->ExtraTurretOffsets[turIdx];
+	const float x = static_cast<float>(offset->X * factor);
+	const float y = static_cast<float>(offset->Y * factor);
+	const float z = static_cast<float>(offset->Z * factor);
+
+	mtx->Translate(x, y, z);
+}
+
 // =============================
 // load / save
 
@@ -12,6 +23,8 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
+
+	char tempBuffer[40];
 
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
 	this->Sinkable.Read(exINI, pSection, "Sinkable");
@@ -81,6 +94,47 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 	this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
+
+	if (!this->Harvester_Counted.isset() && pThis->Harvester)
+		this->Harvester_Counted = true;
+
+	// Multi-turret / multi-barrel position offsets
+	this->BarrelOverTurret.Read(exArtINI, pArtSection, "BarrelOverTurret");
+	this->BarrelOffset.Read(exArtINI, pArtSection, "BarrelOffset");
+	this->ExtraBarrelCount.Read(exArtINI, pArtSection, "ExtraBarrelCount");
+
+	if (this->ExtraBarrelCount > 0)
+	{
+		for (int i = 0; i < this->ExtraBarrelCount; ++i)
+		{
+			Valueable<int> extraBarrelOffset;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraBarrelOffset%u", i);
+			extraBarrelOffset.Read(exArtINI, pArtSection, tempBuffer);
+			this->ExtraBarrelOffsets.emplace_back(extraBarrelOffset.Get());
+		}
+	}
+	else
+	{
+		this->ExtraBarrelCount = 0;
+	}
+
+	this->ExtraTurretCount.Read(exArtINI, pArtSection, "ExtraTurretCount");
+
+	if (this->ExtraTurretCount > 0)
+	{
+		for (int i = 0; i < this->ExtraTurretCount; ++i)
+		{
+			Valueable<CoordStruct> extraTurretOffset;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "ExtraTurretOffset%u", i);
+			extraTurretOffset.Read(exArtINI, pArtSection, tempBuffer);
+			this->ExtraTurretOffsets.emplace_back(extraTurretOffset.Get());
+		}
+		this->BurstPerTurret.Read(exArtINI, pArtSection, "BurstPerTurret");
+	}
+	else
+	{
+		this->ExtraTurretCount = 0;
+	}
 }
 
 template <typename T>
@@ -139,6 +193,13 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->Deploy_NoTiberium)
 		.Process(this->HoverDrownable)
 		.Process(this->TurretShape)
+		.Process(this->BarrelOverTurret)
+		.Process(this->BarrelOffset)
+		.Process(this->ExtraBarrelCount)
+		.Process(this->ExtraBarrelOffsets)
+		.Process(this->ExtraTurretCount)
+		.Process(this->ExtraTurretOffsets)
+		.Process(this->BurstPerTurret)
 		;
 }
 
@@ -168,6 +229,19 @@ DEFINE_HOOK(0x7470E3, UnitTypeClass_CTOR, 0x6)
 	GET(UnitTypeClass*, pItem, ESI);
 
 	UnitTypeExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// The extension chain is read at the end of each concrete type class's LoadFromINI,
+// once every native field - inherited and own alike - has been parsed.
+DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
+{
+	GET(UnitTypeClass*, pItem, ESI);
+	GET_STACK(CCINIClass*, pINI, 0x154);
+
+	if (auto const pExt = UnitTypeExt::TryFetch(pItem))
+		pExt->LoadFromINI(pINI);
 
 	return 0;
 }

@@ -12,8 +12,8 @@ public:
 	static constexpr DWORD Canary = 0xA5A6A7A8;
 
 	NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
-	Valueable<EdgeType> SpawnFromEdge;
-	Valueable<EdgeType> RetreatToEdge;
+	Nullable<EdgeType> SpawnFromEdge;
+	Nullable<EdgeType> RetreatToEdge;
 	Nullable<Leptons> SpawnDistanceFromTarget;
 	Nullable<int> SpawnHeight;
 	Nullable<int> LandingDir;
@@ -24,10 +24,11 @@ public:
 	Nullable<bool> ExtendedAircraftMissions_RearApproach;
 	Nullable<bool> ExtendedAircraftMissions_FastScramble;
 	Nullable<int> ExtendedAircraftMissions_UnlandDamage;
-	Valueable<bool> FiringForceScatter;
+	Nullable<bool> FiringForceScatter;
 	Nullable<int> ParadropDelay;
 	Nullable<int> ParadropEndDelay;
 	Nullable<bool> FlyNoWobbles;
+	Nullable<bool> IsALoaner;
 	Nullable<AnimTypeClass*> LandingAnim;
 	Valueable<bool> Missile_Cruise;
 	Valueable<AnimTypeClass*> Missile_TakeOffAnim;
@@ -35,8 +36,8 @@ public:
 
 	explicit AircraftTypeExt(AircraftTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, VoicePickup {}
-		, SpawnFromEdge { EdgeType::Owner }
-		, RetreatToEdge { EdgeType::Owner }
+		, SpawnFromEdge {}
+		, RetreatToEdge {}
 		, SpawnDistanceFromTarget {}
 		, SpawnHeight {}
 		, LandingDir {}
@@ -47,10 +48,11 @@ public:
 		, ExtendedAircraftMissions_RearApproach {}
 		, ExtendedAircraftMissions_FastScramble {}
 		, ExtendedAircraftMissions_UnlandDamage {}
-		, FiringForceScatter { true }
+		, FiringForceScatter {}
 		, ParadropDelay {}
 		, ParadropEndDelay {}
 		, FlyNoWobbles {}
+		, IsALoaner {}
 		, LandingAnim {}
 		, Missile_Cruise { false }
 		, Missile_TakeOffAnim { nullptr }

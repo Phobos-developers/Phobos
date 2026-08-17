@@ -1,4 +1,3 @@
-#include <Ext/TechnoType/Body.h>
 #include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)
