@@ -6,6 +6,8 @@
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
+PhobosMap<BombClass*, WeaponTypeExt*> WeaponTypeExt::BombExtMap;
+
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
 	const bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
