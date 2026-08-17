@@ -682,6 +682,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
 
 #### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -774,6 +775,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
 
 #### Phobos fixes:
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
@@ -855,6 +857,7 @@ HideShakeEffects=false           ; boolean
 #### TBD
 
 ##### Phobos fixes:
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
@@ -862,14 +865,11 @@ HideShakeEffects=false           ; boolean
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
 
 ##### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 
-##### 0.5-alpha2
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
-
 #### 0.5-alpha2
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Vanilla fixes:
 - Fixed units approaching target not taking weapon `MinimumRange` correctly into accord (by NetsuNegi)

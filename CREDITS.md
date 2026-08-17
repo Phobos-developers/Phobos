@@ -745,6 +745,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
