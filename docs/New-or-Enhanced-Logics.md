@@ -744,7 +744,7 @@ PowerPlantEnhancer.MaxCount=-1     ; integer
 ### Roof production anim
 
 - Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
-  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `Jumpjet=yes` or `BalloonHover=yes`.
+  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
 
 In `artmd.ini`:
 ```ini
