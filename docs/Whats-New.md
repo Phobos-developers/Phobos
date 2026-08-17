@@ -423,6 +423,7 @@ HideShakeEffects=false           ; boolean
 #### Vanilla fixes:
 
 #### Phobos fixes:
+- Fixed a game crash when parsing string list with null entry (by Ollerus)
 
 #### Fixes / interactions with other extensions:
 
@@ -1522,7 +1523,6 @@ HideShakeEffects=false           ; boolean
 - Fixed a game crash when checking `BuildLimit` if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
-- Fixed a game crash when parsing string list with null entry (by Ollerus)
 
 #### Fixes / interactions with other extensions:
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set (by FS-21)
