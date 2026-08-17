@@ -486,6 +486,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Malicious.Read(exINI, pSection, "Malicious");
 	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
+	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::Detonate
@@ -808,6 +809,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Malicious)
 		.Process(this->Flash_Duration)
 		.Process(this->Damage_Deployed)
+		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

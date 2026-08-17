@@ -1749,6 +1749,7 @@ Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMov
 ```
 
 ### Customizable spawns queue
+
 - It is now possible to spawn multiple types of spawnees from a spawner with `Spawns.Queue`. The order of spawnees in this queue is the order of their respawn.
   - `Spawns` still needs to be set to enable the spawner logic and act as a default spawnee.
   - `SpawnsNumber` still needs to be set to determine the amount of spawnee slots.
@@ -2037,6 +2038,7 @@ If `NoQueueUpToEnter.BoardDistance` is set to a too small value, the passenger u
 ```
 
 ### Initial spawns number
+
 - It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
 
 In `rulesmd.ini`:
@@ -2341,6 +2343,33 @@ RecountBurst=false  ; boolean
 
 [SOMETECHNO]        ; TechnoType
 RecountBurst=       ; boolean, default to [General] -> RecountBurst
+```
+
+### Reload speed adjustment on promotion
+
+- Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
+  - `RELOAD` scales the duration of normal reload cycles.
+  - `EMPTY_RELOAD` scales the duration of the reload cycle that starts when the clip is completely empty, which is only used when the TechnoType has a positive `EmptyReload`.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranReload` and `VeteranEmptyReload` are multipliers applied to the final reload duration computed by the game, so other reload modifiers such as `ReloadIncrement` are still taken into account.
+  - Values greater than `1.0` lengthen the reload, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeteranReload=1.0        ; floating point value, multiplier
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranReload
+
+[SOMETECHNO]             ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RELOAD or EMPTY_RELOAD.
+VeteranReload=           ; floating point value, multiplier, default to [General] -> VeteranReload
+VeteranEmptyReload=      ; floating point value, multiplier, default to [General] -> VeteranEmptyReload
+```
+
+```{note}
+For `EMPTY_RELOAD` to have any effect, the TechnoType must not set `EmptyReload` to `-1`, otherwise the empty clip uses the regular `Reload` duration instead. Note that `EmptyReload=0` still takes the empty-clip path and reloads the clip instantly.
 ```
 
 ### Reset MindControl after transformation
@@ -2843,6 +2872,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ```
 
 ### Custom Mind Control Animation
+
 - Allows Warheads to play custom `MindControl.Anim`.
 
 In `rulesmd.ini`:
@@ -3272,6 +3302,8 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 ```
 
 ### Customize whether warhead can prevent crew escape from techno
+
+- Now you can customize on warheads whether to prevent survivors/passengers/occupant infantry from appearing when destroying a target.
 
 In `rulesmd.ini`:
 ```ini

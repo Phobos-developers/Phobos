@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-09 20:48+0800\n"
+"POT-Creation-Date: 2026-08-14 18:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "Credits"
 msgstr "鸣谢"
@@ -2518,6 +2518,23 @@ msgid ""
 "`DiscardOn`"
 msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
 
+msgid "Disable AlphaImage during Buildup"
+msgstr ""
+"建筑拔起期间关闭 AlphaImage"
+
+msgid ""
+"Allow customizing the default value of `[Warhead] -> PreventScatter` via "
+"`[CombatDamage] -> Warhead.PreventScatter`"
+msgstr ""
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> PreventScatter` 的默认值"
+
+msgid ""
+"Allow `(Pre)ProductionAnim` animations to use `Powered` & "
+"`PoweredLight/Effect/Special` keys"
+msgstr ""
+"允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
+"类的标签"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2968,12 +2985,10 @@ msgstr "自定义飞机是否是cargo plane"
 msgid ""
 "Allow the unit to stop immediately if the target enters the range during "
 "ApproachTarget"
-msgstr ""
-"允许单位在接近目标期间若目标进入射程则立即停止"
+msgstr "允许单位在接近目标期间若目标进入射程则立即停止"
 
 msgid "Allow the unit to keep pursuing the target during ApproachTarget"
-msgstr ""
-"允许单位在接近目标期间持续追踪目标"
+msgstr "允许单位在接近目标期间持续追踪目标"
 
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
@@ -3182,4 +3197,7 @@ msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置�
 
 msgid "**obsidianus** - Automatic conversion based on health"
 msgstr "**obsidianus** - 自动根据血量变形"
+
+msgid "**Nuke** - Reload speed adjustment on promotion"
+msgstr "**Nuke** - 升级时调整装填速率"
 

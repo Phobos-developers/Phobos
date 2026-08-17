@@ -294,6 +294,11 @@ public:
 	Nullable<bool> NoReload_UnderEMP;
 	Nullable<bool> NoReload_Temporal;
 
+	std::bitset<AdditionalAbilityCount> AdditionalVeteranAbilities;
+	std::bitset<AdditionalAbilityCount> AdditionalEliteAbilities;
+	Nullable<double> VeteranReload;
+	Nullable<double> VeteranEmptyReload;
+
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
 	Nullable<AnimTypeClass*> Wake_Sinking;
@@ -689,6 +694,11 @@ public:
 		, NoRearm_Temporal {}
 		, NoReload_UnderEMP {}
 		, NoReload_Temporal {}
+
+		, AdditionalVeteranAbilities {}
+		, AdditionalEliteAbilities {}
+		, VeteranReload {}
+		, VeteranEmptyReload {}
 
 		, Wake { }
 		, Wake_Grapple { }

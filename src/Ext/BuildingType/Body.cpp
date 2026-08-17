@@ -98,6 +98,19 @@ void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
+bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial)
+{
+	auto const pType = pBuilding->Type;
+
+	if (!((pType->Powered && pType->PowerDrain > 0 && (powered || poweredLight || poweredEffect))
+		|| (pType->PoweredSpecial && poweredSpecial)))
+		return false;
+
+	return pBuilding->CurrentMission != Mission::Construction
+		&& pBuilding->CurrentMission != Mission::Selling
+		&& !pBuilding->IsPowerOnline();
+}
+
 int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
 {
 	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
@@ -295,6 +308,18 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
 	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
+
+	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);
+	preProdAnim.Powered = pArtINI->ReadBool(pArtSection, "PreProductionAnimPowered", preProdAnim.Powered);
+	preProdAnim.PoweredLight = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredLight", preProdAnim.PoweredLight);
+	preProdAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredEffect", preProdAnim.PoweredEffect);
+	preProdAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredSpecial", preProdAnim.PoweredSpecial);
+
+	auto& prodAnim = pThis->GetBuildingAnim(BuildingAnimSlot::Production);
+	prodAnim.Powered = pArtINI->ReadBool(pArtSection, "ProductionAnimPowered", prodAnim.Powered);
+	prodAnim.PoweredLight = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredLight", prodAnim.PoweredLight);
+	prodAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredEffect", prodAnim.PoweredEffect);
+	prodAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredSpecial", prodAnim.PoweredSpecial);
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
