@@ -975,6 +975,8 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 
 ### `600` The shield of the attached object is broken
 
+- Springs when the shield of the attached object is broken.
+
 In `mycampaign.map`:
 ```ini
 [Events]
