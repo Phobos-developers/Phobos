@@ -1,9 +1,9 @@
+#include "Body.h"
+
 #include <DriveLocomotionClass.h>
 #include <ShipLocomotionClass.h>
-#include <UnitClass.h>
 #include <OverlayTypeClass.h>
 
-#include "Body.h"
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
@@ -131,8 +131,6 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 	R->AL(result);
 	return SkipGameCode;
 }
-#include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
