@@ -3303,6 +3303,8 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 
 ### Customize whether warhead can prevent crew escape from techno
 
+- Now you can customize on warheads whether to prevent survivors/passengers/occupant infantry from appearing when destroying a target.
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                          ; WarheadType

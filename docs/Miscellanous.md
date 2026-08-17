@@ -4,7 +4,7 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 ## Blowfish Dependency
 
-`BLOWFISH.DLL` is no longer required to start the game.
+- `BLOWFISH.DLL` is no longer required to start the game.
 
 ## Developer tools
 
