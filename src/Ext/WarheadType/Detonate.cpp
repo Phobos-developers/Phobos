@@ -210,6 +210,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->ChangeOwner)
 		this->ApplyOwnerChange(pHouse, pTarget);
 
+	if (this->Ammo != 0)
+		this->ApplyAmmoModifier(pTarget);
+
 	// These can change the target's techno types
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
@@ -907,4 +910,13 @@ void WarheadTypeExt::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass*
 		if (cleanSound != -1)
 			VocClass::PlayAt(cleanSound, transporterCoords);
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
+{
+	int maxAmmo = pTarget->GetTechnoType()->Ammo;
+	int newCurrentAmmo = this->Ammo + pTarget->Ammo;
+
+	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
+	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
 }
