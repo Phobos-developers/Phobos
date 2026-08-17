@@ -616,6 +616,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->KeepAlive_SupportAircrafts.Read(exINI, GameStrings::General, "KeepAlive.SupportAircrafts");
 	this->KeepAlive_SupportBuildings.Read(exINI, GameStrings::General, "KeepAlive.SupportBuildings");
 
+	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -1092,6 +1094,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAlphaImageOnBuildup)
 		.Process(this->ReadyToNextMission_MovingCheck)
 		.Process(this->Warhead_PreventScatter)
+		.Process(this->ProjectileRange_ApplyModifiers)
 		.Process(this->KeepAlive_SupportInfantrys)
 		.Process(this->KeepAlive_SupportVehicles)
 		.Process(this->KeepAlive_SupportAircrafts)

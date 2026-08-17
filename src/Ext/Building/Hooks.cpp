@@ -1079,6 +1079,22 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 	return 0;
 }
 
+DEFINE_HOOK(0x4501AF, AI_ConYard_CompleteProduction_ProductionAnim, 0x5)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(TechnoClass*, pObject, EDI);
+
+	if (pBuilding->Owner->IsControlledByHuman())
+		return 0;
+
+	if (!pObject || pObject->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	pBuilding->SendCommand(RadioCommand::RequestEndProduction, pBuilding);
+
+	return 0;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)

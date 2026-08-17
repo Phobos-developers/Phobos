@@ -328,6 +328,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state.
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 
 ## Fixes / interactions with other extensions
 
@@ -384,6 +385,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic.
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
+- Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Ares' `KeepAlive` adds global tags.
 
 ## Newly added global settings
@@ -2028,6 +2030,8 @@ FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> Fall
 
 ### Customize crash spin multiplier
 
+- To address the issue that larger planes look silly when crashing due to spinning, Ares allows customizing whether technos with `Locomotor=Fly` spin when crashing. Here we provide another approach: customizing the speed multiplier of the spin.
+
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                      ; TechnoType, with Locomotor=Fly
@@ -2939,6 +2943,15 @@ AllowDamageOnSelf=       ; boolean, default to [General] -> AllowDamageOnSelf
 ### Berzerk (`Psychedelic`) duration stacking customization
 
 - By default `Psychedelic` warheads override the current duration of the berzerk effect regardless of if the new duration is higher or lower than the current one. This can now be customized with `Psychedelic.StackingMode`, with both global setting under `[CombatDamage]` and per-Warhead customization.
+  - Available stacking modes:
+    - `override`: Replace the current duration with the new one.
+    - `setifzero`: Only set the duration if the unit is not currently berzerk, otherwise the existing duration is kept.
+    - `min`: Keep the shorter of the current and new durations.
+    - `max`: Keep the longer of the current and new durations.
+    - `add`: Add the new duration to the current one.
+    - `subtract`: Subtract the new duration from the current one.
+    - `multiply`: Multiply the current duration by the new one.
+    - `divide`: Divide the current duration by the new one, no change if the new value is 0.
 
 In `rulesmd.ini`:
 ```ini
