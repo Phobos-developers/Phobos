@@ -278,6 +278,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
+
 	this->StartFacing.Read(exINI, pSection, "StartFacing");
 	this->StartFacing_Random.Read(exINI, pSection, "StartFacing.Random");
 
