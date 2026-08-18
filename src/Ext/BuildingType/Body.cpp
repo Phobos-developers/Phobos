@@ -10,18 +10,12 @@ BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 
 double BuildingTypeExt::GetSellTime() const
 {
-	if (this->SellTime.isset())
-		return this->SellTime.Get();
-	if (this->BuildupTime.isset())
-		return this->BuildupTime.Get();
-	return RulesClass::Instance->BuildupTime;
+	return this->SellTime.Get(this->BuildupTime.Get(RulesClass::Instance->BuildupTime));
 }
 
 double BuildingTypeExt::GetUndeployTime() const
 {
-	if (this->UndeployTime.isset())
-		return this->UndeployTime.Get();
-	return this->GetSellTime();
+	return this->UndeployTime.Get(this->GetSellTime());
 }
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
