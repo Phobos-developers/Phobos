@@ -1,8 +1,9 @@
 #include "Body.h"
+#include <Ext/Techno/Body.h>
 
 void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 		return;
 

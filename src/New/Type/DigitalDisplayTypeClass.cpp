@@ -1,12 +1,6 @@
 #include "DigitalDisplayTypeClass.h"
 
-#include <TacticalClass.h>
-#include <SpawnManagerClass.h>
-
-#include <Ext/Techno/Body.h>
-
 #include <Utilities/ShapeTextPrinter.h>
-#include <Utilities/EnumFunctions.h>
 
 template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
