@@ -1501,8 +1501,7 @@ DEFINE_HOOK(0x43D2B5, BuildingClass_Draw_Sell, 0x6)
 		// BState is unreliable.
 		int effectiveFrames = pSHP->Frames / 2;
 		double timeMinutes = pThis->ArchiveTarget ? pTypeExt->GetUndeployTime() : pTypeExt->GetSellTime();
-		int totalDuration = static_cast<int>(timeMinutes * 900);
-		int newRate = Math::max(1, totalDuration / effectiveFrames);
+		int newRate = Math::max(1, static_cast<int>(timeMinutes / effectiveFrames * 900));
 
 		if (!pBldExt->UseCustomSellFrames)
 		{
@@ -1543,7 +1542,7 @@ DEFINE_HOOK(0x447AA7, BuildingClass_BeginMode_CustomSell, 0x6)
 		if (effectiveFrames > 0)
 		{
 			double time = pThis->ArchiveTarget ? pTypeExt->GetUndeployTime() : pTypeExt->GetSellTime();
-			int rate = Math::max(1, static_cast<int>(time * 900) / effectiveFrames);
+			int rate = Math::max(1, static_cast<int>(time / effectiveFrames * 900));
 
 			pThis->Animation.Rate = rate;
 			pThis->Animation.Timer.TimeLeft = rate;
@@ -1564,7 +1563,7 @@ DEFINE_HOOK(0x447AA7, BuildingClass_BeginMode_CustomSell, 0x6)
 			int frames = pThis->Type->BuildingAnimFrame[pThis->BState].FrameCount;
 			if (frames > 0)
 			{
-				int rate = Math::max(1, static_cast<int>(pTypeExt->GetUndeployTime() * 900) / frames);
+				int rate = Math::max(1, static_cast<int>(pTypeExt->GetUndeployTime() / frames * 900));
 				pThis->Animation.Rate = rate;
 				pThis->Animation.Timer.TimeLeft = rate;
 			}

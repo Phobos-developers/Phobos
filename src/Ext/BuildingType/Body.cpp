@@ -278,31 +278,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretAnim_LowPowerFiringFrames.Read(exINI, pSection, "TurretAnim.LowPowerFiringFrames");
 	this->TurretAnim_IdleRate.Read(exINI, pSection, "TurretAnim.IdleRate");
 	this->TurretAnim_FiringRate.Read(exINI, pSection, "TurretAnim.FiringRate");
-	this->BuildupTime.Read(exINI, pSection, "BuildupTime");
-	this->SellTime.Read(exINI, pSection, "SellTime");
-	this->UndeployTime.Read(exINI, pSection, "UndeployTime");
-
-	if (exArtINI.ReadString(pArtSection, "Sell") > 0)
-	{
-		strcpy_s(this->SellFileName, exArtINI.value());
-		this->Sell = nullptr;
-	}
-	else
-	{
-		this->SellFileName[0] = '\0';
-	}
-	this->Sell_Reverse.Read(exArtINI, pArtSection, "Sell.Reverse");
-	if (exArtINI.ReadString(pArtSection, "Undeploy") > 0)
-	{
-		strcpy_s(this->UndeployFileName, exArtINI.value());
-		this->Undeploy = nullptr;
-	}
-	else
-	{
-		this->UndeployFileName[0] = '\0';
-	}
-	this->Undeploy_Reverse.Read(exArtINI, pArtSection, "Undeploy.Reverse");
-
 	this->StartFacing.Read(exINI, pSection, "StartFacing");
 	this->StartFacing_Random.Read(exINI, pSection, "StartFacing.Random");
 
@@ -361,6 +336,28 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	prodAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredEffect", prodAnim.PoweredEffect);
 	prodAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredSpecial", prodAnim.PoweredSpecial);
 
+	if (exArtINI.ReadString(pArtSection, "Sell") > 0)
+	{
+		strcpy_s(this->SellFileName, exArtINI.value());
+		this->Sell = nullptr;
+	}
+	else
+	{
+		this->SellFileName[0] = '\0';
+	}
+	this->Sell_Reverse.Read(exArtINI, pArtSection, "Sell.Reverse");
+	if (exArtINI.ReadString(pArtSection, "Undeploy") > 0)
+	{
+		strcpy_s(this->UndeployFileName, exArtINI.value());
+		this->Undeploy = nullptr;
+	}
+	else
+	{
+		this->UndeployFileName[0] = '\0';
+	}
+	this->Undeploy_Reverse.Read(exArtINI, pArtSection, "Undeploy.Reverse");
+	this->UndeployTime.Read(exINI, pSection, "UndeployTime");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -407,6 +404,10 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 0.D
+	this->BuildupTime.Read(exINI, pSection, "BuildupTime");
+	this->SellTime.Read(exINI, pSection, "SellTime");
 
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
@@ -513,8 +514,6 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Sell_Reverse)
 		.Process(this->Undeploy)
 		.Process(this->Undeploy_Reverse)
-		.Process(this->BuildupTime)
-		.Process(this->SellTime)
 		.Process(this->UndeployTime)
 
 		// Ares 0.2
@@ -523,6 +522,10 @@ void BuildingTypeExt::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 0.D
+		.Process(this->BuildupTime)
+		.Process(this->SellTime)
 
 		// Ares 3.0
 		.Process(this->UnitSell)

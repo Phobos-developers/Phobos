@@ -124,8 +124,6 @@ public:
 	Valueable<bool> Sell_Reverse;
 	Valueable<SHPStruct*> Undeploy;
 	Valueable<bool> Undeploy_Reverse;
-	Nullable<double> BuildupTime;
-	Nullable<double> SellTime;
 	Nullable<double> UndeployTime;
 	char SellFileName[0x20];
 	char UndeployFileName[0x20];
@@ -145,6 +143,10 @@ public:
 	// Ares 0.A
 	Valueable<BuildingTypeClass*> RubbleIntact;
 	Valueable<bool> RubbleIntactRemove;
+
+	// Ares 0.D
+	Nullable<double> BuildupTime;
+	Nullable<double> SellTime;
 
 	// Ares 3.0
 	Nullable<bool> UnitSell;
@@ -235,6 +237,13 @@ public:
 		, SetTabBySelecting { -1 }
 		, RevealToAll_Radius {}
 		, DeployFireDelay {}
+		, Sell { nullptr }
+		, Sell_Reverse { true }
+		, Undeploy { nullptr }
+		, Undeploy_Reverse { true }
+		, UndeployTime {}
+		, SellFileName {}
+		, UndeployFileName {}
 
 		// Ares 0.2
 		, CloningFacility { false }
@@ -243,17 +252,12 @@ public:
 		, RubbleIntact { nullptr }
 		, RubbleIntactRemove { false }
 
-		// Ares 3.0
-		, UnitSell {}
-		, Sell { nullptr }
-		, Sell_Reverse { true }
-		, Undeploy { nullptr }
-		, Undeploy_Reverse { true }
+		// Ares 0.D
 		, BuildupTime {}
 		, SellTime {}
-		, UndeployTime {}
-		, SellFileName {}
-		, UndeployFileName {}
+
+		// Ares 3.0
+		, UnitSell {}
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)

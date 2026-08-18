@@ -1370,7 +1370,7 @@ NoAlphaImageOnBuildup=       ; boolean, defaults to [AudioVisual] -> NoAlphaImag
 
 In `artmd.ini`:
 ```ini
-[SOMEBUILDING]         ; BuildingType
+[SOMEBUILDING]         ; BuildingType, with Buildup
 Sell=                  ; filename - excluding the .shp extension, defaults to [BuildingType] -> Buildup
 Sell.Reverse=true      ; boolean
 Undeploy=              ; filename - excluding the .shp extension, defaults to [BuildingType] -> Sell
@@ -1473,11 +1473,11 @@ Skipping the bunkerable checks doesn't mean that vehicles and tank bunkers will 
 
 ### Undeploy Time
 
-- By default the undeploy animation plays at the same speed as the sell animation (`SellTime`, which falls back to `BuildupTime` and finally the global `[General] -> BuildupTime`). `UndeployTime` gives the undeploy case its own, independent duration.
+- The playback rate of the image sequence when a building undeploys is by default the same as when selling. It can now be independently controlled through the flag below.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]       ; BuildingType
+[SOMEBUILDING]       ; BuildingType, with UndeploysInto
 UndeployTime=        ; floating point value, defaults to [BuildingType] -> SellTime
 ```
 
