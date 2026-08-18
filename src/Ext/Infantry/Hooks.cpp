@@ -1,6 +1,5 @@
 #include <Ext/BuildingType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Infantry/Body.h>
 
 #include <InputManagerClass.h>
 
@@ -16,8 +15,8 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
 	{
@@ -26,15 +25,15 @@ DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
 	}
 
-	return 0x520B44;
+	return 0;
 }
 
 // Undeploy case: DoAction(Ready)
 DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
 	{
@@ -43,7 +42,7 @@ DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
 	}
 
-	return 0x520B9F;
+	return 0;
 }
 
 // Reset mark when Deploy/Undeploy
@@ -54,7 +53,7 @@ DEFINE_HOOK(0x520E75, InfantryClass_DoingAI_DeployConvert_ResetFlags, 0x6)
 
 	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pExt = InfantryExt::Fetch(pThis);
 		pExt->HasDeployConverted = false;
 		pExt->HasUndeployConverted = false;
 	}
@@ -119,7 +118,7 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 		if (pBuilding->Health >= pBuildingType->Strength)
 		{
-			const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			const auto pTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 
 			if (!pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
 				return Skip;
@@ -191,7 +190,7 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 {
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
-	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+	return InfantryTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
 
 DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)

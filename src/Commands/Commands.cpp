@@ -9,6 +9,7 @@
 #include "ToggleDigitalDisplay.h"
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
+#include "SelectCaptured.h"
 #include "ToggleSWSidebar.h"
 #include "FireTacticalSW.h"
 #include "ToggleMessageList.h"
@@ -32,6 +33,9 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleSWSidebar>();
 	MakeCommand<DeselectObjectCommandClass>();
 	MakeCommand<DeselectObject5CommandClass>();
+
+	if (Phobos::Config::SelectCapturedCommand)
+		MakeCommand<SelectCapturedCommandClass>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
 	{

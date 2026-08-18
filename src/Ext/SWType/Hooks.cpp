@@ -17,7 +17,7 @@ DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 // Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
 DEFINE_HOOK_AGAIN(0x6CC390, SuperClass_Place_FireExt, 0x6)
-DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x5)
+DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x3)
 {
 	GET(SuperClass* const, pSuper, ECX);
 	GET_STACK(CellStruct const* const, pCell, 0x4);
@@ -41,8 +41,8 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 		std::sort(SuperClass::ShowTimers.begin(), SuperClass::ShowTimers.end(),
 			[](SuperClass* a, SuperClass* b)
 			{
-				const auto aExt = SWTypeExt::ExtMap.Find(a->Type);
-				const auto bExt = SWTypeExt::ExtMap.Find(b->Type);
+				const auto aExt = SWTypeExt::Fetch(a->Type);
+				const auto bExt = SWTypeExt::Fetch(b->Type);
 				return aExt->ShowTimer_Priority.Get() > bExt->ShowTimer_Priority.Get();
 			}
 		);
@@ -57,7 +57,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		return 0;
 
 	const auto pSuperType = SuperWeaponTypeClass::Array.GetItem(Unsorted::CurrentSWType);
-	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+	const auto pExt = SWTypeExt::Fetch(pSuperType);
 
 	if (!pExt->ShowDesignatorRange)
 		return 0;
@@ -76,7 +76,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			continue;
 		}
 
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pCurrentTechnoType);
 
 		const float radius = pOwner == HouseClass::CurrentPlayer
 			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
@@ -105,7 +105,7 @@ DEFINE_HOOK(0x6CBEF4, SuperClass_AnimStage_UseWeeds, 0x6)
 	GET(SuperClass*, pSuper, ECX);
 	GET(SuperWeaponTypeClass*, pSWType, EBX);
 
-	const auto pExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pExt = SWTypeExt::Fetch(pSWType);
 
 	if (pExt->UseWeeds)
 	{
@@ -148,7 +148,7 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 
 	GET(SuperClass*, pSuper, ESI);
 
-	const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 	if (pExt->UseWeeds)
 	{
@@ -192,7 +192,7 @@ DEFINE_HOOK(0x6CC1E6, SuperClass_SetSWCharge_UseWeeds, 0x5)
 
 	GET(SuperClass*, pSuper, EDI);
 
-	const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 	if (pExt->UseWeeds)
 		return Skip;
@@ -244,7 +244,7 @@ DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
 		return 0;
 
 	const auto pSWType = SuperWeaponTypeClass::Array[typeIdx];
-	const auto pSWTypExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pSWTypExt = SWTypeExt::Fetch(pSWType);
 
 	R->EAX(pSWTypExt->TabIndex);
 	return ApplyTabIndex;

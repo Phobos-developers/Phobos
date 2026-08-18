@@ -6,9 +6,9 @@
 
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
-void HouseTypeExt::ExtData::Initialize() { }
+void HouseTypeExt::Initialize() { }
 
-void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -449,7 +449,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 }
 
 template <typename T>
-void HouseTypeExt::ExtData::Serialize(T& Stm)
+void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
@@ -512,15 +512,15 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 	}
 }
 
-void HouseTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void HouseTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<HouseTypeClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void HouseTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void HouseTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<HouseTypeClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -566,30 +566,6 @@ DEFINE_HOOK(0x5127CF, HouseTypeClass_DTOR, 0x6)
 	GET(HouseTypeClass*, pItem, ESI);
 
 	HouseTypeExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x512480, HouseTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x512290, HouseTypeClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(HouseTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	HouseTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x51246D, HouseTypeClass_Load_Suffix, 0x5)
-{
-
-	HouseTypeExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x51255C, HouseTypeClass_Save_Suffix, 0x5)
-{
-	HouseTypeExt::ExtMap.SaveStatic();
 	return 0;
 }
 

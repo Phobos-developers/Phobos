@@ -34,8 +34,8 @@
 
 #include "Iterator.h"
 
-#include <MouseClass.h>
-#include <FootClass.h>
+#include <RulesClass.h>
+#include <TechnoClass.h>
 
 #include "Savegame.h"
 #include "Enum.h"
@@ -460,6 +460,16 @@ public:
 			return this->ConditionYellow;
 
 		return this->BaseValue;
+	}
+
+	constexpr bool isset() const noexcept
+	{
+		return this->BaseValue || this->ConditionYellow.isset() || this->ConditionRed.isset();
+	}
+
+	constexpr bool isDamagedValueSet() const noexcept
+	{
+		return this->ConditionYellow.isset() || this->ConditionRed.isset();
 	}
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

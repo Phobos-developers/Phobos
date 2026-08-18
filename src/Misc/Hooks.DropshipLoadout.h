@@ -38,9 +38,9 @@ private:
 	bool CanCarrierHoldUnit(int carrierIdx, TechnoTypeClass* pUnitType);
 
 	// Extensions
-	HouseTypeExt::ExtData* pHouseTypeExt { nullptr };
+	HouseTypeExt* pHouseTypeExt { nullptr };
 	SuperWeaponTypeClass* pSWType { nullptr };
-	class SWTypeExt::ExtData* pSWTypeExt { nullptr };
+	SWTypeExt* pSWTypeExt { nullptr };
 
 	// Config & state
 	int nStartingDropships { 0 };

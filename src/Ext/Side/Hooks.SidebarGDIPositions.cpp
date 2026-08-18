@@ -6,7 +6,7 @@ DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 {
 	GET(const int, sideIndex, ECX);
 	const auto pSide = SideClass::Array.GetItemOrDefault(sideIndex);
-	const auto pSideExt = SideExt::ExtMap.TryFind(pSide);
+	const auto pSideExt = SideExt::TryFetch(pSide);
 	isNODSidebar = pSideExt ? !pSideExt->Sidebar_GDIPositions : sideIndex;
 
 	return 0;

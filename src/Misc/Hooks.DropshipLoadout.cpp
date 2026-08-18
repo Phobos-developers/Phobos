@@ -160,9 +160,9 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 	this->allowableUnitsIndex = allowableUnitsIndex;
 	this->startingMoney = startingMoney;
 	this->pSWType = pSWType;
-	this->pSWTypeExt = pSWType ? SWTypeExt::ExtMap.Find(pSWType) : nullptr;
+	this->pSWTypeExt = SWTypeExt::TryFetch(pSWType);
 
-	pHouseTypeExt = HouseTypeExt::ExtMap.Find(HouseClass::CurrentPlayer->Type);
+	pHouseTypeExt = HouseTypeExt::Fetch(HouseClass::CurrentPlayer->Type);
 
 	if (!ScenarioClass::Instance)
 		return false;
@@ -208,7 +208,7 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 void DropshipLoadoutClass::LoadAssets()
 {
 	auto const pGlobal = ScenarioExt::Global();
-	auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+	auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
 
 	if (pSWTypeExt)
 	{
@@ -1578,7 +1578,7 @@ void DropshipLoadoutClass::CreateControls()
 	dropshipBayFixedUnitsLists.clear();
 	dropshipBayChosenUnitsCount.clear();
 
-	auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+	auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
 
 	if (pSWTypeExt)
 	{
@@ -3234,7 +3234,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 			pSurface->FillRectTrans(&newRectangle, &foreColor, 255);
 		}
 
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		auto const pPCXSurface = pTypeExt->CameoPCX.GetSurface();
 		auto pFileSHP = pType->Cameo;
@@ -3456,7 +3456,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 			if (!pType)
 				continue;
 
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 			auto const pPCXSurface = pTypeExt->CameoPCX.GetSurface();
 			auto pFileSHP = pType->Cameo;
@@ -3580,7 +3580,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 	// Draw Dragged Cameo
 	if (bIsDragging && pDraggedUnitType)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pDraggedUnitType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pDraggedUnitType);
 		{
 			auto const pPCXSurface = pTypeExt->CameoPCX.GetSurface();
 			auto pFileSHP = pDraggedUnitType->Cameo;
@@ -3721,7 +3721,7 @@ void DropshipLoadoutClass::DrawTooltip(DSurface* pSurface)
 	// Description
 	std::wstring descStr;
 	int descWidth = 0, descHeight = 0;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pHoveredUnitType);
+	auto const pTypeExt = TechnoTypeExt::Fetch(pHoveredUnitType);
 
 	if (Phobos::Config::ToolTipDescriptions && !pTypeExt->UIDescription.Get().empty())
 	{
@@ -3910,7 +3910,7 @@ int DropshipLoadoutClass::GetCarrierSizeLimit(int carrierIdx)
 		if (pSWTypeExt->DropshipLoadout_Carrier.isset())
 			return static_cast<int>(pSWTypeExt->DropshipLoadout_Carrier.Get()->SizeLimit);
 
-		if (auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer))
+		if (auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer))
 		{
 			if (pHouseExt->DropshipLoadout_SWCarrier)
 				return static_cast<int>(pHouseExt->DropshipLoadout_SWCarrier->SizeLimit);
@@ -3985,7 +3985,7 @@ void DropshipLoadoutClass::SaveCargo()
 	if (!HouseClass::CurrentPlayer)
 		return;
 
-	auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
+	auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
 
 	if (!pHouseExt)
 		return;
@@ -4196,7 +4196,7 @@ DEFINE_HOOK(0x683D89, Dropship_Loadout_Remake, 0x6)
 	if (!HouseClass::CurrentPlayer || !ScenarioClass::Instance)
 		return EndFunction;
 
-	auto const pHouseTypeExt = HouseTypeExt::ExtMap.Find(HouseClass::CurrentPlayer->Type);
+	auto const pHouseTypeExt = HouseTypeExt::Fetch(HouseClass::CurrentPlayer->Type);
 
 	if (!pHouseTypeExt)
 		return EndFunction;
