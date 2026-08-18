@@ -1371,9 +1371,9 @@ NoAlphaImageOnBuildup=       ; boolean, defaults to [AudioVisual] -> NoAlphaImag
 In `artmd.ini`:
 ```ini
 [SOMEBUILDING]         ; BuildingType
-Sell=                  ; filename - excluding the .shp extension
+Sell=                  ; filename - excluding the .shp extension, defaults to [BuildingType] -> Buildup
 Sell.Reverse=true      ; boolean
-Undeploy=              ; filename - excluding the .shp extension
+Undeploy=              ; filename - excluding the .shp extension, defaults to [BuildingType] -> Sell
 Undeploy.Reverse=true  ; boolean
 ```
 

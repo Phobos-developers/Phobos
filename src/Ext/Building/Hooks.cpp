@@ -27,8 +27,8 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 		auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
 		const bool hasCustomSHP = pThis->ArchiveTarget
-			? pTypeExt->UndeployFileName[0] != '\0'
-			: pTypeExt->SellFileName[0] != '\0';
+			? (pTypeExt->UndeployFileName[0] != '\0' || pTypeExt->SellFileName[0] != '\0')
+			: (pTypeExt->SellFileName[0] != '\0');
 
 		if (hasCustomSHP)
 		{
@@ -1469,10 +1469,12 @@ DEFINE_HOOK(0x43D2B5, BuildingClass_Draw_Sell, 0x6)
 
 	if (pThis->ArchiveTarget)
 	{
-		if (pTypeExt->UndeployFileName[0])
+		const char* undeployFile = pTypeExt->UndeployFileName[0]
+			? pTypeExt->UndeployFileName : pTypeExt->SellFileName;
+		if (undeployFile[0])
 		{
 			if (!pTypeExt->Undeploy)
-				pTypeExt->Undeploy = LoadTheaterSHP(pTypeExt->UndeployFileName);
+				pTypeExt->Undeploy = LoadTheaterSHP(undeployFile);
 			pSHP = pTypeExt->Undeploy;
 		}
 	}

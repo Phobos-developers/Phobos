@@ -252,10 +252,9 @@ public:
 		, BuildupTime {}
 		, SellTime {}
 		, UndeployTime {}
-	{
-		SellFileName[0] = '\0';
-		UndeployFileName[0] = '\0';
-	}
+		, SellFileName {}
+		, UndeployFileName {}
+	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)
 	BuildingTypeClass* OwnerObject() const
