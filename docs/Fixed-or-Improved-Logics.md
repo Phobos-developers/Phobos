@@ -1364,6 +1364,23 @@ NoAlphaImageOnBuildup=false  ; boolean
 NoAlphaImageOnBuildup=       ; boolean, defaults to [AudioVisual] -> NoAlphaImageOnBuildup
 ```
 
+### Customize the images for building sell and undeploy
+
+- In vanilla, when a building is sold or undeployed, it plays the reversed `Buildup` image. Now you can customize the images for these two cases and set whether to reverse them separately.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]         ; BuildingType, with Buildup
+Sell=                  ; filename - excluding the .shp extension, defaults to [BuildingType] -> Buildup
+Sell.Reverse=true      ; boolean
+Undeploy=              ; filename - excluding the .shp extension, defaults to [BuildingType] -> Sell
+Undeploy.Reverse=true  ; boolean
+```
+
+```{note}
+When the replacement image is not explicitly set, the `Buildup` image will be used, and reversal can still work independently.
+```
+
 ### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
@@ -1452,6 +1469,20 @@ BunkerableAnyway=false     ; boolean
 
 ```{warning}
 Skipping the bunkerable checks doesn't mean that vehicles and tank bunkers will interact correctly - actual bunkerability is mainly determined by `Locomotor`. Details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
+```
+
+### Undeploy Time
+
+- The playback rate of the image sequence when a building undeploys is by default the same as when selling. It can now be independently controlled through the flag below.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]       ; BuildingType, with UndeploysInto
+UndeployTime=        ; floating point value, defaults to [BuildingType] -> SellTime
+```
+
+```{note}
+This pairs with the `Undeploy` sequence, just like `SellTime` drives the `Sell` sequence. See [Customize the images for building sell and undeploy](Fixed-or-Improved-Logics.md#customize-the-images-for-building-sell-and-undeploy).
 ```
 
 ### Unit repair customization

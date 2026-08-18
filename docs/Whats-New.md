@@ -419,6 +419,8 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- [Customize the images for building sell and undeploy](Fixed-or-Improved-Logics.md#customize-the-images-for-building-sell-and-undeploy) (by Noble_Fish)
+- [Undeploy time](Fixed-or-Improved-Logics.md#undeploy-time) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

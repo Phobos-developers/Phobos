@@ -120,6 +120,14 @@ public:
 	Valueable<int> TurretAnim_IdleRate;
 	Valueable<int> TurretAnim_FiringRate;
 
+	Valueable<SHPStruct*> Sell;
+	Valueable<bool> Sell_Reverse;
+	Valueable<SHPStruct*> Undeploy;
+	Valueable<bool> Undeploy_Reverse;
+	Nullable<double> UndeployTime;
+	char SellFileName[0x20];
+	char UndeployFileName[0x20];
+
 	Nullable<int> StartFacing;
 	Nullable<bool> StartFacing_Random;
 
@@ -135,6 +143,10 @@ public:
 	// Ares 0.A
 	Valueable<BuildingTypeClass*> RubbleIntact;
 	Valueable<bool> RubbleIntactRemove;
+
+	// Ares 0.D
+	Nullable<double> BuildupTime;
+	Nullable<double> SellTime;
 
 	// Ares 3.0
 	Nullable<bool> UnitSell;
@@ -225,6 +237,13 @@ public:
 		, SetTabBySelecting { -1 }
 		, RevealToAll_Radius {}
 		, DeployFireDelay {}
+		, Sell { nullptr }
+		, Sell_Reverse { true }
+		, Undeploy { nullptr }
+		, Undeploy_Reverse { true }
+		, UndeployTime {}
+		, SellFileName {}
+		, UndeployFileName {}
 
 		// Ares 0.2
 		, CloningFacility { false }
@@ -232,6 +251,10 @@ public:
 		// Ares 0.A
 		, RubbleIntact { nullptr }
 		, RubbleIntactRemove { false }
+
+		// Ares 0.D
+		, BuildupTime {}
+		, SellTime {}
 
 		// Ares 3.0
 		, UnitSell {}
@@ -242,6 +265,9 @@ public:
 	{
 		return static_cast<BuildingTypeClass*>(this->TechnoTypeExt::OwnerObject());
 	}
+
+	double GetSellTime() const;
+	double GetUndeployTime() const;
 
 	// Ares 0.A functions
 	int GetSuperWeaponCount() const;
