@@ -419,6 +419,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- Customized transport plane for teams (by FlyStar)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

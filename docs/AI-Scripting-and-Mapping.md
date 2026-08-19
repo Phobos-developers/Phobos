@@ -1056,3 +1056,13 @@ SetRecruitableOnLiberate=-1  ; integer
 [SOMETEAMTYPE]               ; TeamType
 SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
 ```
+
+### Customized Transport Aircraft
+
+- You can now use `ParaDropPlane` to specify a new transport plane, which will override the global settings for both `Ares` and `Vanilla`.
+
+In `aimd.ini / mycampaign.map`:
+```ini
+[SOMETEAMTYPE]      ; TeamType
+ParaDropPlane=      ; AircraftType
+```
