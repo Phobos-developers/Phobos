@@ -419,6 +419,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- New map actions in the 19000 range that are copies of the original actions but using ID entries instead of indexes (by FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

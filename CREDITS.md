@@ -160,7 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
-  - New map actions in the 19000 range that are copies of the original actions but using ID entries instead of indexes
+  - New map actions in the 19000 range that are copies of the original actions but with ID entries instead of indexes
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
