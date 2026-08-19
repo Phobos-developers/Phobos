@@ -1,7 +1,6 @@
 #include "SaveVariablesToFile.h"
 
 #include <Ext/Scenario/Body.h>
-#include <HouseClass.h>
 
 const char* SaveVariablesToFileCommandClass::GetName() const
 {
