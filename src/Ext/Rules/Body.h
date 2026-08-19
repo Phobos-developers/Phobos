@@ -291,6 +291,7 @@ public:
 		Valueable<double> VeteranReload;
 		Nullable<double> VeteranEmptyReload;
 		Valueable<bool> VeteranRange;
+		Valueable<bool> VeteranCritChance;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
@@ -781,6 +782,7 @@ public:
 			, VeteranReload { 1.0 }
 			, VeteranEmptyReload {}
 			, VeteranRange { 1.0 }
+			, VeteranCritChance { 1.0 }
 			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }

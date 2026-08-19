@@ -18,7 +18,8 @@ namespace
 		{ "RELOAD",       AdditionalAbility::Reload },
 		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
 		{ "RANGE",		  AdditionalAbility::Range },
-		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune }
+		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune },
+		{ "CRITCHANCE",	  AdditionalAbility::CritChance }
 	};
 
 	void ReadAdditionalAbilities(
@@ -1054,6 +1055,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
 	this->VeteranRange.Read(exINI, pSection, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, pSection, "VeteranCritChance");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -1691,6 +1693,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
 		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

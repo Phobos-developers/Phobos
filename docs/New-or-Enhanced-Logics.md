@@ -2801,9 +2801,18 @@ AffectsGround=true         ; boolean
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits. You can also add `CRITIMMUNE` to the TechnoTypes' `VeteranAbilities` and `EliteAbilities` to grant them immunity when promoting.
+  - You can add `CRITCHANCE` to `VeteranAbilities` and `EliteAbilities` to adjust the critical hit chance of this TechnoType.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranCritChance` will be applied to the range calculation. Values greater than `1.0` increase the chance, values smaller than `1.0` decrease it, and `1.0` (the default) leaves it unchanged.
+```
 
 In `rulesmd.ini`:
 ```ini
+[General]
+VeteranCritChance=1.0                      ; floating point value
+
 [CombatDamage]
 Crit.ApplyChancePerTarget=false            ; boolean
 Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
@@ -2830,6 +2839,9 @@ Crit.SuppressWhenIntercepted=              ; boolean, default to [CombatDamage] 
 
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
+
+[SOMETECHNO]                               ; TechnoType, with VeteranAbilities and/or EliteAbilities containing CRITCHANCE.
+VeteranCritChance=                         ; floating point value, multiplier, default to [General] -> VeteranCritChance
 ```
 
 ```{warning}

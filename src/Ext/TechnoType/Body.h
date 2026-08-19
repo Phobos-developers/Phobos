@@ -299,6 +299,7 @@ public:
 	Nullable<double> VeteranReload;
 	Nullable<double> VeteranEmptyReload;
 	Nullable<double> VeteranRange;
+	Nullable<double> VeteranCritChance;
 
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
@@ -701,6 +702,7 @@ public:
 		, VeteranReload {}
 		, VeteranEmptyReload {}
 		, VeteranRange {}
+		, VeteranCritChance {}
 
 		, Wake { }
 		, Wake_Grapple { }

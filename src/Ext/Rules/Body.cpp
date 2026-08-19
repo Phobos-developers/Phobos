@@ -358,6 +358,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
 	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
@@ -915,6 +916,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
 		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
