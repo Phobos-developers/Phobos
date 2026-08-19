@@ -1,13 +1,12 @@
+#include "Constructs.h"
 #include "GeneralUtils.h"
 #include "Debug.h"
 #include <Theater.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
-#include <Utilities/Constructs.h>
 #include "AresHelper.h"
 
 bool GeneralUtils::IsValidString(const char* str)
@@ -86,19 +85,16 @@ struct DummyTypeExtHere
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType)
 {
-	if (!AresHelper::CanUseAres)
-		return pWH->Verses[static_cast<int>(armorType)];
+	if (AresHelper::CanUseAres)
+		return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
 
-	return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
+	return static_cast<double>(MapClass::GetTotalDamage(100, pWH, armorType, 0)) / 100.0;
 }
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
 {
-	if (!pType)
-		pType = pThis->GetTechnoType();
-
 	auto armorType = pType->Armor;
-	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+	auto const pShield = TechnoExt::Fetch(pThis)->Shield.get();
 
 	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
 		armorType = pShield->GetArmorType(pType);
@@ -203,14 +199,22 @@ int GeneralUtils::CountDigitsInNumber(int number)
 	return digits;
 }
 
-// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
-CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+// Calculates direction between two coordinates.
+DirStruct GeneralUtils::GetDirectionBetweenCoords(const CoordStruct& currentCoords, const CoordStruct& targetCoords)
 {
-	const int deltaX = currentCoords.X - targetCoords.X;
-	const int deltaY = targetCoords.Y - currentCoords.Y;
-
+	const int deltaX = targetCoords.X - currentCoords.X;
+	const int deltaY = currentCoords.Y - targetCoords.Y;
 	const double atan = Math::atan2(deltaY, deltaX);
 	const double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	DirStruct dir {};
+	dir.SetRadian<65536>(radians);
+	return dir;
+}
+
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(const CoordStruct& currentCoords, const CoordStruct& targetCoords, int distance)
+{
+	const double radians = GeneralUtils::GetDirectionBetweenCoords(currentCoords, targetCoords).GetRadian<65536>() + Math::Pi;
 	const int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
 	const int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
 
@@ -286,13 +290,18 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	const int green = color.G;
 	const int blue = color.B;
 
-	if (Drawing::ColorMode == RGBMode::RGB565)
-		colorValue |= blue | (32 * (green | (red << 6)));
-
-	if (Drawing::ColorMode != RGBMode::RGB655)
-		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
-
-	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+	switch (Drawing::ColorMode)
+	{
+	case RGBMode::RGB565:
+		colorValue |= (red << 6 | green) << 5 | blue;
+		break;
+	case RGBMode::RGB556:
+		colorValue |= (red << 5 | green >> 1) << 6 | blue;
+		break;
+	default:
+		colorValue |= (red << 5 | green >> 1) << 5 | blue;
+		break;
+	}
 
 	return colorValue;
 }
