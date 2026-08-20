@@ -71,7 +71,7 @@ namespace WhatActionObjectTemp
 
 DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 {
-	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, CanBomb = 0x51E48F };
+	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, GoToAres = 0x51E488 };
 
 	GET(InfantryClass*, pThis, EDI);
 	GET(ObjectClass*, pTarget, ESI);
@@ -92,7 +92,7 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 		const int index = pThis->SelectWeapon(pTarget);
 		const auto pWeaponType = pThis->GetWeapon(index)->WeaponType;
 
-		return pWeaponType && pWeaponType->Warhead->BombDisarm ? CanBomb : SkipBomb;
+		return pWeaponType && pWeaponType->Warhead->BombDisarm ? GoToAres : SkipBomb;
 	}
 
 	return SkipBomb;

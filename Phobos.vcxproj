@@ -21,6 +21,7 @@
   <!-- Compiled files -->
   <ItemGroup>
     <!-- src/ -->
+    <ClCompile Include="src\Ext\TeamType\Hooks.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />

@@ -1206,6 +1206,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
+	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
 
 	if (pThis->Gunner)
 	{
@@ -1804,6 +1805,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->JumpjetClimbIgnoreBuilding)
 
 		.Process(this->Unsellable)
+		.Process(this->KeepAlive)
 
 		.Process(this->ExtraThreat_Enabled)
 		.Process(this->ExtraThreat_IsThreat)
