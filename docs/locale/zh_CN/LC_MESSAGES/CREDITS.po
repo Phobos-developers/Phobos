@@ -1375,6 +1375,7 @@ msgstr ""
 
 msgid "Customized transport plane for teams"
 msgstr ""
+"为作战小队自定义运输机"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

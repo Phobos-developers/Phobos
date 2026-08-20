@@ -838,8 +838,9 @@ msgstr "0.6"
 msgid "New:"
 msgstr "新增内容："
 
-msgid "Customized transport plane for teams (by FlyStar)"
+msgid "[Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)"
 msgstr ""
+"[为作战小队自定义运输机](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams)（FlyStar）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
