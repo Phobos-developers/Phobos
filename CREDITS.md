@@ -442,6 +442,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
+  - Ares' `KeepAlive` adds global tags
   - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
