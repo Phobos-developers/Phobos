@@ -526,6 +526,16 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 
 void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
 {
+	if (this->InApplyCrit)
+		return;
+
+	struct InApplyCritGuard
+	{
+		WarheadTypeExt* P;
+		InApplyCritGuard(WarheadTypeExt* p) : P(p) { P->InApplyCrit = true; }
+		~InApplyCritGuard() { P->InApplyCrit = false; }
+	} guard(this);
+
 	const double dice = this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget)
 		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
