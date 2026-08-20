@@ -198,15 +198,22 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 		switch (rtti)
 		{
 		case AbstractType::Infantry:
+		{
 			keepAlive = RulesExt::Global()->KeepAlive_Infantry;
 			break;
+		}
 		case AbstractType::Unit:
+		{
 			keepAlive = RulesExt::Global()->KeepAlive_Units;
 			break;
+		}
 		case AbstractType::Aircraft:
+		{
 			keepAlive = RulesExt::Global()->KeepAlive_Aircraft;
 			break;
+		}
 		case AbstractType::Building:
+		{
 			auto const pBuildingType = static_cast<BuildingTypeClass*>(pType);
 
 			if (pBuildingType->BuildCat == BuildCat::Combat)
@@ -215,8 +222,11 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 				keepAlive = RulesExt::Global()->KeepAlive_Buildings;
 
 			break;
+		}
 		default:
+		{
 			break;
+		}
 		}
 
 		result = true;
