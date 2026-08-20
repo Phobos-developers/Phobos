@@ -190,23 +190,30 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 {
 	bool keepAlive = false;
 	bool result = false;
-	auto const pType = pTechno->GetTechnoType();
+	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
 
 	if (!pType->Insignificant && !pType->DontScore)
 	{
 		switch (rtti)
 		{
 		case AbstractType::Infantry:
-			keepAlive = RulesExt::Global()->KeepAlive_SupportInfantrys;
+			keepAlive = RulesExt::Global()->KeepAlive_Infantry;
 			break;
 		case AbstractType::Unit:
-			keepAlive = RulesExt::Global()->KeepAlive_SupportVehicles;
+			keepAlive = RulesExt::Global()->KeepAlive_Units;
 			break;
 		case AbstractType::Aircraft:
-			keepAlive = RulesExt::Global()->KeepAlive_SupportAircrafts;
+			keepAlive = RulesExt::Global()->KeepAlive_Aircraft;
 			break;
 		case AbstractType::Building:
-			keepAlive = RulesExt::Global()->KeepAlive_SupportBuildings;
+			auto const pBuildingType = static_cast<BuildingTypeClass*>(pType);
+
+			if (pBuildingType->BuildCat == BuildCat::Combat)
+				keepAlive = RulesExt::Global()->KeepAlive_Defenses;
+			else
+				keepAlive = RulesExt::Global()->KeepAlive_Buildings;
+
 			break;
 		default:
 			break;
@@ -214,8 +221,6 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 
 		result = true;
 	}
-
-	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	if (pTypeExt->KeepAlive.Get(keepAlive))
 	{

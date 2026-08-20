@@ -541,11 +541,12 @@ Unless otherwise specified, after removing the last dot and everything before it
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false            ; boolean
-KeepAlive.SupportInfantrys=false    ; boolean
-KeepAlive.SupportVehicles=false     ; boolean
-KeepAlive.SupportAircrafts=false    ; boolean
-KeepAlive.SupportBuildings=true    ; boolean
+DefaultToGuardArea=false      ; boolean
+KeepAlive.Buildings=true      ; boolean
+KeepAlive.Defenses=true       ; boolean
+KeepAlive.Infantry=false      ; boolean
+KeepAlive.Units=false         ; boolean
+KeepAlive.Aircraft=false      ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean

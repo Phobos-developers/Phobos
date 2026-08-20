@@ -535,10 +535,11 @@ public:
 
 		Valueable<bool> Warhead_PreventScatter;
 		
-		Valueable<bool> KeepAlive_SupportInfantrys;
-		Valueable<bool> KeepAlive_SupportVehicles;
-		Valueable<bool> KeepAlive_SupportAircrafts;
-		Valueable<bool> KeepAlive_SupportBuildings;
+		Valueable<bool> KeepAlive_Infantry;
+		Valueable<bool> KeepAlive_Units;
+		Valueable<bool> KeepAlive_Aircraft;
+		Valueable<bool> KeepAlive_Buildings;
+		Valueable<bool> KeepAlive_Defenses;
 
 		Valueable<bool> ProjectileRange_ApplyModifiers;
 
@@ -1015,10 +1016,11 @@ public:
 
 			, ProjectileRange_ApplyModifiers { true }
 
-			, KeepAlive_SupportInfantrys { false }
-			, KeepAlive_SupportVehicles { false }
-			, KeepAlive_SupportAircrafts { false }
-			, KeepAlive_SupportBuildings { true }
+			, KeepAlive_Infantry { false }
+			, KeepAlive_Units { false }
+			, KeepAlive_Aircraft { false }
+			, KeepAlive_Buildings { true }
+			, KeepAlive_Defenses { true }
 		{ }
 
 		virtual ~ExtData() = default;

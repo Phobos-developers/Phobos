@@ -611,10 +611,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
 	
-	this->KeepAlive_SupportInfantrys.Read(exINI, GameStrings::General, "KeepAlive.SupportInfantrys");
-	this->KeepAlive_SupportVehicles.Read(exINI, GameStrings::General, "KeepAlive.SupportVehicles");
-	this->KeepAlive_SupportAircrafts.Read(exINI, GameStrings::General, "KeepAlive.SupportAircrafts");
-	this->KeepAlive_SupportBuildings.Read(exINI, GameStrings::General, "KeepAlive.SupportBuildings");
+	this->KeepAlive_Infantry.Read(exINI, GameStrings::General, "KeepAlive.Infantry");
+	this->KeepAlive_Units.Read(exINI, GameStrings::General, "KeepAlive.Units");
+	this->KeepAlive_Aircraft.Read(exINI, GameStrings::General, "KeepAlive.Aircraft");
+	this->KeepAlive_Buildings.Read(exINI, GameStrings::General, "KeepAlive.Buildings");
+	this->KeepAlive_Defenses.Read(exINI, GameStrings::General, "KeepAlive.Defenses");
 
 	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
 
@@ -1095,10 +1096,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReadyToNextMission_MovingCheck)
 		.Process(this->Warhead_PreventScatter)
 		.Process(this->ProjectileRange_ApplyModifiers)
-		.Process(this->KeepAlive_SupportInfantrys)
-		.Process(this->KeepAlive_SupportVehicles)
-		.Process(this->KeepAlive_SupportAircrafts)
-		.Process(this->KeepAlive_SupportBuildings)
+		.Process(this->KeepAlive_Infantry)
+		.Process(this->KeepAlive_Units)
+		.Process(this->KeepAlive_Aircraft)
+		.Process(this->KeepAlive_Buildings)
+		.Process(this->KeepAlive_Defenses)
     ;
 }
 
