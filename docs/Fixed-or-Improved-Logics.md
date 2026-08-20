@@ -386,6 +386,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
+- Ares' `KeepAlive` adds global tags.
 
 ## Newly added global settings
 
@@ -541,6 +542,11 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DefaultToGuardArea=false      ; boolean
+KeepAlive.Buildings=true      ; boolean
+KeepAlive.Defenses=true       ; boolean
+KeepAlive.Infantry=false      ; boolean
+KeepAlive.Units=false         ; boolean
+KeepAlive.Aircraft=false      ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean
