@@ -1276,16 +1276,56 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
-DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
-DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+namespace
 {
-	GET(RulesClass*, pRules, EDI);
-	GET(CCINIClass*, pINI, ESI);
+	template <typename T>
+	void ReadSpecialWeaponType(T& value, INI_EX& parser, CCINIClass* pINI, const char* pKey)
+	{
+		using base_type = std::remove_pointer_t<T>;
 
-	pRules->LoadTypesFromINI(pINI);
+		if (!parser.ReadString("SpecialWeapons", pKey))
+			return;
 
-	return 0;
+		auto pValue = parser.value();
+		if (INIClass::IsBlank(pValue))
+		{
+			value = nullptr;
+			return;
+		}
+
+		if (auto pType = base_type::Find(pValue))
+		{
+			value = pType;
+			return;
+		}
+
+		if (auto pType = GameCreate<base_type>(pValue))
+		{
+			pType->LoadFromINI(pINI);
+			value = pType;
+			return;
+		}
+
+		Debug::INIParseFailed("SpecialWeapons", pKey, pValue);
+	}
+}
+
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_HOOK(0x668FDB, RulesClass_Read_SpecialWeapons, 0x6)
+{
+	GET(RulesClass*, pRules, ESI);
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	ReadSpecialWeaponType(pRules->NukeWarhead, exINI, pINI, "NukeWarhead");
+	ReadSpecialWeaponType(pRules->NukeProjectile, exINI, pINI, "NukeProjectile");
+	ReadSpecialWeaponType(pRules->NukeDown, exINI, pINI, "NukeDown");
+	ReadSpecialWeaponType(pRules->MutateWarhead, exINI, pINI, "MutateWarhead");
+	ReadSpecialWeaponType(pRules->MutateExplosionWarhead, exINI, pINI, "MutateExplosionWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseWarhead, exINI, pINI, "EMPulseWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseProjectile, exINI, pINI, "EMPulseProjectile");
+
+	return 0x6691B7;
 }
 
 // skip vanilla JumpjetControls and make it earlier load
