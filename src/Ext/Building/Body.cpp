@@ -483,7 +483,6 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentEMPulseSW)
 		.Process(this->RandomEMPTarget)
 		.Process(this->EMPulseBurstIndex)
-		.Process(this->EMPulseBurst)
 		;
 }
 

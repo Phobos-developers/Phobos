@@ -168,7 +168,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	}
 
 	// Only clean up on the last burst shot
-	if (pExt->EMPulseBurstIndex + 1 >= pExt->EMPulseBurst)
+	if (pExt->EMPulseBurstIndex + 1 >= pSWExt->EMPulse_Burst)
 	{
 		if (pSWExt->EMPulse_SuspendOthers)
 		{

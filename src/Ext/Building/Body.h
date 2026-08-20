@@ -40,7 +40,6 @@ public:
 		SuperClass* CurrentEMPulseSW;
 		CellStruct RandomEMPTarget;
 		int EMPulseBurstIndex;
-		int EMPulseBurst;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -57,7 +56,6 @@ public:
 			, CurrentEMPulseSW {}
 			, RandomEMPTarget { CellStruct::Empty }
 			, EMPulseBurstIndex { 0 }
-			, EMPulseBurst { 0 }
 		{ }
 
 		void DisplayIncomeString();

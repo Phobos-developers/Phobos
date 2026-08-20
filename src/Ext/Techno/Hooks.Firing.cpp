@@ -1081,11 +1081,12 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 
 	// Obtain the weapon used by the EMP weapon
 	int weaponIndex = 0;
+	int totalBurst = 1;
 
 	if (pExt->CurrentEMPulseSW)
 	{
 		const auto pSWExt = SWTypeExt::ExtMap.Find(pExt->CurrentEMPulseSW->Type);
-		pExt->EMPulseBurst = pSWExt->EMPulse_Burst;
+		totalBurst = pSWExt->EMPulse_Burst;
 
 		if (pSWExt->EMPulse_WeaponIndex >= 0)
 		{
@@ -1135,14 +1136,13 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 	// Increment burst index and restart if there are burst shots remaining
 	pExt->EMPulseBurstIndex++;
 
-	if (pExt->EMPulseBurstIndex < pExt->EMPulseBurst)
+	if (pExt->EMPulseBurstIndex < totalBurst)
 	{
 		pThis->MissionStatus = 0;
 	}
 	else
 	{
 		pExt->EMPulseBurstIndex = 0;
-		pExt->EMPulseBurst = 0;
 	}
 
 	return 0;
