@@ -534,6 +534,12 @@ public:
 		Valueable<bool> NoAlphaImageOnBuildup;
 
 		Valueable<bool> Warhead_PreventScatter;
+		
+		Valueable<bool> KeepAlive_Infantry;
+		Valueable<bool> KeepAlive_Units;
+		Valueable<bool> KeepAlive_Aircraft;
+		Valueable<bool> KeepAlive_Buildings;
+		Valueable<bool> KeepAlive_Defenses;
 
 		Valueable<bool> ProjectileRange_ApplyModifiers;
 
@@ -1009,6 +1015,12 @@ public:
 			, Warhead_PreventScatter { false }
 
 			, ProjectileRange_ApplyModifiers { true }
+
+			, KeepAlive_Infantry { false }
+			, KeepAlive_Units { false }
+			, KeepAlive_Aircraft { false }
+			, KeepAlive_Buildings { true }
+			, KeepAlive_Defenses { true }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -419,6 +419,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- Customized transport plane for teams (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 
 #### Vanilla fixes:
@@ -429,6 +430,7 @@ HideShakeEffects=false           ; boolean
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
+- Ares' `KeepAlive` adds global tags (by FlyStar)
 
 ```
 
