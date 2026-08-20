@@ -2005,7 +2005,7 @@ AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.PlayerPowerStatus=none               ; Player Power Enumeration (none|low/consumer|normal)
+AutoDeath.PlayerPowerState=none                ; Player Power Enumeration (none|low/consumer|full)
 AutoDeath.PlayerMoneyLessThan=-1               ; integer
 AutoDeath.PlayerMoneyMoreThan=-1               ; integer
 ```
