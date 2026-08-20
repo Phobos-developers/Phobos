@@ -39,6 +39,8 @@ public:
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 		SuperClass* CurrentEMPulseSW;
 		CellStruct RandomEMPTarget;
+		int EMPulseBurstIndex;
+		int EMPulseBurst;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -54,6 +56,8 @@ public:
 			, PoweredUpToLevel { 0 }
 			, CurrentEMPulseSW {}
 			, RandomEMPTarget { CellStruct::Empty }
+			, EMPulseBurstIndex { 0 }
+			, EMPulseBurst { 0 }
 		{ }
 
 		void DisplayIncomeString();

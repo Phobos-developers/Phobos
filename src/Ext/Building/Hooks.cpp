@@ -167,27 +167,31 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 		}
 	}
 
-	if (pSWExt->EMPulse_SuspendOthers)
+	// Only clean up on the last burst shot
+	if (pExt->EMPulseBurstIndex + 1 >= pExt->EMPulseBurst)
 	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pOwner);
-		const int index = pExt->CurrentEMPulseSW->Type->ArrayIndex;
-
-		if (pHouseExt->SuspendedEMPulseSWs.count(index))
+		if (pSWExt->EMPulse_SuspendOthers)
 		{
-			auto& supers = pOwner->Supers;
+			auto const pHouseExt = HouseExt::ExtMap.Find(pOwner);
+			const int index = pExt->CurrentEMPulseSW->Type->ArrayIndex;
 
-			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[index])
+			if (pHouseExt->SuspendedEMPulseSWs.count(index))
 			{
-				auto const super = supers[swidx];
-				super->IsSuspended = false;
+				auto& supers = pOwner->Supers;
+
+				for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[index])
+				{
+					auto const super = supers[swidx];
+					super->IsSuspended = false;
+				}
+
+				pHouseExt->SuspendedEMPulseSWs[index].clear();
+				pHouseExt->SuspendedEMPulseSWs.erase(index);
 			}
-
-			pHouseExt->SuspendedEMPulseSWs[index].clear();
-			pHouseExt->SuspendedEMPulseSWs.erase(index);
 		}
-	}
 
-	pExt->CurrentEMPulseSW = nullptr;
+		pExt->CurrentEMPulseSW = nullptr;
+	}
 	EMPulseCannonTemp::weaponIndex = weaponIndex;
 	R->EAX(pThis->GetWeapon(weaponIndex));
 	return SkipGameCode;

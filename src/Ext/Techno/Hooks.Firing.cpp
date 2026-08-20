@@ -1057,6 +1057,22 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 	if (!pThis->Type->EMPulseCannon)
 		return 0;
 
+	const auto pExt = BuildingExt::ExtMap.Find(pThis);
+
+	// Pause firing sequence if the structure is unpowered or offline
+	const bool isOffline = !pThis->IsPowerOnline()
+		|| !pThis->StuffEnabled
+		|| pThis->Deactivated
+		|| pThis->IsUnderEMP()
+		|| pExt->TechnoExtData->AE.DisableWeapons;
+
+	if (isOffline)
+	{
+		pThis->MissionStatus = 0;
+		// Return to game loop to wait without advancing state
+		return 0;
+	}
+
 	HouseClass* pHouse = pThis->Owner;
 	const auto pCell = MapClass::Instance.TryGetCellAt(pHouse->EMPTarget);
 
@@ -1065,11 +1081,11 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 
 	// Obtain the weapon used by the EMP weapon
 	int weaponIndex = 0;
-	const auto pExt = BuildingExt::ExtMap.Find(pThis);
 
 	if (pExt->CurrentEMPulseSW)
 	{
 		const auto pSWExt = SWTypeExt::ExtMap.Find(pExt->CurrentEMPulseSW->Type);
+		pExt->EMPulseBurst = pSWExt->EMPulse_Burst;
 
 		if (pSWExt->EMPulse_WeaponIndex >= 0)
 		{
@@ -1088,7 +1104,7 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 
 	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	// Innacurate random strike Area calculation
+	// Inaccurate random strike area calculation
 	int radius = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->EMPulseCannon_InaccurateRadius;
 	radius = radius < 0 ? 0 : radius;
 
@@ -1096,16 +1112,19 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 	{
 		if (pExt->RandomEMPTarget == CellStruct::Empty)
 		{
-			// Calculate a new valid random target coordinate
-			do
-			{
-				pExt->RandomEMPTarget.X = (short)ScenarioClass::Instance->Random.RandomRanged(pHouse->EMPTarget.X - radius, pHouse->EMPTarget.X + radius);
-				pExt->RandomEMPTarget.Y = (short)ScenarioClass::Instance->Random.RandomRanged(pHouse->EMPTarget.Y - radius, pHouse->EMPTarget.Y + radius);
-			}
-			while (!MapClass::Instance.IsWithinUsableArea(pExt->RandomEMPTarget, false));
+			CoordStruct targetCoords = CellClass::Cell2Coord(pHouse->EMPTarget);
+			int maxDistanceLeptons = radius * Unsorted::LeptonsPerCell;
+			int distanceLeptons = ScenarioClass::Instance->Random.RandomRanged(0, maxDistanceLeptons);
+			CoordStruct randomCoords = MapClass::GetRandomCoordsNear(targetCoords, distanceLeptons, false);
+			CellStruct randomCell = CellClass::Coord2Cell(randomCoords);
+
+			if (MapClass::Instance.IsWithinUsableArea(randomCell, false))
+				pExt->RandomEMPTarget = randomCell;
+			else
+				pExt->RandomEMPTarget = pHouse->EMPTarget;
 		}
 
-		pHouse->EMPTarget = pExt->RandomEMPTarget; // Value overwrited every frame
+		pHouse->EMPTarget = pExt->RandomEMPTarget; // Value overwritten every frame
 	}
 
 	if (pThis->MissionStatus != 3)
@@ -1113,24 +1132,17 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 
 	pExt->RandomEMPTarget = CellStruct::Empty;
 
-	// Restart the super weapon firing process if there is enough ammo set for the current weapon
-	if (pThis->Type->Ammo > 0 && pThis->Ammo > 0)
+	// Increment burst index and restart if there are burst shots remaining
+	pExt->EMPulseBurstIndex++;
+
+	if (pExt->EMPulseBurstIndex < pExt->EMPulseBurst)
 	{
-		const int ammo = WeaponTypeExt::ExtMap.Find(pWeapon)->Ammo.Get(1);
-
-		for (int i = 0; i < ammo; i++)
-		{
-			pThis->DecreaseAmmo(); // Use vanilla's ammo handler
-		}
-
-		if (pThis->Ammo >= ammo)
-			pThis->MissionStatus = 0;
-
-		if (!pThis->ReloadTimer.InProgress())
-			pThis->ReloadTimer.Start(pThis->Type->Reload);
-
-		if (pThis->Ammo == 0 && pThis->Type->EmptyReload >= 0 && pThis->ReloadTimer.GetTimeLeft() > pThis->Type->EmptyReload)
-			pThis->ReloadTimer.Start(pThis->Type->EmptyReload);
+		pThis->MissionStatus = 0;
+	}
+	else
+	{
+		pExt->EMPulseBurstIndex = 0;
+		pExt->EMPulseBurst = 0;
 	}
 
 	return 0;
