@@ -170,7 +170,7 @@ static CellStruct* __fastcall ParadropPickCellOnEdge(MapClass* pThis, void* _, C
 	return &buffer;
 }
 
-static bool __fastcall ParaDropAircraftUnlimbo(AircraftClass* pThis, void* _, const CoordStruct& coords, DirType direction)
+static bool __fastcall ParadropPlaneUnlimbo(AircraftClass* pThis, void* _, const CoordStruct& coords, DirType direction)
 {
 	return AircraftExt::PlaceReinforcementAircraft(pThis, coords);
 }
@@ -299,7 +299,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x74242, &ParadropPickCellOnEdge);
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x742AC, &ParaDropAircraftUnlimbo);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x742AC, &ParadropPlaneUnlimbo);
 
 	// Replace Ares factory update logic with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x13FA7, &BuildingExt::UpdateFactoryQueues);
@@ -417,7 +417,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x752F2, &ParadropPickCellOnEdge);
 
 	// Replace Ares paradrop plane Unlimbo call with our wrapper.
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x7535C, &ParaDropAircraftUnlimbo);
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x7535C, &ParadropPlaneUnlimbo);
 
 	// Replace Ares factory update logic with our wrapper.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x14537, &BuildingExt::UpdateFactoryQueues);
