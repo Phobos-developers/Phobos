@@ -1500,13 +1500,11 @@ msgid ""
 "garrisonable buildings."
 msgstr "修复了 AI 常规索敌也会瞄准可驻军建筑的问题。"
 
-#, fuzzy
 msgid ""
 "Fixed the issue that the move mission of the jumpjet does not end "
 "correctly."
 msgstr ""
-"修复了移动任务无法在单位正在移动时结束的问题，它在 Jumpjet 和 Hover 单位上尤其突出。可通过将 `[General] -> "
-"ReadyToNextMission.MovingCheck` 设为 true 以禁用修复。"
+"修复了 Jumpjet 单位的移动任务无法正确结束的问题。"
 
 msgid ""
 "AI team garrison scripts now re-evaluate destination immediately instead "
@@ -1518,13 +1516,12 @@ msgid ""
 "techno lose 1 health."
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug。"
 
-#, fuzzy
 msgid ""
 "Fixed the issue that techno must end its movement before starting the "
 "next mission, which is mostly problematic for jumpjet and hover techno. "
 "Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the "
 "fix."
-msgstr "修复了 Jumpjet 单位在开始下一个任务前必须先停止移动的问题。"
+msgstr "修复了单位在开始下一个任务前必须先停止移动的问题。它在 Jumpjet 和 Hover 单位上尤其突出。可通过将 `[General] -> ReadyToNextMission.MovingCheck` 设为 true 以禁用修复。"
 
 msgid ""
 "Fixed an issue where parachute units would die upon landing if bridges "
