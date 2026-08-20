@@ -806,7 +806,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
-	this->AutoDeath_PlayerPowerStatus.Read(exINI, pSection, "AutoDeath.PlayerPowerStatus");
+	this->AutoDeath_PlayerPowerState.Read(exINI, pSection, "AutoDeath.PlayerPowerState");
 	this->AutoDeath_PlayerMoney_Max.Read(exINI, pSection, "AutoDeath.PlayerMoney.Max");
 	this->AutoDeath_PlayerMoney_Min.Read(exINI, pSection, "AutoDeath.PlayerMoney.Min");
 
@@ -1574,7 +1574,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
-		.Process(this->AutoDeath_PlayerPowerStatus)
+		.Process(this->AutoDeath_PlayerPowerState)
 		.Process(this->AutoDeath_PlayerMoney_Max)
 		.Process(this->AutoDeath_PlayerMoney_Min)
 

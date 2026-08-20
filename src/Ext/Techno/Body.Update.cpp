@@ -332,13 +332,13 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
-	if (pTypeExt->AutoDeath_PlayerPowerStatus != PlayerPowerStatus::None)
+	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
 	{
 		const bool isLowPower = pOwner->HasLowPower();
-		const auto status = pTypeExt->AutoDeath_PlayerPowerStatus;
+		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
 		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
 
-		if ((status == PlayerPowerStatus::Normal && !isLowPower) || (status == PlayerPowerStatus::Low && isLowPower) && !isFirstFrame)
+		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;

@@ -1627,16 +1627,16 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
-	inline bool read<PlayerPowerStatus>(PlayerPowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
+	inline bool read<PowerStatus>(PowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			static const std::pair<const char*, PlayerPowerStatus> Names[] =
+			static const std::pair<const char*, PowerStatus> Names[] =
 			{
-				{"none", PlayerPowerStatus::None},
-				{"consumer", PlayerPowerStatus::Low},
-				{"low", PlayerPowerStatus::Low},
-				{"normal", PlayerPowerStatus::Normal},
+				{"none", PowerStatus::None},
+				{"consumer", PowerStatus::Low},
+				{"low", PowerStatus::Low},
+				{"full", PowerStatus::Full},
 			};
 
 			for (auto const& [name, val] : Names)
@@ -1648,7 +1648,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				}
 			}
 
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerStatus (none, normal, low|consumer");
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerState (none, full, low|consumer");
 		}
 		return false;
 	}

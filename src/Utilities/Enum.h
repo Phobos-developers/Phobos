@@ -188,10 +188,10 @@ enum class AutoDeathBehavior
 	Sell = 2,     // buildings only
 };
 
-enum class PlayerPowerStatus
+enum class PowerStatus
 {
 	None = 0,
-	Normal = 1,   // not low power
+	Full = 1,   // not low power
 	Low = 2, // low power
 };
 
