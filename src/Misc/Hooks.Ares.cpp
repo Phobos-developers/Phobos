@@ -190,8 +190,7 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 {
 	bool keepAlive = false;
 	bool result = false;
-	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
-	auto const pType = pTypeExt->OwnerObject();
+	auto const pType = pTechno->GetTechnoType(); // can't use TypeExtData since it's not initialized here
 
 	if (!pType->Insignificant && !pType->DontScore)
 	{
@@ -232,7 +231,7 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 		result = true;
 	}
 
-	if (pTypeExt->KeepAlive.Get(keepAlive))
+	if (TechnoTypeExt::Fetch(pType)->KeepAlive.Get(keepAlive))
 	{
 		const int number = add ? 1 : -1;
 		pExt_Ares->KeepAliveTechnos += number;
