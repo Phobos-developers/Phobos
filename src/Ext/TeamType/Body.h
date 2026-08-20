@@ -23,11 +23,11 @@ public:
 	}
 
 	Nullable<int> SetRecruitableOnLiberate;
-	Valueable<AircraftTypeClass*> ParaDropPlane;
+	Valueable<AircraftTypeClass*> ParaDropAircraft;
 
 	TeamTypeExt(TeamTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, SetRecruitableOnLiberate {}
-		, ParaDropPlane { nullptr }
+		, ParaDropAircraft { nullptr }
 	{ }
 
 	virtual ~TeamTypeExt() = default;

@@ -12,7 +12,7 @@ void TeamTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->SetRecruitableOnLiberate.Read(exINI, pSection, "SetRecruitableOnLiberate");
-	this->ParaDropPlane.Read(exINI, pSection, "ParaDropPlane");
+	this->ParaDropAircraft.Read(exINI, pSection, "ParaDropAircraft");
 }
 
 template <typename T>
@@ -20,7 +20,7 @@ void TeamTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->SetRecruitableOnLiberate)
-		.Process(this->ParaDropPlane)
+		.Process(this->ParaDropAircraft)
 		;
 }
 
