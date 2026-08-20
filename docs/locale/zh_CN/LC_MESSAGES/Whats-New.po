@@ -868,6 +868,7 @@ msgstr "允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工
 
 msgid "Ares' `KeepAlive` adds global tags (by FlyStar)"
 msgstr ""
+"为 Ares 的 `KeepAlive` 添加了全局语句（by FlyStar）"
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"

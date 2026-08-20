@@ -1982,6 +1982,7 @@ msgstr "允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工
 
 msgid "Ares' `KeepAlive` adds global tags."
 msgstr ""
+"为 Ares 的 `KeepAlive` 添加了全局语句。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
