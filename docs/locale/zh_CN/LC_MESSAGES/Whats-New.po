@@ -849,6 +849,7 @@ msgid ""
 "[Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) "
 "(by FS-21)"
 msgstr ""
+"[修改弹药弹头](New-or-Enhanced-Logics.md#modify-ammo-on-impact)（by FS-21）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
