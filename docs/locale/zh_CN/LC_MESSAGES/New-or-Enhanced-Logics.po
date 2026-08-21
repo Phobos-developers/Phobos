@@ -4507,8 +4507,8 @@ msgstr "`PlayerPowerState`：当对象所属方的电力状态符合设定条件
 msgid "`low` / `consumer`: Trigger when the owner is in low power."
 msgstr "`low` / `consumer`：当对象所属方处于电力不足状态时触发。"
 
-msgid "`full`: Trigger when the owner is not in low power."
-msgstr "`full`：当对象所属方未处于电力不足状态时触发。"
+msgid "`full` / `normal`: Trigger when the owner is not in low power."
+msgstr "`full` / `normal`：当对象所属方未处于电力不足状态时触发。"
 
 msgid "`PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits."
 msgstr "`PlayerMoney.Max` ／ `PlayerMoney.Min`：根据对象所属方的资金决定对象是否死亡。"

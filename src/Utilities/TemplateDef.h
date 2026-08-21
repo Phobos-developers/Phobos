@@ -1637,6 +1637,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				{"consumer", PowerStatus::Low},
 				{"low", PowerStatus::Low},
 				{"full", PowerStatus::Full},
+				{"normal", PowerStatus::Full},
 			};
 
 			for (auto const& [name, val] : Names)
