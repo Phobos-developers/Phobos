@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:17+0800\n"
+"POT-Creation-Date: 2026-08-21 08:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -478,6 +478,9 @@ msgstr "基于弹药量的自动变形"
 
 msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
 msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
+
+msgid "Modify ammo on impact"
+msgstr ""
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -1370,12 +1373,10 @@ msgid "SkipMapSelect Enhancement"
 msgstr "`SkipMapSelect` 增强"
 
 msgid "Ares' `KeepAlive` adds global tags"
-msgstr ""
-"为 Ares 的 `KeepAlive` 添加了全局语句"
+msgstr "为 Ares 的 `KeepAlive` 添加了全局语句"
 
 msgid "Customized transport plane for teams"
-msgstr ""
-"为作战小队自定义运输机"
+msgstr "为作战小队自定义运输机"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

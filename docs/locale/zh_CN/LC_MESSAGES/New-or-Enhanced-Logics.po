@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 04:17+0800\n"
+"POT-Creation-Date: 2026-08-21 08:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6245,6 +6245,19 @@ msgid ""
 "suitable for launch. **Please use with caution!**"
 msgstr "由于某些超级武器类型的特性并非所有超级武器都适合发射。**请慎用！**"
 
+msgid "Modify ammo on impact"
+msgstr ""
+
+msgid ""
+"When this warhead detonates, it increases the ammo of affected targets by"
+" the set amount; a negative value decreases it."
+msgstr ""
+
+msgid ""
+"This will not raise the ammo above the maximum defined by `[TechnoType] "
+"-> Ammo=`, nor below 0."
+msgstr ""
+
 msgid "Parasite removal"
 msgstr "移除寄生"
 
@@ -6541,6 +6554,9 @@ msgstr "[护盾修改](#shields)"
 
 msgid "[Modify attach-effects](#attached-effects)"
 msgstr "[AE 修改](#attached-effects)"
+
+msgid "[Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)"
+msgstr ""
 
 msgid ""
 "[Critical hits](#chance-based-extra-damage-or-warhead-detonation"

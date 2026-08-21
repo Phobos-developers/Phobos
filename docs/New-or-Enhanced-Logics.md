@@ -3058,6 +3058,20 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
 ```
 
+### Modify ammo on impact
+
+- When this warhead detonates, it increases the ammo of affected targets by the set amount; a negative value decreases it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; WarheadType
+Ammo=0          ; integer
+```
+
+```{note}
+This will not raise the ammo above the maximum defined by `[TechnoType] -> Ammo=`, nor below 0.
+```
+
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
@@ -3241,6 +3255,7 @@ Taunt=false      ; boolean
     - [`ReverseEngineer`](#reverse-engineer-warhead)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
+    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
       - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
 
