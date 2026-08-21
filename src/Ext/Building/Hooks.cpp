@@ -290,7 +290,14 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	GET(BuildingClass* const, pBld, ESI);
 
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
+	{
 		pExt->IsCreatedFromMapFile = true;
+
+		GET_STACK(bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
+
+		if (hasPower)
+			pExt->HasPowerFromMapFile = true;
+	}
 
 	return 0;
 }
