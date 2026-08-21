@@ -1356,12 +1356,12 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (abstract_cast<FootClass*>(pThis))
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		return 0;
 
 	const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
-	if (BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
+	if (pBuilding->Type->LaserFence || BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
 		return 0;
 
 	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));
