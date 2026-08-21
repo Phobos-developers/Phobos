@@ -590,7 +590,7 @@ void BuildingExt::Serialize(T& Stm)
 	Stm
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
-		.Process(this->HasPowerFromMapFile)
+		//.Process(this->HasPowerFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->GrindingWeapon_AccumulatedCredits)
