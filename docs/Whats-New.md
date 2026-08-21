@@ -420,6 +420,7 @@ HideShakeEffects=false           ; boolean
 
 #### New:
 - Customized transport plane for teams (by FlyStar)
+- [Extended Jumpjet Hovering](New-or-Enhanced-Logics.md#extended-jumpjet-hovering) (by TaranDahl)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

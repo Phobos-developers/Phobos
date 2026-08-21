@@ -6511,6 +6511,9 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
 
+msgid "[Extended Jumpjet Hovering](New-or-Enhanced-Logics.md#extended-jumpjet-hovering) (by TaranDahl)"
+msgstr "[扩展的 Jumpjet 悬浮](New-or-Enhanced-Logics.md#extended-jumpjet-hovering)（by TaranDahl）"
+
 #~ msgid "Migrating"
 #~ msgstr "迁移"
 

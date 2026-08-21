@@ -5404,6 +5404,18 @@ msgstr "载具类型默认幻影伪装"
 msgid "Vehicle can now have its `DefaultMirageDisguises` overridden per-type."
 msgstr "现在可以单独为每个载具类型设置其 `DefaultMirageDisguises`。"
 
+msgid "Extended Jumpjet Hovering"
+msgstr "扩展的 Jumpjet 悬浮"
+
+msgid "In vanilla, jumpjets scatter while hovering by randomly setting a destination to a nearby cell. This approach is inefficient when many jumpjets are crowded around, and it forces the unit to turn, which interferes with firing for non-omni-firing units."
+msgstr "在原版中，jumpjet 在悬浮时通过随机设置到周围单元格的目的地来实现分散。这种分散方式在周围有大量 jumpjet 时效率很低，并且会强制单位转向，这对不能全向开火的单位来说会影响开火。"
+
+msgid "Now you can enable a new hovering scatter behaviour via the following switch, which disperses units more efficiently and without requiring the unit to turn."
+msgstr "现在你可以通过以下开关启用一个新的悬浮时分散行为，它能以更高效的方式散开单位，并且无需单位转向。"
+
+msgid "`ExtendedJumpjetHovering` controls whether the new hovering scatter behaviour is enabled."
+msgstr "`ExtendedJumpjetHovering` 控制是否启用新的悬浮时分散行为。"
+
 msgid "Independent SHP Vehicle Turret Files"
 msgstr "独立的 Shape 载具炮塔文件"
 

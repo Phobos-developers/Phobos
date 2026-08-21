@@ -2586,6 +2586,18 @@ In `rulesmd.ini`:
 DefaultMirageDisguises=    ; List of TerrainTypes
 ```
 
+### Extended Jumpjet Hovering
+
+- In vanilla, jumpjets scatter while hovering by randomly setting a destination to a nearby cell. This approach is inefficient when many jumpjets are crowded around, and it forces the unit to turn, which interferes with firing for non-omni-firing units.
+- Now you can enable a new hovering scatter behaviour via the following switch, which disperses units more efficiently and without requiring the unit to turn.
+  - `ExtendedJumpjetHovering` controls whether the new hovering scatter behaviour is enabled.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]                ; global section
+ExtendedJumpjetHovering=false   ; boolean
+```
+
 ### Independent SHP Vehicle Turret Files
 
 - SHP turret vehicles support the use of `*tur.shp` files.
