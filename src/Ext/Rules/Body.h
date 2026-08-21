@@ -222,6 +222,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> ShowPowerPlantEnhancerRange;
+		Valueable<bool> ShowGameTime;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
@@ -738,6 +739,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, ShowPowerPlantEnhancerRange { true }
+			, ShowGameTime { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
