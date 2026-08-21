@@ -285,6 +285,7 @@ public:
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
 	bool Crit_Active;
+	bool InApplyCrit;
 	double ReturnWarhead_RandomBuffer;
 	bool InDamageArea;
 	bool WasDetonatedOnAllMapObjects;
@@ -522,6 +523,7 @@ public:
 		, Crit_RandomBuffer { 0.0 }
 		, Crit_CurrentChance { 0.0 }
 		, Crit_Active { false }
+		, InApplyCrit { false }
 		, ReturnWarhead_RandomBuffer { 0.0 }
 		, InDamageArea { true }
 		, WasDetonatedOnAllMapObjects { false }
