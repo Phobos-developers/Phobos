@@ -302,6 +302,16 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	return 0;
 }
 
+DEFINE_HOOK(0x44FDC5, CreateBuildingFromINIFile_AfterCTOR_AfterUnlimbo, 0xA)
+{
+	GET(BuildingClass* const, pBld, ESI);
+
+	if (auto const pExt = BuildingExt::TryFetch(pBld))
+		pExt->HasPowerFromMapFile = false;
+
+	return 0x44FDD3;
+}
+
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
@@ -986,7 +996,7 @@ DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change.
 	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
 	{
 		pThis->IsReadyToCommence = false;
