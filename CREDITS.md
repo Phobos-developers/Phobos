@@ -568,6 +568,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Crush level system
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

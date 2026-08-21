@@ -2495,6 +2495,9 @@ msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
 
+msgid "[Crush level system](Fixed-or-Improved-Logics.md#crush-level-system) (by NetsuNegi)"
+msgstr "[碾压等级系统](Fixed-or-Improved-Logics.md#crush-level-system)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

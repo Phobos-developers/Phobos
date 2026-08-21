@@ -345,6 +345,13 @@ public:
 		int TintColorForceShield;
 		int TintColorBerserk;
 
+		Valueable<int> CrusherLevel;
+		Valueable<int> CrushableLevel;
+		Valueable<int> OmniCrusherLevel;
+		Valueable<int> OmniCrushResistantLevel;
+		Nullable<int> BuildingCrushableLevel;
+		Valueable<int> WallCrushableLevel;
+    
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
@@ -830,6 +837,14 @@ public:
 
 			, Parasite_GrappleAnim {}
 			, Parasite_AllowWaterExit {}
+    
+			, CrusherLevel { 5 }
+			, CrushableLevel { 5 }
+			, OmniCrusherLevel { 10 }
+			, OmniCrushResistantLevel { 10 }
+			, BuildingCrushableLevel {}
+			, WallCrushableLevel { 10 }
+    
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
 

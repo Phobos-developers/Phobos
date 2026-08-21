@@ -405,7 +405,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CanTargetAI_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTargetAI.IronCurtained");
 	this->CanTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTarget.IronCurtained");
 	this->AutoTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "AutoTarget.IronCurtained");
-
+  
+	this->CrusherLevel.Read(exINI, GameStrings::General, "CrusherLevel");
+	this->CrushableLevel.Read(exINI, GameStrings::General, "CrushableLevel");
+	this->OmniCrusherLevel.Read(exINI, GameStrings::General, "OmniCrusherLevel");
+	this->OmniCrushResistantLevel.Read(exINI, GameStrings::General, "OmniCrushResistantLevel");
+	this->BuildingCrushableLevel.Read(exINI, GameStrings::General, "BuildingCrushableLevel");
+	
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
 	this->AdjacentWallDamage.Read(exINI, GameStrings::CombatDamage, "AdjacentWallDamage");
@@ -956,6 +962,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->Parasite_AllowWaterExit)
+		.Process(this->CrusherLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->OmniCrusherLevel)
+		.Process(this->OmniCrushResistantLevel)
+		.Process(this->BuildingCrushableLevel)
+		.Process(this->WallCrushableLevel)
 		.Process(this->InfantryAutoDeploy)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
@@ -1344,3 +1356,13 @@ DEFINE_HOOK(0x668FDB, RulesClass_Read_SpecialWeapons, 0x6)
 
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
+
+DEFINE_HOOK(0x66D242, RulesClass_ReadWallModel_CrushableLevel, 0x5)
+{
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	RulesExt::Global()->WallCrushableLevel.Read(exINI, "WallModel", "WallCrushableLevel");
+
+	return 0;
+}

@@ -1110,6 +1110,10 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_RecycleCoord.Read(exINI, pSection, "Spawner.RecycleCoord");
 	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
+	this->CrushLevel.Read(exINI, pSection, "CrushLevel.%s");
+	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel.%s");
+	this->DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel.%s");
+
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
 
@@ -1733,6 +1737,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Spawner_RecycleAnim)
 		.Process(this->Spawner_RecycleCoord)
 		.Process(this->Spawner_RecycleOnTurret)
+
+		.Process(this->CrushLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->DeployedCrushableLevel)
 
 		.Process(this->SuppressKillWeapons)
 		.Process(this->SuppressKillWeapons_Types)

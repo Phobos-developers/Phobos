@@ -357,6 +357,10 @@ public:
 
 	std::vector<LaserTrailDataEntry> LaserTrailData;
 
+	Promotable<int> CrushLevel;
+	Promotable<int> CrushableLevel;
+	Promotable<int> DeployedCrushableLevel;
+
 	Valueable<bool> SuppressKillWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
@@ -741,10 +745,14 @@ public:
 		, InitialSpawnsNumber { }
 		, Spawns_Queue { }
 
-		, Spawner_RecycleRange {}
+		, Spawner_RecycleRange { Leptons(-1) }
 		, Spawner_RecycleAnim { }
 		, Spawner_RecycleCoord { {0,0,0} }
-		, Spawner_RecycleOnTurret {}
+		, Spawner_RecycleOnTurret { false }
+
+		, CrushLevel { -1 }
+		, CrushableLevel { -1 }
+		, DeployedCrushableLevel { -1 }
 
 		, SuppressKillWeapons { false }
 		, SuppressKillWeapons_Types { }

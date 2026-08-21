@@ -2068,6 +2068,38 @@ FlyNoWobbles=  ; boolean
 FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
 ```
 
+### Crush level system
+
+- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the `CrushLevel` of the crusher is greater than the `CrushableLevel` of the crushed object.
+
+In `rulesmd.ini`:
+```ini
+[General]
+CrusherLevel=5                            ; integer
+CrushableLevel=5                          ; integer
+OmniCrusherLevel=10                       ; integer
+OmniCrushResistantLevel=10                ; integer
+BuildingCrushableLevel=                   ; integer
+
+[WallModel]
+WallCrushableLevel=10                     ; integer
+
+[SOMEVEHICLE]                             ; VehicleType, as the crusher
+CrushLevel=                               ; integer
+CrushLevel.Veteran=                       ; integer
+CrushLevel.Elite=                         ; integer
+
+[SOMETECHNO]                              ; TechnoType, as the crushed
+CrushableLevel=                           ; integer
+CrushableLevel.Veteran=                   ; integer
+CrushableLevel.Elite=                     ; integer
+
+[SOMEINFANTRY]                            ; InfantryType, as the crushed
+DeployedCrushableLevel=                   ; integer
+DeployedCrushableLevel.Veteran=           ; integer
+DeployedCrushableLevel.Elite=             ; integer
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
