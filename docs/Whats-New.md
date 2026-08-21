@@ -420,6 +420,7 @@ HideShakeEffects=false           ; boolean
 
 #### New:
 - Customized transport plane for teams (by FlyStar)
+- [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Extended Jumpjet Hovering](New-or-Enhanced-Logics.md#extended-jumpjet-hovering) (by TaranDahl)
 
 #### Vanilla fixes:
