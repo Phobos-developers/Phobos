@@ -19,7 +19,8 @@ This page describes all the engine features that are either new and introduced b
     - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
-    - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+    - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`. `DiscardOn.Firing.Count` determines the firing amount to discard the effect.
+    - `receiveddamage`: Discard when receiving damage. `DiscardOn.ReceivedDamage.Count` determines the received damage amount to discard the effect. `DiscardOn.ReceivedDamage.AffectsHouse` determines it can be discarded by which house's damage.
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
@@ -121,11 +122,14 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|firing|receiveddamage|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
 DiscardOn.Ammo.MinimumAmount=-1                    ; integer
 DiscardOn.Ammo.MaximumAmount=-1                    ; integer
 DiscardOn.Health.BelowPercent=-1                   ; floating point value
 DiscardOn.Health.AbovePercent=-1                   ; floating point value
+DiscardOn.Firing.Count=1                           ; integer
+DiscardOn.ReceivedDamage.Count=1                   ; integer
+DiscardOn.ReceivedDamage.AffectsHouse=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DiscardOn.Missions=                                ; List of MissionTypes
 DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
