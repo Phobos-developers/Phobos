@@ -4,10 +4,12 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
+#include <unordered_set>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -137,7 +139,27 @@ void TechnoExt::ApplyInterceptor()
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {
-	auto const pTypeExt = this->TypeExtData;
+	auto pTypeExt = this->TypeExtData;
+
+	// Type replacement that bypasses ConvertToType (e.g. Ares visceroid merge) leaves the
+	// cached type extension stale. Resync it once per object so AutoDeath (and other
+	// per-type state) is evaluated against the new type.
+	auto const pObj = this->OwnerObject();
+	auto const pObjType = pTypeExt->OwnerObject();
+	auto const pCurType = pObj->GetTechnoType();
+	if (pObjType && pCurType && pObjType != pCurType)
+	{
+		static std::unordered_set<const TechnoClass*> s_resynced;
+		if (s_resynced.insert(pObj).second)
+		{
+			if (auto const pFoot = abstract_cast<FootClass*, true>(pObj))
+			{
+				FootExt::Fetch(pFoot)->UpdateTypeData(pCurType);
+				ScenarioExt::Global()->RegisterAutoDeath(pObj);
+				pTypeExt = this->TypeExtData; // refreshed by UpdateTypeData
+			}
+		}
+	}
 
 	if (!pTypeExt->AutoDeath_Behavior.isset())
 		return false;

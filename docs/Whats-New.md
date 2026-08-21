@@ -427,6 +427,7 @@ HideShakeEffects=false           ; boolean
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
+- Fixed AutoDeath not triggering after type replacement that bypasses ConvertToType (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
