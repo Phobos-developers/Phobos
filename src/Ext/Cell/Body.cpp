@@ -1,6 +1,13 @@
 #include "Body.h"
 
+#include <algorithm>
 #include <memory>
+#include <FootClass.h>
+#include <Ext/Techno/Body.h>
+#include <CellSpread.h>
+#include <MapClass.h>
+#include <Unsorted.h>
+#include <JumpjetLocomotionClass.h>
 
 CellExt::ExtContainer CellExt::ExtMap;
 
@@ -14,6 +21,8 @@ void CellExt::Serialize(T& Stm)
 		.Process(this->RadSites)
 		.Process(this->RadLevels)
 		.Process(this->InfantryCount)
+		.Process(this->InAirJumpjets)
+		.Process(this->Jumpjet_LastScatterAffectedFrame)
 		;
 }
 
@@ -95,6 +104,8 @@ void CellExt::ExtContainer::LoadInline(CellClass* pCell, IStream* pStm)
 	PhobosSwizzle::RegisterChange(oldPtr, pExt);
 
 	pExt->LoadFromStream(reader);
+
+	pExt->InAirJumpjets.erase(std::remove(pExt->InAirJumpjets.begin(), pExt->InAirJumpjets.end(), nullptr), pExt->InAirJumpjets.end());
 
 	if (!reader.ExpectEndOfBlock())
 		Debug::FatalErrorAndExit("LoadInline - cell extension block size mismatch!\n");
@@ -235,4 +246,186 @@ DEFINE_HOOK(0x566AB7, MapClass_SetMapDimensions_PostRestore, 0x6)
 
 	return 0;
 }
+// =============================
+// ExtendedJumpjetHovering
+
+static int GetJumpjetCollisionRange(FootClass* pFoot)
+{
+	return pFoot->WhatAmI() == AbstractType::Infantry ? 64 : 128;
+}
+
+static bool IsCloseEnoughToScatter(FootClass* p1, FootClass* p2)
+{
+	int minDist = GetJumpjetCollisionRange(p1) + GetJumpjetCollisionRange(p2);
+	CoordStruct c1 = p1->GetCoords();
+	c1.Z = 0;
+	CoordStruct c2 = p2->GetCoords();
+	c2.Z = 0;
+	return c1.DistanceFrom(c2) < minDist;
+}
+
+static inline bool IsJumpjet(FootClass* pFoot)
+{
+	return locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) != nullptr;
+}
+
+int CellExt::GetWeightedJumpjetCount(FootClass* pHov, bool* shouldScatter)
+{
+	if (!shouldScatter)
+		return 0;
+
+	bool scatter = *shouldScatter;
+	int count = 0;
+
+	for (size_t i = 0; i < this->InAirJumpjets.size(); )
+	{
+		FootClass* pFoot = this->InAirJumpjets[i];
+
+		if (!pFoot)
+		{
+			// null entries can remain after savegame swizzling - drop them
+			this->InAirJumpjets.erase(this->InAirJumpjets.begin() + i);
+			continue;
+		}
+
+		if (pFoot == pHov || pFoot->InLimbo || !IsJumpjet(pFoot))
+		{
+			++i;
+			continue;
+		}
+
+		count += (pFoot->WhatAmI() == AbstractType::Infantry ? 1 : 4);
+		if (!scatter && IsCloseEnoughToScatter(pFoot, pHov))
+			scatter = true;
+		if (count > 11)
+			break;
+		++i;
+	}
+
+	*shouldScatter = scatter;
+	return count;
+}
+
+// ExtendedJumpjetHovering - per-cell pointer invalidation. The Detach funnel notifies every
+// cell extension when a foot is removed from the game; each cell cleans its own
+// InAirJumpjets list, so a destroyed unit never leaves a dangling pointer behind.
+//
+// TEMPORARY: this OnDetach cleanup is the active crash-safe path while the dtor
+// cleanup in TechnoExt::~TechnoExt is commented out. The dtor cleanup only looks
+// at Jumpjet_LastCell, so if the foot was registered in a cell that is NOT its
+// LastCell, the dtor would have missed it - report that case with LogAndMessage.
+void CellExt::OnDetach(FootClass* pFoot, bool removed)
+{
+	if (!pFoot || !removed)
+		return;
+
+	auto& vec = this->InAirJumpjets;
+	auto const it = std::find(vec.begin(), vec.end(), pFoot);
+	if (it == vec.end())
+		return;
+
+	vec.erase(it);
+
+	// Diagnostic: the foot was registered in THIS cell, so its Jumpjet_LastCell is
+	// expected to point here. If it does not, the dtor-based cleanup would have
+	// missed this entry -> log it so the mismatch can be tracked down.
+	CellClass* pLastCell = nullptr;
+	const char* typeId = "?";
+	if (auto pTechnoExt = TechnoExt::TryFetch(pFoot))
+	{
+		pLastCell = pTechnoExt->Jumpjet_LastCell;
+		if (pTechnoExt->TypeExtData)
+			typeId = pTechnoExt->TypeExtData->OwnerObject()->ID;
+	}
+
+	if (pLastCell != this->OwnerObject())
+	{
+		CellStruct thisCoords = this->OwnerObject()->MapCoords;
+		CellStruct lastCoords { -1, -1 };
+		if (pLastCell)
+			lastCoords = pLastCell->MapCoords;
+		Debug::LogAndMessage("[ExtendedJumpjetHovering] MISMATCH: '%s'(0x%08X) was in cell(%d,%d) but LastCell=%s(%d,%d)\n",
+			typeId, pFoot, thisCoords.X, thisCoords.Y,
+			pLastCell ? "cell" : "NULL", lastCoords.X, lastCoords.Y);
+	}
+}
+
+void CellExt::MarkJumpjetScatterCell()
+{
+	if (auto pExt = CellExt::TryFetch(this->OwnerObject()))
+		pExt->Jumpjet_LastScatterAffectedFrame = Unsorted::CurrentFrame;
+	CellStruct pos = this->OwnerObject()->MapCoords;
+	for (int dir = 0; dir < 8; ++dir)
+	{
+		CellStruct off = CellSpread::GetNeighbourOffset(dir);
+		if (auto pCell = MapClass::Instance.GetCellAt(pos + off))
+			if (auto pCellExt = CellExt::TryFetch(pCell))
+				pCellExt->Jumpjet_LastScatterAffectedFrame = Unsorted::CurrentFrame;
+	}
+}
+
+void CellExt::UpdateJumpjet(FootClass* pFoot, int curHeight, int oldHeight)
+{
+	if (this->OwnerObject()->MapCoords.X == 0 && this->OwnerObject()->MapCoords.Y == 0)
+		return;
+	if (oldHeight == curHeight)
+		return;
+	bool wasInAir = oldHeight >= Unsorted::CellHeight;
+	bool nowInAir = curHeight >= Unsorted::CellHeight;
+	if (wasInAir == nowInAir)
+		return;
+	if (wasInAir)
+	{
+		// symmetric removal: whatever was added to this cell's list must leave it,
+		// even if the unit is no longer a jumpjet (e.g. its locomotor changed)
+		for (size_t i = 0; i < this->InAirJumpjets.size(); ++i)
+		{
+			if (this->InAirJumpjets[i] == pFoot)
+			{
+				this->InAirJumpjets.erase(this->InAirJumpjets.begin() + i);
+				break;
+			}
+		}
+	}
+	else if (nowInAir && IsJumpjet(pFoot))
+	{
+		// only in-air jumpjets are ever tracked (see AddJumpjet)
+		if (std::find(this->InAirJumpjets.begin(), this->InAirJumpjets.end(), pFoot) == this->InAirJumpjets.end())
+			this->InAirJumpjets.push_back(pFoot);
+	}
+}
+
+void CellExt::AddJumpjet(FootClass* pFoot, int curHeight)
+{
+	if (!IsJumpjet(pFoot))
+		return;
+	if (this->OwnerObject()->MapCoords.X == 0 && this->OwnerObject()->MapCoords.Y == 0)
+		return;
+	this->MarkJumpjetScatterCell();
+	if (curHeight >= Unsorted::CellHeight)
+	{
+		if (std::find(this->InAirJumpjets.begin(), this->InAirJumpjets.end(), pFoot) == this->InAirJumpjets.end())
+			this->InAirJumpjets.push_back(pFoot);
+	}
+}
+
+void CellExt::RemoveJumpjet(FootClass* pFoot, int oldHeight)
+{
+	// no IsJumpjet gate here on purpose: removal must be symmetric with AddJumpjet,
+	// even if the unit's locomotor changed after it was added, otherwise stale
+	// entries linger in the lists and dangle once the unit is destroyed.
+	if (this->OwnerObject()->MapCoords.X == 0 && this->OwnerObject()->MapCoords.Y == 0)
+		return;
+	if (oldHeight < Unsorted::CellHeight)
+		return;
+	for (size_t i = 0; i < this->InAirJumpjets.size(); ++i)
+	{
+		if (this->InAirJumpjets[i] == pFoot)
+		{
+			this->InAirJumpjets.erase(this->InAirJumpjets.begin() + i);
+			break;
+		}
+	}
+}
+
 

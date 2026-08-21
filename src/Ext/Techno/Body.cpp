@@ -6,11 +6,14 @@
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Cell/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <algorithm>
 #include <Utilities/AresHelper.h>
+#include <Unsorted.h>
 #include <Interop/TechnoExt.h>
 
 TechnoExt::~TechnoExt()
@@ -55,6 +58,21 @@ TechnoExt::~TechnoExt()
 	}
 
 	this->ElectricBolts.clear();
+
+	// ExtendedJumpjetHovering - remove this foot from its last cell's tracking
+	// list. DISABLED FOR NOW: the OnDetach full-map purge (CellExt::PurgeJumpjet)
+	// is the active cleanup. Re-enable this once the LastCell/current-cell
+	// mismatch diagnostics in PurgeJumpjet show no more problems.
+	/*
+	if (this->Jumpjet_LastCell)
+	{
+		if (auto pCellExt = CellExt::TryFetch(this->Jumpjet_LastCell))
+		{
+			auto& vec = pCellExt->InAirJumpjets;
+			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		}
+	}
+	*/
 
 	if (this->SpecialTracked)
 		ScenarioExt::Global()->SpecialTracker.Remove(pThis);
@@ -1218,6 +1236,10 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
 		.Process(this->PreventCrewEscape)
+		.Process(this->Jumpjet_ScatterFinishFrame)
+		.Process(this->Jumpjet_ScatterDir)
+		.Process(this->Jumpjet_LastCell)
+		.Process(this->Jumpjet_LastHeight)
 		;
 }
 

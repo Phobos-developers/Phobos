@@ -721,6 +721,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetRotateOnCrash)
+		.Process(this->ExtendedJumpjetHovering)
 		.Process(this->VeinholeWarhead)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
@@ -1286,6 +1287,7 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
 	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
 	pRulesExt->JumpjetRotateOnCrash.Read(exINI, GameStrings::JumpjetControls, "RotateOnCrash");
+	pRulesExt->ExtendedJumpjetHovering.Read(exINI, GameStrings::JumpjetControls, "ExtendedJumpjetHovering");
 
 	return 0;
 }
