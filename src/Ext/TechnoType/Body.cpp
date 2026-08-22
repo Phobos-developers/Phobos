@@ -1203,6 +1203,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+	this->FakeOf.Read(exINI, pSection, "FakeOf");
 
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
@@ -1563,6 +1564,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
 		.Process(this->EnemyUIName)
+		.Process(this->FakeOf)
 
 		.Process(this->ForceWeapon_Check)
 		.Process(this->ForceWeapon_Naval_Decloaked)

@@ -15,11 +15,15 @@
 #include "ToggleMessageList.h"
 #include "DeselectObject.h"
 #include "DeselectObject5.h"
+#include "DistributionMode.h"
 
 #include <CCINIClass.h>
+#include <ShapeButtonClass.h>
 
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 #include <Misc/MessageColumn.h>
+
+#pragma region HotkeyCommand
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -50,6 +54,20 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		SWSidebarClass::Commands[8] = MakeCommand<FireTacticalSWCommandClass<8>>();
 		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
 	}
+	
+	if (Phobos::Config::AllowSwitchNoMoveCommand)
+		MakeCommand<SwitchNoMoveCommandClass>();
+
+	if (Phobos::Config::AllowDistributionCommand)
+	{
+		if (Phobos::Config::AllowDistributionCommand_SpreadModeHotKey)
+			MakeCommand<DistributionModeSpreadCommandClass>();
+
+		if (Phobos::Config::AllowDistributionCommand_FilterMode)
+			MakeCommand<DistributionModeFilterCommandClass>();
+
+		MakeCommand<DistributionModeHoldDownCommandClass>();
+	}
 
 	if (Phobos::Config::DevelopmentCommands)
 	{
@@ -68,16 +86,26 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	return 0;
 }
 
+#pragma endregion
+
+#pragma region MouseScroll
+
 static void MouseWheelDownCommand()
 {
 	if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollDown();
+
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
+		DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce();
 }
 
 static void MouseWheelUpCommand()
 {
 	if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollUp();
+
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
+		DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand();
 }
 
 DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
@@ -94,7 +122,7 @@ DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
 
 static inline bool CheckSkipScrollSidebar()
 {
-	return MessageColumnClass::Instance.IsHovering();
+	return MessageColumnClass::Instance.IsHovering() || DistributionModeHoldDownCommandClass::Enabled;
 }
 
 DEFINE_HOOK(0x533F50, Game_ScrollSidebar_Skip, 0x5)
@@ -102,3 +130,5 @@ DEFINE_HOOK(0x533F50, Game_ScrollSidebar_Skip, 0x5)
 	enum { SkipScrollSidebar = 0x533FC3 };
 	return CheckSkipScrollSidebar() ? SkipScrollSidebar : 0;
 }
+
+#pragma endregion
