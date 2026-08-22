@@ -3332,7 +3332,6 @@ UnlimboDetonate.KeepSelected=true      ; boolean
   -  `Webby.Cap >0` case: Makes this web effect stackable, but maximum value capped to `Webby.Cap` value.
 - Infantry can define a duration multiplier with `Webby.Modifier` to modify the duration of the web effect applied to them, as well as an optional `Webby.DurationVariation` to override the warhead's variation.
 - Infantry with `ImmuneToWeb=true` are not affected by `Webby=true` warheads.
-- No damage is done by the weapons warhead.
 - `ForceWeapon.Webby` specify what weapon should use the attacker against the affected unit.
 
 In `rulesmd.ini`:
