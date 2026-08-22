@@ -222,6 +222,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> ShowPowerPlantEnhancerRange;
+		Valueable<bool> ShowGameTime;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
@@ -534,6 +535,14 @@ public:
 		Valueable<bool> NoAlphaImageOnBuildup;
 
 		Valueable<bool> Warhead_PreventScatter;
+		
+		Valueable<bool> KeepAlive_Infantry;
+		Valueable<bool> KeepAlive_Units;
+		Valueable<bool> KeepAlive_Aircraft;
+		Valueable<bool> KeepAlive_Buildings;
+		Valueable<bool> KeepAlive_Defenses;
+
+		Valueable<bool> ProjectileRange_ApplyModifiers;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -730,6 +739,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, ShowPowerPlantEnhancerRange { true }
+			, ShowGameTime { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -1001,8 +1011,18 @@ public:
 			, ApproachTarget_StopWhenInRange { false }
 
 			, NoAlphaImageOnBuildup { false }
+
 			, ReadyToNextMission_MovingCheck { false }
+
 			, Warhead_PreventScatter { false }
+
+			, ProjectileRange_ApplyModifiers { true }
+
+			, KeepAlive_Infantry { false }
+			, KeepAlive_Units { false }
+			, KeepAlive_Aircraft { false }
+			, KeepAlive_Buildings { true }
+			, KeepAlive_Defenses { true }
 		{ }
 
 		virtual ~ExtData() = default;

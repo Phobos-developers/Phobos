@@ -294,9 +294,26 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	GET(BuildingClass* const, pBld, ESI);
 
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
+	{
 		pExt->IsCreatedFromMapFile = true;
 
+		GET_STACK(bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
+
+		if (hasPower)
+			pExt->HasPowerFromMapFile = true;
+	}
+
 	return 0;
+}
+
+DEFINE_HOOK(0x44FDC5, CreateBuildingFromINIFile_AfterCTOR_AfterUnlimbo, 0xA)
+{
+	GET(BuildingClass* const, pBld, ESI);
+
+	if (auto const pExt = BuildingExt::TryFetch(pBld))
+		pExt->HasPowerFromMapFile = false;
+
+	return 0x44FDD3;
 }
 
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
@@ -983,7 +1000,7 @@ DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change.
 	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
 	{
 		pThis->IsReadyToCommence = false;
@@ -1079,6 +1096,22 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 			pThis->PlayAnim(anim, BuildingAnimSlot::Production, isDamaged, false, 0);
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4501AF, AI_ConYard_CompleteProduction_ProductionAnim, 0x5)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(TechnoClass*, pObject, EDI);
+
+	if (pBuilding->Owner->IsControlledByHuman())
+		return 0;
+
+	if (!pObject || pObject->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	pBuilding->SendCommand(RadioCommand::RequestEndProduction, pBuilding);
 
 	return 0;
 }
@@ -1360,12 +1393,12 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (abstract_cast<FootClass*>(pThis))
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		return 0;
 
 	const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
-	if (BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
+	if (pBuilding->Type->LaserFence || BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
 		return 0;
 
 	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));

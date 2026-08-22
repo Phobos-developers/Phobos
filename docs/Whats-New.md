@@ -27,7 +27,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### Changes to Phobos behavior
 
-- `ProjectileRange` (Ares feature) now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
+- When the value of the `ProjectileRange` (Ares feature) field on a weapon is greater than 0, weapon range modifiers will be applied. This behavior can be disabled by explicitly setting `ProjectileRange.ApplyModifiers=false` on that weapon; if `ProjectileRange.ApplyModifiers` is not explicitly set, it will fall back to the global default `[CombatDamage] -> ProjectileRange.ApplyModifiers`.
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.
 - `[TechnoType] -> WarpAway=` has now been changed to set the animation when units are erased to maintain semantic consistency with `[General] -> WarpAway=`. The animation that was originally controlled by `[TechnoType] -> WarpAway=`, which played instead of `[General] -> WarpOut=` when a Techno is chronowarped by chronosphere, now needs to be specified using `[TechnoType] -> Chronoshift.WarpOut=`, which defaults to the value of `[TechnoType] -> WarpOut=`.
@@ -419,13 +419,25 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- Customized transport plane for teams (by FlyStar)
+- [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [`EMPulseCannon.InaccurateRadius` and `EMPulse.Burst` for `Type=EMPulse` superweapons](New-or-Enhanced-Logics.md#empulse-settings) (by FS-21)
+
+#### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
+
+#### Phobos fixes:
+- Fixed a game crash when parsing string list with null entry (by Ollerus)
+
+#### Fixes / interactions with other extensions:
+- Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
+- Ares' `KeepAlive` adds global tags (by FlyStar)
+
 ```
 
 ### 0.5
 
 ```{dropdown} Click to show
-:open:
 
 #### New:
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
@@ -814,7 +826,6 @@ HideShakeEffects=false           ; boolean
 - Fixed combat light ignoring / behaving differently from vanilla game regarding detail level and framerate checks (by Starkku)
 - Fixed the bug where the `.SubjectToGround` of the Trajectory type did not consider bridges (by Noble_Fish)
 - AttachEffect `DisableWeapons=true` now makes `Gattling=yes` rate tick down and stops the sounds from playing (by Starkku)
-- Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 - Fixed a bug where stationary vehicles would also block movement caused by external factors (by Noble_Fish)
 - Fixed `src/Interop/Version.cpp` not being compiled into the project (by Chang_zhi)
 - Fixed the issue that `NoQueueUpToEnter` will clear passenger's planning tokens when entered transport (by NetsuNegi)
@@ -851,7 +862,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where passengers created by the InitialPayload logic or TeamType with `Full=true` would fail to execute the auto death logic (by Noble_Fish)
 - Fixed the issue of Ares' EMP not suspending the production of AI factories (by CrimRecya)
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
-- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType (by Starkku)
+- `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 (by Starkku)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
 ```
 
@@ -881,6 +892,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug causing transfering AttachEffects (e.g on `DeploysInto`/`UndeploysInto`) not to immediately recalculate stats or tint (by Starkku)
 - Fixed a bug where updating the `OpenTopped` attribute during convert did not update the coordinates of passengers (by NetsuNegi)
 - Fixed `Shrapnel.AffectsBuildings=true` shrapnel weapons being able to hit the building itself, potentially multiple times, if it had foundation larger than 1x1 (by Starkku)
+- Fixed cells with `CanBeBuiltOn=true` TerrainTypes on them not being considered valid build locations by AI (by Starkku)
 - Fixed the bug where `WeaponRange.AllowWeapons` and `WeaponRange.DisallowWeapons` only support weapons listed in the `[WeaponTypes]` list (by Noble_Fish)
 - Fixed the bug where passengers, when their transport unit is removed, would cause incorrect `LimboTracker` counts due to either having their destructor called directly (bypassing `UnInit`) or nested `UnInit` calls resetting the deletion flag too early, thereby breaking auto-death and superweapon auxiliary techno checks (by NetsuNegi)
 - Fixed AttachEffect with `RecreationDelay` of 0 checking `Delay` as well instead of immediately refreshing duration when possible (by Starkku)
