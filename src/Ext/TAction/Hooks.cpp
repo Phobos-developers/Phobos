@@ -3,18 +3,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 
-#include <Helpers/Macro.h>
-
-#include <HouseClass.h>
-#include <BuildingClass.h>
-#include <OverlayTypeClass.h>
-#include <LightSourceClass.h>
-#include <RadSiteClass.h>
-#include <VocClass.h>
-#include <ScenarioClass.h>
-
-#include <Utilities/Macro.h>
-
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
 	GET(TActionClass*, pThis, ECX);
@@ -45,7 +33,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	const bool playBuildup = pBuildingType->LoadBuildup();
 	bool created = false;
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
+	if (auto const pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse)))
 	{
 		// Set before unlimbo cause otherwise it will call BuildingClass::Place.
 		pBuilding->QueueMission(Mission::Construction, false);
@@ -131,3 +119,7 @@ DEFINE_HOOK(0x6E2368, TActionClass_PlayAnimAt, 0x7)
 
 	return SkipGameCode;
 }
+
+// Enable InGameMovie TAction in non-campaign mode.
+DEFINE_JUMP(LJMP, 0x5BF3B0, 0x5BF3BD);
+DEFINE_JUMP(LJMP, 0x5BF2BB, 0x5BF2C1); // Func unused in vanilla, but maybe someone will use it.

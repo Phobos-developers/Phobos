@@ -1,11 +1,8 @@
 #include "Body.h"
-#include <LocomotionClass.h>
-#include <TeleportLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <TacticalClass.h>
 
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \
@@ -13,7 +10,7 @@
 	TeleportLocomotionClass *pLocomotor = static_cast<TeleportLocomotionClass*>(Loco); \
 	FootClass* pLinked = pLocomotor->LinkedTo;\
 	TechnoTypeClass const*pType = pLinked->GetTechnoType(); \
-	TechnoTypeExt::ExtData const*pExt = TechnoTypeExt::ExtMap.Find(pType);
+	TechnoTypeExt const*pExt = TechnoTypeExt::Fetch(pType);
 
 DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0x6)
 {
@@ -32,13 +29,13 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	if (pExt->WarpOutWeapon)
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
-	const int distance = (int)Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
-	const auto linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	const double distance = Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
+	const auto linkedExt = FootExt::Fetch(pLinked);
 	linkedExt->LastWarpDistance = distance;
 
 	if (const auto pImage = pType->AlphaImage)
 	{
-		auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
+		const auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
 		RectangleStruct Dirty = {
 			xy.X - (pImage->Width / 2),
 			xy.Y - (pImage->Height / 2),
@@ -50,11 +47,11 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 
 	int duree = pExt->ChronoMinimumDelay.Get(RulesClass::Instance->ChronoMinimumDelay);
 
-	if (distance >= pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
+	if (distance >= (double)pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
 		&& pExt->ChronoTrigger.Get(RulesClass::Instance->ChronoTrigger))
 	{
 		const int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
-		duree = std::max(distance / factor, duree);
+		duree = std::max((int)(distance / factor), duree);
 
 	}
 
@@ -90,12 +87,12 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
-	auto const lastWarpDistance = TechnoExt::ExtMap.Find(pLinked)->LastWarpDistance;
+	const double lastWarpDistance = FootExt::Fetch(pLinked)->LastWarpDistance;
 	const bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
 
 	if (auto const weaponType = isInMinRange ? pExt->WarpInMinRangeWeapon.Get(pExt->WarpInWeapon) : pExt->WarpInWeapon)
 	{
-		const int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? lastWarpDistance / Unsorted::LeptonsPerCell : weaponType->Damage;
+		const int damage = pExt->WarpInWeapon_UseDistanceAsDamage ? (int)(lastWarpDistance / Unsorted::LeptonsPerCell) : weaponType->Damage;
 		WeaponTypeExt::DetonateAt(weaponType, pLinked, pLinked, damage);
 	}
 
@@ -160,7 +157,7 @@ DEFINE_HOOK(0x7197E4, TeleportLocomotionClass_Process_ChronospherePreDelay, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+	auto const pExt = FootExt::Fetch(pThis->Owner);
 	pExt->IsBeingChronoSphered = true;
 	R->ECX(pExt->TypeExtData->ChronoSpherePreDelay.Get(RulesExt::Global()->ChronoSpherePreDelay));
 
@@ -171,7 +168,7 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 {
 	GET(TeleportLocomotionClass*, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+	auto const pExt = FootExt::Fetch(pThis->Owner);
 
 	if (!pExt->IsBeingChronoSphered)
 		return 0;

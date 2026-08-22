@@ -42,6 +42,8 @@
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
 
+#include <Ext/WarheadType/Body.h>
+
 #include <set>
 #include <functional>
 #include <algorithm>
@@ -119,26 +121,23 @@ namespace Helpers
 			}
 		}
 
-		//! Gets a list of all units in range of a cell spread weapon.
-		/*!
-			CellSpread is handled as described in
-			http://modenc.renegadeprojects.com/CellSpread.
 
+#pragma region GetCellSpreadItems
+
+		//! Gets a list of all technos in range.
+		/*!
+		    Contains actual implementation of getCellSpreadItems,
+			can have additional params over it to retain
+			the original's function signature.
+			
 			\param coords The location the projectile detonated.
 			\param spread The range to find items in.
 			\param includeInAir Include items that are currently InAir.
-
-			\author AlexB
-			\date 2010-06-28
-
-			\modifications by Starkku
-			\date 2024-05-20
-			\modifications by Trsdy
-			\date 2024-12-05
+			\param ignoreHeight Ignore height checks.
 		*/
-		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
+		inline DistinctCollector<TechnoClass*> getCellSpreadItemsExt(
 			CoordStruct const& coords, double const spread,
-			bool const includeInAir = false)
+			bool const includeInAir, bool const ignoreHeight)
 		{
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
@@ -150,8 +149,12 @@ namespace Helpers
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
 				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
-				if (!pCell)continue;
+
+				if (!pCell)
+					continue;
+
 				bool isCenter = pCell->MapCoords == cellCoords;
+
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
@@ -161,7 +164,13 @@ namespace Helpers
 						{
 							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 								continue;
-							auto const cellCenterCoords = pCell->GetCenterCoords();
+
+							auto cellCenterCoords = pCell->GetCenterCoords();
+
+							// Ignore Z coordinate / height.
+							if (ignoreHeight)
+								cellCenterCoords.Z = coords.Z;
+
 							double dist = cellCenterCoords.DistanceFrom(coords);
 
 							// If this is the center cell, there's some different behaviour.
@@ -197,7 +206,14 @@ namespace Helpers
 				{
 					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						auto dist = pTechno->Location.DistanceFrom(coords);
+						auto location = pTechno->Location;
+
+						// Ignore Z coordinate / height.
+						if (ignoreHeight)
+							location.Z = coords.Z;
+
+						auto dist = location.DistanceFrom(coords);
+
 						// reduce the distance for flying aircraft
 						if (pTechno->WhatAmI() == AbstractType::Aircraft)
 							dist *= 0.5;
@@ -209,6 +225,38 @@ namespace Helpers
 
 			return set;
 		}
+
+		//! Gets a list of all technos in range.
+		/*!
+			CellSpread is handled as described in
+			http://modenc.renegadeprojects.com/CellSpread.
+			
+			NOTE: Function signature for this has to stay the same
+			here due to Ares calls being redirected to this.
+			
+			Use getCellSpreadItemsExt() directly to get additional
+			features from Phobos WarheadTypeExt.
+			
+			\param coords The location the projectile detonated.
+			\param spread The range to find items in.
+			\param includeInAir Include items that are currently InAir.
+
+			\author AlexB
+			\date 2010-06-28
+
+			\modifications by Starkku
+			\date 2024-05-20
+			\modifications by Trsdy
+			\date 2024-12-05
+		*/
+		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
+			CoordStruct const& coords, double const spread,
+			bool const includeInAir = false)
+		{
+			return getCellSpreadItemsExt(coords, spread, includeInAir, false);
+		}
+
+#pragma endregion
 
 		//! Invokes an action for every cell or every object contained on the cells.
 		/*!

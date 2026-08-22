@@ -1,5 +1,6 @@
 #include "Body.h"
-#include <Randomizer.h>
+
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 {
@@ -10,7 +11,7 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 	INI_EX exINI(pINI);
 	const char* pSection = pThis->ID;
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis);
 	pTypeExt->MultiWeapon.Read(exINI, pSection, "MultiWeapon");
 	const bool multiWeapon = pThis->HasMultipleTurrets() || pTypeExt->MultiWeapon.Get();
 
@@ -50,7 +51,7 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 
 				for (int weaponIndex : isSecondary)
 				{
-					if (weaponIndex >= weaponCount)
+					if (weaponIndex >= weaponCount || weaponIndex < 0)
 						continue;
 
 					SecondaryList[weaponIndex] = true;
@@ -71,7 +72,7 @@ DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
 	GET(TechnoTypeClass*, pThis, EBP);
 	enum { ReadWeaponX = 0x715B1F, Continue = 0x715B17 };
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis);
 
 	if (pTypeExt->ReadMultiWeapon)
 		return ReadWeaponX;
@@ -80,9 +81,9 @@ DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
 	return Continue;
 }
 
-int GetVoiceAttack(TechnoTypeClass* pType, int weaponIndex, bool isElite, WeaponTypeClass* pWeaponType)
+static inline int GetVoiceAttack(TechnoTypeClass* pType, int weaponIndex, bool isElite, WeaponTypeClass* pWeaponType)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	int voiceAttack = -1;
 
 	if (pWeaponType && pWeaponType->Damage < 0)
@@ -141,3 +142,80 @@ DEFINE_HOOK(0x7090A0, TechnoClass_VoiceAttack, 0x7)
 
 	return 0x7091C7;
 }
+
+static __forceinline ThreatType GetThreatType(TechnoClass* pThis, TechnoTypeExt* pTypeExt, ThreatType result)
+{
+	const ThreatType flags = pThis->Veterancy.IsElite() ? pTypeExt->ThreatTypes.Y : pTypeExt->ThreatTypes.X;
+	return result | flags;
+}
+
+DEFINE_HOOK_AGAIN(0x51E2CF, FootClass_SelectAutoTarget_MultiWeapon, 0x6)	// InfantryClass_SelectAutoTarget
+DEFINE_HOOK(0x7431C9, FootClass_SelectAutoTarget_MultiWeapon, 0x7)			// UnitClass_SelectAutoTarget
+{
+	enum { InfantryReturn = 0x51E31B, UnitReturn = 0x74324F, UnitGunner = 0x7431E4 };
+
+	GET(FootClass*, pThis, ESI);
+	GET(const ThreatType, result, EDI);
+
+	const bool isUnit = R->Origin() == 0x7431C9;
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+
+	if (isUnit
+		&& !pType->IsGattling && pType->TurretCount > 0
+		&& (pType->Gunner || !pTypeExt->MultiWeapon))
+	{
+		return UnitGunner;
+	}
+
+	R->EDI(GetThreatType(pThis, pTypeExt, result));
+	return isUnit ? UnitReturn : InfantryReturn;
+}
+
+DEFINE_HOOK(0x445F04, BuildingClass_SelectAutoTarget_MultiWeapon, 0xA)
+{
+	enum { ReturnThreatType = 0x445F58, Continue = 0x445F0E };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(const ThreatType, result, STACK_OFFSET(0x8, 0x4));
+
+	if (pThis->UpgradeLevel > 0 || pThis->CanOccupyFire())
+	{
+		R->EAX(pThis->GetWeapon(0));
+		return Continue;
+	}
+
+	R->EDI(GetThreatType(pThis, TechnoTypeExt::Fetch(pThis->Type), result));
+	return ReturnThreatType;
+}
+
+DEFINE_HOOK(0x6F398E, TechnoClass_CombatDamage_MultiWeapon, 0x7)
+{
+	enum { ReturnDamage = 0x6F3ABB, GunnerDamage = 0x6F39AD, Continue = 0x6F39F4 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const AbstractType rtti = pThis->WhatAmI();
+
+	if (rtti == AbstractType::Building)
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+
+		if (pBuilding->UpgradeLevel > 0 || pBuilding->CanOccupyFire())
+			return Continue;
+	}
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+
+	if (rtti == AbstractType::Unit
+		&& !pType->IsGattling && pType->TurretCount > 0
+		&& (pType->Gunner || !pTypeExt->MultiWeapon))
+	{
+		return GunnerDamage;
+	}
+
+	R->EAX(pThis->Veterancy.IsElite() ? pTypeExt->CombatDamages.Y : pTypeExt->CombatDamages.X);
+	return ReturnDamage;
+}
+

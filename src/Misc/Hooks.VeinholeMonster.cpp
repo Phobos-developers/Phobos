@@ -1,12 +1,6 @@
 #include <Ext/Anim/Body.h>
 
-#include <GameOptionsClass.h>
-#include <IonBlastClass.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
 #include <VeinholeMonsterClass.h>
-
 
 ///
 /// Veinhole Monster

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <unordered_map>
 
 #include <CCINIClass.h>
@@ -11,6 +12,8 @@
 #include "Swizzle.h"
 #include "Phobos.h"
 
+class AbstractClass;
+
 enum class InitState
 {
 	Blank = 0x0,	  // CTOR'd
@@ -21,35 +24,183 @@ enum class InitState
 };
 
 /*
- * ==========================
- *	It's a kind of magic
- * ==========================
-
- * These two templates are the basis of the new class extension standard.
-
- * ==========================
-
- * Extension<T> is the parent class for the data you want to link with this instance of T
-	( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-	which itself should be a derivate of Extension<WarheadTypeClass> )
-
- * ==========================
-
-	Container<TX> is the storage for all the Extension<T> which share the same T,
-	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
-	( for example, there is Container<WarheadTypeExt>
-	which contains all the custom data for all WarheadTypeClass instances,
-	and WarheadTypeExt itself contains just statics like the Container itself )
-
-	Requires:
-	using base_type = T;
-	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
-	class TX::ExtData : public Extension<T> { custom_data; }
-
-	Complex? Yes. That's partially why you should be happy these are premade for you.
+ * Extension classes form an inheritance hierarchy that mirrors the game's own class
+ * tree, rooted at AbstractExt. Every game object of an extended type carries exactly
+ * one extension instance of the most derived matching type, cached inside the object
+ * at AbstractExt::ExtPointerOffset.
  *
+ * The static Fetch/TryFetch accessors of any level of the hierarchy are the one
+ * lookup API: Fetch fatals when the object has no extension attached, TryFetch is
+ * the null-tolerant form (also for objects that legitimately have none, e.g. during
+ * the savegame load window).
+ *
+ * Container<TX> tracks all live extension instances of one concrete class for the
+ * bulk operations: allocation, removal, centralized savegame streaming, post-load
+ * relinking and scenario clearing. Its Find/TryFind lookups are deprecated in favor
+ * of the accessors above. TX must provide:
+ *   using base_type = T;  (the extended game class)
+ *   static constexpr DWORD Canary = (any dword value easily identifiable in a byte stream)
  */
 
+// The non-template root of every extension of an AbstractClass-derived game class.
+// It owns the back-pointer and the staged init state, so all extensions share a common base.
+class AbstractExt
+{
+	template <typename T>
+	friend class Container;
+
+	AbstractClass* AttachedToObject;
+	InitState Initialized;
+
+	// position within the owning container's item list, kept up to date on removal
+	// so single removals don't have to search the list; never serialized
+	size_t ContainerIndex { SIZE_MAX };
+
+public:
+	// every extension pointer lives in the unused AbstractClass::unknown_18 field
+	static constexpr size_t ExtPointerOffset = 0x18;
+
+	// reads the inline extension slot of any AbstractClass-derived object; returns
+	// null for objects of unextended types (the slot is zeroed by the game's ctor)
+	static AbstractExt* Fetch(const AbstractClass* pThis)
+	{
+		return *reinterpret_cast<AbstractExt* const*>(reinterpret_cast<const char*>(pThis) + ExtPointerOffset);
+	}
+
+	static AbstractExt* TryFetch(const AbstractClass* pThis)
+	{
+		return pThis ? Fetch(pThis) : nullptr;
+	}
+
+	// the typed accessors behind every extension class's own Fetch/TryFetch;
+	// select them with an explicit template argument
+	template <typename TExt>
+	static TExt* TryFetch(const AbstractClass* pThis)
+	{
+		return static_cast<TExt*>(TryFetch(pThis));
+	}
+
+	template <typename TExt>
+	static TExt* Fetch(const AbstractClass* pThis)
+	{
+		return static_cast<TExt*>(Fetch(pThis));
+	}
+
+	// writes the inline extension slot directly, for extensions that are not
+	// managed by a container (the static working cell)
+	static void Attach(AbstractClass* pThis, AbstractExt* pExt)
+	{
+		*reinterpret_cast<AbstractExt**>(reinterpret_cast<char*>(pThis) + ExtPointerOffset) = pExt;
+	}
+
+	explicit AbstractExt(AbstractClass* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
+	{ }
+
+	AbstractExt(const AbstractExt& other) = delete;
+
+	void operator=(const AbstractExt& RHS) = delete;
+
+	virtual ~AbstractExt() = default;
+
+	void EnsureConstanted()
+	{
+		if (this->Initialized < InitState::Constanted)
+		{
+			this->InitializeConstants();
+			this->Initialized = InitState::Constanted;
+		}
+	}
+
+	void LoadFromINI(CCINIClass* pINI)
+	{
+		if (!pINI)
+			return;
+
+		switch (this->Initialized)
+		{
+		case InitState::Blank:
+			this->EnsureConstanted();
+		case InitState::Constanted:
+			this->InitializeRuled();
+			this->Initialized = InitState::Ruled;
+		case InitState::Ruled:
+			this->Initialize();
+			this->Initialized = InitState::Inited;
+		case InitState::Inited:
+		case InitState::Completed:
+			if (pINI == CCINIClass::INI_Rules)
+				this->LoadFromRulesFile(pINI);
+
+			this->LoadFromINIFile(pINI);
+			this->Initialized = InitState::Completed;
+		}
+	}
+
+	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
+	{
+		Stm.Save(this->Initialized);
+	}
+
+	virtual inline void LoadFromStream(PhobosStreamReader& Stm)
+	{
+		Stm.Load(this->Initialized);
+	}
+
+	// on load the extension is constructed with the save-time owner pointer;
+	// this queues it for remapping when the swizzle manager resolves pointers.
+	void RegisterOwnerForChange()
+	{
+		PhobosSwizzle::RegisterPointerForChange(this->AttachedToObject);
+	}
+
+	// called after loading once all pointers (including the owner) have been remapped
+	virtual void PostLoad() { }
+
+protected:
+	AbstractClass* GetAttachedObject() const
+	{
+		return this->AttachedToObject;
+	}
+
+	// right after construction. only basic initialization tasks possible;
+	// owner object is only partially constructed! do not use global state!
+	virtual void InitializeConstants() { }
+
+	virtual void InitializeRuled() { }
+
+	// called before the first ini file is read
+	virtual void Initialize() { }
+
+	// for things that only logically work in rules - countries, sides, etc
+	virtual void LoadFromRulesFile(CCINIClass* pINI) { }
+
+	// load any ini file: rules, game mode, scenario or map
+	virtual void LoadFromINIFile(CCINIClass* pINI) { }
+};
+
+// compatibility stand-in for classes whose single container was split into
+// per-leaf containers by the extension rework (TechnoExt, TechnoTypeExt):
+// lookup-only, forwards the old ExtMap calls to the Fetch/TryFetch accessors.
+// TBase is passed explicitly because TExt is incomplete at the declaration site.
+template <typename TExt, typename TBase>
+struct CompatExtMap
+{
+	[[deprecated("use the extension class's Fetch instead")]]
+	auto Find(const TBase* pThis) const
+	{
+		return TExt::Fetch(pThis);
+	}
+
+	[[deprecated("use the extension class's TryFetch instead")]]
+	auto TryFind(const TBase* pThis) const
+	{
+		return TExt::TryFetch(pThis);
+	}
+};
+
+// legacy standalone base for extensions whose owners are not AbstractClass-derived
+// (the Rules/Scenario/Sidebar singletons and EBolt); AbstractClass-derived owners use
+// the AbstractExt hierarchy instead.
 template <typename T>
 class Extension
 {
@@ -58,7 +209,7 @@ class Extension
 
 public:
 
-	Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
+	explicit Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
 
 	Extension(const Extension& other) = delete;
@@ -68,7 +219,7 @@ public:
 	virtual ~Extension() = default;
 
 	// the object this Extension expands
-	T* const& OwnerObject() const
+	T* OwnerObject() const
 	{
 		return this->AttachedToObject;
 	}
@@ -107,17 +258,13 @@ public:
 		}
 	}
 
-	virtual void InvalidatePointer(void* ptr, bool bRemoved) = 0;
-
 	virtual inline void SaveToStream(PhobosStreamWriter& Stm)
 	{
-		//Stm.Save(this->AttachedToObject);
 		Stm.Save(this->Initialized);
 	}
 
 	virtual inline void LoadFromStream(PhobosStreamReader& Stm)
 	{
-		//Stm.Load(this->AttachedToObject);
 		Stm.Load(this->Initialized);
 	}
 
@@ -272,55 +419,42 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
+// resolves the data class of an extension: the extension class itself for the
+// flattened hierarchy, or the nested ExtData class of the legacy shells (EBolt).
+// slot-mode extensions are their own data class and are resolved directly: their
+// ExtData is only a deprecated, class-local compatibility alias of themselves and
+// must never be consulted here (it would warn, and a derived class that does not
+// redeclare it would inherit its parent's alias).
+template <typename T>
+struct ExtensionDataType { using type = T; };
+
+template <typename T> requires (!HasOffset<T> && requires { typename T::ExtData; })
+struct ExtensionDataType<T> { using type = typename T::ExtData; };
+
 template <typename T>
 class Container
 {
 private:
 	using base_type = typename T::base_type;
-	using extension_type = typename T::ExtData;
+	using extension_type = typename ExtensionDataType<T>::type;
 	using base_type_ptr = base_type*;
 	using const_base_type_ptr = const base_type*;
 	using extension_type_ptr = extension_type*;
 	using map_type = ContainerMap<base_type, extension_type>;
 
-	map_type Items;
+	map_type MappedItems;
+	std::vector<extension_type_ptr> Items;
 
-	base_type* SavingObject;
-	extension_type_ptr SavingExtPointer;
-	IStream* SavingStream;
 	const char* Name;
 
 public:
 	explicit Container(const char* pName) :
+		MappedItems(),
 		Items(),
-		SavingObject(nullptr),
-		SavingStream(nullptr),
 		Name(pName)
 	{ }
 
 	virtual ~Container() = default;
-
-	void PointerGotInvalid(void* ptr, bool bRemoved)
-	{
-		//this->InvalidatePointer(ptr, bRemoved);
-
-		if (!this->InvalidateExtDataIgnorable(ptr))
-			this->InvalidateExtDataPointer(ptr, bRemoved);
-	}
-
-protected:
-	//virtual void InvalidatePointer(void* ptr, bool bRemoved) { }
-
-	virtual bool InvalidateExtDataIgnorable(void* const ptr) const
-	{
-		return true;
-	}
-
-	void InvalidateExtDataPointer(void* const ptr, bool bRemoved) const
-	{
-		for (const auto& i : this->Items)
-			i.second->InvalidatePointer(ptr, bRemoved);
-	}
 
 private:
 	extension_type_ptr GetExtensionPointer(const_base_type_ptr key) const
@@ -338,8 +472,23 @@ private:
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
 	}
 
-public:
-	extension_type_ptr Allocate(base_type_ptr key)
+	extension_type_ptr FindRaw(const_base_type_ptr key) const
+	{
+		if constexpr (HasOffset<T>)
+			return GetExtensionPointer(key);
+		else
+			return this->MappedItems.find(key);
+	}
+
+	extension_type_ptr TryFindRaw(const_base_type_ptr key) const
+	{
+		return key ? FindRaw(key) : nullptr;
+	}
+
+protected:
+	// the unguarded allocation core, also used by load-time fixups that run while
+	// Phobos::IsLoadingSaveGame is still set
+	extension_type_ptr AllocateUnchecked(base_type_ptr key)
 	{
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
@@ -349,11 +498,28 @@ public:
 		val->EnsureConstanted();
 
 		if constexpr (HasOffset<T>)
+		{
 			SetExtensionPointer(key, val);
+			val->ContainerIndex = Items.size();
+		}
+		else
+		{
+			this->MappedItems.insert(key, val);
+		}
 
-		this->Items.insert(key, val);
+		Items.emplace_back(val);
 
 		return val;
+	}
+
+public:
+	extension_type_ptr Allocate(base_type_ptr key)
+	{
+		// during savegame load extensions are restored from the stream instead
+		if (Phobos::IsLoadingSaveGame)
+			return nullptr;
+
+		return this->AllocateUnchecked(key);
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
@@ -378,50 +544,94 @@ public:
 		return Allocate(key);
 	}
 
-	extension_type_ptr TryFind(const_base_type_ptr key) const
+	// lookups belong to the extension classes' own Fetch/TryFetch accessors; the
+	// container lookups remain only so pre-rework code keeps compiling. Map-mode
+	// containers (EBolt) have no accessors and keep using these legitimately.
+	[[deprecated("use the extension class's TryFetch instead")]]
+	extension_type_ptr TryFind(const_base_type_ptr key) const requires HasOffset<T>
 	{
-		if (!key)
-			return nullptr;
-
-		if constexpr (HasOffset<T>)
-			return GetExtensionPointer(key);
-		else
-			return this->Items.find(key);
+		return TryFindRaw(key);
 	}
 
-	extension_type_ptr Find(const_base_type_ptr key) const
+	extension_type_ptr TryFind(const_base_type_ptr key) const requires (!HasOffset<T>)
 	{
-		if constexpr (HasOffset<T>)
-			return GetExtensionPointer(key);
-		else
-			return this->Items.find(key);
+		return TryFindRaw(key);
 	}
 
-	// Only used on loading, does not check if key is nullptr.
-	extension_type_ptr FindOrAllocate(base_type_ptr key)
+	[[deprecated("use the extension class's Fetch instead")]]
+	extension_type_ptr Find(const_base_type_ptr key) const requires HasOffset<T>
 	{
-		extension_type_ptr value = nullptr;
+		return FindRaw(key);
+	}
 
-		if constexpr (HasOffset<T>)
-			value = GetExtensionPointer(key);
-		else
-			value = this->Items.find(key);
-
-		if (!value)
-			value = Allocate(key);
-
-		return value;
+	extension_type_ptr Find(const_base_type_ptr key) const requires (!HasOffset<T>)
+	{
+		return FindRaw(key);
 	}
 
 	void Remove(base_type_ptr key)
 	{
-		if (auto Item = Find(key))
+		if (auto Item = FindRaw(key))
 		{
-			this->Items.remove(key);
-			delete Item;
+			auto& vec = this->Items;
 
 			if constexpr (HasOffset<T>)
+			{
 				ResetExtensionPointer(key);
+
+				// untracked extensions (index out of range) only detach from the owner
+				const size_t index = Item->ContainerIndex;
+
+				if (index >= vec.size() || vec[index] != Item)
+					return;
+
+				vec[index] = vec.back();
+				vec[index]->ContainerIndex = index;
+				vec.pop_back();
+			}
+			else
+			{
+				this->MappedItems.remove(key);
+				auto it = std::find(vec.begin(), vec.end(), Item);
+
+				if (it != vec.end())
+				{
+					*it = vec.back();
+					vec.pop_back();
+				}
+			}
+
+			delete Item;
+		}
+	}
+
+	// Rewrites every tracked extension into its owner's inline slot. For owners the
+	// game value-copies or re-initializes in place (cells), the container is the
+	// source of truth and the slots are only a cache that has to be rebuilt after
+	// the game shuffles the objects around.
+	void ReattachAll()
+	{
+		if constexpr (HasOffset<T>)
+		{
+			for (const auto& item : this->Items)
+				SetExtensionPointer(item->OwnerObject(), item);
+		}
+	}
+
+	// Deletes every tracked extension and detaches it from its owner. Unlike Clear,
+	// this is regular teardown for owners the game re-initializes in place without
+	// destroying them (cells).
+	void RemoveAll()
+	{
+		if constexpr (HasOffset<T>)
+		{
+			for (const auto& item : this->Items)
+			{
+				ResetExtensionPointer(item->OwnerObject());
+				delete item;
+			}
+
+			this->Items.clear();
 		}
 	}
 
@@ -435,8 +645,16 @@ public:
 			{
 				for (const auto& item : this->Items)
 				{
-					ResetExtensionPointer(item.first);
+					ResetExtensionPointer(item->OwnerObject());
+					delete item;
 				}
+			}
+			else
+			{
+				for (const auto& item : this->Items)
+					delete item;
+
+				this->MappedItems.clear();
 			}
 
 			this->Items.clear();
@@ -445,60 +663,142 @@ public:
 
 	void LoadFromINI(const_base_type_ptr key, CCINIClass* pINI)
 	{
-		if (auto ptr = this->Find(key))
+		if (auto ptr = this->FindRaw(key))
 			ptr->LoadFromINI(pINI);
 	}
 
-	void PrepareStream(base_type_ptr key, IStream* pStm)
+	// Writes every live extension of this container into the savegame stream:
+	// a header block (canary + count), then one length-prefixed block per extension
+	// carrying its save-time address (for pointer swizzling), its owner's identity
+	// and the serialized members.
+	bool SaveAllToStream(IStream* pStm)
 	{
-		//Debug::Log("[PrepareStream] Next is %p of type '%s'\n", key, this->Name);
+		if constexpr (!HasOffset<T>)
+		{
+			return true; // map-mode extensions (EBolt) are not serialized
+		}
+		else
+		{
+			PhobosByteStream headerStm(sizeof(DWORD) * 2);
+			PhobosStreamWriter headerWriter(headerStm);
+			headerWriter.Save(T::Canary);
+			headerWriter.Save(this->Items.size());
 
-		this->SavingObject = key;
-		this->SavingStream = pStm;
+			if (!headerStm.WriteBlockToStream(pStm))
+			{
+				Debug::Log("SaveAllToStream - Failed to save header for '%s'.\n", this->Name);
+				return false;
+			}
 
-		// Loading the base type data might override the ext pointer stored on it so it needs to be saved.
+			for (const auto& item : this->Items)
+			{
+				if (!item->OwnerObject())
+					Debug::FatalErrorAndExit("SaveAllToStream - '%s' extension has no owner!\n", this->Name);
+
+				PhobosByteStream saver(sizeof(*item));
+				PhobosStreamWriter writer(saver);
+
+				// the extension's own save-time address, so pointers to it can be remapped
+				writer.RegisterChange(item);
+				// the save-time owner address, remapped to the loaded owner by the swizzle manager
+				writer.Save(static_cast<void*>(item->OwnerObject()));
+
+				item->SaveToStream(writer);
+
+				if (!saver.WriteBlockToStream(pStm))
+				{
+					Debug::Log("SaveAllToStream - Failed to save an item of '%s'.\n", this->Name);
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	// Recreates every extension of this container from the savegame stream. Owners do
+	// not exist yet; each extension holds the save-time owner pointer until the swizzle
+	// manager remaps it, and the owners' inline pointers are restored by
+	// RelinkExtensionPointers afterwards.
+	bool LoadAllFromStream(IStream* pStm)
+	{
+		if constexpr (!HasOffset<T>)
+		{
+			return true;
+		}
+		else
+		{
+			PhobosByteStream headerStm(0);
+			if (!headerStm.ReadBlockFromStream(pStm))
+			{
+				Debug::Log("LoadAllFromStream - Failed to read header for '%s'.\n", this->Name);
+				return false;
+			}
+
+			PhobosStreamReader headerReader(headerStm);
+			size_t count = 0;
+
+			if (!headerReader.Expect(T::Canary) || !headerReader.Load(count) || !headerReader.ExpectEndOfBlock())
+			{
+				Debug::Log("LoadAllFromStream - Invalid header for '%s'.\n", this->Name);
+				return false;
+			}
+
+			this->Items.reserve(count);
+
+			for (size_t i = 0; i < count; ++i)
+			{
+				PhobosByteStream loader(0);
+				if (!loader.ReadBlockFromStream(pStm))
+				{
+					Debug::Log("LoadAllFromStream - Failed to read an item of '%s'.\n", this->Name);
+					return false;
+				}
+
+				PhobosStreamReader reader(loader);
+
+				void* oldPtr = nullptr;
+				void* oldOwner = nullptr;
+
+				if (!reader.Load(oldPtr) || !reader.Load(oldOwner))
+				{
+					Debug::Log("LoadAllFromStream - Invalid item header in '%s'.\n", this->Name);
+					return false;
+				}
+
+				auto const buffer = new extension_type(static_cast<base_type_ptr>(oldOwner));
+				buffer->RegisterOwnerForChange();
+				PhobosSwizzle::RegisterChange(oldPtr, buffer);
+				buffer->ContainerIndex = this->Items.size();
+				this->Items.emplace_back(buffer);
+
+				buffer->LoadFromStream(reader);
+
+				if (!reader.ExpectEndOfBlock())
+					return false;
+			}
+
+			return true;
+		}
+	}
+
+	// After the swizzle manager has remapped all pointers, write each extension back
+	// into its owner's inline slot (cleared when the owner was loaded).
+	void RelinkExtensionPointers()
+	{
 		if constexpr (HasOffset<T>)
-			this->SavingExtPointer = GetExtensionPointer(key);
-	}
-
-	void SaveStatic()
-	{
-		if (this->SavingObject && this->SavingStream)
 		{
-			//Debug::Log("[SaveStatic] Saving object %p as '%s'\n", this->SavingObject, this->Name);
-			if (!this->Save(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("SaveStatic - Saving object %p as '%s' failed!\n", this->SavingObject, this->Name);
-		}
-		else
-		{
-			Debug::Log("SaveStatic - Object or Stream not set for '%s': %p, %p\n",
-				this->Name, this->SavingObject, this->SavingStream);
-		}
+			for (const auto& item : this->Items)
+			{
+				auto const key = item->OwnerObject();
 
-		this->SavingObject = nullptr;
-		this->SavingStream = nullptr;
-	}
+				if (!key)
+					Debug::FatalErrorAndExit("RelinkExtensionPointers - '%s' extension has no owner!\n", this->Name);
 
-	void LoadStatic()
-	{
-		if (this->SavingObject && this->SavingStream)
-		{
-			// Restore stored ext pointer data.
-			if constexpr (HasOffset<T>)
-				SetExtensionPointer(this->SavingObject, this->SavingExtPointer);
-
-			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
-			if (!this->Load(this->SavingObject, this->SavingStream))
-				Debug::FatalErrorAndExit("LoadStatic - Loading object %p as '%s' failed!\n", this->SavingObject, this->Name);
+				SetExtensionPointer(key, item);
+				item->PostLoad();
+			}
 		}
-		else
-		{
-			Debug::Log("LoadStatic - Object or Stream not set for '%s': %p, %p\n",
-				this->Name, this->SavingObject, this->SavingStream);
-		}
-
-		this->SavingObject = nullptr;
-		this->SavingStream = nullptr;
 	}
 
 	decltype(auto) begin() const = delete;
@@ -508,93 +808,6 @@ public:
 	size_t size() const
 	{
 		return this->Items.size();
-	}
-
-protected:
-	// override this method to do type-specific stuff
-	virtual bool Save(base_type_ptr key, IStream* pStm)
-	{
-		return this->SaveKey(key, pStm) != nullptr;
-	}
-
-	// override this method to do type-specific stuff
-	virtual bool Load(base_type_ptr key, IStream* pStm)
-	{
-		return this->LoadKey(key, pStm) != nullptr;
-	}
-
-	extension_type_ptr SaveKey(base_type_ptr key, IStream* pStm)
-	{
-		// this really shouldn't happen
-		if (!key)
-		{
-			Debug::Log("SaveKey - Attempted for a null pointer! WTF!\n");
-			return nullptr;
-		}
-
-		// get the value data
-		auto buffer = this->Find(key);
-		if (!buffer)
-		{
-			Debug::Log("SaveKey - Could not find value.\n");
-			return nullptr;
-		}
-
-		// write the current pointer, the size of the block, and the canary
-		PhobosByteStream saver(sizeof(*buffer));
-		PhobosStreamWriter writer(saver);
-
-		writer.Save(T::Canary);
-		writer.Save(buffer);
-
-		// save the data
-		buffer->SaveToStream(writer);
-
-		// save the block
-		if (!saver.WriteBlockToStream(pStm))
-		{
-			Debug::Log("SaveKey - Failed to save data.\n");
-			return nullptr;
-		}
-
-		//Debug::Log("[SaveKey] Save used up 0x%X bytes\n", saver.Size());
-
-		return buffer;
-	}
-
-	extension_type_ptr LoadKey(base_type_ptr key, IStream* pStm)
-	{
-		// this really shouldn't happen
-		if (!key)
-		{
-			Debug::Log("LoadKey - Attempted for a null pointer! WTF!\n");
-			return nullptr;
-		}
-
-		// get or allocate the value data
-		extension_type_ptr buffer = this->FindOrAllocate(key);
-		if (!buffer)
-		{
-			Debug::Log("LoadKey - Could not find or allocate value.\n");
-			return nullptr;
-		}
-
-		PhobosByteStream loader(0);
-		if (!loader.ReadBlockFromStream(pStm))
-		{
-			Debug::Log("LoadKey - Failed to read data from save stream?!\n");
-			return nullptr;
-		}
-
-		PhobosStreamReader reader(loader);
-		if (reader.Expect(T::Canary) && reader.RegisterChange(buffer))
-		{
-			buffer->LoadFromStream(reader);
-			if (reader.ExpectEndOfBlock())
-				return buffer;
-		}
-
-		return nullptr;
 	}
 
 private:

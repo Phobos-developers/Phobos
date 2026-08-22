@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
+
+#include <Ext/House/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -90,6 +91,11 @@ void ScenarioExt::Remove(ScenarioClass* pThis)
 void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+	}
 }
 
 void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
@@ -167,10 +173,11 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLS640BkgdName)
 		.Process(this->DefaultLS800BkgdName)
 		.Process(this->DefaultLS800BkgdPal)
-		.Process(this->MasterDetonationBullet)
 		.Process(this->LimboLaunchers)
 		.Process(this->UndergroundTracker)
 		.Process(this->SpecialTracker)
+		.Process(this->FallingDownTracker)
+		.Process(this->EVAIndex)
 		;
 }
 
@@ -182,6 +189,8 @@ void ScenarioExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 
 void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Global()->EVAIndex = VoxClass::EVAIndex;
+
 	Extension<ScenarioClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

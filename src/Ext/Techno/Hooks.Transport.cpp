@@ -1,6 +1,9 @@
 #include "Body.h"
 
+#include <Ext/Foot/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
 
 DEFINE_HOOK_AGAIN(0x6FA33C, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::AI
 DEFINE_HOOK_AGAIN(0x6F89F4, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::EvaluateCell
@@ -33,7 +36,7 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 
 	if (auto const pTransport = pThis->Transporter)
 	{
-		if (TechnoExt::ExtMap.Find(pTransport)->TypeExtData->Passengers_SyncOwner)
+		if (TechnoExt::Fetch(pTransport)->TypeExtData->Passengers_SyncOwner)
 			return returnAddress;
 	}
 
@@ -46,7 +49,7 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->Passengers_SyncOwner)
+		if (TechnoExt::Fetch(pThis)->TypeExtData->Passengers_SyncOwner)
 		{
 			const auto pOwner = pThis->Owner;
 
@@ -70,9 +73,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
-		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const pExt = FootExt::Fetch(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
-		auto const pTransTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+		auto const pTransTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
@@ -95,9 +98,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
-		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const pExt = FootExt::Fetch(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
-		auto const pTransTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+		auto const pTransTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 		// Remove from transport reloader list before switching house
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
@@ -125,13 +128,13 @@ DEFINE_HOOK(0x737F80, UnitClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 
 	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
 
 		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
 		{
 			do
 			{
-				auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+				auto const pExt = FootExt::Fetch(pPassenger);
 
 				if (pExt->OriginalPassengerOwner)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
@@ -152,7 +155,7 @@ DEFINE_HOOK(0x51DF82, InfantryClass_FireAt_ReloadInTransport, 0x6)
 	if (pThis->Transporter)
 	{
 		auto const pType = pThis->Type;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		if (pTypeExt->ReloadInTransport && pType->Ammo > 0 && pThis->Ammo < pType->Ammo)
 			pThis->StartReloading();
@@ -169,8 +172,10 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto const pTransport = pThis->Transporter)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
-		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+		auto const pExt = TechnoExt::Fetch(pTransport)->TypeExtData;
+		const int rangeBonus = pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus);
+
+		R->EAX(rangeBonus + TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_RangeBonus.Get(RulesExt::Global()->OpenTransport_RangeBonus));
 		return 0x6F72DE;
 	}
 
@@ -183,7 +188,7 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	if (auto const pTransport = pThis->Owner->Transporter)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
+		auto const pExt = TechnoExt::Fetch(pTransport)->TypeExtData;
 		R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 		return 0x71A838;
 	}
@@ -200,9 +205,9 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 	if (pTarget)
 	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+		auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-		if (!pTypeExt->OpenTopped_ShareTransportTarget)
+		if (!pTypeExt->OpenTopped_ShareTransportTarget.Get(RulesExt::Global()->OpenTopped_ShareTransportTarget))
 			return ReturnFromFunction;
 	}
 
@@ -214,8 +219,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 // Use a square range because it doesn't seem necessary to calculate the circular range
 static inline bool IsCloseEnoughToEnter(UnitClass* pTransport, FootClass* pPassenger)
 {
-	return (std::abs(pPassenger->Location.X - pTransport->Location.X) < 384
-		&& std::abs(pPassenger->Location.Y - pTransport->Location.Y) < 384
+	const auto pTypeExt = TechnoTypeExt::Fetch(pTransport->Type);
+	const int boardDistance = pTypeExt->NoQueueUpToEnter_BoardDistance.Get(RulesExt::Global()->NoQueueUpToEnter_BoardDistance.Get());
+
+	return (std::abs(pPassenger->Location.X - pTransport->Location.X) < boardDistance
+		&& std::abs(pPassenger->Location.Y - pTransport->Location.Y) < boardDistance
 		&& std::abs(pPassenger->Location.Z - pTransport->Location.Z) < Unsorted::CellHeight);
 }
 
@@ -238,12 +246,13 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const auto pTransportType = pTransport->Type;
+	const auto pTransportTypeExt = TechnoTypeExt::Fetch(pTransportType);
 
 	// Added to fit with AmphibiousEnter
-	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+	if (pTransport->GetCell()->LandType == LandType::Water && !pTransportTypeExt->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return false;
 
-	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const bool bySize = pTransportTypeExt->Passengers_BySize;
 	const int passengerSize = static_cast<int>(pPassenger->GetTechnoType()->Size);
 
 	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))
@@ -272,7 +281,7 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 }
 
 // Rewrite from 0x51A21B/0x73A6D1
-static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
+static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, FootExt* pExt)
 {
 	// Vanilla only for infantry, but why
 	if (const auto pTag = pTransport->AttachedTag)
@@ -288,21 +297,10 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
-	pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
+	//pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
-
-	const auto pPassengerType = pPassenger->GetTechnoType();
-
-	// Reinstalling Locomotor can avoid various issues such as teleportation, ignoring commands, and automatic return
-	while (LocomotionClass::End_Piggyback(pPassenger->Locomotor));
-
-	if (const auto pNewLoco = LocomotionClass::CreateInstance(pPassengerType->Locomotor))
-	{
-		pPassenger->Locomotor = std::move(pNewLoco);
-		pPassenger->Locomotor->Link_To_Object(pPassenger);
-	}
 
 	pTransport->AddPassenger(pPassenger); // Don't swap order casually, very very important
 	pPassenger->Transporter = pTransport;
@@ -310,10 +308,11 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (pTransport->Type->OpenTopped)
 		pTransport->EnteredOpenTopped(pPassenger);
 
-	if (pPassengerType->OpenTopped)
+	if (pPassenger->GetTechnoType()->OpenTopped)
 		pPassenger->SetTargetForPassengers(nullptr);
 
 	pPassenger->Undiscover();
+	pExt->ResetLocomotor = true;
 }
 
 // Update after unit location update
@@ -322,21 +321,22 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
-	TechnoExt::ExtMap.Find(pThis)->UpdateLaserTrails();
+	const auto pExt = FootExt::Fetch(pThis);
+	pExt->UpdateLaserTrails();
 
 	// The core part of the fast enter action
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
 	{
 		const auto pType = pDest->Type;
 
-		if (pType->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		if (pType->Passengers > 0 && TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
 		{
 			if (IsCloseEnoughToEnter(pDest, pThis))
 			{
 				const auto absType = pThis->WhatAmI();
 
 				if ((absType == AbstractType::Infantry || absType == AbstractType::Unit) && CanEnterNow(pDest, pThis))
-					DoEnterNow(pDest, pThis);
+					DoEnterNow(pDest, pThis, pExt);
 			}
 			else if (!pThis->Destination // Move to enter position, prevent other passengers from waiting for call and not moving early
 				&& !pDest->OnBridge && !pDest->Destination)
@@ -354,13 +354,27 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 		}
 	}
 
+	if (pExt->ResetLocomotor)
+	{
+		// Reinstalling Locomotor can avoid various issues such as teleportation, ignoring commands, and automatic return
+		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
+
+		if (const auto pNewLoco = LocomotionClass::CreateInstance(pThis->GetTechnoType()->Locomotor))
+		{
+			pThis->Locomotor = std::move(pNewLoco);
+			pThis->Locomotor->Link_To_Object(pThis);
+		}
+
+		pExt->ResetLocomotor = false;
+	}
+
 	return 0;
 }
 
 // Rewrite from 0x4835D5/0x74004B, replace check pThis->GetCell()->LandType != LandType::Water
 static inline bool CanUnloadNow(UnitClass* pTransport, FootClass* pPassenger)
 {
-	if (TechnoTypeExt::ExtMap.Find(pTransport->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	if (TechnoTypeExt::Fetch(pTransport->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
 		return GroundType::Array[static_cast<int>(pTransport->GetCell()->LandType)].Cost[static_cast<int>(pPassenger->GetTechnoType()->SpeedType)] != 0.0;
 
 	return pTransport->GetCell()->LandType != LandType::Water;
@@ -402,7 +416,7 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 		TransportUnloadTemp::ShouldPlaySound = false;
 		const auto pType = pThis->Type;
 
-		if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+		if (TechnoTypeExt::Fetch(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
 	}
 
@@ -419,7 +433,7 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 	const auto pType = pThis->Type;
 	const auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
-	if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+	if (TechnoTypeExt::Fetch(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 	{
 		if (!pPassenger || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
@@ -598,7 +612,7 @@ DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
 	if (pThis->OnBridge)
 		return MoveToPassenger;
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+	if (TechnoTypeExt::Fetch(pThis->Type)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return ContinueCheck;
 
 	GET(CellClass* const, pCell, EBP);
@@ -619,7 +633,7 @@ DEFINE_HOOK(0x7400B5, UnitClass_MouseOverObject_AmphibiousUnload, 0x7)
 
 	GET(UnitClass* const, pThis, ESI);
 
-	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
+	return TechnoTypeExt::Fetch(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
 }
 
 DEFINE_HOOK(0x70107A, TechnoClass_CanDeploySlashUnload_AmphibiousUnload, 0x7)
@@ -633,7 +647,7 @@ DEFINE_HOOK(0x70107A, TechnoClass_CanDeploySlashUnload_AmphibiousUnload, 0x7)
 
 	GET(UnitClass* const, pThis, ESI);
 
-	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
+	return TechnoTypeExt::Fetch(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
 }
 
 DEFINE_HOOK(0x73D769, UnitClass_Mission_Unload_AmphibiousUnload, 0x7)
@@ -651,7 +665,7 @@ DEFINE_HOOK(0x73D7AB, UnitClass_Mission_Unload_FindUnloadPosition, 0x5)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	if (TechnoTypeExt::Fetch(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
 	{
 		if (const auto pPassenger = pThis->Passengers.GetFirstPassenger())
 		{
@@ -680,7 +694,7 @@ DEFINE_HOOK(0x740C9C, UnitClass_GetUnloadDirection_CheckUnloadPosition, 0x7)
 {
 	GET(UnitClass* const, pThis, EDI);
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	if (TechnoTypeExt::Fetch(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
 	{
 		if (const auto pPassenger = pThis->Passengers.GetFirstPassenger())
 		{
@@ -696,7 +710,7 @@ DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	if (TechnoTypeExt::Fetch(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
 	{
 		GET(FootClass* const, pPassenger, EDI);
 		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xBC, -0xAC));
@@ -707,3 +721,232 @@ DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
 }
 
 #pragma endregion
+
+#pragma region BuildingEnterExtension
+
+DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+{
+	GET(ObjectClass*, pObject, ESI);
+	enum { NewAction = 0x51EE3B };
+
+	if (pObject->WhatAmI() == AbstractType::Building)
+	{
+		const auto pRulesExt = RulesExt::Global();
+		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+
+		if (pType->InfantryAbsorb
+			&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+		{
+			R->EBP(Action::Repair);
+			return NewAction;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+{
+	GET(ObjectClass*, pObject, EDI);
+	enum { NewAction = 0x74037A };
+
+	if (pObject->WhatAmI() == AbstractType::Building)
+	{
+		const auto pRulesExt = RulesExt::Global();
+		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+
+		if (pType->UnitAbsorb
+			&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+		{
+			R->EBX(Action::Repair);
+			return NewAction;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	enum { SkipGameCode = 0x73F64F };
+
+	const auto pRulesExt = RulesExt::Global();
+	const auto pType = pThis->Type;
+
+	if (pType->UnitAbsorb
+		&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+	{
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGameCode = 0x4DFC91 };
+
+	const auto RulesExt = RulesExt::Global();
+	const Mission mission = TechnoTypeExt::Fetch(pBuilding->Type)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter))
+		? Mission::Eaten : Mission::Enter;
+
+	pThis->QueueMission(mission, false);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	const auto pRulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pThis->Type)->NoQueueUpToUnload.Get(
+		pRulesExt->NoQueueUpToUnload_Buildings.Get(pRulesExt->NoQueueUpToUnload)))
+	{
+		R->EAX(0);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+	enum { EnterBuilding = 0x51A2AD, CannotEnter = 0x51A488 };
+
+	const auto pType = pBuilding->Type;
+	if (!pType->InfantryAbsorb)
+		return 0;
+
+	const auto pTunnel = AresHelper::CanUseAres
+		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+
+	if (pType->Passengers > 0 || pTunnel)
+	{
+		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		{
+			if (const auto pTag = pBuilding->AttachedTag)
+				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+			R->EBP(0);
+			R->EDI(pBuilding);
+			return EnterBuilding;
+		}
+
+		R->EBP(0);
+		return CannotEnter;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x739FA2, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(BuildingClass*, pBuilding, EBX);
+	enum { EnterBuilding = 0x73A28A, CannotEnter = 0x73A796, SkipGameCode = 0x73A315 };
+
+	const auto pType = pBuilding->Type;
+	if (!pType->UnitAbsorb)
+		return 0;
+
+	const auto pTunnel = AresHelper::CanUseAres
+		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+
+	if (pType->Passengers > 0 || pTunnel)
+	{
+		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		{
+			if (const auto pTag = pBuilding->AttachedTag)
+				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+			// This might fix a bug where hover vehicles enter tunnels.
+			FootExt::Fetch(pThis)->ResetLocomotor = true;
+
+			if (pTunnel)
+			{
+				AresFunctions::AddPassengerFromTunnel(pTunnel, pBuilding, pThis);
+				return SkipGameCode;
+			}
+
+			return EnterBuilding;
+		}
+		else
+		{
+			return CannotEnter;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x4D9510, FootClass_SetDestination_OpenToppedFireWhileMoving, 0x6)
+{
+	GET(FootClass*, pThis, EBP);
+	GET(void*, moving, ESI);
+
+	if (!moving)
+		return 0;
+
+	auto const pUnit = abstract_cast<UnitClass*, true>(pThis);
+
+	if (!pUnit)
+		return 0;
+
+	auto const pType = pUnit->Type;
+
+	if (pType->OpenTopped && pUnit->Passengers.NumPassengers > 0)
+	{
+		const bool fireWhileMoving = TechnoTypeExt::Fetch(pType)->OpenTopped_FireWhileMoving.Get(RulesExt::Global()->OpenTopped_FireWhileMoving);
+		auto pPassenger = pUnit->Passengers.GetFirstPassenger();
+
+		while (pPassenger)
+		{
+			const bool canFire = fireWhileMoving && TechnoExt::Fetch(pPassenger)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving);
+
+			// Technically these 2 can't exist in the same time, but just in case
+			if (auto const pLocoTarget = pPassenger->LocomotorTarget)
+			{
+				if (!canFire)
+				{
+					pPassenger->ReleaseLocomotor(true);
+				}
+				else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pLocoTarget))->WeaponType)
+				{
+					if (pWeapon->Warhead->IsLocomotor && !pWeapon->FireWhileMoving)
+						pPassenger->ReleaseLocomotor(true);
+				}
+			}
+
+			if (auto const pTemporal = pPassenger->TemporalImUsing)
+			{
+				if (auto const pTarget = pTemporal->Target)
+				{
+					if (!canFire)
+					{
+						pTemporal->LetGo();
+					}
+					else if (auto const pWeapon = pPassenger->GetWeapon(pPassenger->SelectWeapon(pTarget))->WeaponType)
+					{
+						if (pWeapon->Warhead->Temporal && !pWeapon->FireWhileMoving)
+							pTemporal->LetGo();
+					}
+				}
+			}
+
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+		}
+	}
+
+	return 0;
+}
