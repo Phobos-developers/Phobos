@@ -370,7 +370,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
 
 	// Ares 0.E
-	this->Tunnel.Read(exINI, pSection, "Tunnel");
+	this->Tunnel = exINI.ReadString(pSection, "Tunnel");
 
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
