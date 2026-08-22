@@ -2539,8 +2539,8 @@ msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
 
-msgid "Customize ivan bomb visibility (by NetsuNegi)"
-msgstr "自定义伊文炸弹可见性（by NetsuNegi）"
+msgid "[Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)"
+msgstr "[自定义伊文炸弹可见性](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility)（by NetsuNegi）"
 
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "

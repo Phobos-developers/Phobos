@@ -3250,6 +3250,20 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), default to [CombatDamage] -> ROF.RandomDelay
 ```
 
+### Customize ivan bomb visibility
+
+- Now you can customize who can see bomb image.
+  - This also affect on bomb detectors.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMEWEAPON]                ; WeaponType
+IvanBomb.Visibility=        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Customizing whether passengers are kicked out when an aircraft fires
 
 - You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
