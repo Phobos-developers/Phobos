@@ -26,7 +26,7 @@ void TechnoExt::OnEarlyUpdate()
 	if (this->CheckDeathConditions())
 		return;
 
-	if (this->WebbyAnim)
+	if (this->WebbyDurationTimer.IsTicking())
 		this->WebbyUpdate();
 
 	this->ApplyInterceptor();
@@ -146,7 +146,6 @@ void TechnoExt::WebbyUpdate()
 
 	if (this->WebbyDurationTimer.Completed())
 	{
-		this->WebbyDurationCountDown = -1;
 		this->WebbyDurationTimer.Stop();
 
 		if (this->WebbyAnim && this->WebbyAnim->Type) // If this anim doesn't have a type pointer, just detach it

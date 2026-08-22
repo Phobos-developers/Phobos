@@ -1111,13 +1111,9 @@ DEFINE_HOOK(0x518FBC, InfantryClass_DrawIt_DontRenderSHP, 0x6)
 	if (!pThis)
 		return 0;
 
-	auto pTechno = static_cast<TechnoClass*>(pThis);
-	if (!pTechno)
-		return 0;
+	auto pExt = TechnoExt::Fetch(pThis);
 
-	auto pExt = TechnoExt::Fetch(pTechno);
-
-	if (pExt->WebbyDurationCountDown > 0)
+	if (pExt->IsWebbed())
 		return SkipDrawCode;
 
 	return 0;
@@ -1201,7 +1197,6 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 	pExt->WebbyLastTarget = pThis->Target;
 	pExt->WebbyLastMission = pThis->CurrentMission;
 
-	pExt->WebbyDurationCountDown = duration;
 	pExt->WebbyDurationTimer.Start(duration);
 
 	if (pThis->Locomotor && pThis->Locomotor->Is_Moving())

@@ -83,7 +83,6 @@ public:
 
 	bool ShouldBeDead;
 
-	int	WebbyDurationCountDown;
 	CDTimerClass WebbyDurationTimer;
 	AnimClass* WebbyAnim;
 	AbstractClass* WebbyLastTarget;
@@ -140,7 +139,6 @@ public:
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
 		, ShouldBeDead { false }
-		, WebbyDurationCountDown { -1 }
 		, WebbyDurationTimer {}
 		, WebbyAnim { nullptr }
 		, WebbyLastTarget { nullptr }
@@ -195,6 +193,7 @@ public:
 	void UpdateLastTargetCrd();
 	void WebbyUpdate();
 	int GetSight();
+	bool IsWebbed() const;
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 

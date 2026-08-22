@@ -91,7 +91,7 @@ DEFINE_HOOK(0x51AA49, InfantryClass_Assign_Destination_DisallowMoving, 0x6)
 
 	const auto pExt = TechnoExt::Fetch(pThis);
 
-	if (pExt->WebbyDurationCountDown > 0)
+	if (pExt->IsWebbed())
 	{
 		if (pThis->Target)
 		{

@@ -349,7 +349,7 @@ bool TEventExt::AttachedIsUnderWebbyTEvent(ObjectClass* pObject)
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
 	{
 		const auto pExt = TechnoExt::Fetch(pTechno);
-		return pExt->WebbyDurationCountDown > 0;
+		return pExt->IsWebbed();
 	}
 
 	return false;

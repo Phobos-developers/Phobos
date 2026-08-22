@@ -100,7 +100,7 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 		{
 			const auto pTargetExt = TechnoExt::Fetch(pTargetTechno);
 
-			if (pTargetExt->WebbyAnim)
+			if (pTargetExt->IsWebbed())
 				forceWeaponIndex = this->ForceWeapon_Webby;
 		}
 	}
