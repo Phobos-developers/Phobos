@@ -381,10 +381,25 @@ HideShakeEffects=false           ; boolean
 
 ## Changelog
 
-### Version TBD (develop branch nightly builds)
+### 0.6
 
 ```{dropdown} Click to show
 :open:
+
+#### New:
+- [New ScriptTypeActions `19017, 19018, 19020, 19024, 19025, 19026, 19027, 19046, 19047, 19051, 19056, 19058` that require ID as argument](AI-Scripting-and-Mapping.md#new-scripttypeactions-that-require-id-as-argument) (by FS-21)
+
+#### Vanilla fixes:
+
+#### Phobos fixes:
+
+#### Fixes / interactions with other extensions:
+
+```
+
+### 0.5
+
+```{dropdown} Click to show
 
 #### New:
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
@@ -503,7 +518,6 @@ HideShakeEffects=false           ; boolean
 - Allow the aircraft to enter area guard mission and not crash immediately without any airport (by CrimRecya)
 - [Unlimbo Detonate warhead](New-or-Enhanced-Logics.md#unlimbo-detonate-warhead) (by FlyStar)
 - [Attack](New-or-Enhanced-Logics.md#attack-technos-underground) and [damage](New-or-Enhanced-Logics.md#damage-technos-underground) technos underground (by TaranDahl)
-- [New ScriptTypeActions `19017, 19018, 19020, 19024, 19025, 19026, 19027, 19046, 19047, 19051, 19056, 19058` that require ID as argument](AI-Scripting-and-Mapping.md#new-scripttypeactions-that-require-id-as-argument) (by FS-21)
 - Fast access structure (by FlyStar)
 - Toggle off laser trail and shake effects (by Ollerus)
 - [Dehardcode the `ZAdjust` of warhead anim](Fixed-or-Improved-Logics.md#dehardcode-the-zadjust-of-warhead-anim) (by TaranDahl)
@@ -622,7 +636,6 @@ HideShakeEffects=false           ; boolean
 - [New exception handler with a crash dialog, crash report and minidumps](Miscellanous.md#turning-offon-in-game-exception-handling) (by ZivDero, ported from Vinifera)
 - [Common Controls v6 visual styles for the game process](Miscellanous.md#visual-styles) (by ZivDero)
 - Global default value for `LeptonMindControlOffset` and `MindControlRingOffset` (by Noble_Fish)
->>>>>>> develop
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
