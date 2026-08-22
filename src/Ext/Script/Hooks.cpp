@@ -195,7 +195,6 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 		// When these lists change, there's a high probability of breaking the original index of the pointed element
 		char id[sizeof(AbstractTypeClass::ID)] = { 0 };
 		char bwp[20] = { 0 };
-		char* context = nullptr;
 		int index = 0;
 		int prefixIndex = 0;
 
