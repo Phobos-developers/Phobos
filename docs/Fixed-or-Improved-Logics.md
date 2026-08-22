@@ -3255,7 +3255,7 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), defau
 - Now you can customize who can see bomb image.
   - This also affect on bomb detectors.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
