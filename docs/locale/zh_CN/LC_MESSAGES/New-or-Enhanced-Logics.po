@@ -7282,6 +7282,19 @@ msgstr ""
 "此功能仅叠加到**视觉效果**原本的散布上，也就是说它独立于 `BallisticScatter.(Min/Max)` "
 "且可共同使用，不会影响抛射体实际爆点的散布。"
 
+msgid "Customize Ivan Bomb"
+msgstr "自定义伊文炸弹"
+
+msgid ""
+"Now you can customize who can see bomb image."
+msgstr ""
+"现在你可以自定义谁能看见炸弹的图像。"
+
+msgid ""
+"This also affect on bomb detectors."
+msgstr ""
+"这对炸弹探测者也有效。"
+
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 

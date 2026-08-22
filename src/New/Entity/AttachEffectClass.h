@@ -104,6 +104,8 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool ShouldRecalculateStats;
+	int FiringCount;
+	int ReceivedDamageCount;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -121,6 +123,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasOnDamageDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -137,6 +140,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasOnDamageDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }
