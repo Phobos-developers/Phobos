@@ -19,7 +19,7 @@
 
 enum class PhobosScripts : unsigned int
 {
-	PlaySpeech = 24, // Reserved! PR 1900 needs to be merged
+	PlaySpeech = 24,
 
 	// Range 10000-10999 are team (aka ingame) actions
 	// Sub-range 10000-10049 is for "attack" actions

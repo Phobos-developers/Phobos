@@ -208,16 +208,6 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			else if (PhobosScripts::MoveToFriendlyStructureByID == static_cast<PhobosScripts>(action))
 				action = 58;
 
-			/* BwP check:
-			Information from https://modenc.renegadeprojects.com/ScriptTypes/ScriptActions
-			Computed Value                           Description
-			-------------------------------------		-------------------------------------------------------
-			0 (Hex 0x0) + Building Index          -> Index of the instance of the building with least threat
-			65536 (Hex 0x10000) + Building Index  -> Index of the instance of the building with highest threat
-			131072 (Hex 0x20000) + Building Index -> Index of the instance of the building which is nearest
-			196608 (Hex 0x30000) + Building Index -> Index of the instance of the building which is farthest
-			*/
-
 			if (sscanf(textArgument, "%[^,],%s", id, bwp) == 2)
 			{
 				index = BuildingTypeClass::FindIndex(id);
