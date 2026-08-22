@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Allow cyborg legs to be repaired when they enter into transports or structures
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Modify ammo on impact
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -444,6 +445,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
+  - Ares' `KeepAlive` adds global tags
+  - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -567,6 +570,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Customize ivan bomb visibility
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -17,6 +17,9 @@ AttachEffectClass::AttachEffectClass()
 	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, LastSequenceCheck { Sequence::Nothing }
+	, FiringCount { 0 }
+	, ReceivedDamageCount { 0 }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -43,6 +46,8 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 	, LastSequenceCheck { Sequence::Nothing }
+	, FiringCount { 0 }
+	, ReceivedDamageCount { 0 }
 {
 	this->HasInitialized = false;
 
@@ -1270,6 +1275,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LaserTrail)
 		.Process(this->ShouldRecalculateStats)
 		.Process(this->LastSequenceCheck)
+		.Process(this->FiringCount)
+		.Process(this->ReceivedDamageCount)
 		.Success();
 }
 

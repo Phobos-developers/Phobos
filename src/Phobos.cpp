@@ -11,6 +11,8 @@
 #include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
+#include <Ext/Rules/Body.h>
+
 #ifdef TESTING_BUILD
 bool HideWarning = false;
 #endif
@@ -338,7 +340,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	}
 #endif // !RELEASE
 
-	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+	if (!Phobos::Config::ShowGameTime || !RulesExt::Global()->ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
 		return 0;
 
 	wchar_t buffer[0x20] {};
