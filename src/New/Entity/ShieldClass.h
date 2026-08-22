@@ -1,8 +1,8 @@
 #pragma once
 
-#include <GeneralStructures.h>
-#include <SpecificStructures.h>
-#include <Ext/TechnoType/Body.h>
+#include <New/Type/ShieldTypeClass.h>
+
+#include "SpecificStructures.h"
 
 class TechnoClass;
 class WarheadTypeClass;
@@ -95,7 +95,7 @@ public:
 	bool IsRedSP() const
 	{
 		auto const pType = this->Type;
-		return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
+		return this->HP <= pType->GetConditionRed() * pType->Strength.Get();
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed);
@@ -112,9 +112,9 @@ private:
 
 	void RespawnShield();
 
-	void CreateAnim();
-	void UpdateIdleAnim();
-	AnimTypeClass* GetIdleAnimType();
+	void CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType = nullptr);
+	void UpdateIdleAnim(ShieldTypeClass* pType, double ratio = 0.0);
+	AnimTypeClass* GetIdleAnimType(ShieldTypeClass* pType, bool idleAnimSet, bool idleAnimDamagedSet, double ratio = 0.0);
 
 	void WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim);
 	void ResponseAttack();
