@@ -3647,10 +3647,10 @@ VisualScatter=false     ; boolean
 This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
 ```
 
-### Customize Ivan Bomb
+### Customize ivan bomb visibility
 
 - Now you can customize who can see bomb image.
-    - This also affect on bomb detectors.
+  - This also affect on bomb detectors.
 
 In `rulesmd.ini`
 ```ini
