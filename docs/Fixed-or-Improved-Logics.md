@@ -386,7 +386,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
-- Ares' `KeepAlive` adds global tags.
 
 ## Newly added global settings
 
@@ -399,6 +398,20 @@ This category lists all features that are globally effective without needing to 
 It was originally planned to list global features that are exclusively related to specific Types, such as [Voxel light source customization](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#voxel-light-source-customization) and [Customizing effect of level lighting on air units](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#customizing-effect-of-level-lighting-on-air-units), under the corresponding Types categories. But later, features like [Veinholes & Weeds](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#veinholes-weeds) were found to be too difficult to separate, so they were just summarized according to the locations where INI flags are written. After all, the end users are modders.
 
 -->
+
+### Add a global default value for `KeepAlive`
+
+- Ares added accompanying [map trigger event#87 and event#88](http://ares-developers.github.io/Ares-docs/new/triggerevents.html#all-keepalives-destroyed-87-88) for [`KeepAlive`](http://ares-developers.github.io/Ares-docs/new/keepalive.html), but since using them for non-building technos requires manually adding them one by one, which is very troublesome, now you can use the following flag to define global default values by type.
+
+In `rulesmd.ini`:
+```ini
+[General]
+KeepAlive.Buildings=true      ; boolean
+KeepAlive.Defenses=true       ; boolean
+KeepAlive.Infantry=false      ; boolean
+KeepAlive.Units=false         ; boolean
+KeepAlive.Aircraft=false      ; boolean
+```
 
 ### Allow beacon placement hotkey in single player
 
@@ -542,11 +555,6 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DefaultToGuardArea=false      ; boolean
-KeepAlive.Buildings=true      ; boolean
-KeepAlive.Defenses=true       ; boolean
-KeepAlive.Infantry=false      ; boolean
-KeepAlive.Units=false         ; boolean
-KeepAlive.Aircraft=false      ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean

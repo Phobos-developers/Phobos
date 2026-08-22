@@ -430,7 +430,7 @@ HideShakeEffects=false           ; boolean
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
-- Ares' `KeepAlive` adds global tags (by FlyStar)
+- [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 
 ```
 

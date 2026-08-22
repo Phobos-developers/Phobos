@@ -1992,6 +1992,22 @@ msgid ""
 "needing to be defined on any specific object."
 msgstr "这个类别下列出了所有全局生效而无需在任何特定对象上定义的功能。"
 
+msgid "Add a global default value for `KeepAlive`"
+msgstr "为 `KeepAlive` 添加全局默认值"
+
+msgid ""
+"Ares added accompanying [map trigger event#87 and event#88](http://ares-"
+"developers.github.io/Ares-docs/new/triggerevents.html#all-keepalives-"
+"destroyed-87-88) for [`KeepAlive`](http://ares-developers.github.io/Ares-"
+"docs/new/keepalive.html), but since using them for non-building technos "
+"requires manually adding them one by one, which is very troublesome, now "
+"you can use the following flag to define global default values by type."
+msgstr ""
+"Ares 为 [`KeepAlive`](http://ares-developers.github.io/Ares-docs/new/keepalive.html) 添加了配套的 [地图触发条件 #87 和 #88](http://ares-developers.github.io/Ares-docs/new/triggerevents.html#all-keepalives-destroyed-87-88)，但是由于为了让非建筑类单位使用它们需要逐个手动添加，非常麻烦，现在你可以用下面的语句按类型定义全局默认值。"
+
+msgid "In `rulesmd.ini`:"
+msgstr "在 `rulesmd.ini`："
+
 msgid "Allow beacon placement hotkey in single player"
 msgstr "允许在单人模式下使用信标放置快捷键"
 

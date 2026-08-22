@@ -876,8 +876,8 @@ msgid ""
 "`SW.AutoFire` (by Noble_Fish)"
 msgstr "允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作（by Noble_Fish）"
 
-msgid "Ares' `KeepAlive` adds global tags (by FlyStar)"
-msgstr "为 Ares 的 `KeepAlive` 添加了全局语句（by FlyStar）"
+msgid "[Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)"
+msgstr "[为 `KeepAlive` 添加全局默认值](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive)（by FlyStar）"
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
