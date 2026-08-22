@@ -329,6 +329,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
+- Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button.
 
 ## Fixes / interactions with other extensions
 
@@ -387,6 +388,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Ares' `KeepAlive` adds global tags.
+- Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 
 ## Newly added global settings
 

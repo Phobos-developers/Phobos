@@ -424,6 +424,7 @@ HideShakeEffects=false           ; boolean
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
+- Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -431,6 +432,7 @@ HideShakeEffects=false           ; boolean
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 - Ares' `KeepAlive` adds global tags (by FlyStar)
+- Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 
 ```
 
