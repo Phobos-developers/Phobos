@@ -222,6 +222,7 @@
     <!-- src\Ext\WeaponType -->
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.Bomb.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <!-- src\Interop -->
     <ClCompile Include="src\Interop\AttachEffect.cpp" />
