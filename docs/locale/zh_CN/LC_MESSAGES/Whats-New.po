@@ -110,6 +110,11 @@ msgid "Changes to Phobos behavior"
 msgstr "Phobos 行为更改"
 
 msgid ""
+"VXL vehicles can now swap their turret and barrel models per weapon index "
+"by using `MultiWeapon` together with `TurretCount`."
+msgstr "VXL 载具现在可以通过同时使用 `MultiWeapon` 和 `TurretCount`，按武器索引切换炮塔和炮管模型。"
+
+msgid ""
 "When the value of the `ProjectileRange` (Ares feature) field on a weapon "
 "is greater than 0, weapon range modifiers will be applied. This behavior "
 "can be disabled by explicitly setting "

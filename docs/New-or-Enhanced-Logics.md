@@ -2183,6 +2183,9 @@ MindControlSize=1                     ; integer
   - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
     - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
     - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
+  - For VXL vehicles that also set `TurretCount>0`, the turret and barrel VXL models swap based on the currently selected weapon. Weapon index `N` uses `<ImageFile>turN.vxl` / `<ImageFile>barlN.vxl` (weapon 1 -> `<ImageFile>tur.vxl`, weapon 2 -> `<ImageFile>tur1.vxl`, weapon 3 -> `<ImageFile>tur2.vxl`, and so on). No `artmd.ini` changes are needed - just place the extra `.vxl` / `.hva` files into the game directory following the naming convention.
+  - The number of effective turrets is the smaller of `WeaponCount` and `TurretCount`; a weapon whose index is out of this range falls back to the default turret. Elite weapons follow the same per-index rule. When the unit has no target, the turret stays on the last used weapon instead of reverting to the default.
+  - Turret and barrel shadows are drawn as usual when `UseTurretShadow=yes`.
 
 In `rulesmd.ini`:
 ```ini

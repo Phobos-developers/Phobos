@@ -32,3 +32,6 @@ out
 # Python bytecode caches
 __pycache__/
 *.py[cod]
+
+# Personal agent instructions
+/AGENTS.md

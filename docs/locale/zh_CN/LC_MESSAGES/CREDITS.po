@@ -3198,6 +3198,12 @@ msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置�
 msgid "**obsidianus** - Automatic conversion based on health"
 msgstr "**obsidianus** - 自动根据血量变形"
 
-msgid "**Nuke** - Reload speed adjustment on promotion"
-msgstr "**Nuke** - 升级时调整装填速率"
+msgid "**Nuke**:"
+msgstr "**Nuke**："
+
+msgid "Reload speed adjustment on promotion"
+msgstr "升级时调整装填速率"
+
+msgid "Switch Voxel Turret Depends on MultiWeapon"
+msgstr "根据 MultiWeapon 切换体素炮塔"
 

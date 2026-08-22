@@ -27,6 +27,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### Changes to Phobos behavior
 
+- VXL vehicles can now swap their turret and barrel models per weapon index by using `MultiWeapon` together with `TurretCount`. (by Nuke)
 - When the value of the `ProjectileRange` (Ares feature) field on a weapon is greater than 0, weapon range modifiers will be applied. This behavior can be disabled by explicitly setting `ProjectileRange.ApplyModifiers=false` on that weapon; if `ProjectileRange.ApplyModifiers` is not explicitly set, it will fall back to the global default `[CombatDamage] -> ProjectileRange.ApplyModifiers`.
 - `Splits.TargetCellRange` < 0 now applies special behaviour where the projectile does not consider nearby cells as additional targets if there are not enough techno targets to match `Cluster` count at all.
 - Combat light customizations introduced a bug that removed vanilla behaviour of ignoring detail level / framerate checks for colored combat light. This bug has been fixed but the previous behaviour can be restored by setting `CombatLightDetailLevel.CheckColored` on Warhead or globally under `[AudioVisual]`.

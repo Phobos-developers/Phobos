@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Ext/TechnoType/Body.h>
+#include <FileSystem.h>
 #include <UnitTypeClass.h>
 
 // Concrete leaf extension for UnitTypeClass.
@@ -82,6 +83,12 @@ public:
 	Valueable<int> ExtraTurretCount;
 	std::vector<CoordStruct> ExtraTurretOffsets;
 	Valueable<int> BurstPerTurret;
+
+	// VXL turrets / barrels that get swapped in per weapon index when MultiWeapon
+	// + TurretCount is in use. Index 0 of a weapon is always the vanilla turret,
+	// these hold the extra ones (weapon 1 -> MultiWeaponTurrets[0] and so on).
+	std::vector<VoxelStruct> MultiWeaponTurrets;
+	std::vector<VoxelStruct> MultiWeaponBarrels;
 
 	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, SinkSpeed {}
@@ -173,7 +180,16 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+	virtual ~UnitTypeExt() override;
+
 	void ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx);
+
+	// Loads the extra VXL turrets / barrels (named <ImageFile>turN.vxl and
+	// <ImageFile>barlN.vxl) for units using MultiWeapon + TurretCount.
+	void LoadMultiWeaponTurrets();
+	bool IsMultiWeaponTurretEnabled() const;
+	VoxelStruct* GetMultiWeaponTurret(int weaponIndex, VoxelStruct* pFallback);
+	VoxelStruct* GetMultiWeaponBarrel(int weaponIndex, VoxelStruct* pFallback);
 
 private:
 	template <typename T>
