@@ -438,8 +438,11 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
-	Nullable<bool> Unsellable;	// Ares 3.0
-	Nullable<bool> KeepAlive;	// Ares 3.0
+	Valueable<bool> PsychicDetectable;
+
+	// Ares 3.0
+	Nullable<bool> Unsellable;
+	Nullable<bool> KeepAlive;
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
@@ -830,6 +833,8 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+		
+		, PsychicDetectable { true }
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
