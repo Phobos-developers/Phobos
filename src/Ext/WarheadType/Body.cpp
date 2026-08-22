@@ -523,6 +523,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
 		|| this->Ammo
+		|| this->Webby
 	);
 
 	char tempBuffer[32];
