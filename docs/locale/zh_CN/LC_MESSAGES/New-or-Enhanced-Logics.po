@@ -125,10 +125,13 @@ msgstr "`outofrange`：当对象处于当前目标的武器射程外则弃用。
 msgid ""
 "`firing`: Discard when firing a weapon. This counts special weapons that "
 "are not actually fired such as ones with `Spawner=true` or "
-"`DrainWeapon=true`."
+"`DrainWeapon=true`. `DiscardOn.Firing.Count` determines the firing amount to discard the effect."
 msgstr ""
 "`firing`：当对象开火时弃用。这包括那些实际上并未开火的特殊武器，例如带有 `Spawner=true` 或 "
-"`DrainWeapon=true` 的武器。"
+"`DrainWeapon=true` 的武器。`DiscardOn.Firing.Count` 决定了弃用所需的开火次数。"
+
+msgid "`receiveddamage`: Discard when receiving damage. `DiscardOn.ReceivedDamage.Count` determines the received damage amount to discard the effect. `DiscardOn.ReceivedDamage.AffectsHouse` determines it can be discarded by which house's damage."
+msgstr "`receiveddamage`：当 AE 所附加的对象受到伤害时弃用。`DiscardOn.ReceivedDamage.Count` 决定触发弃用所需的受伤次数。`DiscardOn.ReceivedDamage.AffectsHouse` 决定它可以被哪些所属方的伤害弃用。"
 
 msgid ""
 "`selling`: Discard when the building to which the effect is attached is "
