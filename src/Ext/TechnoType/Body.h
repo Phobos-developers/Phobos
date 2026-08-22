@@ -273,8 +273,8 @@ public:
 
 		ValueableVector<AnimTypeClass*> Webby_Anims;
 		Valueable<bool> ImmuneToWeb;
-		Valueable<int> Webby_Duration;
-		Valueable<int> Webby_DurationVariation;
+		Valueable<double> Webby_Modifier;
+		Nullable<int> Webby_DurationVariation;
 
 		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
@@ -691,8 +691,8 @@ public:
 
 			, Webby_Anims {}
 			, ImmuneToWeb { false }
-			, Webby_Duration { 0 }
-			, Webby_DurationVariation { 0 }
+			, Webby_Modifier { 1.0 }
+			, Webby_DurationVariation {}
 			, LandingDir {}
 			, DroppodType {}
 			, TiberiumEaterType {}

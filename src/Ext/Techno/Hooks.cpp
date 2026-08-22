@@ -902,7 +902,7 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->ImmuneToWeb.Get())
+	if (pTypeExt->ImmuneToWeb.Get() || pTypeExt->Webby_Modifier <= 0.0)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -922,14 +922,17 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 		}
 	}
 
-	int duration = pTypeExt->Webby_Duration.Get() > 0 ? pTypeExt->Webby_Duration.Get() : pWarheadExt->Webby_Duration.Get();
-	int durationVariation = pTypeExt->Webby_DurationVariation.Get() > 0 ? pTypeExt->Webby_DurationVariation.Get() : pWarheadExt->Webby_DurationVariation.Get();
+	int duration = pWarheadExt->Webby_Duration.Get();
+	int durationVariation = pTypeExt->Webby_DurationVariation.Get(pWarheadExt->Webby_DurationVariation.Get());
 	durationVariation = durationVariation < 0 ? 0 : durationVariation;
 	int minDuration = duration - durationVariation;
 	minDuration = minDuration <= 0 ? 0 : minDuration;
 	int maxDuration = duration + durationVariation;
 
 	duration = ScenarioClass::Instance->Random.RandomRanged(minDuration, maxDuration);
+
+	if (pTypeExt->Webby_Modifier != 1.0)
+		duration = static_cast<int>(duration * pTypeExt->Webby_Modifier);
 
 	int cap = pWarheadExt->Webby_Cap;
 	int webbyCountDown = pExt->WebbyDurationTimer.GetTimeLeft();
