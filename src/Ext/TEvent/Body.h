@@ -1,10 +1,7 @@
 #pragma once
 
 #include <Utilities/Container.h>
-#include <Utilities/Template.h>
-#include <Helpers/Template.h>
-
-#include <optional>
+#include <Utilities/TemplateDef.h>
 
 #include <TEventClass.h>
 
@@ -60,30 +57,36 @@ enum PhobosTriggerEvent
 	_DummyMaximum,
 };
 
-class TEventExt
+class TEventExt final : public AbstractExt
 {
 public:
 	using base_type = TEventClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TEventExt;
+
 	static constexpr DWORD Canary = 0x91919191;
 
-	class ExtData final : public Extension<TEventClass>
+public:
+	// typed owner accessor
+	TEventClass* OwnerObject() const
 	{
-	public:
-		ExtData(TEventClass* const OwnerObject) : Extension<TEventClass>(OwnerObject)
-		{ }
+		return static_cast<TEventClass*>(this->GetAttachedObject());
+	}
 
-		virtual ~ExtData() = default;
+	TEventExt(TEventClass* const OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~TEventExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
 
 	static int GetFlags(int iEvent);
 
@@ -105,6 +108,7 @@ public:
 	static bool AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject);
 
 
+public:
 	class ExtContainer final : public Container<TEventExt>
 	{
 	public:
@@ -113,4 +117,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TEventExt* Fetch(const TEventClass* pThis)
+	{
+		return AbstractExt::Fetch<TEventExt>(pThis);
+	}
+
+	static TEventExt* TryFetch(const TEventClass* pThis)
+	{
+		return AbstractExt::TryFetch<TEventExt>(pThis);
+	}
 };
+

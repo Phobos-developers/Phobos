@@ -1,14 +1,4 @@
-#include <Phobos.h>
-
-#include <Helpers/Macro.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Helpers.Alex.h>
-
-#include <CCINIClass.h>
-#include <RulesClass.h>
-#include <InfantryTypeClass.h>
-#include <UnitTypeClass.h>
-#include <AircraftTypeClass.h>
+#include "Body.h"
 
 static void ReplaceImageInfantry(InfantryTypeClass* pType)
 {
