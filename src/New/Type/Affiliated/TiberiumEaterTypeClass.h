@@ -6,7 +6,7 @@ class TiberiumEaterTypeClass
 {
 public:
 	Valueable<int> TransDelay { -1 };
-	Valueable<float>  CashMultiplier { 1.0 };
+	Valueable<float>  CashMultiplier { 1.0f };
 	Valueable<int> AmountPerCell { 0 };
 	std::vector<Vector2D<int>> Cells { std::vector<Vector2D<int>>(1) };
 	Valueable<bool> Display { true };
@@ -15,6 +15,7 @@ public:
 	ValueableVector<AnimTypeClass*> Anims {};
 	NullableVector<AnimTypeClass*> Anims_Tiberiums[4] {};
 	Valueable<bool> AnimMove { true };
+	Valueable<bool> UnderEMP { false };
 
 	TiberiumEaterTypeClass() = default;
 

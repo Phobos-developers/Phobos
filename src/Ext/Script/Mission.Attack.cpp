@@ -2,6 +2,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/Unit/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
@@ -12,12 +13,12 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	bool bAircraftsWithoutAmmo = false;
 	bool agentMode = false;
 	bool pacifistTeam = true;
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 	auto& waitNoTargetCounter = pTeamData->WaitNoTargetCounter;
 	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
 	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
 
-	const auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	const auto pHouseExt = HouseExt::Fetch(pTeam->Owner);
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (waitNoTargetCounter > 0)
 	{
@@ -56,7 +57,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 	for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		const auto pKillerTechnoData = TechnoExt::ExtMap.Find(pFoot);
+		const auto pKillerTechnoData = FootExt::Fetch(pFoot);
 
 		if (pKillerTechnoData->LastKillWasTeamTarget)
 		{
@@ -78,7 +79,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 				for (auto pFootTeam = pFirstUnit; pFootTeam; pFootTeam = pFootTeam->NextTeamMember)
 				{
 					// Let's reset all Team Members objective
-					const auto pKillerTeamUnitData = TechnoExt::ExtMap.Find(pFootTeam);
+					const auto pKillerTeamUnitData = FootExt::Fetch(pFootTeam);
 					pKillerTeamUnitData->LastKillWasTeamTarget = false;
 
 					if (pFootTeam->WhatAmI() == AbstractType::Aircraft)
@@ -239,7 +240,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 						// If the vehicle cannot be moved, perhaps it is better this way.
 						if (whatAmI == AbstractType::Unit
-							&& TechnoExt::CannotMove(static_cast<UnitClass*>(pFoot))
+							&& UnitExt::CannotMove(static_cast<UnitClass*>(pFoot))
 							&& !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
 						{
 							continue;
@@ -456,7 +457,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
-	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+	const auto pTechnoTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
 	const auto pTechnoType = pTechnoTypeExt->OwnerObject();
 	const auto pTechnoOwner = pTechno->Owner;
 	const auto targetZoneScanType = pTechnoTypeExt->TargetZoneScanType;
@@ -484,16 +485,21 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		const auto pTargetType = pTarget->GetTechnoType();
+		bool skipImmune = false;
 
-		if (!pTargetType->LegalTarget || pTargetType->Immune)
-			continue;
-
-		// Discard invisible structures
-		if (const auto pTargetBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
+		if (const auto pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
 		{
-			if (pTargetBuildingType->InvisibleInGame)
+			// Discard invisible structures
+			if (pTargetBuilding->Type->InvisibleInGame)
 				continue;
+
+			// Skip immunity check for buildings in agent mode.
+			if (agentMode)
+				skipImmune = true;
 		}
+
+		if (!pTargetType->LegalTarget || (!skipImmune && pTargetType->Immune))
+			continue;
 
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
 		const auto pWeaponType = pTechno->GetWeapon(pTechno->SelectWeapon(pTarget))->WeaponType;
@@ -871,26 +877,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
 		{
-			const auto& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
-
-			if (const int count = neutralTechBuildings.Count)
-			{
-				for (int i = 0; i < count; ++i)
-				{
-					if (neutralTechBuildings.GetItem(i) == pTechnoType)
-						return true;
-				}
-			}
-
-			// Other cases of civilian Tech Structures
-			if (pBuildingType->Unsellable
-				&& pBuildingType->Capturable
-				&& pBuildingType->TechLevel < 0
-				&& pBuildingType->NeedsEngineer
-				&& !pBuildingType->BridgeRepairHut)
-			{
+			if (pBuildingType->Capturable && pBuildingType->NeedsEngineer)
 				return true;
-			}
 		}
 
 		break;
@@ -978,7 +966,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral())
 		{
-			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pTechnoType);
 
 			if (pTechnoTypeExt->RadarJamRadius > 0
 				|| pTechnoTypeExt->InhibitorRange.isset())
@@ -1176,7 +1164,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 			{
 				if (pBuildingType->SuperWeapon >= 0
 					|| pBuildingType->SuperWeapon2 >= 0
-					|| BuildingTypeExt::ExtMap.Find(pBuildingType)->SuperWeapons.size() > 0)
+					|| BuildingTypeExt::Fetch(pBuildingType)->SuperWeapons.size() > 0)
 				{
 					return true;
 				}
@@ -1245,7 +1233,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Radar Jammer
 
 		if (!pTechno->Owner->IsNeutral()
-			&& TechnoTypeExt::ExtMap.Find(pTechnoType)->RadarJamRadius > 0)
+			&& TechnoTypeExt::Fetch(pTechnoType)->RadarJamRadius > 0)
 		{
 			return true;
 		}
@@ -1256,7 +1244,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Inhibitor
 
 		if (!pTechno->Owner->IsNeutral()
-			&& TechnoTypeExt::ExtMap.Find(pTechnoType)->InhibitorRange.isset())
+			&& TechnoTypeExt::Fetch(pTechnoType)->InhibitorRange.isset())
 		{
 			return true;
 		}
@@ -1300,7 +1288,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		{
 			if (pBuildingType->Capturable
 				|| (pBuildingType->BridgeRepairHut
-					&& pBuildingType->Repairable))
+					&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords())))
 			{
 				return true;
 			}
@@ -1313,14 +1301,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (pTeamLeader && !pTechno->Owner->IsNeutral())
 		{
-			const int distanceToTarget = pTeamLeader->DistanceFrom(pTechno);
-			const int guardRange = pTeamLeader->GetTechnoType()->GuardRange;
-
-			if (guardRange > 0
-				&& distanceToTarget <= (guardRange * 2))
-			{
+			if (pTeamLeader->DistanceFrom(pTechno) <= pTeamLeader->GetGuardRange(1))
 				return true;
-			}
 		}
 
 		break;
@@ -1356,6 +1338,20 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		break;
 
+	case 37:
+		// Bridge Repair Hut
+
+		if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTechnoType))
+		{
+			if (pBuildingType->BridgeRepairHut
+				&& MapClass::Instance.IsLinkedBridgeDestroyed(pTechno->GetMapCoords()))
+			{
+				return true;
+			}
+		}
+
+		break;
+
 	default:
 		break;
 	}
@@ -1366,7 +1362,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 void ScriptExt::Mission_Attack_List(TeamClass* pTeam, int calcThreatMode, bool repeatAction, int attackAITargetType)
 {
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 	pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
@@ -1387,7 +1383,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 	bool selected = false;
 	int idxSelectedObject = -1;
 	std::vector<int> validIndexes;
-	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	const auto pTeamData = TeamExt::Fetch(pTeam);
 
 	if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 	{
@@ -1484,7 +1480,7 @@ bool ScriptExt::CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetIn
 		if (const auto pWeapon = TechnoExt::GetCurrentWeapon(pTechno, pType, secondary))
 		{
 			const auto pBulletType = pWeapon->Projectile;
-			return (targetInAir ? pBulletType->AA : (pBulletType->AG && !BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly));
+			return (targetInAir ? pBulletType->AA : (pBulletType->AG && !BulletTypeExt::Fetch(pBulletType)->AAOnly));
 		}
 
 		return false;

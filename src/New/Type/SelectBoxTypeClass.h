@@ -24,7 +24,7 @@ public:
 	Valueable<bool> GroundLine_Dashed;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
-		, Shape { FileSystem::LoadSHPFile("select.shp") }
+		, Shape { nullptr }
 		, Palette {}
 		, Frames {}
 		, Offset { Point2D::Empty }

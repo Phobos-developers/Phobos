@@ -20,13 +20,14 @@ public:
 	void AI_Temporal();
 	void KillAnim();
 	void CreateAnim();
-	void UpdateCumulativeAnim();
-	void TransferCumulativeAnim(AttachEffectClass* pSource);
+	void UpdateCumulativeAnim(int count);
 
 	bool CanShowAnim() const
 	{
-		return (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-			&& (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
+		const auto pType = this->Type;
+		return (pType->Animation || (pType->Cumulative && pType->CumulativeAnimations.size() > 0))
+			&& (this->IsOnline || pType->Animation_OfflineAction != AttachedAnimFlag::Hides)
+			&& (!this->IsUnderTemporal || pType->Animation_TemporalAction != AttachedAnimFlag::Hides)
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 
@@ -40,12 +41,13 @@ public:
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
+	HouseClass* GetInvokerHouse() const { return this->InvokerHouse; }
 	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
 
 	bool IsActiveIgnorePowered() const
 	{
 		if (this->IsSelfOwned())
-			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->ShouldRefreshDuration;
 		else
 			return this->Duration;
 	}
@@ -91,16 +93,19 @@ private:
 	bool IsOnline;
 	bool IsCloaked;
 	bool HasInitialized;
-	bool NeedsDurationRefresh;
+	bool ShouldRefreshDuration;
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
 	LaserTrailClass* LaserTrail;
+	Sequence LastSequenceCheck;
 
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
-	bool NeedsRecalculateStat;
+	bool ShouldRecalculateStats;
+	int FiringCount;
+	int ReceivedDamageCount;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -118,6 +123,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasOnDamageDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -134,6 +140,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasOnDamageDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }
