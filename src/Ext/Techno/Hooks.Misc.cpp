@@ -23,6 +23,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+DEFINE_HOOK_AGAIN(0x6B0BA4, SlaveManagerClass_Killed_DecideOwner, 0x6)
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
 	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
@@ -51,7 +52,22 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		break;
 	}
 
-	return 0x0;
+	if (R->Origin() == 0x6B0BA4)
+	{
+		// 0x6B0BA4: master sold / self-destroyed (killer == 0).
+		// Replicate the vanilla fallback: give the slave to the neutral house,
+		// otherwise destroy it. Avoid `return 0` here so we bypass the vanilla
+		// `mov eax,[esp+arg_4]; test eax,eax` sequence and branch explicitly.
+		if (const auto pNeutral = HouseClass::FindNeutral())
+		{
+			R->EAX(pNeutral);
+			return ChangeSlaveOwner;
+		}
+		return KillTheSlave;
+
+	}
+
+	return 0;
 }
 
 // Fix slaves cannot always suicide due to armor multiplier or something
