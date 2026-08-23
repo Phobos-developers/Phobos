@@ -220,6 +220,8 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->SkipWeaponPicking = true;
 	}
+
+	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
 }
 
 template <typename T>
@@ -316,6 +318,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
+		.Process(this->IvanBomb_Detonate)
 		;
 };
 

@@ -119,6 +119,11 @@ public:
 
 	Nullable<bool> CylinderRangefinding;
 
+<<<<<<< Updated upstream
+=======
+	Valueable<bool> IvanBomb_Detonate;
+	
+>>>>>>> Stashed changes
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }
 		, ProjectileRange { Leptons(100000) }
@@ -210,6 +215,7 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
+		, IvanBomb_Detonate { false }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;
