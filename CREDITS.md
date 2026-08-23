@@ -943,3 +943,4 @@ This page lists all the individual contributions to the project by their author.
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)**:
   - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **dh381-1** - Custom weapons to detonate your own Ivan bombs.

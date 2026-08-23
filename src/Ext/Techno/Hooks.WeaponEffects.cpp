@@ -4,8 +4,6 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Bullet/Body.h>
 
-#include <vector>
-
 // Contains hooks that fix weapon graphical effects like lasers, railguns, electric bolts, beams and waves not interacting
 // correctly with obstacles between firer and target, as well as railgun / railgun particles being cut off by elevation.
 
@@ -344,34 +342,25 @@ DEFINE_HOOK(0x762D57, WaveClass_AI_TargetUnset, 0x6)
 }
 
 DEFINE_HOOK(0x702D19, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x6)
-{                   
+{
+	GET(ObjectClass*, pThis, ESI);                   
     GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xB4, 0x10));
 
     if (!pSource)
         return 0; 
 
-    if(auto const pSourceExt = TechnoExt::TryFetch(pSource)) 
+	if(auto pBomb = pThis->AttachedBomb)
 	{
-		if(WeaponTypeClass* pWeapon = pSourceExt->LastWeaponType)
+		if(auto pSourceExt = TechnoExt::TryFetch(pSource))
 		{
-			if(auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon))
+			if(auto pWeaponExt = WeaponTypeExt::TryFetch(pSourceExt->LastWeaponType))
 			{
-				if(!pWeaponExt->IvanBomb_Detonate)
+				if(!pWeaponExt->IvanBomb_Detonate
+				   || pBomb->Owner != pSource)
+				{
 					return 0;
-
-				BombListClass BombList = BombListClass::Instance;
-				std::vector<BombClass*> DetonateBomb;
-    			for (int i = 0;i < BombList.Bombs.Count;i++)
-    			{
-					auto pBb = BombList.Bombs.Items[i];
-        			if (pBb && pBb->Owner == pSource)
-            			DetonateBomb.push_back(pBb);
-
-					for(const auto pBomb : DetonateBomb)
-					{
-						pBomb->Detonate();
-					}
 				}
+				pBomb->Detonate();
 			}
 		}
 	}

@@ -3682,3 +3682,15 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
+
+### Manually detonate Ivan bomb
+
+![image](_static/images/IvanBombDetonate.gif)
+
+- Now you can detonate planted Ivan bombs using custom weapon. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]               ; WeaponType
+IvanBomb.Detonate=true     ; Enable bomb detonation (true/false), default: false.
+```
