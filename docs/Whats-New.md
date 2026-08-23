@@ -427,6 +427,7 @@ HideShakeEffects=false           ; boolean
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
+- Fixed the bug that slaves would be handed over to the neutral house instead of respecting `Slaved.OwnerWhenMasterKilled` when their master was sold or self-destructed (by frg2089)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

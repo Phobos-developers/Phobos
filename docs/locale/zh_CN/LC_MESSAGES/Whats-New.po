@@ -832,6 +832,12 @@ msgstr "在 `FAData.ini`："
 msgid "Changelog"
 msgstr "更新日志"
 
+msgid ""
+"Fixed the bug that slaves would be handed over to the neutral house "
+"instead of respecting `Slaved.OwnerWhenMasterKilled` when their master "
+"was sold or self-destructed (by frg2089)"
+msgstr "修复了奴隶矿场被出售或自毁时，奴隶会归于中立阵营而不是遵守 `Slaved.OwnerWhenMasterKilled` 设置的问题（by frg2089）"
+
 msgid "New:"
 msgstr "新增内容："
 

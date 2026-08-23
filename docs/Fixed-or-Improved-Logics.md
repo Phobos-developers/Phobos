@@ -329,6 +329,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
+- Fixed the bug that `Slaved.OwnerWhenMasterKilled` was not respected when the slave miner was sold or self-destructed, as the slaves would be handed over to the neutral house (the vanilla fallback) instead.
 
 ## Fixes / interactions with other extensions
 
