@@ -951,58 +951,32 @@ void WarheadTypeExt::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoCl
 	auto const& location = pTarget->GetCenterCoords();
 	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
 	const int distance = static_cast<int>(location.DistanceFrom(coords));
-	damage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
 
-	auto doDamage = [=](InfantryClass* pPassenger)
+	auto doDamage = [=](int index)
 	{
+		auto const pPassenger = pBuilding->Occupants.GetItem(index);
 		auto const pType = pPassenger->Type;
 		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		if (!pTypeExt->PenetratesGarrison_Allowed)
 			return;
 
-		const int totalDamage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
-		pPassenger->Health = std::clamp(pPassenger->Health - totalDamage, 0, pType->Strength);
+		pPassenger->SetLocation(location);
 
-		if (!pPassenger->Health)
-		{
-			pPassenger->IsAlive = false;
-
-			if (pType->VoiceDie.Count)
-			{
-				// Play a new death sound.
-				const int soundIndex = pType->VoiceDie[Randomizer::Global.Random() % pType->VoiceDie.Count];
-				VocClass::PlayAt(soundIndex, location);
-			}
-			else if (pType->DieSound.Count)
-			{
-				// Play a new fallback death sound.
-				const int soundIndex = pType->DieSound[Randomizer::Global.Random() % pType->DieSound.Count];
-				VocClass::PlayAt(soundIndex, location);
-			}
-
-			pInvoker->KillPassengers(pPassenger);
-			pInvoker->RegisterDestruction(pPassenger);
-			pPassenger->UnInit();
-		}
+		int applyDamage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
+		pPassenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse);
 	};
 
-	// Victim's death sound
 	if (occupantIndex < 0)
 	{
-		for (int i = 0; i < pBuilding->Occupants.Count; i++)
-		{
-			auto const pPassenger = pBuilding->Occupants.GetItem(i);
-			doDamage(pPassenger);
-		}
+		for (int i = pBuilding->Occupants.Count - 1; i >= 0; i--)
+			doDamage(i);
 	}
 	else
 	{
-		auto const pPassenger = pBuilding->Occupants.GetItem(occupantIndex);
-		doDamage(pPassenger);
+		doDamage(occupantIndex);
 	}
 
-	// Building fully cleaned!
 	if (!pBuilding->Occupants.Count)
 	{
 		pBuilding->Mark(MarkType::Change);
