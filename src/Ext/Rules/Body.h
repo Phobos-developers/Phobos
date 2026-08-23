@@ -423,9 +423,6 @@ public:
 
 		Valueable<bool> ExtendedPlayerRepair;
 
-
-		Valueable<bool> ExtendedHealthBarDrawing;
-		
 		Valueable<bool> AutoTarget_NoThreatBuildings;
 		Valueable<bool> AutoTargetAI_NoThreatBuildings;
 
@@ -547,6 +544,8 @@ public:
 		Valueable<bool> KeepAlive_Aircraft;
 		Valueable<bool> KeepAlive_Buildings;
 		Valueable<bool> KeepAlive_Defenses;
+
+		Valueable<bool> ExtendedHealthBarDrawing;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
