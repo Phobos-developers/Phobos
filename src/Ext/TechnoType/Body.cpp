@@ -1187,7 +1187,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
->>>>>>> origin/develop
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
