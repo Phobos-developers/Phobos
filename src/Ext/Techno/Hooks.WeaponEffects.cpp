@@ -353,14 +353,17 @@ DEFINE_HOOK(0x702D19, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x6)
 	{
 		if(auto pSourceExt = TechnoExt::TryFetch(pSource))
 		{
-			if(auto pWeaponExt = WeaponTypeExt::TryFetch(pSourceExt->LastWeaponType))
+			if(WeaponTypeClass* pWeapon = pSourceExt->LastWeaponType)
 			{
-				if(!pWeaponExt->IvanBomb_Detonate
-				   || pBomb->Owner != pSource)
+				if(auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon))
 				{
-					return 0;
+					if(!pWeaponExt->IvanBomb_Detonate
+				       || pBomb->Owner != pSource)
+					{
+						return 0;
+					}
+					pBomb->Detonate();
 				}
-				pBomb->Detonate();
 			}
 		}
 	}
