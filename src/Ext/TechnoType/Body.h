@@ -438,6 +438,8 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
+	Nullable<bool> ExitThroughRoof;
+
 	Nullable<bool> Unsellable;	// Ares 3.0
 	Nullable<bool> KeepAlive;	// Ares 3.0
 
@@ -830,6 +832,9 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+
+		, ExitThroughRoof {}
+
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

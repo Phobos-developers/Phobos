@@ -748,6 +748,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - Roof production anim
+  - Customize whether the unit exits from the roof
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

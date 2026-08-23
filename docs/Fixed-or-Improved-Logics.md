@@ -2069,6 +2069,16 @@ FlyNoWobbles=  ; boolean
 FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
 ```
 
+### Customize whether the unit exits from the roof
+
+- In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from the roof. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.

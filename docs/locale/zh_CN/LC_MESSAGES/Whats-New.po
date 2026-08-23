@@ -833,6 +833,13 @@ msgid "Changelog"
 msgstr "更新日志"
 
 msgid ""
+"[Customize whether the unit exits from the roof](Fixed-or-Improved-"
+"Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)"
+msgstr ""
+"[自定义单位是否从天窗退出](Fixed-or-Improved-"
+"Logics.md#customize-whether-the-unit-exits-from-the-roof)（by Noble_Fish）"
+
+msgid ""
 "Fixed the bug that slaves would be handed over to the neutral house "
 "instead of respecting `Slaved.OwnerWhenMasterKilled` when their master "
 "was sold or self-destructed (by frg2089)"

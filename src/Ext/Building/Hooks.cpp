@@ -4,6 +4,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
 #pragma region Update
@@ -1049,7 +1050,7 @@ static __inline bool AllowBuildingProductionAnim(BuildingTypeClass* pType)
 
 static bool IsRoofExitTechno(TechnoTypeClass* pType)
 {
-	return pType->JumpJet || pType->BalloonHover;
+	return TechnoTypeExt::Fetch(pType)->ExitThroughRoof.Get(pType->JumpJet || pType->BalloonHover);
 }
 
 static bool IsRoofExitBuildingUnit(BuildingClass* pBuilding)

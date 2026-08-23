@@ -2541,6 +2541,9 @@ msgstr ""
 msgid "Roof production anim"
 msgstr "天窗生产动画"
 
+msgid "Customize whether the unit exits from the roof"
+msgstr "自定义单位是否从天窗退出"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
