@@ -341,10 +341,10 @@ DEFINE_HOOK(0x762D57, WaveClass_AI_TargetUnset, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x702D19, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x6)
+DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x7)
 {
-	GET(ObjectClass*, pThis, ESI);                   
-    GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xB4, 0x10));
+	GET(TechnoClass*, pThis, ESI);                   
+    GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 
     if (!pSource)
         return 0; 
