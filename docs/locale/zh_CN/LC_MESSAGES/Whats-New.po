@@ -2505,10 +2505,10 @@ msgid "Customize ivan bomb visibility (by NetsuNegi)"
 msgstr "自定义伊文炸弹可见性（by NetsuNegi）"
 
 msgid ""
-"[`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim) "
+"[Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) "
 "(by Noble_Fish)"
 msgstr ""
-"[`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim)（by"
+"[天窗生产动画](New-or-Enhanced-Logics.md#roof-production-anim)（by"
 " Noble_Fish）"
 
 msgid "Vanilla fixes:"

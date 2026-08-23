@@ -2538,8 +2538,8 @@ msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签"
 
-msgid "`RoofProductionAnim`"
-msgstr "`RoofProductionAnim`"
+msgid "Roof production anim"
+msgstr "天窗生产动画"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
