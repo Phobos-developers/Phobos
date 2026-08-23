@@ -684,38 +684,38 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 	damage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
 
 	auto doDamage = [=](InfantryClass* pPassenger)
+	{
+		auto const pType = pPassenger->Type;
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (!pTypeExt->PenetratesGarrison_Allowed)
+			return;
+
+		const int totalDamage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
+		pPassenger->Health = std::clamp(pPassenger->Health - totalDamage, 0, pType->Strength);
+
+		if (!pPassenger->Health)
 		{
-			auto const pType = pPassenger->Type;
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			pPassenger->IsAlive = false;
 
-			if (!pTypeExt->PenetratesGarrison_Allowed)
-				return;
-
-			const int totalDamage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
-			pPassenger->Health = std::clamp(pPassenger->Health - totalDamage, 0, pType->Strength);
-
-			if (!pPassenger->Health)
+			if (pType->VoiceDie.Count)
 			{
-				pPassenger->IsAlive = false;
-
-				if (pType->VoiceDie.Count)
-				{
-					// Play a new death sound.
-					const int soundIndex = pType->VoiceDie[Randomizer::Global.Random() % pType->VoiceDie.Count];
-					VocClass::PlayAt(soundIndex, location);
-				}
-				else if (pType->DieSound.Count)
-				{
-					// Play a new fallback death sound.
-					const int soundIndex = pType->DieSound[Randomizer::Global.Random() % pType->DieSound.Count];
-					VocClass::PlayAt(soundIndex, location);
-				}
-
-				pInvoker->KillPassengers(pPassenger);
-				pInvoker->RegisterDestruction(pPassenger);
-				pPassenger->UnInit();
+				// Play a new death sound.
+				const int soundIndex = pType->VoiceDie[Randomizer::Global.Random() % pType->VoiceDie.Count];
+				VocClass::PlayAt(soundIndex, location);
 			}
-		};
+			else if (pType->DieSound.Count)
+			{
+				// Play a new fallback death sound.
+				const int soundIndex = pType->DieSound[Randomizer::Global.Random() % pType->DieSound.Count];
+				VocClass::PlayAt(soundIndex, location);
+			}
+
+			pInvoker->KillPassengers(pPassenger);
+			pInvoker->RegisterDestruction(pPassenger);
+			pPassenger->UnInit();
+		}
+	};
 
 	// Victim's death sound
 	if (occupantIndex < 0)
