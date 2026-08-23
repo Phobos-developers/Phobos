@@ -832,6 +832,12 @@ msgstr "在 `FAData.ini`："
 msgid "Changelog"
 msgstr "更新日志"
 
+msgid ""
+"Fixed the bug that slaves would be handed over to the neutral house "
+"instead of respecting `Slaved.OwnerWhenMasterKilled` when their master "
+"was sold or self-destructed (by frg2089)"
+msgstr "修复了奴隶矿场被出售或自毁时，奴隶会归于中立阵营而不是遵守 `Slaved.OwnerWhenMasterKilled` 设置的问题（by frg2089）"
+
 msgid "New:"
 msgstr "新增内容："
 
@@ -2494,6 +2500,9 @@ msgid ""
 msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
+
+msgid "Customize ivan bomb visibility (by NetsuNegi)"
+msgstr "自定义伊文炸弹可见性（by NetsuNegi）"
 
 msgid ""
 "[`RoofProductionAnim`](New-or-Enhanced-Logics.md#roof-production-anim) "

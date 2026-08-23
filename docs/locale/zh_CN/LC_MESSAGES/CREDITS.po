@@ -1879,6 +1879,9 @@ msgid ""
 "due to the accumulation of a large amount of radsite in a short time"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题"
 
+msgid "Customize ivan bomb visibility"
+msgstr "自定义伊文炸弹可见性"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -3203,4 +3206,10 @@ msgstr "**obsidianus** - 自动根据血量变形"
 
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
+
+msgid "**frg2089 (舰队的偶像-岛风酱!)**:"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)**："
+
+msgid "Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
 

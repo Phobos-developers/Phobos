@@ -15,6 +15,7 @@ public:
 
 	bool DeployedTechno;
 	bool IsCreatedFromMapFile;
+	bool HasPowerFromMapFile;
 	int LimboID;
 	int GrindingWeapon_LastFiredFrame;
 	int GrindingWeapon_AccumulatedCredits;
@@ -33,6 +34,7 @@ public:
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
 		, DeployedTechno { false }
 		, IsCreatedFromMapFile { false }
+		, HasPowerFromMapFile { false }
 		, LimboID { -1 }
 		, GrindingWeapon_LastFiredFrame { 0 }
 		, GrindingWeapon_AccumulatedCredits { 0 }

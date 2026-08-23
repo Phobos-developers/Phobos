@@ -182,7 +182,7 @@ bool SWButtonClass::LaunchSuper() const
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pType = pSuper->Type;
 	const auto pSWExt = SWTypeExt::Fetch(pType);
-	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
+	const bool manual = !pSWExt->SW_ManualFire;
 	const bool unstoppable = pType->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining && pSWExt->SW_Unstoppable;
 
 	if (!pSuper->CanFire() && !manual)

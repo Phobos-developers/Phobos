@@ -160,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Modify ammo on impact
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -442,6 +443,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
+  - Ares' `KeepAlive` adds global tags
+  - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -565,6 +568,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Customize ivan bomb visibility
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -741,6 +745,8 @@ This page lists all the individual contributions to the project by their author.
   - Disable AlphaImage during Buildup
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
+  - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - `RoofProductionAnim`
 - **Ollerus**:
   - Build limit group enhancement
@@ -773,6 +779,7 @@ This page lists all the individual contributions to the project by their author.
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
+  - Fix a game crash when parsing string list with null entry
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -935,3 +942,5 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
+- **frg2089 (舰队的偶像-岛风酱!)**:
+  - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
