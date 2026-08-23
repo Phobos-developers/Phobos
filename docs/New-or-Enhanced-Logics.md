@@ -3686,7 +3686,6 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ### Manually detonate Ivan bomb
 
 ![image](_static/images/IvanBombDetonate.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - Now you can detonate planted Ivan bombs using custom weapon. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
 
