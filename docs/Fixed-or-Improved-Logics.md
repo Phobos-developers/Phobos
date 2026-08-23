@@ -2269,8 +2269,8 @@ This may subject to further changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                   ; TechnoType
-ApproachTarget.PursuitTarget=  ; boolean, default to false
+[SOMETECHNO]                        ; TechnoType
+ApproachTarget.PursuitTarget=false  ; boolean
 ```
 
 ### Kill spawns on low power

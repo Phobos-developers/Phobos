@@ -1052,7 +1052,10 @@ In `rulesmd.ini`:
 ```ini
 [General]
 SetRecruitableOnLiberate=-1  ; integer
+```
 
+In `aimd.ini`:
+```ini
 [SOMETEAMTYPE]               ; TeamType
 SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
 ```
