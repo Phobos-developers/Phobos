@@ -1,6 +1,6 @@
-#include "Body.h"
 #include <Ext/House/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
@@ -10,7 +10,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
 	GET_STACK(const int, nBrightness, STACK_OFFSET(0x50, 0x4));
 
-	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pData = UnitTypeExt::Fetch(pThis->Type);
 
 	ConvertClass* pDrawer = FileSystem::ANIM_PAL;
 	SHPStruct* pSHP = FileSystem::OREGATH_SHP;
@@ -22,7 +22,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	{
 		auto const pAnimType = pData->OreGathering_Anims.size() > 0 ? pData->OreGathering_Anims[idxArray] : nullptr;
 		auto const nFramesPerFacing = pData->OreGathering_FramesPerDir.size() > 0 ? pData->OreGathering_FramesPerDir[idxArray] : 15;
-		auto const pAnimExt = AnimTypeExt::ExtMap.TryFind(pAnimType);
+		auto const pAnimExt = AnimTypeExt::TryFetch(pAnimType);
 		if (pAnimType)
 		{
 			pSHP = pAnimType->GetImage();
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 
 		if (!IsAlly && !IsCivilian && !IsObserver)
 		{
-			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pTechnoType);
 
 			if (const auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
 			{
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x711F39, TechnoTypeClass_CostOf_FactoryPlant, 0x8)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x8));
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
 
 	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
 		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
@@ -103,14 +103,13 @@ DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x4));
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
 
 	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
 		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
 
 	return 0;
 }
-
 
 DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
 {
@@ -126,4 +125,31 @@ DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
 	exINI.ReadSpeed(pSection, "Speed", &pThis->Speed);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x747A2E, UnitTypeClass_ReadINI_TurretShape, 0x6)
+{
+	GET(UnitTypeClass*, pType, EDI);
+
+	if (!pType->Voxel && pType->Turret)
+	{
+		char nameBuffer[0x19];
+		char Buffer[260];
+		const auto pArtSection = pType->ImageFile;
+
+		if (Phobos::Config::ArtImageSwap &&
+			CCINIClass::INI_Art.ReadString(pArtSection, "Image", 0, nameBuffer, 0x19) != 0)
+		{
+			_snprintf_s(Buffer, sizeof(Buffer), "%sTUR.SHP", nameBuffer);
+		}
+		else
+		{
+			_snprintf_s(Buffer, sizeof(Buffer), "%sTUR.SHP", pArtSection);
+		}
+
+		if (const auto pShape = FileSystem::LoadSHPFile(Buffer))
+			UnitTypeExt::Fetch(pType)->TurretShape = pShape;
+	}
+
+	return 0;
 }
