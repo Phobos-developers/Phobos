@@ -1112,7 +1112,7 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 	if (pThis && !TechnoTypeExt::Fetch(pThis->GetTechnoType())->PsychicDetectable)
 	{
 		R->EAX(0);
-		return 0x43B4A9;
+		return 0x43B4B0;
 	}
 
 	return 0;
