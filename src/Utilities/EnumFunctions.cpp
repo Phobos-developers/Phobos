@@ -1,5 +1,7 @@
 #include "EnumFunctions.h"
 
+#include <Utilities/GeneralUtils.h>
+
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
 	if (flags == AffectedHouse::All)
@@ -11,6 +13,23 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
+bool EnumFunctions::CanTargetVeterancy(AffectedVeterancy flags, TechnoClass* pTechno)
+{
+	if (flags == AffectedVeterancy::All)
+		return true;
+
+	switch (pTechno->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Elite:
+		return (flags & AffectedVeterancy::Elite) != AffectedVeterancy::None;
+	case Rank::Veteran:
+		return (flags & AffectedVeterancy::Veteran) != AffectedVeterancy::None;
+	default:
+		return (flags & AffectedVeterancy::Rookie) != AffectedVeterancy::None;
+	}
+}
+
+
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
 	if (allowed == AffectedTarget::All)
@@ -18,7 +37,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 	if (explicitEmptyCells)
 	{
-		const auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
+		const auto pTechno = abstract_cast<TechnoClass*>(pCell->GetContent());
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -93,4 +112,49 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 	}
 
 	return true;
+}
+
+bool EnumFunctions::CalcValueWithStackingMode(int& oldValue, int newValue, StackingMode stackingMode)
+{
+	bool valueChanged = true;
+	int oldValueTemp = oldValue;
+
+	switch (stackingMode)
+	{
+	case StackingMode::Override:
+		oldValue = newValue;
+		break;
+	case StackingMode::SetIfZero:
+		if (oldValue == 0)
+			oldValue = newValue;
+		else
+			valueChanged = false;
+		break;
+	case StackingMode::Min:
+		oldValue = Math::min(oldValue, newValue);
+		break;
+	case StackingMode::Max:
+		oldValue = Math::max(oldValue, newValue);
+		break;
+	case StackingMode::Add:
+		oldValue += newValue;
+		break;
+	case StackingMode::Subtract:
+		oldValue -= newValue;
+		break;
+	case StackingMode::Multiply:
+		oldValue = GeneralUtils::SafeMultiply(oldValue, newValue);
+		break;
+	case StackingMode::Divide:
+		if (newValue != 0)
+			oldValue /= newValue;
+		else
+			valueChanged = false;
+		break;
+	default:
+		valueChanged = false;
+		break;
+	}
+
+	return valueChanged && oldValueTemp != oldValue;
 }

@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/Rules/Body.h>
 
 void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = -1, bool isEnabled = false)
 {
@@ -68,7 +69,7 @@ void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1
 	if (sideIdx < 0)
 		sideIdx = -1;
 
-	if (auto pTeamData = TeamExt::ExtMap.Find(pTeam))
+	if (auto pTeamData = TeamExt::Fetch(pTeam))
 		pTeamData->TriggersSideIdx = sideIdx;
 
 	// This action finished
@@ -85,7 +86,7 @@ void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 
 
 	houseIdx = HouseExt::GetHouseIndex(houseIdx, pTeam, nullptr);
 
-	if (auto pTeamData = TeamExt::ExtMap.Find(pTeam))
+	if (auto pTeamData = TeamExt::Fetch(pTeam))
 		pTeamData->TriggersHouseIdx = houseIdx;
 
 	// This action finished
@@ -94,7 +95,7 @@ void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 
 
 void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished

@@ -1,20 +1,23 @@
 #include "LaserTrailClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <Ext/EBolt/Body.h>
 
 // Draws LaserTrail if the conditions are suitable.
 // Returns true if drawn, false otherwise.
 bool LaserTrailClass::Update(CoordStruct location)
 {
+	if (Phobos::Config::HideLaserTrailEffects && this->Type->IsHideable)
+		return false;
+
 	bool result = false;
+	const double segmentLength = (double)this->Type->SegmentLength;
 
 	if (!this->LastLocation.isset())
 	{
 		// The trail was just inited
 		this->LastLocation = location;
 	}
-	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
+	else if (location.DistanceFromSquared(this->LastLocation.Get()) > segmentLength * segmentLength) // TODO reimplement IgnoreVertical properly?
 	{
 		auto const pType = this->Type;
 
@@ -57,7 +60,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 				pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
 				pBolt->AlternateColor = pType->IsAlternateColor;
 
-				pBolt->Fire(this->LastLocation, location, 0);
+				pBolt->Fire(this->LastLocation, location, pType->Bolt_ZAdjust);
 			}
 			else if (pType->DrawType == LaserTrailDrawType::RadBeam)
 			{
