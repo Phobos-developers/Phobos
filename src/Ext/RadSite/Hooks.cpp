@@ -204,7 +204,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 DEFINE_JUMP(LJMP, 0x4DA554, 0x4DA56E);
 
 // Hook Adjusted to support Ares RadImmune Ability check
-DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
+DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x0)
 {
 	enum { Continue = 0x4DA63B, ReturnFromFunction = 0x4DAF00 };
 
@@ -352,6 +352,14 @@ DEFINE_HOOK(0x65B6F2, RadSiteClass_Activate_TintFactor, 0x6)
 DEFINE_HOOK(0x65B843, RadSiteClass_AI_LevelDelay, 0x6)
 {
 	GET_RADSITE(ESI, GetLevelDelay());
+
+	if (pExt->LightDirty)
+	{
+		if (const auto pLight = pThis->LightSource)
+			pLight->ChangeLevels(pThis->Intensity, pThis->Tint, false);
+
+		pExt->LightDirty = false;
+	}
 
 	R->ECX(output);
 

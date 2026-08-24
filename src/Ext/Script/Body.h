@@ -188,6 +188,9 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
 public:
 	class ExtContainer final : public Container<ScriptExt>
@@ -239,6 +242,7 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
+	static void PlaySpeech(TeamClass* pTeam);
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);

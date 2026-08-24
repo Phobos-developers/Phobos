@@ -1,9 +1,5 @@
 #include "Phobos.h"
 
-#include <Drawing.h>
-#include <SessionClass.h>
-#include <Unsorted.h>
-
 #include <commctrl.h>
 
 #include <Misc/ExceptionHandler.h>
@@ -12,9 +8,12 @@
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 #include "Utilities/AresHelper.h"
+#include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
-#ifndef IS_RELEASE_VER
+#include <Ext/Rules/Body.h>
+
+#ifdef TESTING_BUILD
 bool HideWarning = false;
 #endif
 
@@ -32,13 +31,14 @@ bool Phobos::Optimizations::Applied = false;
 bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
+bool Phobos::Optimizations::DisableLaserTracking = true;
 
-#ifdef STR_GIT_COMMIT
-const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
-#elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
-#else
-//const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
+// The leading L"" widens the narrow metadata literals it is concatenated with, so that the
+// name and the version are taken from Phobos.version.h rather than spelled out again.
+#ifdef NIGHTLY
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". DO NOT SHIP IN MODS!";
+#elif defined(TESTING_BUILD)
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". Please test the build before shipping.";
 #endif
 
 
@@ -61,8 +61,13 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER
-		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
+#ifdef TESTING_BUILD
+		// Suppresses the "please test this build" warning drawn over the game screen.
+		// The exact version of this very build has to be spelled out (it is printed in
+		// the warning itself and in the release title), so that the switch can't be set
+		// once and then silently carried over into a mod release with a newer build.
+		if (_stricmp(pArg, "-HideVersionWarning=" FILE_VERSION_STR) == 0
+			|| _stricmp(pArg, "-HideVersionWarning=v" FILE_VERSION_STR) == 0) // as shown in the warning
 		{
 			HideWarning = true;
 		}
@@ -133,6 +138,13 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		ExceptionHandler::Init();
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
+#ifdef STR_GIT_COMMIT
+	Debug::Log("Git commit: " STR_GIT_COMMIT "\n");
+	Debug::Log("Git dirty: " GIT_DIRTY_FLAG "\n");
+#endif
+#ifdef STR_GIT_REF
+	Debug::Log("Git ref: " STR_GIT_REF "\n");
+#endif
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
@@ -214,8 +226,7 @@ void Phobos::ExeRun()
 
 		L"To attach a debugger find the YR process in Process Hacker "
 		L"/ Visual Studio processes window and detach debuggers from it, "
-		L"then you can attach your own debugger. After this you should "
-		L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+		L"then you can attach your own debugger.\n\n"
 
 		L"Press OK to continue YR execution.",
 		L"Debugger Notice", MB_OK);
@@ -301,30 +312,75 @@ DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 	return 0;
 }
 
-#ifndef IS_RELEASE_VER
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
-#ifndef STR_GIT_COMMIT
+	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
+	int coordY = 0;
+
+#ifdef TESTING_BUILD
+#ifndef NIGHTLY
 	if (!HideWarning)
-#endif // !STR_GIT_COMMIT
+#endif // !NIGHTLY
 	{
-		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0,0 }, 0, 2, 0);
+		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
 		RectangleStruct rect = {
-			DSurface::Composite->GetWidth() - wanted.Width - 10,
+			DSurface::Composite->GetWidth() - wanted.Width - marginX,
 			0,
 			wanted.Width + 10,
 			wanted.Height + 10
 		};
 
-		Point2D location { rect.X + 5,5 };
-
+		Point2D location { rect.X + 5, 5 };
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
 		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
+
+		// add margin for next text
+		coordY = rect.Height;
 	}
+#endif // !RELEASE
+
+	if (!Phobos::Config::ShowGameTime || !RulesExt::Global()->ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+		return 0;
+
+	wchar_t buffer[0x20] {};
+	const auto& timer = ScenarioClass::Instance->ElapsedTimer;
+	int currentTime = timer.TimeLeft;
+
+	if (timer.StartTime != -1)
+		currentTime += SystemTimer::GetTime() - timer.StartTime;
+
+	currentTime /= 60;
+	const int hours = currentTime / 3600;
+	const int minutes = (currentTime / 60) % 60;
+	const int seconds = currentTime % 60;
+	const auto text = GeneralUtils::LoadStringUnlessMissing("TXT_GAMETIME", L"Time:");
+
+	if (hours > 0)
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %d:%02d:%02d", text, hours, minutes, seconds);
+	}
+	else
+	{
+		swprintf(buffer, std::size(buffer), L"%ls %02d:%02d", text, minutes, seconds);
+	}
+
+	auto wantedB = Drawing::GetTextDimensions(buffer, { 0, 0 }, 0, 2, 0);
+
+	RectangleStruct rectB = {
+		DSurface::Composite->GetWidth() - wantedB.Width - marginX,
+		coordY,
+		wantedB.Width + 10,
+		wantedB.Height + 10
+	};
+
+	Point2D locationB { rectB.X + 5, rectB.Y + 5 };
+	ColorStruct color { 0x0, 0x0 ,0x0 };
+	DSurface::Composite->FillRectTrans(&rectB, &color, Phobos::Config::ShowGameTime_BoardOpacity);
+	DSurface::Composite->DrawText(buffer, &locationB, COLOR_WHITE);
+
 	return 0;
 }
-#endif
 
 // Mainly used to disable hooks for optimization.
 // Called after loading saved game and at end of scenario start after all INI data etc has been initialized.

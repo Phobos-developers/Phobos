@@ -40,20 +40,16 @@ public:
 	Valueable<CSFText> UIDescription;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> LowDeployPriority;
-	PhobosFixedString<0x20> GroupAs;
 	std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
-	Valueable<int> RadarJamRadius;
-	Valueable<AffectedHouse> RadarJamHouses;
-	Valueable<int> RadarJamDelay;
+	Nullable<AffectedHouse> RadarJamHouses;
+	Nullable<int> RadarJamDelay;
 	ValueableVector<BuildingTypeClass*> RadarJamAffect;
 	ValueableVector<BuildingTypeClass*> RadarJamIgnore;
-	Nullable<int> InhibitorRange;
-	Nullable<int> DesignatorRange;
 	Valueable<float> FactoryPlant_Multiplier;
 	Valueable<Leptons> MindControlRangeLimit;
-	Valueable<bool> MindControl_IgnoreSize;
+	Nullable<bool> MindControl_IgnoreSize;
 	Valueable<int> MindControlSize;
-	Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
+	Nullable<AffectedHouse> MindControlLink_VisibleToHouse;
 
 	std::unique_ptr<InterceptorTypeClass> InterceptorType;
 
@@ -66,17 +62,17 @@ public:
 	int SpawnerRange;
 	int EliteSpawnerRange;
 	Nullable<int> Spawner_DelayFrames;
-	Valueable<bool> Spawner_AttackImmediately;
-	Valueable<bool> Spawner_UseTurretFacing;
+	Nullable<bool> Spawner_AttackImmediately;
+	Nullable<bool> Spawner_UseTurretFacing;
 	Nullable<bool> Harvester_Counted;
-	Valueable<bool> Promote_IncludeSpawns;
+	Nullable<bool> Promote_IncludeSpawns;
 	Valueable<bool> ImmuneToCrit;
-	Valueable<bool> MultiMindControl_ReleaseVictim;
+	Nullable<bool> MultiMindControl_ReleaseVictim;
 	Valueable<int> CameoPriority;
 	PhobosPCXFile AltCameoPCX;
 	Valueable<bool> NoManualMove;
 	Nullable<int> InitialStrength;
-	Valueable<bool> ReloadInTransport;
+	Nullable<bool> ReloadInTransport;
 	Valueable<bool> ForbidParallelAIQueues;
 	Valueable<bool> IgnoreForBaseCenter;
 
@@ -90,19 +86,21 @@ public:
 	std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
 	Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+	Nullable<bool> AutoDeath_AllowLimboed;
 	ValueableVector<AnimTypeClass*> AutoDeath_VanishAnimation;
 	Valueable<bool> AutoDeath_OnAmmoDepletion;
 	Valueable<bool> AutoDeath_OnOwnerChange;
+	Nullable<bool> AutoDeath_OnOwnerChange_IgnoreRevertOnExit;
 	Nullable<bool> AutoDeath_OnOwnerChange_HumanToComputer;
 	Nullable<bool> AutoDeath_OnOwnerChange_ComputerToHuman;
 	Valueable<int> AutoDeath_AfterDelay;
 	ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 	Valueable<bool> AutoDeath_TechnosDontExist_Any;
-	Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
+	Nullable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
 	Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
 	ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
 	Valueable<bool> AutoDeath_TechnosExist_Any;
-	Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
+	Nullable<bool> AutoDeath_TechnosExist_AllowLimboed;
 	Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 	NullableIdx<VocClass> SellSound;
@@ -138,12 +136,12 @@ public:
 	std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 	std::vector<CoordStruct> AlternateFLHs;
-	Valueable<bool> AlternateFLH_OnTurret;
-	Valueable<bool> AlternateFLH_ApplyVehicle;
+	Nullable<bool> AlternateFLH_OnTurret;
+	Nullable<bool> AlternateFLH_ApplyVehicle;
 
-	Valueable<bool> DestroyAnim_Random;
+	Nullable<bool> DestroyAnim_Random;
 
-	Valueable<bool> UseDisguiseMovementSpeed;
+	Nullable<bool> UseDisguiseMovementSpeed;
 
 	Nullable<int> OpenTopped_RangeBonus;
 	Nullable<float> OpenTopped_DamageMultiplier;
@@ -167,10 +165,7 @@ public:
 	Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
 	Nullable<bool> AllowWeaponSelectAgainstWalls;
 
-	Valueable<int> NoAmmoWeapon;
-	Valueable<int> NoAmmoAmount;
-
-	Valueable<bool> JumpjetRotateOnCrash;
+	Nullable<bool> JumpjetRotateOnCrash;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
 	Valueable<CSFText> EnemyUIName;
@@ -180,13 +175,13 @@ public:
 	Valueable<int> ForceWeapon_Cloaked;
 	Valueable<int> ForceWeapon_Disguised;
 	Valueable<int> ForceWeapon_UnderEMP;
-	Valueable<bool> ForceWeapon_InRange_TechnoOnly;
+	Nullable<bool> ForceWeapon_InRange_TechnoOnly;
 	ValueableVector<int> ForceWeapon_InRange;
 	ValueableVector<double> ForceWeapon_InRange_Overrides;
-	Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
+	Nullable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
 	ValueableVector<int> ForceAAWeapon_InRange;
 	ValueableVector<double> ForceAAWeapon_InRange_Overrides;
-	Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
+	Nullable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
 	Valueable<int> ForceWeapon_Buildings;
 	Valueable<int> ForceWeapon_Defenses;
 	Valueable<int> ForceWeapon_Infantry;
@@ -201,8 +196,8 @@ public:
 	Valueable<int> Ammo_Shared_Group;
 
 	Nullable<SelfHealGainType> SelfHealGainType;
-	Valueable<bool> Passengers_SyncOwner;
-	Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+	Nullable<bool> Passengers_SyncOwner;
+	Nullable<bool> Passengers_SyncOwner_RevertOnExit;
 
 	Nullable<bool> IronCurtain_KeptOnDeploy;
 	Nullable<IronCurtainEffect> IronCurtain_Effect;
@@ -210,8 +205,8 @@ public:
 	Nullable<bool> ForceShield_KeptOnDeploy;
 	Nullable<IronCurtainEffect> ForceShield_Effect;
 	Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
-	Valueable<bool> Explodes_KillPassengers;
-	Valueable<bool> DriverKilled_KeptPassengers;
+	Nullable<bool> Explodes_KillPassengers;
+	Nullable<bool> DriverKilled_KeptPassengers;
 	Nullable<bool> DriverKilled_KillPassengers;
 	Nullable<int> DeployFireWeapon;
 	Valueable<TargetZoneScanType> TargetZoneScanType;
@@ -248,11 +243,10 @@ public:
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
 
-	Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
-	Valueable<bool> Convert_ResetMindControl;
+	Nullable<bool> Convert_ResetMindControl;
 
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -268,8 +262,8 @@ public:
 	ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 	ValueableVector<int> BuildLimitGroup_Nums;
 	Valueable<int> BuildLimitGroup_Factor;
-	Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
-	Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
+	Nullable<bool> BuildLimitGroup_ContentIfAnyMatch;
+	Nullable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
 	ValueableVector<TechnoTypeClass*> BuildLimitGroup_ExtraLimit_Types;
 	ValueableVector<int> BuildLimitGroup_ExtraLimit_Nums;
 	ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
@@ -280,7 +274,6 @@ public:
 	Nullable<bool> NoQueueUpToEnter;
 	Nullable<int> NoQueueUpToEnter_BoardDistance;
 	Nullable<bool> NoQueueUpToUnload;
-	Valueable<bool> Passengers_BySize;
 
 	Valueable<int> RateDown_Delay;
 	Valueable<bool> RateDown_Reset;
@@ -292,10 +285,17 @@ public:
 	Nullable<bool> NoReload_UnderEMP;
 	Nullable<bool> NoReload_Temporal;
 
+	std::bitset<AdditionalAbilityCount> AdditionalVeteranAbilities;
+	std::bitset<AdditionalAbilityCount> AdditionalEliteAbilities;
+	Nullable<double> VeteranReload;
+	Nullable<double> VeteranEmptyReload;
+
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
 	Nullable<AnimTypeClass*> Wake_Sinking;
 	Nullable<bool> MakesWake;
+
+	Valueable<float> CrashSpin_Multiplier;
 
 	Nullable<int> AINormalTargetingDelay;
 	Nullable<int> PlayerNormalTargetingDelay;
@@ -307,6 +307,9 @@ public:
 
 	Nullable<bool> AttackMove_Aggressive;
 	Nullable<bool> AttackMove_UpdateTarget;
+
+	Nullable<bool> ApproachTarget_StopWhenInRange;
+	Valueable<bool> ApproachTarget_PursuitTarget;
 
 	Valueable<bool> BunkerableAnyway;
 	Valueable<bool> KeepTargetOnMove;
@@ -325,10 +328,10 @@ public:
 	Nullable<int> InitialSpawnsNumber;
 	ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
-	Valueable<Leptons> Spawner_RecycleRange;
+	Nullable<Leptons> Spawner_RecycleRange;
 	ValueableVector<AnimTypeClass*> Spawner_RecycleAnim;
 	Valueable<CoordStruct> Spawner_RecycleCoord;
-	Valueable<bool> Spawner_RecycleOnTurret;
+	Nullable<bool> Spawner_RecycleOnTurret;
 
 	ValueableVector<AnimTypeClass*> Promote_VeteranAnimation;
 	ValueableVector<AnimTypeClass*> Promote_EliteAnimation;
@@ -348,24 +351,22 @@ public:
 	Valueable<bool> SuppressKillWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
-	Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+	Nullable<bool> DigitalDisplay_Health_FakeAtDisguise;
 
 	NullableVector<int> Overload_Count;
 	NullableVector<int> Overload_Damage;
 	NullableVector<int> Overload_Frames;
 	NullableIdx<VocClass> Overload_DeathSound;
 	Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
-	Valueable<int> Overload_ParticleSysCount;
+	Nullable<int> Overload_ParticleSysCount;
 
-	Valueable<double> FallingDownDamage;
+	Nullable<double> FallingDownDamage;
 	Nullable<double> FallingDownDamage_Water;
-	Valueable<bool> FallingDownDamage_AllowEMP;
+	Nullable<bool> FallingDownDamage_AllowEMP;
 
 	Valueable<int> Ammo_AutoConvertMinimumAmount;
 	Valueable<int> Ammo_AutoConvertMaximumAmount;
 	Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
-
-	Valueable<bool> FiringForceScatter;
 
 	//Nullable<int> SecondaryFire;
 
@@ -377,8 +378,6 @@ public:
 	Valueable<bool> AttackMove_Follow;
 	Valueable<bool> AttackMove_Follow_IncludeAir;
 	Valueable<bool> AttackMove_Follow_IfMindControlIsFull;
-	Nullable<bool> AttackMove_StopWhenTargetAcquired;
-	Valueable<bool> AttackMove_PursuitTarget;
 
 	Valueable<bool> MultiWeapon;
 	ValueableVector<bool> MultiWeapon_IsSecondary;
@@ -424,7 +423,33 @@ public:
 	Nullable<double> ExtraThreatCoefficient_Facing;
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
-	Nullable<bool> Unsellable; // Ares 3.0
+	Nullable<Powerup> DropCrate;
+
+	Valueable<double> Convert_Health_AbovePercent;
+	Valueable<double> Convert_Health_BelowPercent;
+	Nullable<TechnoTypeClass*> Convert_Health;
+
+	// Ares 0.2
+	Valueable<int> RadarJamRadius;
+
+	// Ares 0.9
+	Nullable<int> InhibitorRange;
+	Nullable<int> DesignatorRange;
+
+	// Ares 0.A
+	PhobosFixedString<0x20> GroupAs;
+
+	// Ares 0.C
+	Valueable<int> NoAmmoWeapon;
+	Valueable<int> NoAmmoAmount;
+
+	// Ares 2.0
+	Valueable<bool> Passengers_BySize;
+	Valueable<TechnoTypeClass*> Convert_Deploy;
+
+	// Ares 3.0
+	Nullable<bool> Unsellable;
+	Nullable<bool> KeepAlive;
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
@@ -434,20 +459,16 @@ public:
 		, UIDescription {}
 		, LowSelectionPriority { false }
 		, LowDeployPriority { false }
-		, GroupAs { NONE_STR }
 		, WeaponGroupAs {}
-		, RadarJamRadius { 0 }
-		, RadarJamHouses { AffectedHouse::Enemies }
-		, RadarJamDelay { 30 }
+		, RadarJamHouses {}
+		, RadarJamDelay {}
 		, RadarJamAffect {}
 		, RadarJamIgnore {}
-		, InhibitorRange {}
-		, DesignatorRange { }
 		, FactoryPlant_Multiplier { 1.0f }
 		, MindControlRangeLimit {}
-		, MindControl_IgnoreSize { true }
+		, MindControl_IgnoreSize {}
 		, MindControlSize { 1 }
-		, MindControlLink_VisibleToHouse{ AffectedHouse::All }
+		, MindControlLink_VisibleToHouse{}
 
 		, InterceptorType { nullptr }
 
@@ -460,17 +481,17 @@ public:
 		, SpawnerRange { 0 }
 		, EliteSpawnerRange { 0 }
 		, Spawner_DelayFrames {}
-		, Spawner_AttackImmediately { false }
-		, Spawner_UseTurretFacing { false }
+		, Spawner_AttackImmediately {}
+		, Spawner_UseTurretFacing {}
 		, Harvester_Counted {}
-		, Promote_IncludeSpawns { false }
+		, Promote_IncludeSpawns {}
 		, ImmuneToCrit { false }
-		, MultiMindControl_ReleaseVictim { false }
+		, MultiMindControl_ReleaseVictim {}
 		, CameoPriority { 0 }
 		, AltCameoPCX {}
 		, NoManualMove { false }
 		, InitialStrength {}
-		, ReloadInTransport { false }
+		, ReloadInTransport {}
 		, ForbidParallelAIQueues { false }
 		, IgnoreForBaseCenter { false }
 		, TintColorAirstrike { 0 }
@@ -497,9 +518,9 @@ public:
 		, WarpInWeapon_UseDistanceAsDamage { false }
 
 		, LaserTrailData {}
-		, AlternateFLH_OnTurret { true }
-		, AlternateFLH_ApplyVehicle { false }
-		, DestroyAnim_Random { true }
+		, AlternateFLH_OnTurret {}
+		, AlternateFLH_ApplyVehicle {}
+		, DestroyAnim_Random {}
 
 		, UseDisguiseMovementSpeed {}
 
@@ -523,25 +544,25 @@ public:
 		, NoSecondaryWeaponFallback { false }
 		, NoSecondaryWeaponFallback_AllowAA { false }
 		, AllowWeaponSelectAgainstWalls {}
-		, NoAmmoWeapon { -1 }
-		, NoAmmoAmount { 0 }
-		, JumpjetRotateOnCrash { true }
+		, JumpjetRotateOnCrash {}
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }
+		, AutoDeath_AllowLimboed {}
 		, AutoDeath_VanishAnimation {}
 		, AutoDeath_OnAmmoDepletion { false }
 		, AutoDeath_OnOwnerChange { false }
+		, AutoDeath_OnOwnerChange_IgnoreRevertOnExit {}
 		, AutoDeath_OnOwnerChange_HumanToComputer {}
 		, AutoDeath_OnOwnerChange_ComputerToHuman {}
 		, AutoDeath_AfterDelay { 0 }
 		, AutoDeath_TechnosDontExist {}
 		, AutoDeath_TechnosDontExist_Any { false }
-		, AutoDeath_TechnosDontExist_AllowLimboed { false }
+		, AutoDeath_TechnosDontExist_AllowLimboed {}
 		, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
 		, AutoDeath_TechnosExist {}
 		, AutoDeath_TechnosExist_Any { true }
-		, AutoDeath_TechnosExist_AllowLimboed { true }
+		, AutoDeath_TechnosExist_AllowLimboed {}
 		, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 		, SellSound {}
@@ -563,13 +584,13 @@ public:
 		, ForceWeapon_Cloaked { -1 }
 		, ForceWeapon_Disguised { -1 }
 		, ForceWeapon_UnderEMP { -1 }
-		, ForceWeapon_InRange_TechnoOnly { true }
+		, ForceWeapon_InRange_TechnoOnly {}
 		, ForceWeapon_InRange {}
 		, ForceWeapon_InRange_Overrides {}
-		, ForceWeapon_InRange_ApplyRangeModifiers { false }
+		, ForceWeapon_InRange_ApplyRangeModifiers {}
 		, ForceAAWeapon_InRange {}
 		, ForceAAWeapon_InRange_Overrides {}
-		, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
+		, ForceAAWeapon_InRange_ApplyRangeModifiers {}
 		, ForceWeapon_Buildings { -1 }
 		, ForceWeapon_Defenses { -1 }
 		, ForceWeapon_Infantry { -1 }
@@ -584,8 +605,8 @@ public:
 		, Ammo_Shared_Group { -1 }
 
 		, SelfHealGainType {}
-		, Passengers_SyncOwner { false }
-		, Passengers_SyncOwner_RevertOnExit { true }
+		, Passengers_SyncOwner {}
+		, Passengers_SyncOwner_RevertOnExit {}
 
 		, IronCurtain_KeptOnDeploy {}
 		, IronCurtain_Effect {}
@@ -594,8 +615,8 @@ public:
 		, ForceShield_Effect {}
 		, ForceShield_KillWarhead {}
 
-		, Explodes_KillPassengers { true }
-		, DriverKilled_KeptPassengers { false }
+		, Explodes_KillPassengers {}
+		, DriverKilled_KeptPassengers {}
 		, DriverKilled_KillPassengers {}
 		, DeployFireWeapon {}
 		, TargetZoneScanType { TargetZoneScanType::Same }
@@ -635,11 +656,10 @@ public:
 		, DroppodType {}
 		, TiberiumEaterType {}
 
-		, Convert_Deploy { }
 		, Convert_Undeploy { }
 		, Convert_HumanToComputer { }
 		, Convert_ComputerToHuman { }
-		, Convert_ResetMindControl { false }
+		, Convert_ResetMindControl {}
 
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
@@ -655,8 +675,8 @@ public:
 		, BuildLimitGroup_Types {}
 		, BuildLimitGroup_Nums {}
 		, BuildLimitGroup_Factor { 1 }
-		, BuildLimitGroup_ContentIfAnyMatch { false }
-		, BuildLimitGroup_NotBuildableIfQueueMatch { false }
+		, BuildLimitGroup_ContentIfAnyMatch {}
+		, BuildLimitGroup_NotBuildableIfQueueMatch {}
 		, BuildLimitGroup_ExtraLimit_Types {}
 		, BuildLimitGroup_ExtraLimit_Nums {}
 		, BuildLimitGroup_ExtraLimit_MaxCount {}
@@ -667,7 +687,6 @@ public:
 		, NoQueueUpToEnter {}
 		, NoQueueUpToEnter_BoardDistance {}
 		, NoQueueUpToUnload {}
-		, Passengers_BySize { true }
 
 		, RateDown_Delay { 0 }
 		, RateDown_Reset { false }
@@ -679,10 +698,17 @@ public:
 		, NoReload_UnderEMP {}
 		, NoReload_Temporal {}
 
+		, AdditionalVeteranAbilities {}
+		, AdditionalEliteAbilities {}
+		, VeteranReload {}
+		, VeteranEmptyReload {}
+
 		, Wake { }
 		, Wake_Grapple { }
 		, Wake_Sinking { }
 		, MakesWake { }
+
+		, CrashSpin_Multiplier { 1.0f }
 
 		, AINormalTargetingDelay {}
 		, PlayerNormalTargetingDelay {}
@@ -692,10 +718,13 @@ public:
 		, PlayerAttackMoveTargetingDelay {}
 		, DistributeTargetingFrame {}
 
-		, DigitalDisplay_Health_FakeAtDisguise { true }
+		, DigitalDisplay_Health_FakeAtDisguise {}
 
 		, AttackMove_Aggressive {}
 		, AttackMove_UpdateTarget {}
+
+		, ApproachTarget_StopWhenInRange {}
+		, ApproachTarget_PursuitTarget { false }
 
 		, BunkerableAnyway { false }
 		, KeepTargetOnMove { false }
@@ -714,10 +743,10 @@ public:
 		, InitialSpawnsNumber { }
 		, Spawns_Queue { }
 
-		, Spawner_RecycleRange { Leptons(-1) }
+		, Spawner_RecycleRange {}
 		, Spawner_RecycleAnim { }
 		, Spawner_RecycleCoord { {0,0,0} }
-		, Spawner_RecycleOnTurret { false }
+		, Spawner_RecycleOnTurret {}
 
 		, SuppressKillWeapons { false }
 		, SuppressKillWeapons_Types { }
@@ -732,11 +761,11 @@ public:
 		, Overload_Frames {}
 		, Overload_DeathSound {}
 		, Overload_ParticleSys {}
-		, Overload_ParticleSysCount { 5 }
+		, Overload_ParticleSysCount {}
 
-		, FallingDownDamage { 1.0 }
+		, FallingDownDamage {}
 		, FallingDownDamage_Water {}
-		, FallingDownDamage_AllowEMP { true }
+		, FallingDownDamage_AllowEMP {}
 
 		, Ammo_AutoConvertMinimumAmount { -1 }
 		, Ammo_AutoConvertMaximumAmount { -1 }
@@ -752,8 +781,6 @@ public:
 		, AttackMove_Follow { false }
 		, AttackMove_Follow_IncludeAir { false }
 		, AttackMove_Follow_IfMindControlIsFull { false }
-		, AttackMove_StopWhenTargetAcquired { }
-		, AttackMove_PursuitTarget { false }
 
 		, MultiWeapon { false }
 		, MultiWeapon_IsSecondary {}
@@ -789,8 +816,6 @@ public:
 
 		, JumpjetClimbIgnoreBuilding {}
 
-		, Unsellable {}
-
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
 		, AlwaysConsideredThreat { false }
@@ -798,6 +823,34 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+		, DropCrate {}
+
+		, Convert_Health_AbovePercent { -1.0 }
+		, Convert_Health_BelowPercent { -1.0 }
+		, Convert_Health {}
+
+		// Ares 0.2
+		, RadarJamRadius { 0 }
+
+		// Ares 0.9
+		, InhibitorRange {}
+		, DesignatorRange {}
+			
+		// Ares 0.A
+		, GroupAs { NONE_STR }
+			
+		// Ares 0.C
+		, NoAmmoWeapon { -1 }
+		, NoAmmoAmount { 0 }
+			
+		// Ares 2.0
+		, Passengers_BySize { true }
+		, Convert_Deploy { }
+
+		// Ares 3.0
+		, Unsellable {}
+		, KeepAlive {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

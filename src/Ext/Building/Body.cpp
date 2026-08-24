@@ -452,6 +452,28 @@ WeaponStruct* BuildingExt::GetLaserWeapon(BuildingClass* pThis)
 	return pThis->GetPrimaryWeapon();
 }
 
+void BuildingExt::UpdateFactoryQueues(BuildingClass* pThis)
+{
+	const auto pType = pThis->Type;
+	const auto factory = pType->Factory;
+
+	if (factory == AbstractType::None)
+		return;
+
+	if (const auto pFactory = pThis->Factory)
+	{
+		if (pFactory->Object)
+		{
+			if (pThis->Deactivated || !pThis->HasPower)
+				pFactory->Suspend(false);
+			else if (pFactory->IsSuspended && !pFactory->IsManual)
+				pFactory->Unsuspend(false);
+		}
+	}
+
+	pThis->Owner->Update_FactoriesQueues(factory, pType->Naval, BuildCat::DontCare);
+}
+
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
 	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
@@ -546,6 +568,19 @@ int BuildingExt::GetTurretFrame(BuildingClass* pThis)
 	return baseOffset + (shapeFacing * framesPerFacing) + animFrame;
 }
 
+bool BuildingExt::BuildingOnline(BuildingClass* pThis)
+{
+	const Mission currentMission = pThis->CurrentMission;
+
+	if (currentMission == Mission::Construction || currentMission == Mission::Selling
+		|| pThis->EMPLockRemaining > 0 || !pThis->WasOnline || pThis->BunkerLinkedItem)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -555,6 +590,7 @@ void BuildingExt::Serialize(T& Stm)
 	Stm
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
+		//.Process(this->HasPowerFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->GrindingWeapon_AccumulatedCredits)

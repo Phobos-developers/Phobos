@@ -428,6 +428,10 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
+	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
+	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
+	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
+
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
@@ -438,6 +442,14 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
+
+	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
+
+	this->PreventCrewEscape.Read(exINI, pSection, "PreventCrewEscape");
+	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
+	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
+
+	this->Ammo.Read(exINI, pSection, "Ammo");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -476,6 +488,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Malicious.Read(exINI, pSection, "Malicious");
 	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
+	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::Detonate
@@ -489,8 +502,11 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Shield_RemoveTypes.size() > 0
 		|| this->Shield_RemoveAll
 		|| this->Convert_Pairs.size() > 0
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+#endif
+		|| this->ChangeOwner
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
@@ -500,6 +516,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
+		|| this->Ammo
 	);
 
 	char tempBuffer[32];
@@ -703,10 +720,10 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 		.Process(this->PenetratesTransport_DamageAll)
 		.Process(this->PenetratesTransport_CleanSound)
-
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
-
+#endif
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
@@ -720,7 +737,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
-			
+
 		.Process(this->JumpjetTurnRate)
 		.Process(this->JumpjetSpeed)
 		.Process(this->JumpjetClimb)
@@ -774,9 +791,19 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->AnimZAdjust)
 
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_SetAsMindControl)
+		.Process(this->ChangeOwner_MindControlAnim)
+
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		.Process(this->Taunt)
+
+		.Process(this->Psychedelic_StackingMode)
+
+		.Process(this->PreventCrewEscape)
+		.Process(this->PreventPassengerEscape)
+		.Process(this->PreventOccupantEscape)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
@@ -785,12 +812,16 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Malicious)
 		.Process(this->Flash_Duration)
 		.Process(this->Damage_Deployed)
+		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->InApplyCrit)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->Ammo)
 		;
 }
 

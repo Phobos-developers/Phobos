@@ -658,7 +658,7 @@ DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
 
 			CoordStruct enhancerCoords = pEnhancer->GetCoords();
 
-			if (center.DistanceFrom(CellClass::Coord2Cell(enhancerCoords)) > range * 1.5)
+			if (center.DistanceFromSquared(CellClass::Coord2Cell(enhancerCoords)) > range * range * 2.25) // 1.5 * 1.5
 				continue;
 
 			enhancerCoords.Z = MapClass::Instance.GetCellFloorHeight(enhancerCoords);

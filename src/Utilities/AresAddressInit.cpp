@@ -10,11 +10,13 @@ decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 decltype(AresFunctions::UnitDeliveryStateMachine_Update) AresFunctions::UnitDeliveryStateMachine_Update = nullptr;
+decltype(AresFunctions::SetSpotlight) AresFunctions::SetSpotlight = nullptr;
 decltype(AresFunctions::ApplyPermaMC) AresFunctions::ApplyPermaMC = nullptr;
 decltype(AresFunctions::DetailsCurrentlyEnabled) AresFunctions::DetailsCurrentlyEnabled = nullptr;
 decltype(AresFunctions::SendPDPlane) AresFunctions::SendPDPlane = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
+PhobosMap<BombClass*, WeaponTypeClass**>* AresFunctions::BombExtMap = nullptr;
 
 decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
 decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
@@ -50,6 +52,8 @@ void AresFunctions::InitAres3_0()
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x075DE0);
 
+	NOTE_ARES_FUN(SetSpotlight, 0x046420);
+
 	NOTE_ARES_FUN(ApplyPermaMC, 0x052CD0);
 
 	NOTE_ARES_FUN(DetailsCurrentlyEnabled, 0x02A6C0);
@@ -61,6 +65,7 @@ void AresFunctions::InitAres3_0()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
+	NOTE_ARES_FUN(BombExtMap, 0xC1DE0);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
@@ -97,6 +102,8 @@ void AresFunctions::InitAres3_0p1()
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x076E90);
 
+	NOTE_ARES_FUN(SetSpotlight, 0x046F90);
+
 	NOTE_ARES_FUN(ApplyPermaMC, 0x053980);
 
 	NOTE_ARES_FUN(DetailsCurrentlyEnabled, 0x02B1C0);
@@ -108,6 +115,7 @@ void AresFunctions::InitAres3_0p1()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
+	NOTE_ARES_FUN(BombExtMap, 0xC2DFC);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);

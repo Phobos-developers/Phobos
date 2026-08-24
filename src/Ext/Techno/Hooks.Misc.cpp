@@ -1,14 +1,11 @@
-#include "Body.h"
-
 #include <EventClass.h>
 #include <TunnelLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
 #include <Ext/Unit/Body.h>
-#include <Ext/UnitType/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -26,6 +23,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+DEFINE_HOOK_AGAIN(0x6B0BA4, SlaveManagerClass_Killed_DecideOwner, 0x6)
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
 	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
@@ -54,7 +52,22 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		break;
 	}
 
-	return 0x0;
+	if (R->Origin() == 0x6B0BA4)
+	{
+		// 0x6B0BA4: master sold / self-destroyed (killer == 0).
+		// Replicate the vanilla fallback: give the slave to the neutral house,
+		// otherwise destroy it. Avoid `return 0` here so we bypass the vanilla
+		// `mov eax,[esp+arg_4]; test eax,eax` sequence and branch explicitly.
+		if (const auto pNeutral = HouseClass::FindNeutral())
+		{
+			R->EAX(pNeutral);
+			return ChangeSlaveOwner;
+		}
+		return KillTheSlave;
+
+	}
+
+	return 0;
 }
 
 // Fix slaves cannot always suicide due to armor multiplier or something
@@ -129,7 +142,7 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	auto const pOwner = pThis->Owner;
 	auto const pTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
-	if (pTypeExt->Spawner_AttackImmediately)
+	if (pTypeExt->Spawner_AttackImmediately.Get(RulesExt::Global()->Spawner_AttackImmediately))
 	{
 		pSpawnee->SetTarget(pThis->Target);
 		pSpawnee->QueueMission(Mission::Attack, true);
@@ -206,7 +219,7 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 	auto const pTypeExt = TechnoExt::Fetch(pThis->Owner)->TypeExtData;
 
-	if (pTypeExt->Promote_IncludeSpawns)
+	if (pTypeExt->Promote_IncludeSpawns.Get(RulesExt::Global()->Promote_IncludeSpawns))
 	{
 		for (auto const pNode : pThis->SpawnedNodes)
 		{
@@ -240,10 +253,10 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	{
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
 		auto const recycleCrd = FLH != CoordStruct::Empty
-			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret)
+			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret.Get(RulesExt::Global()->Spawner_RecycleOnTurret))
 			: pCarrier->GetCoords();
 		auto const deltaCrd = spawnerCrd - recycleCrd;
-		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange.Get();
+		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange.Get(RulesExt::Global()->Spawner_RecycleRange);
 
 		if (recycleRange < 0)
 		{
@@ -283,7 +296,7 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 		if (FLH != CoordStruct::Empty)
 		{
 			GET(CoordStruct*, pDestCrd, EAX);
-			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
+			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret.Get(RulesExt::Global()->Spawner_RecycleOnTurret)) - pCarrier->GetCoords();
 		}
 	}
 	else if (!pThis->GetTechnoType()->MissileSpawn && pDest->WhatAmI() == AbstractType::Building
@@ -305,7 +318,7 @@ DEFINE_HOOK(0x6B74F0, SpawnManagerClass_AI_UseTurretFacing, 0x5)
 
 	auto const pTechno = pThis->Owner;
 
-	if (pTechno->HasTurret() && TechnoExt::Fetch(pTechno)->TypeExtData->Spawner_UseTurretFacing)
+	if (pTechno->HasTurret() && TechnoExt::Fetch(pTechno)->TypeExtData->Spawner_UseTurretFacing.Get(RulesExt::Global()->Spawner_UseTurretFacing))
 		R->EAX(pTechno->SecondaryFacing.Current().Raw);
 
 	return 0;
@@ -787,6 +800,35 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
+	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && pThis->GetOwningHouse()->IsCurrentPlayer())
+	{
+		auto const pBldTypeExt = BuildingTypeExt::Fetch(specific_cast<BuildingClass*>(pThis)->Type);
+		const int tabIndex = pBldTypeExt->SetTabBySelecting;
+
+		if (tabIndex >= 0 && tabIndex < 4)
+		{
+			TabClass::Instance.SetTab(tabIndex);
+		}
+		else if (tabIndex < 0)
+		{
+			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
+			{
+			case AbstractType::InfantryType:
+				TabClass::Instance.SetTab(2);
+				break;
+			case AbstractType::UnitType:
+			case AbstractType::AircraftType:
+				TabClass::Instance.SetTab(3);
+				break;
+			case AbstractType::BuildingType:
+				TabClass::Instance.SetTab(SidebarClass::Instance.ActiveTabIndex == 0 ? 1 : 0); // A controversial design, but no one has yet proposed a better one.
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	if (!Phobos::Config::ShowFlashOnSelecting)
 		return 0;
 
@@ -845,7 +887,7 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	R->EBP(0); // Restore overridden instructions.
 
 	const auto pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
-	if (pTypeExt->OnlyUseLandSequences)
+	if (pTypeExt->OnlyUseLandSequences.Get(RulesExt::Global()->OnlyUseLandSequences))
 		return SkipWaterSequences;
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
@@ -860,13 +902,12 @@ static bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
-	// These locomotors either cause the game to crash or fail to enter the tank bunker properly.
-	return loco != LocomotionClass::CLSIDs::Hover
-		&& loco != LocomotionClass::CLSIDs::Mech
-		&& loco != LocomotionClass::CLSIDs::Fly
-		&& loco != LocomotionClass::CLSIDs::Droppod
-		&& loco != LocomotionClass::CLSIDs::Rocket
-		&& loco != LocomotionClass::CLSIDs::Ship;
+	// Other locomotors will either cause the game to crash or fail to enter the tank bunker properly.
+	return loco == LocomotionClass::CLSIDs::Drive
+		|| loco == LocomotionClass::CLSIDs::Walk
+		|| loco == LocomotionClass::CLSIDs::Tunnel
+		|| loco == LocomotionClass::CLSIDs::Teleport
+		|| loco == LocomotionClass::CLSIDs::Jumpjet;
 }
 
 DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
@@ -929,6 +970,29 @@ DEFINE_HOOK(0x730D1F, ProcessDeployCommand_VoiceDeploy, 0x5)
 	return 0;
 }
 
+// rotation when crashing made optional
+DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
+{
+	enum { SkipGameCode = 0x4DED4B };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	const float multiplier = pTypeExt->CrashSpin_Multiplier;
+
+	if (multiplier > 0.0f)
+	{
+		auto& random = ScenarioClass::Instance->Random;
+		pThis->RockingSidewaysPerFrame = static_cast<float>((random(0, 2147483646) * 4.656612877414201e-10 * 0.15 + 0.1) * multiplier);
+
+		if (!random(0, 1))
+			pThis->RockingSidewaysPerFrame *= -1.0f;
+
+		pThis->RockingForwardsPerFrame = static_cast<float>(random(0, 2147483646) * 4.656612877414201e-10 * 0.1 * multiplier);
+	}
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region Events
@@ -937,11 +1001,13 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
+		auto const pType = pUnit->Type;
+
 		// issue #112 Make FireOnce=yes work on other TechnoType
 		// Author: Starkku
-		if (pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+		if (pUnit->CurrentMission == Mission::Unload && pType->DeployFire && !pType->IsSimpleDeployer)
 		{
 			pUnit->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
@@ -951,6 +1017,17 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 		auto const pExt = UnitExt::Fetch(pUnit);
 		pExt->SubterraneanHarvStatus = 0;
 		pExt->SubterraneanHarvRallyPoint = nullptr;
+	}
+	else if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+	{
+		auto const pType = pBuilding->Type;
+
+		if (pBuilding->CurrentMission == Mission::Unload
+			&& pType->DeployFire && pType->Factory == AbstractType::None)
+		{
+			pBuilding->SetTarget(nullptr);
+			pBuilding->ForceMission(Mission::Guard);
+		}
 	}
 
 	return 0;
@@ -992,6 +1069,35 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_MegaMission_MoveCommand, 0x5)
 	}
 
 	pExt->KeepTargetOnMove = false;
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region Controllability
+
+DEFINE_HOOK_AGAIN(0x4C6D4D, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOff
+DEFINE_HOOK_AGAIN(0x4C71CA, EventClass_RespondToEvent_CheckControllability, 0x8)  // MegaMission
+DEFINE_HOOK_AGAIN(0x4C74CB, EventClass_RespondToEvent_CheckControllability, 0x8)  // Idle
+DEFINE_HOOK_AGAIN(0x4C7859, EventClass_RespondToEvent_CheckControllability, 0x8)  // Scatter
+DEFINE_HOOK_AGAIN(0x4C76BC, EventClass_RespondToEvent_CheckControllability, 0x8)  // Deploy
+DEFINE_HOOK_AGAIN(0x4C6F12, EventClass_RespondToEvent_CheckControllability, 0x8)  // Sell
+DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // PowerOn
+{
+	enum { SkipGameCode = 0x4C6D42 };
+
+	GET(EventClass* const, pThis, ESI);
+
+	auto const pTechno = pThis->MegaMission.Whom.As_Techno();
+
+	if (!pTechno)
+		return SkipGameCode;
+
+	auto const pHouse = pTechno->GetOwningHouse();
+
+	if (!TechnoExt::CanReceiveEvent(pTechno, pHouse))
+		return SkipGameCode;
 
 	return 0;
 }

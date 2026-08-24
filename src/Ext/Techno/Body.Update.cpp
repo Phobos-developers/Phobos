@@ -1,6 +1,5 @@
 // methods used in TechnoClass_AI hooks or anything similar
-#include "Body.h"
-
+#include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
@@ -77,7 +76,7 @@ void TechnoExt::ApplyInterceptor()
 		const auto pBulletExt = BulletExt::Fetch(pBullet);
 		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
-		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+		if (!pBulletTypeExt->Interceptable.Get(RulesExt::Global()->ProjectileInterceptable) || pBullet->SpawnNextAnim)
 			continue;
 
 		const bool isTargetedOrLocked = static_cast<bool>(pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked));
@@ -88,7 +87,7 @@ void TechnoExt::ApplyInterceptor()
 
 		auto bulletLoc = pBullet->Location;
 
-		if (pInterceptorType->GuardRange_IsCylindrical)
+		if (pInterceptorType->GuardRange_IsCylindrical.Get(RulesExt::Global()->Interceptor_GuardRange_IsCylindrical))
 			bulletLoc.Z = location.Z;
 
 		const auto distanceSq = bulletLoc.DistanceFromSquared(location);
@@ -135,32 +134,6 @@ void TechnoExt::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::AmmoAutoConvertActions()
-{
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pTypeExt->Ammo_AutoConvertType.isset())
-		return;
-
-	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
-	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
-
-	if (min < 0 && max < 0)
-		return;
-
-	if (pTypeExt->OwnerObject()->Ammo <= 0)
-		return;
-
-	const auto pThis = this->OwnerObject();
-	const int ammo = pThis->Ammo;
-
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
-	{
-		const auto pFoot = abstract_cast<FootClass*, true>(pThis);
-		TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
-	}
-}
-
 // TODO : Merge into new AttachEffects
 bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 {
@@ -171,8 +144,23 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 	auto const pThis = this->OwnerObject();
 
+	if (pThis->InLimbo)
+	{
+		if (!pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+			return false;
+
+		isInLimbo = true;
+	}
+
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death by conditions out of this function
+	if (this->ShouldBeDead)
+	{
+		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+		return true;
+	}
 
 	// Death if no ammo
 	if (pTypeExt->OwnerObject()->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
@@ -222,7 +210,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
-		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed.Get(RulesExt::Global()->AutoDeath_TechnosDontExist_AllowLimboed)))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
@@ -233,7 +221,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos exist
 	if (!pTypeExt->AutoDeath_TechnosExist.empty())
 	{
-		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed.Get(RulesExt::Global()->AutoDeath_TechnosExist_AllowLimboed)))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
@@ -254,10 +242,7 @@ void TechnoExt::EatPassengers()
 
 	auto const pThis = this->OwnerObject();
 
-	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
-		return;
-
-	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+	if (pThis->InLimbo || (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
 	{
 		if (this->PassengerDeletionTimer.InProgress())
 			this->PassengerDeletionTimer.StartTime++;
@@ -891,11 +876,16 @@ void TechnoExt::UpdateAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || pThis->IsImmobilized)
+		return;
+
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
-	bool altered = false;
+	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
+	std::vector<AEWeaponParams> expireWeapons;
+	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -906,10 +896,10 @@ void TechnoExt::UpdateAttachEffects()
 
 		attachEffect->AI();
 
-		if (attachEffect->NeedsRecalculateStat)
+		if (attachEffect->ShouldRecalculateStats)
 		{
-			altered = true;
-			attachEffect->NeedsRecalculateStat = false;
+			requiresRecalc = true;
+			attachEffect->ShouldRecalculateStats = false;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -920,14 +910,14 @@ void TechnoExt::UpdateAttachEffects()
 			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
+				cumulativeAnimTypes.insert(pType);
 
 			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
@@ -937,11 +927,13 @@ void TechnoExt::UpdateAttachEffects()
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
 						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+						else
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
 					}
 				}
 			}
@@ -960,7 +952,7 @@ void TechnoExt::UpdateAttachEffects()
 		}
 	}
 
-	if (altered)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -969,12 +961,16 @@ void TechnoExt::UpdateAttachEffects()
 		this->UpdateTintValues();
 	}
 
+	for (auto const pType : cumulativeAnimTypes)
+	{
+		this->UpdateCumulativeAttachEffects(pType, true);
+	}
+
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 }
 
@@ -985,8 +981,8 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pTechnoType = pTypeExt->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
-	bool altered = false;
+	std::vector<AEWeaponParams> expireWeapons;
+	bool requiresRecalc = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -999,8 +995,8 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 
 		if (remove)
 		{
-			if (pType->NeedCalculate)
-				altered = true;
+			if (pType->RequiresRecalculation)
+				requiresRecalc = true;
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -1009,11 +1005,13 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 					if (pType->ExpireWeapon_UseInvokerAsOwner)
 					{
 						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
+						else
+							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
 					}
 					else
 					{
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
 					}
 				}
 			}
@@ -1028,25 +1026,25 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 
 	auto const coords = pThis->GetCoords();
 
-	for (auto const& pair : expireWeapons)
+	for (auto const& info : expireWeapons)
 	{
-		auto const pInvoker = pair.second;
-		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (altered && !count)
+	if (requiresRecalc && !count)
 		this->RecalculateStatMultipliers();
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
+void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
+	int count = 0;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
@@ -1057,7 +1055,7 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 		{
 			pAEWithAnim = attachEffect.get();
 		}
-		else if (attachEffect->CanShowAnim(true))
+		else if (attachEffect->CanShowAnim())
 		{
 			const int currentDuration = attachEffect->GetRemainingDuration();
 
@@ -1067,19 +1065,21 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 				duration = currentDuration;
 			}
 		}
+
+		if (attachEffect->IsActive())
+			count++;
 	}
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim();
+		pAEWithAnim->UpdateCumulativeAnim(count);
+	}
+	else if (pAELargestDuration)
+	{
+		pAELargestDuration->HasCumulativeAnim = true;
 
-		if (pRemoved == pAEWithAnim)
-		{
-			pAEWithAnim->HasCumulativeAnim = false;
-
-			if (pAELargestDuration)
-				pAELargestDuration->TransferCumulativeAnim(pAEWithAnim);
-		}
+		if (createAnim)
+			pAELargestDuration->CreateAnim();
 	}
 }
 
@@ -1103,9 +1103,10 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.HasTint |= type->HasTint();
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 
-		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+		if (type->RestrictedArmorMultiplier)
 			pAE.HasRestrictedArmorMultipliers = true;
 		else
 			pAE.ArmorMultiplier *= type->ArmorMultiplier;
@@ -1125,6 +1126,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool hasTint = false;
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
+	bool hasOnDamageDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
 
@@ -1137,7 +1139,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		firepower *= type->FirepowerMultiplier;
 		speed *= type->SpeedMultiplier;
 
-		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+		if (type->RestrictedArmorMultiplier)
 			hasRestrictedArmorMultipliers = true;
 		else
 			armor *= type->ArmorMultiplier;
@@ -1151,6 +1153,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
@@ -1166,6 +1169,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.HasTint = hasTint;
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
+	pAE.HasOnDamageDiscardables = hasOnDamageDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
 
