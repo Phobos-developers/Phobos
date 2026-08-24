@@ -748,17 +748,6 @@ void ShieldClass::SelfHealing()
 	}
 }
 
-int ShieldClass::GetPercentageAmount(double iStatus)
-{
-	if (iStatus == 0)
-		return 0;
-
-	if (iStatus >= -1.0 && iStatus <= 1.0)
-		return (int)std::round(this->Type->Strength * iStatus);
-
-	return (int)std::trunc(iStatus);
-}
-
 void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
@@ -935,15 +924,6 @@ void ShieldClass::CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType
 
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
-	}
-}
-
-void ShieldClass::KillAnim()
-{
-	if (auto& pAnim = this->IdleAnim)
-	{
-		pAnim->UnInit();
-		pAnim = nullptr;
 	}
 }
 
@@ -1128,12 +1108,4 @@ ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const
 	}
 
 	return pShieldType->Armor.Get();
-}
-
-void ShieldClass::SetAnimationVisibility(bool visible)
-{
-	if (!this->AreAnimsHidden && !visible)
-		this->KillAnim();
-
-	this->AreAnimsHidden = !visible;
 }

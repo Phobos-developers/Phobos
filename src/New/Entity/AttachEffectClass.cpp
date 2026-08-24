@@ -452,15 +452,6 @@ void AttachEffectClass::CreateAnim()
 	}
 }
 
-void AttachEffectClass::KillAnim()
-{
-	if (this->Animation)
-	{
-		this->Animation->UnInit();
-		this->Animation = nullptr;
-	}
-}
-
 void AttachEffectClass::UpdateCumulativeAnim(int count)
 {
 	const auto pAnim = this->Animation;
@@ -479,14 +470,6 @@ void AttachEffectClass::UpdateCumulativeAnim(int count)
 
 	if (pAnim->Type != pAnimType)
 		AnimExt::ChangeAnimType(pAnim, pAnimType, false, pType->CumulativeAnimations_RestartOnChange);
-}
-
-void AttachEffectClass::SetAnimationTunnelState(bool visible)
-{
-	if (!this->IsInTunnel && !visible)
-		this->KillAnim();
-
-	this->IsInTunnel = !visible;
 }
 
 void AttachEffectClass::RefreshDuration(int durationOverride)

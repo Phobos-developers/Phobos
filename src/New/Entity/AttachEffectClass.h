@@ -18,7 +18,16 @@ public:
 
 	void AI();
 	void AI_Temporal();
-	void KillAnim();
+
+	void KillAnim()
+	{
+		if (this->Animation)
+		{
+			this->Animation->UnInit();
+			this->Animation = nullptr;
+		}
+	}
+
 	void CreateAnim();
 	void UpdateCumulativeAnim(int count);
 
@@ -31,7 +40,14 @@ public:
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 
-	void SetAnimationTunnelState(bool visible);
+	void SetAnimationTunnelState(bool visible)
+	{
+		if (!this->IsInTunnel && !visible)
+			this->KillAnim();
+
+		this->IsInTunnel = !visible;
+	}
+
 	AttachEffectTypeClass* GetType() const { return this->Type; }
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
@@ -62,8 +78,8 @@ public:
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
+	inline void CloakCheck();
 	void OnlineCheck();
-	void CloakCheck();
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
