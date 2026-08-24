@@ -39,7 +39,7 @@ public:
 	void AI();
 
 	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
-	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+	void DrawShieldBar_Other(const int length, RectangleStruct* pBound, bool isInfantry);
 
 	double GetHealthRatio() const
 	{
@@ -165,6 +165,7 @@ private:
 	bool Attached;
 	bool AreAnimsHidden;
 	bool IsSelfHealingEnabled;
+	int BracketDelta;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
