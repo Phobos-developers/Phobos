@@ -2,9 +2,13 @@
 #include <CellClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Detach.h>
+#include <vector>
+
+class FootClass;
 #include <Utilities/TemplateDef.h>
 
-class CellExt final : public AbstractExt
+class CellExt final : public AbstractExt, public Detach::Listener<FootClass>
 {
 public:
 	using base_type = CellClass;
@@ -46,6 +50,17 @@ public:
 	std::vector<RadSiteClass*> RadSites {};
 	std::vector<RadLevel> RadLevels { };
 	int InfantryCount{ 0 };
+
+	std::vector<FootClass*> InAirJumpjets {};
+	int Jumpjet_LastScatterAffectedFrame { 0 };
+
+	int GetWeightedJumpjetCount(FootClass* pHov, bool* shouldScatter);
+	void MarkJumpjetScatterCell();
+	void UpdateJumpjet(FootClass* pFoot, int curHeight, int oldHeight);
+	void AddJumpjet(FootClass* pFoot, int curHeight);
+	void RemoveJumpjet(FootClass* pFoot, int oldHeight);
+
+	virtual void OnDetach(FootClass* pFoot, bool removed) override;
 
 	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
 	{ }

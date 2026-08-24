@@ -1,4 +1,16 @@
+#pragma warning(disable: 4996)
 #include <JumpjetLocomotionClass.h>
+#include <AircraftTrackerClass.h>
+#include <CellSpread.h>
+#include <ScenarioClass.h>
+#include <FootClass.h>
+#include <InfantryClass.h>
+#include <MapClass.h>
+#include <Unsorted.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/Cell/Body.h>
+#include <Utilities/GeneralUtils.h>
 
 #include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
@@ -496,3 +508,225 @@ DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x
 
 	return SkipGameCode;
 }
+
+// ============================================================================
+// ExtendedJumpjetHovering
+// ============================================================================
+
+static void ProcessJumpjetScatter(JumpjetLocomotionClass* pLoco, int dir)
+{
+	if (dir < 0 || dir > 7)
+		return;
+
+	double dist = static_cast<double>(pLoco->Speed);
+	FootClass* pFoot = pLoco->LinkedTo;
+	CoordStruct oldPos = pFoot->GetCoords();
+	auto pTechnoExt = TechnoExt::Fetch(pFoot);
+	CellStruct off = CellSpread::GetNeighbourOffset(dir);
+	if (off.X && off.Y)
+		dist /= Math::Sqrt2;
+
+	CoordStruct newPos { oldPos.X + static_cast<int>(static_cast<double>(off.X) * dist),
+	                     oldPos.Y + static_cast<int>(static_cast<double>(off.Y) * dist),
+	                     oldPos.Z };
+
+	AircraftTrackerClass::Instance.Update(pFoot, CellClass::Coord2Cell(oldPos), CellClass::Coord2Cell(newPos));
+	bool onMap = pFoot->IsOnMap;
+	pFoot->IsOnMap = false;
+	pFoot->SetLocation(newPos);
+	pFoot->IsOnMap = onMap;
+	pLoco->DestinationCoords.X = newPos.X;
+	pLoco->DestinationCoords.Y = newPos.Y;
+
+	if (pTechnoExt->Jumpjet_ScatterFinishFrame - Unsorted::CurrentFrame <= 0)
+		pTechnoExt->Jumpjet_ScatterFinishFrame = Unsorted::CurrentFrame + static_cast<int>(std::ceil(128.0 / dist));
+}
+
+static bool ShouldScatter(FootClass* pHov, int* outDir)
+{
+	bool should = false;
+	int scatterDir = -1;
+	std::vector<std::pair<int,int>> vec;
+
+	CellClass* pCell = pHov->GetCell();
+	int cellCount = 0;
+	if (auto pCellExt = CellExt::TryFetch(pCell))
+	{
+		if (Unsorted::CurrentFrame - pCellExt->Jumpjet_LastScatterAffectedFrame > 2)
+			return false;
+		if (pCellExt->InAirJumpjets.size())
+			cellCount += pCellExt->GetWeightedJumpjetCount(pHov, &should);
+	}
+
+	CellStruct cellPos = pCell->MapCoords;
+
+	if (auto pTarget = pHov->Target)
+	{
+		int targetDir = pHov->GetTargetDirection(pTarget).GetFacing<8>();
+		int d1 = (targetDir + 2) % 8;
+		int d2 = (targetDir - 2 + 8) % 8;
+		int c1 = 0, c2 = 0;
+		CellStruct off1 = CellSpread::GetNeighbourOffset(d1);
+		if (auto pC1 = MapClass::Instance.GetCellAt(cellPos + off1))
+			if (auto pE1 = CellExt::TryFetch(pC1))
+				if (pE1->InAirJumpjets.size())
+					c1 += pE1->GetWeightedJumpjetCount(pHov, &should);
+		CellStruct off2 = CellSpread::GetNeighbourOffset(d2);
+		if (auto pC2 = MapClass::Instance.GetCellAt(cellPos + off2))
+			if (auto pE2 = CellExt::TryFetch(pC2))
+				if (pE2->InAirJumpjets.size())
+					c2 += pE2->GetWeightedJumpjetCount(pHov, &should);
+
+		int c3 = 27;
+		int c4 = 27;
+		int d3 = (targetDir + 1) % 8;
+		int d4 = (targetDir - 1 + 8) % 8;
+		vec = { {cellCount, -1}, {c1, d1}, {c2, d2}, {c3, d3}, {c4, d4} };
+		const int maxPlus = 30;
+		for (auto& pr : vec)
+			pr.first = maxPlus - pr.first;
+	}
+	else
+	{
+		int counts[8] = {0};
+		for (int i = 0; i < 8; ++i)
+		{
+			CellStruct off = CellSpread::GetNeighbourOffset(i);
+			if (auto pC = MapClass::Instance.GetCellAt(cellPos + off))
+				if (auto pE = CellExt::TryFetch(pC))
+					if (pE->InAirJumpjets.size())
+						counts[i] += pE->GetWeightedJumpjetCount(pHov, &should);
+		}
+		vec = { {cellCount, -1},
+		        {counts[0],0},{counts[1],1},{counts[2],2},{counts[3],3},
+		        {counts[4],4},{counts[5],5},{counts[6],6},{counts[7],7} };
+		int maxVal = cellCount;
+		for (int i = 0; i < 8; ++i) maxVal = std::max(maxVal, counts[i]);
+		int maxPlus = 3 + maxVal;
+		for (auto& pr : vec)
+			pr.first = maxPlus - pr.first;
+	}
+
+	auto pExt = TechnoExt::Fetch(pHov);
+	if (pExt->Jumpjet_ScatterFinishFrame - Unsorted::CurrentFrame <= 0)
+	{
+		// build weight list for GeneralUtils::ChooseOneWeighted
+		std::vector<int> weights;
+		weights.reserve(vec.size());
+		for (auto& pr : vec) weights.push_back(pr.first);
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+		int idx = GeneralUtils::ChooseOneWeighted(dice, &weights);
+		if (idx >= 0 && idx < static_cast<int>(vec.size()))
+			scatterDir = vec[idx].second;
+		else
+			scatterDir = vec[0].second;
+		pExt->Jumpjet_ScatterDir = scatterDir;
+		*outDir = scatterDir;
+	}
+	else
+	{
+		*outDir = pExt->Jumpjet_ScatterDir;
+	}
+	return should;
+}
+
+DEFINE_HOOK(0x4135A0, AircraftTracker_JumpjetShouldScatter, 0x5)
+{
+	if (!RulesExt::Global()->ExtendedJumpjetHovering)
+		return 0;
+	R->EAX(false);
+	return 0x4135C6;
+}
+
+DEFINE_HOOK(0x54BD93, JumpjetLocomotion_ProcessHovering_Scatter, 0x6)
+{
+	if (!RulesExt::Global()->ExtendedJumpjetHovering)
+		return 0;
+	GET(JumpjetLocomotionClass*, pLoco, ESI);
+	int dir = -1;
+	if (ShouldScatter(pLoco->LinkedTo, &dir))
+		ProcessJumpjetScatter(pLoco, dir);
+	else
+	{
+		FootClass* pFoot = pLoco->LinkedTo;
+		auto pExt = TechnoExt::Fetch(pFoot);
+		if (pExt->Jumpjet_LastCell && pExt->Jumpjet_LastCell != pFoot->Destination)
+			pFoot->Destination = pExt->Jumpjet_LastCell;
+	}
+	return 0;
+}
+
+// Foot tracking for ExtendedJumpjetHovering
+DEFINE_HOOK(0x4DB83F, FootClass_SetLocation_ExtendedJumpjet, 0x5)
+{
+	GET(bool, changed, EBX);
+	if (!changed)
+		return 0;
+	GET(FootClass*, pFoot, ESI);
+	GET_STACK(CoordStruct*, pTargetPos, STACK_OFFSET(0xC, 0x4));
+
+	auto pTechnoExt = TechnoExt::Fetch(pFoot);
+	CellClass* pOldCell = pTechnoExt->Jumpjet_LastCell;
+	CellClass* pNewCell = MapClass::Instance.GetCellAt(*pTargetPos);
+	auto pNewExt = CellExt::TryFetch(pNewCell);
+
+	int bridgeAdj = pFoot->OnBridge ? -CellClass::BridgeHeight : 0;
+	int oldHeight = pTechnoExt->Jumpjet_LastHeight;
+	int newHeight = pTargetPos->Z - MapClass::Instance.GetCellFloorHeight(*pTargetPos) + bridgeAdj;
+	pTechnoExt->Jumpjet_LastHeight = newHeight;
+
+	if (pNewCell == pOldCell)
+	{
+		if (pNewExt)
+		{
+			pNewExt->UpdateJumpjet(pFoot, newHeight, oldHeight);
+			if (pFoot->Location.X != pTargetPos->X || pFoot->Location.Y != pTargetPos->Y)
+				pNewExt->MarkJumpjetScatterCell();
+		}
+	}
+	else
+	{
+		pTechnoExt->Jumpjet_LastCell = pNewCell;
+		if (auto pOldExt = CellExt::TryFetch(pOldCell))
+			pOldExt->RemoveJumpjet(pFoot, oldHeight);
+		if (pNewExt)
+			pNewExt->AddJumpjet(pFoot, newHeight);
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5FBB, ObjectClass_SetHeight_ExtendedJumpjet, 0x5)
+{
+	GET(FootClass*, pFoot, ESI);
+	if ((pFoot->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None)
+		return 0;
+	GET(int, curHeight, EDI);
+	auto pExt = TechnoExt::Fetch(pFoot);
+	int oldHeight = pExt->Jumpjet_LastHeight;
+	pExt->Jumpjet_LastHeight = curHeight;
+	if (auto pCellExt = CellExt::TryFetch(pExt->Jumpjet_LastCell))
+		pCellExt->UpdateJumpjet(pFoot, curHeight, oldHeight);
+	return 0;
+}
+
+// ExtendedJumpjetHovering - Skip Jumpjet StopMoving when hovering
+DEFINE_HOOK(0x54B4F2, JumpjetLocomotion_StopMoving_Skip, 0x9)
+{
+    GET(ILocomotion*, pILoco, EDI);
+
+    if (!RulesExt::Global()->ExtendedJumpjetHovering)
+        return 0;
+	
+    auto pLoco = static_cast<JumpjetLocomotionClass*>(pILoco);
+    auto pFoot = pLoco->LinkedTo;
+    auto crd = pFoot->GetCoords();
+    pLoco->DestinationCoords.X = crd.X;
+    pLoco->DestinationCoords.Y = crd.Y;
+    pLoco->CurrentSpeed = 0;
+    pLoco->MaxSpeed = 0;
+    pLoco->State = JumpjetLocomotionClass::State::Hovering;
+    pFoot->AbortMotion();
+    return 0x54B6D6;
+}
+
+

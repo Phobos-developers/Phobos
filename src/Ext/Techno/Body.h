@@ -88,6 +88,11 @@ public:
 
 	bool PreventCrewEscape;
 
+	int Jumpjet_ScatterFinishFrame { 0 };
+	int Jumpjet_ScatterDir { -1 };
+	CellClass* Jumpjet_LastCell { nullptr };
+	int Jumpjet_LastHeight { 0 };
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, Shield {}
@@ -137,6 +142,10 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, Jumpjet_ScatterFinishFrame { 0 }
+		, Jumpjet_ScatterDir { -1 }
+		, Jumpjet_LastCell { nullptr }
+		, Jumpjet_LastHeight { 0 }
 	{ }
 
 	void OnEarlyUpdate();

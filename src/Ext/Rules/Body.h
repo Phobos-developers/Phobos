@@ -54,6 +54,7 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetRotateOnCrash;
+		Valueable<bool> ExtendedJumpjetHovering;
 
 		Nullable<WarheadTypeClass*> VeinholeWarhead;
 
