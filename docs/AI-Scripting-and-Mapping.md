@@ -1052,17 +1052,20 @@ In `rulesmd.ini`:
 ```ini
 [General]
 SetRecruitableOnLiberate=-1  ; integer
+```
 
+In `aimd.ini`:
+```ini
 [SOMETEAMTYPE]               ; TeamType
 SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
 ```
 
-### Customized Transport Aircraft
+### Customized transport plane for teams
 
 - You can now use `ParaDropAircraft` to specify a new transport aircraft type for teams with `Droppod=yes`, which will override the global settings for `Ares` and `Vanilla`.
 
-In `aimd.ini / mycampaign.map`:
+In `aimd.ini`:
 ```ini
-[SOMETEAMTYPE]      ; TeamType
+[SOMETEAMTYPE]      ; TeamType, with Droppod=yes
 ParaDropAircraft=   ; AircraftType
 ```

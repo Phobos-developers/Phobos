@@ -443,7 +443,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
-  - Ares' `KeepAlive` adds global tags
+  - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -943,3 +943,4 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
