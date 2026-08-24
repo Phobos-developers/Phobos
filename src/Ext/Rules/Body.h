@@ -545,6 +545,8 @@ public:
 		Valueable<bool> KeepAlive_Buildings;
 		Valueable<bool> KeepAlive_Defenses;
 
+		Valueable<bool> ExtendedHealthBarDrawing;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1025,6 +1027,8 @@ public:
 			, KeepAlive_Aircraft { false }
 			, KeepAlive_Buildings { true }
 			, KeepAlive_Defenses { true }
+
+			, ExtendedHealthBarDrawing { false }
 		{ }
 
 		virtual ~ExtData() = default;

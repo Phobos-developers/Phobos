@@ -1911,6 +1911,18 @@ RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
+### Extended health bar drawing logic
+
+- In vanilla, the algorithm used for drawing the health bar is very crude, with problems of insufficient accuracy and incorrect boundary handling. 
+- You can now enable a new way of drawing the health bar through the following flag.
+  - The new logic will draw the last pip of the health bar with a transparency fade.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ExtendedHealthBarDrawing=false  ; boolean
+```
+
 ### Extra threat
 
 - Now you can adjust the techno's evaluation of the threat posed by the target in more ways. This will help the techno in auto - targeting.

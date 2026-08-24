@@ -885,6 +885,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether aircraft is a cargo plane
   - Allow the unit to stop immediately if the target enters the range during ApproachTarget
   - Allow the unit to keep pursuing the target during ApproachTarget
+  - Refine the drawing of the health bar with pip transparency fade
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
