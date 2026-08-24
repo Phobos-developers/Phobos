@@ -297,7 +297,7 @@ public:
 
 	Valueable<float> CrashSpin_Multiplier;
 
-	ValueableVector<double> DetectDisguise_Percent;
+	Valueable<PartialVector3D<double>> DetectDisguise_Percent;
 
 	Nullable<int> AINormalTargetingDelay;
 	Nullable<int> PlayerNormalTargetingDelay;
@@ -711,7 +711,7 @@ public:
 		, MakesWake { }
 
 		, CrashSpin_Multiplier { 1.0f }
-		, DetectDisguise_Percent {}
+		, DetectDisguise_Percent { { 1.0, 1.0, 1.0 } }
 
 		, AINormalTargetingDelay {}
 		, PlayerNormalTargetingDelay {}

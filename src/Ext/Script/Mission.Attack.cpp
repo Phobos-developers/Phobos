@@ -144,13 +144,24 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 			auto pTechnoData = TechnoTypeExt::Fetch(pTechnoType);
 			if (pTechnoType->DetectDisguise)
 			{
-				auto const AIDifficulty = static_cast<int>(pFoot->Owner->GetAIDifficultyIndex());
+				auto const AIDifficulty = pFoot->Owner->GetAIDifficultyIndex();
+				const auto& percent = pTechnoData->DetectDisguise_Percent.Get();
 				double detectionValue = 1.0;
 
-				if (pTechnoData->DetectDisguise_Percent.size() == 3)
-					detectionValue = pTechnoData->DetectDisguise_Percent[AIDifficulty];
+				switch (AIDifficulty)
+				{
+				case 0:
+					detectionValue = percent.X;
+					break;
+				case 1:
+					detectionValue = percent.Y;
+					break;
+				case 2:
+				default:
+					detectionValue = percent.Z;
+					break;
+				}
 
-				detectionValue = detectionValue > 0.0 ? detectionValue : 1.0;
 				disguiseDetection.push_back(detectionValue);
 			}
 		}
@@ -465,7 +476,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode, std::vector<double> disguiseDetection)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode, const std::vector<double>& disguiseDetection)
 {
 	TechnoClass* pBestObject = nullptr;
 	double bestVal = -1;
