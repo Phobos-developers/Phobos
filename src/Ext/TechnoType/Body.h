@@ -40,15 +40,11 @@ public:
 	Valueable<CSFText> UIDescription;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> LowDeployPriority;
-	PhobosFixedString<0x20> GroupAs;
 	std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
-	Valueable<int> RadarJamRadius;
 	Nullable<AffectedHouse> RadarJamHouses;
 	Nullable<int> RadarJamDelay;
 	ValueableVector<BuildingTypeClass*> RadarJamAffect;
 	ValueableVector<BuildingTypeClass*> RadarJamIgnore;
-	Nullable<int> InhibitorRange;
-	Nullable<int> DesignatorRange;
 	Valueable<float> FactoryPlant_Multiplier;
 	Valueable<Leptons> MindControlRangeLimit;
 	Nullable<bool> MindControl_IgnoreSize;
@@ -169,9 +165,6 @@ public:
 	Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
 	Nullable<bool> AllowWeaponSelectAgainstWalls;
 
-	Valueable<int> NoAmmoWeapon;
-	Valueable<int> NoAmmoAmount;
-
 	Nullable<bool> JumpjetRotateOnCrash;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
@@ -250,7 +243,6 @@ public:
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
 
-	Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
@@ -282,7 +274,6 @@ public:
 	Nullable<bool> NoQueueUpToEnter;
 	Nullable<int> NoQueueUpToEnter_BoardDistance;
 	Nullable<bool> NoQueueUpToUnload;
-	Valueable<bool> Passengers_BySize;
 
 	Valueable<int> RateDown_Delay;
 	Valueable<bool> RateDown_Reset;
@@ -439,6 +430,23 @@ public:
 	Nullable<TechnoTypeClass*> Convert_Health;
 
 	Valueable<bool> PsychicDetectable;
+	// Ares 0.2
+	Valueable<int> RadarJamRadius;
+
+	// Ares 0.9
+	Nullable<int> InhibitorRange;
+	Nullable<int> DesignatorRange;
+
+	// Ares 0.A
+	PhobosFixedString<0x20> GroupAs;
+
+	// Ares 0.C
+	Valueable<int> NoAmmoWeapon;
+	Valueable<int> NoAmmoAmount;
+
+	// Ares 2.0
+	Valueable<bool> Passengers_BySize;
+	Valueable<TechnoTypeClass*> Convert_Deploy;
 
 	// Ares 3.0
 	Nullable<bool> Unsellable;
@@ -452,15 +460,11 @@ public:
 		, UIDescription {}
 		, LowSelectionPriority { false }
 		, LowDeployPriority { false }
-		, GroupAs { NONE_STR }
 		, WeaponGroupAs {}
-		, RadarJamRadius { 0 }
 		, RadarJamHouses {}
 		, RadarJamDelay {}
 		, RadarJamAffect {}
 		, RadarJamIgnore {}
-		, InhibitorRange {}
-		, DesignatorRange { }
 		, FactoryPlant_Multiplier { 1.0f }
 		, MindControlRangeLimit {}
 		, MindControl_IgnoreSize {}
@@ -541,8 +545,6 @@ public:
 		, NoSecondaryWeaponFallback { false }
 		, NoSecondaryWeaponFallback_AllowAA { false }
 		, AllowWeaponSelectAgainstWalls {}
-		, NoAmmoWeapon { -1 }
-		, NoAmmoAmount { 0 }
 		, JumpjetRotateOnCrash {}
 		, ShadowSizeCharacteristicHeight { }
 
@@ -655,7 +657,6 @@ public:
 		, DroppodType {}
 		, TiberiumEaterType {}
 
-		, Convert_Deploy { }
 		, Convert_Undeploy { }
 		, Convert_HumanToComputer { }
 		, Convert_ComputerToHuman { }
@@ -687,7 +688,6 @@ public:
 		, NoQueueUpToEnter {}
 		, NoQueueUpToEnter_BoardDistance {}
 		, NoQueueUpToUnload {}
-		, Passengers_BySize { true }
 
 		, RateDown_Delay { 0 }
 		, RateDown_Reset { false }
@@ -817,9 +817,6 @@ public:
 
 		, JumpjetClimbIgnoreBuilding {}
 
-		, Unsellable {}
-		, KeepAlive {}
-
 		, ExtraThreat_Enabled { false }
 		, ExtraThreat_IsThreat {}
 		, AlwaysConsideredThreat { false }
@@ -835,6 +832,28 @@ public:
 		, Convert_Health {}
 		
 		, PsychicDetectable { true }
+
+		// Ares 0.2
+		, RadarJamRadius { 0 }
+
+		// Ares 0.9
+		, InhibitorRange {}
+		, DesignatorRange {}
+			
+		// Ares 0.A
+		, GroupAs { NONE_STR }
+			
+		// Ares 0.C
+		, NoAmmoWeapon { -1 }
+		, NoAmmoAmount { 0 }
+			
+		// Ares 2.0
+		, Passengers_BySize { true }
+		, Convert_Deploy { }
+
+		// Ares 3.0
+		, Unsellable {}
+		, KeepAlive {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
