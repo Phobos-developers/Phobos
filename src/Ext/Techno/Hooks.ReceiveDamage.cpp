@@ -566,3 +566,30 @@ DEFINE_HOOK(0x737E6E, UnitClass_ReceiveDamage_SkipExplode, 0xA)
 	R->EAX(pThis->GetHeight());
 	return ContinueCheck;
 }
+
+DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);                   
+    GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(WarheadTypeClass*, pWH, STACK_OFFSET(0xC4, 0xC));
+
+    if (!pSource)
+        return 0; 
+
+	if(auto pBomb = pThis->AttachedBomb)
+	{
+		if(auto pSourceExt = TechnoExt::TryFetch(pSource))
+		{
+			if(auto pWHExt = WarheadTypeExt::TryFetch(pWH))
+				{
+				if(!pWHExt->IvanBomb_Detonate
+				   || pBomb->Owner != pSource)
+				{
+					return 0;
+				}
+				pBomb->Detonate();
+			}
+		}
+	}
+    return 0; 
+}

@@ -282,6 +282,8 @@ public:
 	Valueable<double> Damage_Deployed;
 	Nullable<bool> PreventScatter;
 
+	Valueable<bool> IvanBomb_Detonate;
+
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
 	bool Crit_Active;
@@ -573,6 +575,8 @@ public:
 		, PreventOccupantEscape { false }
 
 		, Ammo { 0 }
+
+		, IvanBomb_Detonate { false }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

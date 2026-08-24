@@ -451,6 +451,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Ammo.Read(exINI, pSection, "Ammo");
 
+	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -822,6 +824,8 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->DamageAreaTarget)
 
 		.Process(this->Ammo)
+
+		.Process(this->IvanBomb_Detonate)
 		;
 }
 

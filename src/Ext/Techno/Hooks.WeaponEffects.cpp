@@ -340,32 +340,3 @@ DEFINE_HOOK(0x762D57, WaveClass_AI_TargetUnset, 0x6)
 
 	return 0;
 }
-
-DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x7)
-{
-	GET(TechnoClass*, pThis, ESI);                   
-    GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
-
-    if (!pSource)
-        return 0; 
-
-	if(auto pBomb = pThis->AttachedBomb)
-	{
-		if(auto pSourceExt = TechnoExt::TryFetch(pSource))
-		{
-			if(WeaponTypeClass* pWeapon = pSourceExt->LastWeaponType)
-			{
-				if(auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon))
-				{
-					if(!pWeaponExt->IvanBomb_Detonate
-				       || pBomb->Owner != pSource)
-					{
-						return 0;
-					}
-					pBomb->Detonate();
-				}
-			}
-		}
-	}
-    return 0; 
-}

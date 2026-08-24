@@ -118,8 +118,6 @@ public:
 	bool SkipWeaponPicking;
 
 	Nullable<bool> CylinderRangefinding;
-
-	Valueable<bool> IvanBomb_Detonate;
 	
 
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
@@ -213,7 +211,6 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
-		, IvanBomb_Detonate { false }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;
