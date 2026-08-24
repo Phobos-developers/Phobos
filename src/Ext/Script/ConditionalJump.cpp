@@ -8,7 +8,7 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -60,7 +60,7 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -111,7 +111,7 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -140,7 +140,7 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -175,7 +175,7 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -202,7 +202,7 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -230,7 +230,7 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -260,7 +260,7 @@ void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -286,7 +286,7 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -314,7 +314,7 @@ void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable =
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -343,7 +343,7 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -377,7 +377,7 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -433,7 +433,7 @@ void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -511,7 +511,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -555,7 +555,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 	if (!pTeam)
 		return;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
