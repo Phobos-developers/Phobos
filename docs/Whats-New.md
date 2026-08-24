@@ -328,6 +328,15 @@ HideShakeEffects=false           ; boolean
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
   14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
+  14006=Set House Hate Value Modifier,20,0,1,[LONG DESC]
+  14007=Modify House Hate Using House Index,20,0,1,[LONG DESC]
+  14008=Modify Hate Values From A List Of Countries,28,0,1,[LONG DESC]
+  14009=Modify Hate Value Against A Random Country From A List Of Countries,28,0,1,[LONG DESC]
+  14010=Set The Most Hated House ("<" Comparison),20,0,1,[LONG DESC]
+  14011=Set The Most Hated House (">" Comparison),20,0,1,[LONG DESC]
+  14012=Set The Most Hated House Randomly,0,0,1,[LONG DESC]
+  14013=Reset Hate Against Other Houses,0,0,1,[LONG DESC]
+  14014=Set A House As The Most Hated House Of The Map,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -408,6 +417,10 @@ HideShakeEffects=false           ; boolean
   25=Local variables,-4
   26=Global variables,-5
   27=Global variables,-6
+  28=AI Houses List, -7
+
+  [ScriptParamTypes]
+  7=AIHousesList,1,1,0
   ```
 ````
 
@@ -421,6 +434,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [Script action for modifying AI anger against other houses](AI-Scripting-and-Mapping.md#14006-set-house-hate-value-modifier) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

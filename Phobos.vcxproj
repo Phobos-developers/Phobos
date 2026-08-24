@@ -131,6 +131,7 @@
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Waypoints.cpp" />
     <!-- src\Ext\Script -->
+    <ClCompile Include="src\Ext\Script\Body.AngerNodes.cpp" />
     <ClCompile Include="src\Ext\Script\Body.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
     <ClCompile Include="src\Ext\Script\Mission.Attack.cpp" />
