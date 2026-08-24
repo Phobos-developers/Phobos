@@ -747,6 +747,8 @@ This page lists all the individual contributions to the project by their author.
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
   - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
+  - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
+  - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
