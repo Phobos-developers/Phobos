@@ -136,6 +136,9 @@ public:
 	Valueable<BuildingTypeClass*> RubbleIntact;
 	Valueable<bool> RubbleIntactRemove;
 
+	// Ares 0.E
+	Valueable<bool> Tunnel; // temporarily bool: Ares stores TunnelType name (string -> index), not mapped here
+
 	// Ares 3.0
 	Nullable<bool> UnitSell;
 
@@ -232,6 +235,9 @@ public:
 		// Ares 0.A
 		, RubbleIntact { nullptr }
 		, RubbleIntactRemove { false }
+
+		// Ares 0.E
+		, Tunnel { false }
 
 		// Ares 3.0
 		, UnitSell {}

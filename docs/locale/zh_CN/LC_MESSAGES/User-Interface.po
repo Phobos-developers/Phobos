@@ -689,6 +689,9 @@ msgid ""
 "starts."
 msgstr "一个显示自游戏开始以来所经过时间的计时器。"
 
+msgid "Both `[Phobos] -> ShowGameTime` and `[General] -> ShowGameTime` need to be set to true to enable the timer."
+msgstr "将 `[Phobos] -> ShowGameTime` 与 `[General] -> ShowGameTime` 均设为 true 以启用计时器。"
+
 msgid ""
 "The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For "
 "localization add `TXT_GAMETIME` into your `.csf` file."
