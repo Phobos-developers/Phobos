@@ -776,8 +776,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 				return;
 			}
 		}
-		if (Phobos::Config::DevelopmentCommands)
-			Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
+
+		Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill
@@ -1103,6 +1103,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.HasTint |= type->HasTint();
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 
 		if (type->RestrictedArmorMultiplier)
@@ -1125,6 +1126,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool hasTint = false;
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
+	bool hasOnDamageDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
 
@@ -1151,6 +1153,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
@@ -1166,6 +1169,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.HasTint = hasTint;
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
+	pAE.HasOnDamageDiscardables = hasOnDamageDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
 

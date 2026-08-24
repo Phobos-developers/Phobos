@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 18:44+0800\n"
+"POT-Creation-Date: 2026-08-21 08:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -478,6 +478,10 @@ msgstr "基于弹药量的自动变形"
 
 msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
 msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
+
+msgid "Modify ammo on impact"
+msgstr ""
+"修改弹药弹头"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -1137,9 +1141,6 @@ msgstr "读档后重置超时空计时器修复"
 msgid "Teleport, Tunnel and Fly loco visual tilt fix"
 msgstr "Teleport、Tunnel 和 Fly 运动模式视觉倾斜的修复"
 
-msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
-msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
-
 msgid "Skip units' turret rotation and jumpjets' wobbling under EMP"
 msgstr "在 EMP 状态下跳过单位的炮塔旋转和 Jumpjet 浮动"
 
@@ -1155,11 +1156,14 @@ msgstr "工程师／间谍路径点自偷 Bug 的修复"
 msgid "Skippable game save on scenario start"
 msgstr "可跳过的场景开始时自动存档"
 
-msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
-msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
+msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
+msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
 
 msgid "Skip rally point line drawing when undeploying a building"
 msgstr "跳过建筑反部署时的集结线绘制"
+
+msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
+msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
 
 msgid "Ares' `SW.Shots` hint on extended tooltips"
 msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
@@ -1368,6 +1372,12 @@ msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入�
 
 msgid "SkipMapSelect Enhancement"
 msgstr "`SkipMapSelect` 增强"
+
+msgid "Add a global default value for `KeepAlive`"
+msgstr "为 `KeepAlive` 添加全局默认值"
+
+msgid "Customized transport plane for teams"
+msgstr "为作战小队自定义运输机"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1878,6 +1888,9 @@ msgid ""
 "Fix the issue of significant lagging caused by frequent lighting updates "
 "due to the accumulation of a large amount of radsite in a short time"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题"
+
+msgid "Customize ivan bomb visibility"
+msgstr "自定义伊文炸弹可见性"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2519,14 +2532,14 @@ msgid ""
 msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
 
 msgid "Disable AlphaImage during Buildup"
-msgstr ""
-"建筑拔起期间关闭 AlphaImage"
+msgstr "建筑拔起期间关闭 AlphaImage"
 
 msgid ""
 "Allow customizing the default value of `[Warhead] -> PreventScatter` via "
 "`[CombatDamage] -> Warhead.PreventScatter`"
 msgstr ""
-"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> PreventScatter` 的默认值"
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> "
+"PreventScatter` 的默认值"
 
 msgid ""
 "Allow `(Pre)ProductionAnim` animations to use `Powered` & "
@@ -2534,6 +2547,16 @@ msgid ""
 msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签"
+
+msgid ""
+"Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of "
+"`SW.AutoFire`"
+msgstr "允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作"
+
+msgid ""
+"Fix the bug where a building with `Factory=BuildingType` owned by the AI "
+"did not play `ProductionAnim` when placing a produced building"
+msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2615,6 +2638,9 @@ msgid ""
 "Customize whether or not passenger can fire out when the transport is "
 "moving"
 msgstr "自定义乘客能否在运输工具移动时向外开火"
+
+msgid "Fix a game crash when parsing string list with null entry"
+msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3200,4 +3226,7 @@ msgstr "**obsidianus** - 自动根据血量变形"
 
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
+
+msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
 

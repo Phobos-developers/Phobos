@@ -222,6 +222,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> ShowPowerPlantEnhancerRange;
+		Valueable<bool> ShowGameTime;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
@@ -354,6 +355,7 @@ public:
 		Valueable<int> WarheadAnimZAdjust;
 
 		Valueable<bool> IvanBombAttachToCenter;
+		Valueable<AffectedHouse> IvanBomb_Visibility;
 		Valueable<bool> MissileSpawnAttackCell;
 
 		Valueable<bool> FallingDownTargetingFix;
@@ -538,6 +540,12 @@ public:
 		Valueable<bool> Warhead_PreventScatter;
 
 		Valueable<bool> ProjectileRange_ApplyModifiers;
+
+		Valueable<bool> KeepAlive_Infantry;
+		Valueable<bool> KeepAlive_Units;
+		Valueable<bool> KeepAlive_Aircraft;
+		Valueable<bool> KeepAlive_Buildings;
+		Valueable<bool> KeepAlive_Defenses;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -734,6 +742,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, ShowPowerPlantEnhancerRange { true }
+			, ShowGameTime { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -834,6 +843,7 @@ public:
 			, WarheadAnimZAdjust { -15 }
 
 			, IvanBombAttachToCenter { false }
+			, IvanBomb_Visibility { AffectedHouse::Owner }
 			, MissileSpawnAttackCell { true }
 
 			, FallingDownTargetingFix { false }
@@ -1013,6 +1023,12 @@ public:
 			, Warhead_PreventScatter { false }
 
 			, ProjectileRange_ApplyModifiers { true }
+
+			, KeepAlive_Infantry { false }
+			, KeepAlive_Units { false }
+			, KeepAlive_Aircraft { false }
+			, KeepAlive_Buildings { true }
+			, KeepAlive_Defenses { true }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -51,6 +51,7 @@ public:
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
+	static PhobosMap<BombClass*, WeaponTypeClass**>* BombExtMap;
 
 	// BuildingTypeExt
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);

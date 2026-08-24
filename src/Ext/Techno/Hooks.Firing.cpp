@@ -1,5 +1,3 @@
-#include <JumpjetLocomotionClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -689,8 +687,15 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	{
 		for (const auto& attachEffect : pExt->AttachedEffects)
 		{
-			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
-				attachEffect->ShouldBeDiscarded = true;
+			const auto pType = attachEffect->GetType();
+
+			if ((pType->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+			{
+				attachEffect->FiringCount++;
+
+				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
+					attachEffect->ShouldBeDiscarded = true;
+			}
 		}
 	}
 
@@ -1309,7 +1314,10 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 		// Per-type setting takes priority, falls back to the global one.
 		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
 		{
-			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			// these codes are for preventing jumpjets from moving around when executing ApproachTarget.StopWhenInRange
+			// however, it'll make them can't scatter and find empty cells after attacking, so disable it for now
+			// TODO: a better solution to handle both cases properly
+			/*if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
 				auto const crd = pThis->GetCoords();
 				pJumpjetLoco->DestinationCoords.X = crd.X;
@@ -1317,13 +1325,10 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 				pJumpjetLoco->CurrentSpeed = 0;
 				pJumpjetLoco->MaxSpeed = 0;
 				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
-				pThis->AbortMotion();
-			}
-			else
-			{
-				pThis->StopMoving();
-				pThis->AbortMotion();
-			}
+			}*/
+			
+			pThis->StopMoving();
+			pThis->AbortMotion();
 		}
 	}
 

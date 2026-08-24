@@ -177,6 +177,74 @@ static bool __fastcall ParadropPlaneUnlimbo(AircraftClass* pThis, void* _, const
 
 #pragma endregion
 
+#pragma region AresKeepAlive
+
+struct AresHouseExt
+{
+	char _[0x18];
+	int KeepAliveTechnos;
+	int KeepAliveBuildings;
+};
+
+static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, void*, TechnoClass* const pTechno, const AbstractType rtti, const bool add)
+{
+	bool keepAlive = false;
+	bool result = false;
+	auto const pType = pTechno->GetTechnoType(); // can't use TypeExtData since it's not initialized here
+
+	if (!pType->Insignificant && !pType->DontScore)
+	{
+		switch (rtti)
+		{
+		case AbstractType::Infantry:
+		{
+			keepAlive = RulesExt::Global()->KeepAlive_Infantry;
+			break;
+		}
+		case AbstractType::Unit:
+		{
+			keepAlive = RulesExt::Global()->KeepAlive_Units;
+			break;
+		}
+		case AbstractType::Aircraft:
+		{
+			keepAlive = RulesExt::Global()->KeepAlive_Aircraft;
+			break;
+		}
+		case AbstractType::Building:
+		{
+			auto const pBuildingType = static_cast<BuildingTypeClass*>(pType);
+
+			if (pBuildingType->BuildCat == BuildCat::Combat)
+				keepAlive = RulesExt::Global()->KeepAlive_Defenses;
+			else
+				keepAlive = RulesExt::Global()->KeepAlive_Buildings;
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+
+		result = true;
+	}
+
+	if (TechnoTypeExt::Fetch(pType)->KeepAlive.Get(keepAlive))
+	{
+		const int number = add ? 1 : -1;
+		pExt_Ares->KeepAliveTechnos += number;
+
+		if (rtti == AbstractType::Building)
+			pExt_Ares->KeepAliveBuildings += number;
+	}
+
+	return result;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -307,6 +375,14 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CE84, &BuildingExt::UpdateFactoryQueues);
 
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4ADE0, GET_OFFSET(AresPreventScatter_Override));
+
+	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x39635, AresHelper::AresBaseAddress + 0x39664);
+	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x34DD0, AresHelper::AresBaseAddress + 0x34DD9);
+
+	// Ares' `KeepAlive` adds global tags.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x21F70, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -420,4 +496,12 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4DAF4, &BuildingExt::UpdateFactoryQueues);
 
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4BA40, GET_OFFSET(AresPreventScatter_Override));
+
+	// Decouple SW.ShowCameo from SW.AutoFire - Ares' HouseClass_UpdateSuperWeaponsUnavailable
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3A0B5, AresHelper::AresBaseAddress + 0x3A0E4);
+	// Decouple SW.ManualFire from SW.AutoFire - Ares' SidebarClass_ProcessCameoClick_SuperWeapons
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x35810, AresHelper::AresBaseAddress + 0x35819);
+
+	// Ares' `KeepAlive` adds global tags.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x229F0, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
 }

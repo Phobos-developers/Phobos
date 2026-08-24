@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 04:17+0800\n"
+"POT-Creation-Date: 2026-08-21 08:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,10 +125,13 @@ msgstr "`outofrange`：当对象处于当前目标的武器射程外则弃用。
 msgid ""
 "`firing`: Discard when firing a weapon. This counts special weapons that "
 "are not actually fired such as ones with `Spawner=true` or "
-"`DrainWeapon=true`."
+"`DrainWeapon=true`. `DiscardOn.Firing.Count` determines the firing amount to discard the effect."
 msgstr ""
 "`firing`：当对象开火时弃用。这包括那些实际上并未开火的特殊武器，例如带有 `Spawner=true` 或 "
-"`DrainWeapon=true` 的武器。"
+"`DrainWeapon=true` 的武器。`DiscardOn.Firing.Count` 决定了弃用所需的开火次数。"
+
+msgid "`receiveddamage`: Discard when receiving damage. `DiscardOn.ReceivedDamage.Count` determines the received damage amount to discard the effect. `DiscardOn.ReceivedDamage.AffectsHouse` determines it can be discarded by which house's damage."
+msgstr "`receiveddamage`：当 AE 所附加的对象受到伤害时弃用。`DiscardOn.ReceivedDamage.Count` 决定触发弃用所需的受伤次数。`DiscardOn.ReceivedDamage.AffectsHouse` 决定它可以被哪些所属方的伤害弃用。"
 
 msgid ""
 "`selling`: Discard when the building to which the effect is attached is "
@@ -6245,6 +6248,22 @@ msgid ""
 "suitable for launch. **Please use with caution!**"
 msgstr "由于某些超级武器类型的特性并非所有超级武器都适合发射。**请慎用！**"
 
+msgid "Modify ammo on impact"
+msgstr ""
+"修改弹药弹头"
+
+msgid ""
+"When this warhead detonates, it increases the ammo of affected targets by"
+" the set amount; a negative value decreases it."
+msgstr ""
+"当该弹头被引爆时更改为被影响目标增加所设值的弹药量，负值则扣除弹药。"
+
+msgid ""
+"This will not raise the ammo above the maximum defined by `[TechnoType] "
+"-> Ammo=`, nor below 0."
+msgstr ""
+"这不会将被影响目标的弹药量增加至超出 `[TechnoType] -> Ammo=` 决定的上限也不会扣除至低于 0。"
+
 msgid "Parasite removal"
 msgstr "移除寄生"
 
@@ -6541,6 +6560,10 @@ msgstr "[护盾修改](#shields)"
 
 msgid "[Modify attach-effects](#attached-effects)"
 msgstr "[AE 修改](#attached-effects)"
+
+msgid "[Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)"
+msgstr ""
+"[修改弹药弹头](New-or-Enhanced-Logics.md#modify-ammo-on-impact)"
 
 msgid ""
 "[Critical hits](#chance-based-extra-damage-or-warhead-detonation"
