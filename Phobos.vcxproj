@@ -132,6 +132,7 @@
     <ClCompile Include="src\Ext\Scenario\Hooks.Waypoints.cpp" />
     <!-- src\Ext\Script -->
     <ClCompile Include="src\Ext\Script\Body.cpp" />
+    <ClCompile Include="src\Ext\Script\ConditionalJump.cpp" />
     <ClCompile Include="src\Ext\Script\Hooks.cpp" />
     <ClCompile Include="src\Ext\Script\Mission.Attack.cpp" />
     <ClCompile Include="src\Ext\Script\Mission.Move.cpp" />

@@ -421,6 +421,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [Conditional jumps in script actions](AI-Scripting-and-Mapping.md#16013-conditional-jump-manage-variables-reset-if-the-jump-is-successful) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -1021,6 +1022,7 @@ HideShakeEffects=false           ; boolean
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when `PlacementPreview` is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit)
+- Script actions for manipulating script flows with conditional jumps (by FS-21)
 - Show briefing screen on singleplayer mission start (by Starkku)
 - Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
