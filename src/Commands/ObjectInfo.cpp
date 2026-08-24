@@ -1,17 +1,9 @@
 #include "ObjectInfo.h"
 
 #include <Utilities/GeneralUtils.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <FootClass.h>
-#include <TeamClass.h>
-#include <HouseClass.h>
-#include <ScriptClass.h>
-#include <AITriggerTypeClass.h>
 #include <Helpers/Enumerators.h>
 #include <CRT.h>
 
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Script/Body.h>
 
@@ -142,7 +134,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pFoot);
+		auto const pTechnoExt = TechnoExt::Fetch(pFoot);
 		auto const pShieldData = pTechnoExt->Shield.get();
 
 		if (pTechnoExt->CurrentShieldType && pShieldData)
@@ -211,7 +203,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
 
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoExt = TechnoExt::Fetch(pBuilding);
 		auto const pShieldData = pTechnoExt->Shield.get();
 
 		if (pTechnoExt->CurrentShieldType && pShieldData)

@@ -2,23 +2,14 @@
 
 #include <ScriptClass.h>
 #include <ScriptTypeClass.h>
-#include <TeamClass.h>
-#include <AITriggerTypeClass.h>
-
-#include <HouseClass.h>
-#include <AircraftClass.h>
-#include <MapClass.h>
-#include <BulletClass.h>
-#include <Helpers/Enumerators.h>
-#include <WarheadTypeClass.h>
-#include <SpawnManagerClass.h>
-
 #include <Ext/Team/Body.h>
+#include <Ext/House/Body.h>
 #include <Utilities/Container.h>
-#include <Phobos.h>
 
 enum class PhobosScripts : unsigned int
 {
+	PlaySpeech = 24,
+
 	// Range 10000-10999 are team (aka ingame) actions
 	// Sub-range 10000-10049 is for "attack" actions
 	RepeatAttackCloser = 10000,
@@ -69,6 +60,7 @@ enum class PhobosScripts : unsigned int
 	IncreaseCurrentAITriggerWeight = 14001,
 	DecreaseCurrentAITriggerWeight = 14002,
 	UnregisterGreatSuccess = 14003,
+	ForceGlobalOnlyTargetHouseEnemy = 14004,
 	OverrideOnlyTargetHouseEnemy = 14005,
 	SetHouseAngerModifier = 14006,
 	ModifyHateHouseIndex = 14007,
@@ -165,31 +157,39 @@ enum class PhobosScripts : unsigned int
 	// Range 19000-19999 are miscellanous/uncategorized actions
 };
 
-class ScriptExt
+class ScriptExt final : public AbstractExt
 {
 public:
 	using base_type = ScriptClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = ScriptExt;
+
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 
-	class ExtData final : public Extension<ScriptClass>
+public:
+	// typed owner accessor
+	ScriptClass* OwnerObject() const
 	{
-	public:
+		return static_cast<ScriptClass*>(this->GetAttachedObject());
+	}
+
+	// Nothing yet
+
+	ScriptExt(ScriptClass* OwnerObject) : AbstractExt(OwnerObject)
 		// Nothing yet
+	{ }
 
-		ExtData(ScriptClass* OwnerObject) : Extension<ScriptClass>(OwnerObject)
-			// Nothing yet
-		{ }
+	virtual ~ScriptExt() = default;
 
-		virtual ~ExtData() = default;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	};
-
+public:
 	class ExtContainer final : public Container<ScriptExt>
 	{
 	public:
@@ -198,6 +198,16 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static ScriptExt* Fetch(const ScriptClass* pThis)
+	{
+		return AbstractExt::Fetch<ScriptExt>(pThis);
+	}
+
+	static ScriptExt* TryFetch(const ScriptClass* pThis)
+	{
+		return AbstractExt::TryFetch<ScriptExt>(pThis);
+	}
 
 	static void ProcessAction(TeamClass* pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
@@ -228,6 +238,7 @@ public:
 	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 	static void AggroHouse(TeamClass* pTeam, int index);
 	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode);
+	static void ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
@@ -237,6 +248,7 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
+	static void PlaySpeech(TeamClass* pTeam);
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
@@ -245,7 +257,7 @@ public:
 	static void Mission_Attack_List(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
 	static void Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1);
 	static bool CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetInAir, bool agentMode);
-	static bool IsUnitArmed(TechnoClass* pTechno);
+	static bool IsUnitArmed(TechnoClass* pTechno, TechnoTypeClass* pType);
 	static bool IsMindControlledByEnemy(HouseClass* pHouse, TechnoClass* pTechno);
 
 	// Mission.Move.cpp
@@ -260,3 +272,4 @@ private:
 	static void ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget);
 	static void UpdateEnemyHouseIndex(HouseClass* pHouse);
 };
+

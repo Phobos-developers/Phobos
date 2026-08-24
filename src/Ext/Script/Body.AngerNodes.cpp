@@ -15,7 +15,7 @@ void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 
 void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -37,7 +37,7 @@ void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
 
 void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -96,7 +96,7 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 
 void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 
 	if (!pTeamData || pTeamData->AngerNodeModifier == 0)
 	{
@@ -169,7 +169,7 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 
 void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1, bool random = false)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -275,7 +275,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 
 HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 
 	if (!pTeamData || mask == 0)
 	{
@@ -505,7 +505,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 // Note: only works for new Phobos script actions, not the original ones
 void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
@@ -556,7 +556,7 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 
 void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 
 	if (!pTeamData || pTeamData->AngerNodeModifier == 0)
 	{
@@ -607,7 +607,7 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 // The selected house will become the most hated of the map (the effects are only visible if the other houses are enemy of the selected house)
 void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::Fetch(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
