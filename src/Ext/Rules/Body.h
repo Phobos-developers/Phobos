@@ -1,5 +1,6 @@
 #pragma once
 
+#include <AITriggerTypeClass.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
@@ -24,6 +25,7 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
+		std::vector<std::vector<AITriggerTypeClass*>> AITriggersLists;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Valueable<float> HarvesterDumpAmount;
