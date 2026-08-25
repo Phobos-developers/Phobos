@@ -29,7 +29,7 @@ static bool IsValidTargetInRange(TechnoClass* pFirer, AbstractClass* pTarget, We
 	if (pFirer && pWeapon)
 	{
 		int maxRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
-		if (auto const pFirerTypeExt = TechnoTypeExt::ExtMap.TryFind(pFirer->GetTechnoType()))
+		if (auto const pFirerTypeExt = TechnoTypeExt::TryFetch(pFirer->GetTechnoType()))
 		{
 			if (pFirerTypeExt->Spawner_LimitRange && pFirerTypeExt->Spawner_ExtraLimitRange > 0)
 			{
@@ -56,7 +56,7 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_RandomTarget, 0x5)
 		if (pWeapon->Spawner)
 			return 0;
 
-		if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
+		if (auto const pWeaponExt = WeaponTypeExt::TryFetch(pWeapon))
 		{
 			if (pWeaponExt->RandomTarget > 0.0)
 			{
@@ -86,7 +86,7 @@ DEFINE_HOOK(0x6B7B90, SpawnManagerClass_SetTarget_RandomTarget, 0x7)
 		{
 			if (auto pWeapon = pSpawner->GetWeapon(weaponIndex)->WeaponType)
 			{
-				if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
+				if (auto const pWeaponExt = WeaponTypeExt::TryFetch(pWeapon))
 				{
 					// Maintain player's clicked target as reference anchor for individual aircraft sampling
 					if (pWeaponExt->RandomTarget_Spawners_MultipleTargets)
@@ -135,11 +135,11 @@ DEFINE_HOOK(0x6B7AE3, SpawnManagerClass_Launch_RandomTarget, 0x6)
 	if (!pWeapon)
 		return 0;
 
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
 	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
 		return 0;
 
-	auto const pSpawnExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pSpawnExt = TechnoExt::Fetch(pThis);
 	if (!pSpawnExt)
 		return 0;
 
@@ -182,7 +182,7 @@ DEFINE_HOOK(0x6B76E3, SpawnManagerClass_AI_RandomTarget, 0x5)
 	if (!pSpawn || !pSpawn->Unit || pSpawn->IsSpawnMissile)
 		return 0;
 
-	auto const pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+	auto const pSpawnExt = TechnoExt::Fetch(pSpawn->Unit);
 	if (!pSpawnExt)
 		return 0;
 
@@ -195,7 +195,7 @@ DEFINE_HOOK(0x6B76E3, SpawnManagerClass_AI_RandomTarget, 0x5)
 	if (!pWeapon)
 		return 0;
 
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
 	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
 		return 0;
 

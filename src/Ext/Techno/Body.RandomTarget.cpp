@@ -15,7 +15,7 @@ AbstractClass* TechnoExt::FindRandomTarget(TechnoClass* pFirer, AbstractClass* p
 	if (!pFirer || !pWeapon)
 		return pOriginalTarget;
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
 	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
 		return pOriginalTarget;
 
