@@ -8,8 +8,6 @@
 
 UnitExt::ExtContainer UnitExt::ExtMap;
 
-UnitClass* UnitExt::Deployer = nullptr;
-
 UnitExt::~UnitExt()
 {
 	if (this->UndergroundTracked)
@@ -315,31 +313,6 @@ bool UnitExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue,
 	}
 
 	return true;
-}
-
-// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
-bool UnitExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
-{
-	if (!pThis)
-		return false;
-
-	auto const pDeployType = pThis->Type->DeploysInto;
-
-	if (!pDeployType)
-		return noDeploysIntoDefaultValue;
-
-	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
-
-	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
-		mapCoords += CellStruct { -1, -1 };
-
-	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
-	// Now, through additional checks, we can directly exclude the unit who want to deploy.
-	UnitExt::Deployer = pThis;
-	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
-	UnitExt::Deployer = nullptr;
-
-	return canDeploy;
 }
 
 UnitTypeClass* UnitExt::GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData)

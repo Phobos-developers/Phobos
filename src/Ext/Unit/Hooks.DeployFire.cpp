@@ -28,6 +28,21 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_DeployCommand, 0x6)
 		}
 	}
 
+	if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		const auto pExt = TechnoExt::Fetch(pThis);
+		auto const pConvertToType = pExt->TypeExtData->Convert_Deploy.Get();
+		if (pConvertToType
+			&& pConvertToType->WhatAmI() == AbstractType::BuildingType
+			&& !FootExt::CanDeployIntoBuilding(pFoot, false))
+		{
+			if (pThis->IsOwnedByCurrentPlayer)
+				VoxClass::PlayIndex(VoxClass::FindIndex(GameStrings::EVA_CannotDeployHere));
+
+			return DoNotExecute;
+		}
+	}
+
 	return 0;
 }
 
