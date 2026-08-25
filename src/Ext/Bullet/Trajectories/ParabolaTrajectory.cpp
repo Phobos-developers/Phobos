@@ -186,7 +186,7 @@ void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 		if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
 		{
-			const auto pExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pExt = BulletExt::Fetch(pBullet);
 			pExt->SnappedToTarget = true;
 			pBullet->SetLocation(coords);
 			return;
@@ -247,7 +247,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
-		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		const auto pTypeExt = BulletTypeExt::Fetch(pBullet->Type);
 		const auto offsetMult = 0.0004 * theSourceCoords.DistanceFrom(theTargetCoords);
 		const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
 		const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
@@ -882,7 +882,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet
 	if (pType->BounceDetonate)
 	{
 		const auto pFirer = pBullet->Owner;
-		const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		const auto pOwner = pFirer ? pFirer->Owner : BulletExt::Fetch(pBullet)->FirerHouse;
 		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pFirer, pBullet->Health, pOwner);
 	}
 

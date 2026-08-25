@@ -75,12 +75,13 @@ Assuming you've successfully cloned and built the project before getting here, y
   - `New/` - source code for new ingame classes.
     - `Type/` - new enumerated types (types that are declared with a list section in an INI, for example, radiation types) implemented in the project. Every enumerated type class inherits `Enumerable<T>` (where `T` is an enum. type class) class that is defined in `Enumerable.h`.
     - `Entity/` - classes that represent ingame entities are located here.
-  - `Ext/` - source code for vanilla engine class extensions. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
-    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class must contain the following to work correctly:
-      - `ExtData` - extension data class definition which inherits `Extension<T>` from `Container.h` (where `T` is the class that is being extended), which is the actual class that contains new data for vanilla classes;
-      - `ExtContainer` - a definition of a special map class to store and look up `ExtData` instances for base class instances which inherits `Container<T>` from `Container.h` (where `T` is the extension data class);
-      - `ExtMap` - a static instance of `ExtContainer` map;
-      - constructor, destructor, serialization, deserialization and (for appropriate classes) INI reading hooks.
+  - `Ext/` - source code for vanilla engine class extensions. Extension classes form a parallel inheritance hierarchy mirroring the game's own class tree (`AbstractExt` from `Container.h` is the root; e.g. `BuildingExt : TechnoExt : RadioExt : MissionExt : ObjectExt : AbstractExt`), and every game object carries exactly one extension instance of the most derived matching type, cached inside the object at the unified `AbstractClass` `0x18` slot. Each class extension is kept in a separate folder named after vanilla engine class name and contains the following:
+    - `Body.h` and `Body.cpp` contain class and method definitions/declarations and common extension hooks. Each extension class contains the following to work correctly:
+      - new data members and (for appropriate classes) `LoadFromINIFile`/`SaveToStream`/`LoadFromStream` overrides, plus static helper methods;
+      - `ExtContainer`/`ExtMap` - the per-class container (inherits `Container<T>` from `Container.h`) that tracks all live instances of one concrete extension class for bulk operations (allocation/removal, centralized savegame streaming, post-load relinking, scenario clearing); only concrete leaf classes (e.g. `BuildingExt`) have containers, while every level of the hierarchy provides typed `Fetch`/`TryFetch`. The container's own `Find`/`TryFind` lookups are deprecated compatibility forwards (`TechnoExt`/`TechnoTypeExt`, whose containers were split into per-leaf ones, keep a lookup-only `ExtMap` stand-in for the same reason), and every pre-rework class carries a deprecated `ExtData` alias of itself so code written against the old nested data classes keeps compiling;
+      - `Fetch`/`TryFetch` statics - the O(1) lookup used at call sites (`TechnoExt::Fetch(pThis)`); `Fetch` fatals if the object carries no extension, `TryFetch` returns null instead (also the right choice while a savegame is loading);
+      - constructor/destructor and (for appropriate classes) INI reading hooks. Serialization is centralized in `Phobos.Ext.cpp` - there are no per-class savegame hooks. The one exception is `CellExt`: the game treats cells as value objects with unstable identity (it re-initializes them in place and copies them around wholesale), so cell extensions are persisted inline within each cell's own savegame block instead (see `Ext/Cell/Body.cpp`).
+    - Extensions subscribe to pointer invalidation by inheriting `Detach::Listener<T>` from `Utilities/Detach.h` and overriding `OnDetach` (see `HouseExt` for an example).
     - `Hooks.cpp` and `Hooks.*.cpp` contain non-common hooks to correctly patch in new custom logics.
   - `ExtraHeaders/` - extra header files to interact with / describe types included in game binary that are not included in YRpp yet.
   - `Misc/` - uncategorized source code, including hooks that don't belong to an extension class.
@@ -197,7 +198,7 @@ if (SomeCondition())
 - A space must be put between braces of empty curly brace blocks.
 - To have less Git merge conflicts member initializer lists and other list-like syntax structures used in frequently modified places should be split per-item with item separation characters (commas, for example) placed *after newline character*:
 ```cpp
-ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
+TerrainTypeExt(TerrainTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
     , SpawnsTiberium_Type(0)
     , SpawnsTiberium_Range(1)
     , SpawnsTiberium_GrowthStage({ 3, 0 })
@@ -229,15 +230,64 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 The styleguide is not exhaustive and may be adjusted in the future.
 ```
 
-## Git branching model
+## Git branching model / Version lifecycle and release strategy
 
-Couple of notes regarding the Git practices. We use [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)-like workflow:
-  - `master` is for stable releases, can have hotfixes pushed to it or branched off like a feature branch with the requirement of version increment and `master` being merged into `develop` after that;
-  - `develop` is the main development branch;
-  - `feature/`-prefixed branches (sometimes the prefix may be different if appropriate, like for big fixes or changes) are so called "feature branches" - those are branched off `develop` for every new feature to be introduced into it and then merged back. We use squash merge to merge them back in case of smaller branches and sometimes merge commit in case the branch is so big it would be viable to keep it as is.
-  - `hotfix/`-prefixed branches may be used in a same manner as `feature/`, but with `master` branch, with a requirement of `master` being merged into `develop` after `hotfix/` branch was squash merged into `master`.
-  - `release/`-prefixed branches are branched off `develop` when a new stable release is slated to allow working on features for a next release and stability improvements for this release. Those are merged with a merge commit into `master` and `develop` with a stable version number increase, after which the stable version is released.
-- When you're working with your local & remote branches use **fast-forward** pulls to get the changes from remote branch to local, **don't merge remote branch into local and vice versa**, this creates junk commits and makes things unsquashable.
+Starting from version 0.5, Phobos adopts a new release strategy to enable faster and more frequent releases.
+
+![Versioning scheme from 0.5 onward](_static/images/versioning-past-0.5.excalidraw.png)
+
+*Image editable in [Excalidraw](https://excalidraw.com)*
+
+```{important}
+All changes are to be made **exclusively** to `develop` as the source of truth, and then cherry-picked to other branches!
+```
+
+```{hint}
+A brief summary compared to old style:
+- devbuilds are now called pre-releases (alpha, beta, RC etc.) and are almost a proper version with docs, all changes tracked in a special changelog subsection, released on the same cadence;
+- each pre-release (new devbuild) materializes a version branch, bugfix followups committed to develop get ported to it;
+- when enough bugs are fixed - a stable version is created;
+- if some critical change that warrants a version bump needs to be applied (e.g. forgot to serialize a field, or fixed a critical bug from a feature released before upcoming version) - we introduce a new version (with docs, version change etc.) on the same branch;
+- the new stable release is not the old stable: after 0.5 a stable version is "a devbuild with enough bug fixes", released on a faster cadence with less time spent per version.
+```
+
+The lifecycle of a version is as follows:
+
+1. **Development phase**: New features and changes are committed to the `develop` branch. `develop` always carries the version it is working towards: as soon as a release branch is cut, `VERSION_MINOR` (or `VERSION_MAJOR`) in `src/Phobos.version.h` is bumped and `VERSION_REVISION`/`VERSION_PATCH` are reset to 0, so that nightlies are stamped with the version they lead up to instead of one that has already been released.
+2. **Pre-release phase**: When enough features have accumulated on `develop`, a pre-release build (e.g., `v0.5-beta1`) is created. This build marks the start of a new *release branch* (e.g., `release/v0.5`) and signifies that active feature development for version 0.5 is complete. This branch will be used for all subsequent testing and the final stable release.
+   - During this phase, multiple pre-release builds (which can be called beta, alpha, or release candidate) may be published for wider testing. Between pre-releases on the same version number, there shall be no changes that warrant a stable version changelog addition; in other words — only bug fixes, minor additions, and polish to the existing new version feature set are allowed.
+     - If there's an urgent need to introduce a feature that would warrant new changelog addition on the same branch - it is allowed to **reset the pre-release prefix and increment the appropriate version number**, while also creating the corresponding doc changelog section.
+3. **Stable release**: When the pre-release builds are deemed stable enough, a stable release (e.g., `v0.5`) is published from the release's branch.
+4. **Maintenance phase**: After the stable release, the release branch enters maintenance mode, where only bug fixes are applied, resulting in patch releases (e.g., `v0.5.0.1`, `v0.5.0.2`).
+5. **End of maintenance**: When a new stable release is published (e.g., `v0.6`), the previous minor version branch (e.g., `v0.5.x.y`) is officially deprecated and enters end-of-life, ceasing to receive any further updates, including bug fixes. Concurrently, the new stable release (e.g., `v0.6`) enters its own maintenance phase, and a new release branch for the next version (e.g., `release/v0.7`) may already have been created from the `develop` branch, initiating its pre-release cycle.
+
+```{hint}
+If needed, a new release branch may be started even before the previous one has had a stable release. Doing so will temporarily increase the burden of upkeeping multiple branches, so do it only when there's a valid reason for such.
+```
+
+```{important}
+The `master` branch is deprecated; all development occurs in `develop`, and each version branches off from it.
+
+**`develop` is the source of truth! Always apply your changes to `develop` first, then cherry-pick them onto the correct branch!**
+```
+
+### How to publish a release
+
+Publishing a release is done from a release branch (see the lifecycle above). The steps are:
+
+1. **Set the version** in `src/Phobos.version.h`. When a release branch is cut, bump `VERSION_MINOR` (or `VERSION_MAJOR`) and reset `VERSION_REVISION` and `VERSION_PATCH` to 0; patch releases only bump `VERSION_PATCH`.
+2. **Decide whether it is a pre-release or a stable release.** The pre-release suffix is the knob: as long as `PRERELEASE_SUFFIX` is defined (e.g. `#define PRERELEASE_SUFFIX "beta1"`), a release build is a pre-release; remove the define entirely for a stable release. The suffix can be anything semantic versioning allows (e.g. `alpha5`, `beta1`, `rc3`).
+3. **Create a GitHub release and tag** using the short user-facing version you've set in steps 1 and 2 (e.g. `v0.5-alpha1`). The `release.yml` workflow builds the DLL with `BuildType=RELEASE`;
+   - The changelog is extracted from `docs/Whats-New.md` automatically. **Do not write the changelog yourself!** It will be appended to the text you wrote after you publish the release. Also **do not use GitHub's "Generate release notes" button!** It can't be configured to provide correct output.
+   - The build is built and attached automatically. **Do not build Phobos releases manually!**
+   - **GitHub "pre-release" checkbox doesn't affect the produced build type**, it only affects the release's display status for GitHub.
+4. **Verify the artifacts** once the build finishes and the artifacts are attached, then announce the release.
+
+The release tag and name use the short user-facing version (e.g. `v0.5-alpha1`); the DLL reports the full version with trailing zeros (e.g. `0.5.0.0-alpha1`) internally, so that is what appears in the file properties and what the `-HideVersionWarning` switch expects.
+
+If you want to build a pre-release locally for testing, run `scripts\build.bat Release RELEASE` with the suffix still defined in `version.h`. A plain `scripts\build_debug.bat` or `scripts\build_release.bat` always produces a local build instead.
+
+### Useful Git config
 
 These commands will do the following for all repositories on your PC:
 1) remove the automatic merge upon pull and replace it with a rebase;

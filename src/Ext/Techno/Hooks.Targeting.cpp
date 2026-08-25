@@ -18,7 +18,7 @@ DEFINE_HOOK(0x70982C, TechnoClass_TargetAndEstimateDamage_TargetingDelay, 0x8)
 
 	pThis->unknown_4FC = frame;
 	int delay = ScenarioClass::Instance->Random.RandomRanged(0, 2);
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (pThis->MegaMissionIsAttackMove())
 	{
@@ -58,13 +58,28 @@ DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
 
 		if (pWeapon)
 		{
-			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 			if (pWeaponExt->AutoTarget_IronCurtained.isset())
 				return pWeaponExt->AutoTarget_IronCurtained.Get() ? 0 : ReturnFalse;
 		}
 
 		return RulesExt::Global()->AutoTarget_IronCurtained ? 0 : ReturnFalse;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F8364, TechnoClass_CanAutoTargetObject_InsignificantWhenMindControlled, 0x6)
+{
+	enum { SkipMindControlChecks = 0x6F838E };
+
+	GET(TechnoClass*, pTarget, ESI);
+
+	if (!RulesExt::Global()->AutoTarget_InsignificantWhenMindControlled
+		&& pTarget->GetTechnoType()->Insignificant)
+	{
+		return SkipMindControlChecks;
 	}
 
 	return 0;

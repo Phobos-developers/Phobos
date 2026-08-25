@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -181,6 +182,16 @@ enum class SlaveChangeOwnerType
 	Neutral = 4,
 };
 
+enum class PositionFollow : BYTE
+{
+	None = 0x0,
+	Firer = 0x1,
+	Target = 0x2,
+	All = Firer | Target
+};
+
+MAKE_ENUM_FLAGS(PositionFollow)
+
 enum class AutoDeathBehavior
 {
 	Kill = 0,     // default death option
@@ -248,6 +259,18 @@ enum class DamageDisplayType
 	Regular = 0,
 	Shield = 1,
 	Intercept = 2
+};
+
+enum class StackingMode
+{
+	Override = 0,
+	SetIfZero = 1,
+	Min = 2,
+	Max = 3,
+	Add = 4,
+	Subtract = 5,
+	Multiply = 6,
+	Divide = 7
 };
 
 enum class ChronoSparkleDisplayPosition : unsigned char
@@ -418,3 +441,22 @@ enum class InterpolationMode : BYTE
 	None = 0,
 	Linear = 1
 };
+
+enum class EdgeType : BYTE
+{
+	Owner = 0,
+	Closest = 1,
+	Random = 2
+};
+
+// Phobos extension abilities that augment the vanilla veteran/elite ability
+// lists (VeteranAbilities / EliteAbilities). Do not extend the vanilla Ability
+// enum, whose storage is a fixed-size AbilitiesStruct.
+enum class AdditionalAbility : unsigned char
+{
+	Reload = 0,
+	EmptyReload = 1,
+	Count
+};
+
+constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);

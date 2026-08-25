@@ -5,9 +5,6 @@
 #include <Ext/Rules/Body.h>
 
 #include <Helpers/Macro.h>
-#include <EventClass.h>
-#include <HouseClass.h>
-#include <FootClass.h>
 #include <ShapeButtonClass.h>
 
 bool EventExt::AddEvent()
@@ -120,7 +117,7 @@ void EventExt::RespondToTogglePlayerAutoRepair()
 		return;
 
 	auto pHouse = HouseClass::Array.GetItem(this->HouseIndex);
-	auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	auto pHouseExt = HouseExt::Fetch(pHouse);
 	pHouseExt->PlayerAutoRepair = !pHouseExt->PlayerAutoRepair;
 
 	if (HouseClass::CurrentPlayer == pHouse)
