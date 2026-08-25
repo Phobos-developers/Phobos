@@ -3526,16 +3526,16 @@ ExtraWarheads.RollChances=        ; List of percentages
 ExtraWarheads.RandomWeightsN=     ; List of integers
 ```
 
-### Projectile's random target
-- The firer will pick targets randomly.
+### Weapon random target
+- Weapons with this logic will randomly pick targets within range upon firing or launching spawners.
 - Works with missiles (no splits, airbursts, etc), cannons, lasers & spawners.
 - A valid techno is required for triggering the logic.
 - `OmniFire=yes` will make selectable any targets around the firer, limited by the weapon range.
-- `OmniFire=no` will force the firer to pick targets in an area composed by the firer's weapon range around the original target intersected with the firer's weapon range around the firer.
+- `OmniFire=no` will force the weapon to pick targets in an area composed by the firer's weapon range around the original target intersected with the firer's weapon range around the firer.
 - `RandomTarget.Spawners.MultipleTargets=true` gives each spawner aircraft its own target.
 - `RandomTarget.Spawners.RememberTargets=true` controls whether spawned aircraft remember and finish off their previous target upon returning/reloading if it is still alive (if `false`, a new random target is chosen every wave).
-- `RandomTarget.MissChance` controls the probability of a projectile missing completely and targeting a random ground cell in the area.
-- `RandomTarget.FriendlyFireChance` controls the probability of a projectile inverting its target house filter to target friendly/allied objects.
+- `RandomTarget.MissChance` controls the probability of a shot missing completely and targeting a random ground cell in the area.
+- `RandomTarget.FriendlyFireChance` controls the probability of a shot inverting its target house filter to target friendly/allied objects.
 - This logic should be used only in one weapon of the object.
 
 In `rulesmd.ini`:

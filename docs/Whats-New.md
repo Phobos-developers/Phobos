@@ -421,7 +421,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
-- [Projectile's random target](New-or-Enhanced-Logics.md#projectiles-random-target) (by FS-21)
+- [Weapon random target](New-or-Enhanced-Logics.md#weapon-random-target) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 
 #### Vanilla fixes:
