@@ -1,13 +1,23 @@
 #include "Body.h"
 
-#include <SuperClass.h>
+//this hook just for phobos NewSWType
+DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
+{
+	GET(SuperClass* const, pSuper, ECX);
+	GET_STACK(CellStruct const* const, pCell, 0x4);
+	GET_STACK(bool const, isPlayer, 0x8);
 
-#include <Ext/House/Body.h>
+	Debug::Log("[Phobos Launch] %s\n", pSuper->Type->get_ID());
+
+	auto const handled = SWTypeExt::Activate(pSuper, *pCell, isPlayer);
+
+	return handled ? 0x6CDE40 : 0;
+}
 
 // Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
 DEFINE_HOOK_AGAIN(0x6CC390, SuperClass_Place_FireExt, 0x6)
-DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
+DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x3)
 {
 	GET(SuperClass* const, pSuper, ECX);
 	GET_STACK(CellStruct const* const, pCell, 0x4);
@@ -26,13 +36,13 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 {
 	GET(SuperClass*, pThis, ESI);
 
-	if (SuperClass::ShowTimers->AddItem(pThis))
+	if (SuperClass::ShowTimers.AddItem(pThis))
 	{
-		std::sort(SuperClass::ShowTimers->begin(), SuperClass::ShowTimers->end(),
+		std::sort(SuperClass::ShowTimers.begin(), SuperClass::ShowTimers.end(),
 			[](SuperClass* a, SuperClass* b)
 			{
-				auto aExt = SWTypeExt::ExtMap.Find(a->Type);
-				auto bExt = SWTypeExt::ExtMap.Find(b->Type);
+				const auto aExt = SWTypeExt::Fetch(a->Type);
+				const auto bExt = SWTypeExt::Fetch(b->Type);
 				return aExt->ShowTimer_Priority.Get() > bExt->ShowTimer_Priority.Get();
 			}
 		);
@@ -46,13 +56,13 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange) || Unsorted::CurrentSWType == -1)
 		return 0;
 
-	const auto pSuperType = SuperWeaponTypeClass::Array()->GetItem(Unsorted::CurrentSWType);
-	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+	const auto pSuperType = SuperWeaponTypeClass::Array.GetItem(Unsorted::CurrentSWType);
+	const auto pExt = SWTypeExt::Fetch(pSuperType);
 
 	if (!pExt->ShowDesignatorRange)
 		return 0;
 
-	for (const auto pCurrentTechno : *TechnoClass::Array)
+	for (const auto pCurrentTechno : TechnoClass::Array)
 	{
 		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
 		const auto pOwner = pCurrentTechno->Owner;
@@ -66,14 +76,14 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			continue;
 		}
 
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pCurrentTechnoType);
 
 		const float radius = pOwner == HouseClass::CurrentPlayer
 			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
 			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
 
 		CoordStruct coords = pCurrentTechno->GetCenterCoords();
-		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto color = pOwner->Color;
 		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
 	}
@@ -95,7 +105,7 @@ DEFINE_HOOK(0x6CBEF4, SuperClass_AnimStage_UseWeeds, 0x6)
 	GET(SuperClass*, pSuper, ECX);
 	GET(SuperWeaponTypeClass*, pSWType, EBX);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pExt = SWTypeExt::Fetch(pSWType);
 
 	if (pExt->UseWeeds)
 	{
@@ -138,21 +148,22 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 
 	GET(SuperClass*, pSuper, ESI);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 	if (pExt->UseWeeds)
 	{
-		if (pSuper->Type->ShowTimer)
-			pSuper->Type->ShowTimer = false;
+		pSuper->Type->ShowTimer = false;
+		const float totalAmount = pSuper->Owner->OwnedWeed.GetTotalAmount();
+		const int weedAmount = pExt->UseWeeds_Amount;
 
-		if (pSuper->Owner->OwnedWeed.GetTotalAmount() >= pExt->UseWeeds_Amount)
+		if (totalAmount >= weedAmount)
 		{
-			pSuper->Owner->OwnedWeed.RemoveAmount(static_cast<float>(pExt->UseWeeds_Amount), 0);
+			pSuper->Owner->OwnedWeed.RemoveAmount(static_cast<float>(weedAmount), 0);
 			pSuper->RechargeTimer.Start(SWReadyTimer); // The Armageddon is here
 			return Charged;
 		}
 
-		if (pSuper->Owner->OwnedWeed.GetTotalAmount() >= pExt->UseWeeds_ReadinessAnimationPercentage * pExt->UseWeeds_Amount)
+		if (totalAmount >= pExt->UseWeeds_ReadinessAnimationPercentage * weedAmount)
 		{
 			pSuper->RechargeTimer.Start(SWAlmostReadyTimer); // The end is nigh!
 		}
@@ -161,7 +172,7 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 			pSuper->RechargeTimer.Start(SWNotReadyTimer); // 61 seconds > 60 seconds (animation activation threshold)
 		}
 
-		int animStage = pSuper->AnimStage();
+		const int animStage = pSuper->AnimStage();
 		if (pSuper->CameoChargeState != animStage)
 		{
 			pSuper->CameoChargeState = animStage;
@@ -181,7 +192,7 @@ DEFINE_HOOK(0x6CC1E6, SuperClass_SetSWCharge_UseWeeds, 0x5)
 
 	GET(SuperClass*, pSuper, EDI);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
 
 	if (pExt->UseWeeds)
 		return Skip;
@@ -229,11 +240,11 @@ DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
 
 	GET(int const, typeIdx, EDX);
 
-	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array->Count)
+	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array.Count)
 		return 0;
 
-	const auto pSWType = SuperWeaponTypeClass::Array->Items[typeIdx];
-	const auto pSWTypExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pSWType = SuperWeaponTypeClass::Array[typeIdx];
+	const auto pSWTypExt = SWTypeExt::Fetch(pSWType);
 
 	R->EAX(pSWTypExt->TabIndex);
 	return ApplyTabIndex;
@@ -252,3 +263,28 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 
 DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
+
+DEFINE_HOOK(0x53B276, PsyDom_Fire_Select, 0x6)
+{
+	enum { SkipGameCode = 0x53B29E };
+
+	GET(TechnoClass*, pTechno, ESI);
+	const bool selected = pTechno->IsSelected;
+
+	if (const auto pController = pTechno->MindControlledBy)
+	{
+		if (const auto pManager = pController->CaptureManager)
+			pManager->FreeUnit(pTechno);
+	}
+
+	pTechno->SetOwningHouse(PsyDom::Owner);
+
+	if (selected && pTechno->Owner->IsCurrentPlayer())
+	{
+		const bool moveFeedBack = std::exchange(Unsorted::MoveFeedback, false);
+		pTechno->Select();
+		Unsorted::MoveFeedback = moveFeedBack;
+	}
+
+	return SkipGameCode;
+}

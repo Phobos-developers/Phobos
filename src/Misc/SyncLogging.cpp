@@ -1,19 +1,19 @@
-#include <Misc/SyncLogging.h>
+#include "SyncLogging.h"
 
-#include <AircraftClass.h>
-#include <InfantryClass.h>
-#include <HouseClass.h>
-#include <Unsorted.h>
-
+#include <Helpers/Macro.h>
+#include <EventClass.h>
+#include <Ext/AnimType/Body.h>
 #include <Utilities/Debug.h>
-#include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/AresHelper.h>
 
-bool SyncLogger::HooksDisabled = false;
 int SyncLogger::AnimCreations_HighestX = 0;
 int SyncLogger::AnimCreations_HighestY = 0;
 int SyncLogger::AnimCreations_HighestZ = 0;
+int SyncLogger::TeamTypeClass_MaxIDLength = 0;
+int SyncLogger::ScriptTypeClass_MaxIDLength = 0;
+int SyncLogger::HouseTypeClass_MaxIDLength = 0;
+int SyncLogger::HouseName_MaxIDLength = 0;
 
 SyncLogEventBuffer<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
 SyncLogEventBuffer<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
@@ -21,7 +21,6 @@ SyncLogEventBuffer<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::Tar
 SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
 SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
 SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> SyncLogger::AnimCreations;
-
 
 void __forceinline MakeCallerRelative(unsigned int& caller)
 {
@@ -122,13 +121,14 @@ void SyncLogger::WriteSyncLog(const char* logFilename)
 
 		fprintf(pLogFile, "\nPhobos synchronization log:\n\n");
 
-		int frameDigits = GeneralUtils::CountDigitsInNumber(Unsorted::CurrentFrame);
+		const int frameDigits = GeneralUtils::CountDigitsInNumber(Unsorted::CurrentFrame);
 
 		WriteRNGCalls(pLogFile, frameDigits);
 		WriteFacingChanges(pLogFile, frameDigits);
 		WriteTargetChanges(pLogFile, frameDigits);
 		WriteDestinationChanges(pLogFile, frameDigits);
 		WriteAnimCreations(pLogFile, frameDigits);
+		WriteTeams(pLogFile);
 
 		fclose(pLogFile);
 	}
@@ -239,9 +239,9 @@ void SyncLogger::WriteMissionOverrides(FILE* const pLogFile, int frameDigits)
 
 void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 {
-	int xDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestX);
-	int yDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestY);
-	int zDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestZ);
+	const int xDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestX);
+	const int yDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestY);
+	const int zDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestZ);
 
 	fprintf(pLogFile, "Animation creations:\n");
 
@@ -259,13 +259,97 @@ void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 	fprintf(pLogFile, "\n");
 }
 
+void SyncLogger::WriteTeams(FILE* const pLogFile)
+{
+	if (TeamClass::Array.Count < 1)
+		return;
+
+	fprintf(pLogFile, "AI Teams:\n");
+	char buffer[0x20];
+	size_t count = 0;
+
+	// Set padding for values.
+	for (auto const& pTeam : TeamClass::Array)
+	{
+		SyncLogger::SetTeamLoggingPadding(pTeam);
+		count++;
+	}
+
+	for (size_t i = 0; i < count; i++)
+	{
+		auto const pTeam = TeamClass::Array[i];
+
+		fprintf(pLogFile, "#%05d: Type: %*s",
+		i, SyncLogger::TeamTypeClass_MaxIDLength, pTeam->Type->get_ID());
+
+		if (pTeam->CurrentScript && pTeam->CurrentScript->Type)
+		{
+			sprintf_s(buffer, sizeof(buffer), "%d", pTeam->CurrentScript->CurrentMission);
+			fprintf(pLogFile, " | Script: %*s | Line: %2s", SyncLogger::ScriptTypeClass_MaxIDLength, pTeam->CurrentScript->Type->get_ID(), buffer);
+		}
+
+		if (pTeam->Owner)
+		{
+			sprintf_s(buffer, sizeof(buffer), "(%s)", pTeam->Owner->PlainName);
+			fprintf(pLogFile, " | Owner: %d %*s | OwnerHouse: %*s", pTeam->Owner->ArrayIndex,
+				SyncLogger::HouseName_MaxIDLength, buffer,SyncLogger::HouseTypeClass_MaxIDLength, pTeam->Owner->Type->get_ID());
+		}
+
+		if (pTeam->Focus)
+		{
+			auto const rtti = pTeam->Focus->WhatAmI();
+			fprintf(pLogFile, " | TargetRTTI: %d (%s) | TargetID: %08d", rtti, AbstractClass::GetRTTIName(rtti), pTeam->Focus->UniqueID);
+		}
+
+		if (pTeam->QueuedFocus)
+		{
+			auto const rtti = pTeam->QueuedFocus->WhatAmI();
+			fprintf(pLogFile, " | MissionTargetRTTI: %d (%s) | MissionTargetID: %08d", rtti,AbstractClass::GetRTTIName(rtti),
+				pTeam->QueuedFocus->UniqueID);
+		}
+
+		fprintf(pLogFile, "\n");
+	}
+
+	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::SetTeamLoggingPadding(TeamClass* pTeam)
+{
+	int length = strlen(pTeam->Type->get_ID());
+
+	if (length <= 24 && SyncLogger::TeamTypeClass_MaxIDLength < length)
+		SyncLogger::TeamTypeClass_MaxIDLength = length;
+
+	if (pTeam->Type->ScriptType)
+	{
+		length = strlen(pTeam->Type->ScriptType->get_ID());
+
+		if (length <= 24 && SyncLogger::ScriptTypeClass_MaxIDLength < length)
+			SyncLogger::ScriptTypeClass_MaxIDLength = length;
+	}
+
+	if (pTeam->Owner)
+	{
+		length = strlen(pTeam->Owner->Type->get_ID());
+
+		if (length <= 24 && SyncLogger::HouseTypeClass_MaxIDLength < length)
+			SyncLogger::HouseTypeClass_MaxIDLength = length;
+
+		length = strlen(pTeam->Owner->PlainName);
+
+		if (length <= 21 && SyncLogger::HouseName_MaxIDLength < length)
+			SyncLogger::HouseName_MaxIDLength = length;
+	}
+}
+
 // Hooks. Anim contructor logging is in Ext/Anim/Body.cpp to reduce duplicate hooks
 
 // Sync file writing
 
 DEFINE_HOOK(0x64736D, Queue_AI_WriteDesyncLog, 0x5)
 {
-	GET(int, frame, ECX);
+	GET(const int, frame, ECX);
 
 	char logFilename[0x40];
 
@@ -277,9 +361,9 @@ DEFINE_HOOK(0x64736D, Queue_AI_WriteDesyncLog, 0x5)
 	SyncLogger::WriteSyncLog(logFilename);
 
 	// Replace overridden instructions.
-	JMP_STD(0x6BEC60);
+	CALL(0x6BEC60);
 
-	return 0x647374;
+	return 0x647372;
 }
 
 DEFINE_HOOK(0x64CD11, ExecuteDoList_WriteDesyncLog, 0x8)
@@ -305,22 +389,22 @@ DEFINE_HOOK(0x64CD11, ExecuteDoList_WriteDesyncLog, 0x8)
 
 // RNG call logging
 
-DEFINE_HOOK(0x65C7D0, Random2Class_Random_SyncLog, 0x6)
+DEFINE_HOOK(0x65C7D0, Random2Class_Random_SyncLog, 0x1)
 {
 	GET(Randomizer*, pThis, ECX);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddRNGCallSyncLogEvent(pThis, 1, callerAddress);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x6)
+DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x3)
 {
 	GET(Randomizer*, pThis, EDX);
-	GET_STACK(unsigned int, callerAddress, 0x0);
-	GET_STACK(int, min, 0x4);
-	GET_STACK(int, max, 0x8);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
+	GET_STACK(const int, min, 0x4);
+	GET_STACK(const int, max, 0x8);
 
 	SyncLogger::AddRNGCallSyncLogEvent(pThis, 2, callerAddress, min, max);
 
@@ -332,7 +416,7 @@ DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x6)
 DEFINE_HOOK(0x4C9300, FacingClass_Set_SyncLog, 0x5)
 {
 	GET_STACK(DirStruct*, facing, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddFacingChangeSyncLogEvent(facing->Raw, callerAddress);
 
@@ -345,7 +429,7 @@ DEFINE_HOOK(0x51B1F0, InfantryClass_AssignTarget_SyncLog, 0x5)
 {
 	GET(InfantryClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
 
@@ -356,7 +440,7 @@ DEFINE_HOOK(0x443B90, BuildingClass_AssignTarget_SyncLog, 0xB)
 {
 	GET(BuildingClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
 
@@ -367,7 +451,7 @@ DEFINE_HOOK(0x6FCDB0, TechnoClass_AssignTarget_SyncLog, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	auto const RTTI = pThis->WhatAmI();
 
@@ -383,7 +467,7 @@ DEFINE_HOOK(0x41AA80, AircraftClass_AssignDestination_SyncLog, 0x7)
 {
 	GET(AircraftClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pDest, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddDestinationChangeSyncLogEvent(pThis, pDest, callerAddress);
 
@@ -394,7 +478,7 @@ DEFINE_HOOK(0x455D50, BuildingClass_AssignDestination_SyncLog, 0xA)
 {
 	GET(BuildingClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pDest, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddDestinationChangeSyncLogEvent(pThis, pDest, callerAddress);
 
@@ -405,7 +489,7 @@ DEFINE_HOOK(0x51AA40, InfantryClass_AssignDestination_SyncLog, 0x5)
 {
 	GET(InfantryClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pDest, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddDestinationChangeSyncLogEvent(pThis, pDest, callerAddress);
 
@@ -416,7 +500,7 @@ DEFINE_HOOK(0x741970, UnitClass_AssignDestination_SyncLog, 0x6)
 {
 	GET(UnitClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pDest, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddDestinationChangeSyncLogEvent(pThis, pDest, callerAddress);
 
@@ -428,8 +512,8 @@ DEFINE_HOOK(0x741970, UnitClass_AssignDestination_SyncLog, 0x6)
 DEFINE_HOOK(0x41BB30, AircraftClass_OverrideMission_SyncLog, 0x6)
 {
 	GET(AircraftClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const int, mission, 0x4);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
 
@@ -439,8 +523,8 @@ DEFINE_HOOK(0x41BB30, AircraftClass_OverrideMission_SyncLog, 0x6)
 DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
 {
 	GET(FootClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const int, mission, 0x4);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
 
@@ -450,8 +534,8 @@ DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
 DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const int, mission, 0x4);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 		SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
@@ -459,71 +543,134 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 	return 0;
 }
 
-// Disable sync logging hooks in non-MP games
-DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
+#pragma region FrameCRC
+
+class ObjectFake : public ObjectClass
 {
-	if (SessionClass::IsMultiplayer())
+public:
+	inline bool _IsCRCHashable();
+};
+
+bool ObjectFake::_IsCRCHashable()
+{
+	auto const rtti = this->WhatAmI();
+
+	if (rtti == AbstractType::Anim)
 	{
-		Patch::Apply_LJMP(0x55DBCD, 0x55DC99); // Disable MainLoop_SaveGame
-		return 0;
+		// Game creates animation from [General] -> MoveFlash with this UniqueID
+		// in FootClass::Active_Click_With() (0x4D7D50) - this is local-client only code
+		// which is why these animations have to be ignored in sync check.
+		if (this->UniqueID == -2)
+			return false;
+
+		auto const pAnim = reinterpret_cast<AnimClass*>(this);
+		auto pType = pAnim->Type;
+
+		while (pType)
+		{
+			// If animation type has logic that affects game simulation, don't ignore.
+			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
+				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::Fetch(pType)->CreateUnitType.get())
+			{
+				return true;
+			}
+
+			// Check anim's Next type recursively until not present.
+			pType = pType->Next;
+		}
+
+		return false;
+	}
+	else if (rtti == AbstractType::Particle)
+	{
+		auto const pParticle = reinterpret_cast<ParticleClass*>(this);
+		auto pType = pParticle->Type;
+
+		// If particle type deals damage don't ignore.
+		if (pType->Damage)
+			return true;
+
+		// Check particle's NextParticle type recursively until not present.
+		int index = pType->NextParticle;
+
+		while (index != -1)
+		{
+			pType = ParticleTypeClass::Array[index];
+
+			if (pType->Damage)
+				return true;
+
+			index = pType->NextParticle;
+		}
+
+		return false;
 	}
 
-	if (SyncLogger::HooksDisabled)
-		return 0;
-
-	SyncLogger::HooksDisabled = true;
-
-	Patch::Apply_RAW(0x65C7D0, // Disable Random2Class_Random_SyncLog
-	{ 0xC3, 0x90, 0x90, 0x90, 0x90, 0x90 }
-	);
-
-	Patch::Apply_RAW(0x65C88A, // Disable Random2Class_RandomRanged_SyncLog
-	{ 0xC2, 0x08, 0x00, 0x90, 0x90, 0x90 }
-	);
-
-	Patch::Apply_RAW(0x4C9300, // Disable FacingClass_Set_SyncLog
-	{ 0x83, 0xEC, 0x10, 0x53, 0x56 }
-	);
-
-	Patch::Apply_RAW(0x51B1F0, // Disable InfantryClass_AssignTarget_SyncLog
-	{ 0x53, 0x56, 0x8B, 0xF1, 0x57 }
-	);
-
-	Patch::Apply_RAW(0x443B90, // Disable BuildingClass_AssignTarget_SyncLog
-	{ 0x56, 0x8B, 0xF1, 0x57, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 }
-	);
-
-	Patch::Apply_RAW(0x6FCDB0, // Disable TechnoClass_AssignTarget_SyncLog
-	{ 0x83, 0xEC, 0x0C, 0x53, 0x56 }
-	);
-
-	Patch::Apply_RAW(0x41AA80, // Disable AircraftClass_AssignDestination_SyncLog
-	{ 0x53, 0x56, 0x57, 0x8B, 0x7C, 0x24, 0x10 }
-	);
-
-	Patch::Apply_RAW(0x455D50, // Disable BuildingClass_AssignDestination_SyncLog
-	{ 0x56, 0x8B, 0xF1, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 }
-	);
-
-	Patch::Apply_RAW(0x51AA40, // Disable InfantryClass_AssignDestination_SyncLog
-	{ 0x83, 0xEC, 0x2C, 0x53, 0x55 }
-	);
-
-	Patch::Apply_RAW(0x741970, // Disable UnitClass_AssignDestination_SyncLog
-	{ 0x81, 0xEC, 0x80, 0x0, 0x0, 0x0 }
-	);
-
-	Patch::Apply_RAW(0x41BB30, // Disable AircraftClass_OverrideMission_SyncLog
-	{ 0x8B, 0x81, 0xAC, 0x0, 0x0, 0x0 }
-	);
-
-	Patch::Apply_RAW(0x4D8F40, // Disable FootClass_OverrideMission_SyncLog
-	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
-	);
-
-	Patch::Apply_RAW(0x7013A0, // Disable TechnoClass_OverrideMission_SyncLog
-	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
-	);
-
-	return 0;
+	return true;
 }
+
+static void AddCRC(DWORD* crc, unsigned int val)
+{
+	*crc = val + (*crc >> 31) + (*crc << 1);
+}
+
+static int GetCoordHash(CoordStruct location)
+{
+	return location.X / 10 + ((location.Y / 10) << 16);
+}
+
+static void ComputeGameCRC()
+{
+	EventClass::CurrentFrameCRC = 0;
+
+	for (auto const pInf : InfantryClass::Array)
+	{
+		const int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pInf->Location) + primaryFacing);
+	}
+
+	for (auto const pUnit : UnitClass::Array)
+	{
+		const int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
+		const int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
+	}
+
+	for (auto const pBuilding : BuildingClass::Array)
+	{
+		const int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
+	}
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		AddCRC(&EventClass::CurrentFrameCRC, pHouse->MapIsClear);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto const layer = DisplayClass::GetLayer((Layer)i);
+
+		for (auto const pObj : *layer)
+		{
+			if (((ObjectFake*)pObj)->_IsCRCHashable())
+				AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+		}
+	}
+
+	LogicClass const& logic = LogicClass::Instance;
+
+	for (auto const pObj : logic)
+	{
+		if (((ObjectFake*)pObj)->_IsCRCHashable())
+			AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+	}
+
+	AddCRC(&EventClass::CurrentFrameCRC, ScenarioClass::Instance->Random.Random());
+	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x64731C, ComputeGameCRC);
+DEFINE_FUNCTION_JUMP(CALL, 0x647684, ComputeGameCRC);
+
+#pragma endregion

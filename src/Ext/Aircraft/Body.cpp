@@ -1,62 +1,80 @@
 #include "Body.h"
 
-#include <BuildingClass.h>
-
+#include <Ext/AircraftType/Body.h>
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// TODO: Implement proper extended AircraftClass.
+AircraftExt::ExtContainer AircraftExt::ExtMap;
 
-void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
+void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	if (!pTarget)
-		return;
-
-	auto weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
-
-	if (weaponIndex < 0)
-		weaponIndex = pThis->SelectWeapon(pTarget);
-
+	auto const pExt = AircraftExt::Fetch(pThis);
+	const int weaponIndex = pExt->CurrentAircraftWeaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+	const int burstCount = pWeapon->Burst;
+	const bool isStrafe = pThis->Is_Strafe();
 
-	if (pWeapon->Burst > 0)
+	if (burstCount > 0)
 	{
-		for (int i = 0; i < pWeapon->Burst; i++)
+		int& bombDropCount = pExt->Strafe_BombsDroppedThisRound;
+		int& currentBurstIndex = pThis->CurrentBurstIndex;
+		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst.Get(RulesExt::Global()->Strafing_SimulateBurst);
+
+		for (int i = 0; i < burstCount; i++)
 		{
-			if (pWeapon->Burst < 2 && pWeaponExt->Strafing_SimulateBurst)
-				pThis->CurrentBurstIndex = shotNumber;
+			if (isStrafe && burstCount < 2 && simulateBurst)
+				currentBurstIndex = bombDropCount % 2 == 0;
 
 			pThis->Fire(pTarget, weaponIndex);
 		}
-	}
 
-	if (pThis->Is_Strafe())
-		TechnoExt::ExtMap.Find(pThis)->Strafe_BombsDroppedThisRound++;
+		if (isStrafe)
+		{
+			bombDropCount++;
+
+			if (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot))
+			{
+				pThis->Ammo--;
+				pThis->ShouldLoseAmmo = false;
+
+				if (!pThis->Ammo)
+				{
+					pThis->SetTarget(nullptr);
+					pThis->SetDestination(nullptr, true);
+				}
+			}
+		}
+	}
 }
 
-// Spy plane, airstrike etc.
-bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell)
+// Paradrop, spy plane, airstrike.
+bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CoordStruct edgeCoords)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	auto coords = CellClass::Cell2Coord(edgeCell);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
+	auto dir = DirType::North;
+	auto coords = edgeCoords;
 	coords.Z = 0;
-	AbstractClass* pTarget = nullptr;
+	AbstractClass* pTarget = pThis->Target ? pThis->Target : pThis->Destination;
 
-	if (pTypeExt->SpawnDistanceFromTarget.isset())
+	if (pTarget)
 	{
-		pTarget = pThis->Target ? pThis->Target : pThis->Destination;
+		auto const pTargetCoords = pTarget->GetCoords();
 
-		if (pTarget)
-			coords = GeneralUtils::CalculateCoordsFromDistance(CellClass::Cell2Coord(edgeCell), pTarget->GetCoords(), pTypeExt->SpawnDistanceFromTarget.Get());
+		if (pTypeExt->SpawnDistanceFromTarget.isset())
+			coords = GeneralUtils::CalculateCoordsFromDistance(edgeCoords, pTargetCoords, pTypeExt->SpawnDistanceFromTarget.Get());
+
+		dir = GeneralUtils::GetDirectionBetweenCoords(coords, pTargetCoords).GetDir();
 	}
 
-	++Unsorted::IKnowWhatImDoing;
-	bool result = pThis->Unlimbo(coords, DirType::North);
-	--Unsorted::IKnowWhatImDoing;
+	bool result = false;
 
-	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pThis->Type->GetFlightLevel()));
+	++Unsorted::ScenarioInit;
+	result = pThis->Unlimbo(coords, dir);
+	--Unsorted::ScenarioInit;
+
+	pThis->SetHeight(pTypeExt->SpawnHeight.isset() ? pTypeExt->SpawnHeight.Get() : pType->GetFlightLevel());
 
 	if (pTarget)
 		pThis->PrimaryFacing.SetDesired(pThis->GetTargetDirection(pTarget));
@@ -64,7 +82,50 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 	return result;
 }
 
-DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
+CellStruct AircraftExt::PickEdgeCellForPlane(AircraftTypeClass* pPlaneType, CellStruct destCell, Edge edge, bool isOnRetreat)
+{
+	auto const pTypeExt = AircraftTypeExt::Fetch(pPlaneType);
+	auto const edgeMode = !isOnRetreat ? pTypeExt->SpawnFromEdge.Get(RulesExt::Global()->AircraftSpawnFromEdge)
+		: pTypeExt->RetreatToEdge.Get(RulesExt::Global()->AircraftRetreatToEdge);
+	auto spawnEdge = edge;
+	auto refCell = CellStruct::Empty;
+
+	switch (edgeMode)
+	{
+	case EdgeType::Closest:
+	{
+		if (destCell != CellStruct::Empty)
+		{
+			spawnEdge = Edge::None;
+			refCell = destCell;
+
+			// Scatter the coords a bit to randomize spawn cell a little - otherwise multiple planes sent at same target
+			// from same source might end up overlapping - still a possibility, just less likely.
+			// The edge cell picking function itself will do no randomization on Edge::None + waypoint cell set mode.
+			int const randomRange = 5;
+			short const randomX = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+			short const randomY = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(-randomRange, randomRange));
+			refCell += CellStruct { randomX, randomY };
+		}
+		break;
+	}
+	case EdgeType::Random:
+	{
+		int const min = static_cast<int>(Edge::North);
+		int const max = static_cast<int>(Edge::West);
+		spawnEdge = static_cast<Edge>(ScenarioClass::Instance->Random.RandomRanged(min, max));
+		break;
+	}
+	default:
+	{
+		break;
+	}
+	}
+
+	return MapClass::Instance.PickCellOnEdge(spawnEdge, refCell, CellStruct::Empty, SpeedType::Winged, true, MovementZone::Normal);
+}
+
+DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock, bool isProduction)
 {
 	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
 
@@ -72,18 +133,23 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		return poseDir;
 
 	// If this is a spawnee, use the spawner's facing.
-	if (auto pOwner = pThis->SpawnOwner)
+	if (auto const pOwner = pThis->SpawnOwner)
 		return pOwner->PrimaryFacing.Current().GetDir();
 
-	if (pDock || pThis->HasAnyLink())
-	{
-		auto pLink = pThis->GetNthLink(0);
+	auto const pType = pThis->Type;
 
-		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*>(pLink))
+	const bool hasDockOrLink = (pDock || pThis->HasAnyLink());
+
+	if (hasDockOrLink)
+	{
+		auto const pLink = pThis->GetNthLink(0);
+
+		if (auto const pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
 		{
-			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-			int docks = pBuilding->Type->NumberOfDocks;
-			int linkIndex = pBuilding->FindLinkIndex(pThis);
+			auto const pBuildingType = pBuilding->Type;
+			auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+			const int docks = pBuildingType->NumberOfDocks;
+			const int linkIndex = pBuilding->FindLinkIndex(pThis);
 
 			if (docks > 0 && linkIndex >= 0 && linkIndex < docks)
 			{
@@ -92,15 +158,116 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			}
 			else if (docks > 0 && pBuildingTypeExt->AircraftDockingDirs[0].has_value())
 				return *pBuildingTypeExt->AircraftDockingDirs[0];
+
+			if (!pBuildingTypeExt->AircraftDockingDir_DefaultToPoseDir.Get(RulesExt::Global()->AircraftDockingDir_DefaultToPoseDir))
+			{
+				if (!isProduction)
+					return pBuilding->PrimaryFacing.Current().GetDir();
+			}
 		}
-		else if (!pThis->Type->AirportBound)
+		else if (!pType->AirportBound)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
-	if (!pThis->Type->AirportBound && landingDir < 0)
-		return pThis->PrimaryFacing.Current().GetDir();
+	if (pTypeExt->LandingDir.isset())
+	{
+		int landingDir = pTypeExt->LandingDir.Get();
+		if (pType->AirportBound)
+			return static_cast<DirType>(landingDir & 0xFF);
+		else if (landingDir < 0)
+			return pThis->PrimaryFacing.Current().GetDir();
+		else
+			return static_cast<DirType>(landingDir & 0xFF);
+	}
 
-	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
+	if (isProduction)
+		return static_cast<DirType>(RulesExt::Global()->PoseDir_Production.Get((int)poseDir) & 0xFF);
+
+	if (hasDockOrLink)
+		return poseDir;
+
+	int fieldDir = RulesExt::Global()->PoseDir_Field.Get((int)poseDir * 32);
+	return static_cast<DirType>(fieldDir & 0xFF);
+}
+
+AircraftTypeClass* AircraftExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	auto const pType = pAircraft->Type;
+	auto const pData = AircraftTypeExt::Fetch(pType);
+
+	if (!pData->NeedDamagedImage || pAircraft->IsGreenHP())
+	{
+		return pType;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pType;
+}
+
+// =============================
+// load / save
+
+template <typename T>
+void AircraftExt::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
+		.Process(this->CurrentAircraftWeaponIndex)
+		;
+}
+
+void AircraftExt::LoadFromStream(PhobosStreamReader& Stm)
+{
+	FootExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void AircraftExt::SaveToStream(PhobosStreamWriter& Stm)
+{
+	FootExt::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+// =============================
+// container
+
+AircraftExt::ExtContainer::ExtContainer() : Container("AircraftClass") { }
+AircraftExt::ExtContainer::~ExtContainer() = default;
+
+// =============================
+// container hooks
+
+DEFINE_HOOK(0x413D30, AircraftClass_CTOR, 0x7)
+{
+	GET(AircraftClass*, pItem, ESI);
+
+	AircraftExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
+// Late in every destructor body of the class, right before it chains into the
+// base destructor: the last point where the extension is no longer used.
+DEFINE_HOOK_AGAIN(0x41426D, AircraftClass_DTOR, 0x9)
+DEFINE_HOOK(0x4141FA, AircraftClass_DTOR, 0x9)
+{
+	GET(AircraftClass*, pItem, EDI);
+
+	AircraftExt::ExtMap.Remove(pItem);
+
+	return 0;
 }

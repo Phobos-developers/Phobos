@@ -1,12 +1,13 @@
+#include "Constructs.h"
 #include "GeneralUtils.h"
 #include "Debug.h"
 #include <Theater.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
-#include <Utilities/Constructs.h>
+#include "AresHelper.h"
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -49,6 +50,7 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wcha
 std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
+	result.reserve((2 * range + 1) * (2 * range + 1));
 
 	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);
@@ -63,15 +65,41 @@ const int GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<int> range)
 
 const double GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<double> range)
 {
-	int min = static_cast<int>(range.X * 100);
-	int max = static_cast<int>(range.Y * 100);
+	const int min = static_cast<int>(range.X * 100);
+	const int max = static_cast<int>(range.Y * 100);
 
 	return range.X >= range.Y || range.ValueCount < 2 ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
 }
 
-const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType)
+struct VersesData
 {
-	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+	double Verses;
+	WarheadFlags Flags;
+};
+
+struct DummyTypeExtHere
+{
+	char _[0x24];
+	std::vector<VersesData> Verses;
+};
+
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType)
+{
+	if (AresHelper::CanUseAres)
+		return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
+
+	return static_cast<double>(MapClass::GetTotalDamage(100, pWH, armorType, 0)) / 100.0;
+}
+
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
+{
+	auto armorType = pType->Armor;
+	auto const pShield = TechnoExt::Fetch(pThis)->Shield.get();
+
+	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
+		armorType = pShield->GetArmorType(pType);
+
+	return GeneralUtils::GetWarheadVersusArmor(pWH, armorType);
 }
 
 // Weighted random element choice (weight) - roll for one.
@@ -101,16 +129,19 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 	if (oldRatio == newRatio)
 		return false;
 
-	if (oldRatio > RulesClass::Instance->ConditionYellow && newRatio <= RulesClass::Instance->ConditionYellow)
+	if (oldRatio > RulesClass::Instance->ConditionYellow
+		&& newRatio <= RulesClass::Instance->ConditionYellow)
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionYellow && oldRatio > RulesClass::Instance->ConditionRed &&
-		(newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
+	else if (oldRatio <= RulesClass::Instance->ConditionYellow
+		&& oldRatio > RulesClass::Instance->ConditionRed
+		&& (newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionRed && newRatio > RulesClass::Instance->ConditionRed)
+	else if (oldRatio <= RulesClass::Instance->ConditionRed
+		&& newRatio > RulesClass::Instance->ConditionRed)
 	{
 		return true;
 	}
@@ -122,8 +153,8 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 {
 	if (auto pSuffix = strstr(str, "~~~"))
 	{
-		auto theater = ScenarioClass::Instance->Theater;
-		auto pExtension = Theater::GetTheater(theater).Extension;
+		const auto theater = ScenarioClass::Instance->Theater;
+		const auto pExtension = Theater::GetTheater(theater).Extension;
 		pSuffix[0] = pExtension[0];
 		pSuffix[1] = pExtension[1];
 		pSuffix[2] = pExtension[2];
@@ -136,6 +167,7 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 std::string GeneralUtils::IntToDigits(int num)
 {
 	std::string digits;
+	digits.reserve(10); // 32-bit int max: 2,147,483,647 (10 digits)
 
 	if (num == 0)
 	{
@@ -167,16 +199,24 @@ int GeneralUtils::CountDigitsInNumber(int number)
 	return digits;
 }
 
-// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
-CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+// Calculates direction between two coordinates.
+DirStruct GeneralUtils::GetDirectionBetweenCoords(const CoordStruct& currentCoords, const CoordStruct& targetCoords)
 {
-	int deltaX = currentCoords.X - targetCoords.X;
-	int deltaY = targetCoords.Y - currentCoords.Y;
+	const int deltaX = targetCoords.X - currentCoords.X;
+	const int deltaY = currentCoords.Y - targetCoords.Y;
+	const double atan = Math::atan2(deltaY, deltaX);
+	const double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	DirStruct dir {};
+	dir.SetRadian<65536>(radians);
+	return dir;
+}
 
-	double atan = Math::atan2(deltaY, deltaX);
-	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
-	int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
-	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(const CoordStruct& currentCoords, const CoordStruct& targetCoords, int distance)
+{
+	const double radians = GeneralUtils::GetDirectionBetweenCoords(currentCoords, targetCoords).GetRadian<65536>() + Math::Pi;
+	const int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
+	const int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
 
 	return CoordStruct { x, y, targetCoords.Z };
 }
@@ -203,7 +243,7 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 		break;
 	}
 
-	int maxOffset = Unsorted::CellWidthInPixels / 2;
+	const int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
 	wchar_t damageStr[0x20];
 	swprintf_s(damageStr, L"%d", damage);
@@ -246,17 +286,46 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	if (RulesExt::Global()->ColorAddUse8BitRGB)
 		return Drawing::RGB_To_Int(color);
 
-	int red = color.R;
-	int green = color.G;
-	int blue = color.B;
+	const int red = color.R;
+	const int green = color.G;
+	const int blue = color.B;
 
-	if (Drawing::ColorMode() == RGBMode::RGB565)
-		colorValue |= blue | (32 * (green | (red << 6)));
-
-	if (Drawing::ColorMode() != RGBMode::RGB655)
-		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
-
-	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+	switch (Drawing::ColorMode)
+	{
+	case RGBMode::RGB565:
+		colorValue |= (red << 6 | green) << 5 | blue;
+		break;
+	case RGBMode::RGB556:
+		colorValue |= (red << 5 | green >> 1) << 6 | blue;
+		break;
+	default:
+		colorValue |= (red << 5 | green >> 1) << 5 | blue;
+		break;
+	}
 
 	return colorValue;
+}
+
+int GeneralUtils::SafeMultiply(int value, int mult)
+{
+	long long product = static_cast<long long>(value) * mult;
+
+	if (product > INT32_MAX)
+		product = INT32_MAX;
+	else if (product < INT32_MIN)
+		product = INT32_MIN;
+
+	return static_cast<int>(product);
+}
+
+int GeneralUtils::SafeMultiply(int value, double mult)
+{
+	double product = static_cast<double>(value) * mult;
+
+	if (product > INT32_MAX)
+		product = INT32_MAX;
+	else if (product < INT32_MIN)
+		product = INT32_MIN;
+
+	return static_cast<int>(product);
 }

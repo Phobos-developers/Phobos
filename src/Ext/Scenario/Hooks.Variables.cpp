@@ -1,8 +1,4 @@
-#include <Helpers/Macro.h>
-
 #include "Body.h"
-
-#include <TagClass.h>
 
 DEFINE_HOOK(0x689910, ScenarioClass_SetLocalToByID, 0x5)
 {
@@ -117,3 +113,81 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 
 	return 0;
 }
+
+#pragma region MapSelectExtension
+
+static bool __fastcall MapSelectClass_SetNextScenario_CustomMission(MapSelectClass* pThis, void* _, ScenarioClass* pItem)
+{
+	// It can be directly filled in the map file name without being restricted by mapselmd.ini.
+	if (pItem->SkipMapSelect)
+	{
+		std::string scenario {};
+		auto const pGlobal = ScenarioExt::Global();
+
+		do
+		{
+			if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
+			{
+				const auto& localVariables = pGlobal->Variables[false];
+				const auto& globalVariables = pGlobal->Variables[true];
+				bool success = false;
+
+				if (!localVariables.empty())
+				{
+					for (const auto& itr : localVariables)
+					{
+						if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+							continue;
+
+						success = true;
+						break;
+					}
+				}
+
+				if (!success && !globalVariables.empty())
+				{
+					for (const auto& itr : globalVariables)
+					{
+						if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+							continue;
+
+						success = true;
+						break;
+					}
+
+					if (!success && globalVariables.contains(1) && globalVariables.find(1)->second.Value > 0)
+						success = true;
+				}
+
+				if (success)
+				{
+					scenario = pItem->AltNextScenario;
+					break;
+				}
+			}
+
+			scenario = pItem->NextScenario;
+		}
+		while (false);
+
+		if (!scenario.empty())
+		{
+			// Does this Stage have any function ? If anyone knows, please let me know.
+			pItem->Stage = 0;
+			strncpy(pItem->FileName, scenario.c_str(), 0x104u);
+			pItem->FileName[259] = '\0';
+
+			return true;
+		}
+
+		return false;
+	}
+
+	// Return to the original function.
+	return pThis->SetNextScenario(pItem);
+}
+
+DEFINE_JUMP(LJMP, 0x685A38, 0x685A63)	// Skip the original code
+DEFINE_FUNCTION_JUMP(CALL, 0x5ADD63, MapSelectClass_SetNextScenario_CustomMission)
+
+#pragma endregion

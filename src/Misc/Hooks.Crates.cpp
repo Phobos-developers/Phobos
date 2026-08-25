@@ -1,40 +1,37 @@
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-
-#include <Ext/Rules/Body.h>
-#include <Ext/TechnoType/Body.h>
-
-#include <Utilities/Macro.h>
+#include <Ext/UnitType/Body.h>
 
 DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {
 	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
 
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
+	const int XP = 2 * MapClass::Instance.VisibleRect.X - MapClass::Instance.MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Width);
 
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
+	const int YP = 2 * MapClass::Instance.VisibleRect.Y + MapClass::Instance.MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Height + 2);
 
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
+	const CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
+	const auto pCell = MapClass::Instance.TryGetCellAt(candidate);
 
 	if (!pCell)
 		return SkipSpawn;
 
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
+	if (!MapClass::Instance.IsWithinUsableArea(pCell, true))
 		return SkipSpawn;
 
-	bool isWater = pCell->LandType == LandType::Water;
+	const bool isWater = pCell->LandType == LandType::Water;
 
 	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
 		return SkipSpawn;
 
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
 
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
+	cell = MapClass::Instance.NearByLocation(pCell->MapCoords,
 		isWater ? SpeedType::Float : SpeedType::Track,
 		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell == CellStruct::Empty)
+		return SkipSpawn;
 
 	R->EAX(&cell);
 
@@ -51,8 +48,11 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	GET(HouseClass*, pHouse, EDI);
 	GET_STACK(UnitTypeClass*, pBaseUnit, STACK_OFFSET(0x188, -0x138));
 
-	if (RulesClass::Instance->FreeMCV && pHouse->Available_Money() > RulesExt::Global()->FreeMCV_CreditsThreshold &&
-		SessionClass::Instance->Config.Bases && !pHouse->OwnedBuildings && !pHouse->CountOwnedNow(pBaseUnit))
+	if (RulesClass::Instance->FreeMCV
+		&& pHouse->Available_Money() > RulesExt::Global()->FreeMCV_CreditsThreshold
+		&& SessionClass::Instance.Config.Bases
+		&& !pHouse->OwnedBuildings
+		&& !pHouse->CountOwnedNow(pBaseUnit))
 	{
 		return EnableForcedMCV;
 	}
@@ -60,7 +60,7 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	return SkipForcedMCV;
 }
 
-DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x5)
+DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x0)
 {
 	enum { Capped = 0x481C44, NotCapped = 0x481C4A };
 
@@ -82,7 +82,7 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 
 	if (crateGoodie)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnitType);
+		auto const pTypeExt = UnitTypeExt::Fetch(pUnitType);
 
 		if (pTypeExt->CrateGoodie_RerollChance > 0.0)
 			crateGoodie = pTypeExt->CrateGoodie_RerollChance < ScenarioClass::Instance->Random.RandomDouble();
@@ -91,4 +91,18 @@ DEFINE_HOOK(0x4821BD, CellClass_GoodieCheck_CrateGoodie, 0x6)
 	R->CL(crateGoodie);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x481F9D, CellClass_SpringCrate_RevealMap, 0x8)
+{
+	GET_BASE(FootClass*, pFoot, 0x8);
+
+	auto pOwner = pFoot->Owner;
+
+	if (SessionClass::IsCampaign() && (pOwner->IsHumanPlayer || pOwner->IsInPlayerControl))
+		pOwner = HouseClass::CurrentPlayer;
+
+	MapClass::Instance.Reveal(pOwner);
+
+	return 0x481FC8;
 }
