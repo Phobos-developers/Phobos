@@ -172,6 +172,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
 	//this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
 	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
+	this->RandomTarget_Spawners_RememberTargets.Read(exINI, pSection, "RandomTarget.Spawners.RememberTargets");
+	this->RandomTarget_Spawners_RememberTargets.Read(exINI, pSection, "RandomTarget.Spawners.RememberTarget");
+	this->RandomTarget_MissChance.Read(exINI, pSection, "RandomTarget.MissChance");
+	this->RandomTarget_FriendlyFireChance.Read(exINI, pSection, "RandomTarget.FriendlyFireChance");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -247,6 +251,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RandomTarget)
 		//.Process(this->RandomTarget_DistributeBurst)
 		.Process(this->RandomTarget_Spawners_MultipleTargets)
+		.Process(this->RandomTarget_Spawners_RememberTargets)
+		.Process(this->RandomTarget_MissChance)
+		.Process(this->RandomTarget_FriendlyFireChance)
 		.Process(this->SkipWeaponPicking)
 		.Process(this->DelayedFire_Duration)
 		.Process(this->DelayedFire_SkipInTransport)

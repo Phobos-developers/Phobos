@@ -62,10 +62,6 @@ public:
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
-		int OriginalTargetWeaponIndex;
-		AbstractClass* OriginalTarget;
-		bool ResetRandomTarget;
-		TechnoClass* CurrentRandomTarget;
 		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
@@ -99,6 +95,7 @@ public:
 		int TintIntensityEnemies;
 
 		int AttackMoveFollowerTempCount;
+		AbstractClass* SpawnRandomTarget;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -145,10 +142,6 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
-			, OriginalTarget { nullptr }
-			, ResetRandomTarget { false }
-			, CurrentRandomTarget { nullptr }
-			, OriginalTargetWeaponIndex { -1 }
 			, FiringAnimationTimer {}
 			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
@@ -163,6 +156,7 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
+			, SpawnRandomTarget { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -198,7 +192,6 @@ public:
 		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
-		void UpdateRandomTargets();
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
 
@@ -278,10 +271,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
-	static void NewRandomTarget(TechnoClass* pThis = nullptr);
-	static TechnoClass* FindRandomTarget(TechnoClass* pThis = nullptr);
-	static bool IsValidTechno(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed = true);
-	static bool IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed = true);
+	static AbstractClass* FindRandomTarget(TechnoClass* pFirer, AbstractClass* pOriginalTarget, WeaponTypeClass* pWeapon);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
@@ -304,6 +294,4 @@ public:
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
 
-	static void SendStopRandomTargetTarNav(TechnoClass* pThis);
-	static void HandleStopRandomTargetTarNav(EventExt* event);
 };

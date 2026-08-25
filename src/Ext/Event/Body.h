@@ -1,8 +1,6 @@
 #pragma once
 #include <cstddef>
 #include <stdint.h>
-#include <TechnoClass.h>
-#include <FootClass.h>
 
 enum class EventTypeExt : uint8_t
 {
@@ -10,10 +8,10 @@ enum class EventTypeExt : uint8_t
 	// CnCNet reserved Events from 0x30 to 0x3F
 	// Ares used Events 0x60 and 0x61
 
-	SyncStopRandomTargetTarNav = 0x49,
+	Sample = 0x40, // Sample event, remove it when Phobos needs its own events
 
-	FIRST = SyncStopRandomTargetTarNav,
-	LAST = SyncStopRandomTargetTarNav
+	FIRST = Sample,
+	LAST = Sample
 };
 
 #pragma pack(push, 1)
@@ -28,10 +26,10 @@ public:
 	{
 		char DataBuffer[104];
 
-		struct SyncStopRandomTargetTarNav
+		struct Sample
 		{
-			int TechnoUniqueID;
-		} SyncStopRandomTargetTarNav;
+			char DataBuffer[104];
+		} Sample;
 	};
 
 	bool AddEvent();

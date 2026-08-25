@@ -79,6 +79,9 @@ public:
 		Valueable<double> RandomTarget;
 		//Valueable<bool> RandomTarget_DistributeBurst;
 		Valueable<bool> RandomTarget_Spawners_MultipleTargets;
+		Valueable<bool> RandomTarget_Spawners_RememberTargets;
+		Valueable<double> RandomTarget_MissChance;
+		Valueable<double> RandomTarget_FriendlyFireChance;
 
 		Nullable<ColorStruct> Beam_Color;
 		Valueable<int> Beam_Duration;
@@ -173,6 +176,9 @@ public:
 			, RandomTarget { 0.0 }
 			//, RandomTarget_DistributeBurst { true }
 			, RandomTarget_Spawners_MultipleTargets { false }
+			, RandomTarget_Spawners_RememberTargets { true }
+			, RandomTarget_MissChance { 0.0 }
+			, RandomTarget_FriendlyFireChance { 0.0 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

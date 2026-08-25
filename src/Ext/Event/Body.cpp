@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <Ext/Techno/Body.h>
-
 #include <Helpers/Macro.h>
 #include <EventClass.h>
 
@@ -14,8 +12,8 @@ void EventExt::RespondEvent()
 {
 	switch (this->Type)
 	{
-	case EventTypeExt::SyncStopRandomTargetTarNav:
-		TechnoExt::HandleStopRandomTargetTarNav(this);
+	case EventTypeExt::Sample:
+		// Place the handler here
 		break;
 	}
 }
@@ -24,8 +22,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
 	{
-	case EventTypeExt::SyncStopRandomTargetTarNav:
-		return sizeof(EventExt::SyncStopRandomTargetTarNav);
+	case EventTypeExt::Sample:
+		return sizeof(EventExt::Sample);
 	}
 
 	return 0;

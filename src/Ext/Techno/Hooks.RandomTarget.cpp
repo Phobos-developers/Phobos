@@ -1,322 +1,238 @@
 #include "Body.h"
 
 #include <Ext/WeaponType/Body.h>
-#include <Ext/Script/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <AircraftClass.h>
+#include <BulletClass.h>
+#include <SpawnManagerClass.h>
 
-DEFINE_HOOK(0x4D4E8A, FootClass_FiringAI_BurstRandomTarget, 0x6)
+static bool IsValidAliveTarget(AbstractClass* pTarget)
 {
-	GET(TechnoClass*, pThis, ESI);
+	if (!pTarget)
+		return false;
 
-	if (pThis->RearmTimer.TimeLeft <= 0 && TechnoExt::IsValidTechno(pThis->Target))
-		TechnoExt::NewRandomTarget(pThis);
+	// Only real, destructible Techno objects (units/buildings) are remembered across waves.
+	// Ground cells from MissChance or force-fire are single-pass coordinates.
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		return pTechno->IsAlive && !pTechno->InLimbo && pTechno->Health > 0 && !pTechno->IsSinking && !pTechno->IsCrashing && !pTechno->BeingWarpedOut;
+	}
+
+	return false;
+}
+
+static bool IsValidTargetInRange(TechnoClass* pFirer, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!IsValidAliveTarget(pTarget))
+		return false;
+
+	if (pFirer && pWeapon)
+	{
+		int maxRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
+		if (auto const pFirerTypeExt = TechnoTypeExt::ExtMap.TryFind(pFirer->GetTechnoType()))
+		{
+			if (pFirerTypeExt->Spawner_LimitRange && pFirerTypeExt->Spawner_ExtraLimitRange > 0)
+			{
+				maxRange += pFirerTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
+			}
+		}
+
+		if (maxRange > 0 && pFirer->DistanceFrom(pTarget) > maxRange)
+			return false;
+	}
+
+	return true;
+}
+
+DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_RandomTarget, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(AbstractClass*, pTarget, 0x8);
+
+	if (pThis && pWeapon && pTarget)
+	{
+		// Spawner weapons manage aircraft targets in SpawnManagerClass
+		if (pWeapon->Spawner)
+			return 0;
+
+		if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
+		{
+			if (pWeaponExt->RandomTarget > 0.0)
+			{
+				auto pNewTarget = TechnoExt::FindRandomTarget(pThis, pTarget, pWeapon);
+				if (pNewTarget && pNewTarget != pTarget)
+				{
+					R->Base(0x8, pNewTarget);
+					R->EDI(pNewTarget);
+				}
+			}
+		}
+	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget, 0x6)
+DEFINE_HOOK(0x6B7B90, SpawnManagerClass_SetTarget_RandomTarget, 0x7)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(SpawnManagerClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
 
-	auto pOriginalTarget = pThis->Target;
+	if (pThis && pThis->Owner && pTarget)
+	{
+		auto pSpawner = pThis->Owner;
+		int weaponIndex = pSpawner->SelectWeapon(pTarget);
+		if (weaponIndex >= 0)
+		{
+			if (auto pWeapon = pSpawner->GetWeapon(weaponIndex)->WeaponType)
+			{
+				if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
+				{
+					// Maintain player's clicked target as reference anchor for individual aircraft sampling
+					if (pWeaponExt->RandomTarget_Spawners_MultipleTargets)
+						return 0;
 
-	if (pThis->RearmTimer.TimeLeft <= 0 && TechnoExt::IsValidTechno(pThis->Target))
-		TechnoExt::NewRandomTarget(pThis);
+					if (pWeaponExt->RandomTarget > 0.0)
+					{
+						// Retain surviving target across passes if RememberTargets is enabled
+						if (pWeaponExt->RandomTarget_Spawners_RememberTargets && IsValidTargetInRange(pSpawner, pThis->Target, pWeapon))
+						{
+							R->Stack(0x4, pThis->Target);
+							return 0;
+						}
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return 0;
-
-	int weaponIndex = pExt->OriginalTarget && TechnoExt::IsValidTechno(pExt->OriginalTarget) ? pExt->OriginalTargetWeaponIndex : pThis->SelectWeapon(pThis->Target);
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon || pWeapon->IsLaser || pWeapon->Spawner)
-		return 0;
-
-	if (pThis->Target)
-		pThis->Target = pOriginalTarget;
+						auto pNewTarget = TechnoExt::FindRandomTarget(pSpawner, pTarget, pWeapon);
+						if (pNewTarget && pNewTarget != pTarget)
+						{
+							R->Stack(0x4, pNewTarget);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x736F61, UnitClass_FiringAI_RandomTarget, 0x6)
+DEFINE_HOOK(0x6B7AE3, SpawnManagerClass_Launch_RandomTarget, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
+	enum { SkipSetTarget = 0x6B7AEF };
 
-	if (pThis->RearmTimer.TimeLeft <= 0 && TechnoExt::IsValidTechno(pThis->Target))
-		TechnoExt::NewRandomTarget(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_RandomTarget_AssignTargetToAircraft, 0x6)
-{
 	GET(AircraftClass*, pThis, ECX);
 
-	SpawnManagerStatus pSpawnManagerStatus = pThis->SpawnOwner->SpawnManager->Status;
-	AirAttackStatus missionStatus = (AirAttackStatus)pThis->MissionStatus;
-
-	if (pSpawnManagerStatus != SpawnManagerStatus::Launching && missionStatus != AirAttackStatus::ValidateAZ)
-		return 0;
-
-	const auto pSpawnExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pSpawnExt)
-		return 0;
-
-	if (!TechnoExt::IsValidTechno(pSpawnExt->OriginalTarget))
+	if (!pThis || !pThis->SpawnOwner || !pThis->SpawnOwner->SpawnManager)
 		return 0;
 
 	auto pSpawner = pThis->SpawnOwner;
+	auto pManager = pSpawner->SpawnManager;
 
-	const auto pSpawnerExt = TechnoExt::ExtMap.Find(pSpawner);
-	if (!pSpawnerExt)
+	int weaponIndex = pSpawner->SelectWeapon(pManager->Target);
+	if (weaponIndex < 0)
 		return 0;
 
-	if (!pSpawner->Target || pSpawnerExt->OriginalTarget != pSpawnExt->OriginalTarget || !TechnoExt::IsValidTechno(pSpawnerExt->CurrentRandomTarget))
-	{
-		pSpawnExt->CurrentRandomTarget = nullptr;
-		pSpawnExt->OriginalTarget = nullptr;
-		pSpawnExt->OriginalTargetWeaponIndex = -1; // Really not needed in spawns, right?
-		pThis->SetTarget(nullptr);
-
-		return 0;
-	}
-
-	auto pWeapon = pSpawner->GetWeapon(pSpawnerExt->OriginalTargetWeaponIndex)->WeaponType;
+	auto pWeapon = pSpawner->GetWeapon(weaponIndex)->WeaponType;
 	if (!pWeapon)
 		return 0;
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
 		return 0;
 
-	if (!TechnoExt::IsValidTechno(pSpawnExt->CurrentRandomTarget))
-	{
-		pSpawnExt->CurrentRandomTarget = pWeaponExt->RandomTarget_Spawners_MultipleTargets ?
-			TechnoExt::FindRandomTarget(pSpawner) : pSpawnerExt->CurrentRandomTarget;
-	}
-
-	pThis->SetTarget(pSpawnExt->CurrentRandomTarget);
-	pSpawnExt->OriginalTargetWeaponIndex = pSpawnerExt->OriginalTargetWeaponIndex;
-
-	return 0x6B7AEF;
-}
-
-DEFINE_HOOK(0x6B76E3, SpawnerManagerClassAI_RandomTarget_AssignTargetToAircraft2, 0x5)
-{
-	GET(SpawnManagerClass*, pThis, ESI);
-	GET(int, index, EBX);
-
-	auto pSpawn = pThis->SpawnedNodes[index];
-
-	if (!pSpawn->Unit || pSpawn->IsSpawnMissile || pSpawn->Unit->GetCurrentMission() != Mission::Attack)
-		return 0;
-
-	const auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+	auto const pSpawnExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pSpawnExt)
 		return 0;
 
-	if (!TechnoExt::IsValidTechno(pSpawnExt->OriginalTarget))
-		return 0;
-
-	auto pSpawner = pSpawn->Unit->SpawnOwner;
-
-	const auto pSpawnerExt = TechnoExt::ExtMap.Find(pSpawner);
-	if (!pSpawnerExt)
-		return 0;
-
-	if (!pSpawner->Target || pSpawnerExt->OriginalTarget != pSpawnExt->OriginalTarget || !TechnoExt::IsValidTechno(pSpawnerExt->CurrentRandomTarget))
+	if (pWeaponExt->RandomTarget_Spawners_MultipleTargets)
 	{
-		pSpawnExt->CurrentRandomTarget = nullptr;
-		pSpawnExt->OriginalTarget = nullptr;
-		pSpawnExt->OriginalTargetWeaponIndex = -1;
+		if (!pSpawnExt->SpawnRandomTarget || !IsValidTargetInRange(pSpawner, pSpawnExt->SpawnRandomTarget, pWeapon))
+		{
+			pSpawnExt->SpawnRandomTarget = TechnoExt::FindRandomTarget(pSpawner, pManager->Target, pWeapon);
+		}
 
-		return 0;
+		if (pSpawnExt->SpawnRandomTarget)
+		{
+			pThis->SetTarget(pSpawnExt->SpawnRandomTarget);
+			return SkipSetTarget;
+		}
 	}
-
-	auto pWeapon = pSpawner->GetWeapon(pSpawnerExt->OriginalTargetWeaponIndex)->WeaponType;
-	if (!pWeapon)
-		return 0;
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
-		return 0;
-
-	if (!TechnoExt::IsValidTechno(pSpawnExt->CurrentRandomTarget))
+	else
 	{
-		pSpawnExt->CurrentRandomTarget = pWeaponExt->RandomTarget_Spawners_MultipleTargets ?
-			TechnoExt::FindRandomTarget(pSpawner) : pSpawnerExt->CurrentRandomTarget;
-		pSpawnExt->OriginalTargetWeaponIndex = pSpawnerExt->OriginalTargetWeaponIndex;
-	}
-
-	if (pSpawnExt->CurrentRandomTarget)
-	{
-		R->EAX(pSpawnExt->CurrentRandomTarget);
-		return 0x6B76EA;
+		if (IsValidTargetInRange(pSpawner, pManager->Target, pWeapon))
+		{
+			pThis->SetTarget(pManager->Target);
+			return SkipSetTarget;
+		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_RandomTarget_ClearRetargets, 0x5)
+DEFINE_HOOK(0x6B76E3, SpawnManagerClass_AI_RandomTarget, 0x5)
 {
-	// Makes technos with random targets stop targeting
-	for (auto pObj : ObjectClass::CurrentObjects)
+	enum { SkipSetTarget = 0x6B76EA };
+
+	GET(SpawnManagerClass*, pThis, ESI);
+	GET(int, index, EBX);
+
+	if (!pThis || !pThis->Owner)
+		return 0;
+
+	auto pSpawn = pThis->SpawnedNodes[index];
+	if (!pSpawn || !pSpawn->Unit || pSpawn->IsSpawnMissile)
+		return 0;
+
+	auto const pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+	if (!pSpawnExt)
+		return 0;
+
+	auto pSpawner = pThis->Owner;
+	int weaponIndex = pSpawner->SelectWeapon(pThis->Target);
+	if (weaponIndex < 0)
+		return 0;
+
+	auto pWeapon = pSpawner->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeapon)
+		return 0;
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
+	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
+		return 0;
+
+	// Reset stored target upon docking if RememberTargets is disabled or target is gone
+	if (pSpawn->Unit->GetCurrentMission() != Mission::Attack)
 	{
-		auto pTechno = abstract_cast<TechnoClass*>(pObj);
-		if (!pTechno)
-			continue;
-
-		auto pExt = TechnoExt::ExtMap.Find(pTechno);
-		if (!pExt)
-			continue;
-
-		if (pExt->CurrentRandomTarget || pExt->OriginalTarget)
+		if (!pWeaponExt->RandomTarget_Spawners_RememberTargets || !IsValidTargetInRange(pSpawner, pSpawnExt->SpawnRandomTarget, pWeapon))
 		{
-			if (SessionClass::IsMultiplayer())
-			{
-				TechnoExt::SendStopRandomTargetTarNav(pTechno); // Prevent desyncs!
-			}
-			else
-			{
-				pExt->CurrentRandomTarget = nullptr;
-				pExt->OriginalTarget = nullptr;
-				pExt->OriginalTargetWeaponIndex = -1;
-				pTechno->ForceMission(Mission::Guard);
-				pTechno->SetTarget(nullptr);
+			pSpawnExt->SpawnRandomTarget = nullptr;
+		}
+		return 0;
+	}
 
-				if (pTechno->SpawnManager)
-					pTechno->SpawnManager->ResetTarget();
+	if (pWeaponExt->RandomTarget_Spawners_MultipleTargets)
+	{
+		if (!pSpawnExt->SpawnRandomTarget || !IsValidTargetInRange(pSpawner, pSpawnExt->SpawnRandomTarget, pWeapon))
+		{
+			pSpawnExt->SpawnRandomTarget = TechnoExt::FindRandomTarget(pSpawner, pThis->Target, pWeapon);
+			if (pSpawnExt->SpawnRandomTarget)
+			{
+				pSpawn->Unit->SetTarget(pSpawnExt->SpawnRandomTarget);
 			}
 		}
-		/*// This code must me uncomented for the OpenTopped.TransferPassengerStopCommand tag's PR
-		auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-		if (pExtType->OpenTopped_TransferPassengerStopCommand)
+		if (pSpawnExt->SpawnRandomTarget)
 		{
-			if (SessionClass::IsMultiplayer())
-			{
-				TechnoExt::SendStopPassengersTar(pTechno); // Prevent desyncs!
-			}
-			else
-			{
-				for (auto pNext = pTechno->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
-				{
-					pNext->SetTarget(nullptr);
-					pNext->SpawnManager->ResetTarget();
-				}
-			}
-		}*/
+			R->EAX(pSpawnExt->SpawnRandomTarget);
+			return SkipSetTarget;
+		}
 	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4D4256, MissionMove_RandomTarget_ClearRetargets, 0x9)
-{
-	GET(FootClass*, pThis, ESI);
-
-	if (!pThis)
-		return 0;
-
-	auto pTechno = abstract_cast<TechnoClass*>(pThis);
-	if (!pTechno)
-		return 0;
-
-	auto pExt = TechnoExt::ExtMap.Find(pTechno);
-	if (!pExt)
-		return 0;
-
-	if ((pExt->CurrentRandomTarget || pExt->OriginalTarget) && pThis->CurrentMission == Mission::Move)
+	else
 	{
-		pExt->ResetRandomTarget = false;
-		pExt->CurrentRandomTarget = nullptr;
-		pExt->OriginalTarget = nullptr;
-		pExt->OriginalTargetWeaponIndex = -1;
-
-		if (pThis->SpawnManager)
-			pThis->SpawnManager->ResetTarget();
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_RandomTarget_BulletWithNewTarget, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(BulletClass*, pBullet, EAX);
-
-	if (!pBullet)
-		return 0;
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt || !pExt->CurrentRandomTarget)
-		return 0;
-
-	auto const pCurrRandTarget = pExt->CurrentRandomTarget;
-	bool isValidRandTechno = TechnoExt::IsValidTechno(pCurrRandTarget);
-	bool isValidTechno = TechnoExt::IsValidTechno(pThis->Target);
-
-	if (!isValidTechno)
-		pThis->SetTarget(nullptr);
-
-	if (!isValidRandTechno || !isValidTechno)
-	{
-		pThis->SetTarget(pExt->OriginalTarget);
-		pExt->ResetRandomTarget = false;
-		pExt->CurrentRandomTarget = nullptr;
-		pExt->OriginalTarget = nullptr;
-		pExt->OriginalTargetWeaponIndex = -1;
-
-		pBullet->Detonate(pBullet->GetCoords());
-		pBullet->Limbo();
-		pBullet->UnInit();
-
-		if (pThis->SpawnManager)
-			pThis->SpawnManager->ResetTarget();
-
-		return 0;
-	}
-
-	pBullet->Target = pExt->CurrentRandomTarget;
-
-	if (pExt->OriginalTargetWeaponIndex < 0)
-		return 0;
-
-	const auto pWeaponType = pThis->GetWeapon(pExt->OriginalTargetWeaponIndex)->WeaponType;
-	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-
-	if (!pWeaponTypeExt)
-		return 0;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FF8F1, TechnoClass_FireAt_RandomTarget_ResetTargets, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return 0;
-
-	if (pExt->OriginalTargetWeaponIndex < 0)
-		return 0;
-
-	// Distance & weapon checks
-	auto const pWeapon = pThis->GetWeapon(pExt->OriginalTargetWeaponIndex)->WeaponType;
-	if (!pWeapon)
-		return 0;
-
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
-		return 0;
-
-	if (pExt->ResetRandomTarget || (pExt->CurrentRandomTarget && !TechnoExt::IsValidTechno(pExt->CurrentRandomTarget)))
-	{
-		pExt->ResetRandomTarget = false;
-		pExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
-
-		pThis->Target = pExt->CurrentRandomTarget;
+		if (IsValidTargetInRange(pSpawner, pThis->Target, pWeapon))
+		{
+			R->EAX(pThis->Target);
+			return SkipSetTarget;
+		}
 	}
 
 	return 0;

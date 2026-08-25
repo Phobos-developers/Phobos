@@ -561,27 +561,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-bool TechnoExt::IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed)
-{
-	const auto pTechno = abstract_cast<TechnoClass*>(pObject);
-	return pTechno ? IsValidTechno(pTechno, checkIfInTransportOrAbsorbed) : false;
-}
 
-bool TechnoExt::IsValidTechno(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
-{
-	if (!pTechno)
-		return false;
-
-	bool isValid = !pTechno->Dirty
-		&& ScriptExt::IsUnitAvailable(pTechno, checkIfInTransportOrAbsorbed)
-		&& pTechno->Owner
-		&& (pTechno->WhatAmI() == AbstractType::Infantry
-			|| pTechno->WhatAmI() == AbstractType::Unit
-			|| pTechno->WhatAmI() == AbstractType::Building
-			|| pTechno->WhatAmI() == AbstractType::Aircraft);
-
-	return isValid;
-}
 
 UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 {
@@ -833,10 +813,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
-		.Process(this->OriginalTargetWeaponIndex)
-		.Process(this->OriginalTarget)
-		.Process(this->ResetRandomTarget)
-		.Process(this->CurrentRandomTarget)
 		.Process(this->FiringAnimationTimer)
 		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
@@ -851,6 +827,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->SpawnRandomTarget)
 		;
 }
 
@@ -858,8 +835,7 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
 	AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
-	AnnounceInvalidPointer(CurrentRandomTarget, ptr);
-	AnnounceInvalidPointer(OriginalTarget, ptr);
+	AnnounceInvalidPointer(this->SpawnRandomTarget, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
