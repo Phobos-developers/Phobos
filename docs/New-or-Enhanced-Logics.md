@@ -3687,10 +3687,10 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 
 ![image](_static/images/IvanBombDetonate.gif)
 
-- Now you can detonate planted Ivan bombs using custom weapon. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]               ; WeaponType
+[SOMEWARHEAD]               ; WarheadType
 IvanBomb.Detonate=true     ; Enable bomb detonation (true/false), default: false.
 ```
