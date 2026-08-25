@@ -291,8 +291,8 @@ public:
 		Valueable<bool> NoReload_Temporal;
 		Valueable<double> VeteranReload;
 		Nullable<double> VeteranEmptyReload;
-		Valueable<bool> VeteranRange;
-		Valueable<bool> VeteranCritChance;
+		Valueable<double> VeteranRange;
+		Valueable<double> VeteranCritChance;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
