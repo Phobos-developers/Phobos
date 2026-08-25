@@ -3230,3 +3230,6 @@ msgstr "**Nuke** - 升级时调整装填速率"
 msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
 msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
 
+msgid "Custom animation when selling TechnoTypes"
+msgstr "出售 TechnoType 时播放自定义动画"
+

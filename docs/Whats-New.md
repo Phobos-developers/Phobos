@@ -421,6 +421,8 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [Custom animation when selling TechnoTypes](New-or-Enhanced-Logics.md#custom-animation-when-selling-technotypes) via `SellingAnim` in `artmd.ini` (by frg2089)
+- [Directly sellable TechnoTypes](New-or-Enhanced-Logics.md#directly-sellable-technotypes) via `Unsellable.Direct` (by frg2089)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

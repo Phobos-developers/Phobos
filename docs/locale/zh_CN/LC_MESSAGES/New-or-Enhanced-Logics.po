@@ -4153,6 +4153,24 @@ msgid ""
 " in consistency with buildings' `SellSound`."
 msgstr "原版游戏中出售载具的 `SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
 
+msgid "Custom animation when selling TechnoTypes"
+msgstr "出售 TechnoType 时播放自定义动画"
+
+msgid "`SellingAnim` can be used to play an additional custom animation when a TechnoType is sold."
+msgstr "`SellingAnim` 可用于在出售 TechnoType 时播放额外的自定义动画。"
+
+msgid "This tag must be defined in the corresponding image section in `artmd.ini`."
+msgstr "此标签必须定义在 `artmd.ini` 中对应的图像段内。"
+
+msgid "Using this tag for BuildingTypes is not recommended. Buildings already play the game's built-in reversed `Buildup` animation when sold, so this feature is unnecessary for them."
+msgstr "不建议将此标签用于建筑类型。建筑出售时已经会播放游戏内置的倒放 `Buildup` 动画，因此无需为建筑使用此功能。"
+
+msgid "Directly sellable TechnoTypes"
+msgstr "可直接出售的 TechnoType"
+
+msgid "`Unsellable.Direct` can be set to true to directly allow the TechnoType to be sold and ensure that the sell cursor is displayed in sell mode."
+msgstr "将 `Unsellable.Direct` 设置为 true 可以直接允许该 TechnoType 被出售，并确保在出售模式下显示出售光标。"
+
 msgid "Disabling fallback to (Elite)Secondary weapon"
 msgstr "禁用副武器自动推算"
 

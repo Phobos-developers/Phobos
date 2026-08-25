@@ -1832,6 +1832,31 @@ SellSound=      ; Sound entry, default to [AudioVisual] -> SellSound
 Vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
 ```
 
+### Custom animation when selling TechnoTypes
+
+- `SellingAnim` can be used to play an additional custom animation when a TechnoType is sold.
+- This tag must be defined in the corresponding image section in `artmd.ini`.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]       ; TechnoType image section
+SellingAnim=       ; AnimationType
+```
+
+```{note}
+Using this tag for BuildingTypes is not recommended. Buildings already play the game's built-in reversed `Buildup` animation when sold, so this feature is unnecessary for them.
+```
+
+### Directly sellable TechnoTypes
+
+- `Unsellable.Direct` can be set to true to directly allow the TechnoType to be sold and ensure that the sell cursor is displayed in sell mode.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+Unsellable.Direct=false  ; boolean
+```
+
 ### Disabling fallback to (Elite)Secondary weapon
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
