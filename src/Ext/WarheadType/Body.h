@@ -283,6 +283,8 @@ public:
 	Nullable<bool> PreventScatter;
 
 	Valueable<bool> IvanBomb_Detonate;
+	Valueable<bool> IvanBomb_Detonate_InvokerOnly;
+	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectsType;
 
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
@@ -577,6 +579,8 @@ public:
 		, Ammo { 0 }
 
 		, IvanBomb_Detonate { false }
+		, IvanBomb_Detonate_InvokerOnly { true }
+		, IvanBomb_Detonate_AffectsType {}
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

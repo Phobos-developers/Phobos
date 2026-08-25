@@ -578,16 +578,26 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_IvanBombDetonate, 0x7)
 
 	if(auto pBomb = pThis->AttachedBomb)
 	{
-		if(auto pSourceExt = TechnoExt::TryFetch(pSource))
+		if(auto pSourceExt = TechnoExt::Fetch(pSource))
 		{
 			if(auto pWHExt = WarheadTypeExt::TryFetch(pWH))
-				{
-				if(!pWHExt->IvanBomb_Detonate
-				   || pBomb->Owner != pSource)
-				{
+			{
+				if(!pWHExt->IvanBomb_Detonate)
 					return 0;
+
+				bool CanAffects = pWHExt->IvanBomb_Detonate_AffectsType.Contains(pThis->GetTechnoType()) 
+								  || pWHExt->IvanBomb_Detonate_AffectsType.empty();
+				
+				if(pWHExt->IvanBomb_Detonate_InvokerOnly)
+				{
+					if(pBomb->Owner == pSource && CanAffects)
+						pBomb->Detonate();
 				}
-				pBomb->Detonate();
+				else
+				{
+					if(CanAffects)
+						pBomb->Detonate();
+				}
 			}
 		}
 	}
