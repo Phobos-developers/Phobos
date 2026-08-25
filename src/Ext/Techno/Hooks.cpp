@@ -1375,7 +1375,7 @@ DEFINE_HOOK(0x7037F7, TechnoClass_Cloak_CloakAnim, 0x5)
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	const auto& cloakAnims = !pTypeExt->CloakAnims.empty() ? pTypeExt->CloakAnims : RulesExt::Global()->CloakAnims;
-	AnimExt::CreateRandomAnim(cloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+	AnimExt::CreateRandomAnim(cloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
 	return 0;
 }
 
@@ -1385,7 +1385,7 @@ DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	const auto& decloakAnims = !pTypeExt->DecloakAnims.empty() ? pTypeExt->DecloakAnims : RulesExt::Global()->DecloakAnims;
-	AnimExt::CreateRandomAnim(decloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+	AnimExt::CreateRandomAnim(decloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
 	return 0;
 }
 
