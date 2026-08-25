@@ -1184,6 +1184,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
+	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
+	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1805,6 +1808,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
+			
+		.Process(this->DefaultToGuardArea_Modes)
+		.Process(this->DefaultToGuardArea_AIModes)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

@@ -750,6 +750,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
   - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
   - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
