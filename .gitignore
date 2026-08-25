@@ -8,6 +8,7 @@ Debug
 .cproject
 .project
 *.aps
+*.log
 
 Nightly/
 
@@ -18,11 +19,16 @@ docs/locale/.doctrees/
 *.pot
 *.mo
 
-/.vscode/c_cpp_properties.json
-/.vscode/cspell.json
-/.vscode/settings.json
+/.vscode
 
 build
 cmake-*
 out
 .idea
+
+# Python virtual environment for docs
+.venv/
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]

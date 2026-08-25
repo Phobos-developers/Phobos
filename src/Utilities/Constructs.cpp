@@ -136,7 +136,7 @@ PhobosPCXFile& PhobosPCXFile::operator = (const char* pFilename)
 
 BSurface* PhobosPCXFile::GetSurface(BytePalette* pPalette) const
 {
-	return this->Exists() ? PCX::Instance->GetSurface(this->filename, pPalette) : nullptr;
+	return this->Exists() ? PCX::Instance.GetSurface(this->filename, pPalette) : nullptr;
 }
 
 bool PhobosPCXFile::Exists() const
@@ -146,7 +146,7 @@ bool PhobosPCXFile::Exists() const
 		this->checked = true;
 		if (this->filename)
 		{
-			auto pPCX = &PCX::Instance();
+			auto pPCX = &PCX::Instance;
 			this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
 		}
 	}
@@ -261,7 +261,7 @@ bool TheaterSpecificSHP::Read(INI_EX& parser, const char* pSection, const char* 
 		GeneralUtils::ApplyTheaterSuffixToString(pValue);
 
 		std::string Result = pValue;
-		if (!strstr(pValue, ".shp"))
+		if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 			Result += ".shp";
 
 		if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))

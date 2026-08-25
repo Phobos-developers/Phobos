@@ -1,15 +1,13 @@
 #pragma once
 
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Savegame.h>
-
-#include <BulletClass.h>
 
 enum class TrajectoryFlag : int
 {
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
+	Parabola = 4
 };
 
 enum class TrajectoryCheckReturnType : int
@@ -32,6 +30,11 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
 	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
+	static std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet, Leptons trajectoryProximityRange);
+private:
+	static std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
+
+public:
 	Valueable<double> Trajectory_Speed { 100.0 };
 };
 
@@ -48,6 +51,7 @@ public:
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
+	virtual bool ShouldSkipBridgeCheck() const { return false; }
 };
 
 /*

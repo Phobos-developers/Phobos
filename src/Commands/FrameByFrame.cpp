@@ -1,10 +1,7 @@
 #include "FrameByFrame.h"
 
-#include <SessionClass.h>
-#include <TacticalClass.h>
+#include <Utilities/Debug.h>
 #include <Utilities/GeneralUtils.h>
-
-#include <Unsorted.h>
 
 size_t FrameByFrameCommandClass::FrameStepCount = 0;
 bool FrameByFrameCommandClass::FrameStep = false;
@@ -51,11 +48,11 @@ bool FrameByFrameCommandClass::FrameStepMainLoop()
 
 		if (Game::IsFocused && Game::SpecialDialog == 0)
 		{
-			MapClass::Instance->MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
 
 			DWORD input;
 			int x, y;
-			MapClass::Instance->GetInputAndUpdate(input, x, y);
+			MapClass::Instance.GetInputAndUpdate(input, x, y);
 			if (input != NULL)
 			{
 				Game::KeyboardProcess(input);
@@ -65,7 +62,7 @@ bool FrameByFrameCommandClass::FrameStepMainLoop()
 					Game::SpecialDialog = 1;
 			}
 
-			MapClass::Instance->Render();
+			MapClass::Instance.Render();
 			TacticalClass::Instance->Update();
 		}
 	}

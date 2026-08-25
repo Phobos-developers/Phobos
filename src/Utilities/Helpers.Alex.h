@@ -36,11 +36,12 @@
 
 #include <AircraftTrackerClass.h>
 #include <BuildingClass.h>
-#include <BuildingTypeClass.h>
 #include <CellSpread.h>
 #include <Unsorted.h>
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
+
+#include <Ext/WarheadType/Body.h>
 
 #include <set>
 #include <functional>
@@ -90,7 +91,7 @@ namespace Helpers
 		inline int getCappedDuration(int CurrentValue, int Duration, int Cap)
 		{
 			// Usually, the new duration is just added.
-			int ProposedDuration = CurrentValue + Duration;
+			const int ProposedDuration = CurrentValue + Duration;
 
 			if (Duration > 0)
 			{
@@ -103,7 +104,7 @@ namespace Helpers
 				else if (Cap > 0)
 				{
 					// Cap the duration.
-					int cappedValue = std::min(ProposedDuration, Cap);
+					const int cappedValue = std::min(ProposedDuration, Cap);
 					return std::max(CurrentValue, cappedValue);
 				}
 				else
@@ -119,11 +120,128 @@ namespace Helpers
 			}
 		}
 
-		//! Gets a list of all units in range of a cell spread weapon.
+
+#pragma region GetCellSpreadItems
+
+		//! Gets a list of all technos in range.
+		/*!
+		    Contains actual implementation of getCellSpreadItems,
+			can have additional params over it to retain
+			the original's function signature.
+			
+			\param coords The location the projectile detonated.
+			\param spread The range to find items in.
+			\param includeInAir Include items that are currently InAir.
+			\param ignoreHeight Ignore height checks.
+		*/
+		inline DistinctCollector<TechnoClass*> getCellSpreadItemsExt(
+			CoordStruct const& coords, double const spread,
+			bool const includeInAir, bool const ignoreHeight)
+		{
+			// set of possibly affected objects. every object can be here only once.
+			DistinctCollector<TechnoClass*> set;
+			double const spreadMult = spread * Unsorted::LeptonsPerCell;
+			double const spreadMultSq = spreadMult * spreadMult;
+			double const threshold = spreadMult + Unsorted::LevelHeight;
+			double const thresholdSq = threshold * threshold;
+
+			// the quick way. only look at stuff residing on the very cells we are affecting.
+			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
+			auto const range = static_cast<size_t>(spread + 0.99);
+			for (CellSpreadEnumerator it(range); it; ++it)
+			{
+				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
+
+				if (!pCell)
+					continue;
+
+				bool const isCenter = pCell->MapCoords == cellCoords;
+
+				for (NextObject obj(pCell->GetContent()); obj; ++obj)
+				{
+					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
+					{
+						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
+						if (pTechno->WhatAmI() == AbstractType::Building)
+						{
+							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+								continue;
+
+							auto cellCenterCoords = pCell->GetCenterCoords();
+
+							// Ignore Z coordinate / height.
+							if (ignoreHeight)
+								cellCenterCoords.Z = coords.Z;
+
+							// If this is the center cell, there's some different behaviour.
+							if (isCenter)
+							{
+								double distanceSq = 0.0;
+
+								if (coords.Z - cellCenterCoords.Z > Unsorted::LevelHeight)
+									distanceSq = cellCenterCoords.DistanceFromSquared(coords);
+
+								if (distanceSq > thresholdSq)
+									continue;
+							}
+							else if (cellCenterCoords.DistanceFromSquared(coords) > spreadMultSq)
+							{
+								continue;
+							}
+						}
+						else if (pTechno->Location.DistanceFromSquared(coords) > spreadMultSq)
+						{
+							continue;
+						}
+
+						set.insert(pTechno);
+					}
+				}
+			}
+
+			// flying objects are not included normally
+			// May 22, 2024 - Starkku: Reimplemented using AircraftTrackerClass.
+			if (includeInAir)
+			{
+				auto const airTracker = &AircraftTrackerClass::Instance;
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(coords), Game::F2I(spread));
+
+				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
+				{
+					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
+					{
+						auto location = pTechno->Location;
+
+						// Ignore Z coordinate / height.
+						if (ignoreHeight)
+							location.Z = coords.Z;
+
+						double distanceSq = location.DistanceFromSquared(coords);
+
+						// reduce the distance for flying aircraft
+						if (pTechno->WhatAmI() == AbstractType::Aircraft)
+							distanceSq *= 0.25; // 0.5 * 0.5
+
+						if (distanceSq <= spreadMultSq)
+							set.insert(pTechno);
+					}
+				}
+			}
+
+			return set;
+		}
+
+		//! Gets a list of all technos in range.
 		/*!
 			CellSpread is handled as described in
 			http://modenc.renegadeprojects.com/CellSpread.
-
+			
+			NOTE: Function signature for this has to stay the same
+			here due to Ares calls being redirected to this.
+			
+			Use getCellSpreadItemsExt() directly to get additional
+			features from Phobos WarheadTypeExt.
+			
 			\param coords The location the projectile detonated.
 			\param spread The range to find items in.
 			\param includeInAir Include items that are currently InAir.
@@ -140,75 +258,10 @@ namespace Helpers
 			CoordStruct const& coords, double const spread,
 			bool const includeInAir = false)
 		{
-			// set of possibly affected objects. every object can be here only once.
-			DistinctCollector<TechnoClass*> set;
-			double const spreadMult = spread * Unsorted::LeptonsPerCell;
-
-			// the quick way. only look at stuff residing on the very cells we are affecting.
-			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
-			auto const range = static_cast<size_t>(spread + 0.99);
-			for (CellSpreadEnumerator it(range); it; ++it)
-			{
-				auto const pCell = MapClass::Instance->TryGetCellAt(*it + cellCoords);
-				if (!pCell)continue;
-				bool isCenter = pCell->MapCoords == cellCoords;
-				for (NextObject obj(pCell->GetContent()); obj; ++obj)
-				{
-					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
-					{
-						// Starkku: Buildings need their distance from the origin coords checked at cell level.
-						if (pTechno->WhatAmI() == AbstractType::Building)
-						{
-							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-								continue;
-							auto const cellCenterCoords = pCell->GetCenterCoords();
-							double dist = cellCenterCoords.DistanceFrom(coords);
-
-							// If this is the center cell, there's some different behaviour.
-							if (isCenter)
-							{
-								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
-									dist = 0;
-								else
-									dist -= Unsorted::LevelHeight;
-							}
-
-							if (dist > spreadMult)
-								continue;
-						}
-						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
-						{
-							continue;
-						}
-
-						set.insert(pTechno);
-					}
-				}
-			}
-
-			// flying objects are not included normally
-			// Starkku: Reimplemented using AircraftTrackerClass.
-			if (includeInAir)
-			{
-				auto const airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
-
-				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
-				{
-					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
-					{
-						auto dist = pTechno->Location.DistanceFrom(coords);
-						// reduce the distance for flying aircraft
-						if (pTechno->WhatAmI() == AbstractType::Aircraft)
-							dist *= 0.5;
-						if (dist <= spreadMult)
-							set.insert(pTechno);
-					}
-				}
-			}
-
-			return set;
+			return getCellSpreadItemsExt(coords, spread, includeInAir, false);
 		}
+
+#pragma endregion
 
 		//! Invokes an action for every cell or every object contained on the cells.
 		/*!

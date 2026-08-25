@@ -3,8 +3,6 @@ name: Nightly Build
 on:
   push:
     branches:
-    - master
-    - main
     - develop
 
 env:
@@ -14,16 +12,14 @@ env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: DevBuild
-  # GIT_COMMIT: $(git rev-parse --short "$GITHUB_SHA")
-  # GIT_BRANCH: ${GITHUB_REF#refs/heads/}
+  BUILD_CONFIGURATION: Release
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
 
@@ -32,3 +28,4 @@ jobs:
       with:
         sln-path: ${{env.SOLUTION_FILE_PATH}}
         build-config: ${{env.BUILD_CONFIGURATION}}
+        build-type: NIGHTLY
