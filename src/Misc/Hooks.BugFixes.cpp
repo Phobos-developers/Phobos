@@ -3188,7 +3188,30 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
+	{
+		if (auto pTechnoExt = TechnoExt::TryFetch(pTechno))
+			if (auto pAnimType = pTechnoExt->TypeExtData->SellingAnim.Get())
+			{
+				auto colorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
+				auto location = pTechno->Location;
+				if (rtti == AbstractType::Infantry)
+				{
+					location.X -= 128;
+					location.Y -= 128;
+				}
+				else
+				{
+					location.X &= ~0xFF;
+					location.Y &= ~0xFF;
+				}
+
+				auto anim = GameCreate<AnimClass>(pAnimType, location);
+				anim->LightConvertIndex = colorScheme->ArrayIndex;
+				anim->LightConvert = colorScheme->LightConvert;
+			}
+		
 		pTechno->Sell(-1);
+	}
 
 	return SkipGameCode;
 }

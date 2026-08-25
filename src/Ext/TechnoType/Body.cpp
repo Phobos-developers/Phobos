@@ -1294,6 +1294,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exArtINI(pArtINI);
 	auto pArtSection = pThis->ImageFile;
 
+	this->SellingAnim.Read(exArtINI, pArtSection, "SellingAnim");
+
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
 	ValueableVector<int> shadow_indices;
@@ -1685,6 +1687,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 		.Process(this->MakesWake)
+
+		.Process(this->SellingAnim)
 
 		.Process(this->CrashSpin_Multiplier)
 
