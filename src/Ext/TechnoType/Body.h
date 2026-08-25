@@ -429,8 +429,8 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
-	Nullable<AnimTypeClass*> CloakAnim;
-	Nullable<AnimTypeClass*> DecloakAnim;
+	ValueableVector<AnimTypeClass*> CloakAnims;
+	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
 	// Ares 0.2
@@ -834,9 +834,9 @@ public:
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
 
-		, CloakAnim{}
-		, DecloakAnim{}
-		, Cloak_KickOutParasite{}
+		, CloakAnims {}
+		, DecloakAnims {}
+		, Cloak_KickOutParasite {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

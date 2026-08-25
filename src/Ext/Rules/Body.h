@@ -546,8 +546,8 @@ public:
 		Valueable<bool> KeepAlive_Defenses;
 		Valueable<bool> AutoTarget_InsignificantWhenMindControlled;
 
-		Valueable<AnimTypeClass*> CloakAnim;
-		Valueable<AnimTypeClass*> DecloakAnim;
+		ValueableVector<AnimTypeClass*> CloakAnims;
+		ValueableVector<AnimTypeClass*> DecloakAnims;
 		Valueable<bool> Cloak_KickOutParasite;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -1033,9 +1033,9 @@ public:
 
 			, AutoTarget_InsignificantWhenMindControlled { true }
 
-			, CloakAnim{ nullptr }
-			, DecloakAnim{ nullptr }
-			, Cloak_KickOutParasite{ true }
+			, CloakAnims {}
+			, DecloakAnims {}
+			, Cloak_KickOutParasite { true }
 		{ }
 
 		virtual ~ExtData() = default;

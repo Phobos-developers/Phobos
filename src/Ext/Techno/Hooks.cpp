@@ -1374,16 +1374,8 @@ DEFINE_HOOK(0x7037F7, TechnoClass_Cloak_CloakAnim, 0x5)
 	GET(TechnoClass* const, pThis, ESI);
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	if (const auto pAnimType = pTypeExt->CloakAnim.Get(RulesExt::Global()->CloakAnim))
-	{
-		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
-		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
-			AnimExt::Fetch(pAnim)->SetInvoker(pThis);
-		}
-	}
-
+	const auto& cloakAnims = !pTypeExt->CloakAnims.empty() ? pTypeExt->CloakAnims : RulesExt::Global()->CloakAnims;
+	AnimExt::CreateRandomAnim(cloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	return 0;
 }
 
@@ -1392,16 +1384,8 @@ DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-
-	if (const auto pAnimType = pTypeExt->DecloakAnim.Get(RulesExt::Global()->DecloakAnim))
-	{
-		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
-		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
-			AnimExt::Fetch(pAnim)->SetInvoker(pThis);
-		}
-	}
-
+	const auto& decloakAnims = !pTypeExt->DecloakAnims.empty() ? pTypeExt->DecloakAnims : RulesExt::Global()->DecloakAnims;
+	AnimExt::CreateRandomAnim(decloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	return 0;
 }
 

@@ -1184,8 +1184,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
-	this->CloakAnim.Read(exINI, pSection, "CloakAnim");
-	this->DecloakAnim.Read(exINI, pSection, "DecloakAnim");
+	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
+	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
 
 	// Ares 0.2
@@ -1810,8 +1810,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
 
-		.Process(this->CloakAnim)
-		.Process(this->DecloakAnim)
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
 
 		// Ares 0.2

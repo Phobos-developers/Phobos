@@ -2555,17 +2555,17 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]
-CloakAnim=                   ; Animation
-DecloakAnim=                 ; Animation
-Cloak.KickOutParasite=       ; boolean
+[General]
+Cloak.KickOutParasite=true    ; boolean
 
 [AudioVisual]
-CloakAnim=                   ; Animation
-DecloakAnim=                 ; Animation
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
 
-[CombatDamage]
-Cloak.KickOutParasite=true   ; boolean
+[SOMETECHNO]
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
 ### Custom hover vehicles shutdown drowning death
