@@ -748,7 +748,7 @@ double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 	auto const pExt = TechnoExt::Fetch(pFirer);
 
 	if (TechnoExt::HasAdditionalAbility(pFirer, AdditionalAbility::CritChance))
-		critChance = GeneralUtils::SafeMultiply(critChance, Math::max(pExt->TypeExtData->VeteranCritChance.Get(RulesExt::Global()->VeteranCritChance), 0.0));
+		critChance = critChance * Math::max(pExt->TypeExtData->VeteranCritChance.Get(RulesExt::Global()->VeteranCritChance), 0);
 
 	if (!pExt->AE.HasCritModifiers)
 		return critChance;
