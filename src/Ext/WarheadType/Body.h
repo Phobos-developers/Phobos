@@ -623,6 +623,7 @@ private:
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
+	void IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>

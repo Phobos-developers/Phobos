@@ -235,7 +235,10 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
-
+		
+	if(this->IvanBomb_Detonate)
+		this->IvanBombDetonate(pOwner,pTarget);
+		
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
@@ -930,4 +933,27 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
+{
+	if (!pOwner)
+        return; 
+
+	if(auto pBomb = pTarget->AttachedBomb)
+	{
+		bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
+						  || this->IvanBomb_Detonate_AffectsType.Contains(pTarget->GetTechnoType()); 
+				
+		if(this->IvanBomb_Detonate_InvokerOnly)
+		{
+			if(pBomb->Owner == pOwner && CanAffects)
+				pBomb->Detonate();
+		}
+		else
+		{
+			if(CanAffects)
+				pBomb->Detonate();
+		}
+	}
 }

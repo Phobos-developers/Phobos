@@ -521,6 +521,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
 		|| this->Ammo
+		|| this->IvanBomb_Detonate
 	);
 
 	char tempBuffer[32];
