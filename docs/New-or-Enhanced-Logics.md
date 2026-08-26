@@ -1835,7 +1835,6 @@ Vanilla game played vehicles' `SellSound` globally. This has been changed in con
 ### Custom animation when selling TechnoTypes
 
 - `SellingAnim` can be used to play an additional custom animation when a TechnoType is sold.
-- This tag must be defined in the corresponding image section in `artmd.ini`.
 
 In `artmd.ini`:
 ```ini
