@@ -537,6 +537,7 @@ namespace DrawTimerTemp
 {
 	bool AdjustLocation = false;
 	bool IsPercentage = false;
+	bool IsDigit = false;
 	double Percentage = 0.0;
 	int TimeLeft = 0;
 }
@@ -552,6 +553,54 @@ DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
 DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 {
 	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	DrawTimerTemp::IsPercentage = false;
+	DrawTimerTemp::IsDigit = false;
+
+	switch (ScenarioExt::Global()->MissionTimer_Type)
+	{
+	case 1:
+	{
+		const int initTime = ScenarioClass::Instance->InitTime;
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::Percentage = initTime > 0 ? static_cast<double>(DrawTimerTemp::TimeLeft) / initTime : 1.0;
+		else
+			DrawTimerTemp::Percentage = initTime > 0 ? static_cast<double>(initTime - DrawTimerTemp::TimeLeft) / initTime : 1.0;
+		DrawTimerTemp::IsPercentage = true;
+		break;
+	}
+	case 2:
+	{
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::TimeLeft = ScenarioClass::Instance->InitTime - DrawTimerTemp::TimeLeft;
+		DrawTimerTemp::IsDigit = true;
+		break;
+	}
+	case 3:
+	{
+		DrawTimerTemp::IsDigit = true;
+		const auto& variables = ScenarioExt::Global()->Variables[0];
+		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
+		if (it != variables.end())
+			DrawTimerTemp::TimeLeft = it->second.Value;
+		break;
+	}
+	case 4:
+	{
+		DrawTimerTemp::IsDigit = true;
+		const auto& variables = ScenarioExt::Global()->Variables[1];
+		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
+		if (it != variables.end())
+			DrawTimerTemp::TimeLeft = it->second.Value;
+		break;
+	}
+	default:
+	{
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::TimeLeft = ScenarioClass::Instance->InitTime - DrawTimerTemp::TimeLeft;
+		break;
+	}
+	}
+
 	return 0;
 }
 
@@ -593,6 +642,8 @@ static int __fastcall TacticalClass_DrawTimer_swprintf(wchar_t* pBuffer, size_t 
 
 	if (IsPercentage)
 		return swprintf(pBuffer, bufferCount, L"%.2lf%s", Percentage * 100, L"%%");
+	else if (IsDigit)
+		return swprintf(pBuffer, bufferCount, L"%d", TimeLeft);
 	else
 		return swprintf(pBuffer, bufferCount, L"%02d:%02d", TimeLeft / 60 % 60, TimeLeft % 60);
 }

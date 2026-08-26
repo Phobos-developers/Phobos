@@ -716,6 +716,32 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `521` Set mission timer type
+
+- Set the method to display mission timer, the variable that should be displayed and if the timer should be displayed reversedly.
+  - `[Basic] -> InitTime` can be adjusted by `Timer Set...` action.
+  - If the local/global variable does not exist, 0 will be displayed.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],521,0,0,[ShowTimerMethod],[VariableIndex],[ReverseTimer],0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*                                  |
+| :---------: | :--------------------------------------------: |
+| 0           | Show normal timer                              |
+| 1           | show percentage based on `[Basic] -> InitTime` |
+| 2           | Show left timer in digit form                  |
+| 3           | Show value of the selected local variable      |
+| 4           | Show value of the selected global variable     |
+
+```{note}
+This won't affect how the global mission timer really ticks, so it'll still end after `[Basic] -> InitTime` amount of time.
+```
+
 ### `600` Configure Drop Crate
 
 - Set or overwrite the `DropCrate` of the affected objects.
