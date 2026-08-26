@@ -33,6 +33,10 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 	this->Type = pType;
 	this->SetHP(pType->InitialStrength.Get(pType->Strength));
 	this->TechnoID = pTechno->GetTechnoType();
+
+	if (pTechno->AbstractFlags & AbstractFlags::Foot)
+		this->BracketDelta = this->TechnoID->PixelSelectionBracketDelta + pType->BracketDelta - 3;
+
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -190,7 +194,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
 		return damage;
 
-	auto const pTechnoType = pTechno->GetTechnoType();
+	auto const pTechnoType = this->TechnoID;
 
 	if (pTechnoType->Immune)
 		return damage;
@@ -683,6 +687,9 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType)
 	}
 
 	this->TechnoID = pTechnoType;
+
+	// BracketDelta
+	this->BracketDelta = pTechnoType->PixelSelectionBracketDelta + pNewType->BracketDelta - 3;
 }
 
 void ShieldClass::SelfHealing()
@@ -746,17 +753,6 @@ void ShieldClass::SelfHealing()
 			}
 		}
 	}
-}
-
-int ShieldClass::GetPercentageAmount(double iStatus)
-{
-	if (iStatus == 0)
-		return 0;
-
-	if (iStatus >= -1.0 && iStatus <= 1.0)
-		return (int)std::round(this->Type->Strength * iStatus);
-
-	return (int)std::trunc(iStatus);
 }
 
 void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
@@ -938,15 +934,6 @@ void ShieldClass::CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType
 	}
 }
 
-void ShieldClass::KillAnim()
-{
-	if (auto& pAnim = this->IdleAnim)
-	{
-		pAnim->UnInit();
-		pAnim = nullptr;
-	}
-}
-
 void ShieldClass::UpdateIdleAnim(ShieldTypeClass* pType, double ratio)
 {
 	if (this->AreAnimsHidden)
@@ -1003,7 +990,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
 		return;
 
-	Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
+	Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, this->TechnoID, BuildingSelectBracketPosition::Top);
 	selectBracketPosition.X -= 6;
 	selectBracketPosition.Y -= 3;
 	const int totalLength = DrawShieldBar_PipAmount(length);
@@ -1042,17 +1029,19 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 	}
 }
 
-void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound, bool isInfantry)
 {
-	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+	const auto pType = this->Type;
+
+	if (this->HP <= 0 && pType->Pips_HideIfNoStrength)
 		return;
 
-	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
-	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
+	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top), isInfantry);
+	const auto pipBoard = pType->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame = pipBoard->Frames > 2 ? 2 : 0;
 
 	position.X -= 1;
-	position.Y += this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta - 3;
+	position.Y += this->BracketDelta;
 
 	if (this->Techno->IsSelected)
 	{
@@ -1084,8 +1073,9 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
-	const int strength = this->Type->Strength.Get();
-	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
+	const auto pType = this->Type;
+	const int strength = pType->Strength.Get();
+	const auto pipsShield = isBuilding ? pType->Pips_Building.Get() : pType->Pips.Get();
 
 	const auto shieldPip = pipsShield.X != -1
 		? pipsShield
@@ -1093,9 +1083,9 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 			? RulesExt::Global()->Pips_Shield_Building.Get()
 			: RulesExt::Global()->Pips_Shield.Get());
 
-	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
+	if (this->HP > pType->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
-	else if (this->HP > this->Type->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
+	else if (this->HP > pType->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
 		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
 	else if (shieldPip.Z != -1 || shieldPip.X != -1)
 		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;
@@ -1128,12 +1118,4 @@ ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const
 	}
 
 	return pShieldType->Armor.Get();
-}
-
-void ShieldClass::SetAnimationVisibility(bool visible)
-{
-	if (!this->AreAnimsHidden && !visible)
-		this->KillAnim();
-
-	this->AreAnimsHidden = !visible;
 }

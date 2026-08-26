@@ -536,14 +536,15 @@ public:
 		Valueable<bool> NoAlphaImageOnBuildup;
 
 		Valueable<bool> Warhead_PreventScatter;
-		
+
+		Valueable<bool> ProjectileRange_ApplyModifiers;
+
 		Valueable<bool> KeepAlive_Infantry;
 		Valueable<bool> KeepAlive_Units;
 		Valueable<bool> KeepAlive_Aircraft;
 		Valueable<bool> KeepAlive_Buildings;
 		Valueable<bool> KeepAlive_Defenses;
-
-		Valueable<bool> ProjectileRange_ApplyModifiers;
+		Valueable<bool> AutoTarget_InsignificantWhenMindControlled;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -1025,6 +1026,8 @@ public:
 			, KeepAlive_Aircraft { false }
 			, KeepAlive_Buildings { true }
 			, KeepAlive_Defenses { true }
+
+			, AutoTarget_InsignificantWhenMindControlled { true }
 		{ }
 
 		virtual ~ExtData() = default;

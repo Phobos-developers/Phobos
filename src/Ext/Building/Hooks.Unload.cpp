@@ -94,7 +94,10 @@ DEFINE_HOOK(0x730B09, DeployCommandClass_Execute_BuildingDeploy, 0x5)
 		const auto pHouse = pBuilding->Owner;
 
 		if (!pHouse->IsControlledByCurrentPlayer()
-			|| !pType->DeployFire || pType->Factory != AbstractType::None || pType->GapGenerator)
+			|| (!pType->DeployFire
+				&& pBuilding->Passengers.NumPassengers <= 0
+				&& !BuildingTypeExt::Fetch(pType)->Tunnel)
+			|| pType->Factory != AbstractType::None || pType->GapGenerator)
 		{
 			continue;
 		}
