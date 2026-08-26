@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <FootClass.h>
 #include <GameOptionsClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
@@ -391,13 +392,17 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 DEFINE_HOOK(0x441553, BuildingClass_Unlimbo_AddOwned, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
-	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
-	const auto pOwnerExt = HouseExt::Fetch(pThis->Owner);
-	const auto pBuildingExt = BuildingExt::Fetch(pThis);
+	if (!pThis)
+		return 0;
 
-	pBuildingExt->InitializeResourceProductions();
+	const auto pTypeExt = BuildingTypeExt::TryFetch(pThis->Type);
+	const auto pOwnerExt = HouseExt::TryFetch(pThis->Owner);
+	const auto pBuildingExt = BuildingExt::TryFetch(pThis);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (pBuildingExt)
+		pBuildingExt->InitializeResourceProductions();
+
+	if (pTypeExt && pOwnerExt && !pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pOwnerExt->PowerPlantEnhancers.push_back(pThis);
 
 	return 0;
@@ -1402,6 +1407,159 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 
 	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region Repair
+
+DEFINE_HOOK(0x450885, BuildingClass_Repair_CheckAndSpend, 0x23)
+{
+	enum { CanRepair = 0x4508A8, StopRepair = 0x4509B4 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(int, moneyStepCost, EDI);
+	GET(int, repairHP, EBP);
+
+	const auto pOwner = pThis->Owner;
+	if (!pOwner)
+		return StopRepair;
+
+	const int availableMoney = pOwner->Available_Money();
+	if (moneyStepCost > availableMoney)
+		return StopRepair;
+
+	const auto pType = pThis->Type;
+	const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
+	const auto pHouseExt = HouseExt::TryFetch(pOwner);
+
+	std::vector<std::pair<size_t, int>> resDues;
+	if (pTypeExt && pHouseExt && !pTypeExt->ResourceCosts.empty() && pType && pType->Strength > 0 && repairHP > 0)
+	{
+		const double repairFactor = (RulesClass::Instance && RulesClass::Instance->RepairPercent > 0.0)
+			? RulesClass::Instance->RepairPercent
+			: 0.5;
+
+		for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+		{
+			const int totalResCost = pTypeExt->ResourceCosts[i];
+			if (totalResCost > 0)
+			{
+				const double stepCostExact = (static_cast<double>(totalResCost) * repairFactor * repairHP) / static_cast<double>(pType->Strength);
+				const int resCost = std::max(1, static_cast<int>(std::round(stepCostExact)));
+
+				if (!pHouseExt->CanAffordResource(static_cast<int>(i), resCost))
+				{
+					return StopRepair;
+				}
+
+				resDues.push_back(std::make_pair(i, resCost));
+			}
+		}
+	}
+
+	// Afforded - Deduct money
+	if (moneyStepCost > 0)
+	{
+		pOwner->TakeMoney(moneyStepCost);
+	}
+
+	// Deduct custom resources
+	if (pHouseExt && !resDues.empty())
+	{
+		for (const auto& due : resDues)
+		{
+			pHouseExt->UpdateResourceAmount(static_cast<int>(due.first), -due.second);
+		}
+	}
+
+	return CanRepair;
+}
+
+static void DeductUnitRepairCustomResources(BuildingClass* pDepot)
+{
+	if (!pDepot || !pDepot->Owner)
+		return;
+
+	const auto pOwner = pDepot->Owner;
+	const auto pHouseExt = HouseExt::TryFetch(pOwner);
+	if (!pHouseExt)
+		return;
+
+	const signed char unitIdx = *reinterpret_cast<signed char*>(reinterpret_cast<DWORD>(pDepot) + 0x702);
+	if (unitIdx <= 0)
+		return;
+
+	const auto pUnit = *reinterpret_cast<FootClass**>(reinterpret_cast<DWORD>(pDepot) + 0x5E8 + unitIdx * 4);
+	if (!pUnit)
+		return;
+
+	const auto pType = pUnit->GetTechnoType();
+	if (!pType || pType->Strength <= 0)
+		return;
+
+	const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
+	if (!pTypeExt || pTypeExt->ResourceCosts.empty())
+		return;
+
+	const int repairHP = pType->GetRepairStep();
+	if (repairHP <= 0)
+		return;
+
+	const double repairFactor = (RulesClass::Instance && RulesClass::Instance->RepairPercent > 0.0)
+		? RulesClass::Instance->RepairPercent
+		: 0.5;
+
+	for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+	{
+		const int totalResCost = pTypeExt->ResourceCosts[i];
+		if (totalResCost > 0)
+		{
+			const double stepCostExact = (static_cast<double>(totalResCost) * repairFactor * repairHP) / static_cast<double>(pType->Strength);
+			const int resCost = std::max(1, static_cast<int>(std::round(stepCostExact)));
+
+			if (pHouseExt->CanAffordResource(static_cast<int>(i), resCost))
+			{
+				pHouseExt->UpdateResourceAmount(static_cast<int>(i), -resCost);
+			}
+		}
+	}
+}
+
+DEFINE_HOOK(0x4575E4, BuildingClass_ServiceDepot_TakeMoneyAndResources, 0x5)
+{
+	GET(BuildingClass*, pDepot, ESI);
+	GET(int, moneyCost, EAX);
+
+	if (pDepot && pDepot->Owner)
+	{
+		if (moneyCost > 0)
+		{
+			pDepot->Owner->TakeMoney(moneyCost);
+		}
+
+		DeductUnitRepairCustomResources(pDepot);
+	}
+
+	return 0x4575E9;
+}
+
+DEFINE_HOOK(0x44AAEF, BuildingClass_MissionRepair_TakeMoneyAndResources, 0x5)
+{
+	GET(BuildingClass*, pDepot, EBP);
+	GET(int, moneyCost, EAX);
+
+	if (pDepot && pDepot->Owner)
+	{
+		if (moneyCost > 0)
+		{
+			pDepot->Owner->TakeMoney(moneyCost);
+		}
+
+		DeductUnitRepairCustomResources(pDepot);
+	}
+
+	return 0x44AAF4;
 }
 
 #pragma endregion

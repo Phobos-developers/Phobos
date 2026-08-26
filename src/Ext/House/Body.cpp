@@ -4,6 +4,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <FactoryClass.h>
 #include <New/Type/ResourceTypeClass.h>
 
 //Static init
@@ -717,6 +718,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->FactoryResourceStates)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }
@@ -1318,6 +1320,48 @@ void HouseExt::InitializeCustomResources()
 	for (size_t i = 0; i < count; ++i)
 	{
 		this->CustomResources[i] = ResourceTypeClass::Array[i]->InitialValue.Get();
+	}
+}
+
+int HouseExt::GetFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx) const
+{
+	for (const auto& s : this->FactoryResourceStates)
+	{
+		if (s.pFactory == pFactory && resIdx < s.Spent.size())
+			return s.Spent[resIdx];
+	}
+	return 0;
+}
+
+void HouseExt::AddFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx, int amount)
+{
+	for (auto& s : this->FactoryResourceStates)
+	{
+		if (s.pFactory == pFactory)
+		{
+			if (s.Spent.size() <= resIdx)
+				s.Spent.resize(resIdx + 1, 0);
+			s.Spent[resIdx] += amount;
+			return;
+		}
+	}
+
+	FactoryResourceState newState;
+	newState.pFactory = pFactory;
+	newState.Spent.resize(resIdx + 1, 0);
+	newState.Spent[resIdx] = amount;
+	const_cast<HouseExt*>(this)->FactoryResourceStates.push_back(newState);
+}
+
+void HouseExt::ClearFactoryResourceState(FactoryClass* pFactory)
+{
+	for (auto it = this->FactoryResourceStates.begin(); it != this->FactoryResourceStates.end(); ++it)
+	{
+		if (it->pFactory == pFactory)
+		{
+			this->FactoryResourceStates.erase(it);
+			return;
+		}
 	}
 }
 

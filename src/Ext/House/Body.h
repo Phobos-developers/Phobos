@@ -9,6 +9,28 @@
 
 #include <array>
 
+class FactoryClass;
+class TechnoTypeClass;
+
+struct FactoryResourceState
+{
+	FactoryClass* pFactory { nullptr };
+	TechnoTypeClass* pType { nullptr };
+	int LastStep { 0 };
+	std::vector<int> Spent {};
+
+	template <typename T>
+	void Serialize(T& Stm)
+	{
+		Stm
+			.Process(this->pFactory)
+			.Process(this->pType)
+			.Process(this->LastStep)
+			.Process(this->Spent)
+			;
+	}
+};
+
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -83,6 +105,7 @@ public:
 	bool PlayerAutoRepair;
 
 	std::array<int, 3> BeaconsPlacedOrder;
+	std::vector<FactoryResourceState> FactoryResourceStates;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
@@ -121,6 +144,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, FactoryResourceStates {}
 	{ }
 
 	int GetResourceAmount(int resourceIdx) const;
@@ -130,6 +154,9 @@ public:
 	bool IsResourceEnabled(int resourceIdx) const;
 	int CalculateResourceBounty(int resourceIdx, TechnoClass* pTechno) const;
 	void InitializeCustomResources();
+	int GetFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx) const;
+	void AddFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx, int amount);
+	void ClearFactoryResourceState(FactoryClass* pFactory);
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
 	void AddToLimboTracking(TechnoTypeClass* pTechnoType);

@@ -2,6 +2,7 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>

@@ -1,6 +1,108 @@
 #include "Body.h"
 
 #include <Ext/House/Body.h>
+#include <FactoryClass.h>
+#include <New/Type/ResourceTypeClass.h>
+
+DEFINE_HOOK(0x4C9BD5, FactoryClass_AI_ProcessProductionStep, 0x31)
+{
+	GET(FactoryClass*, pFactory, ESI);
+	GET(int, moneyCost, EDI);
+
+	const auto pOwner = pFactory->Owner;
+	if (pOwner)
+	{
+		const int availableMoney = pOwner->Available_Money();
+		bool canAfford = (moneyCost <= availableMoney);
+
+		TechnoTypeClass* pType = pFactory->Object ? pFactory->Object->GetTechnoType() : (pFactory->QueuedObjects.Count > 0 ? pFactory->QueuedObjects[0] : nullptr);
+		const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
+		const auto pHouseExt = HouseExt::TryFetch(pOwner);
+
+		std::vector<int> resDues;
+		if (pTypeExt && pHouseExt && !pTypeExt->ResourceCosts.empty())
+		{
+			const int stage = pFactory->Production.Value;
+			const int stepsRemaining = 54 - stage;
+			resDues.resize(pTypeExt->ResourceCosts.size(), 0);
+
+			for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+			{
+				const int totalCost = pTypeExt->ResourceCosts[i];
+				if (totalCost > 0)
+				{
+					const int spent = pHouseExt->GetFactoryResourceSpent(pFactory, i);
+					const int remaining = totalCost - spent;
+					int resCost = (stage >= 54) ? remaining : (remaining / (stepsRemaining > 0 ? stepsRemaining : 1));
+					resCost = std::clamp(resCost, 0, remaining);
+
+					if (resCost > 0)
+					{
+						resDues[i] = resCost;
+						if (!pHouseExt->CanAffordResource(static_cast<int>(i), resCost))
+						{
+							canAfford = false;
+						}
+					}
+				}
+			}
+		}
+
+		if (canAfford)
+		{
+			// Deduct money
+			if (moneyCost > 0)
+			{
+				pOwner->TakeMoney(moneyCost);
+			}
+			pFactory->Balance -= moneyCost;
+			pFactory->OnHold = false;
+
+			// Deduct custom resources
+			if (pHouseExt && !resDues.empty())
+			{
+				for (size_t i = 0; i < resDues.size(); ++i)
+				{
+					if (resDues[i] > 0)
+					{
+						pHouseExt->UpdateResourceAmount(static_cast<int>(i), -resDues[i]);
+						pHouseExt->AddFactoryResourceSpent(pFactory, i, resDues[i]);
+					}
+				}
+			}
+		}
+		else
+		{
+			// Insufficient money or resources: put on hold and revert step
+			pFactory->OnHold = true;
+			pFactory->Production.Value = std::max(0, pFactory->Production.Value - 1);
+		}
+	}
+
+	return 0x4C9C06;
+}
+
+DEFINE_HOOK(0x4C9C28, FactoryClass_AI_FinishProduction, 0x13)
+{
+	GET(FactoryClass*, pFactory, ESI);
+
+	if (pFactory->Owner)
+	{
+		const int remainingMoney = pFactory->Balance;
+		if (remainingMoney > 0)
+		{
+			pFactory->Owner->TakeMoney(remainingMoney);
+		}
+		pFactory->Balance = 0;
+
+		if (const auto pHouseExt = HouseExt::TryFetch(pFactory->Owner))
+		{
+			pHouseExt->ClearFactoryResourceState(pFactory);
+		}
+	}
+
+	return 0x4C9C3B;
+}
 
 DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
@@ -128,6 +230,22 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 {
 	GET(FactoryClass*, pFactory, ESI);
 	GET_STACK(DWORD const, calledby, 0x18);
+
+	if (pFactory && pFactory->Owner)
+	{
+		if (const auto pHouseExt = HouseExt::TryFetch(pFactory->Owner))
+		{
+			for (size_t i = 0; i < ResourceTypeClass::Array.size(); ++i)
+			{
+				const int spent = pHouseExt->GetFactoryResourceSpent(pFactory, i);
+				if (spent > 0)
+				{
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), spent);
+				}
+			}
+			pHouseExt->ClearFactoryResourceState(pFactory);
+		}
+	}
 
 	auto const pTechno = pFactory->Object;
 
