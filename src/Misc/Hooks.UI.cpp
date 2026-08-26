@@ -547,6 +547,7 @@ DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
 	using namespace DrawTimerTemp;
 	AdjustLocation = false;
 	IsPercentage = false;
+	IsDigit = false;
 	return 0;
 }
 
@@ -555,23 +556,25 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 	DrawTimerTemp::TimeLeft = R->EDX<int>();
 	DrawTimerTemp::IsPercentage = false;
 	DrawTimerTemp::IsDigit = false;
+	const auto& timer = ScenarioClass::Instance->MissionTimer;
+	const int timerPassed = (timer.CurrentTime - timer.StartTime) / 15;
 
 	switch (ScenarioExt::Global()->MissionTimer_Type)
 	{
 	case 1:
 	{
-		const int initTime = ScenarioClass::Instance->InitTime;
-		if (ScenarioExt::Global()->MissionTimer_Reverse)
-			DrawTimerTemp::Percentage = initTime > 0 ? static_cast<double>(DrawTimerTemp::TimeLeft) / initTime : 1.0;
-		else
-			DrawTimerTemp::Percentage = initTime > 0 ? static_cast<double>(initTime - DrawTimerTemp::TimeLeft) / initTime : 1.0;
 		DrawTimerTemp::IsPercentage = true;
+		const int totalTime = timerPassed + DrawTimerTemp::TimeLeft;
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::Percentage = totalTime > 0 ? static_cast<double>(DrawTimerTemp::TimeLeft) / totalTime : 1.0;
+		else
+			DrawTimerTemp::Percentage = totalTime > 0 ? static_cast<double>(totalTime - DrawTimerTemp::TimeLeft) / totalTime : 1.0;
 		break;
 	}
 	case 2:
 	{
 		if (ScenarioExt::Global()->MissionTimer_Reverse)
-			DrawTimerTemp::TimeLeft = ScenarioClass::Instance->InitTime - DrawTimerTemp::TimeLeft;
+			DrawTimerTemp::TimeLeft = timerPassed;
 		DrawTimerTemp::IsDigit = true;
 		break;
 	}
@@ -596,7 +599,7 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 	default:
 	{
 		if (ScenarioExt::Global()->MissionTimer_Reverse)
-			DrawTimerTemp::TimeLeft = ScenarioClass::Instance->InitTime - DrawTimerTemp::TimeLeft;
+			DrawTimerTemp::TimeLeft = timerPassed;
 		break;
 	}
 	}
@@ -611,6 +614,7 @@ DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
 	GET(SuperClass*, pSuper, ECX);
 
 	DrawTimerTemp::IsPercentage = false;
+	DrawTimerTemp::IsDigit = false;
 	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
 	const auto pSWTypeExt = SWTypeExt::Fetch(pSuper->Type);
 
