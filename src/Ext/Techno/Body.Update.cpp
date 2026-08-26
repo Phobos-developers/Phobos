@@ -1031,11 +1031,11 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
-	// Add new ones.
-	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
-
-	if (requiresRecalc && !count)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
+
+	// Add new ones.
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 }
 
 // Updates CumulativeAnimations AE's on techno.
