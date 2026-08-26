@@ -91,4 +91,55 @@ DEFINE_HOOK(0x6F9AF4, TechnoClass_SelectAutoTarget_DisableStupid, 0x6)
 	return RulesExt::Global()->DisableOveroptimizationInTargeting ? 0x6F9B1B : 0;
 }
 
-DEFINE_JUMP(LJMP, 0x6F9039, 0x6F9042); // TechnoClass_SelectAutoTarget_HealGuardRange
+DEFINE_HOOK(0x6F9039, TechnoClass_SelectAutoTarget_HealGuardRange, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	int rangeLeptons = 512; // fallback to the vanilla value if no heal weapon is found
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	const bool isElite = pThis->Veterancy.IsElite();
+	int count = 2;
+	bool useCurrentWeapon = false;
+
+	if (pTypeExt->MultiWeapon.Get() && !pType->IsGattling && (!pType->HasMultipleTurrets() || !pType->Gunner))
+		count = pType->WeaponCount;
+	else if (pThis->WhatAmI() == AbstractType::Unit && !pType->IsGattling && pType->TurretCount > 0 && (pType->Gunner || !pTypeExt->MultiWeapon.Get()))
+		useCurrentWeapon = true; // CombatDamage(-1) only uses the current weapon here.
+
+	auto isHealWeapon = [](WeaponTypeClass* const pWeapon)
+	{
+		return pWeapon && pWeapon->Damage + pWeapon->AmbientDamage < 0;
+	};
+
+	WeaponTypeClass* pHealWeapon = nullptr;
+
+	if (useCurrentWeapon)
+	{
+		pHealWeapon = pThis->GetWeapon(pThis->CurrentWeaponNumber)->WeaponType;
+	}
+	else
+	{
+		for (int i = 0; i < count; i++)
+		{
+			auto pWeapon = (isElite ? pType->GetEliteWeapon(i) : pThis->GetWeapon(i))->WeaponType;
+
+			if (!pWeapon && isElite)
+				pWeapon = pThis->GetWeapon(i)->WeaponType;
+
+			if (isHealWeapon(pWeapon))
+			{
+				pHealWeapon = pWeapon;
+				break;
+			}
+		}
+	}
+
+	if (isHealWeapon(pHealWeapon))
+		rangeLeptons = pHealWeapon->Range;
+
+	R->EDI(rangeLeptons);
+	return 0x6F903E;
+}
