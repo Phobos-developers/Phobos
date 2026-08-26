@@ -3132,7 +3132,11 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	if (rtti == AbstractType::Building)
 		return true;
 
-	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+	auto const pType = pTechno->GetTechnoType();
+	if (!pType)
+		return false;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	if (pTypeExt->Unsellable_Direct.Get(false))
 		return true;
@@ -3189,9 +3193,8 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 
 	if (CanBeSold(pTechno, rtti))
 	{
-		if (auto pTechnoExt = TechnoExt::TryFetch(pTechno))
-			if (auto pAnimType = pTechnoExt->TypeExtData->SellingAnim.Get())
-			{
+		if (auto const pAnimType = TechnoTypeExt::Fetch(pTechno->GetTechnoType())->SellingAnim.Get())
+		{
 				auto colorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
 				auto location = pTechno->Location;
 				if (rtti == AbstractType::Infantry)

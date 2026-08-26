@@ -3227,9 +3227,14 @@ msgstr "**obsidianus** - 自动根据血量变形"
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
 
-msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
-msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+msgid "**frg2089 (舰队的偶像-岛风酱!)**:"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)**："
+
+msgid "Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+
+msgid "Directly sellable TechnoTypes"
+msgstr "可直接出售的 TechnoType"
 
 msgid "Custom animation when selling TechnoTypes"
 msgstr "出售 TechnoType 时播放自定义动画"
-
