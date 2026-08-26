@@ -1035,7 +1035,7 @@ public:
 
 			, CloakAnims {}
 			, DecloakAnims {}
-			, Cloak_KickOutParasite { true }
+			, Cloak_KickOutParasite { false }
 		{ }
 
 		virtual ~ExtData() = default;

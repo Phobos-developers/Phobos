@@ -2556,7 +2556,7 @@ Ammo.DeployUnlockMaximumAmount=-1  ; integer
 In `rulesmd.ini`:
 ```ini
 [General]
-Cloak.KickOutParasite=true    ; boolean
+Cloak.KickOutParasite=false   ; boolean
 
 [AudioVisual]
 CloakAnims=                   ; List of Animation
