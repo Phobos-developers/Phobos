@@ -836,6 +836,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug where incorrect calculation of `[AudioVisual] -> PoseDir` caused the landing direction of aircraft to behave incorrectly under vanilla configuration (by Noble_Fish)
 - Fixed the bug where landing direction cannot be correctly converted when set to a value exceeding 256 (by Noble_Fish)
 - Fixed a bug with some keys relating to `Interceptor` and `PassengerDeletion` not having correct default values (by Starkku)
+- Fixed a bug that percentage sw timer shows `-nan(ind)%` when `RechargeTime` is too short (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)

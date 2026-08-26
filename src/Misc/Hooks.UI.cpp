@@ -569,7 +569,7 @@ DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
 	{
 		DrawTimerTemp::IsPercentage = true;
 		const int recharge = pSuper->GetRechargeTime();
-		const double percentage = DrawTimerTemp::Percentage = std::min(static_cast<double>(recharge - timeLeft) / recharge, 1.0);
+		const double percentage = DrawTimerTemp::Percentage = recharge > 0 ? static_cast<double>(recharge - timeLeft) / recharge : 1.0;
 		R->ESI(percentage >= 1.0 ? 0 : 15);
 	}
 	else
