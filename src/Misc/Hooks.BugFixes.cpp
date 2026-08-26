@@ -3209,8 +3209,14 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 				}
 
 				auto anim = GameCreate<AnimClass>(pAnimType, location);
+				// Note: When anim does not make infantry or create unit, 
+				// AnimExt::SetAnimOwnerHouseKind will not set the color scheme, 
+				// so we manually set the color scheme here.
+				//
+				// I sell my own unit but it draws in someone else's color?
 				anim->LightConvertIndex = colorScheme->ArrayIndex;
 				anim->LightConvert = colorScheme->LightConvert;
+				AnimExt::SetAnimOwnerHouseKind(anim, pTechno->Owner, pTechno->Owner, false, true);
 			}
 		
 		pTechno->Sell(-1);
