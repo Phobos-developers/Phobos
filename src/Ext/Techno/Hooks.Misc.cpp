@@ -1122,7 +1122,6 @@ DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 			return modes.Contains(pThis->CurrentWeaponNumber) ? GoAreaGuardDecision : GoGuard;
 	}
 
-	R->EAX(pThis->Owner);
-	return Continue;
+	return 0;
 }
 
