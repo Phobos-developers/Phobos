@@ -1059,6 +1059,24 @@ static bool IsRoofExitBuildingUnit(BuildingClass* pBuilding)
 	return pUnit && IsRoofExitTechno(pUnit->GetTechnoType());
 }
 
+DEFINE_HOOK(0x43D0CF, BuildingClass_DrawDoorAnim_ExitThroughRoof, 0x6)
+{
+	enum { UseRoof = 0x43D0D9, UseGate = 0x43D0E7 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	return TechnoTypeExt::Fetch(pType)->ExitThroughRoof.Get(pType->JumpJet) ? UseRoof : UseGate; // 0x43D0CF, JumpJet Only
+}
+
+DEFINE_HOOK(0x43D363, BuildingClass_DrawUnderDoorAnim_ExitThroughRoof, 0x6)
+{
+	enum { MarkRoof = 0x43D381, Skip = 0x43D386 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	return IsRoofExitTechno(pType) ? MarkRoof : Skip;
+}
+
 static AnimTypeClass* PickRoofProductionAnim(BuildingTypeExt* pTypeExt, bool isDamaged, bool garrisoned)
 {
 	if (garrisoned && pTypeExt->RoofProductionAnimGarrisoned.Get() != nullptr)
