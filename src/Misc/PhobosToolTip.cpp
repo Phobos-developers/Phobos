@@ -8,6 +8,7 @@
 #include <Ext/Surface/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #include <sstream>
 #include <iomanip>
@@ -147,6 +148,31 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 		oss << std::setw(1) << nPower;
 	}
 
+	for (size_t i = 0; i < pData->ResourceCosts.size(); ++i)
+	{
+		const int resCost = pData->ResourceCosts[i];
+		if (resCost > 0 && i < ResourceTypeClass::Array.size())
+		{
+			const auto pResource = ResourceTypeClass::Array[i].get();
+			if (pResource)
+			{
+				const wchar_t* label = pResource->Display_Label.Get();
+				const bool useSpace = pResource->Display_Label_UseSpace.Get();
+				if (label && *label)
+				{
+					if (pResource->Display_Label_InvertPosition.Get())
+						oss << L" " << resCost << (useSpace ? L" " : L"") << label;
+					else
+						oss << L" " << label << (useSpace ? L" " : L"") << resCost;
+				}
+				else
+				{
+					oss << L" " << resCost;
+				}
+			}
+		}
+	}
+
 	if (auto const pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
@@ -174,16 +200,33 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		showSth = true;
 	}
 
-	if (int nPoints = std::abs(pData->BattlePoints_Amount))
+	for (size_t i = 0; i < pData->SW_ResourceAmounts.size(); ++i)
 	{
-		oss << L"\n";
+		const int nAmount = pData->SW_ResourceAmounts[i];
+		if (nAmount != 0)
+		{
+			oss << L"\n";
+			const auto pResource = (i < ResourceTypeClass::Array.size()) ? ResourceTypeClass::Array[i].get() : nullptr;
+			const wchar_t* label = pResource ? pResource->Display_Label.Get() : L"";
+			const bool useSpace = pResource ? pResource->Display_Label_UseSpace.Get() : true;
 
-		if (pData->BattlePoints_Amount > 0)
-			oss << Phobos::UI::BattlePoints_Label << L"+" << nPoints;
-		else if (pData->BattlePoints_Amount < 0)
-			oss << Phobos::UI::BattlePoints_Label << L"-" << nPoints;
+			if (nAmount > 0)
+			{
+				if (pResource && pResource->Display_Label_InvertPosition.Get())
+					oss << L"+" << std::abs(nAmount) << (useSpace ? L" " : L"") << label;
+				else
+					oss << label << (useSpace ? L" " : L"") << L"+" << std::abs(nAmount);
+			}
+			else
+			{
+				if (pResource && pResource->Display_Label_InvertPosition.Get())
+					oss << L"-" << std::abs(nAmount) << (useSpace ? L" " : L"") << label;
+				else
+					oss << label << (useSpace ? L" " : L"") << L"-" << std::abs(nAmount);
+			}
 
-		showSth = true;
+			showSth = true;
+		}
 	}
 
 	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());

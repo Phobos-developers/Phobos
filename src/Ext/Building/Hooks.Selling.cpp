@@ -1,5 +1,6 @@
 #include "Body.h"
-
+#include <Ext/House/Body.h>
+#include <New/Type/ResourceTypeClass.h>
 #include <Misc/FlyingStrings.h>
 
 // SellSound and EVA dehardcode
@@ -11,6 +12,19 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	const int money = pThis->GetRefund();
 	const auto pOwner = pThis->Owner;
 	pOwner->GiveMoney(money);
+
+	if (const auto pHouseExt = HouseExt::TryFetch(pOwner))
+	{
+		const size_t resCount = ResourceTypeClass::Array.size();
+		for (size_t i = 0; i < resCount; ++i)
+		{
+			const int resRefund = TechnoExt::GetResourceRefund(pThis, static_cast<int>(i), false);
+			if (resRefund > 0)
+			{
+				pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
+			}
+		}
+	}
 
 	if (pOwner->IsControlledByCurrentPlayer())
 	{
@@ -71,6 +85,22 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 	{
 		const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.isset() ? pTypeExt->EVA_Sold.Get() : VoxClass::FindIndex(GameStrings::EVA_StructureSold));
+	}
+
+	if (!BuildingExt::CanUndeployOnSell(pThis))
+	{
+		if (const auto pHouseExt = HouseExt::TryFetch(pThis->Owner))
+		{
+			const size_t resCount = ResourceTypeClass::Array.size();
+			for (size_t i = 0; i < resCount; ++i)
+			{
+				const int resRefund = TechnoExt::GetResourceRefund(pThis, static_cast<int>(i), false);
+				if (resRefund > 0)
+				{
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
+				}
+			}
+		}
 	}
 
 	return BuildingExt::CanUndeployOnSell(pThis) ? CreateUnit : SkipTheEntireShit;

@@ -25,14 +25,9 @@ public:
 		return static_cast<HouseTypeClass*>(this->GetAttachedObject());
 	}
 
-	Valueable<bool> BattlePoints;
-	Valueable<bool> BattlePoints_CanUseStandardPoints;
-
 	EVAType EVATag;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
-		, BattlePoints { false }
-		, BattlePoints_CanUseStandardPoints { false }
 		, EVATag { -2 }
 	{ }
 

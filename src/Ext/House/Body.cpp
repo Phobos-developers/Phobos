@@ -3,6 +3,8 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <New/Type/ResourceTypeClass.h>
 
 //Static init
 
@@ -707,7 +709,8 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
-		.Process(this->BattlePoints)
+		.Process(this->CustomResources)
+		.Process(this->ResourceCollectorCounts)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
 		.Process(this->TeamDelay)
@@ -1190,60 +1193,132 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 }
 #pragma endregion
 
-void HouseExt::UpdateBattlePoints(int modifier)
+int HouseExt::GetResourceAmount(int resourceIdx) const
 {
-	this->BattlePoints += modifier;
-	this->BattlePoints = this->BattlePoints < 0 ? 0 : this->BattlePoints;
+	if (resourceIdx >= 0 && resourceIdx < static_cast<int>(this->CustomResources.size()))
+		return this->CustomResources[resourceIdx];
+	return 0;
 }
 
-bool HouseExt::AreBattlePointsEnabled() const
+void HouseExt::SetResourceAmount(int resourceIdx, int amount)
 {
-	const auto pThis = this->OwnerObject();
-	const auto pOwnerTypeExt = HouseTypeExt::Fetch(pThis->Type);
+	if (resourceIdx < 0)
+		return;
 
-	// Global setting
-	if (RulesExt::Global()->BattlePoints.isset())
-		return RulesExt::Global()->BattlePoints.Get();
+	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
+		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
 
-	// House specific setting
-	if (!pOwnerTypeExt->BattlePoints)
-	{
-		// Structures can enable this logic overwriting the house's setting
-		for (const auto pBuilding : pThis->Buildings)
-		{
-			if (const auto pBuildingTypeExt = BuildingTypeExt::TryFetch(pBuilding->Type))
-			{
-				if (pBuildingTypeExt->BattlePointsCollector.Get(false))
-					return true;
-			}
-		}
+	this->CustomResources[resourceIdx] = std::max(0, amount);
+}
 
+void HouseExt::UpdateResourceAmount(int resourceIdx, int delta)
+{
+	if (resourceIdx < 0)
+		return;
+
+	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
+		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
+
+	this->CustomResources[resourceIdx] = std::max(0, this->CustomResources[resourceIdx] + delta);
+}
+
+bool HouseExt::CanAffordResource(int resourceIdx, int amount) const
+{
+	return this->GetResourceAmount(resourceIdx) >= amount;
+}
+
+bool HouseExt::IsResourceEnabled(int resourceIdx) const
+{
+	if (resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
 		return false;
-	}
 
-	return true;
+	const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+	if (!pResource)
+		return false;
+
+	if (!pResource->RequiresCollector.Get())
+		return true;
+
+	if (resourceIdx < static_cast<int>(this->ResourceCollectorCounts.size()))
+		return this->ResourceCollectorCounts[resourceIdx] > 0;
+
+	return false;
 }
 
-int HouseExt::CalculateBattlePoints(TechnoClass* pTechno) const
+int HouseExt::CalculateResourceBounty(int resourceIdx, TechnoClass* pVictim) const
 {
-	if (!pTechno)
+	if (!pVictim || resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
+		return 0;
+
+	const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+	if (!pResource || !this->IsResourceEnabled(resourceIdx))
 		return 0;
 
 	const auto pThis = this->OwnerObject();
-	const auto pThisTypeExt = HouseTypeExt::Fetch(pThis->Type);
-	const auto pTechnoTypeExt = TechnoTypeExt::TryFetch(pTechno->GetTechnoType());
+	const auto pVictimType = pVictim->GetTechnoType();
+	const auto pVictimTypeExt = TechnoTypeExt::TryFetch(pVictimType);
 
-	int defaultValue = RulesExt::Global()->BattlePoints_DefaultValue.Get(0);
-	int defaultFriendlyValue = RulesExt::Global()->BattlePoints_DefaultFriendlyValue.Get(0);
+	const bool isAllied = pThis->IsAlliedWith(pVictim);
 
-	int points = pThis->IsAlliedWith(pTechno) ? defaultFriendlyValue : defaultValue;
-	if (pTechnoTypeExt)
+	if (isAllied)
 	{
-		points = pTechnoTypeExt->BattlePoints.Get(points);
-	}
-	points = points == 0 && pThisTypeExt->BattlePoints_CanUseStandardPoints ? pTechno->GetTechnoType()->Points : points;
+		// Friendly fire always applies a friendly penalty (never enemy bounties).
+		// Clamped to negative/zero so positive accidental inputs cannot reward teamkilling.
+		if (pVictimTypeExt && resourceIdx < static_cast<int>(pVictimTypeExt->ResourceFriendlyBounties.size()))
+		{
+			int customFriendlyVal = pVictimTypeExt->ResourceFriendlyBounties[resourceIdx];
+			if (customFriendlyVal != 0)
+				return -std::abs(customFriendlyVal);
+		}
 
-	return points;
+		return -std::abs(pResource->Bounty_DefaultFriendlyValue.Get());
+	}
+
+	int bounty = 0;
+
+	// 1. Explicit per-techno bounty
+	if (pVictimTypeExt && resourceIdx < static_cast<int>(pVictimTypeExt->ResourceBounties.size()))
+	{
+		int customVal = pVictimTypeExt->ResourceBounties[resourceIdx];
+		if (customVal != 0)
+			bounty = customVal;
+	}
+
+	// 2. Generic fallback / MoneyConversion / Points / DefaultValue
+	if (bounty == 0)
+	{
+		const int moneyConversion = pResource->Bounty_MoneyConversion.Get();
+		if (moneyConversion > 0)
+		{
+			bounty = (pVictimType->Cost + (moneyConversion / 2)) / moneyConversion;
+		}
+
+		if (bounty <= 0)
+		{
+			if (pResource->Bounty_CanUseStandardPoints.Get() && pVictimType->Points > 0)
+			{
+				bounty = pVictimType->Points;
+			}
+			else if (pResource->Bounty_DefaultValue.Get() > 0)
+			{
+				bounty = pResource->Bounty_DefaultValue.Get();
+			}
+		}
+	}
+
+	return bounty;
+}
+
+void HouseExt::InitializeCustomResources()
+{
+	const size_t count = ResourceTypeClass::Array.size();
+	this->CustomResources.resize(count, 0);
+	this->ResourceCollectorCounts.resize(count, 0);
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		this->CustomResources[i] = ResourceTypeClass::Array[i]->InitialValue.Get();
+	}
 }
 
 // =============================
@@ -1261,7 +1336,10 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.TryAllocate(pItem);
+	if (const auto pExt = HouseExt::ExtMap.TryAllocate(pItem))
+	{
+		pExt->InitializeCustomResources();
+	}
 	HouseExt::CalculatePowerSurplus(pItem);
 
 	return 0;

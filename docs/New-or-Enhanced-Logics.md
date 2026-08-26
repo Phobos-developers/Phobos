@@ -280,6 +280,99 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should remain `true`, because not doing so will be very resource-intensive.
 ```
 
+### Custom Resource Types
+
+- Now you can define and customize arbitrary secondary/tertiary resources with their own HUD counters, production cycles, unit costs, bounties, and superweapon requirements.
+  - `[ResourceTypes]` defines the list of custom resource types available in the game.
+  - `[AudioVisual] -> Display.ResourceTypes.Orientation` controls whether multiple resource counters stack vertically or horizontally on the HUD (`Vertical` / `Horizontal`).
+  - `[AudioVisual] -> Display.ResourceTypes.Anchor` sets the reference HUD anchor corner (`TopRight`, `TopLeft`, `BottomRight`, `BottomLeft`, `Sidebar`).
+  - `[AudioVisual] -> Display.ResourceTypes.BaseOffset` provides an initial X,Y pixel offset for the resource display group.
+  - `[AudioVisual] -> Display.ResourceTypes.Spacing` specifies the spacing in pixels between consecutive resource counters.
+  - `[<ResourceType>] -> Display.Label` specifies the CSF label or text symbol displayed alongside the counter.
+  - `[<ResourceType>] -> Display.Label.InvertPosition` when set to true, places the label after the value (`100 ★` vs `★ 100`).
+  - `[<ResourceType>] -> Display.Label.UseSpace` when set to false, omits the separating space between label and amount (`100★` or `★100` vs `100 ★` / `★ 100`). Defaults to `true`.
+  - `[<ResourceType>] -> Display.Color` specifies the text color (R,G,B) for the resource on the HUD and floating strings.
+  - `[<ResourceType>] -> Display.Condition` specifies when the counter is visible (`Always`, `GreaterThanZero`, `HasCollector`, `Never` / `Hidden` / `None`).
+  - `[<ResourceType>] -> Display.Offset` optional explicit X,Y screen coordinates overriding auto-stacking.
+  - `[<ResourceType>] -> InitialValue` starting resource amount granted to houses at match start.
+  - `[<ResourceType>] -> RequiresCollector` when true, the house resource only activates once a structure with `ResourceCollector.<Resource>=true` is built.
+  - `[<ResourceType>] -> Bounty.Enabled` enables kill bounty rewards for this resource.
+  - `[<ResourceType>] -> Bounty.DefaultValue` default bounty granted when destroying an enemy unit that lacks a specific bounty tag.
+  - `[<ResourceType>] -> Bounty.DefaultFriendlyValue` bounty when destroying an allied unit.
+  - `[<ResourceType>] -> Bounty.CanUseStandardPoints` fall back to the techno's `Points=` tag for bounty calculation.
+  - `[<ResourceType>] -> Bounty.MoneyConversion` divides the destroyed unit's `Cost=` by this value to determine the bounty reward when not explicitly defined on the techno (e.g. 100 calculates 700 / 100 = 7). Falls back to `Bounty.DefaultValue` if result is 0.
+  - `[<TechnoType>] -> Cost.<ResourceType>` additional resource cost required to build the techno.
+  - `[<TechnoType>] -> Bounty.<ResourceType>.Value` custom bounty awarded to the killer when this enemy unit is destroyed.
+  - `[<TechnoType>] -> Bounty.<ResourceType>.FriendlyValue` custom friendly fire penalty applied if destroyed by an ally (e.g. -50; always evaluated as negative to prevent accidental rewards).
+  - `[<TechnoType>] -> Production.<ResourceType>`, `Production.<ResourceType>.Delay`, and `Production.<ResourceType>.Startup` configure periodic and initial resource generation. Works on all units, vehicles, infantry, aircraft, and buildings. `Startup` is optional (defaults to 0). Periodic production occurs every `Delay` frames.
+  - `[<TechnoType>] -> Production.<ResourceType>.Display.Offset` optional X,Y pixel offset for the floating string text relative to the object render center.
+  - `[<TechnoType>] -> Production.<ResourceType>.Display.Color` optional R,G,B text color override for the floating string (falls back to `Display.Color` from `[<ResourceType>]`).
+  - `[<TechnoType>] -> Production.<ResourceType>.Display.Houses` controls which players can see the floating string (`All`, `Owner`, `Allies`, `Enemies`, `None`, defaults to `All`).
+  - `[<TechnoType>] -> ResourceCollector.<ResourceType>` designates this unit or building as an active collector for this resource.
+  - `[<SuperWeaponType>] -> ResourceType.<ResourceType>.Amount` specifies resource cost (positive) or grant (negative) upon firing.
+  - `[<TiberiumType>] -> ResourceType` and `ResourceValue` configure Tiberium/Ore harvesting to yield custom resources. When `ResourceValue=` is omitted, `Value=` is used for the custom resource and no money is granted (replaces money). When `ResourceValue=` is defined, `ResourceValue` is used for the custom resource AND `Value=` is used to grant standard money (dual income).
+  - `[<Side>] -> Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
+  - `[<Side>] -> Sidebar.ResourceTypes.Offset`, `Sidebar.ResourceTypes.Color`, and `Sidebar.ResourceTypes.Align` provide per-side HUD positioning and text styling fallbacks.
+
+In `rulesmd.ini`:
+```ini
+[ResourceTypes]
+0=BattlePoints
+1=OreAlloy
+
+[AudioVisual]
+; Global HUD alignment and stacking for custom resources
+Display.ResourceTypes.Orientation=Vertical         ; Vertical, Horizontal
+Display.ResourceTypes.Anchor=TopRight              ; TopRight, TopLeft, BottomRight, BottomLeft, Sidebar
+Display.ResourceTypes.BaseOffset=0,0               ; X,Y pixel offset
+Display.ResourceTypes.Spacing=14                   ; integer, pixels between stacked counters
+
+[BattlePoints]                        ; ResourceTypeClass
+Display.Label=TXT_BP_SYMBOL          ; CSF entry key (e.g. "★")
+Display.Label.InvertPosition=false   ; boolean
+Display.Label.UseSpace=true          ; boolean (false = "★100", true = "★ 100")
+Display.Color=255,215,0              ; R,G,B ColorStruct
+Display.Condition=GreaterThanZero    ; Always, GreaterThanZero, HasCollector, Never
+Display.Offset=                      ; X,Y pixels (optional, overrides auto-stacking)
+InitialValue=0                       ; integer
+RequiresCollector=no                 ; boolean
+Bounty.Enabled=yes                   ; boolean
+Bounty.DefaultValue=1                ; integer
+Bounty.DefaultFriendlyValue=-10      ; integer
+Bounty.CanUseStandardPoints=no       ; boolean
+Bounty.MoneyConversion=100           ; integer (calculates Cost / 100)
+
+[SOMETECHNO]                         ; Works on InfantryType, UnitType, AircraftType, BuildingType
+Cost.BattlePoints=50                 ; integer
+Bounty.BattlePoints.Value=15         ; integer
+Bounty.BattlePoints.FriendlyValue=-50; integer (optional special penalty for friendly fire)
+ResourceCollector.BattlePoints=yes   ; boolean (enables resource for house if RequiresCollector=yes)
+Production.BattlePoints=10           ; integer (periodic amount generated)
+Production.BattlePoints.Delay=450    ; integer (frames between generation)
+Production.BattlePoints.Startup=25   ; integer (optional one-time grant upon creation)
+Production.BattlePoints.Display.Offset=0,-20 ; X,Y pixels offset for floating text (optional)
+Production.BattlePoints.Display.Color=255,215,0 ; R,G,B color override for floating text (optional)
+Production.BattlePoints.Display.Houses=All ; All, Owner, Allies, Enemies, None (optional)
+
+[Cruentus]                           ; TiberiumType
+; Example 1: Replace money entirely with BattlePoints (uses Value= for points)
+ResourceType=BattlePoints
+
+; Example 2: Dual income (gives $50 money via Value= AND 15 points via ResourceValue=)
+; Value=50
+; ResourceType=BattlePoints
+; ResourceValue=15
+
+[SOMESW]                             ; SuperWeaponType
+ResourceType.BattlePoints.Amount=100 ; integer (>0 required to launch, <0 grants on fire)
+
+[SOMESIDE]                           ; SideClass
+Sidebar.ResourceTypes.Types=BattlePoints ; List of ResourceTypes to show on this side's sidebar
+Sidebar.ResourceTypes.Offset=0,0         ; X,Y
+Sidebar.ResourceTypes.Color=             ; R,G,B
+Sidebar.ResourceTypes.Align=Left         ; Left, Right, Center/Centre
+```
+
 ### Laser Trails
 
 ![Laser Trails](_static/images/lasertrails.gif)
@@ -1181,54 +1274,6 @@ In `rulesmd.ini`:
 ```ini
 [General]
 AISuperWeaponDelay=  ; integer, game frames
-```
-
-### Battle Points economy for super weapons
-- This system displayes a new currency to be used (optionally) in Super Weapons.
-- The new currency will be modified by the kills against other players and the system is enabled.
-- If set `BattlePointsCollector` in any structure then the system will be enabled if the structure is built.
-- If set `BattlePoints` in houses they will have the system enabled by default.
-- If set [General] -> `BattlePoints` enables/disables the system for every player in the scenario, overriding the country preferences & `BattlePointsCollector` setting.
-- If set [General] -> `BattlePoints.DefaultValue` and the enemy destroyed object doesn't have a value then this generic value will be used instead.
-- If set [General] -> `BattlePoints.DefaultFriendlyValue` and the friendly destroyed object doesn't have a value then this generic value will be used instead. This tag doesn't work with the own objects of the player.
-- If is set `BattlePoints.CanUseStandardPoints` and the destroyed object doesn't have the `BattlePoints` value then the points are obtained from the `Points` tag of the destroyed object. If `BattlePoints.DefaultValue` is present then this will be ignored.
-- If set `BattlePoints` in the destroyed object the calculation is made with this value. Self-Kills done by the own player doesn't count in this system.
-- If `BattlePoints.Amount` is set with a value different from `0` then the super weapon is influenced by this system. If the value is positive then this super weapon won't be launched until the affected player gathered the required ammount.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-BattlePointsSidebar.Label=<none>                ; CSF entry key `★ <VALUE>`, code U+2605
-BattlePointsSidebar.Label.InvertPosition=false  ; bool, `<VALUE> ★`, code U+2605
-
-[ToolTips]
-BattlePoints.Label=<none>                       ; CSF entry key, default to `★: <VALUE>`, code U+2605
-```
-
-In `rulesmd.ini`:
-```ini
-[General]
-BattlePoints=                            ; bool
-BattlePoints.DefaultValue=               ; int
-BattlePoints.DefaultFriendlyValue=       ; int
-
-[SOMESIDE]                               ; Side
-Sidebar.BattlePoints.Offset=0,0          ; X,Y, pixels relative to default
-Sidebar.BattlePoints.Color=              ; integer - R,G,B
-Sidebar.BattlePoints.Align=Left          ; Left, Right, Center/Centre
-
-[SOMECOUNTRY]                            ; HouseType
-BattlePoints=false                       ; bool
-BattlePoints.CanUseStandardPoints=false  ; bool
-
-[SOMEBUILDING]                           ; BuildingType
-BattlePointsCollector=                   ; bool
-
-[SOMETECHNO]                             ; TechnoType
-BattlePoints=                            ; int
-
-[SOMESW]
-BattlePoints.Amount=0                    ; int
 ```
 
 ### Aux technos and TechLevel requirement of superweapon

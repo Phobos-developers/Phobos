@@ -307,9 +307,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AircraftDockingDir_DefaultToPoseDir.Read(exArtINI, pArtSection, "AircraftDockingDir.DefaultToPoseDir");
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
-	
-	this->BattlePointsCollector.Read(exINI, pSection, "BattlePointsCollector");
-
 	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
 
 	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);
@@ -461,7 +458,6 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
-		.Process(this->BattlePointsCollector)
 		.Process(this->UndeploysInto_Sellable)
 		.Process(this->BuildingRadioLink_SyncOwner)
 		.Process(this->GuardRetryDelay)

@@ -393,6 +393,9 @@ DEFINE_HOOK(0x441553, BuildingClass_Unlimbo_AddOwned, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pThis->Owner);
+	const auto pBuildingExt = BuildingExt::Fetch(pThis);
+
+	pBuildingExt->InitializeResourceProductions();
 
 	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pOwnerExt->PowerPlantEnhancers.push_back(pThis);

@@ -3,6 +3,8 @@
 #include <BitFont.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
+#include <Ext/House/Body.h>
+#include <New/Type/ResourceTypeClass.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -11,7 +13,17 @@ BuildingExt::ExtContainer::~ExtContainer() = default;
 
 void BuildingExt::DisplayIncomeString()
 {
-	if (this->AccumulatedIncome)
+	bool hasResourceIncome = false;
+	for (float val : this->AccumulatedResources)
+	{
+		if (val >= 1.0f || val <= -1.0f)
+		{
+			hasResourceIncome = true;
+			break;
+		}
+	}
+
+	if (this->AccumulatedIncome != 0 || hasResourceIncome)
 	{
 		int const delay = this->GetTypeExtData()->DisplayIncome_Delay.Get(RulesExt::Global()->DisplayIncome_Delay.Get());
 		if (Unsorted::CurrentFrame % delay == 0)
@@ -22,15 +34,90 @@ void BuildingExt::DisplayIncomeString()
 			if ((RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
 				&& pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 			{
-				FlyingStrings::AddMoneyString(
-					this->AccumulatedIncome,
-					pThis,
-					pThis->Owner,
-					pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-					pThis->GetRenderCoords(),
-					pTypeExt->DisplayIncome_Offset
-				);
+				std::wstring combinedStr;
+				ColorStruct displayColor = ColorStruct { 0, 255, 0 };
+				bool hasCustomColor = false;
+
+				if (this->AccumulatedIncome != 0)
+				{
+					const bool isPositive = this->AccumulatedIncome > 0;
+					wchar_t moneyBuf[32];
+					swprintf_s(moneyBuf, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(this->AccumulatedIncome));
+					combinedStr += moneyBuf;
+					if (!isPositive)
+						displayColor = ColorStruct { 255, 0, 0 };
+				}
+
+				for (size_t i = 0; i < this->AccumulatedResources.size(); ++i)
+				{
+					const int amount = static_cast<int>(this->AccumulatedResources[i]);
+					if (amount != 0 && i < ResourceTypeClass::Array.size())
+					{
+						if (const auto pResource = ResourceTypeClass::Array[i].get())
+						{
+							if (!combinedStr.empty())
+								combinedStr += L" ";
+
+							const bool isPositive = amount > 0;
+							wchar_t resBuf[32];
+							const wchar_t* label = pResource->Display_Label.Get();
+							const bool useSpace = pResource->Display_Label_UseSpace.Get();
+							if (label && *label)
+							{
+								if (pResource->Display_Label_InvertPosition.Get())
+									swprintf_s(resBuf, useSpace ? L"%ls%d %ls" : L"%ls%d%ls", isPositive ? L"+" : L"-", std::abs(amount), label);
+								else
+									swprintf_s(resBuf, useSpace ? L"%ls%ls %d" : L"%ls%ls%d", isPositive ? L"+" : L"-", label, std::abs(amount));
+							}
+							else
+							{
+								swprintf_s(resBuf, L"%ls%d", isPositive ? L"+" : L"-", std::abs(amount));
+							}
+							combinedStr += resBuf;
+
+							if (this->AccumulatedIncome == 0 && !hasCustomColor)
+							{
+								const ColorStruct resColor = pResource->Display_Color.Get();
+								if (resColor != ColorStruct { 0, 0, 0 })
+								{
+									displayColor = resColor;
+									hasCustomColor = true;
+								}
+								else if (!isPositive)
+								{
+									displayColor = ColorStruct { 255, 0, 0 };
+								}
+							}
+						}
+					}
+				}
+
+				if (!combinedStr.empty() && !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
+				{
+					const auto displayHouses = pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get());
+					if (displayHouses == AffectedHouse::All || EnumFunctions::CanTargetHouse(displayHouses, pThis->Owner, HouseClass::CurrentPlayer))
+					{
+						if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
+						{
+							Point2D offset = pTypeExt->DisplayIncome_Offset;
+							int width = 0, height = 0;
+							if (BitFont::Instance)
+							{
+								BitFont::Instance->GetTextDimension(combinedStr.c_str(), &width, &height, 120);
+								offset.X -= (width / 2);
+							}
+							FlyingStrings::Add(combinedStr.c_str(), pThis->GetCoords(), displayColor, offset);
+						}
+					}
+				}
 			}
+
+			for (size_t i = 0; i < this->AccumulatedResources.size(); ++i)
+			{
+				const int amount = static_cast<int>(this->AccumulatedResources[i]);
+				this->AccumulatedResources[i] -= static_cast<float>(amount);
+			}
+
 			this->AccumulatedIncome = 0;
 		}
 	}
@@ -269,6 +356,23 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
+
+		if (const auto pHouseExt = HouseExt::TryFetch(pBuilding->Owner))
+		{
+			const size_t resCount = ResourceTypeClass::Array.size();
+			for (size_t i = 0; i < resCount; ++i)
+			{
+				const int resRefund = TechnoExt::GetResourceRefund(pTechno, static_cast<int>(i), true);
+				if (resRefund > 0)
+				{
+					if (i >= pExt->AccumulatedResources.size())
+						pExt->AccumulatedResources.resize(i + 1, 0.0f);
+
+					pExt->AccumulatedResources[i] += static_cast<float>(resRefund);
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
+				}
+			}
+		}
 
 		if (pTypeExt->Grinding_Weapon
 			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF
@@ -596,6 +700,7 @@ void BuildingExt::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_AccumulatedCredits)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
+		.Process(this->AccumulatedResources)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
 		.Process(this->CurrentEMPulseSW)
@@ -603,7 +708,7 @@ void BuildingExt::Serialize(T& Stm)
 		.Process(this->TurretAnimIdleFrame)
 		.Process(this->TurretAnimFiringFrame)
 		.Process(this->TurretAnimRateTick)
-		.Process(this->ConstructionStartFacing) 
+		.Process(this->ConstructionStartFacing)
 		;
 }
 
@@ -674,6 +779,11 @@ DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);
 DEFINE_HOOK(0x43C0B6, BuildingClass_DTOR, 0x9)
 {
 	GET(BuildingClass*, pItem, ESI);
+
+	if (const auto pExt = BuildingExt::TryFetch(pItem))
+	{
+		pExt->ApplyCollectorRegistration(false);
+	}
 
 	BuildingExt::ExtMap.Remove(pItem);
 

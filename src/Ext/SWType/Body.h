@@ -110,8 +110,7 @@ public:
 	Valueable<bool> EMPulse_SuspendOthers;
 	ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 	Valueable<bool> EMPulse_TargetSelf;
-
-	Valueable<int> BattlePoints_Amount;
+	std::vector<int> SW_ResourceAmounts;
 	ValueableIdxVector<SuperWeaponTypeClass> SW_Link;
 	Valueable<bool> SW_Link_Grant;
 	Valueable<bool> SW_Link_Ready;
@@ -214,7 +213,7 @@ public:
 		, EVA_Activated_Owner { -1 }
 		, EVA_Activated_Allies { -1 }
 		, EVA_Activated_Enemies { -1 }
-		, BattlePoints_Amount { 0 }
+		, SW_ResourceAmounts {}
 	{ }
 
 	// Ares 0.A functions
@@ -239,7 +238,8 @@ public:
 	std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 	std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
-	void ApplyBattlePoints(SuperClass* pSW);
+	void ApplyResourceAmounts(SuperClass* pSW);
+	bool AreResourcesSufficient(HouseClass* pHouse) const;
 	void ApplyLinkedSW(SuperClass* pSW);
 
 	void ApplyActivatedMessage(SuperClass* pSW) const;

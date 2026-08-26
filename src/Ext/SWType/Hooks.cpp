@@ -266,7 +266,7 @@ DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
 
 // Full rewrite
-DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
+DEFINE_HOOK(0x6CC367, SuperClass_IsReady_Resources, 0xD)
 {
 	GET(SuperClass*, pSuper, ECX);
 
@@ -282,15 +282,9 @@ DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
 	}
 
 	const auto pExt = SWTypeExt::Fetch(pSuper->Type);
-	if (pExt->BattlePoints_Amount != 0)
+	if (!pExt->AreResourcesSufficient(pSuper->Owner))
 	{
-		const auto pOwnerExt = HouseExt::Fetch(pSuper->Owner);
-
-		if (pExt->BattlePoints_Amount < 0)
-		{
-			if (pOwnerExt->BattlePoints < std::abs(pExt->BattlePoints_Amount))
-				return ReturnZero;
-		}
+		return ReturnZero;
 	}
 
 	return ReturnIsReady;

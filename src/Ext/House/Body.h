@@ -65,7 +65,8 @@ public:
 
 	std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 
-	int BattlePoints;
+	std::vector<int> CustomResources;
+	std::vector<int> ResourceCollectorCounts;
 
 	// standalone? no need and not a good idea
 	struct SWExt
@@ -109,9 +110,10 @@ public:
 		, NumShipyards_NonMFB { 0 }
 		, AIFireSaleDelayTimer {}
 		, SuspendedEMPulseSWs {}
+		, CustomResources {}
+		, ResourceCollectorCounts {}
 		, SuperExts(SuperWeaponTypeClass::Array.Count)
 		, ForceEnemyIndex(-1)
-		, BattlePoints(0)
 		, ForceOnlyTargetHouseEnemy { false }
 		, ForceOnlyTargetHouseEnemyMode { -1 }
 		, TeamDelay(-1)
@@ -121,9 +123,13 @@ public:
 		, BeaconsPlacedOrder { 0, 0, 0 }
 	{ }
 
-	void UpdateBattlePoints(int modifier);
-	bool AreBattlePointsEnabled() const;
-	int CalculateBattlePoints(TechnoClass* pTechno) const;
+	int GetResourceAmount(int resourceIdx) const;
+	void SetResourceAmount(int resourceIdx, int amount);
+	void UpdateResourceAmount(int resourceIdx, int delta);
+	bool CanAffordResource(int resourceIdx, int amount) const;
+	bool IsResourceEnabled(int resourceIdx) const;
+	int CalculateResourceBounty(int resourceIdx, TechnoClass* pTechno) const;
+	void InitializeCustomResources();
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
 	void AddToLimboTracking(TechnoTypeClass* pTechnoType);

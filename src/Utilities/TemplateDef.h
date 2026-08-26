@@ -1119,6 +1119,94 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ResourceDisplayCondition>(ResourceDisplayCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "always") == 0)
+			{
+				value = ResourceDisplayCondition::Always;
+				return true;
+			}
+			else if (_strcmpi(str, "greaterthanzero") == 0 || _strcmpi(str, "positive") == 0 || _strcmpi(str, ">0") == 0)
+			{
+				value = ResourceDisplayCondition::GreaterThanZero;
+				return true;
+			}
+			else if (_strcmpi(str, "hascollector") == 0 || _strcmpi(str, "collector") == 0)
+			{
+				value = ResourceDisplayCondition::HasCollector;
+				return true;
+			}
+			else if (_strcmpi(str, "never") == 0 || _strcmpi(str, "none") == 0 || _strcmpi(str, "hidden") == 0 || _strcmpi(str, "no") == 0 || _strcmpi(str, "false") == 0)
+			{
+				value = ResourceDisplayCondition::Never;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display condition can be Always, GreaterThanZero, HasCollector or Never/None/Hidden");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourceDisplayOrientation>(ResourceDisplayOrientation& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "vertical") == 0)
+			{
+				value = ResourceDisplayOrientation::Vertical;
+				return true;
+			}
+			else if (_strcmpi(str, "horizontal") == 0)
+			{
+				value = ResourceDisplayOrientation::Horizontal;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display orientation can be Vertical or Horizontal");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourceDisplayAnchor>(ResourceDisplayAnchor& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "topright") == 0)
+			{
+				value = ResourceDisplayAnchor::TopRight;
+				return true;
+			}
+			else if (_strcmpi(str, "topleft") == 0)
+			{
+				value = ResourceDisplayAnchor::TopLeft;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomright") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomRight;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomleft") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomLeft;
+				return true;
+			}
+			else if (_strcmpi(str, "sidebar") == 0)
+			{
+				value = ResourceDisplayAnchor::Sidebar;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display anchor can be TopRight, TopLeft, BottomRight, BottomLeft or Sidebar");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

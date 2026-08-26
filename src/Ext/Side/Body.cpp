@@ -45,9 +45,11 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_PowerDelta_ColorRed.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
 	this->Sidebar_PowerDelta_ColorGrey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
-	this->Sidebar_BattlePoints_Offset.Read(exINI, pSection, "Sidebar.BattlePoints.Offset");
-	this->Sidebar_BattlePoints_Color.Read(exINI, pSection, "Sidebar.BattlePoints.Color");
-	this->Sidebar_BattlePoints_Align.Read(exINI, pSection, "Sidebar.BattlePoints.Align");
+	this->Sidebar_ResourceTypes_Offset.Read(exINI, pSection, "Sidebar.ResourceTypes.Offset");
+	this->Sidebar_ResourceTypes_Color.Read(exINI, pSection, "Sidebar.ResourceTypes.Color");
+	this->Sidebar_ResourceTypes_Align.Read(exINI, pSection, "Sidebar.ResourceTypes.Align");
+	this->Sidebar_ResourceTypes_Types.Read(exINI, pSection, "Sidebar.ResourceTypes.Types");
+
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
@@ -60,7 +62,7 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
 }
 
-// =============================
+// =============
 // load / save
 
 template <typename T>
@@ -84,9 +86,10 @@ void SideExt::Serialize(T& Stm)
 		.Process(this->Sidebar_PowerDelta_ColorRed)
 		.Process(this->Sidebar_PowerDelta_ColorGrey)
 		.Process(this->Sidebar_PowerDelta_Align)
-		.Process(this->Sidebar_BattlePoints_Offset)
-		.Process(this->Sidebar_BattlePoints_Color)
-		.Process(this->Sidebar_BattlePoints_Align)
+		.Process(this->Sidebar_ResourceTypes_Offset)
+		.Process(this->Sidebar_ResourceTypes_Color)
+		.Process(this->Sidebar_ResourceTypes_Align)
+		.Process(this->Sidebar_ResourceTypes_Types)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)

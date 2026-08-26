@@ -8,6 +8,8 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/InfantryType/Body.h>
+#include <Misc/FlyingStrings.h>
+#include <New/Type/ResourceTypeClass.h>
 
 // Unsorted methods
 
@@ -51,10 +53,25 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, House
 	{
 		if (auto pHouseExt = HouseExt::TryFetch(pHouse))
 		{
-			if (pHouseExt->AreBattlePointsEnabled())
+			const size_t resourceCount = ResourceTypeClass::Array.size();
+			for (size_t i = 0; i < resourceCount; ++i)
 			{
-				int points = pHouseExt->CalculateBattlePoints(pVictim);
-				pHouseExt->UpdateBattlePoints(points);
+				const int bounty = pHouseExt->CalculateResourceBounty(static_cast<int>(i), pVictim);
+				if (bounty != 0)
+				{
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), bounty);
+					if (const auto pResource = ResourceTypeClass::Array[i].get())
+					{
+						FlyingStrings::AddResourceString(
+							pResource,
+							bounty,
+							pVictim,
+							pHouse,
+							AffectedHouse::All,
+							pVictim->GetRenderCoords()
+						);
+					}
+				}
 			}
 		}
 	}

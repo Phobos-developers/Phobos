@@ -142,8 +142,6 @@ public:
 	// Ares 3.0
 	Nullable<bool> UnitSell;
 
-	Nullable<bool> BattlePointsCollector;
-
 	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
 		, PowersUp_Owner { AffectedHouse::Owner }
 		, PowersUp_Buildings {}
@@ -243,8 +241,6 @@ public:
 
 		// Ares 3.0
 		, UnitSell {}
-
-		, BattlePointsCollector {}
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)

@@ -3541,6 +3541,14 @@ DEFINE_JUMP(LJMP, 0x502630, 0x50263B);
 DEFINE_HOOK(0x7015A2, TechnoClass_SetOwningHouse_RefreshSidebar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(HouseClass*, pNewOwner, EBX);
+
+	if (const auto pExt = TechnoExt::Fetch(pThis))
+	{
+		pExt->ApplyCollectorRegistration(false, pThis->Owner);
+		pExt->ApplyCollectorRegistration(true, pNewOwner);
+	}
+
 	SidebarClass::Instance.OnTechnoDestroyed(pThis);
 	return 0;
 }

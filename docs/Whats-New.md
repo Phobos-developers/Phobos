@@ -421,7 +421,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
-- [Battle Points economy for super weapons](New-or-Enhanced-Logics.md#battle-points-economy-for-super-weapons) (by FS-21)
+- [Custom Resource Types](New-or-Enhanced-Logics.md#custom-resource-types) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 
 #### Vanilla fixes:

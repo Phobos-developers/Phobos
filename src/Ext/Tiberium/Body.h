@@ -4,6 +4,7 @@
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <New/Type/ResourceTypeClass.h>
 
 class TiberiumExt final : public AbstractTypeExt
 {
@@ -23,9 +24,13 @@ public:
 	}
 
 	Nullable<ColorStruct> MinimapColor;
+	NullableIdx<ResourceTypeClass> ResourceType;
+	Nullable<int> ResourceValue;
 
 	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, MinimapColor {}
+		, ResourceType { -1 }
+		, ResourceValue {}
 	{ }
 
 	virtual ~TiberiumExt() = default;

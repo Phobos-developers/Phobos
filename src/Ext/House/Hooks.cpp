@@ -5,6 +5,9 @@
 #include "Ext/Techno/Body.h"
 #include "Ext/Building/Body.h"
 #include <Ext/Event/Body.h>
+#include <Ext/Tiberium/Body.h>
+#include <New/Type/ResourceTypeClass.h>
+#include <Misc/FlyingStrings.h>
 
 #include <BeaconManagerClass.h>
 
@@ -68,7 +71,52 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 
 	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
-	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
+	if (idxTiberium >= 0 && idxTiberium < TiberiumClass::Array.Count)
+	{
+		const auto pTiberium = TiberiumClass::Array.GetItem(idxTiberium);
+		if (const auto pTibExt = TiberiumExt::TryFetch(pTiberium))
+		{
+			if (pTibExt->ResourceType.isset() && pTibExt->ResourceType >= 0)
+			{
+				const int resIdx = pTibExt->ResourceType.Get();
+				const bool hasCustomResourceValue = pTibExt->ResourceValue.isset();
+				const int unitVal = hasCustomResourceValue ? pTibExt->ResourceValue.Get() : pTiberium->Value;
+				const float incomingPoints = amount * static_cast<float>(unitVal);
+
+				if (incomingPoints > 0.0f && pBuilding && pBuilding->Owner)
+				{
+					if (const auto pHouseExt = HouseExt::TryFetch(pBuilding->Owner))
+					{
+						if (pHouseExt->IsResourceEnabled(resIdx))
+						{
+							if (const auto pBldExt = BuildingExt::TryFetch(pBuilding))
+							{
+								if (resIdx >= static_cast<int>(pBldExt->AccumulatedResources.size()))
+									pBldExt->AccumulatedResources.resize(resIdx + 1, 0.0f);
+
+								const int prevWhole = static_cast<int>(pBldExt->AccumulatedResources[resIdx]);
+								pBldExt->AccumulatedResources[resIdx] += incomingPoints;
+								const int newWhole = static_cast<int>(pBldExt->AccumulatedResources[resIdx]);
+								const int pointsToGrant = newWhole - prevWhole;
+
+								if (pointsToGrant > 0)
+								{
+									pHouseExt->UpdateResourceAmount(resIdx, pointsToGrant);
+								}
+							}
+						}
+					}
+				}
+
+				if (!hasCustomResourceValue)
+				{
+					amount = 0.0f; // Value was used for the custom resource, suppress money
+				}
+			}
+		}
+	}
+
+	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0 && amount > 0.0f)
 	{
 		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
 		amount = 0.0f;
@@ -856,3 +904,109 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 }
 
 #pragma endregion
+
+#pragma region ResourceCosts
+
+DEFINE_HOOK(0x4FD590, HouseClass_CanBuild_CheckResources, 0x6)
+{
+	GET(HouseClass*, pHouse, ECX);
+	GET_STACK(TechnoTypeClass*, pItem, 0x4);
+	GET_STACK(bool, check_money, 0x8);
+
+	if (check_money && pItem && pHouse)
+	{
+		if (const auto pTypeExt = TechnoTypeExt::TryFetch(pItem))
+		{
+			if (const auto pHouseExt = HouseExt::TryFetch(pHouse))
+			{
+				for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+				{
+					const int cost = pTypeExt->ResourceCosts[i];
+					if (cost > 0 && !pHouseExt->CanAffordResource(static_cast<int>(i), cost))
+					{
+						R->AL(0);
+						return 0x4FD605;
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FA4B0, HouseClass_BeginProduction_CheckAndDeductResources, 0x6)
+{
+	GET(HouseClass*, pHouse, ECX);
+	GET_STACK(AbstractType, absType, 0x4);
+	GET_STACK(int, index, 0x8);
+	GET_STACK(int, count, 0xC);
+
+	if (pHouse && count > 0)
+	{
+		if (const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index))
+		{
+			if (const auto pTypeExt = TechnoTypeExt::TryFetch(pType))
+			{
+				if (const auto pHouseExt = HouseExt::TryFetch(pHouse))
+				{
+					for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+					{
+						const int cost = pTypeExt->ResourceCosts[i];
+						if (cost > 0 && !pHouseExt->CanAffordResource(static_cast<int>(i), cost * count))
+						{
+							R->AL(0);
+							return 0x4FA66C;
+						}
+					}
+
+					for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+					{
+						const int cost = pTypeExt->ResourceCosts[i];
+						if (cost > 0)
+						{
+							pHouseExt->UpdateResourceAmount(static_cast<int>(i), -(cost * count));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FAA20, HouseClass_AbandonProduction_RefundResources, 0x6)
+{
+	GET(HouseClass*, pHouse, ECX);
+	GET_STACK(AbstractType, absType, 0x4);
+	GET_STACK(int, index, 0x8);
+	GET_STACK(int, count, 0xC);
+
+	if (pHouse)
+	{
+		if (const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index))
+		{
+			if (const auto pTypeExt = TechnoTypeExt::TryFetch(pType))
+			{
+				if (const auto pHouseExt = HouseExt::TryFetch(pHouse))
+				{
+					const int refundCount = (count > 0) ? count : 1;
+					for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+					{
+						const int cost = pTypeExt->ResourceCosts[i];
+						if (cost > 0)
+						{
+							pHouseExt->UpdateResourceAmount(static_cast<int>(i), cost * refundCount);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+

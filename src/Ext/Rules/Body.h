@@ -347,10 +347,6 @@ public:
 		int TintColorBerserk;
 		Valueable<bool> InfantryAutoDeploy;
 
-		Nullable<bool> BattlePoints;
-		Nullable<int> BattlePoints_DefaultValue;
-		Nullable<int> BattlePoints_DefaultFriendlyValue;
-
 		Valueable<int> AdjacentWallDamage;
 		Valueable<int> WarheadAnimZAdjust;
 
@@ -837,9 +833,6 @@ public:
 			, Parasite_GrappleAnim {}
 			, Parasite_AllowWaterExit {}
 			, InfantryAutoDeploy { false }
-			, BattlePoints {}
-			, BattlePoints_DefaultValue {}
-			, BattlePoints_DefaultFriendlyValue {}
 			, AdjacentWallDamage { 200 }
 			, WarheadAnimZAdjust { -15 }
 

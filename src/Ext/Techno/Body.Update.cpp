@@ -14,6 +14,12 @@
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::OnEarlyUpdate()
 {
+	if (!this->ResourceInitialized && this->OwnerObject() && this->OwnerObject()->Owner && !this->OwnerObject()->InLimbo)
+	{
+		this->InitializeResourceProductions();
+	}
+
+	this->UpdateResourceProductions();
 	this->UpdateShield();
 	this->UpdateAttachEffects();
 	this->EatPassengers();

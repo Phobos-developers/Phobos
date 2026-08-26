@@ -17,8 +17,6 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->BattlePoints.Read(exINI, pSection, "BattlePoints");
-	this->BattlePoints_CanUseStandardPoints.Read(exINI, pSection, "BattlePoints.CanUseStandardPoints");
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 }
 
@@ -26,8 +24,6 @@ template <typename T>
 void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BattlePoints)
-		.Process(this->BattlePoints_CanUseStandardPoints)
 		.Process(this->EVATag)
 		;
 }
