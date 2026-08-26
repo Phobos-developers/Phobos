@@ -1,5 +1,4 @@
 #include <AircraftTrackerClass.h>
-#include <DisplayClass.h>
 #include <EventClass.h>
 #include <HoverLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -3150,9 +3149,9 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 
 		if (auto const pBuilding = pCell->GetBuilding())
 		{
-			auto const pType = pBuilding->Type;
+			auto const pBuildingType = pBuilding->Type;
 
-			if (BuildingTypeExt::Fetch(pType)->UnitSell.Get(pType->UnitRepair))
+			if (BuildingTypeExt::Fetch(pBuildingType)->UnitSell.Get(pBuildingType->UnitRepair))
 				return true;
 		}
 	}
@@ -3160,28 +3159,6 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	return false;
 }
 
-// Override the final action to `Sell` for technos with `Unsellable.Direct` set,
-// so the sell cursor can be shown over them even when they are not docked and even when
-// Ares is loaded (Ares's own hook at 0x6929FC would otherwise set NoSell for infantry).
-DEFINE_HOOK(0x692B28, DisplayClass_ChooseAction_AllowCursor, 0x6)
-{
-	enum { Continue = 0 };
-
-	if (!DisplayClass::Instance.SellMode)
-		return Continue;
-
-	GET(ObjectClass*, pObject, ESI);
-
-	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
-	{
-		auto const pType = pTechno->GetTechnoType();
-		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
-		if (pTypeExt->Unsellable_Direct.Get(false))
-			R->Stack(0x10, static_cast<int>(Action::Sell));
-	}
-
-	return Continue;
-}
 
 // Verify if object can be sold at event level.
 DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
