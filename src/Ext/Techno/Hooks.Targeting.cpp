@@ -91,7 +91,4 @@ DEFINE_HOOK(0x6F9AF4, TechnoClass_SelectAutoTarget_DisableStupid, 0x6)
 	return RulesExt::Global()->DisableOveroptimizationInTargeting ? 0x6F9B1B : 0;
 }
 
-DEFINE_HOOK(0x6F9039, TechnoClass_SelectAutoTarget_HealGuardRange, 0x5)
-{
-	return 0x6F9042;
-}
+DEFINE_JUMP(LJMP, 0x6F9039, 0x6F9042); // TechnoClass_SelectAutoTarget_HealGuardRange
