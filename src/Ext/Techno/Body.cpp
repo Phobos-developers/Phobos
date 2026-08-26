@@ -351,7 +351,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 {
 	auto const pToObject = pToType->CreateObject(pFromTechno->Owner);
-	auto const pToTechno = abstract_cast<TechnoClass*>(pToObject);
+	auto const pToTechno = static_cast<TechnoClass*>(pToObject);
 	if (!pToTechno)
 	{
 		if (pToObject)
@@ -441,8 +441,9 @@ bool TechnoExt::ConvertToType(TechnoClass* pThisTechno, TechnoTypeClass* pToType
 		return false;
 	}
 
-	if (pType->WhatAmI() != pToType->WhatAmI()
-		|| (pType->WhatAmI() == pToType->WhatAmI() && pType->WhatAmI() == AbstractType::BuildingType))
+    const auto absType = pType->WhatAmI();
+    
+	if (absType != pToType->WhatAmI() || absType == AbstractType::BuildingType)
 		return XConvertToType(pThisTechno, pToType);
 
 	auto const pThis = abstract_cast<FootClass*>(pThisTechno);
@@ -589,8 +590,12 @@ void TechnoExt::TransferStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	pTo->ArmorMultiplier = pFrom->ArmorMultiplier;
 	pTo->FirepowerMultiplier = pFrom->FirepowerMultiplier;
 	if (auto const pFromFoot = abstract_cast<FootClass*>(pFrom))
+	{
 		if (auto const pToFoot = abstract_cast<FootClass*>(pTo))
+		{
 			pToFoot->SpeedMultiplier = pFromFoot->SpeedMultiplier;
+		}
+	}
 }
 
 void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
@@ -599,13 +604,13 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 		? pTechnoFrom->MindControlRingAnim->Type
 		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
 
-	if (const auto Controller = pTechnoFrom->MindControlledBy)
+	if (const auto pController = pTechnoFrom->MindControlledBy)
 	{
-		if (const auto Manager = Controller->CaptureManager)
+		if (const auto pManager = pController->CaptureManager)
 		{
-			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
+			CaptureManagerExt::FreeUnit(pManager, pTechnoFrom, true);
 
-			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, pAnimType, true))
+			if (CaptureManagerExt::CaptureUnit(pManager, pTechnoTo, false, pAnimType, true))
 			{
 				if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechnoTo))
 				{
@@ -629,9 +634,9 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 			}
 		}
 	}
-	else if (const auto MCHouse = pTechnoFrom->MindControlledByHouse)
+	else if (const auto phMC = pTechnoFrom->MindControlledByHouse)
 	{
-		pTechnoTo->MindControlledByHouse = MCHouse;
+		pTechnoTo->MindControlledByHouse = phMC;
 		pTechnoFrom->MindControlledByHouse = nullptr;
 	}
 	else if (pTechnoFrom->MindControlledByAUnit) // Perma MC
