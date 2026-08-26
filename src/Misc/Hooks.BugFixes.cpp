@@ -3159,7 +3159,6 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	return false;
 }
 
-
 // Verify if object can be sold at event level.
 DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 {
