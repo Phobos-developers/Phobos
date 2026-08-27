@@ -841,6 +841,24 @@ ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
 ...
 ```
 
+### `620-622` Modify Custom Resource
+
+- Modifies the stored amount of a custom resource for a house.
+  - `620`: Sets the resource amount to a specific value.
+  - `621`: Adds the specified amount to the current resource amount.
+  - `622`: Subtracts the specified amount from the current resource amount.
+  - `HouseIndex` specifies the target house (`-1` or omitted uses the trigger owner / current player).
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],620,4,[ResourceTypeID],[Amount],[HouseIndex],0,0,A,[ActionX]
+ID=ActionCount,[Action1],621,4,[ResourceTypeID],[Amount],[HouseIndex],0,0,A,[ActionX]
+ID=ActionCount,[Action1],622,4,[ResourceTypeID],[Amount],[HouseIndex],0,0,A,[ActionX]
+...
+```
+
 ### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
@@ -1036,6 +1054,21 @@ In `mycampaign.map`:
 [Events]
 ...
 ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```
+
+### `610-611` House Has Custom Resource Greater/Less Than
+
+- Checks if the trigger owner house has more or less than the specified amount of a custom resource.
+  - `610`: Springs when the house owns strictly greater than the specified amount of the resource.
+  - `611`: Springs when the house owns strictly less than the specified amount of the resource.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,610,2,[Amount],[ResourceTypeID],...
+ID=EventCount,...,611,2,[Amount],[ResourceTypeID],...
 ...
 ```
 

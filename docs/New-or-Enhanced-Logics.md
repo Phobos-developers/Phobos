@@ -337,6 +337,7 @@ Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should 
     - `ColorRed`: no harvesters are active / all idle (defaults to `255,0,0`).
     - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of harvester activity.
   - When `Weeds` is declared, it automatically tracks the player's stored Veinhole monster Tiberium / Weeds (`pPlayer->OwnedWeed.GetTotalAmount()`) and replaces the legacy sidebar weeds counter.
+- Supports map trigger actions `620 Set Custom Resource`, `621 Add Custom Resource`, `622 Subtract Custom Resource`, and trigger events `610 House Has Custom Resource Greater Than`, `611 House Has Custom Resource Less Than` (see [AI Scripting and Mapping](AI-Scripting-and-Mapping.md)).
 
 In `rulesmd.ini`:
 ```ini
