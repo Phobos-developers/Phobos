@@ -366,8 +366,10 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	pToTechno->SetTarget(pFromTechno->Target);
 
 	auto location = pFromTechno->GetCoords();
+	auto const pFromFoot = abstract_cast<FootClass*>(pFromTechno);
 	auto const pFromBuilding = abstract_cast<BuildingClass*>(pFromTechno);
 	auto const pToBuilding = abstract_cast<BuildingClass*>(pToTechno);
+	auto const pToInfantry = abstract_cast<InfantryClass*>(pToTechno);
 	if (pFromBuilding)
 	{
 		auto const buildingCell = CellClass::Coord2Cell(location);
@@ -384,9 +386,35 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 		pBuildingExt->DeployedTechno = true;
 	}
 
-	if (auto const pFromFoot = abstract_cast<FootClass*>(pFromTechno))
+	if (pFromFoot)
 		pToTechno->SetDestination(pFromFoot->Destination, true);
 	pToTechno->QueueMission(pFromTechno->CurrentMission, false);
+
+	if (pFromBuilding && pFromBuilding->Occupants.Count > 0)
+	{
+		if (pToBuilding
+			&& pToBuilding->Type->CanBeOccupied
+			&& pToBuilding->Type->MaxNumberOccupants >= pFromBuilding->Occupants.Count)
+		{
+			pToBuilding->Occupants = pFromBuilding->Occupants;
+		}
+		else
+		{
+			pFromBuilding->Mission_Unload();
+		}
+	}
+
+	if (pFromFoot && pFromFoot->IsDeploying)
+	{
+		if (pToInfantry->Type->Sequence->GetSequence(Sequence::Deployed))
+		{
+			pToInfantry->PlayAnim(Sequence::Deployed, true);
+		}
+		else
+		{
+			pToInfantry->PlayAnim(Sequence::Ready, true);
+		}
+	}
 
 	++Unsorted::ScenarioInit;
 	pToTechno->Unlimbo(location, pFromTechno->PrimaryFacing.Current().GetDir());
