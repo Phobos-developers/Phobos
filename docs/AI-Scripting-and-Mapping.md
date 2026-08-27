@@ -739,7 +739,7 @@ ID=ActionCount,[Action1],521,0,0,[ShowTimerMethod],[VariableIndex],[ReverseTimer
 | 4           | Show value of the selected global variable          |
 
 ```{note}
-This won't affect how the global mission timer really ticks, so it'll still end after `[Basic] -> InitTime` amount of time.
+This won't affect how the global mission timer really ticks, so it'll still end after the mission tiemr expired.
 ```
 
 ### `600` Configure Drop Crate
