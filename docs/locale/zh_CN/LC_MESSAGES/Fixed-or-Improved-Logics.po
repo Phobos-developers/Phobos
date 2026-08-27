@@ -1705,6 +1705,11 @@ msgid ""
 "AI did not play `ProductionAnim` when placing a produced building."
 msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug。"
 
+msgid ""
+"Fixed the bug that computer player record cannot be log normally "
+"in non English mode."
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

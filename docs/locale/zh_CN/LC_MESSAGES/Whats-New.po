@@ -5064,6 +5064,11 @@ msgstr ""
 "CrimRecya）"
 
 msgid ""
+"Fixed the bug that computer player record cannot be log normally "
+"in non English mode (by NetsuNegi)"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug（by NetsuNegi）"
+
+msgid ""
 "Fixed a few errors of calling for superweapon launch by `LaunchSW` or "
 "building infiltration (by Trsdy)"
 msgstr "修复了通过 `LaunchSW` 或渗透建筑来调用超级武器发射相关的若干错误（by Trsdy）"
