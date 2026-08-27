@@ -330,6 +330,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button.
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
+- Fixed the bug that computer player record cannot be log normally in non English mode.
 
 ## Fixes / interactions with other extensions
 
@@ -564,6 +566,16 @@ Warhead.PreventScatter=false  ; boolean
 [AudioVisual]
 LeptonMindControlOffset=70    ; integer, in leptons
 MindControlRingOffset=140     ; integer, in leptons
+```
+
+### Customize whether mind-controlled Insignificant technos can be auto-targeted
+
+- In vanilla Red Alert 2, non-building technos with `Insignificant=yes` can never be acquired as auto targets, even when mind-controlled. In vanilla Yuri's Revenge, such technos become targetable once they are mind-controlled. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AutoTarget.InsignificantWhenMindControlled=true  ; boolean
 ```
 
 ### Customizing effect of level lighting on air units
@@ -2086,6 +2098,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
 PsychicDetectable=true  ; boolean
+```
+
+### Customize whether the unit exits from the roof
+
+- In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from the roof. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
 ### Damaged speed customization

@@ -4,7 +4,6 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
 
@@ -1109,7 +1108,7 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if (pThis && !TechnoTypeExt::Fetch(pThis->GetTechnoType())->PsychicDetectable)
+	if (pThis && !TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
 	{
 		R->EAX(0);
 		return 0x43B4B0;
