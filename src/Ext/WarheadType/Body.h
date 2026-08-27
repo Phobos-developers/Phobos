@@ -285,6 +285,8 @@ public:
 	Valueable<bool> IvanBomb_Detonate;
 	Valueable<bool> IvanBomb_Detonate_InvokerOnly;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectsType;
+	Valueable<bool> IvanBomb_Detonate_PenetrateTransport;
+	Valueable<bool> IvanBomb_Detonate_PenetrateBuilding;
 
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
@@ -581,6 +583,8 @@ public:
 		, IvanBomb_Detonate { false }
 		, IvanBomb_Detonate_InvokerOnly { true }
 		, IvanBomb_Detonate_AffectsType {}
+		, IvanBomb_Detonate_PenetrateTransport { false }
+		, IvanBomb_Detonate_PenetrateBuilding { false }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
