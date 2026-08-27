@@ -1007,6 +1007,9 @@ DEFINE_HOOK(0x692B28, DisplayClass_ChooseAction_AllowCursor, 0x6)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		if (pTechno->Owner != HouseClass::CurrentPlayer)
+			return Continue;
+
 		auto const pType = pTechno->GetTechnoType();
 		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 		if (pTypeExt->Unsellable_Direct.Get(false))
