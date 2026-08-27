@@ -70,8 +70,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	case PhobosTriggerAction::SetFollowsIndexForVehicle:
 		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
 
-	case PhobosTriggerAction::SetMissionTimerType:
-		return TActionExt::SetMissionTimerType(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetMissionTimer:
+		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::SetDropCrate:
 		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
@@ -781,7 +781,7 @@ bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pH
 	return true;
 }
 
-bool TActionExt::SetMissionTimerType(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	const int type = pThis->Param3;
 	const int reverse = pThis->Param5;

@@ -556,15 +556,13 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 	DrawTimerTemp::TimeLeft = R->EDX<int>();
 	DrawTimerTemp::IsPercentage = false;
 	DrawTimerTemp::IsDigit = false;
-	const auto& timer = ScenarioClass::Instance->MissionTimer;
-	const int timerPassed = (timer.CurrentTime - timer.StartTime) / 15;
 
 	switch (ScenarioExt::Global()->MissionTimer_Type)
 	{
 	case 1:
 	{
 		DrawTimerTemp::IsPercentage = true;
-		const int totalTime = timerPassed + DrawTimerTemp::TimeLeft;
+		const int totalTime = ScenarioExt::Global()->MissionTimer_Variable;
 		if (ScenarioExt::Global()->MissionTimer_Reverse)
 			DrawTimerTemp::Percentage = totalTime > 0 ? static_cast<double>(DrawTimerTemp::TimeLeft) / totalTime : 1.0;
 		else
@@ -574,7 +572,7 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 	case 2:
 	{
 		if (ScenarioExt::Global()->MissionTimer_Reverse)
-			DrawTimerTemp::TimeLeft = timerPassed;
+			DrawTimerTemp::TimeLeft = ScenarioExt::Global()->MissionTimer_Variable - DrawTimerTemp::TimeLeft;
 		DrawTimerTemp::IsDigit = true;
 		break;
 	}
@@ -599,7 +597,7 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 	default:
 	{
 		if (ScenarioExt::Global()->MissionTimer_Reverse)
-			DrawTimerTemp::TimeLeft = timerPassed;
+			DrawTimerTemp::TimeLeft = ScenarioExt::Global()->MissionTimer_Variable - DrawTimerTemp::TimeLeft;
 		break;
 	}
 	}
