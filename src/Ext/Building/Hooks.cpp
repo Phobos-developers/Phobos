@@ -1055,7 +1055,7 @@ static bool IsRoofExitTechno(TechnoTypeClass* pType)
 
 static bool IsRoofExitBuildingUnit(BuildingClass* pBuilding)
 {
-	auto pUnit = pBuilding->GetNthLink();
+	const auto pUnit = pBuilding->GetNthLink();
 	return pUnit && IsRoofExitTechno(pUnit->GetTechnoType());
 }
 
