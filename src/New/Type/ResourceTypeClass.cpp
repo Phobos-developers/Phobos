@@ -153,30 +153,21 @@ void ResourceTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crate_Sound.Read(exINI, section, "Crate.Sound");
 	this->Crate_Anim.Read(exINI, section, "Crate.Anim");
 
-	this->Display_Power_Mode.Read(exINI, section, "Display.Power.Mode");
-	this->Display_Power_Mode.Read(exINI, section, "Display.Power.Format");
+	this->Display_Power_Mode.Read(exINI, section, "Display.Format");
 
-	this->Display_Power_ColorGreen.Read(exINI, section, "Display.Power.ColorGreen");
 	this->Display_Power_ColorGreen.Read(exINI, section, "Display.ColorGreen");
-	this->Display_Power_ColorYellow.Read(exINI, section, "Display.Power.ColorYellow");
 	this->Display_Power_ColorYellow.Read(exINI, section, "Display.ColorYellow");
-	this->Display_Power_ColorRed.Read(exINI, section, "Display.Power.ColorRed");
 	this->Display_Power_ColorRed.Read(exINI, section, "Display.ColorRed");
-	this->Display_Power_ColorGrey.Read(exINI, section, "Display.Power.ColorGrey");
 	this->Display_Power_ColorGrey.Read(exINI, section, "Display.ColorGrey");
 
-	this->Display_Harvester_Mode.Read(exINI, section, "Display.Harvesters.Mode");
-	this->Display_Harvester_Mode.Read(exINI, section, "Display.Harvesters.Format");
+	this->Display_Harvester_Mode.Read(exINI, section, "Display.Format");
 
-	this->Display_Harvester_ColorGreen.Read(exINI, section, "Display.Harvesters.ColorGreen");
 	this->Display_Harvester_ColorGreen.Read(exINI, section, "Display.ColorGreen");
-	this->Display_Harvester_ColorYellow.Read(exINI, section, "Display.Harvesters.ColorYellow");
 	this->Display_Harvester_ColorYellow.Read(exINI, section, "Display.ColorYellow");
-	this->Display_Harvester_ColorRed.Read(exINI, section, "Display.Harvesters.ColorRed");
 	this->Display_Harvester_ColorRed.Read(exINI, section, "Display.ColorRed");
 
 	bool showTotal = true;
-	if (exINI.ReadBool(section, "Display.Power.ShowTotal", &showTotal))
+	if (exINI.ReadBool(section, "Display.ShowTotal", &showTotal))
 	{
 		this->Display_Power_Mode = showTotal ? ResourcePowerDisplayMode::NetAndTotal : ResourcePowerDisplayMode::Net;
 	}

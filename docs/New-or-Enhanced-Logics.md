@@ -322,16 +322,16 @@ Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should 
   - `Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
 - `[ResourceTypes]` also supports **`Money`**, **`Power`**, **`Harvesters`**, and **`Weeds`** pseudo-resources. Simply declare them in the list (e.g. `0=Money`, `1=Power`, `2=Harvesters`, `3=Weeds`) to customize their HUD display (labels, positioning, formatting, status colors, or moving them between the sidebar and the tactical screen).
   - When `Money` is declared, it automatically tracks player credits and replaces the default sidebar counter with the Resource HUD. It also supports `Production.Money` and `ResourceCollector.Money`.
-  - `Display.Power.Format` controls the format of the displayed power value (`DrainAndTotal`, `Drain`, `NetAndTotal`, `Net`, `Total`; defaults to `NetAndTotal`).
-  - `Display.Power.ColorGreen`, `Display.Power.ColorYellow`, `Display.Power.ColorRed`, `Display.Power.ColorGrey` (or `Display.ColorGreen`, `ColorYellow`, `ColorRed`, `ColorGrey`) optional R,G,B text colors for power states:
+  - `Display.Format` controls the format of the displayed power value (`NetAndTotal`, `Net`, `DrainAndTotal`, `Drain`, `Total`; defaults to `NetAndTotal`).
+  - `Display.ColorGreen`, `Display.ColorYellow`, `Display.ColorRed`, `Display.ColorGrey` optional R,G,B text colors for power states:
     - `ColorGreen`: normal surplus power (defaults to `0,255,0`).
     - `ColorYellow`: high drain / low power (defaults to `255,255,0`).
     - `ColorRed`: power deficit / low power offline (defaults to `255,0,0`).
     - `ColorGrey`: blackout active (defaults to `128,128,128`).
     - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of power status.
   - When `Harvesters` is declared, it automatically tracks active and total harvesters and replaces the legacy sidebar harvester counter.
-  - `Display.Harvesters.Format` controls the format of the displayed harvester counter (`ActiveAndTotal`, `Active`, `Total`; defaults to `ActiveAndTotal`).
-  - `Display.Harvesters.ColorGreen`, `Display.Harvesters.ColorYellow`, `Display.Harvesters.ColorRed` (or `Display.ColorGreen`, `ColorYellow`, `ColorRed`) optional R,G,B text colors for harvester activity states:
+  - `Display.Format` controls the format of the displayed harvester counter (`ActiveAndTotal`, `Active`, `Total`; defaults to `ActiveAndTotal`).
+  - `Display.ColorGreen`, `Display.ColorYellow`, `Display.ColorRed` optional R,G,B text colors for harvester activity states:
     - `ColorGreen`: all harvesters are actively harvesting or unloading (defaults to `0,255,0`).
     - `ColorYellow`: some harvesters are active while at least one is idle (defaults to `255,255,0`).
     - `ColorRed`: no harvesters are active / all idle (defaults to `255,0,0`).
@@ -392,11 +392,11 @@ Display.Label.InvertPosition=false               ; boolean
 Display.Label.UseSpace=false                     ; boolean
 Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
 Display.Offset=                                  ; Point2D - X,Y
-Display.Power.Format=NetAndTotal                 ; ResourcePowerDisplayMode (NetAndTotal | Net | DrainAndTotal | Drain | Total)
-Display.Power.ColorGreen=0,255,0                 ; integer - Red,Green,Blue (normal power surplus, default 0,255,0)
-Display.Power.ColorYellow=255,255,0              ; integer - Red,Green,Blue (low power / high drain, default 255,255,0)
-Display.Power.ColorRed=255,0,0                   ; integer - Red,Green,Blue (power deficit / offline, default 255,0,0)
-Display.Power.ColorGrey=128,128,128              ; integer - Red,Green,Blue (blackout status, default 128,128,128)
+Display.Format=NetAndTotal                       ; ResourcePowerDisplayMode (NetAndTotal | Net | DrainAndTotal | Drain | Total)
+Display.ColorGreen=0,255,0                       ; integer - Red,Green,Blue (normal power surplus, default 0,255,0)
+Display.ColorYellow=255,255,0                    ; integer - Red,Green,Blue (low power / high drain, default 255,255,0)
+Display.ColorRed=255,0,0                         ; integer - Red,Green,Blue (power deficit / offline, default 255,0,0)
+Display.ColorGrey=128,128,128                    ; integer - Red,Green,Blue (blackout status, default 128,128,128)
 Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
 
 [Harvesters]                                     ; Harvesters Pseudo-Resource (tracks active and total harvesters)
@@ -405,10 +405,10 @@ Display.Label.InvertPosition=false               ; boolean
 Display.Label.UseSpace=false                     ; boolean
 Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | Never; HasCollector is ignored)
 Display.Offset=                                  ; Point2D - X,Y
-Display.Harvesters.Format=ActiveAndTotal         ; ResourceHarvesterDisplayMode (ActiveAndTotal | Active | Total)
-Display.Harvesters.ColorGreen=0,255,0            ; integer - Red,Green,Blue (100% harvesters active, default 0,255,0)
-Display.Harvesters.ColorYellow=255,255,0         ; integer - Red,Green,Blue (some harvesters active, default 255,255,0)
-Display.Harvesters.ColorRed=255,0,0              ; integer - Red,Green,Blue (no harvesters active, default 255,0,0)
+Display.Format=ActiveAndTotal                    ; ResourceHarvesterDisplayMode (ActiveAndTotal | Active | Total)
+Display.ColorGreen=0,255,0                       ; integer - Red,Green,Blue (100% harvesters active, default 0,255,0)
+Display.ColorYellow=255,255,0                    ; integer - Red,Green,Blue (some harvesters active, default 255,255,0)
+Display.ColorRed=255,0,0                         ; integer - Red,Green,Blue (no harvesters active, default 255,0,0)
 Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
 
 [Weeds]                                          ; Weeds Pseudo-Resource (tracks stored Veinhole monster Tiberium / Weeds)
