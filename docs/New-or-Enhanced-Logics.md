@@ -2243,6 +2243,13 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
+  - `PlayerPowerState`: The object will die if its owner's power status matches the configured state.
+    - `low` / `consumer`: Trigger when the owner is in low power.
+    - `full` / `normal`: Trigger when the owner is not in low power.
+  - `PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits.
+    - If only `PlayerMoney.Max` is set, triggers when money is not above this value.
+    - If only `PlayerMoney.Min` is set, triggers when money is not below this value.
+    - If both are set, triggers when money is **inside the range**.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
@@ -2278,6 +2285,9 @@ AutoDeath.TechnosExist=                           ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                   ; boolean
 AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
 AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.PlayerPowerState=none                   ; Player Power Enumeration (none|low/consumer|full/normal)
+AutoDeath.PlayerMoneyLessThan=-1                  ; integer
+AutoDeath.PlayerMoneyMoreThan=-1                  ; integer
 ```
 
 ```{note}

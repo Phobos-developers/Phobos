@@ -4667,6 +4667,27 @@ msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类�
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
 msgstr "`Technos(Dont)Exist.Houses` 控制检查哪些所属方。"
 
+msgid "`PlayerPowerState`: The object will die if its owner's power status matches the configured state."
+msgstr "`PlayerPowerState`：当对象所属方的电力状态符合设定条件时，则对象死亡。"
+
+msgid "`low` / `consumer`: Trigger when the owner is in low power."
+msgstr "`low` / `consumer`：当对象所属方处于电力不足状态时触发。"
+
+msgid "`full` / `normal`: Trigger when the owner is not in low power."
+msgstr "`full` / `normal`：当对象所属方未处于电力不足状态时触发。"
+
+msgid "`PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits."
+msgstr "`PlayerMoney.Max` ／ `PlayerMoney.Min`：根据对象所属方的资金决定对象是否死亡。"
+
+msgid "If only `PlayerMoney.Max` is set, triggers when money is not above this value."
+msgstr "仅设置 `PlayerMoney.Max` 时，当资金不高于该值时触发。"
+
+msgid "If only `PlayerMoney.Min` is set, triggers when money is not below this value."
+msgstr "仅设置 `PlayerMoney.Min` 时，当资金不低于该值时触发。"
+
+msgid "If both are set, triggers when money is **inside the range**."
+msgstr "同时设置时，资金处于**区间内**时触发。"
+
 msgid "The auto-death behavior can be chosen from the following:"
 msgstr "自毁行为有以下选择："
 
