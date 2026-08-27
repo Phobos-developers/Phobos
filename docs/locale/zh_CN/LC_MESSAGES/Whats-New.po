@@ -3032,6 +3032,12 @@ msgid ""
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
 
 msgid ""
+"Fixed the issue where vehicles always finish turret resetting first "
+"before turn to a new attack target, now it should turn to "
+"new target immediately (by NetsuNegi)"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标（by NetsuNegi）"
+
+msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it (by NetsuNegi)"
 msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug（by NetsuNegi）"
