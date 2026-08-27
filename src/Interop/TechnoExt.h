@@ -31,10 +31,10 @@ public:
 /// <summary>
 /// Converts a unit to a different type.
 /// </summary>
-/// <param name="pThis">Pointer to the FootClass instance to convert</param>
+/// <param name="pThis">Pointer to the TechnoClass instance to convert</param>
 /// <param name="toType">Pointer to the target TechnoTypeClass</param>
 /// <returns>S_OK if conversion was successful, E_INVALIDARG if types are incompatible, E_FAIL if conversion failed</returns>
-DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType);
+DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, TechnoClass* pThis, TechnoTypeClass* toType);
 
 DEFINE_EXPORT(HRESULT, RegisterCalculateExtraThreatCallback, CalculateExtraThreatCallback callback);
 

@@ -406,7 +406,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 
 	if (pFromFoot && pFromFoot->IsDeploying)
 	{
-		if (pToInfantry->Type->Sequence->GetSequence(Sequence::Deployed))
+		if (pToInfantry->Type->Sequence->GetSequence(Sequence::Deployed).CountFrames)
 		{
 			pToInfantry->PlayAnim(Sequence::Deployed, true);
 		}
