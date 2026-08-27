@@ -1711,6 +1711,11 @@ msgid ""
 "new target immediately."
 msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标。"
 
+msgid ""
+"Fixed the bug that computer player record cannot be log normally "
+"in non English mode."
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
