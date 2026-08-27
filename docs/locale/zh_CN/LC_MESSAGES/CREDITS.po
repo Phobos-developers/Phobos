@@ -1893,6 +1893,12 @@ msgid "Customize ivan bomb visibility"
 msgstr "自定义伊文炸弹可见性"
 
 msgid ""
+"Fix the issue where vehicles always finish turret resetting first "
+"before turn to a new attack target, now it should turn to "
+"new target immediately"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标"
+
+msgid ""
 "Fixed a bug that computer player record cannot be log normally "
 "in non English mode"
 msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"

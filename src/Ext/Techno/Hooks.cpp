@@ -2414,3 +2414,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F40, CrewTemp::TechnoClassFake::_GetCrewCount)
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCount) // BuildingClass
 
 #pragma endregion
+
+// UnitClass::UpdateRotation
+// Allow turret turn to target immediately
+DEFINE_JUMP(LJMP, 0x7369A5, 0x7369B3)
