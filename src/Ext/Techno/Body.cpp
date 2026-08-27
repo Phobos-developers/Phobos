@@ -372,6 +372,9 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	auto const pToInfantry = abstract_cast<InfantryClass*>(pToTechno);
 	if (pFromBuilding)
 	{
+		if (pFromBuilding->CurrentMission == Mission::Selling)
+			return false;
+
 		auto const buildingCell = CellClass::Coord2Cell(location);
 		auto const tmpCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pFromBuilding->Type, buildingCell);
 		location = CellClass::Cell2Coord(buildingCell + buildingCell - tmpCell, location.Z);
@@ -424,16 +427,8 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	if (wasSelected)
 		pToTechno->Select();
 
-	if (pFromBuilding && pFromBuilding->CanBeSold() && !pFromBuilding->IsStrange())
-	{
-		pFromBuilding->SetArchiveTarget(nullptr); // Reset to ensure it must to be sold
-		pFromBuilding->Sell(-1);
-	}
-	else
-	{
-		pFromTechno->Limbo();
-		pFromTechno->UnInit();
-	}
+	pFromTechno->Limbo();
+	pFromTechno->UnInit();
 
 	if (!pToBuilding)
 		return true;
