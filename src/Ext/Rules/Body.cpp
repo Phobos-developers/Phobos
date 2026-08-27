@@ -12,6 +12,7 @@
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/ResourceTypeClass.h>
+#include <Ext/Side/Body.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -33,7 +34,19 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	ResourceTypeClass::LoadFromINIList(pINI);
-	ResourceTypeClass::LoadGlobalsFromINI(pINI);
+
+	// Re-read Sidebar.ResourceTypes.Types for all sides now that ResourceTypes are registered
+	{
+		INI_EX exINI(pINI);
+		for (const auto pSide : SideClass::Array)
+		{
+			if (auto pSideExt = SideExt::TryFetch(pSide))
+			{
+				pSideExt->Sidebar_ResourceTypes_Types.Read(exINI, pSide->ID, "Sidebar.ResourceTypes.Types");
+			}
+		}
+	}
+
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	SelectBoxTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);

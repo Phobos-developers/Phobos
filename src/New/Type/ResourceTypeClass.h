@@ -7,17 +7,6 @@
 class ResourceTypeClass final : public Enumerable<ResourceTypeClass>
 {
 public:
-	// Global HUD Configuration
-	static Valueable<ResourceDisplayOrientation> Global_Display_Orientation;
-	static Valueable<ResourceDisplayAnchor> Global_Display_Anchor;
-	static Valueable<Point2D> Global_Display_BaseOffset;
-	static Valueable<int> Global_Display_Spacing;
-	static Nullable<TextAlign> Global_Display_Align;
-	static PhobosPCXFile Global_Display_Background_PCX;
-	static Valueable<SHPStruct*> Global_Display_Background_SHP;
-	static CustomPalette Global_Display_Background_Palette;
-	static Valueable<Point2D> Global_Display_Background_Offset;
-
 	// Per-Resource Display Configuration
 	Valueable<CSFText> Display_Label;
 	Valueable<bool> Display_Label_InvertPosition;
@@ -42,20 +31,32 @@ public:
 	NullableIdx<VocClass> Crate_Sound;
 	NullableIdx<AnimTypeClass> Crate_Anim;
 
-	// Pseudo-Resource Types (Money and Power)
+	// Pseudo-Resource Types (Money, Power, and Harvesters)
 	Valueable<ResourcePowerDisplayMode> Display_Power_Mode;
+	Nullable<ColorStruct> Display_Power_ColorGreen;
+	Nullable<ColorStruct> Display_Power_ColorYellow;
+	Nullable<ColorStruct> Display_Power_ColorRed;
+	Nullable<ColorStruct> Display_Power_ColorGrey;
+
+	Valueable<ResourceHarvesterDisplayMode> Display_Harvester_Mode;
+	Nullable<ColorStruct> Display_Harvester_ColorGreen;
+	Nullable<ColorStruct> Display_Harvester_ColorYellow;
+	Nullable<ColorStruct> Display_Harvester_ColorRed;
 
 	bool IsMoneyResource() const { return _strcmpi(this->Name, "Money") == 0; }
 	bool IsPowerResource() const { return _strcmpi(this->Name, "Power") == 0; }
+	bool IsHarvesterResource() const { return _strcmpi(this->Name, "Harvesters") == 0; }
+	bool IsWeedsResource() const { return _strcmpi(this->Name, "Weeds") == 0; }
 	static bool HasMoneyResource();
 	static bool HasPowerResource();
+	static bool HasHarvesterResource();
+	static bool HasWeedsResource();
 	static bool ShouldSkipWestwoodCredits();
 
 	ResourceTypeClass(const char* pTitle = NONE_STR);
 	virtual ~ResourceTypeClass() = default;
 
 	void LoadFromINI(CCINIClass* pINI);
-	static void LoadGlobalsFromINI(CCINIClass* pINI);
 	static void DrawResourceHUD(DSurface* pSurface, bool isSidebar);
 
 	void LoadFromStream(PhobosStreamReader& Stm);

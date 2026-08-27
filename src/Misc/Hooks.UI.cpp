@@ -129,7 +129,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	// Draw custom resources in sidebar if Anchor=Sidebar
 	ResourceTypeClass::DrawResourceHUD(DSurface::Sidebar, true);
 
-	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
+	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter && !ResourceTypeClass::HasHarvesterResource())
 	{
 		wchar_t counter[0x20];
 		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
@@ -193,7 +193,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
-	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
+	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter && !ResourceTypeClass::HasWeedsResource())
 	{
 		wchar_t counter[0x20];
 		const ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);

@@ -56,6 +56,16 @@ public:
 	PhobosPCXFile SuperWeaponSidebar_TopPCX;
 	PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 	PhobosPCXFile SuperWeaponSidebar_BottomPCX;
+	Valueable<ResourceDisplayOrientation> Display_ResourceTypes_Orientation;
+	Valueable<ResourceDisplayAnchor> Display_ResourceTypes_Anchor;
+	Valueable<Point2D> Display_ResourceTypes_BaseOffset;
+	Valueable<int> Display_ResourceTypes_Spacing;
+	Nullable<TextAlign> Display_ResourceTypes_Align;
+	PhobosPCXFile Display_ResourceTypes_Background_PCX;
+	Valueable<SHPStruct*> Display_ResourceTypes_Background_SHP;
+	CustomPalette Display_ResourceTypes_Background_Palette;
+	Valueable<Point2D> Display_ResourceTypes_Background_Offset;
+	Valueable<bool> Display_ResourceTypes_Background_Horizontal_ResourcesInside;
 
 	SideExt(SideClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, ArrayIndex { -1 }
@@ -91,6 +101,16 @@ public:
 		, SuperWeaponSidebar_TopPCX {}
 		, SuperWeaponSidebar_CenterPCX {}
 		, SuperWeaponSidebar_BottomPCX {}
+		, Display_ResourceTypes_Orientation { ResourceDisplayOrientation::Vertical }
+		, Display_ResourceTypes_Anchor { ResourceDisplayAnchor::TopRight }
+		, Display_ResourceTypes_BaseOffset { { 0, 0 } }
+		, Display_ResourceTypes_Spacing { 14 }
+		, Display_ResourceTypes_Align {}
+		, Display_ResourceTypes_Background_PCX {}
+		, Display_ResourceTypes_Background_SHP { nullptr }
+		, Display_ResourceTypes_Background_Palette {}
+		, Display_ResourceTypes_Background_Offset { { 0, 0 } }
+		, Display_ResourceTypes_Background_Horizontal_ResourcesInside { false }
 	{ }
 
 	virtual ~SideExt() = default;

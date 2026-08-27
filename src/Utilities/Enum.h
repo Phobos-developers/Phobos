@@ -477,6 +477,13 @@ enum class ResourcePowerDisplayMode : unsigned char
 	Total = 4
 };
 
+enum class ResourceHarvesterDisplayMode : unsigned char
+{
+	ActiveAndTotal = 0,
+	Active = 1,
+	Total = 2
+};
+
 
 enum class ResourceDisplayAnchor : unsigned char
 {

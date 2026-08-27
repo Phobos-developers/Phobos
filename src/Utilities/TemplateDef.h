@@ -1207,6 +1207,32 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ResourceHarvesterDisplayMode>(ResourceHarvesterDisplayMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "activeandtotal") == 0 || _strcmpi(str, "active/total") == 0 || _strcmpi(str, "all") == 0 || _strcmpi(str, "both") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::ActiveAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "active") == 0 || _strcmpi(str, "activeonly") == 0 || _strcmpi(str, "working") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::Active;
+				return true;
+			}
+			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "totalonly") == 0 || _strcmpi(str, "max") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::Total;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Harvester display mode can be ActiveAndTotal, Active, or Total");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<ResourceDisplayAnchor>(ResourceDisplayAnchor& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1877,12 +1903,21 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	template <typename Lookuper, typename T>
 	void parse_indexes(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
+		char* comment = strchr(parser.value(), ';');
+		if (comment)
+			*comment = 0;
+
 		for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 		{
 			std::string_view&& cur { part.begin(),part.end() };
-			// you forgot to trim, suckers
-			auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
-			*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+			if (cur.empty())
+				continue;
+			auto first = cur.find_first_not_of(" \t\r");
+			if (first == std::string_view::npos)
+				continue;
+			auto last = cur.find_last_not_of(" \t\r");
+			auto pCur = cur.data() + first;
+			*const_cast<char*>(cur.data() + last + 1) = 0;
 			int idx = Lookuper::FindIndex(pCur);
 			if (idx != -1)
 				vector.push_back(idx);

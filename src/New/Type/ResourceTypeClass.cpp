@@ -15,22 +15,12 @@ const char* Enumerable<ResourceTypeClass>::GetMainSection()
 	return "ResourceTypes";
 }
 
-Valueable<ResourceDisplayOrientation> ResourceTypeClass::Global_Display_Orientation { ResourceDisplayOrientation::Vertical };
-Valueable<ResourceDisplayAnchor> ResourceTypeClass::Global_Display_Anchor { ResourceDisplayAnchor::TopRight };
-Valueable<Point2D> ResourceTypeClass::Global_Display_BaseOffset { Point2D::Empty };
-Valueable<int> ResourceTypeClass::Global_Display_Spacing { 14 };
-Nullable<TextAlign> ResourceTypeClass::Global_Display_Align {};
-PhobosPCXFile ResourceTypeClass::Global_Display_Background_PCX {};
-Valueable<SHPStruct*> ResourceTypeClass::Global_Display_Background_SHP { nullptr };
-CustomPalette ResourceTypeClass::Global_Display_Background_Palette {};
-Valueable<Point2D> ResourceTypeClass::Global_Display_Background_Offset { Point2D::Empty };
-
 ResourceTypeClass::ResourceTypeClass(const char* pTitle) : Enumerable<ResourceTypeClass>(pTitle)
 	, Display_Label {}
 	, Display_Label_InvertPosition { false }
-	, Display_Label_UseSpace { pTitle ? (_strcmpi(pTitle, "Money") != 0 && _strcmpi(pTitle, "Power") != 0) : true }
+	, Display_Label_UseSpace { pTitle ? (_strcmpi(pTitle, "Money") != 0 && _strcmpi(pTitle, "Power") != 0 && _strcmpi(pTitle, "Harvesters") != 0 && _strcmpi(pTitle, "Weeds") != 0) : true }
 	, Display_Color {}
-	, Display_Condition { (pTitle && _strcmpi(pTitle, "Power") == 0) ? ResourceDisplayCondition::Never : ResourceDisplayCondition::Always }
+	, Display_Condition { (pTitle && (_strcmpi(pTitle, "Harvesters") == 0 || _strcmpi(pTitle, "Weeds") == 0)) ? ResourceDisplayCondition::Never : ResourceDisplayCondition::Always }
 	, Display_Offset {}
 	, InitialValue { 0 }
 	, RequiresCollector { false }
@@ -38,11 +28,19 @@ ResourceTypeClass::ResourceTypeClass(const char* pTitle) : Enumerable<ResourceTy
 	, Bounty_DefaultValue { 0 }
 	, Bounty_DefaultFriendlyValue { 0 }
 	, Bounty_CanUseStandardPoints { false }
-	, Bounty_MoneyConversion { 0 }
+	, Bounty_MoneyConversion { 100 }
 	, Crate_Amount { 0 }
 	, Crate_Sound {}
 	, Crate_Anim {}
 	, Display_Power_Mode { ResourcePowerDisplayMode::NetAndTotal }
+	, Display_Power_ColorGreen {}
+	, Display_Power_ColorYellow {}
+	, Display_Power_ColorRed {}
+	, Display_Power_ColorGrey {}
+	, Display_Harvester_Mode { ResourceHarvesterDisplayMode::ActiveAndTotal }
+	, Display_Harvester_ColorGreen {}
+	, Display_Harvester_ColorYellow {}
+	, Display_Harvester_ColorRed {}
 {
 }
 
@@ -66,21 +64,43 @@ bool ResourceTypeClass::HasPowerResource()
 	return false;
 }
 
+bool ResourceTypeClass::HasHarvesterResource()
+{
+	for (const auto& pResource : ResourceTypeClass::Array)
+	{
+		if (pResource && pResource->IsHarvesterResource())
+			return true;
+	}
+	return false;
+}
+
+bool ResourceTypeClass::HasWeedsResource()
+{
+	for (const auto& pResource : ResourceTypeClass::Array)
+	{
+		if (pResource && pResource->IsWeedsResource())
+			return true;
+	}
+	return false;
+}
+
 bool ResourceTypeClass::ShouldSkipWestwoodCredits()
 {
 	if (!ResourceTypeClass::HasMoneyResource())
 		return false;
-
-	const auto globalAnchor = ResourceTypeClass::Global_Display_Anchor.Get();
-	if (globalAnchor != ResourceDisplayAnchor::Sidebar)
-		return true;
 
 	auto const pPlayer = HouseClass::CurrentPlayer;
 	if (!pPlayer || pPlayer->Defeated)
 		return false;
 
 	auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
-	if (pSideExt && !pSideExt->Sidebar_ResourceTypes_Types.empty())
+	if (!pSideExt)
+		return false;
+
+	const bool hasExplicitSidebarTypes = !pSideExt->Sidebar_ResourceTypes_Types.empty();
+	const auto sideAnchor = pSideExt->Display_ResourceTypes_Anchor.Get();
+
+	if (hasExplicitSidebarTypes)
 	{
 		for (const auto idx : pSideExt->Sidebar_ResourceTypes_Types)
 		{
@@ -90,47 +110,18 @@ bool ResourceTypeClass::ShouldSkipWestwoodCredits()
 					return true;
 			}
 		}
+		return (sideAnchor != ResourceDisplayAnchor::Sidebar);
 	}
 
-	return false;
-}
-
-void ResourceTypeClass::LoadGlobalsFromINI(CCINIClass* pINI)
-{
-	INI_EX exINI(pINI);
-
-	Global_Display_Orientation.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Orientation");
-	Global_Display_Anchor.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Anchor");
-	Global_Display_BaseOffset.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.BaseOffset");
-	Global_Display_Spacing.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Spacing");
-	Global_Display_Align.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Align");
-
-	Global_Display_Background_PCX.Read(pINI, GameStrings::AudioVisual, "Display.ResourceTypes.BackgroundPCX");
-	Global_Display_Background_PCX.Read(pINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.PCX");
-
-	Global_Display_Background_SHP.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background");
-	Global_Display_Background_SHP.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.SHP");
-	Global_Display_Background_SHP.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.Shape");
-
-	Global_Display_Background_Offset.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.Offset");
-	Global_Display_Background_Offset.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.BackgroundOffset");
-	Global_Display_Background_Offset.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.BackgroundPCX.Offset");
-	Global_Display_Background_Offset.Read(exINI, GameStrings::AudioVisual, "Display.ResourceTypes.BackgroundPCXOffset");
-	Global_Display_Background_Palette.LoadFromINI(pINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.Palette");
-	Global_Display_Background_Palette.LoadFromINI(pINI, GameStrings::AudioVisual, "Display.ResourceTypes.Background.SHP.Palette");
+	return (sideAnchor != ResourceDisplayAnchor::Sidebar);
 }
 
 void ResourceTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
-	if (this->IsMoneyResource() || this->IsPowerResource())
+	if (this->IsMoneyResource() || this->IsPowerResource() || this->IsHarvesterResource() || this->IsWeedsResource())
 	{
 		this->Display_Label_UseSpace = false;
-	}
-
-	if (this->IsPowerResource())
-	{
-		this->Display_Condition = ResourceDisplayCondition::Never;
 	}
 
 	if (!pINI->GetSection(section))
@@ -143,6 +134,10 @@ void ResourceTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Display_Label_UseSpace.Read(exINI, section, "Display.Label.UseSpace");
 	this->Display_Color.Read(exINI, section, "Display.Color");
 	this->Display_Condition.Read(exINI, section, "Display.Condition");
+	if (this->IsHarvesterResource() && this->Display_Condition.Get() == ResourceDisplayCondition::HasCollector)
+	{
+		this->Display_Condition = ResourceDisplayCondition::Always;
+	}
 	this->Display_Offset.Read(exINI, section, "Display.Offset");
 
 	this->InitialValue.Read(exINI, section, "InitialValue");
@@ -160,6 +155,25 @@ void ResourceTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Display_Power_Mode.Read(exINI, section, "Display.Power.Mode");
 	this->Display_Power_Mode.Read(exINI, section, "Display.Power.Format");
+
+	this->Display_Power_ColorGreen.Read(exINI, section, "Display.Power.ColorGreen");
+	this->Display_Power_ColorGreen.Read(exINI, section, "Display.ColorGreen");
+	this->Display_Power_ColorYellow.Read(exINI, section, "Display.Power.ColorYellow");
+	this->Display_Power_ColorYellow.Read(exINI, section, "Display.ColorYellow");
+	this->Display_Power_ColorRed.Read(exINI, section, "Display.Power.ColorRed");
+	this->Display_Power_ColorRed.Read(exINI, section, "Display.ColorRed");
+	this->Display_Power_ColorGrey.Read(exINI, section, "Display.Power.ColorGrey");
+	this->Display_Power_ColorGrey.Read(exINI, section, "Display.ColorGrey");
+
+	this->Display_Harvester_Mode.Read(exINI, section, "Display.Harvesters.Mode");
+	this->Display_Harvester_Mode.Read(exINI, section, "Display.Harvesters.Format");
+
+	this->Display_Harvester_ColorGreen.Read(exINI, section, "Display.Harvesters.ColorGreen");
+	this->Display_Harvester_ColorGreen.Read(exINI, section, "Display.ColorGreen");
+	this->Display_Harvester_ColorYellow.Read(exINI, section, "Display.Harvesters.ColorYellow");
+	this->Display_Harvester_ColorYellow.Read(exINI, section, "Display.ColorYellow");
+	this->Display_Harvester_ColorRed.Read(exINI, section, "Display.Harvesters.ColorRed");
+	this->Display_Harvester_ColorRed.Read(exINI, section, "Display.ColorRed");
 
 	bool showTotal = true;
 	if (exINI.ReadBool(section, "Display.Power.ShowTotal", &showTotal))
@@ -188,7 +202,15 @@ void ResourceTypeClass::Serialize(T& Stm)
 		.Process(this->Crate_Amount)
 		.Process(this->Crate_Sound)
 		.Process(this->Crate_Anim)
-		.Process(this->Display_Power_Mode);
+		.Process(this->Display_Power_Mode)
+		.Process(this->Display_Power_ColorGreen)
+		.Process(this->Display_Power_ColorYellow)
+		.Process(this->Display_Power_ColorRed)
+		.Process(this->Display_Power_ColorGrey)
+		.Process(this->Display_Harvester_Mode)
+		.Process(this->Display_Harvester_ColorGreen)
+		.Process(this->Display_Harvester_ColorYellow)
+		.Process(this->Display_Harvester_ColorRed);
 }
 
 void ResourceTypeClass::LoadFromStream(PhobosStreamReader& Stm)
@@ -213,18 +235,21 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 	auto pHouseExt = HouseExt::Fetch(pPlayer);
 	auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 
-	const auto globalAnchor = ResourceTypeClass::Global_Display_Anchor.Get();
+	const auto sideAnchor = pSideExt ? pSideExt->Display_ResourceTypes_Anchor.Get() : ResourceDisplayAnchor::TopRight;
+	const auto sideOrientation = pSideExt ? pSideExt->Display_ResourceTypes_Orientation.Get() : ResourceDisplayOrientation::Vertical;
+	const Point2D sideBaseOffset = pSideExt ? pSideExt->Display_ResourceTypes_BaseOffset.Get() : Point2D::Empty;
+	const int spacing = pSideExt ? pSideExt->Display_ResourceTypes_Spacing.Get() : 14;
+	const bool resourcesInside = pSideExt && pSideExt->Display_ResourceTypes_Background_Horizontal_ResourcesInside.Get();
+	const bool hasExplicitSidebarTypes = pSideExt && !pSideExt->Sidebar_ResourceTypes_Types.empty();
 
-	// If global anchor is Sidebar: only draw during sidebar pass.
-	// If global anchor is NOT Sidebar (TopLeft, TopRight, etc.): only draw during tactical game screen pass.
-	if (globalAnchor == ResourceDisplayAnchor::Sidebar)
+	if (isSidebar)
 	{
-		if (!isSidebar)
+		if (sideAnchor != ResourceDisplayAnchor::Sidebar && !hasExplicitSidebarTypes)
 			return;
 	}
 	else
 	{
-		if (isSidebar)
+		if (sideAnchor == ResourceDisplayAnchor::Sidebar)
 			return;
 	}
 
@@ -232,7 +257,6 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 
 	int baseX = 0;
 	int baseY = 0;
-	const Point2D baseOffset = ResourceTypeClass::Global_Display_BaseOffset.Get();
 
 	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
 	const int screenW = pSurface->GetWidth();
@@ -240,61 +264,67 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 
 	if (isSidebar)
 	{
-		baseX = 20 + pSideExt->Sidebar_ResourceTypes_Offset.Get().X + baseOffset.X;
-		baseY = 2 + pSideExt->Sidebar_ResourceTypes_Offset.Get().Y + baseOffset.Y;
+		int defaultBaseX = 20;
+		if (pSideExt->Sidebar_ResourceTypes_Align.Get() == TextAlign::Right)
+			defaultBaseX = 140;
+		else if (pSideExt->Sidebar_ResourceTypes_Align.Get() == TextAlign::Center)
+			defaultBaseX = pSurface->GetWidth() / 2;
+
+		const Point2D sideOffset = pSideExt->Sidebar_ResourceTypes_Offset.Get();
+		baseX = (sideOffset.X != 0 ? sideOffset.X : defaultBaseX) + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.X : 0);
+		baseY = 2 + sideOffset.Y + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.Y : 0);
 	}
 	else
 	{
-		switch (globalAnchor)
+		switch (sideAnchor)
 		{
 		case ResourceDisplayAnchor::TopLeft:
-			baseX = marginX + baseOffset.X;
-			baseY = 5 + baseOffset.Y;
+			baseX = marginX + sideBaseOffset.X;
+			baseY = 5 + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::TopRight:
-			baseX = screenW - marginX + baseOffset.X;
-			baseY = 5 + baseOffset.Y;
+			baseX = screenW - marginX + sideBaseOffset.X;
+			baseY = 5 + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::TopCenter:
-			baseX = (screenW / 2) + baseOffset.X;
-			baseY = 5 + baseOffset.Y;
+			baseX = (screenW / 2) + sideBaseOffset.X;
+			baseY = 5 + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomLeft:
-			baseX = marginX + baseOffset.X;
-			baseY = screenH - 20 + baseOffset.Y;
+			baseX = marginX + sideBaseOffset.X;
+			baseY = screenH - 20 + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomRight:
-			baseX = screenW - marginX + baseOffset.X;
-			baseY = screenH - 20 + baseOffset.Y;
+			baseX = screenW - marginX + sideBaseOffset.X;
+			baseY = screenH - 20 + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomCenter:
-			baseX = (screenW / 2) + baseOffset.X;
-			baseY = screenH - 20 + baseOffset.Y;
+			baseX = (screenW / 2) + sideBaseOffset.X;
+			baseY = screenH - 20 + sideBaseOffset.Y;
 			break;
 		default:
-			baseX = marginX + baseOffset.X;
-			baseY = 5 + baseOffset.Y;
+			baseX = marginX + sideBaseOffset.X;
+			baseY = 5 + sideBaseOffset.Y;
 			break;
 		}
 	}
 
-	int const spacing = ResourceTypeClass::Global_Display_Spacing.Get();
 	int stackIndex = 0;
 	int runningRightX = baseX;
 	int runningLeftX = baseX;
 
 	TextAlign effectiveAlign;
-	if (ResourceTypeClass::Global_Display_Align.isset())
+	if (isSidebar)
 	{
-		effectiveAlign = ResourceTypeClass::Global_Display_Align.Get();
+		effectiveAlign = pSideExt ? pSideExt->Sidebar_ResourceTypes_Align.Get() : TextAlign::Left;
 	}
 	else
 	{
-		if (isSidebar)
-			effectiveAlign = pSideExt->Sidebar_ResourceTypes_Align.Get();
-		else if (globalAnchor == ResourceDisplayAnchor::TopCenter || globalAnchor == ResourceDisplayAnchor::BottomCenter)
+		if (pSideExt && pSideExt->Display_ResourceTypes_Align.isset())
+			effectiveAlign = pSideExt->Display_ResourceTypes_Align.Get();
+		else if (sideAnchor == ResourceDisplayAnchor::TopCenter || sideAnchor == ResourceDisplayAnchor::BottomCenter)
 			effectiveAlign = TextAlign::Center;
-		else if (globalAnchor == ResourceDisplayAnchor::TopRight || globalAnchor == ResourceDisplayAnchor::BottomRight)
+		else if (sideAnchor == ResourceDisplayAnchor::TopRight || sideAnchor == ResourceDisplayAnchor::BottomRight)
 			effectiveAlign = TextAlign::Right;
 		else
 			effectiveAlign = TextAlign::Left;
@@ -302,48 +332,45 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 
 	const bool isRightAlign = (effectiveAlign == TextAlign::Right);
 	const bool isCenterAlign = (effectiveAlign == TextAlign::Center);
-	const bool isBottomAnchor = !isSidebar && (globalAnchor == ResourceDisplayAnchor::BottomLeft || globalAnchor == ResourceDisplayAnchor::BottomRight || globalAnchor == ResourceDisplayAnchor::BottomCenter);
+	const bool isRightAnchor = (sideAnchor == ResourceDisplayAnchor::TopRight || sideAnchor == ResourceDisplayAnchor::BottomRight);
+	const bool isCenterAnchor = (sideAnchor == ResourceDisplayAnchor::TopCenter || sideAnchor == ResourceDisplayAnchor::BottomCenter);
+	const bool isBottomAnchor = !isSidebar && (sideAnchor == ResourceDisplayAnchor::BottomLeft || sideAnchor == ResourceDisplayAnchor::BottomRight || sideAnchor == ResourceDisplayAnchor::BottomCenter);
 
-	const bool hasExplicitSidebarTypes = !pSideExt->Sidebar_ResourceTypes_Types.empty();
 	const size_t count = (isSidebar && hasExplicitSidebarTypes) ? pSideExt->Sidebar_ResourceTypes_Types.size() : ResourceTypeClass::Array.size();
+
+	int bgWidth = 0;
+	int bgHeight = 0;
+	BSurface* pPCX = pSideExt ? pSideExt->Display_ResourceTypes_Background_PCX.GetSurface() : nullptr;
+	SHPStruct* pSHP = pSideExt ? pSideExt->Display_ResourceTypes_Background_SHP.Get() : nullptr;
+
+	if (pPCX)
+	{
+		bgWidth = pPCX->GetWidth();
+		bgHeight = pPCX->GetHeight();
+	}
+	else if (pSHP)
+	{
+		bgWidth = pSHP->Width;
+		bgHeight = pSHP->Height;
+	}
+
+	Point2D const bgOffset = pSideExt ? pSideExt->Display_ResourceTypes_Background_Offset.Get() : Point2D::Empty;
+	Point2D bgPos;
+	if (isRightAnchor)
+		bgPos.X = (baseX - bgWidth) + bgOffset.X;
+	else if (isCenterAnchor)
+		bgPos.X = (baseX - bgWidth / 2) + bgOffset.X;
+	else
+		bgPos.X = baseX + bgOffset.X;
+
+	bgPos.Y = (isBottomAnchor ? (baseY - bgHeight) : baseY) + bgOffset.Y;
 
 	bool bgDrawn = false;
 	auto DrawBackgroundOnce = [&]()
 	{
-		if (bgDrawn || isSidebar)
+		if (bgDrawn || isSidebar || (bgWidth == 0 && bgHeight == 0) || !pSideExt)
 			return;
 		bgDrawn = true;
-
-		int bgWidth = 0;
-		int bgHeight = 0;
-		BSurface* pPCX = ResourceTypeClass::Global_Display_Background_PCX.GetSurface();
-		SHPStruct* pSHP = ResourceTypeClass::Global_Display_Background_SHP.Get();
-
-		if (pPCX)
-		{
-			bgWidth = pPCX->GetWidth();
-			bgHeight = pPCX->GetHeight();
-		}
-		else if (pSHP)
-		{
-			bgWidth = pSHP->Width;
-			bgHeight = pSHP->Height;
-		}
-		else
-		{
-			return;
-		}
-
-		Point2D const bgOffset = ResourceTypeClass::Global_Display_Background_Offset.Get();
-		Point2D bgPos;
-		if (isRightAlign)
-			bgPos.X = (baseX - bgWidth) + bgOffset.X;
-		else if (isCenterAlign)
-			bgPos.X = (baseX - bgWidth / 2) + bgOffset.X;
-		else
-			bgPos.X = baseX + bgOffset.X;
-
-		bgPos.Y = (isBottomAnchor ? (baseY - bgHeight) : baseY) + bgOffset.Y;
 
 		if (pPCX)
 		{
@@ -352,7 +379,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		}
 		else if (pSHP)
 		{
-			ConvertClass* pConvert = ResourceTypeClass::Global_Display_Background_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+			ConvertClass* pConvert = pSideExt->Display_ResourceTypes_Background_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 			int const frame = pSHP->Frames > 1 ? (Unsorted::CurrentFrame % pSHP->Frames) : 0;
 
 			pSurface->DrawSHP
@@ -376,6 +403,10 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		}
 	};
 
+	std::vector<int> visibleResourceIndices;
+	int dynamicSidebarCount = 0;
+	int dynamicTacticalCount = 0;
+
 	for (size_t iter = 0; iter < count; ++iter)
 	{
 		const int i = (isSidebar && hasExplicitSidebarTypes) ? pSideExt->Sidebar_ResourceTypes_Types[iter] : static_cast<int>(iter);
@@ -385,6 +416,22 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		const auto pResource = ResourceTypeClass::Array[i].get();
 		if (!pResource || !pHouseExt->IsResourceEnabled(i))
 			continue;
+
+		// If drawing tactical HUD (!isSidebar), skip any resource that is already being drawn on the sidebar by this side's explicit list
+		if (!isSidebar && hasExplicitSidebarTypes)
+		{
+			bool alreadyInSidebar = false;
+			for (const auto sIdx : pSideExt->Sidebar_ResourceTypes_Types)
+			{
+				if (sIdx == i)
+				{
+					alreadyInSidebar = true;
+					break;
+				}
+			}
+			if (alreadyInSidebar)
+				continue;
+		}
 
 		if (pResource->Display_Condition.Get() == ResourceDisplayCondition::Never)
 			continue;
@@ -397,6 +444,15 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		if (pResource->IsPowerResource())
 		{
 			hasCollector = pPlayer->Buildings.Count > 0;
+		}
+		else if (pResource->IsHarvesterResource())
+		{
+			hasCollector = HouseExt::TotalHarvesterCount(pPlayer) > 0;
+		}
+		else if (pResource->IsWeedsResource())
+		{
+			const bool hasCustomCollector = (i < static_cast<int>(pHouseExt->ResourceCollectorCounts.size())) && (pHouseExt->ResourceCollectorCounts[i] > 0);
+			hasCollector = hasCustomCollector || (pPlayer->OwnedWeed.GetTotalAmount() > 0) || (HouseExt::ActiveHarvesterCount(pPlayer) > 0);
 		}
 		else if (pResource->IsMoneyResource())
 		{
@@ -417,6 +473,16 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 					if ((pPlayer->PowerOutput - pPlayer->PowerDrain) <= 0)
 						continue;
 				}
+				else if (pResource->IsHarvesterResource())
+				{
+					if (HouseExt::TotalHarvesterCount(pPlayer) <= 0)
+						continue;
+				}
+				else if (pResource->IsWeedsResource())
+				{
+					if (pPlayer->OwnedWeed.GetTotalAmount() <= 0)
+						continue;
+				}
 				else if (pHouseExt->GetResourceAmount(i) <= 0)
 				{
 					continue;
@@ -427,6 +493,26 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 				continue;
 		}
 
+		visibleResourceIndices.push_back(i);
+		if (isSidebar)
+		{
+			if (!pResource->Display_Offset.isset())
+				++dynamicSidebarCount;
+		}
+		else
+		{
+			if (!pResource->Display_Offset.isset())
+				++dynamicTacticalCount;
+		}
+	}
+
+	int dynamicSidebarIdx = 0;
+	int dynamicTacticalIdx = 0;
+
+	for (const int i : visibleResourceIndices)
+	{
+		const auto pResource = ResourceTypeClass::Array[i].get();
+
 		DrawBackgroundOnce();
 
 		wchar_t counter[0x40];
@@ -436,7 +522,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		if (pResource->IsPowerResource())
 		{
 			if (!label || !*label)
-				label = Phobos::UI::PowerLabel;
+				label = L"\u26a1";
 
 			const int output = pPlayer->PowerOutput;
 			const int drain = pPlayer->PowerDrain;
@@ -475,7 +561,12 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 				wcscpy_s(counter, powerVal);
 			}
 
-			if (pResource->Display_Color.isset())
+			const bool hasSpecificPowerColors = pResource->Display_Power_ColorGreen.isset()
+				|| pResource->Display_Power_ColorYellow.isset()
+				|| pResource->Display_Power_ColorRed.isset()
+				|| pResource->Display_Power_ColorGrey.isset();
+
+			if (pResource->Display_Color.isset() && !hasSpecificPowerColors)
 			{
 				clrToolTip = pResource->Display_Color.Get();
 			}
@@ -483,7 +574,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 			{
 				if (pPlayer->PowerBlackoutTimer.InProgress())
 				{
-					clrToolTip = pSideExt->Sidebar_PowerDelta_ColorGrey.Get();
+					clrToolTip = pResource->Display_Power_ColorGrey.Get(ColorStruct { 128, 128, 128 });
 				}
 				else
 				{
@@ -491,18 +582,103 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 						? (double)drain / (double)output
 						: (drain != 0 ? Phobos::UI::PowerDelta_ConditionRed * 2.f : Phobos::UI::PowerDelta_ConditionYellow);
 
-					clrToolTip = percent < Phobos::UI::PowerDelta_ConditionYellow
-						? pSideExt->Sidebar_PowerDelta_ColorGreen.Get()
-						: LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed)
-						? pSideExt->Sidebar_PowerDelta_ColorYellow.Get()
-						: pSideExt->Sidebar_PowerDelta_ColorRed.Get();
+					if (percent < Phobos::UI::PowerDelta_ConditionYellow)
+					{
+						clrToolTip = pResource->Display_Power_ColorGreen.Get(ColorStruct { 0, 255, 0 });
+					}
+					else if (LESS_EQUAL(percent, Phobos::UI::PowerDelta_ConditionRed))
+					{
+						clrToolTip = pResource->Display_Power_ColorYellow.Get(ColorStruct { 255, 255, 0 });
+					}
+					else
+					{
+						clrToolTip = pResource->Display_Power_ColorRed.Get(ColorStruct { 255, 0, 0 });
+					}
 				}
 			}
+		}
+		else if (pResource->IsHarvesterResource())
+		{
+			if (!label || !*label)
+				label = L"\u26cf";
+
+			const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
+			const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
+			const double nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
+
+			wchar_t harvesterVal[0x40];
+			switch (pResource->Display_Harvester_Mode.Get())
+			{
+			case ResourceHarvesterDisplayMode::ActiveAndTotal:
+				swprintf_s(harvesterVal, L"%d / %d", nActive, nTotal);
+				break;
+			case ResourceHarvesterDisplayMode::Active:
+				swprintf_s(harvesterVal, L"%d", nActive);
+				break;
+			case ResourceHarvesterDisplayMode::Total:
+				swprintf_s(harvesterVal, L"%d", nTotal);
+				break;
+			}
+
+			if (label && *label)
+			{
+				const bool useSpace = pResource->Display_Label_UseSpace.Get();
+				if (pResource->Display_Label_InvertPosition.Get())
+					swprintf_s(counter, useSpace ? L"%ls %ls" : L"%ls%ls", harvesterVal, label);
+				else
+					swprintf_s(counter, useSpace ? L"%ls %ls" : L"%ls%ls", label, harvesterVal);
+			}
+			else
+			{
+				wcscpy_s(counter, harvesterVal);
+			}
+
+			const bool hasSpecificHarvesterColors = pResource->Display_Harvester_ColorGreen.isset()
+				|| pResource->Display_Harvester_ColorYellow.isset()
+				|| pResource->Display_Harvester_ColorRed.isset();
+
+			if (pResource->Display_Color.isset() && !hasSpecificHarvesterColors)
+			{
+				clrToolTip = pResource->Display_Color.Get();
+			}
+			else
+			{
+				if (nActive >= nTotal || nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow)
+				{
+					clrToolTip = pResource->Display_Harvester_ColorGreen.Get(ColorStruct { 0, 255, 0 });
+				}
+				else if (nPercentage > Phobos::UI::HarvesterCounter_ConditionRed)
+				{
+					clrToolTip = pResource->Display_Harvester_ColorYellow.Get(ColorStruct { 255, 255, 0 });
+				}
+				else
+				{
+					clrToolTip = pResource->Display_Harvester_ColorRed.Get(ColorStruct { 255, 0, 0 });
+				}
+			}
+		}
+		else if (pResource->IsWeedsResource())
+		{
+			const int weedAmount = static_cast<int>(pPlayer->OwnedWeed.GetTotalAmount());
+			if (label && *label)
+			{
+				const bool useSpace = pResource->Display_Label_UseSpace.Get();
+				if (pResource->Display_Label_InvertPosition.Get())
+					swprintf_s(counter, useSpace ? L"%d %ls" : L"%d%ls", weedAmount, label);
+				else
+					swprintf_s(counter, useSpace ? L"%ls %d" : L"%ls%d", label, weedAmount);
+			}
+			else
+			{
+				swprintf_s(counter, L"%d", weedAmount);
+			}
+
+			clrToolTip = pResource->Display_Color.Get(pSideExt ? pSideExt->Sidebar_ResourceTypes_Color.Get(Drawing::TooltipColor) : Drawing::TooltipColor);
 		}
 		else
 		{
 			if (pResource->IsMoneyResource() && (!label || !*label))
-				label = Phobos::UI::CostLabel;
+				label = L"$";
 
 			const int amount = pHouseExt->GetResourceAmount(i);
 			if (label && *label)
@@ -526,17 +702,78 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		{
 			vPos = pResource->Display_Offset.Get();
 		}
+		else if (isSidebar)
+		{
+			if (dynamicSidebarCount <= 1)
+			{
+				vPos.X = baseX;
+				vPos.Y = baseY;
+			}
+			else
+			{
+				int posX = 0;
+				if (effectiveAlign == TextAlign::Left)
+					posX = (dynamicSidebarIdx * screenW) / dynamicSidebarCount + 10;
+				else if (effectiveAlign == TextAlign::Right)
+					posX = ((dynamicSidebarIdx + 1) * screenW) / dynamicSidebarCount - 10;
+				else
+					posX = (2 * dynamicSidebarIdx + 1) * screenW / (2 * dynamicSidebarCount);
+
+				const Point2D sideOffset = pSideExt->Sidebar_ResourceTypes_Offset.Get();
+				vPos.X = posX + sideOffset.X;
+				vPos.Y = baseY;
+				++dynamicSidebarIdx;
+			}
+		}
+		else if (bgWidth > 0 && resourcesInside && sideOrientation == ResourceDisplayOrientation::Horizontal)
+		{
+			auto const dim = Drawing::GetTextDimensions(counter, { 0, 0 }, 0, 2, 0);
+
+			if (dynamicTacticalCount <= 1)
+			{
+				if (effectiveAlign == TextAlign::Left)
+					vPos.X = bgPos.X + 10;
+				else if (effectiveAlign == TextAlign::Right)
+					vPos.X = (bgPos.X + bgWidth) - dim.Width - 10;
+				else
+					vPos.X = bgPos.X + (bgWidth - dim.Width) / 2;
+			}
+			else
+			{
+				int posX = 0;
+				if (effectiveAlign == TextAlign::Left)
+					posX = bgPos.X + (dynamicTacticalIdx * bgWidth) / dynamicTacticalCount + 10;
+				else if (effectiveAlign == TextAlign::Right)
+					posX = bgPos.X + ((dynamicTacticalIdx + 1) * bgWidth) / dynamicTacticalCount - dim.Width - 10;
+				else
+				{
+					int slotCenter = bgPos.X + (2 * dynamicTacticalIdx + 1) * bgWidth / (2 * dynamicTacticalCount);
+					posX = slotCenter - (dim.Width / 2);
+				}
+
+				vPos.X = posX;
+				++dynamicTacticalIdx;
+			}
+
+			vPos.Y = bgPos.Y + (bgHeight > dim.Height ? (bgHeight - dim.Height) / 2 : 0);
+		}
 		else
 		{
 			auto const dim = Drawing::GetTextDimensions(counter, { 0, 0 }, 0, 2, 0);
 
-			if (ResourceTypeClass::Global_Display_Orientation.Get() == ResourceDisplayOrientation::Horizontal)
+			if (sideOrientation == ResourceDisplayOrientation::Horizontal)
 			{
 				if (isRightAlign)
 				{
 					vPos.X = runningRightX - dim.Width;
 					vPos.Y = baseY;
 					runningRightX -= (dim.Width + spacing);
+				}
+				else if (isCenterAlign)
+				{
+					vPos.X = runningLeftX - (dim.Width / 2);
+					vPos.Y = baseY;
+					runningLeftX += (dim.Width + spacing);
 				}
 				else
 				{
@@ -554,7 +791,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 				else
 					vPos.X = baseX;
 
-				vPos.Y = isBottomAnchor ? (baseY - stackIndex * spacing) : (baseY + stackIndex * spacing);
+				vPos.Y = isBottomAnchor ? (baseY - bgHeight > 0 ? baseY - stackIndex * spacing : baseY) : (baseY + stackIndex * spacing);
 				++stackIndex;
 			}
 		}

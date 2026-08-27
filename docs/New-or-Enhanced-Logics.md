@@ -292,6 +292,7 @@ Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should 
   - `Display.ResourceTypes.Background` optional SHP background image rendered behind the tactical HUD counters (without `.shp` extension; multi-frame SHPs animate continuously).
   - `Display.ResourceTypes.Background.Offset` optional X,Y pixel offset for the background image (applies to both PCX and SHP).
   - `Display.ResourceTypes.Background.Palette` optional palette for SHP background.
+  - `Display.ResourceTypes.Background.Horizontal.ResourcesInside` when true and `Display.ResourceTypes.Orientation=Horizontal`, dynamically divides the background graphic's width proportionally among all currently visible resources so they stay nicely framed inside the background without overflowing (defaults to `false`).
   - `Display.Label` specifies the CSF label key displayed alongside the counter.
   - `Display.Label.InvertPosition` when set to true, places the label after the value (`100 ★` vs `★ 100`).
   - `Display.Label.UseSpace` when set to false, omits the separating space between label and amount (`100★` or `★100` vs `100 ★` / `★ 100`). Defaults to `true`.
@@ -319,31 +320,50 @@ Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should 
   - `ResourceType.<ResourceType>.Amount` specifies resource cost (positive) or grant (negative) upon firing.
   - `ResourceType` and `ResourceValue` configure Tiberium/Ore harvesting to yield custom resources. When `ResourceValue=` is omitted, `Value=` is used for the custom resource and no money is granted (replaces money). When `ResourceValue=` is defined, `ResourceValue` is used for the custom resource AND `Value=` is used to grant standard money (dual income).
   - `Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
-- `[ResourceTypes]` also supports **`Money`** and **`Power`** pseudo-resources. Simply declare them in the list (e.g. `0=Money`, `1=Power`) to customize their HUD display (labels, positioning, formatting, or moving them out of the sidebar to the tactical screen).
+- `[ResourceTypes]` also supports **`Money`**, **`Power`**, **`Harvesters`**, and **`Weeds`** pseudo-resources. Simply declare them in the list (e.g. `0=Money`, `1=Power`, `2=Harvesters`, `3=Weeds`) to customize their HUD display (labels, positioning, formatting, status colors, or moving them between the sidebar and the tactical screen).
   - When `Money` is declared, it automatically tracks player credits and replaces the default sidebar counter with the Resource HUD. It also supports `Production.Money` and `ResourceCollector.Money`.
-  - `Display.Power.Format` controls the format of the displayed power value (`NetAndTotal`, `Net`, `DrainAndTotal`, `Drain`, `Total`).
+  - `Display.Power.Format` controls the format of the displayed power value (`DrainAndTotal`, `Drain`, `NetAndTotal`, `Net`, `Total`; defaults to `NetAndTotal`).
+  - `Display.Power.ColorGreen`, `Display.Power.ColorYellow`, `Display.Power.ColorRed`, `Display.Power.ColorGrey` (or `Display.ColorGreen`, `ColorYellow`, `ColorRed`, `ColorGrey`) optional R,G,B text colors for power states:
+    - `ColorGreen`: normal surplus power (defaults to `0,255,0`).
+    - `ColorYellow`: high drain / low power (defaults to `255,255,0`).
+    - `ColorRed`: power deficit / low power offline (defaults to `255,0,0`).
+    - `ColorGrey`: blackout active (defaults to `128,128,128`).
+    - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of power status.
+  - When `Harvesters` is declared, it automatically tracks active and total harvesters and replaces the legacy sidebar harvester counter.
+  - `Display.Harvesters.Format` controls the format of the displayed harvester counter (`ActiveAndTotal`, `Active`, `Total`; defaults to `ActiveAndTotal`).
+  - `Display.Harvesters.ColorGreen`, `Display.Harvesters.ColorYellow`, `Display.Harvesters.ColorRed` (or `Display.ColorGreen`, `ColorYellow`, `ColorRed`) optional R,G,B text colors for harvester activity states:
+    - `ColorGreen`: all harvesters are actively harvesting or unloading (defaults to `0,255,0`).
+    - `ColorYellow`: some harvesters are active while at least one is idle (defaults to `255,255,0`).
+    - `ColorRed`: no harvesters are active / all idle (defaults to `255,0,0`).
+    - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of harvester activity.
+  - When `Weeds` is declared, it automatically tracks the player's stored Veinhole monster Tiberium / Weeds (`pPlayer->OwnedWeed.GetTotalAmount()`) and replaces the legacy sidebar weeds counter.
 
 In `rulesmd.ini`:
 ```ini
 [ResourceTypes]
 0=SOMERESOURCETYPE
 
-[AudioVisual]
+[GDI]                                            ; SideClass
 Display.ResourceTypes.Orientation=Vertical       ; ResourceDisplayOrientation (Vertical | Horizontal)
 Display.ResourceTypes.Anchor=TopRight            ; ResourceDisplayAnchor (TopRight | TopLeft | TopCenter | BottomRight | BottomLeft | BottomCenter | Sidebar)
 Display.ResourceTypes.BaseOffset=0,0             ; Point2D - X,Y
 Display.ResourceTypes.Spacing=14                 ; integer - pixels
 Display.ResourceTypes.Align=                     ; TextAlign (Left | Center | Right, default depends on Anchor)
-Display.ResourceTypes.BackgroundPCX=             ; filename - .pcx
-Display.ResourceTypes.Background=                ; filename - without .shp extension
+Display.ResourceTypes.BackgroundPCX=             ; filename - .pcx (hidden automatically if no tactical resources are visible)
+Display.ResourceTypes.Background=                ; filename - without .shp extension (hidden automatically if no tactical resources are visible)
 Display.ResourceTypes.Background.Offset=0,0      ; Point2D - X,Y (applies to both PCX and SHP)
 Display.ResourceTypes.Background.Palette=        ; CustomPalette (palette for SHP background)
+Display.ResourceTypes.Background.Horizontal.ResourcesInside=false ; boolean
+Sidebar.ResourceTypes.Types=                     ; list of ResourceTypes
+Sidebar.ResourceTypes.Offset=0,0                 ; Point2D - X,Y
+Sidebar.ResourceTypes.Align=Left                 ; TextAlign (Left | Center | Right)
+Sidebar.ResourceTypes.Color=                     ; integer - Red,Green,Blue
 
 [SOMERESOURCETYPE]                               ; ResourceType
 Display.Label=                                   ; CSF entry key
 Display.Label.InvertPosition=false               ; boolean
 Display.Label.UseSpace=true                      ; boolean
-Display.Color=255,255,255                        ; integer - Red,Green,Blue
+Display.Color=255,255,255                        ; integer - Red,Green,Blue (static color)
 Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
 Display.Offset=                                  ; Point2D - X,Y
 InitialValue=0                                   ; integer
@@ -358,22 +378,46 @@ Crate.Anim=                                      ; AnimationType
 Crate.Sound=                                     ; Sound
 
 [Money]                                          ; Money Pseudo-Resource (tracks player credits)
-Display.Label=                                   ; CSF entry key, default to [ToolTips] -> CostLabel from uimd.ini ($)
+Display.Label=                                   ; CSF entry key (defaults to $)
 Display.Label.InvertPosition=false               ; boolean
 Display.Label.UseSpace=false                     ; boolean
-Display.Color=255,255,0                          ; integer - Red,Green,Blue
+Display.Color=255,255,0                          ; integer - Red,Green,Blue (static color)
 Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
 Display.Offset=                                  ; Point2D - X,Y
 RequiresCollector=false                          ; boolean
 
 [Power]                                          ; Power Pseudo-Resource (tracks power status)
-Display.Label=                                   ; CSF entry key, default to [ToolTips] -> PowerLabel from uimd.ini (⚡)
+Display.Label=                                   ; CSF entry key (defaults to ⚡)
 Display.Label.InvertPosition=false               ; boolean
 Display.Label.UseSpace=false                     ; boolean
-Display.Color=                                   ; integer - Red,Green,Blue (uses dynamic grid colors if omitted)
-Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
 Display.Offset=                                  ; Point2D - X,Y
 Display.Power.Format=NetAndTotal                 ; ResourcePowerDisplayMode (NetAndTotal | Net | DrainAndTotal | Drain | Total)
+Display.Power.ColorGreen=0,255,0                 ; integer - Red,Green,Blue (normal power surplus, default 0,255,0)
+Display.Power.ColorYellow=255,255,0              ; integer - Red,Green,Blue (low power / high drain, default 255,255,0)
+Display.Power.ColorRed=255,0,0                   ; integer - Red,Green,Blue (power deficit / offline, default 255,0,0)
+Display.Power.ColorGrey=128,128,128              ; integer - Red,Green,Blue (blackout status, default 128,128,128)
+Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
+
+[Harvesters]                                     ; Harvesters Pseudo-Resource (tracks active and total harvesters)
+Display.Label=                                   ; CSF entry key (defaults to ⛏)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | Never; HasCollector is ignored)
+Display.Offset=                                  ; Point2D - X,Y
+Display.Harvesters.Format=ActiveAndTotal         ; ResourceHarvesterDisplayMode (ActiveAndTotal | Active | Total)
+Display.Harvesters.ColorGreen=0,255,0            ; integer - Red,Green,Blue (100% harvesters active, default 0,255,0)
+Display.Harvesters.ColorYellow=255,255,0         ; integer - Red,Green,Blue (some harvesters active, default 255,255,0)
+Display.Harvesters.ColorRed=255,0,0              ; integer - Red,Green,Blue (no harvesters active, default 255,0,0)
+Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
+
+[Weeds]                                          ; Weeds Pseudo-Resource (tracks stored Veinhole monster Tiberium / Weeds)
+Display.Label=                                   ; CSF entry key
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Color=0,255,128                          ; integer - Red,Green,Blue (static color)
+Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
 
 [SOMETECHNO]                                     ; TechnoType
 Cost.<ResourceType>=0                            ; integer
@@ -393,12 +437,6 @@ ResourceValue=                                   ; integer, default to Value
 
 [SOMESUPERWEAPON]                                ; SuperWeaponType
 ResourceType.<ResourceType>.Amount=0             ; integer
-
-[SOMESIDE]                                       ; SideClass
-Sidebar.ResourceTypes.Types=                     ; List of ResourceTypes
-Sidebar.ResourceTypes.Offset=0,0                 ; Point2D - X,Y
-Sidebar.ResourceTypes.Color=                     ; integer - Red,Green,Blue
-Sidebar.ResourceTypes.Align=Left                 ; TextAlign (Left | Right | Center)
 ```
 
 ### Laser Trails
