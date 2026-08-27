@@ -432,6 +432,8 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
+	Nullable<bool> ExitThroughRoof;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -835,6 +837,8 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+
+		, ExitThroughRoof {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
