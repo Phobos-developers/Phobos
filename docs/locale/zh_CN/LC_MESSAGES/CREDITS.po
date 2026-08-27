@@ -1892,6 +1892,9 @@ msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新
 msgid "Customize ivan bomb visibility"
 msgstr "自定义伊文炸弹可见性"
 
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
