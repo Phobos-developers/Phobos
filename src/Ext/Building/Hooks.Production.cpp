@@ -12,12 +12,25 @@ DEFINE_HOOK(0x4C9BD5, FactoryClass_AI_ProcessProductionStep, 0x31)
 	const auto pOwner = pFactory->Owner;
 	if (pOwner)
 	{
+		const auto pHouseExt = HouseExt::TryFetch(pOwner);
 		const int availableMoney = pOwner->Available_Money();
 		bool canAfford = (moneyCost <= availableMoney);
 
+		for (size_t resIdx = 0; resIdx < ResourceTypeClass::Array.size(); ++resIdx)
+		{
+			const auto pResource = ResourceTypeClass::Array[resIdx].get();
+			if (pResource && pResource->IsMoneyResource())
+			{
+				if (pHouseExt && !pHouseExt->IsResourceEnabled(static_cast<int>(resIdx)))
+				{
+					canAfford = false;
+				}
+				break;
+			}
+		}
+
 		TechnoTypeClass* pType = pFactory->Object ? pFactory->Object->GetTechnoType() : (pFactory->QueuedObjects.Count > 0 ? pFactory->QueuedObjects[0] : nullptr);
 		const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
-		const auto pHouseExt = HouseExt::TryFetch(pOwner);
 
 		std::vector<int> resDues;
 		if (pTypeExt && pHouseExt && !pTypeExt->ResourceCosts.empty())

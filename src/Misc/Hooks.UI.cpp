@@ -99,6 +99,24 @@ DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
     return Continue;
 }
 
+DEFINE_HOOK(0x4A24DB, CreditsClass_Draw_SkipIfMoneyResource1, 0x5)
+{
+	if (ResourceTypeClass::ShouldSkipWestwoodCredits())
+	{
+		return 0x4A24E0;
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x4A25DB, CreditsClass_Draw_SkipIfMoneyResource2, 0x5)
+{
+	if (ResourceTypeClass::ShouldSkipWestwoodCredits())
+	{
+		return 0x4A25E0;
+	}
+	return 0;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	auto const pPlayer = HouseClass::CurrentPlayer;
@@ -106,116 +124,10 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		return 0;
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
-	auto pHouseExt = HouseExt::Fetch(pPlayer);
 	auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 
-	// Calculate base HUD coordinate based on Anchor
-	int baseX = 0;
-	int baseY = 0;
-	const Point2D baseOffset = ResourceTypeClass::Global_Display_BaseOffset.Get();
-
-	switch (ResourceTypeClass::Global_Display_Anchor.Get())
-	{
-	case ResourceDisplayAnchor::TopLeft:
-		baseX = 10 + baseOffset.X;
-		baseY = 2 + baseOffset.Y;
-		break;
-	case ResourceDisplayAnchor::TopRight:
-		baseX = DSurface::Sidebar->GetWidth() - 100 + baseOffset.X;
-		baseY = 2 + baseOffset.Y;
-		break;
-	case ResourceDisplayAnchor::BottomLeft:
-		baseX = 10 + baseOffset.X;
-		baseY = DSurface::Sidebar->GetHeight() - 30 + baseOffset.Y;
-		break;
-	case ResourceDisplayAnchor::BottomRight:
-		baseX = DSurface::Sidebar->GetWidth() - 100 + baseOffset.X;
-		baseY = DSurface::Sidebar->GetHeight() - 30 + baseOffset.Y;
-		break;
-	case ResourceDisplayAnchor::Sidebar:
-	default:
-		baseX = DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_ResourceTypes_Offset.Get().X + baseOffset.X;
-		baseY = 2 + pSideExt->Sidebar_ResourceTypes_Offset.Get().Y + baseOffset.Y;
-		break;
-	}
-
-	int const spacing = ResourceTypeClass::Global_Display_Spacing.Get();
-	int stackIndex = 0;
-
-	const bool hasExplicitTypes = !pSideExt->Sidebar_ResourceTypes_Types.empty();
-	const size_t count = hasExplicitTypes ? pSideExt->Sidebar_ResourceTypes_Types.size() : ResourceTypeClass::Array.size();
-
-	for (size_t iter = 0; iter < count; ++iter)
-	{
-		const int i = hasExplicitTypes ? pSideExt->Sidebar_ResourceTypes_Types[iter] : static_cast<int>(iter);
-		if (i < 0 || i >= static_cast<int>(ResourceTypeClass::Array.size()))
-			continue;
-
-		const auto pResource = ResourceTypeClass::Array[i].get();
-		if (!pResource)
-			continue;
-
-		if (!pHouseExt->IsResourceEnabled(i))
-			continue;
-
-		// Check display condition
-		if (pResource->Display_Condition.Get() == ResourceDisplayCondition::Never)
-			continue;
-
-		const int amount = pHouseExt->GetResourceAmount(i);
-		const bool hasCollector = (i < static_cast<int>(pHouseExt->ResourceCollectorCounts.size())) && (pHouseExt->ResourceCollectorCounts[i] > 0);
-
-		if (!hasCollector)
-		{
-			if (pResource->Display_Condition.Get() == ResourceDisplayCondition::GreaterThanZero && amount <= 0)
-				continue;
-
-			if (pResource->Display_Condition.Get() == ResourceDisplayCondition::HasCollector)
-				continue;
-		}
-
-		wchar_t counter[0x40];
-		const wchar_t* label = pResource->Display_Label.Get();
-		if (label && *label)
-		{
-			const bool useSpace = pResource->Display_Label_UseSpace.Get();
-			if (pResource->Display_Label_InvertPosition.Get())
-				swprintf_s(counter, useSpace ? L"%d %ls" : L"%d%ls", amount, label);
-			else
-				swprintf_s(counter, useSpace ? L"%ls %d" : L"%ls%d", label, amount);
-		}
-		else
-		{
-			swprintf_s(counter, L"%d", amount);
-		}
-
-		Point2D vPos;
-		if (pResource->Display_Offset.isset())
-		{
-			vPos = pResource->Display_Offset.Get();
-		}
-		else
-		{
-			if (ResourceTypeClass::Global_Display_Orientation.Get() == ResourceDisplayOrientation::Horizontal)
-			{
-				vPos.X = baseX + stackIndex * spacing;
-				vPos.Y = baseY;
-			}
-			else
-			{
-				vPos.X = baseX;
-				vPos.Y = baseY + stackIndex * spacing;
-			}
-			++stackIndex;
-		}
-
-		const ColorStruct resColor = pResource->Display_Color.Get();
-		const ColorStruct clrToolTip = (resColor != ColorStruct { 0, 0, 0 }) ? resColor : pSideExt->Sidebar_ResourceTypes_Color.Get(Drawing::TooltipColor);
-		auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
-				| static_cast<int>(pSideExt->Sidebar_ResourceTypes_Align.Get()));
-
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
-	}
+	// Draw custom resources in sidebar if Anchor=Sidebar
+	ResourceTypeClass::DrawResourceHUD(DSurface::Sidebar, true);
 
 	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{
@@ -244,7 +156,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
-	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
+	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count && !ResourceTypeClass::HasPowerResource())
 	{
 		wchar_t counter[0x20];
 

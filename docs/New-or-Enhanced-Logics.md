@@ -282,95 +282,123 @@ Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should 
 
 ### Custom Resource Types
 
-- Now you can define and customize arbitrary secondary/tertiary resources with their own HUD counters, production cycles, unit costs, bounties, and superweapon requirements.
-  - `[ResourceTypes]` defines the list of custom resource types available in the game.
-  - `[AudioVisual] -> Display.ResourceTypes.Orientation` controls whether multiple resource counters stack vertically or horizontally on the HUD (`Vertical` / `Horizontal`).
-  - `[AudioVisual] -> Display.ResourceTypes.Anchor` sets the reference HUD anchor corner (`TopRight`, `TopLeft`, `BottomRight`, `BottomLeft`, `Sidebar`).
-  - `[AudioVisual] -> Display.ResourceTypes.BaseOffset` provides an initial X,Y pixel offset for the resource display group.
-  - `[AudioVisual] -> Display.ResourceTypes.Spacing` specifies the spacing in pixels between consecutive resource counters.
-  - `[<ResourceType>] -> Display.Label` specifies the CSF label or text symbol displayed alongside the counter.
-  - `[<ResourceType>] -> Display.Label.InvertPosition` when set to true, places the label after the value (`100 ★` vs `★ 100`).
-  - `[<ResourceType>] -> Display.Label.UseSpace` when set to false, omits the separating space between label and amount (`100★` or `★100` vs `100 ★` / `★ 100`). Defaults to `true`.
-  - `[<ResourceType>] -> Display.Color` specifies the text color (R,G,B) for the resource on the HUD and floating strings.
-  - `[<ResourceType>] -> Display.Condition` specifies when the counter is visible (`Always`, `GreaterThanZero`, `HasCollector`, `Never` / `Hidden` / `None`).
-  - `[<ResourceType>] -> Display.Offset` optional explicit X,Y screen coordinates overriding auto-stacking.
-  - `[<ResourceType>] -> InitialValue` starting resource amount granted to houses at match start.
-  - `[<ResourceType>] -> RequiresCollector` when true, the house resource only activates once a structure with `ResourceCollector.<Resource>=true` is built.
-  - `[<ResourceType>] -> Bounty.Enabled` enables kill bounty rewards for this resource.
-  - `[<ResourceType>] -> Bounty.DefaultValue` default bounty granted when destroying an enemy unit that lacks a specific bounty tag.
-  - `[<ResourceType>] -> Bounty.DefaultFriendlyValue` bounty when destroying an allied unit.
-  - `[<ResourceType>] -> Bounty.CanUseStandardPoints` fall back to the techno's `Points=` tag for bounty calculation.
-  - `[<ResourceType>] -> Bounty.MoneyConversion` divides the destroyed unit's `Cost=` by this value to determine the bounty reward when not explicitly defined on the techno (e.g. 100 calculates 700 / 100 = 7). Falls back to `Bounty.DefaultValue` if result is 0.
-  - `[<TechnoType>] -> Cost.<ResourceType>` additional resource cost required to build the techno.
-  - `[<TechnoType>] -> Bounty.<ResourceType>.Value` custom bounty awarded to the killer when this enemy unit is destroyed.
-  - `[<TechnoType>] -> Bounty.<ResourceType>.FriendlyValue` custom friendly fire penalty applied if destroyed by an ally (e.g. -50; always evaluated as negative to prevent accidental rewards).
-  - `[<TechnoType>] -> Production.<ResourceType>`, `Production.<ResourceType>.Delay`, and `Production.<ResourceType>.Startup` configure periodic and initial resource generation. Works on all units, vehicles, infantry, aircraft, and buildings. `Startup` is optional (defaults to 0). Periodic production occurs every `Delay` frames.
-  - `[<TechnoType>] -> Production.<ResourceType>.Display.Offset` optional X,Y pixel offset for the floating string text relative to the object render center.
-  - `[<TechnoType>] -> Production.<ResourceType>.Display.Color` optional R,G,B text color override for the floating string (falls back to `Display.Color` from `[<ResourceType>]`).
-  - `[<TechnoType>] -> Production.<ResourceType>.Display.Houses` controls which players can see the floating string (`All`, `Owner`, `Allies`, `Enemies`, `None`, defaults to `All`).
-  - `[<TechnoType>] -> ResourceCollector.<ResourceType>` designates this unit or building as an active collector for this resource.
-  - `[<SuperWeaponType>] -> ResourceType.<ResourceType>.Amount` specifies resource cost (positive) or grant (negative) upon firing.
-  - `[<TiberiumType>] -> ResourceType` and `ResourceValue` configure Tiberium/Ore harvesting to yield custom resources. When `ResourceValue=` is omitted, `Value=` is used for the custom resource and no money is granted (replaces money). When `ResourceValue=` is defined, `ResourceValue` is used for the custom resource AND `Value=` is used to grant standard money (dual income).
-  - `[<Side>] -> Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
-  - `[<Side>] -> Sidebar.ResourceTypes.Offset`, `Sidebar.ResourceTypes.Color`, and `Sidebar.ResourceTypes.Align` provide per-side HUD positioning and text styling fallbacks.
+- Now you can define and customize arbitrary secondary/tertiary resources with their own HUD counters, production cycles, unit costs, bounties, crates, and superweapon requirements.
+  - `Display.ResourceTypes.Orientation` controls whether multiple resource counters stack vertically or horizontally on the HUD (`Vertical` / `Horizontal`).
+  - `Display.ResourceTypes.Anchor` sets the reference HUD anchor corner (`TopRight`, `TopLeft`, `TopCenter`, `BottomRight`, `BottomLeft`, `BottomCenter`, `Sidebar`).
+  - `Display.ResourceTypes.BaseOffset` provides an initial X,Y pixel offset for the resource display group.
+  - `Display.ResourceTypes.Spacing` specifies the spacing in pixels between consecutive resource counters.
+  - `Display.ResourceTypes.Align` text alignment for HUD counters (`Left`, `Center`, `Right`; defaults to `Right` for right anchors, `Center` for center anchors, `Left` for left anchors).
+  - `Display.ResourceTypes.BackgroundPCX` optional PCX background image rendered behind the tactical HUD counters (takes precedence over SHP if both are defined).
+  - `Display.ResourceTypes.Background` optional SHP background image rendered behind the tactical HUD counters (without `.shp` extension; multi-frame SHPs animate continuously).
+  - `Display.ResourceTypes.Background.Offset` optional X,Y pixel offset for the background image (applies to both PCX and SHP).
+  - `Display.ResourceTypes.Background.Palette` optional palette for SHP background.
+  - `Display.Label` specifies the CSF label key displayed alongside the counter.
+  - `Display.Label.InvertPosition` when set to true, places the label after the value (`100 ★` vs `★ 100`).
+  - `Display.Label.UseSpace` when set to false, omits the separating space between label and amount (`100★` or `★100` vs `100 ★` / `★ 100`). Defaults to `true`.
+  - `Display.Color` specifies the text color (R,G,B) for the resource on the HUD and floating strings.
+  - `Display.Condition` specifies when the counter is visible (`Always`, `GreaterThanZero`, `HasCollector`, `Never` / `Hidden` / `None`).
+  - `Display.Offset` optional explicit X,Y screen coordinates overriding auto-stacking.
+  - `InitialValue` starting resource amount granted to houses at match start.
+  - `RequiresCollector` when true, the house resource only activates once a structure with `ResourceCollector.<Resource>=true` is built.
+  - `Bounty.Enabled` enables kill bounty rewards for this resource.
+  - `Bounty.DefaultValue` default bounty granted when destroying an enemy unit that lacks a specific bounty tag.
+  - `Bounty.DefaultFriendlyValue` bounty when destroying an allied unit.
+  - `Bounty.CanUseStandardPoints` fall back to the techno's `Points=` tag for bounty calculation.
+  - `Bounty.MoneyConversion` divides the destroyed unit's `Cost=` by this value to determine the bounty reward when not explicitly defined on the techno (e.g. 100 calculates 700 / 100 = 7). Falls back to `Bounty.DefaultValue` if result is 0.
+  - `Crate.Amount` amount granted when rolled from a money crate (if > 0, the resource enters the money crate raffle with equal probability alongside standard credits).
+  - `Crate.Anim` optional animation played at the crate location when this resource is awarded.
+  - `Crate.Sound` optional sound effect played when this resource is awarded.
+  - `Cost.<ResourceType>` additional resource cost required to build the techno. Consumed progressively during production (pausing if funds are insufficient and fully refunded on cancellation), and consumed proportionally during structure repair and Service Depot unit repair.
+  - `Bounty.<ResourceType>.Value` custom bounty awarded to the killer when this enemy unit is destroyed.
+  - `Bounty.<ResourceType>.FriendlyValue` custom friendly fire penalty applied if destroyed by an ally (e.g. -50; always evaluated as negative to prevent accidental rewards).
+  - `Production.<ResourceType>`, `Production.<ResourceType>.Delay`, and `Production.<ResourceType>.Startup` configure periodic and initial resource generation. Works on all units, vehicles, infantry, aircraft, and buildings. `Startup` is optional (defaults to 0). Periodic production occurs every `Delay` frames.
+  - `Production.<ResourceType>.Display.Offset` optional X,Y pixel offset for the floating string text relative to the object render center.
+  - `Production.<ResourceType>.Display.Color` optional R,G,B text color override for the floating string (falls back to `Display.Color` from `[<ResourceType>]`).
+  - `Production.<ResourceType>.Display.Houses` controls which players can see the floating string (`All`, `Owner`, `Allies`, `Enemies`, `None`, defaults to `All`).
+  - `ResourceCollector.<ResourceType>` designates this unit or building as an active collector for this resource.
+  - `ResourceType.<ResourceType>.Amount` specifies resource cost (positive) or grant (negative) upon firing.
+  - `ResourceType` and `ResourceValue` configure Tiberium/Ore harvesting to yield custom resources. When `ResourceValue=` is omitted, `Value=` is used for the custom resource and no money is granted (replaces money). When `ResourceValue=` is defined, `ResourceValue` is used for the custom resource AND `Value=` is used to grant standard money (dual income).
+  - `Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
+- `[ResourceTypes]` also supports **`Money`** and **`Power`** pseudo-resources. Simply declare them in the list (e.g. `0=Money`, `1=Power`) to customize their HUD display (labels, positioning, formatting, or moving them out of the sidebar to the tactical screen).
+  - When `Money` is declared, it automatically tracks player credits and replaces the default sidebar counter with the Resource HUD. It also supports `Production.Money` and `ResourceCollector.Money`.
+  - `Display.Power.Format` controls the format of the displayed power value (`NetAndTotal`, `Net`, `DrainAndTotal`, `Drain`, `Total`).
 
 In `rulesmd.ini`:
 ```ini
 [ResourceTypes]
-0=BattlePoints
-1=OreAlloy
+0=SOMERESOURCETYPE
 
 [AudioVisual]
-; Global HUD alignment and stacking for custom resources
-Display.ResourceTypes.Orientation=Vertical         ; Vertical, Horizontal
-Display.ResourceTypes.Anchor=TopRight              ; TopRight, TopLeft, BottomRight, BottomLeft, Sidebar
-Display.ResourceTypes.BaseOffset=0,0               ; X,Y pixel offset
-Display.ResourceTypes.Spacing=14                   ; integer, pixels between stacked counters
+Display.ResourceTypes.Orientation=Vertical       ; ResourceDisplayOrientation (Vertical | Horizontal)
+Display.ResourceTypes.Anchor=TopRight            ; ResourceDisplayAnchor (TopRight | TopLeft | TopCenter | BottomRight | BottomLeft | BottomCenter | Sidebar)
+Display.ResourceTypes.BaseOffset=0,0             ; Point2D - X,Y
+Display.ResourceTypes.Spacing=14                 ; integer - pixels
+Display.ResourceTypes.Align=                     ; TextAlign (Left | Center | Right, default depends on Anchor)
+Display.ResourceTypes.BackgroundPCX=             ; filename - .pcx
+Display.ResourceTypes.Background=                ; filename - without .shp extension
+Display.ResourceTypes.Background.Offset=0,0      ; Point2D - X,Y (applies to both PCX and SHP)
+Display.ResourceTypes.Background.Palette=        ; CustomPalette (palette for SHP background)
 
-[BattlePoints]                        ; ResourceTypeClass
-Display.Label=TXT_BP_SYMBOL          ; CSF entry key (e.g. "★")
-Display.Label.InvertPosition=false   ; boolean
-Display.Label.UseSpace=true          ; boolean (false = "★100", true = "★ 100")
-Display.Color=255,215,0              ; R,G,B ColorStruct
-Display.Condition=GreaterThanZero    ; Always, GreaterThanZero, HasCollector, Never
-Display.Offset=                      ; X,Y pixels (optional, overrides auto-stacking)
-InitialValue=0                       ; integer
-RequiresCollector=no                 ; boolean
-Bounty.Enabled=yes                   ; boolean
-Bounty.DefaultValue=1                ; integer
-Bounty.DefaultFriendlyValue=-10      ; integer
-Bounty.CanUseStandardPoints=no       ; boolean
-Bounty.MoneyConversion=100           ; integer (calculates Cost / 100)
+[SOMERESOURCETYPE]                               ; ResourceType
+Display.Label=                                   ; CSF entry key
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=true                      ; boolean
+Display.Color=255,255,255                        ; integer - Red,Green,Blue
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+InitialValue=0                                   ; integer
+RequiresCollector=false                          ; boolean
+Bounty.Enabled=false                             ; boolean
+Bounty.DefaultValue=0                            ; integer
+Bounty.DefaultFriendlyValue=0                    ; integer
+Bounty.CanUseStandardPoints=false                ; boolean
+Bounty.MoneyConversion=0                         ; integer
+Crate.Amount=0                                   ; integer
+Crate.Anim=                                      ; AnimationType
+Crate.Sound=                                     ; Sound
 
-[SOMETECHNO]                         ; Works on InfantryType, UnitType, AircraftType, BuildingType
-Cost.BattlePoints=50                 ; integer
-Bounty.BattlePoints.Value=15         ; integer
-Bounty.BattlePoints.FriendlyValue=-50; integer (optional special penalty for friendly fire)
-ResourceCollector.BattlePoints=yes   ; boolean (enables resource for house if RequiresCollector=yes)
-Production.BattlePoints=10           ; integer (periodic amount generated)
-Production.BattlePoints.Delay=450    ; integer (frames between generation)
-Production.BattlePoints.Startup=25   ; integer (optional one-time grant upon creation)
-Production.BattlePoints.Display.Offset=0,-20 ; X,Y pixels offset for floating text (optional)
-Production.BattlePoints.Display.Color=255,215,0 ; R,G,B color override for floating text (optional)
-Production.BattlePoints.Display.Houses=All ; All, Owner, Allies, Enemies, None (optional)
+[Money]                                          ; Money Pseudo-Resource (tracks player credits)
+Display.Label=                                   ; CSF entry key, default to [ToolTips] -> CostLabel from uimd.ini ($)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Color=255,255,0                          ; integer - Red,Green,Blue
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+RequiresCollector=false                          ; boolean
 
-[Cruentus]                           ; TiberiumType
-; Example 1: Replace money entirely with BattlePoints (uses Value= for points)
-ResourceType=BattlePoints
+[Power]                                          ; Power Pseudo-Resource (tracks power status)
+Display.Label=                                   ; CSF entry key, default to [ToolTips] -> PowerLabel from uimd.ini (⚡)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Color=                                   ; integer - Red,Green,Blue (uses dynamic grid colors if omitted)
+Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+Display.Power.Format=NetAndTotal                 ; ResourcePowerDisplayMode (NetAndTotal | Net | DrainAndTotal | Drain | Total)
 
-; Example 2: Dual income (gives $50 money via Value= AND 15 points via ResourceValue=)
-; Value=50
-; ResourceType=BattlePoints
-; ResourceValue=15
+[SOMETECHNO]                                     ; TechnoType
+Cost.<ResourceType>=0                            ; integer
+Bounty.<ResourceType>.Value=                     ; integer, default to [SOMERESOURCETYPE] -> Bounty.DefaultValue
+Bounty.<ResourceType>.FriendlyValue=             ; integer, default to [SOMERESOURCETYPE] -> Bounty.DefaultFriendlyValue
+ResourceCollector.<ResourceType>=false           ; boolean
+Production.<ResourceType>=0                      ; integer
+Production.<ResourceType>.Delay=0                ; integer - game frames
+Production.<ResourceType>.Startup=0              ; integer
+Production.<ResourceType>.Display.Offset=        ; Point2D - X,Y
+Production.<ResourceType>.Display.Color=         ; integer - Red,Green,Blue, default to [SOMERESOURCETYPE] -> Display.Color
+Production.<ResourceType>.Display.Houses=all     ; AffectedHouse (all | owner | allies | enemies | none)
 
-[SOMESW]                             ; SuperWeaponType
-ResourceType.BattlePoints.Amount=100 ; integer (>0 required to launch, <0 grants on fire)
+[SOMETIBERIUM]                                   ; TiberiumType
+ResourceType=                                    ; ResourceType
+ResourceValue=                                   ; integer, default to Value
 
-[SOMESIDE]                           ; SideClass
-Sidebar.ResourceTypes.Types=BattlePoints ; List of ResourceTypes to show on this side's sidebar
-Sidebar.ResourceTypes.Offset=0,0         ; X,Y
-Sidebar.ResourceTypes.Color=             ; R,G,B
-Sidebar.ResourceTypes.Align=Left         ; Left, Right, Center/Centre
+[SOMESUPERWEAPON]                                ; SuperWeaponType
+ResourceType.<ResourceType>.Amount=0             ; integer
+
+[SOMESIDE]                                       ; SideClass
+Sidebar.ResourceTypes.Types=                     ; List of ResourceTypes
+Sidebar.ResourceTypes.Offset=0,0                 ; Point2D - X,Y
+Sidebar.ResourceTypes.Color=                     ; integer - Red,Green,Blue
+Sidebar.ResourceTypes.Align=Left                 ; TextAlign (Left | Right | Center)
 ```
 
 ### Laser Trails

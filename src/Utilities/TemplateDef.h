@@ -1171,6 +1171,42 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ResourcePowerDisplayMode>(ResourcePowerDisplayMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "netandtotal") == 0 || _strcmpi(str, "net/total") == 0 || _strcmpi(str, "surplus/total") == 0 || _strcmpi(str, "nettotal") == 0)
+			{
+				value = ResourcePowerDisplayMode::NetAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "net") == 0 || _strcmpi(str, "delta") == 0 || _strcmpi(str, "surplus") == 0 || _strcmpi(str, "remaining") == 0)
+			{
+				value = ResourcePowerDisplayMode::Net;
+				return true;
+			}
+			else if (_strcmpi(str, "drainandtotal") == 0 || _strcmpi(str, "drain/total") == 0 || _strcmpi(str, "used/total") == 0 || _strcmpi(str, "demand/total") == 0 || _strcmpi(str, "usedandtotal") == 0)
+			{
+				value = ResourcePowerDisplayMode::DrainAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "drain") == 0 || _strcmpi(str, "used") == 0 || _strcmpi(str, "demand") == 0 || _strcmpi(str, "consumption") == 0)
+			{
+				value = ResourcePowerDisplayMode::Drain;
+				return true;
+			}
+			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "output") == 0 || _strcmpi(str, "production") == 0)
+			{
+				value = ResourcePowerDisplayMode::Total;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Power display mode can be NetAndTotal, Net, DrainAndTotal, Drain, or Total");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<ResourceDisplayAnchor>(ResourceDisplayAnchor& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1201,7 +1237,17 @@ namespace detail
 				value = ResourceDisplayAnchor::Sidebar;
 				return true;
 			}
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display anchor can be TopRight, TopLeft, BottomRight, BottomLeft or Sidebar");
+			else if (_strcmpi(str, "topcenter") == 0 || _strcmpi(str, "topcentre") == 0)
+			{
+				value = ResourceDisplayAnchor::TopCenter;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomcenter") == 0 || _strcmpi(str, "bottomcentre") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomCenter;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display anchor can be TopRight, TopLeft, TopCenter, BottomRight, BottomLeft, BottomCenter or Sidebar");
 		}
 		return false;
 	}

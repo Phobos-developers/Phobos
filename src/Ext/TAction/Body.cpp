@@ -849,6 +849,10 @@ bool TActionExt::ModifyCustomResource(TActionClass* pThis, HouseClass* pHouse, O
 	if (resIdx < 0)
 		return true;
 
+	const auto pResource = ResourceTypeClass::Array[resIdx].get();
+	if (pResource && pResource->IsPowerResource())
+		return true;
+
 	HouseClass* pTargetHouse = pHouse;
 	if (pThis->Value2 >= 0)
 	{

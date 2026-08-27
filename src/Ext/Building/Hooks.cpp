@@ -1433,6 +1433,19 @@ DEFINE_HOOK(0x450885, BuildingClass_Repair_CheckAndSpend, 0x23)
 	const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
 	const auto pHouseExt = HouseExt::TryFetch(pOwner);
 
+	for (size_t resIdx = 0; resIdx < ResourceTypeClass::Array.size(); ++resIdx)
+	{
+		const auto pResource = ResourceTypeClass::Array[resIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			if (pHouseExt && !pHouseExt->IsResourceEnabled(static_cast<int>(resIdx)))
+			{
+				return StopRepair;
+			}
+			break;
+		}
+	}
+
 	std::vector<std::pair<size_t, int>> resDues;
 	if (pTypeExt && pHouseExt && !pTypeExt->ResourceCosts.empty() && pType && pType->Strength > 0 && repairHP > 0)
 	{

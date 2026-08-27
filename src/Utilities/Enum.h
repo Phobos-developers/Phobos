@@ -468,12 +468,24 @@ enum class ResourceDisplayOrientation : unsigned char
 	Horizontal = 1
 };
 
+enum class ResourcePowerDisplayMode : unsigned char
+{
+	NetAndTotal = 0,
+	Net = 1,
+	DrainAndTotal = 2,
+	Drain = 3,
+	Total = 4
+};
+
+
 enum class ResourceDisplayAnchor : unsigned char
 {
 	TopRight = 0,
 	TopLeft = 1,
 	BottomRight = 2,
 	BottomLeft = 3,
-	Sidebar = 4
+	Sidebar = 4,
+	TopCenter = 5,
+	BottomCenter = 6
 };
 

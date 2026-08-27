@@ -12,12 +12,17 @@ public:
 	static Valueable<ResourceDisplayAnchor> Global_Display_Anchor;
 	static Valueable<Point2D> Global_Display_BaseOffset;
 	static Valueable<int> Global_Display_Spacing;
+	static Nullable<TextAlign> Global_Display_Align;
+	static PhobosPCXFile Global_Display_Background_PCX;
+	static Valueable<SHPStruct*> Global_Display_Background_SHP;
+	static CustomPalette Global_Display_Background_Palette;
+	static Valueable<Point2D> Global_Display_Background_Offset;
 
 	// Per-Resource Display Configuration
 	Valueable<CSFText> Display_Label;
 	Valueable<bool> Display_Label_InvertPosition;
 	Valueable<bool> Display_Label_UseSpace;
-	Valueable<ColorStruct> Display_Color;
+	Nullable<ColorStruct> Display_Color;
 	Valueable<ResourceDisplayCondition> Display_Condition;
 	Nullable<Point2D> Display_Offset;
 
@@ -32,11 +37,26 @@ public:
 	Valueable<bool> Bounty_CanUseStandardPoints;
 	Valueable<int> Bounty_MoneyConversion;
 
+	// Crates
+	Valueable<int> Crate_Amount;
+	NullableIdx<VocClass> Crate_Sound;
+	NullableIdx<AnimTypeClass> Crate_Anim;
+
+	// Pseudo-Resource Types (Money and Power)
+	Valueable<ResourcePowerDisplayMode> Display_Power_Mode;
+
+	bool IsMoneyResource() const { return _strcmpi(this->Name, "Money") == 0; }
+	bool IsPowerResource() const { return _strcmpi(this->Name, "Power") == 0; }
+	static bool HasMoneyResource();
+	static bool HasPowerResource();
+	static bool ShouldSkipWestwoodCredits();
+
 	ResourceTypeClass(const char* pTitle = NONE_STR);
 	virtual ~ResourceTypeClass() = default;
 
 	void LoadFromINI(CCINIClass* pINI);
 	static void LoadGlobalsFromINI(CCINIClass* pINI);
+	static void DrawResourceHUD(DSurface* pSurface, bool isSidebar);
 
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);

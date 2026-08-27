@@ -1197,6 +1197,21 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 
 int HouseExt::GetResourceAmount(int resourceIdx) const
 {
+	if (resourceIdx >= 0 && resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			return pHouse ? pHouse->Available_Money() : 0;
+		}
+		if (pResource && pResource->IsPowerResource())
+		{
+			auto pHouse = this->OwnerObject();
+			return pHouse ? (pHouse->PowerOutput - pHouse->PowerDrain) : 0;
+		}
+	}
+
 	if (resourceIdx >= 0 && resourceIdx < static_cast<int>(this->CustomResources.size()))
 		return this->CustomResources[resourceIdx];
 	return 0;
@@ -1206,6 +1221,18 @@ void HouseExt::SetResourceAmount(int resourceIdx, int amount)
 {
 	if (resourceIdx < 0)
 		return;
+
+	if (resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			if (pHouse)
+				pHouse->TransactMoney(amount - pHouse->Available_Money());
+			return;
+		}
+	}
 
 	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
 		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
@@ -1218,6 +1245,18 @@ void HouseExt::UpdateResourceAmount(int resourceIdx, int delta)
 	if (resourceIdx < 0)
 		return;
 
+	if (resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			if (pHouse)
+				pHouse->TransactMoney(delta);
+			return;
+		}
+	}
+
 	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
 		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
 
@@ -1226,6 +1265,8 @@ void HouseExt::UpdateResourceAmount(int resourceIdx, int delta)
 
 bool HouseExt::CanAffordResource(int resourceIdx, int amount) const
 {
+	if (!this->IsResourceEnabled(resourceIdx))
+		return false;
 	return this->GetResourceAmount(resourceIdx) >= amount;
 }
 

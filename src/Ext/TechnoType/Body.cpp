@@ -1150,39 +1150,42 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	for (size_t i = 0; i < resourceCount; ++i)
 	{
 		const auto pResource = ResourceTypeClass::Array[i].get();
-		if (!pResource)
+		if (!pResource || pResource->IsPowerResource())
 			continue;
 
-		char costTag[64];
-		sprintf_s(costTag, "Cost.%s", (const char*)pResource->Name);
-		int costVal = 0;
-		if (exINI.ReadInteger(pSection, costTag, &costVal))
+		if (!pResource->IsMoneyResource())
 		{
-			this->ResourceCosts[i] = std::max(0, costVal);
-		}
+			char costTag[64];
+			sprintf_s(costTag, "Cost.%s", (const char*)pResource->Name);
+			int costVal = 0;
+			if (exINI.ReadInteger(pSection, costTag, &costVal))
+			{
+				this->ResourceCosts[i] = std::max(0, costVal);
+			}
 
-		char bountyTag[64];
-		sprintf_s(bountyTag, "Bounty.%s.Value", (const char*)pResource->Name);
-		int bountyVal = 0;
-		if (exINI.ReadInteger(pSection, bountyTag, &bountyVal))
-		{
-			this->ResourceBounties[i] = std::max(0, bountyVal);
-		}
+			char bountyTag[64];
+			sprintf_s(bountyTag, "Bounty.%s.Value", (const char*)pResource->Name);
+			int bountyVal = 0;
+			if (exINI.ReadInteger(pSection, bountyTag, &bountyVal))
+			{
+				this->ResourceBounties[i] = std::max(0, bountyVal);
+			}
 
-		char friendlyTag[64];
-		sprintf_s(friendlyTag, "Bounty.%s.FriendlyValue", (const char*)pResource->Name);
-		int friendlyVal = 0;
-		if (exINI.ReadInteger(pSection, friendlyTag, &friendlyVal))
-		{
-			this->ResourceFriendlyBounties[i] = -std::abs(friendlyVal);
-		}
+			char friendlyTag[64];
+			sprintf_s(friendlyTag, "Bounty.%s.FriendlyValue", (const char*)pResource->Name);
+			int friendlyVal = 0;
+			if (exINI.ReadInteger(pSection, friendlyTag, &friendlyVal))
+			{
+				this->ResourceFriendlyBounties[i] = -std::abs(friendlyVal);
+			}
 
-		char soylentTag[64];
-		sprintf_s(soylentTag, "Soylent.%s", (const char*)pResource->Name);
-		int soylentVal = 0;
-		if (exINI.ReadInteger(pSection, soylentTag, &soylentVal))
-		{
-			this->ResourceSoylents[i] = std::max(0, soylentVal);
+			char soylentTag[64];
+			sprintf_s(soylentTag, "Soylent.%s", (const char*)pResource->Name);
+			int soylentVal = 0;
+			if (exINI.ReadInteger(pSection, soylentTag, &soylentVal))
+			{
+				this->ResourceSoylents[i] = std::max(0, soylentVal);
+			}
 		}
 
 		// Check ResourceCollector.<ResourceName>
