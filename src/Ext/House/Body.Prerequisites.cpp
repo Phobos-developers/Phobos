@@ -1,6 +1,38 @@
 #include "body.h"
 
-bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, std::map<BuildingTypeClass*, int> ownedBuildings, bool skipSecretLabChecks)
+bool HouseExt::IsAvailableToHouse(HouseClass* const pHouse, TechnoTypeClass* const pItem)
+{
+	if (!pHouse || !pItem)
+		return false;
+
+	const auto pType = pHouse->Type;
+	DWORD const bitHouse = 1u << pType->ArrayIndex2;
+
+	bool inOwners = pItem->InOwners(bitHouse);
+	bool inRequired = pItem->InRequiredHouses(bitHouse);
+	bool inForbidden = pItem->InForbiddenHouses(bitHouse);
+
+	if (!inOwners || !inRequired || inForbidden)
+	{
+		if (auto const pParent = pType->FindParentCountry())
+		{
+			DWORD const bitParent = 1u << pParent->ArrayIndex2;
+
+			if (!inOwners && pItem->InOwners(bitParent))
+				inOwners = true;
+
+			if (!inRequired && pItem->InRequiredHouses(bitParent))
+				inRequired = true;
+
+			if (!inForbidden && pItem->InForbiddenHouses(bitParent))
+				inForbidden = true;
+		}
+	}
+
+	return inOwners && inRequired && !inForbidden;
+}
+
+bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const std::map<BuildingTypeClass*, int>& ownedBuildings, bool skipSecretLabChecks)
 {
 	if (!pThis || !pItem)
 		return false;
@@ -17,9 +49,8 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	if (!skipSecretLabChecks && pItemExt->ConsideredSecretLabTech && !pThis->HasFromSecretLab(pItem))
 		return false;
 
-	// Check if it appears in Owner=, RequiredHouses= and ForbiddenHouses=
-	// Note: if RequiredHouses = tag doesn't exist InRequiredHouses() always returns TRUE
-	if (!pThis->InOwners(pItem) || !pThis->InRequiredHouses(pItem) || pThis->InForbiddenHouses(pItem))
+	// Check if it appears in Owner=, RequiredHouses= and ForbiddenHouses= (including ParentCountry support)
+	if (!HouseExt::IsAvailableToHouse(pThis, pItem))
 		return false;
 
 	// Prerequisite.RequiredTheaters check
@@ -176,8 +207,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	return prerequisiteMet || prerequisiteListsMet || prerequisiteOverrideMet;
 }
 
-bool HouseExt::HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int> ownedBuildings)
-
+bool HouseExt::HasGenericPrerequisite(int idx, const std::map<BuildingTypeClass*, int>& ownedBuildings)
 {
 	if (idx >= 0)
 		return false;
