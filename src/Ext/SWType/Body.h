@@ -110,6 +110,7 @@ public:
 	Valueable<bool> EMPulse_SuspendOthers;
 	ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 	Valueable<bool> EMPulse_TargetSelf;
+	Valueable<int> EMPulse_Burst;
 
 	ValueableIdxVector<SuperWeaponTypeClass> SW_Link;
 	Valueable<bool> SW_Link_Grant;
@@ -199,6 +200,7 @@ public:
 		, EMPulse_SuspendOthers { false }
 		, EMPulse_Cannons {}
 		, EMPulse_TargetSelf { false }
+		, EMPulse_Burst { 1 }
 		, SW_Link {}
 		, SW_Link_Grant { false }
 		, SW_Link_Ready { false }

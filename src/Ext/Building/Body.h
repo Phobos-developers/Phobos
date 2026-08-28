@@ -24,6 +24,8 @@ public:
 	std::optional<int> CurrentLaserWeaponIndex;
 	int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 	SuperClass* CurrentEMPulseSW;
+	CellStruct RandomEMPTarget;
+	int EMPulseBurstIndex;
 	bool IsFiringNow;
 	int TurretAnimIdleFrame;
 	int TurretAnimFiringFrame;
@@ -43,6 +45,8 @@ public:
 		, CurrentLaserWeaponIndex {}
 		, PoweredUpToLevel { 0 }
 		, CurrentEMPulseSW {}
+		, RandomEMPTarget { CellStruct::Empty }
+		, EMPulseBurstIndex { 0 }
 		, IsFiringNow { false }
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }

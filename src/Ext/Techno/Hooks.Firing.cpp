@@ -6,6 +6,10 @@
 #include <Ext/Unit/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 
 #include <cmath>
@@ -1214,6 +1218,104 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
+}
+
+DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadius, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->Type->EMPulseCannon)
+		return 0;
+
+	const auto pExt = BuildingExt::Fetch(pThis);
+
+	// Pause firing sequence if the structure is unpowered or offline
+	const bool isOffline = !pThis->IsPowerOnline()
+		|| !pThis->StuffEnabled
+		|| pThis->Deactivated
+		|| pThis->IsUnderEMP()
+		|| TechnoExt::HasWeaponsDisabled(pThis);
+
+	if (isOffline)
+	{
+		pThis->MissionStatus = 0;
+		// Return to game loop to wait without advancing state
+		return 0;
+	}
+
+	HouseClass* pHouse = pThis->Owner;
+	const auto pCell = MapClass::Instance.TryGetCellAt(pHouse->EMPTarget);
+
+	if (!pCell)
+		return 0;
+
+	// Obtain the weapon used by the EMP weapon
+	int weaponIndex = 0;
+	int totalBurst = 1;
+
+	if (pExt->CurrentEMPulseSW)
+	{
+		const auto pSWExt = SWTypeExt::Fetch(pExt->CurrentEMPulseSW->Type);
+		totalBurst = pSWExt->EMPulse_Burst;
+
+		if (pSWExt->EMPulse_WeaponIndex >= 0)
+		{
+			weaponIndex = pSWExt->EMPulse_WeaponIndex;
+		}
+		else
+		{
+			AbstractClass* pTarget = pCell;
+
+			if (const auto pObject = pCell->GetContent())
+				pTarget = pObject;
+
+			weaponIndex = pThis->SelectWeapon(pTarget);
+		}
+	}
+
+	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	// Inaccurate random strike area calculation
+	int radius = BulletTypeExt::Fetch(pWeapon->Projectile)->EMPulseCannon_InaccurateRadius;
+	radius = radius < 0 ? 0 : radius;
+
+	if (radius > 0)
+	{
+		if (pExt->RandomEMPTarget == CellStruct::Empty)
+		{
+			CoordStruct targetCoords = CellClass::Cell2Coord(pHouse->EMPTarget);
+			int maxDistanceLeptons = radius * Unsorted::LeptonsPerCell;
+			int distanceLeptons = ScenarioClass::Instance->Random.RandomRanged(0, maxDistanceLeptons);
+			CoordStruct randomCoords = MapClass::GetRandomCoordsNear(targetCoords, distanceLeptons, false);
+			CellStruct randomCell = CellClass::Coord2Cell(randomCoords);
+
+			if (MapClass::Instance.IsWithinUsableArea(randomCell, false))
+				pExt->RandomEMPTarget = randomCell;
+			else
+				pExt->RandomEMPTarget = pHouse->EMPTarget;
+		}
+
+		pHouse->EMPTarget = pExt->RandomEMPTarget; // Value overwritten every frame
+	}
+
+	if (pThis->MissionStatus != 3)
+		return 0;
+
+	pExt->RandomEMPTarget = CellStruct::Empty;
+
+	// Increment burst index and restart if there are burst shots remaining
+	pExt->EMPulseBurstIndex++;
+
+	if (pExt->EMPulseBurstIndex < totalBurst)
+	{
+		pThis->MissionStatus = 0;
+	}
+	else
+	{
+		pExt->EMPulseBurstIndex = 0;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x708AD0, TechnoClass_ShouldRetaliate_IronCurtain, 0x6)

@@ -25,6 +25,7 @@ public:
 	}
 
 
+
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
 	Nullable<bool> ProjectileRange_ApplyModifiers;
