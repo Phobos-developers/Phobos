@@ -19,7 +19,8 @@ This page describes all the engine features that are either new and introduced b
     - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
-    - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+    - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`. `DiscardOn.Firing.Count` determines the firing amount to discard the effect.
+    - `receiveddamage`: Discard when receiving damage. `DiscardOn.ReceivedDamage.Count` determines the received damage amount to discard the effect. `DiscardOn.ReceivedDamage.AffectsHouse` determines it can be discarded by which house's damage.
     - `selling`: Discard when the building to which the effect is attached is sold.
     - `undeploying`: Discard when the building to which the effect is attached performs undeploy.
     - `harvesting`: Discard when the object the effect is attached is harvesting ore. This can only be used when `DiscardOn.ConsiderHarvestingAsStationary=false`.
@@ -121,11 +122,14 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|firing|receiveddamage|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
 DiscardOn.Ammo.MinimumAmount=-1                    ; integer
 DiscardOn.Ammo.MaximumAmount=-1                    ; integer
 DiscardOn.Health.BelowPercent=-1                   ; floating point value
 DiscardOn.Health.AbovePercent=-1                   ; floating point value
+DiscardOn.Firing.Count=1                           ; integer
+DiscardOn.ReceivedDamage.Count=1                   ; integer
+DiscardOn.ReceivedDamage.AffectsHouse=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DiscardOn.Missions=                                ; List of MissionTypes
 DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
@@ -739,6 +743,27 @@ PowerPlantEnhancer.Range=0         ; floating point value, distance in cells
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 PowerPlantEnhancer.MaxCount=-1     ; integer
+```
+
+### Roof production anim
+
+- Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
+  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType, with Factory=InfantryType or Factory=UnitType
+RoofProductionAnim=                ; AnimationType, falls back to ProductionAnim if unset
+RoofProductionAnimDamaged=         ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimGarrisoned=      ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimX=               ; integer, defaults to ProductionAnimX
+RoofProductionAnimY=               ; integer, defaults to ProductionAnimY
+RoofProductionAnimYSort=           ; integer, defaults to ProductionAnimYSort
+RoofProductionAnimZAdjust=         ; integer, defaults to ProductionAnimZAdjust
+RoofProductionAnimPowered=         ; boolean, defaults to ProductionAnimPowered
+RoofProductionAnimPoweredLight=    ; boolean, defaults to ProductionAnimPoweredLight
+RoofProductionAnimPoweredEffect=   ; boolean, defaults to ProductionAnimPoweredEffect
+RoofProductionAnimPoweredSpecial=  ; boolean, defaults to ProductionAnimPoweredSpecial
 ```
 
 ### Spy effects
@@ -2080,6 +2105,13 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
+  - `PlayerPowerState`: The object will die if its owner's power status matches the configured state.
+    - `low` / `consumer`: Trigger when the owner is in low power.
+    - `full` / `normal`: Trigger when the owner is not in low power.
+  - `PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits.
+    - If only `PlayerMoney.Max` is set, triggers when money is not above this value.
+    - If only `PlayerMoney.Min` is set, triggers when money is not below this value.
+    - If both are set, triggers when money is **inside the range**.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
@@ -2115,6 +2147,9 @@ AutoDeath.TechnosExist=                           ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                   ; boolean
 AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
 AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.PlayerPowerState=none                   ; Player Power Enumeration (none|low/consumer|full/normal)
+AutoDeath.PlayerMoneyLessThan=-1                  ; integer
+AutoDeath.PlayerMoneyMoreThan=-1                  ; integer
 ```
 
 ```{note}
@@ -2542,6 +2577,26 @@ Ammo.AutoDeployMinimumAmount=-1    ; integer
 Ammo.AutoDeployMaximumAmount=-1    ; integer
 Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
+```
+
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location
+  - You can also set whether cloak units kick out parasites
+
+In `rulesmd.ini`:
+```ini
+[General]
+Cloak.KickOutParasite=false   ; boolean
+
+[AudioVisual]
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
+
+[SOMETECHNO]
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
 ### Custom hover vehicles shutdown drowning death
@@ -3058,6 +3113,20 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
 ```
 
+### Modify ammo on impact
+
+- When this warhead detonates, it increases the ammo of affected targets by the set amount; a negative value decreases it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; WarheadType
+Ammo=0          ; integer
+```
+
+```{note}
+This will not raise the ammo above the maximum defined by `[TechnoType] -> Ammo=`, nor below 0.
+```
+
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
@@ -3241,6 +3310,7 @@ Taunt=false      ; boolean
     - [`ReverseEngineer`](#reverse-engineer-warhead)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
+    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
       - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
 

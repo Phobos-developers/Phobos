@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Script action for repairing destroyed bridges
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Modify ammo on impact
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -443,6 +444,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
+  - Add a global default value for `KeepAlive`
+  - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -566,6 +569,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fixed a bug that computer player record cannot be log normally in non English mode
+  - Cloak Enhancement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -744,6 +751,12 @@ This page lists all the individual contributions to the project by their author.
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
   - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
+  - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
+  - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
+  - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
+  - Customize whether the unit can be detected by psychic detector
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -887,6 +900,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
+  - Add a new AutoDeath condition based on the owner's power status
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -938,3 +952,4 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed

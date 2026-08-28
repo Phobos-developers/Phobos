@@ -152,6 +152,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
 
+	this->ShowGameTime.Read(exINI, GameStrings::General, "ShowGameTime");
+
 	Nullable<double>AirShadowBaseScale;
 	AirShadowBaseScale.Read(exINI, GameStrings::AudioVisual, "AirShadowBaseScale");
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0)
@@ -257,6 +259,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
+
+	this->CloakAnims.Read(exINI, GameStrings::AudioVisual, "CloakAnims");
+	this->DecloakAnims.Read(exINI, GameStrings::AudioVisual, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, GameStrings::General, "Cloak.KickOutParasite");
 
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Delay.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Delay");
@@ -413,6 +419,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
 	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+	this->IvanBomb_Visibility.Read(exINI, GameStrings::AudioVisual, "IvanIconVisibility");
 	this->MissileSpawnAttackCell.Read(exINI, GameStrings::CombatDamage, "MissileSpawnAttackCell");
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
@@ -612,6 +619,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
 
 	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
+
+	this->KeepAlive_Infantry.Read(exINI, GameStrings::General, "KeepAlive.Infantry");
+	this->KeepAlive_Units.Read(exINI, GameStrings::General, "KeepAlive.Units");
+	this->KeepAlive_Aircraft.Read(exINI, GameStrings::General, "KeepAlive.Aircraft");
+	this->KeepAlive_Buildings.Read(exINI, GameStrings::General, "KeepAlive.Buildings");
+	this->KeepAlive_Defenses.Read(exINI, GameStrings::General, "KeepAlive.Defenses");
+
+	this->AutoTarget_InsignificantWhenMindControlled.Read(exINI, GameStrings::CombatDamage, "AutoTarget.InsignificantWhenMindControlled");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -867,6 +882,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->ShowPowerPlantEnhancerRange)
+		.Process(this->ShowGameTime)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
@@ -954,6 +970,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
 		.Process(this->IvanBombAttachToCenter)
+		.Process(this->IvanBomb_Visibility)
 		.Process(this->MissileSpawnAttackCell)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
@@ -1090,6 +1107,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReadyToNextMission_MovingCheck)
 		.Process(this->Warhead_PreventScatter)
 		.Process(this->ProjectileRange_ApplyModifiers)
+		.Process(this->KeepAlive_Infantry)
+		.Process(this->KeepAlive_Units)
+		.Process(this->KeepAlive_Aircraft)
+		.Process(this->KeepAlive_Buildings)
+		.Process(this->KeepAlive_Defenses)
+		.Process(this->AutoTarget_InsignificantWhenMindControlled)
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
     ;
 }
 
@@ -1279,16 +1305,56 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
-DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
-DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+namespace
 {
-	GET(RulesClass*, pRules, EDI);
-	GET(CCINIClass*, pINI, ESI);
+	template <typename T>
+	void ReadSpecialWeaponType(T& value, INI_EX& parser, CCINIClass* pINI, const char* pKey)
+	{
+		using base_type = std::remove_pointer_t<T>;
 
-	pRules->LoadTypesFromINI(pINI);
+		if (!parser.ReadString("SpecialWeapons", pKey))
+			return;
 
-	return 0;
+		auto pValue = parser.value();
+		if (INIClass::IsBlank(pValue))
+		{
+			value = nullptr;
+			return;
+		}
+
+		if (auto pType = base_type::Find(pValue))
+		{
+			value = pType;
+			return;
+		}
+
+		if (auto pType = GameCreate<base_type>(pValue))
+		{
+			pType->LoadFromINI(pINI);
+			value = pType;
+			return;
+		}
+
+		Debug::INIParseFailed("SpecialWeapons", pKey, pValue);
+	}
+}
+
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_HOOK(0x668FDB, RulesClass_Read_SpecialWeapons, 0x6)
+{
+	GET(RulesClass*, pRules, ESI);
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	ReadSpecialWeaponType(pRules->NukeWarhead, exINI, pINI, "NukeWarhead");
+	ReadSpecialWeaponType(pRules->NukeProjectile, exINI, pINI, "NukeProjectile");
+	ReadSpecialWeaponType(pRules->NukeDown, exINI, pINI, "NukeDown");
+	ReadSpecialWeaponType(pRules->MutateWarhead, exINI, pINI, "MutateWarhead");
+	ReadSpecialWeaponType(pRules->MutateExplosionWarhead, exINI, pINI, "MutateExplosionWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseWarhead, exINI, pINI, "EMPulseWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseProjectile, exINI, pINI, "EMPulseProjectile");
+
+	return 0x6691B7;
 }
 
 // skip vanilla JumpjetControls and make it earlier load

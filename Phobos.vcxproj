@@ -21,6 +21,7 @@
   <!-- Compiled files -->
   <ItemGroup>
     <!-- src/ -->
+    <ClCompile Include="src\Ext\TeamType\Hooks.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
@@ -222,6 +223,7 @@
     <!-- src\Ext\WeaponType -->
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\WeaponType\Hooks.Bomb.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <!-- src\Interop -->
     <ClCompile Include="src\Interop\AttachEffect.cpp" />

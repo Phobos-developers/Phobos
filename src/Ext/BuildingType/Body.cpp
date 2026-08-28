@@ -108,7 +108,8 @@ bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powere
 
 	return pBuilding->CurrentMission != Mission::Construction
 		&& pBuilding->CurrentMission != Mission::Selling
-		&& !pBuilding->IsPowerOnline();
+		&& !pBuilding->IsPowerOnline()
+		&& !BuildingExt::Fetch(pBuilding)->HasPowerFromMapFile;
 }
 
 int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
@@ -321,6 +322,18 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	prodAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredEffect", prodAnim.PoweredEffect);
 	prodAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredSpecial", prodAnim.PoweredSpecial);
 
+	this->RoofProductionAnim.Read(exArtINI, pArtSection, "RoofProductionAnim");
+	this->RoofProductionAnimDamaged.Read(exArtINI, pArtSection, "RoofProductionAnimDamaged");
+	this->RoofProductionAnimGarrisoned.Read(exArtINI, pArtSection, "RoofProductionAnimGarrisoned");
+	this->RoofProductionAnimX.Read(exArtINI, pArtSection, "RoofProductionAnimX");
+	this->RoofProductionAnimY.Read(exArtINI, pArtSection, "RoofProductionAnimY");
+	this->RoofProductionAnimZAdjust.Read(exArtINI, pArtSection, "RoofProductionAnimZAdjust");
+	this->RoofProductionAnimYSort.Read(exArtINI, pArtSection, "RoofProductionAnimYSort");
+	this->RoofProductionAnimPowered.Read(exArtINI, pArtSection, "RoofProductionAnimPowered");
+	this->RoofProductionAnimPoweredLight.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredLight");
+	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
+	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -367,6 +380,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 0.E
+	this->Tunnel = exINI.ReadString(pSection, "Tunnel");
 
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
@@ -469,6 +485,17 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->SetTabBySelecting)
 		.Process(this->RevealToAll_Radius)
 		.Process(this->DeployFireDelay)
+		.Process(this->RoofProductionAnim)
+		.Process(this->RoofProductionAnimDamaged)
+		.Process(this->RoofProductionAnimGarrisoned)
+		.Process(this->RoofProductionAnimX)
+		.Process(this->RoofProductionAnimY)
+		.Process(this->RoofProductionAnimZAdjust)
+		.Process(this->RoofProductionAnimYSort)
+		.Process(this->RoofProductionAnimPowered)
+		.Process(this->RoofProductionAnimPoweredLight)
+		.Process(this->RoofProductionAnimPoweredEffect)
+		.Process(this->RoofProductionAnimPoweredSpecial)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -476,6 +503,9 @@ void BuildingTypeExt::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 0.E
+		.Process(this->Tunnel)
 
 		// Ares 3.0
 		.Process(this->UnitSell)
