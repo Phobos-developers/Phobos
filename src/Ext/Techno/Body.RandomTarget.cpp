@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 #include <BuildingClass.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 #include <algorithm>
 #include <cmath>
@@ -99,7 +100,13 @@ AbstractClass* TechnoExt::FindRandomTarget(TechnoClass* pFirer, AbstractClass* p
 		}
 	}
 
-	for (const auto pCandidate : TechnoClass::Array)
+	const int weaponIndex = (pFirer->GetWeapon(1) && pFirer->GetWeapon(1)->WeaponType == pWeapon) ? 1 : 0;
+	const double spread = static_cast<double>(range) / Unsorted::LeptonsPerCell;
+	const bool includeInAir = pWeapon->Projectile && pWeapon->Projectile->AA;
+
+	const auto candidateSet = Helpers::Alex::getCellSpreadItems(pFirer->GetCoords(), spread, includeInAir);
+
+	for (const auto pCandidate : candidateSet)
 	{
 		if (!pCandidate || pCandidate == pFirer || pCandidate == pOriginalTarget)
 			continue;
@@ -117,50 +124,8 @@ AbstractClass* TechnoExt::FindRandomTarget(TechnoClass* pFirer, AbstractClass* p
 				continue;
 		}
 
-		// Liveness and state validity
-		if (!pCandidate->IsAlive || pCandidate->InLimbo || pCandidate->Health <= 0 || !pCandidate->Owner
-			|| pCandidate->IsSinking || pCandidate->IsCrashing || pCandidate->BeingWarpedOut)
+		if (pFirer->GetFireError(pCandidate, weaponIndex, true) != FireError::OK)
 			continue;
-
-		auto const pCandidateType = pCandidate->GetTechnoType();
-		if (!pCandidateType || pCandidateType->Immune)
-			continue;
-
-		if (pCandidate->CloakState == CloakState::Cloaked && !pCandidateType->Naval)
-			continue;
-
-		if (pCandidate->InWhichLayer() == Layer::Underground)
-			continue;
-
-		if (auto pBuilding = abstract_cast<BuildingClass*>(pCandidate))
-		{
-			if (pBuilding->Type->InvisibleInGame)
-				continue;
-		}
-
-		if (pCandidate->TemporalTargetingMe)
-			continue;
-
-		// Terrain layer restrictions
-		const auto landType = pCandidate->GetCell() ? pCandidate->GetCell()->LandType : LandType::Clear;
-		const bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pCandidate->IsInAir();
-
-		if (pCandidateType->Underwater && pFirerType->NavalTargeting == NavalTargetingType::Underwater_Never)
-			continue;
-		if (isOnWater && pFirerType->NavalTargeting == NavalTargetingType::Naval_None)
-			continue;
-		if (!isOnWater && pFirerType->LandTargeting == LandTargetingType::Land_Not_OK)
-			continue;
-
-		// Air / Ground capabilities
-		if (pWeapon->Projectile)
-		{
-			const bool inAir = pCandidate->IsInAir();
-			if (!pWeapon->Projectile->AA && inAir)
-				continue;
-			if (!pWeapon->Projectile->AG && !inAir)
-				continue;
-		}
 
 		// House relationships
 		if (targetAllies)
@@ -178,18 +143,15 @@ AbstractClass* TechnoExt::FindRandomTarget(TechnoClass* pFirer, AbstractClass* p
 				continue;
 		}
 
-		// Phobos weapon eligibility filters
-		if (!EnumFunctions::IsTechnoEligible(pCandidate, pWeaponExt->CanTarget, true))
+		// Additional Phobos weapon eligibility filters
+		auto const pCandidateType = pCandidate->GetTechnoType();
+		if (!pCandidateType
+			|| !pWeaponExt->CanOnlyTargetTheseTechnos(pCandidateType)
+			|| !pWeaponExt->IsHealthInThreshold(pCandidate)
+			|| !pWeaponExt->HasRequiredAttachedEffects(pCandidate, pFirer))
+		{
 			continue;
-
-		if (!pWeaponExt->CanOnlyTargetTheseTechnos(pCandidateType))
-			continue;
-
-		if (!pWeaponExt->IsHealthInThreshold(pCandidate))
-			continue;
-
-		if (!pWeaponExt->HasRequiredAttachedEffects(pCandidate, pFirer))
-			continue;
+		}
 
 		candidates.push_back(pCandidate);
 	}
