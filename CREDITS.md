@@ -570,6 +570,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
   - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fixed a bug that computer player record cannot be log normally in non English mode
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -750,6 +752,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
   - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
+  - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -893,6 +898,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
+  - Add a new AutoDeath condition based on the owner's power status
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
