@@ -19,8 +19,7 @@ enum class PhobosTriggerAction : unsigned int
 	ToggleMCVRedeploy = 510,
 	UndeployToWaypoint = 511,
 	SetFollowsIndexForVehicle = 512,
-
-	SetMissionTimer = 521,
+	SetMissionTimer = 513,
 
 	SetDropCrate = 600,
 

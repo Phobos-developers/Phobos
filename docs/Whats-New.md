@@ -271,7 +271,7 @@ HideShakeEffects=false           ; boolean
   510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0,Set MCVRedeploys to the given value.,0,1,510
   511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
   512=Set Follower for Associated Unit... (Phobos),0,0,73,0,0,0,0,0,0,Sets the follower for the associated object. The parameter is the index of the follower unit.,0,1,512
-  521=Set Mission Timer Properties... (Phobos),0,0,74,48,75,0,0,0,0,Set the method to display mission timer and whether the timer should be displayed reversedly based on given value. Method 0=default, 1=percentage based on given value, 2=digit, 3=local variable, 4=global variable.,0,1,521
+  513=Set Mission Timer Properties... (Phobos),0,0,74,48,75,0,0,0,0,Set the method to display mission timer and whether the timer should be displayed reversedly based on given value. Method 0=default, 1=percentage based on given value, 2=digit, 3=local variable, 4=global variable.,0,1,521
   600=Configure dropped crate... (Phobos),0,72,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when the attached object is destroyed. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate.,0,1,600
   606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
@@ -430,7 +430,7 @@ HideShakeEffects=false           ; boolean
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
 - [Customize whether the unit exits from the roof](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)
-- [`521` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
+- [`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

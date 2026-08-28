@@ -786,7 +786,7 @@ bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pH
 	const int type = pThis->Param3;
 	const int reverse = pThis->Param5;
 	ScenarioExt::Global()->MissionTimer_Variable = pThis->Param4;
-	
+
 	if (0 <= type && 4 >= type)
 		ScenarioExt::Global()->MissionTimer_Type = type;
 

@@ -583,6 +583,8 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
 		if (it != variables.end())
 			DrawTimerTemp::TimeLeft = it->second.Value;
+		else
+			DrawTimerTemp::TimeLeft = 0;
 		break;
 	}
 	case 4:
@@ -592,6 +594,8 @@ DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
 		if (it != variables.end())
 			DrawTimerTemp::TimeLeft = it->second.Value;
+		else
+			DrawTimerTemp::TimeLeft = 0;
 		break;
 	}
 	default:
