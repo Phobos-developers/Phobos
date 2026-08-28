@@ -85,7 +85,6 @@ public:
 	ACTION_FUNC(ToggleMCVRedeploy);
 	ACTION_FUNC(UndeployToWaypoint);
 	ACTION_FUNC(SetFollowsIndexForVehicle);
-
 	ACTION_FUNC(SetMissionTimer);
 
 	ACTION_FUNC(SetDropCrate);

@@ -69,7 +69,6 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetFollowsIndexForVehicle:
 		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
-
 	case PhobosTriggerAction::SetMissionTimer:
 		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
 
