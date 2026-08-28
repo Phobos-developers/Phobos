@@ -329,6 +329,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
+- Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button.
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
+- Fixed the bug that computer player record cannot be log normally in non English mode.
 
 ## Fixes / interactions with other extensions
 
@@ -386,7 +389,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 and unless `ProjectileRange.ApplyModifiers` is set to false on the WeaponType.
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
-- Ares' `KeepAlive` adds global tags.
+- Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 
 ## Newly added global settings
 
@@ -399,6 +402,20 @@ This category lists all features that are globally effective without needing to 
 It was originally planned to list global features that are exclusively related to specific Types, such as [Voxel light source customization](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#voxel-light-source-customization) and [Customizing effect of level lighting on air units](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#customizing-effect-of-level-lighting-on-air-units), under the corresponding Types categories. But later, features like [Veinholes & Weeds](https://phobos.readthedocs.io/en/latest/Fixed-or-Improved-Logics.html#veinholes-weeds) were found to be too difficult to separate, so they were just summarized according to the locations where INI flags are written. After all, the end users are modders.
 
 -->
+
+### Add a global default value for `KeepAlive`
+
+- Ares added accompanying [map trigger event#87 and event#88](http://ares-developers.github.io/Ares-docs/new/triggerevents.html#all-keepalives-destroyed-87-88) for [`KeepAlive`](http://ares-developers.github.io/Ares-docs/new/keepalive.html), but since using them for non-building technos requires manually adding them one by one, which is very troublesome, now you can use the following flag to define global default values by type.
+
+In `rulesmd.ini`:
+```ini
+[General]
+KeepAlive.Buildings=true      ; boolean
+KeepAlive.Defenses=true       ; boolean
+KeepAlive.Infantry=false      ; boolean
+KeepAlive.Units=false         ; boolean
+KeepAlive.Aircraft=false      ; boolean
+```
 
 ### Allow beacon placement hotkey in single player
 
@@ -542,11 +559,6 @@ In `rulesmd.ini`:
 ```ini
 [General]
 DefaultToGuardArea=false      ; boolean
-KeepAlive.Buildings=true      ; boolean
-KeepAlive.Defenses=true       ; boolean
-KeepAlive.Infantry=false      ; boolean
-KeepAlive.Units=false         ; boolean
-KeepAlive.Aircraft=false      ; boolean
 
 [CombatDamage]
 Warhead.PreventScatter=false  ; boolean
@@ -554,6 +566,16 @@ Warhead.PreventScatter=false  ; boolean
 [AudioVisual]
 LeptonMindControlOffset=70    ; integer, in leptons
 MindControlRingOffset=140     ; integer, in leptons
+```
+
+### Customize whether mind-controlled Insignificant technos can be auto-targeted
+
+- In vanilla Red Alert 2, non-building technos with `Insignificant=yes` can never be acquired as auto targets, even when mind-controlled. In vanilla Yuri's Revenge, such technos become targetable once they are mind-controlled. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AutoTarget.InsignificantWhenMindControlled=true  ; boolean
 ```
 
 ### Customizing effect of level lighting on air units
@@ -2068,6 +2090,26 @@ FlyNoWobbles=  ; boolean
 FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
 ```
 
+### Customize whether the unit can be detected by psychic detector
+
+- Now you can use the following flag to define whether the unit can be detected by buildings that have `PsychicDetectionRadius`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+PsychicDetectable=true  ; boolean
+```
+
+### Customize whether the unit exits from the roof
+
+- In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from the roof. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
@@ -2277,8 +2319,8 @@ This may subject to further changes.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                   ; TechnoType
-ApproachTarget.PursuitTarget=  ; boolean, default to false
+[SOMETECHNO]                        ; TechnoType
+ApproachTarget.PursuitTarget=false  ; boolean
 ```
 
 ### Kill spawns on low power
@@ -3248,6 +3290,20 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 
 [SOMEWEAPON]         ; WeaponType
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), default to [CombatDamage] -> ROF.RandomDelay
+```
+
+### Customize ivan bomb visibility
+
+- Now you can customize who can see bomb image.
+  - This also affect on bomb detectors.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMEWEAPON]                ; WeaponType
+IvanBomb.Visibility=        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Customizing whether passengers are kicked out when an aircraft fires

@@ -31,6 +31,7 @@ public:
 	int TurretAnimFiringFrame;
 	int TurretAnimRateTick;
 	int ConstructionStartFacing;
+	bool IsPlayingRoofProductionAnim;
 
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
 		, DeployedTechno { false }
@@ -50,6 +51,7 @@ public:
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }
 		, TurretAnimRateTick { 0 }
+		, IsPlayingRoofProductionAnim { false }
 	{ }
 
 	// typed owner accessor (shadows the TechnoClass one from the base)
