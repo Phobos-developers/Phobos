@@ -1874,6 +1874,22 @@ msgid ""
 "means no limitation."
 msgstr "`PowerPlantEnhancer.MaxCount` 决定了此类建筑中参与电厂增幅的数量上限。负值代表无上限。"
 
+msgid "Roof production anim"
+msgstr "天窗生产动画"
+
+msgid ""
+"Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch."
+msgstr ""
+"现在，你可以用 `RoofProductionAnim*` 系列语句在所生产的步兵和载具从天窗离开工厂时替代 `ProductionAnim*` 系列语句使用。"
+
+msgid ""
+"The criterion for exiting through the roof hatch is the same as "
+"`RoofDeployingAnim` in vanilla: the unit has `Jumpjet=yes` or "
+"`BalloonHover=yes`."
+msgstr ""
+"从天窗离开的判定标准与原版中 `RoofDeployingAnim` 相同：单位拥有 `Jumpjet=yes` 或 "
+"`BalloonHover=yes`。"
+
 msgid "Spy effects"
 msgstr "间谍效果"
 
@@ -4667,6 +4683,27 @@ msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类�
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
 msgstr "`Technos(Dont)Exist.Houses` 控制检查哪些所属方。"
 
+msgid "`PlayerPowerState`: The object will die if its owner's power status matches the configured state."
+msgstr "`PlayerPowerState`：当对象所属方的电力状态符合设定条件时，则对象死亡。"
+
+msgid "`low` / `consumer`: Trigger when the owner is in low power."
+msgstr "`low` / `consumer`：当对象所属方处于电力不足状态时触发。"
+
+msgid "`full` / `normal`: Trigger when the owner is not in low power."
+msgstr "`full` / `normal`：当对象所属方未处于电力不足状态时触发。"
+
+msgid "`PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits."
+msgstr "`PlayerMoney.Max` ／ `PlayerMoney.Min`：根据对象所属方的资金决定对象是否死亡。"
+
+msgid "If only `PlayerMoney.Max` is set, triggers when money is not above this value."
+msgstr "仅设置 `PlayerMoney.Max` 时，当资金不高于该值时触发。"
+
+msgid "If only `PlayerMoney.Min` is set, triggers when money is not below this value."
+msgstr "仅设置 `PlayerMoney.Min` 时，当资金不低于该值时触发。"
+
+msgid "If both are set, triggers when money is **inside the range**."
+msgstr "同时设置时，资金处于**区间内**时触发。"
+
 msgid "The auto-death behavior can be chosen from the following:"
 msgstr "自毁行为有以下选择："
 
@@ -5362,6 +5399,16 @@ msgid ""
 msgstr ""
 "`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
+
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
+msgid "When unit start cloak or stop cloaking, "
+"an animation can play on his location"
+msgstr "当单位开始或停止隐形时，可以在其位置播放动画"
+
+msgid "You can also set whether cloak units kick out parasites"
+msgstr "您也可以设置隐形单位是否踢出寄生者"
 
 msgid "Custom hover vehicles shutdown drowning death"
 msgstr "自定义悬浮载具溺死"
