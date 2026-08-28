@@ -571,6 +571,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize ivan bomb visibility
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
   - Fixed a bug that computer player record cannot be log normally in non English mode
+  - Cloak Enhancement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

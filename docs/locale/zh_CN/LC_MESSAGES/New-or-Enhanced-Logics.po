@@ -5400,6 +5400,16 @@ msgstr ""
 "`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
 
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
+msgid "When unit start cloak or stop cloaking, "
+"an animation can play on his location"
+msgstr "当单位开始或停止隐形时，可以在其位置播放动画"
+
+msgid "You can also set whether cloak units kick out parasites"
+msgstr "您也可以设置隐形单位是否踢出寄生者"
+
 msgid "Custom hover vehicles shutdown drowning death"
 msgstr "自定义悬浮载具溺死"
 

@@ -1903,6 +1903,10 @@ msgid ""
 "in non English mode"
 msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"
 
+msgid ""
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

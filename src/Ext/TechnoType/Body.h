@@ -435,6 +435,10 @@ public:
 	Nullable<bool> ExitThroughRoof;
 	Valueable<bool> PsychicDetectable;
 
+	ValueableVector<AnimTypeClass*> CloakAnims;
+	ValueableVector<AnimTypeClass*> DecloakAnims;
+	Nullable<bool> Cloak_KickOutParasite;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -842,6 +846,10 @@ public:
 		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
+
+		, CloakAnims {}
+		, DecloakAnims {}
+		, Cloak_KickOutParasite {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
