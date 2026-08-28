@@ -1705,6 +1705,17 @@ msgid ""
 "AI did not play `ProductionAnim` when placing a produced building."
 msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug。"
 
+msgid ""
+"Fixed the issue where vehicles always finish turret resetting first "
+"before turn to a new attack target, now it should turn to "
+"new target immediately."
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标。"
+
+msgid ""
+"Fixed the bug that computer player record cannot be log normally "
+"in non English mode."
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -4635,6 +4646,15 @@ msgid ""
 "determines whether to disable wobble behavior based on whether the "
 "technos have `IsDropship=true`."
 msgstr "如果缺少微观定义将会使用全局值，如果全局值也未定义则默认原有规则，即根据单位是否拥有 `IsDropship=true` 决定是否禁用。"
+
+msgid "Customize whether the unit exits from the roof"
+msgstr "自定义单位是否从天窗退出"
+
+msgid ""
+"In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from "
+"the roof. Now you can customize it."
+msgstr ""
+"在原版中，有 `BalloonHover=true` 或 `JumpJet=true` 的单位会从天窗退出。现在你可以自由定义了。"
 
 msgid "Damaged speed customization"
 msgstr "自定义伤残速度"

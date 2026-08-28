@@ -1387,6 +1387,56 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x7037F7, TechnoClass_Cloak_CloakAnim, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto& cloakAnims = !pTypeExt->CloakAnims.empty() ? pTypeExt->CloakAnims : RulesExt::Global()->CloakAnims;
+	AnimExt::CreateRandomAnim(cloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
+	return 0;
+}
+
+DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	const auto& decloakAnims = !pTypeExt->DecloakAnims.empty() ? pTypeExt->DecloakAnims : RulesExt::Global()->DecloakAnims;
+	AnimExt::CreateRandomAnim(decloakAnims, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
+	return 0;
+}
+
+DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
+{
+	enum { SkipGameCode = 0x4D99D3 };
+
+	GET(FootClass*, pThis, ESI);
+	GET(AbstractClass*, pAbstract, EDI);
+	GET(FootClass*, pParasiteOwner, EAX);
+	GET(bool, removed, EBX);
+
+	if (pParasiteOwner == pAbstract && (!pParasiteOwner->Health || !Make_Global<char>(0xA8ED5C)))
+	{
+		pThis->ParasiteEatingMe = nullptr;
+		return SkipGameCode;
+	}
+
+	if (!removed)
+	{
+		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+		removed = pTypeExt->Cloak_KickOutParasite.Get(RulesExt::Global()->Cloak_KickOutParasite);
+	}
+
+	if (pParasiteOwner && pParasiteOwner->Health > 0)
+		pParasiteOwner->ParasiteImUsing->PointerExpired(pAbstract, removed);
+
+	if (pThis == pAbstract && removed)
+		pThis->ParasiteEatingMe = nullptr;
+
+	return SkipGameCode;
+}
+
 // Handle disabling deploy action & cursor for vehicles and aircraft.
 // Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
 DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
@@ -2432,3 +2482,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F40, CrewTemp::TechnoClassFake::_GetCrewCount)
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCount) // BuildingClass
 
 #pragma endregion
+
+// UnitClass::UpdateRotation
+// Allow turret turn to target immediately
+DEFINE_JUMP(LJMP, 0x7369A5, 0x7369B3)

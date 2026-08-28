@@ -1892,6 +1892,21 @@ msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新
 msgid "Customize ivan bomb visibility"
 msgstr "自定义伊文炸弹可见性"
 
+msgid ""
+"Fix the issue where vehicles always finish turret resetting first "
+"before turn to a new attack target, now it should turn to "
+"new target immediately"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标"
+
+msgid ""
+"Fixed a bug that computer player record cannot be log normally "
+"in non English mode"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"
+
+msgid ""
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2557,6 +2572,12 @@ msgid ""
 "Fix the bug where a building with `Factory=BuildingType` owned by the AI "
 "did not play `ProductionAnim` when placing a produced building"
 msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
+
+msgid "Roof production anim"
+msgstr "天窗生产动画"
+
+msgid "Customize whether the unit exits from the roof"
+msgstr "自定义单位是否从天窗退出"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

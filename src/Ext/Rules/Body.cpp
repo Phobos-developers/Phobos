@@ -260,6 +260,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
+	this->CloakAnims.Read(exINI, GameStrings::AudioVisual, "CloakAnims");
+	this->DecloakAnims.Read(exINI, GameStrings::AudioVisual, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, GameStrings::General, "Cloak.KickOutParasite");
+
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Delay.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Delay");
 	if (!this->DisplayIncome_Delay)
@@ -613,7 +617,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ReadyToNextMission_MovingCheck.Read(exINI, GameStrings::General, "ReadyToNextMission.MovingCheck");
 
 	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
-	
+
 	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
 
 	this->KeepAlive_Infantry.Read(exINI, GameStrings::General, "KeepAlive.Infantry");
@@ -621,6 +625,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->KeepAlive_Aircraft.Read(exINI, GameStrings::General, "KeepAlive.Aircraft");
 	this->KeepAlive_Buildings.Read(exINI, GameStrings::General, "KeepAlive.Buildings");
 	this->KeepAlive_Defenses.Read(exINI, GameStrings::General, "KeepAlive.Defenses");
+
+	this->AutoTarget_InsignificantWhenMindControlled.Read(exINI, GameStrings::CombatDamage, "AutoTarget.InsignificantWhenMindControlled");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -1106,6 +1112,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepAlive_Aircraft)
 		.Process(this->KeepAlive_Buildings)
 		.Process(this->KeepAlive_Defenses)
+		.Process(this->AutoTarget_InsignificantWhenMindControlled)
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
     ;
 }
 

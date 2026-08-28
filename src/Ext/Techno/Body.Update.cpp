@@ -247,6 +247,32 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
+	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
+	{
+		const bool isLowPower = pOwner->HasLowPower();
+		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
+		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
+
+		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
+	{
+		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
+		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
+		const int currentMoney = pOwner->Available_Money();
+
+		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
@@ -816,8 +842,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 				return;
 			}
 		}
-		if (Phobos::Config::DevelopmentCommands)
-			Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
+
+		Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill
@@ -1071,11 +1097,11 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
-	// Add new ones.
-	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
-
-	if (requiresRecalc && !count)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
+
+	// Add new ones.
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 }
 
 // Updates CumulativeAnimations AE's on techno.
