@@ -864,6 +864,9 @@ msgid ""
 msgstr ""
 "[修改弹药弹头](New-or-Enhanced-Logics.md#modify-ammo-on-impact)（by FS-21）"
 
+msgid "Cloak Enhancement (by NetsuNegi)"
+msgstr "隐形增强（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

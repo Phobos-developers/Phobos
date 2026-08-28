@@ -1195,6 +1195,10 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
 	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
 
+	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
+	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1822,6 +1826,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->ExitThroughRoof)
 		.Process(this->PsychicDetectable)
+
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
