@@ -1,8 +1,6 @@
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
 
-#include <format>
-
 class ExtSelection
 {
 public:
@@ -195,7 +193,7 @@ const std::string TechnoTypeExt::GetGunnerID(int idx) const
 			return std::string(pWeaponGroup);
 	}
 
-	return std::format("{}", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? idx + 1 : 0);
+	return std::to_string(RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? idx + 1 : 0);
 }
 
 DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
