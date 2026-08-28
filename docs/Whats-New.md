@@ -422,6 +422,10 @@ HideShakeEffects=false           ; boolean
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
+- [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
+- [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
+- [Customize whether the unit exits from the roof](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)
+- [Customize whether the unit can be detected by psychic detector](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector) (by Noble_Fish)
 - Cloak Enhancement (by NetsuNegi)
 
 #### Vanilla fixes:
@@ -797,6 +801,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -1258,6 +1263,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
+- Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
