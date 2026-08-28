@@ -639,17 +639,7 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTa
 	if (!pThis || !pTarget)
 		return false;
 
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-
-	// Force weapon check
-	int nWeaponIndex = pTypeExt->SelectForceWeapon(pThis, pTarget);
-
-	if (nWeaponIndex < 0) // Multi weapon check
-		nWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
-
-	if (nWeaponIndex < 0) // Vanilla weapon check
-		nWeaponIndex = pThis->SelectWeapon(pTarget);
-
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
 	if (nWeaponIndex < 0)
 		return false;
 

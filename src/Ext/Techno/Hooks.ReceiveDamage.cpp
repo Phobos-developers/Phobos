@@ -75,7 +75,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (args->Attacker && pTag)
 			pTag->RaiseEvent(TriggerEvent::EnteredBy, args->Attacker, CellStruct::Empty);
 
-		reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pBuilding, pSourceHouse, true);
+		pBuilding->SetOwningHouse(pSourceHouse, true);
 	}
 
 	// Disarm bomb
