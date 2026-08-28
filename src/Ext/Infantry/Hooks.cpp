@@ -1,11 +1,7 @@
-#include <Utilities/Macro.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/Infantry/Body.h>
 
-#include <InfantryClass.h>
-#include <HouseClass.h>
 #include <InputManagerClass.h>
-#include <WarheadTypeClass.h>
-
-#include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
@@ -13,6 +9,56 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 	GET(AbstractClass*, pTarget, EDI);
 
 	return (!pTarget || pThis->Owner->IsControlledByHuman()) ? 0x51B33F : 0;
+}
+
+// Deploy case: DoAction(Deployed)
+DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
+	{
+		pExt->HasDeployConverted = true;
+		pExt->HasUndeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+	}
+
+	return 0;
+}
+
+// Undeploy case: DoAction(Ready)
+DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
+	{
+		pExt->HasUndeployConverted = true;
+		pExt->HasDeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
+	}
+
+	return 0;
+}
+
+// Reset mark when Deploy/Undeploy
+DEFINE_HOOK(0x520E75, InfantryClass_DoingAI_DeployConvert_ResetFlags, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	const auto curSeq = pThis->SequenceAnim;
+
+	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
+	{
+		auto const pExt = InfantryExt::Fetch(pThis);
+		pExt->HasDeployConverted = false;
+		pExt->HasUndeployConverted = false;
+	}
+
+	return 0;
 }
 
 #pragma region WhatActionObjectFix
@@ -25,7 +71,7 @@ namespace WhatActionObjectTemp
 
 DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 {
-	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, CanBomb = 0x51E48F };
+	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, GoToAres = 0x51E488 };
 
 	GET(InfantryClass*, pThis, EDI);
 	GET(ObjectClass*, pTarget, ESI);
@@ -46,7 +92,7 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 		const int index = pThis->SelectWeapon(pTarget);
 		const auto pWeaponType = pThis->GetWeapon(index)->WeaponType;
 
-		return pWeaponType && pWeaponType->Warhead->BombDisarm ? CanBomb : SkipBomb;
+		return pWeaponType && pWeaponType->Warhead->BombDisarm ? GoToAres : SkipBomb;
 	}
 
 	return SkipBomb;
@@ -67,8 +113,16 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 	if (!bridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
-		if (WhatActionObjectTemp::Move || pBuilding->Health >= pBuildingType->Strength)
+		if (WhatActionObjectTemp::Move)
 			return Skip;
+
+		if (pBuilding->Health >= pBuildingType->Strength)
+		{
+			const auto pTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+
+			if (!pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
+				return Skip;
+		}
 	}
 
 	R->CL(bridgeRepairHut);
@@ -136,7 +190,24 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 {
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
-	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+	return InfantryTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+}
+
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpiedBy, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsHouse, pThis, CellStruct::Empty);
+
+	if (const auto pTag = pBuilding->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
+
+	return 0;
 }
 
 // Pass actual target to SelectWeapon instead of -1 during What_Action evaluation

@@ -2,6 +2,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <BombClass.h>
+#include <Interop/TechnoExt.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
@@ -16,10 +17,10 @@ DEFINE_HOOK(0x6F85C8, TechnoClass_EvaluateObject_TargetStructures, 0x7)
 // Skipping the Immune check
 DEFINE_HOOK(0x740402, UnitClass_WhatAction_Immune_FakeEngineer1, 0xA)
 {
-	enum { ForceNewValue = 0x740440 };
+	enum { ForceNewValue = 0x74049F };
 
-	GET(TechnoClass* const, pThis, EDI);
-	GET(TechnoClass* const, pTarget, ESI);
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
 
 	if (pThis && pTarget)
 	{
@@ -49,8 +50,8 @@ DEFINE_HOOK(0x740486, UnitClass_WhatAction_Immune_FakeEngineer2, 0xA)
 {
 	enum { ForceNewValue = 0x74049F };
 
-	GET(TechnoClass* const, pThis, EDI);
-	GET(TechnoClass* const, pTarget, ESI);
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
 
 	if (pThis && pTarget)
 	{
@@ -85,9 +86,13 @@ DEFINE_HOOK(0x417F63, AircraftClass_WhatAction_Immune_FakeEngineer, 0x5)
 	if (pThis && pBuilding)
 	{
 		bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+		bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
 
 		if (canBeAttacked)
+		{
+			R->EAX(canBeDefused ? Action::DisarmBomb : Action::Attack);
 			return ForceNewValue;
+		}
 	}
 
 	return 0;
@@ -107,11 +112,7 @@ DEFINE_HOOK(0x447527, BuildingClass_WhatAction_Immune_FakeEngineer, 0x5)
 
 		if (canBeAttacked)
 		{
-			if (canBeDefused)
-				R->EBP(Action::DisarmBomb);
-			else
-				R->EBP(Action::Attack);
-
+			R->EAX(canBeDefused ? Action::DisarmBomb : Action::Attack);
 			return ForceNewValue;
 		}
 	}
@@ -184,11 +185,13 @@ DEFINE_HOOK(0x6FC705, TechnoClass_CanFire_CivilianBlock_FakeEngineer, 0x7)
 {
 	enum { BypassEntireBlock = 0x6FC879, ContinueVanilla = 0 };
 
-	GET_STACK(WeaponTypeClass*, pWeapon, 0x10);
+	WeaponTypeClass* pWeapon = R->EDI<WeaponTypeClass*>();
+	if (!pWeapon)
+		pWeapon = *reinterpret_cast<WeaponTypeClass**>(R->ESP() + 0x10);
 
 	if (pWeapon && pWeapon->Warhead)
 	{
-		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		const auto pWHExt = WarheadTypeExt::Fetch(pWeapon->Warhead);
 		if (pWHExt->FakeEngineer_CanCaptureBuildings
 			|| pWHExt->FakeEngineer_CanRepairBridges
 			|| pWHExt->FakeEngineer_CanDestroyBridges
@@ -209,22 +212,31 @@ DEFINE_HOOK(0x6FCB53, TechnoClass_CanFire_FakeEngineer, 0x9)
 	GET_STACK(AbstractClass* const, pTarget, 0x24);
 	GET_STACK(WeaponTypeClass* const, pWeapon, 0x10);
 
-	if (pFirer && pTarget && pWeapon && pWeapon->Warhead)
+	auto const pActualTarget = pTarget ? pTarget : R->EBP<AbstractClass*>();
+	auto const pActualWeapon = pWeapon ? pWeapon : R->EBX<WeaponTypeClass*>();
+
+	if (pFirer && pActualTarget && pActualWeapon && pActualWeapon->Warhead)
 	{
-		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-		const auto pVictim = abstract_cast<TechnoClass*>(pTarget);
+		const auto pWHExt = WarheadTypeExt::Fetch(pActualWeapon->Warhead);
+		const auto pVictim = abstract_cast<TechnoClass*>(pActualTarget);
 
 		if (pVictim && pVictim->AttachedBomb && pWHExt->FakeEngineer_BombDisarm)
 			return BypassToHeightAndRangeChecks;
 
-		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pActualTarget);
 
 		if (pBuilding && pBuilding->IsAlive && pBuilding->Health > 0)
 		{
-			if (pBuilding->Type->BridgeRepairHut
-				&& (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+			if (pBuilding->Type->BridgeRepairHut)
 			{
-				return BypassToHeightAndRangeChecks;
+				CellStruct bridgeRepairHutCell = pBuilding->GetMapCoords();
+				bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+				if ((isBridgeDamaged && pWHExt->FakeEngineer_CanRepairBridges)
+					|| (!isBridgeDamaged && pWHExt->FakeEngineer_CanDestroyBridges))
+				{
+					return BypassToHeightAndRangeChecks;
+				}
 			}
 
 			const bool canCaptureHouse = pBuilding->Owner != pFirer->Owner
@@ -250,11 +262,11 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-	if (pExt->AutoFire)
+	if (pExt->AutoTargetOwnPosition)
 	{
-		if (pExt->AutoFire_TargetSelf)
+		if (pExt->AutoTargetOwnPosition_Self)
 			pThis->SetTarget(pThis);
 		else
 			pThis->SetTarget(pThis->GetCell());
@@ -265,14 +277,9 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 	return 0;
 }
 
-FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
+static FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	const bool disableWeapons = pExt->AE.DisableWeapons;
-	pExt->AE.DisableWeapons = false;
-	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE.DisableWeapons = disableWeapons;
-	return fireError;
+	return TechnoExt::GetFireErrorIgnoreDisableWeapons(pThis, pTarget, weaponIndex, ignoreRange);
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x7098E6, TechnoClass_TargetSomethingNearby_CanFire_Wrapper);
@@ -290,7 +297,7 @@ DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	MapZoneTemp::zoneScanType = pTypeExt->TargetZoneScanType;
 
 	return 0;
@@ -372,12 +379,12 @@ DEFINE_HOOK(0x6F8C9D, TechnoClass_EvaluateCell_SetContext, 0x7)
 	return 0;
 }
 
-WeaponStruct* __fastcall TechnoClass_EvaluateCellGetWeaponWrapper(TechnoClass* pThis)
+static WeaponStruct* __fastcall TechnoClass_EvaluateCellGetWeaponWrapper(TechnoClass* pThis)
 {
 	return pThis->GetWeapon(CellEvalTemp::weaponIndex);
 }
 
-int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis, void* _, int weaponIndex)
+static int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis, void* _, int weaponIndex)
 {
 	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
 }
@@ -426,7 +433,7 @@ DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
 {
 	GET(FootClass* const, pThis, ECX);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget)
 		&& CheckAttackMoveCanResetTarget(pThis))
@@ -445,13 +452,15 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 
 	GET(TechnoClass* const, pThis, EDI);
 
-	if (!pThis->Owner->IsControlledByHuman())
-		return CanTarget;
+	// Now, it is possible to customize which types of national active attacks on non-threatening buildings, so this part has been commented out.
+	// The new judgment code is in TechnoClass_CanAutoTarget_AttackNoThreatBuildings of Hook.cpp.
+	// if (!pThis->Owner->IsControlledByHuman())
+	//	return CanTarget;
 
 	if (!pThis->MegaMissionIsAttackMove())
 		return ContinueCheck;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
 }
@@ -476,20 +485,20 @@ DEFINE_HOOK(0x6F7E24, TechnoClass_EvaluateObject_SetContext, 0x6)
 	return 0;
 }
 
-double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
+static double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 {
 	double result = pTechno->GetHealthPercentage();
 
 	if (result >= 1.0)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const auto pExt = TechnoExt::Fetch(pTechno);
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsActive())
 			{
 				const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
-				const auto pFoot = abstract_cast<FootClass*>(pTechno);
+				const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 				if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
 					result = pShieldData->GetHealthRatio();
@@ -521,14 +530,14 @@ public:
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
-			const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+			const auto pExt = TechnoExt::Fetch(pTechno);
 
 			if (const auto pShieldData = pExt->Shield.get())
 			{
 				if (pShieldData->IsActive())
 				{
 					const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-					const auto pFoot = abstract_cast<FootClass*>(pObj);
+					const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 					if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
 					{
@@ -557,7 +566,7 @@ public:
 private:
 	static bool CanApplyEngineerActions(TechnoClass* pThis, ObjectClass* pTarget)
 	{
-		const auto pInf = abstract_cast<InfantryClass*>(pThis);
+		const auto pInf = abstract_cast<InfantryClass*, true>(pThis);
 		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
 
 		if (!pInf || !pBuilding)
@@ -581,7 +590,7 @@ private:
 	}
 };
 
-FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+static FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->UnitClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
@@ -590,7 +599,7 @@ FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, 
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F6030, UnitClass__GetFireError_Wrapper)
 
-FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+static FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->InfantryClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
@@ -599,8 +608,22 @@ FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, v
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB418, InfantryClass__GetFireError_Wrapper)
 
-Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
+static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
+	if (pThis && pObj)
+	{
+		if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pObj))
+		{
+			bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pTechnoTarget, true, true, true);
+			bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pTechnoTarget, false, false, true);
+
+			if (canBeAttacked)
+			{
+				return canBeDefused ? Action::DisarmBomb : Action::Attack;
+			}
+		}
+	}
+
 	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto const result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
@@ -608,13 +631,165 @@ Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, Objec
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 
-Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
+static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
+	if (pThis && pObj && !pThis->Type->Engineer)
+	{
+		if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pObj))
+		{
+			bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pTechnoTarget, true, true, true);
+			bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pTechnoTarget, false, false, true);
+
+			if (canBeAttacked)
+			{
+				return canBeDefused ? Action::DisarmBomb : Action::Attack;
+			}
+		}
+	}
+
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
 	auto const result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
+
+#pragma endregion
+
+#pragma region ThreatEvaluation
+
+// Current target may hurt me.
+static inline bool IsAThreatToMe(TechnoClass* const pTechno, AbstractClass* const pTarget, int weaponIndex = -1)
+{
+	if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pTarget))
+	{
+		const auto pTypeExt = TechnoExt::Fetch(pTechnoTarget)->TypeExtData;
+
+		if (pTypeExt->AlwaysConsideredThreat)
+			return true;
+
+		if (weaponIndex < 0)
+			weaponIndex = pTechnoTarget->SelectWeapon(pTechno);
+
+		if (!pTechnoTarget->GetWeapon(weaponIndex)->WeaponType)
+			return false;
+
+		const auto error = pTechnoTarget->GetFireError(pTechno, weaponIndex, true);
+		return pTechnoTarget->WhatAmI() == AbstractType::Building ? (error != FireError::ILLEGAL) && (error != FireError::RANGE) : (error != FireError::ILLEGAL);
+	}
+
+	return false;
+}
+
+// Decide the facing to check for firing.
+static inline FacingClass* GetFireFacing(TechnoClass* const pTechno)
+{
+	if (!pTechno)
+		return nullptr;
+
+	switch (pTechno->WhatAmI())
+	{
+		case AbstractType::Building:
+			return &pTechno->PrimaryFacing;
+		case AbstractType::Unit:
+		{
+			if (pTechno->GetTechnoType()->Turret)
+				return &pTechno->SecondaryFacing;
+			else
+				return &pTechno->PrimaryFacing;
+		}
+		case AbstractType::Infantry:
+			return nullptr;
+		case AbstractType::Aircraft:
+			return &pTechno->SecondaryFacing;
+		default:
+			return nullptr;
+	}
+}
+
+DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTarget, ESI);
+	REF_STACK(double, totalThreat, STACK_OFFSET(0x58, -0x48));
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (!pTypeExt->ExtraThreat_Enabled)
+		return 0;
+
+	auto ApplyIsThreatBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus = pTypeExt->ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat);
+
+			if (bonus == 0.0)
+				return;
+
+			if (!IsAThreatToMe(pThis, pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyIsThreatBonus();
+
+	auto ApplyInRangeBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus1 = pTypeExt->ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange);
+			const double dist = pThis->DistanceFrom(pTarget) / 256.0;
+			const double bonus2 = dist * pTypeExt->ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance);
+			const double bonus = bonus1 + bonus2;
+
+			if (bonus == 0.0)
+				return;
+
+			if (!pThis->IsCloseEnoughToAttack(pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyInRangeBonus();
+
+	auto ApplyFacingBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const auto pFacing = GetFireFacing(pThis);
+
+			if (!pFacing)
+				return;
+
+			const double bonus = pTypeExt->ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing);
+
+			if (bonus == 0.0)
+				return;
+
+			DirStruct dir = DirStruct();
+			const int deltaFacing = 32768 - std::abs(std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) - 32768);
+			totalThreat += deltaFacing * bonus;
+		};
+	ApplyFacingBonus();
+
+	auto ApplyLastTargetDistanceBonus = [pExt, pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus = pTypeExt->ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget);
+
+			if (bonus == 0.0)
+				return;
+
+			if (pExt->LastTargetCrd == CoordStruct::Empty)
+				return;
+
+			const double distToLastTarget = pTarget->GetCoords().DistanceFrom(pExt->LastTargetCrd) / 256.0;
+			totalThreat += distToLastTarget * bonus;
+		};
+	ApplyLastTargetDistanceBonus();
+
+	for (auto const& cb : TechnoExtInterop::CalculateExtraThreatCallbacks)
+	{
+		totalThreat = cb(pThis, pTarget, totalThreat);
+	}
+
+	return 0;
+}
+
 
 #pragma endregion

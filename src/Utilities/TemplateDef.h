@@ -37,23 +37,16 @@
 #include "Template.h"
 
 #include "INIParser.h"
-#include "Enum.h"
-#include "Constructs.h"
+#include "EnumFunctions.h"
 #include "SavegameDef.h"
+#include "Macro.h"
+#include "Interpolation.h"
 
-#include <InfantryTypeClass.h>
-#include <AircraftTypeClass.h>
-#include <UnitTypeClass.h>
-#include <BuildingTypeClass.h>
-#include <WarheadTypeClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <FootClass.h>
 #include <Powerups.h>
-#include <VocClass.h>
-#include <VoxClass.h>
 #include <CRT.h>
-#include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
+
+#include <unordered_set>
 
 namespace detail
 {
@@ -244,6 +237,15 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector3D<double>>(Vector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.Read<double, 3>(pSection, pKey, (double*)&value))
+			return true;
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
@@ -273,10 +275,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -284,10 +289,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -295,10 +303,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
+		int valueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -306,10 +317,13 @@ namespace detail
 	template <>
 	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
+		int valueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
 
-		if (value.ValueCount > 0)
+		if (valueCount > 0)
+		{
+			value.ValueCount = valueCount;
 			return true;
+		}
 
 		return false;
 	}
@@ -335,7 +349,7 @@ namespace detail
 			auto const pValue = parser.value();
 			std::string Result = pValue;
 
-			if (!strstr(pValue, ".shp"))
+			if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
 				Result += ".shp";
 
 			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
@@ -514,6 +528,81 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Action>(Action& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const auto Actions = {
+				"move", "nomove", "enter", "enter", "self_deploy", "attack", "harvest", "select", "toggleselect", "capture",
+				"eaten", "repair", "sell", "sellunit", "nosell", "norepair", "sabotage", "tote", "dontuse2", "dontuse3",
+				"nuke", "dontuse4", "dontuse5", "dontuse6", "dontuse7", "dontuse8", "guardarea", "heal", "damage", "grepair",
+				"nodeploy", "noenter", "nogrepair", "togglepower", "notogglepower", "entertunnel", "noentertunnel", "ironcurtain",
+				"lightningstorm", "chronosphere", "chronowarp", "paradrop", "placewaypoint", "tibsunbug", "enterwaypointmode",
+				"followwaypoint", "selectwaypoint", "loopwaypointpath", "dragwaypoint", "attackwaypoint", "enterwaypoint",
+				"patrolwaypoint", "areaattack", "ivanbomb", "noivanbomb", "detonate", "detonateall", "disarmbomb", "selectnode",
+				"attacksupport", "placebeacon", "selectbeacon", "attackmovenav", "attackmovetar", "demolish", "amerparadrop",
+				"psychicdominator", "spyplane", "geneticconverter", "forceshield", "noforceshield", "airstrike", "psychicreveal" };
+
+			auto it = Actions.begin();
+
+			for (auto i = 0u; i < Actions.size(); ++i)
+			{
+				if (_strcmpi(parser.value(), *it++) == 0)
+				{
+					value = static_cast<Action>(i);
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an action");
+		}
+
+		return false;
+	}
+
+	inline bool parse_sequence(const char* str, Sequence& seq)
+	{
+		static const auto Sequences = {
+				"Ready", "Guard", "Prone", "Walk", "FireUp", "Down", "Crawl", "Up",
+				"FireProne", "Idle1", "Idle2", "Die1", "Die2", "Die3", "Die4", "Die5",
+				"Tread", "Swim", "WetIdle1", "WetIdle2", "WetDie1", "WetDie2", "WetAttack",
+				"Hover", "Fly", "Tumble", "FireFly", "Deploy", "Deployed", "DeployedFire",
+				"DeployedIdle", "Undeploy", "Cheer", "Paradrop", "AirDeathStart",
+				"AirDeathFalling", "AirDeathFinish", "Panic", "Shovel", "Carry",
+				"SecondaryFire", "SecondaryProne"
+		};
+		auto it = Sequences.begin();
+		for (auto i = 0u; i < Sequences.size(); ++i)
+		{
+			if (_strcmpi(str, *it++) == 0)
+			{
+				seq = static_cast<Sequence>(i);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<Sequence>(Sequence& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			Sequence seq;
+			if (detail::parse_sequence(parser.value(), seq))
+			{
+				value = seq;
+				return true;
+			}
+			else if (!parser.empty())
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a Sequence animation name");
+			}
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
@@ -599,6 +688,9 @@ namespace detail
 
 			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
+				if (!_strcmpi(cur, "none"))
+					continue;
+
 				auto const landType = GroundType::GetLandTypeFromName(parser.value());
 
 				if (landType >= LandType::Clear && landType <= LandType::Weeds)
@@ -781,6 +873,52 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<AffectedVeterancy>(AffectedVeterancy& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, AffectedVeterancy> Names[] =
+			{
+				{"rookie",  AffectedVeterancy::Rookie},
+				{"veteran", AffectedVeterancy::Veteran},
+				{"elite",   AffectedVeterancy::Elite},
+				{"all",     AffectedVeterancy::All},
+				{"none",    AffectedVeterancy::None},
+			};
+
+
+			auto parsed = AffectedVeterancy::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected veterancy");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+
+	template <>
 	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -835,6 +973,33 @@ namespace detail
 			return true;
 		}
 
+		return false;
+	}
+
+	template <>
+	inline bool read<PositionFollow>(PositionFollow& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PositionFollow> Names[] =
+			{
+				{"none", PositionFollow::None},
+				{"firer", PositionFollow::Firer},
+				{"target", PositionFollow::Target},
+				{"all", PositionFollow::All},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a position follow mode (None, Firer, Target, All)");
+		}
 		return false;
 	}
 
@@ -953,7 +1118,6 @@ namespace detail
 		return value.Read(parser, pSection, pKey);
 	}
 
-
 	template <>
 	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1003,6 +1167,55 @@ namespace detail
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a target zone scan type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<StackingMode>(StackingMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "override") == 0)
+			{
+				value = StackingMode::Override;
+			}
+			if (_strcmpi(parser.value(), "setifzero") == 0)
+			{
+				value = StackingMode::SetIfZero;
+			}
+			else if (_strcmpi(parser.value(), "min") == 0)
+			{
+				value = StackingMode::Min;
+			}
+			else if (_strcmpi(parser.value(), "max") == 0)
+			{
+				value = StackingMode::Max;
+			}
+			else if (_strcmpi(parser.value(), "add") == 0)
+			{
+				value = StackingMode::Add;
+			}
+			else if (_strcmpi(parser.value(), "subtract") == 0)
+			{
+				value = StackingMode::Subtract;
+			}
+			else if (_strcmpi(parser.value(), "multiply") == 0)
+			{
+				value = StackingMode::Multiply;
+			}
+			else if (_strcmpi(parser.value(), "divide") == 0)
+			{
+				value = StackingMode::Divide;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a stacking mode type");
 				return false;
 			}
 
@@ -1135,6 +1348,58 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			return false;
 
 		return true;
+	}
+
+	template <>
+	inline bool read<InterpolationMode>(InterpolationMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "none") == 0)
+			{
+				value = InterpolationMode::None;
+			}
+			else if (_strcmpi(str, "linear") == 0)
+			{
+				value = InterpolationMode::Linear;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected an interpolation mode");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<EdgeType>(EdgeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "owner") == 0)
+			{
+				value = EdgeType::Owner;
+			}
+			else if (_strcmpi(str, "closest") == 0)
+			{
+				value = EdgeType::Closest;
+			}
+			else if (_strcmpi(str, "random") == 0)
+			{
+				value = EdgeType::Random;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected an edge type");
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	template <>
@@ -1410,6 +1675,54 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		return false;
 	}
 
+	template <>
+	inline bool read<DynamicTeamDelayType>(DynamicTeamDelayType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "startingpoint") == 0)
+			{
+				value = DynamicTeamDelayType::StartingPoint;
+			}
+			else if (_strcmpi(str, "playercount") == 0)
+			{
+				value = DynamicTeamDelayType::PlayerCount;
+			}
+			else if (_strcmpi(str, "ally") == 0 || _strcmpi(str, "allies") == 0)
+			{
+				value = DynamicTeamDelayType::Allies;
+			}
+			else if (_strcmpi(str, "enemy") == 0 || _strcmpi(str, "enemies") == 0)
+			{
+				value = DynamicTeamDelayType::Enemies;
+			}
+			else if (_strcmpi(str, "alivecount") == 0)
+			{
+				value = DynamicTeamDelayType::AliveCount;
+			}
+			else if (_strcmpi(str, "aliveally") == 0 || _strcmpi(str, "aliveallies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveAllies;
+			}
+			else if (_strcmpi(str, "aliveenemy") == 0 || _strcmpi(str, "aliveenemies") == 0)
+			{
+				value = DynamicTeamDelayType::AliveEnemies;
+			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				value = DynamicTeamDelayType::None;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Dynamic team delay type is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1443,8 +1756,35 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
 	}
-}
 
+	template <>
+	inline bool read<PowerStatus>(PowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PowerStatus> Names[] =
+			{
+				{"none", PowerStatus::None},
+				{"consumer", PowerStatus::Low},
+				{"low", PowerStatus::Low},
+				{"full", PowerStatus::Full},
+				{"normal", PowerStatus::Full},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerState (none, full, low|consumer");
+		}
+		return false;
+	}
+}
 
 // Valueable
 
@@ -1489,16 +1829,20 @@ void __declspec(noinline) ValueableIdx<Lookuper>::Read(INI_EX& parser, const cha
 // Nullable
 
 template <typename T>
-template <bool Allocate>
+template <bool allocate, bool allowNone>
 void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
 	if (parser.ReadString(pSection, pKey))
 	{
 		const char* val = parser.value();
+		bool reset = !_strcmpi(val, "<default>");
 
-		if (!_strcmpi(val, "<default>") || INIClass::IsBlank(val))
+		if constexpr (!allowNone)
+			reset = reset || INIClass::IsBlank(val);
+
+		if (reset)
 			this->Reset();
-		else if (detail::read<T, Allocate>(this->Value, parser, pSection, pKey))
+		else if (detail::read<T, allocate>(this->Value, parser, pSection, pKey))
 			this->HasValue = true;
 	}
 }
@@ -1548,7 +1892,6 @@ void __declspec(noinline) NullableIdx<Lookuper>::Read(INI_EX& parser, const char
 		}
 	}
 }
-
 
 // Promotable
 
@@ -1606,6 +1949,78 @@ void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* p
 	{
 		this->clear();
 		detail::parse_values<T>(*this, parser, pSection, pKey);
+	}
+}
+
+// Specialization: use FindOrAllocate for weapon vectors, avoiding dependency on [WeaponTypes] registration
+template <>
+inline void ValueableVector<WeaponTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWeapon = WeaponTypeClass::FindOrAllocate(cur))
+				this->push_back(pWeapon);
+		}
+	}
+}
+
+// Specialization: use FindOrAllocate for warhead vectors, avoiding dependency on [Warheads] table
+template <>
+inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pWarhead = WarheadTypeClass::FindOrAllocate(cur))
+				this->push_back(pWarhead);
+		}
+	}
+}
+
+template <>
+inline void ValueableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			auto mission = MissionControlClass::FindIndex(cur);
+			if (mission != Mission::None)
+				this->push_back(mission);
+			else if (!INIClass::IsBlank(cur))
+				Debug::INIParseFailed(pSection, pKey, cur, "Invalid Mission name");
+		}
+	}
+}
+
+template <>
+inline void ValueableVector<Sequence>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			Sequence seq;
+			if (detail::parse_sequence(cur, seq))
+				this->push_back(seq);
+			else if (!INIClass::IsBlank(cur))
+				Debug::INIParseFailed(pSection, pKey, cur, "Invalid Sequence name");
+		}
 	}
 }
 
@@ -1711,6 +2126,31 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 	}
 }
 
+template <>
+inline void NullableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		auto const non_default = _strcmpi(parser.value(), "<default>");
+		this->hasValue = non_default;
+
+		if (non_default)
+		{
+			char* str = parser.value();
+			char* context = nullptr;
+			for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				auto mission = MissionControlClass::FindIndex(cur);
+				if (mission != Mission::None)
+					this->push_back(mission);
+				else if (!INIClass::IsBlank(cur))
+					Debug::INIParseFailed(pSection, pKey, cur, "Invalid Mission name");
+			}
+		}
+	}
+}
+
 template <typename T>
 bool NullableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -1743,7 +2183,6 @@ void __declspec(noinline) ValueableIdxVector<Lookuper>::Read(INI_EX& parser, con
 		detail::parse_indexes<Lookuper>(*this, parser, pSection, pKey);
 	}
 }
-
 
 // NullableIdxVector
 
@@ -1799,4 +2238,281 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 	return Savegame::WritePhobosStream(Stm, this->BaseValue)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionYellow)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionRed);
+}
+
+namespace MultiflagVectorHelpers
+{
+	inline bool ShouldResetValues(INI_EX& parser, const char* pSection, const char* pBaseFlag)
+	{
+		char flagName[256];
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.ResetValues", pBaseFlag);
+
+		Valueable<bool> resetValues {};
+		resetValues.Read(parser, pSection, flagName);
+		return resetValues.Get();
+	}
+
+	template<typename Vec, typename T, typename... TExtraArgs>
+	void ReadVectorBase(Vec& vec, bool& hasValue, INI_EX& parser, const char* pSection, const char* pBaseFlag, TExtraArgs&... extraArgs)
+	{
+		char flagName[0x40];
+
+		for (size_t i = 0; ; ++i)
+		{
+			_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s%zu", pBaseFlag, i);
+
+			if (i < vec.size())
+			{
+				if (!vec[i].Read(parser, pSection, flagName, extraArgs...))
+					continue;
+			}
+			else
+			{
+				T dataEntry {};
+
+				if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
+					break;
+
+				vec.push_back(std::move(dataEntry));
+			}
+
+			hasValue = true;
+		}
+	}
+}
+
+// MultiflagValueableVector
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	if (MultiflagVectorHelpers::ShouldResetValues(parser, pSection, pBaseFlag))
+		this->clear();
+
+	bool dummyHasValue = false;
+	MultiflagVectorHelpers::ReadVectorBase<decltype(*this), T>(*this, dummyHasValue, parser, pSection, pBaseFlag, extraArgs...);
+}
+
+// MultiflagNullableVector
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagNullableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	if (MultiflagVectorHelpers::ShouldResetValues(parser, pSection, pBaseFlag))
+		this->clear();
+
+	MultiflagVectorHelpers::ReadVectorBase<decltype(*this), T>(*this, this->hasValue, parser, pSection, pBaseFlag, extraArgs...);
+}
+
+// Animatable
+
+// Animatable::KeyframeDataEntry
+
+template <typename TValue>
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
+{
+	char flagName[0x40];
+	Nullable<double> percentageTemp {};
+	Nullable<absolute_length_t> absoluteTemp {};
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Percentage", pBaseFlag);
+	percentageTemp.Read(parser, pSection, flagName);
+	bool useNonAbs = true;
+
+	if (!percentageTemp.isset() && this->Percentage >= 0.0)
+		percentageTemp = this->Percentage;
+
+	if (absoluteLength > absolute_length_t(0))
+	{
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Absolute", pBaseFlag);
+		absoluteTemp.Read(parser, pSection, flagName);
+
+		if (absoluteTemp.isset())
+		{
+			this->Percentage = (double)absoluteTemp / absoluteLength;
+			useNonAbs = false;
+		}
+	}
+
+	if (useNonAbs)
+	{
+		if (!percentageTemp.isset() || percentageTemp < 0.0)
+			return false;
+		else
+			this->Percentage = percentageTemp;
+	}
+
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Value", pBaseFlag);
+	this->Value.Read(parser, pSection, flagName);
+	return true;
+};
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->Percentage, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->Percentage)
+		&& Savegame::WritePhobosStream(Stm, this->Value);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::HasValues() const
+{
+	return this->KeyframeData.size() > 0;
+}
+
+template <typename TValue>
+TValue Animatable<TValue>::Get(double const percentage) const
+{
+	TValue match {};
+
+	if (!this->HasValues())
+		return match;
+
+	// Shortcut for fallback keyframe.
+	if (this->KeyframeData.size() == 1 && this->KeyframeData[0].Percentage == 0.0)
+		return this->KeyframeData[0].Value;
+
+	// Check if there is cached value for given percentage and return it if found.
+	auto it_cache = KeyframeValueCache.find(percentage);
+
+	if (it_cache != KeyframeValueCache.end())
+		return it_cache->second;
+
+	// Binary search for a matching keyframe.
+	auto it = std::lower_bound(
+		this->SortedKeyFrames.begin(),
+		this->SortedKeyFrames.end(),
+		percentage,
+		[](const KeyframeDataEntry& entry, double p)
+		{
+			return entry.Percentage < p;
+		}
+	);
+
+	// We found a match.
+	if (it != this->SortedKeyFrames.begin())
+	{
+		--it;
+		double startPercentage = it->Percentage;
+		match = it->Value;
+		auto it_next = std::next(it);
+
+		// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
+		if (this->InterpolationMode != InterpolationMode::None && it_next != this->SortedKeyFrames.end())
+		{
+			auto const& nextKeyFrame = *it_next;
+			TValue nextValue = nextKeyFrame.Value.Get();
+			double progressPercentage = (percentage - startPercentage) / (nextKeyFrame.Percentage - startPercentage);
+			match = detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
+		}
+	}
+
+	// Add value to cache.
+	this->KeyframeValueCache.try_emplace(percentage, match);
+
+	return match;
+}
+
+// pBaseFlag - Expects clean INI key name without format strings.
+// requireParsedFallback - If set to true behaves like Nullable<> template and doesn't set default value as fallback if parsing from base INI key fails.
+template <typename TValue>
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength, bool requireParsedFallback)
+{
+	// Set up buffers.
+	char flagName[0x40];
+
+	// Clear value cache.
+	this->KeyframeValueCache.clear();
+
+	// Clear sorted keyframes.
+	this->SortedKeyFrames.clear();
+
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Keyframe", pBaseFlag);
+	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
+
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Interpolation", pBaseFlag);
+	detail::read(this->InterpolationMode, parser, pSection, flagName);
+
+	if (!this->HasValues())
+	{
+		TValue value { DefaultValue };
+		KeyframeDataEntry keyframe {};
+		bool parsed = detail::read(value, parser, pSection, pBaseFlag);
+
+		if (!requireParsedFallback || parsed)
+		{
+			keyframe.Percentage = 0.0;
+			keyframe.Value = value;
+			this->KeyframeData.push_back(keyframe);
+			this->SortedKeyFrames.push_back(keyframe);
+		}
+
+		return;
+	}
+
+	// Error handling
+	bool foundError = false;
+	std::unordered_set<double> percentages;
+
+	for (size_t i = 0; i < this->KeyframeData.size(); i++)
+	{
+		auto const& value = this->KeyframeData[i];
+		_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.Keyframe%zu", pBaseFlag, i);
+
+		if (percentages.contains(value.Percentage))
+		{
+			Debug::Log("[Developer warning] [%s] %s has duplicated keyframe %.3f.\n", pSection, flagName, value.Percentage);
+			foundError = true;
+		}
+
+		if (value.Percentage < 0.0)
+		{
+			Debug::Log("[Developer warning] [%s] %s has invalid keyframe percentage value %.3f.\n", pSection, flagName, value.Percentage);
+			foundError = true;
+		}
+
+		percentages.insert(value.Percentage);
+	}
+
+	if (foundError)
+		Debug::FatalErrorAndExit("[%s] '%s' has invalid keyframe data defined. Check debug log for more details.\n", pSection, pBaseFlag);
+
+	// Copy keyframes over to sorted vector.
+	this->SortedKeyFrames.reserve(this->KeyframeData.size());
+
+	std::copy(
+		this->KeyframeData.begin(),
+		this->KeyframeData.end(),
+		std::back_inserter(this->SortedKeyFrames)
+	);
+
+	// Sort keyframes based on percentages.
+	std::sort(
+		this->SortedKeyFrames.begin(),
+		this->SortedKeyFrames.end(),
+		[](KeyframeDataEntry const& a, KeyframeDataEntry const& b)
+		{
+			return a.Percentage < b.Percentage;
+		}
+	);
+};
+
+template <typename TValue>
+bool Animatable<TValue>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->KeyframeData, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->KeyframeData);
 }
