@@ -273,6 +273,7 @@
     <ClCompile Include="src\New\Type\InsigniaTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\ResourceTypeClass.cpp" />
     <ClCompile Include="src\New\Type\SelectBoxTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <!-- src\New\Type\Affiliated -->
@@ -313,6 +314,7 @@
     <ClInclude Include="src\Commands\DeselectObject.h" />
     <ClInclude Include="src\Commands\DeselectObject5.h" />
     <ClInclude Include="src\Commands\FireTacticalSW.h" />
+
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
@@ -414,6 +416,7 @@
     <ClInclude Include="src\New\Type\InsigniaTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
+    <ClInclude Include="src\New\Type\ResourceTypeClass.h" />
     <ClInclude Include="src\New\Type\SelectBoxTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <!-- src\New\Type\Affiliated -->

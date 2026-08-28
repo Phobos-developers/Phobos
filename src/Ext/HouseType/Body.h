@@ -65,4 +65,3 @@ public:
 		return AbstractExt::TryFetch<HouseTypeExt>(pThis);
 	}
 };
-

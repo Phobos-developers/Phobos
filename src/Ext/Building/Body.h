@@ -21,6 +21,7 @@ public:
 	int GrindingWeapon_AccumulatedCredits;
 	BuildingClass* CurrentAirFactory;
 	int AccumulatedIncome;
+	std::vector<float> AccumulatedResources;
 	std::optional<int> CurrentLaserWeaponIndex;
 	int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 	SuperClass* CurrentEMPulseSW;
@@ -40,6 +41,7 @@ public:
 		, GrindingWeapon_AccumulatedCredits { 0 }
 		, CurrentAirFactory { nullptr }
 		, AccumulatedIncome { 0 }
+		, AccumulatedResources {}
 		, CurrentLaserWeaponIndex {}
 		, PoweredUpToLevel { 0 }
 		, CurrentEMPulseSW {}
@@ -47,6 +49,7 @@ public:
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }
 		, TurretAnimRateTick { 0 }
+		, ConstructionStartFacing { 0 }
 		, IsPlayingRoofProductionAnim { false }
 	{ }
 

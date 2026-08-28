@@ -2,6 +2,10 @@
 
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <FactoryClass.h>
+#include <New/Type/ResourceTypeClass.h>
 
 //Static init
 
@@ -706,12 +710,15 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
+		.Process(this->CustomResources)
+		.Process(this->ResourceCollectorCounts)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
 		.Process(this->TeamDelay)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->FactoryResourceStates)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }
@@ -1188,6 +1195,217 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 }
 #pragma endregion
 
+int HouseExt::GetResourceAmount(int resourceIdx) const
+{
+	if (resourceIdx >= 0 && resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			return pHouse ? pHouse->Available_Money() : 0;
+		}
+		if (pResource && pResource->IsPowerResource())
+		{
+			auto pHouse = this->OwnerObject();
+			return pHouse ? (pHouse->PowerOutput - pHouse->PowerDrain) : 0;
+		}
+	}
+
+	if (resourceIdx >= 0 && resourceIdx < static_cast<int>(this->CustomResources.size()))
+		return this->CustomResources[resourceIdx];
+	return 0;
+}
+
+void HouseExt::SetResourceAmount(int resourceIdx, int amount)
+{
+	if (resourceIdx < 0)
+		return;
+
+	if (resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			if (pHouse)
+				pHouse->TransactMoney(amount - pHouse->Available_Money());
+			return;
+		}
+	}
+
+	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
+		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
+
+	this->CustomResources[resourceIdx] = std::max(0, amount);
+}
+
+void HouseExt::UpdateResourceAmount(int resourceIdx, int delta)
+{
+	if (resourceIdx < 0)
+		return;
+
+	if (resourceIdx < static_cast<int>(ResourceTypeClass::Array.size()))
+	{
+		const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+		if (pResource && pResource->IsMoneyResource())
+		{
+			auto pHouse = this->OwnerObject();
+			if (pHouse)
+				pHouse->TransactMoney(delta);
+			return;
+		}
+	}
+
+	if (resourceIdx >= static_cast<int>(this->CustomResources.size()))
+		const_cast<HouseExt*>(this)->CustomResources.resize(resourceIdx + 1, 0);
+
+	this->CustomResources[resourceIdx] = std::max(0, this->CustomResources[resourceIdx] + delta);
+}
+
+bool HouseExt::CanAffordResource(int resourceIdx, int amount) const
+{
+	if (!this->IsResourceEnabled(resourceIdx))
+		return false;
+	return this->GetResourceAmount(resourceIdx) >= amount;
+}
+
+bool HouseExt::IsResourceEnabled(int resourceIdx) const
+{
+	if (resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
+		return false;
+
+	const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+	if (!pResource)
+		return false;
+
+	if (!pResource->RequiresCollector.Get())
+		return true;
+
+	if (resourceIdx < static_cast<int>(this->ResourceCollectorCounts.size()))
+		return this->ResourceCollectorCounts[resourceIdx] > 0;
+
+	return false;
+}
+
+int HouseExt::CalculateResourceBounty(int resourceIdx, TechnoClass* pVictim) const
+{
+	if (!pVictim || resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
+		return 0;
+
+	const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
+	if (!pResource || !this->IsResourceEnabled(resourceIdx))
+		return 0;
+
+	const auto pThis = this->OwnerObject();
+	const auto pVictimType = pVictim->GetTechnoType();
+	const auto pVictimTypeExt = TechnoTypeExt::TryFetch(pVictimType);
+
+	const bool isAllied = pThis->IsAlliedWith(pVictim);
+
+	if (isAllied)
+	{
+		// Friendly fire always applies a friendly penalty (never enemy bounties).
+		// Clamped to negative/zero so positive accidental inputs cannot reward teamkilling.
+		if (pVictimTypeExt && resourceIdx < static_cast<int>(pVictimTypeExt->ResourceFriendlyBounties.size()))
+		{
+			int customFriendlyVal = pVictimTypeExt->ResourceFriendlyBounties[resourceIdx];
+			if (customFriendlyVal != 0)
+				return -std::abs(customFriendlyVal);
+		}
+
+		return -std::abs(pResource->Bounty_DefaultFriendlyValue.Get());
+	}
+
+	int bounty = 0;
+
+	// 1. Explicit per-techno bounty
+	if (pVictimTypeExt && resourceIdx < static_cast<int>(pVictimTypeExt->ResourceBounties.size()))
+	{
+		int customVal = pVictimTypeExt->ResourceBounties[resourceIdx];
+		if (customVal != 0)
+			bounty = customVal;
+	}
+
+	// 2. Generic fallback / MoneyConversion / Points / DefaultValue
+	if (bounty == 0)
+	{
+		const int moneyConversion = pResource->Bounty_MoneyConversion.Get();
+		if (moneyConversion > 0)
+		{
+			bounty = (pVictimType->Cost + (moneyConversion / 2)) / moneyConversion;
+		}
+
+		if (bounty <= 0)
+		{
+			if (pResource->Bounty_CanUseStandardPoints.Get() && pVictimType->Points > 0)
+			{
+				bounty = pVictimType->Points;
+			}
+			else if (pResource->Bounty_DefaultValue.Get() > 0)
+			{
+				bounty = pResource->Bounty_DefaultValue.Get();
+			}
+		}
+	}
+
+	return bounty;
+}
+
+void HouseExt::InitializeCustomResources()
+{
+	const size_t count = ResourceTypeClass::Array.size();
+	this->CustomResources.resize(count, 0);
+	this->ResourceCollectorCounts.resize(count, 0);
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		this->CustomResources[i] = ResourceTypeClass::Array[i]->InitialValue.Get();
+	}
+}
+
+int HouseExt::GetFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx) const
+{
+	for (const auto& s : this->FactoryResourceStates)
+	{
+		if (s.pFactory == pFactory && resIdx < s.Spent.size())
+			return s.Spent[resIdx];
+	}
+	return 0;
+}
+
+void HouseExt::AddFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx, int amount)
+{
+	for (auto& s : this->FactoryResourceStates)
+	{
+		if (s.pFactory == pFactory)
+		{
+			if (s.Spent.size() <= resIdx)
+				s.Spent.resize(resIdx + 1, 0);
+			s.Spent[resIdx] += amount;
+			return;
+		}
+	}
+
+	FactoryResourceState newState;
+	newState.pFactory = pFactory;
+	newState.Spent.resize(resIdx + 1, 0);
+	newState.Spent[resIdx] = amount;
+	const_cast<HouseExt*>(this)->FactoryResourceStates.push_back(newState);
+}
+
+void HouseExt::ClearFactoryResourceState(FactoryClass* pFactory)
+{
+	for (auto it = this->FactoryResourceStates.begin(); it != this->FactoryResourceStates.end(); ++it)
+	{
+		if (it->pFactory == pFactory)
+		{
+			this->FactoryResourceStates.erase(it);
+			return;
+		}
+	}
+}
+
 // =============================
 // container
 
@@ -1203,7 +1421,10 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.TryAllocate(pItem);
+	if (const auto pExt = HouseExt::ExtMap.TryAllocate(pItem))
+	{
+		pExt->InitializeCustomResources();
+	}
 	HouseExt::CalculatePowerSurplus(pItem);
 
 	return 0;

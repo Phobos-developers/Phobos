@@ -280,6 +280,166 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 Similarly, unless you really have a need, `UseGlobalRadApplicationDelay` should remain `true`, because not doing so will be very resource-intensive.
 ```
 
+### Custom Resource Types
+
+- Now you can define and customize arbitrary secondary/tertiary resources with their own HUD counters, production cycles, unit costs, bounties, crates, and superweapon requirements.
+  - `Display.ResourceTypes.Orientation` controls whether multiple resource counters stack vertically or horizontally on the HUD (`Vertical` / `Horizontal`).
+  - `Display.ResourceTypes.Anchor` sets the reference HUD anchor corner (`TopRight`, `TopLeft`, `TopCenter`, `BottomRight`, `BottomLeft`, `BottomCenter`, `Sidebar`).
+  - `Display.ResourceTypes.BaseOffset` provides an initial X,Y pixel offset for the resource display group.
+  - `Display.ResourceTypes.Spacing` specifies the spacing in pixels between consecutive resource counters.
+  - `Display.ResourceTypes.Align` text alignment for HUD counters (`Left`, `Center`, `Right`; defaults to `Right` for right anchors, `Center` for center anchors, `Left` for left anchors).
+  - `Display.ResourceTypes.BackgroundPCX` optional PCX background image rendered behind the tactical HUD counters (takes precedence over SHP if both are defined).
+  - `Display.ResourceTypes.Background` optional SHP background image rendered behind the tactical HUD counters (without `.shp` extension; multi-frame SHPs animate continuously).
+  - `Display.ResourceTypes.Background.Offset` optional X,Y pixel offset for the background image (applies to both PCX and SHP).
+  - `Display.ResourceTypes.Background.Palette` optional palette for SHP background.
+  - `Display.ResourceTypes.Background.Horizontal.ResourcesInside` when true and `Display.ResourceTypes.Orientation=Horizontal`, dynamically divides the background graphic's width proportionally among all currently visible resources so they stay nicely framed inside the background without overflowing (defaults to `false`).
+  - `Display.Label` specifies the CSF label key displayed alongside the counter.
+  - `Display.Label.InvertPosition` when set to true, places the label after the value (`100 ★` vs `★ 100`).
+  - `Display.Label.UseSpace` when set to false, omits the separating space between label and amount (`100★` or `★100` vs `100 ★` / `★ 100`). Defaults to `true`.
+  - `Display.Color` specifies the text color (R,G,B) for the resource on the HUD and floating strings.
+  - `Display.Condition` specifies when the counter is visible (`Always`, `GreaterThanZero`, `HasCollector`, `Never` / `Hidden` / `None`).
+  - `Display.Offset` optional explicit X,Y screen coordinates overriding auto-stacking.
+  - `InitialValue` starting resource amount granted to houses at match start.
+  - `RequiresCollector` when true, the house resource only activates once a structure with `ResourceCollector.<Resource>=true` is built.
+  - `Bounty.Enabled` enables kill bounty rewards for this resource.
+  - `Bounty.DefaultValue` default bounty granted when destroying an enemy unit that lacks a specific bounty tag.
+  - `Bounty.DefaultFriendlyValue` bounty when destroying an allied unit.
+  - `Bounty.CanUseStandardPoints` fall back to the techno's `Points=` tag for bounty calculation.
+  - `Bounty.MoneyConversion` divides the destroyed unit's `Cost=` by this value to determine the bounty reward when not explicitly defined on the techno (e.g. 100 calculates 700 / 100 = 7). Falls back to `Bounty.DefaultValue` if result is 0.
+  - `Crate.Amount` amount granted when rolled from a money crate (if > 0, the resource enters the money crate raffle with equal probability alongside standard credits).
+  - `Crate.Anim` optional animation played at the crate location when this resource is awarded.
+  - `Crate.Sound` optional sound effect played when this resource is awarded.
+  - `Cost.<ResourceType>` additional resource cost required to build the techno. Consumed progressively during production (pausing if funds are insufficient and fully refunded on cancellation), and consumed proportionally during structure repair and Service Depot unit repair.
+  - `Bounty.<ResourceType>.Value` custom bounty awarded to the killer when this enemy unit is destroyed.
+  - `Bounty.<ResourceType>.FriendlyValue` custom friendly fire penalty applied if destroyed by an ally (e.g. -50; always evaluated as negative to prevent accidental rewards).
+  - `Production.<ResourceType>`, `Production.<ResourceType>.Delay`, and `Production.<ResourceType>.Startup` configure periodic and initial resource generation. Works on all units, vehicles, infantry, aircraft, and buildings. `Startup` is optional (defaults to 0). Periodic production occurs every `Delay` frames.
+  - `Production.<ResourceType>.Display.Offset` optional X,Y pixel offset for the floating string text relative to the object render center.
+  - `Production.<ResourceType>.Display.Color` optional R,G,B text color override for the floating string (falls back to `Display.Color` from `[<ResourceType>]`).
+  - `Production.<ResourceType>.Display.Houses` controls which players can see the floating string (`All`, `Owner`, `Allies`, `Enemies`, `None`, defaults to `All`).
+  - `ResourceCollector.<ResourceType>` designates this unit or building as an active collector for this resource.
+  - `ResourceType.<ResourceType>.Amount` specifies resource cost (positive) or grant (negative) upon firing.
+  - `ResourceType` and `ResourceValue` configure Tiberium/Ore harvesting to yield custom resources. When `ResourceValue=` is omitted, `Value=` is used for the custom resource and no money is granted (replaces money). When `ResourceValue=` is defined, `ResourceValue` is used for the custom resource AND `Value=` is used to grant standard money (dual income).
+  - `Sidebar.ResourceTypes.Types` list of resources to show on this side's sidebar (if omitted, all non-hidden resources are shown).
+- `[ResourceTypes]` also supports **`Money`**, **`Power`**, **`Harvesters`**, and **`Weeds`** pseudo-resources. Simply declare them in the list (e.g. `0=Money`, `1=Power`, `2=Harvesters`, `3=Weeds`) to customize their HUD display (labels, positioning, formatting, status colors, or moving them between the sidebar and the tactical screen).
+  - When `Money` is declared, it automatically tracks player credits and replaces the default sidebar counter with the Resource HUD. It also supports `Production.Money` and `ResourceCollector.Money`.
+  - `Display.Format` controls the format of the displayed power value (`NetAndTotal`, `Net`, `DrainAndTotal`, `Drain`, `Total`; defaults to `NetAndTotal`).
+  - `Display.ColorGreen`, `Display.ColorYellow`, `Display.ColorRed`, `Display.ColorGrey` optional R,G,B text colors for power states:
+    - `ColorGreen`: normal surplus power (defaults to `0,255,0`).
+    - `ColorYellow`: high drain / low power (defaults to `255,255,0`).
+    - `ColorRed`: power deficit / low power offline (defaults to `255,0,0`).
+    - `ColorGrey`: blackout active (defaults to `128,128,128`).
+    - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of power status.
+  - When `Harvesters` is declared, it automatically tracks active and total harvesters and replaces the legacy sidebar harvester counter.
+  - `Display.Format` controls the format of the displayed harvester counter (`ActiveAndTotal`, `Active`, `Total`; defaults to `ActiveAndTotal`).
+  - `Display.ColorGreen`, `Display.ColorYellow`, `Display.ColorRed` optional R,G,B text colors for harvester activity states:
+    - `ColorGreen`: all harvesters are actively harvesting or unloading (defaults to `0,255,0`).
+    - `ColorYellow`: some harvesters are active while at least one is idle (defaults to `255,255,0`).
+    - `ColorRed`: no harvesters are active / all idle (defaults to `255,0,0`).
+    - Note: If `Display.Color` is defined instead, it forces a single fixed static color regardless of harvester activity.
+  - When `Weeds` is declared, it automatically tracks the player's stored Veinhole monster Tiberium / Weeds (`pPlayer->OwnedWeed.GetTotalAmount()`) and replaces the legacy sidebar weeds counter.
+- Supports map trigger actions `620 Set Custom Resource`, `621 Add Custom Resource`, `622 Subtract Custom Resource`, and trigger events `610 House Has Custom Resource Greater Than`, `611 House Has Custom Resource Less Than` (see [AI Scripting and Mapping](AI-Scripting-and-Mapping.md)).
+
+In `rulesmd.ini`:
+```ini
+[ResourceTypes]
+0=SOMERESOURCETYPE
+
+[GDI]                                            ; SideClass
+Display.ResourceTypes.Orientation=Vertical       ; ResourceDisplayOrientation (Vertical | Horizontal)
+Display.ResourceTypes.Anchor=TopRight            ; ResourceDisplayAnchor (TopRight | TopLeft | TopCenter | BottomRight | BottomLeft | BottomCenter | Sidebar)
+Display.ResourceTypes.BaseOffset=0,0             ; Point2D - X,Y
+Display.ResourceTypes.Spacing=14                 ; integer - pixels
+Display.ResourceTypes.Align=                     ; TextAlign (Left | Center | Right, default depends on Anchor)
+Display.ResourceTypes.BackgroundPCX=             ; filename - .pcx (hidden automatically if no tactical resources are visible)
+Display.ResourceTypes.Background=                ; filename - without .shp extension (hidden automatically if no tactical resources are visible)
+Display.ResourceTypes.Background.Offset=0,0      ; Point2D - X,Y (applies to both PCX and SHP)
+Display.ResourceTypes.Background.Palette=        ; CustomPalette (palette for SHP background)
+Display.ResourceTypes.Background.Horizontal.ResourcesInside=false ; boolean
+Sidebar.ResourceTypes.Types=                     ; list of ResourceTypes
+Sidebar.ResourceTypes.Offset=0,0                 ; Point2D - X,Y
+Sidebar.ResourceTypes.Align=Left                 ; TextAlign (Left | Center | Right)
+Sidebar.ResourceTypes.Color=                     ; integer - Red,Green,Blue
+
+[SOMERESOURCETYPE]                               ; ResourceType
+Display.Label=                                   ; CSF entry key
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=true                      ; boolean
+Display.Color=255,255,255                        ; integer - Red,Green,Blue (static color)
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+InitialValue=0                                   ; integer
+RequiresCollector=false                          ; boolean
+Bounty.Enabled=false                             ; boolean
+Bounty.DefaultValue=0                            ; integer
+Bounty.DefaultFriendlyValue=0                    ; integer
+Bounty.CanUseStandardPoints=false                ; boolean
+Bounty.MoneyConversion=0                         ; integer
+Crate.Amount=0                                   ; integer
+Crate.Anim=                                      ; AnimationType
+Crate.Sound=                                     ; Sound
+
+[Money]                                          ; Money Pseudo-Resource (tracks player credits)
+Display.Label=                                   ; CSF entry key (defaults to $)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Color=255,255,0                          ; integer - Red,Green,Blue (static color)
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+RequiresCollector=false                          ; boolean
+
+[Power]                                          ; Power Pseudo-Resource (tracks power status)
+Display.Label=                                   ; CSF entry key (defaults to ⚡)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Condition=Always                         ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+Display.Format=NetAndTotal                       ; ResourcePowerDisplayMode (NetAndTotal | Net | DrainAndTotal | Drain | Total)
+Display.ColorGreen=0,255,0                       ; integer - Red,Green,Blue (normal power surplus, default 0,255,0)
+Display.ColorYellow=255,255,0                    ; integer - Red,Green,Blue (low power / high drain, default 255,255,0)
+Display.ColorRed=255,0,0                         ; integer - Red,Green,Blue (power deficit / offline, default 255,0,0)
+Display.ColorGrey=128,128,128                    ; integer - Red,Green,Blue (blackout status, default 128,128,128)
+Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
+
+[Harvesters]                                     ; Harvesters Pseudo-Resource (tracks active and total harvesters)
+Display.Label=                                   ; CSF entry key (defaults to ⛏)
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | Never; HasCollector is ignored)
+Display.Offset=                                  ; Point2D - X,Y
+Display.Format=ActiveAndTotal                    ; ResourceHarvesterDisplayMode (ActiveAndTotal | Active | Total)
+Display.ColorGreen=0,255,0                       ; integer - Red,Green,Blue (100% harvesters active, default 0,255,0)
+Display.ColorYellow=255,255,0                    ; integer - Red,Green,Blue (some harvesters active, default 255,255,0)
+Display.ColorRed=255,0,0                         ; integer - Red,Green,Blue (no harvesters active, default 255,0,0)
+Display.Color=                                   ; integer - Red,Green,Blue (forces a single static color if set, overriding status colors)
+
+[Weeds]                                          ; Weeds Pseudo-Resource (tracks stored Veinhole monster Tiberium / Weeds)
+Display.Label=                                   ; CSF entry key
+Display.Label.InvertPosition=false               ; boolean
+Display.Label.UseSpace=false                     ; boolean
+Display.Color=0,255,128                          ; integer - Red,Green,Blue (static color)
+Display.Condition=Never                          ; ResourceDisplayCondition (Always | GreaterThanZero | HasCollector | Never)
+Display.Offset=                                  ; Point2D - X,Y
+
+[SOMETECHNO]                                     ; TechnoType
+Cost.<ResourceType>=0                            ; integer
+Bounty.<ResourceType>.Value=                     ; integer, default to [SOMERESOURCETYPE] -> Bounty.DefaultValue
+Bounty.<ResourceType>.FriendlyValue=             ; integer, default to [SOMERESOURCETYPE] -> Bounty.DefaultFriendlyValue
+ResourceCollector.<ResourceType>=false           ; boolean
+Production.<ResourceType>=0                      ; integer
+Production.<ResourceType>.Delay=0                ; integer - game frames
+Production.<ResourceType>.Startup=0              ; integer
+Production.<ResourceType>.Display.Offset=        ; Point2D - X,Y
+Production.<ResourceType>.Display.Color=         ; integer - Red,Green,Blue, default to [SOMERESOURCETYPE] -> Display.Color
+Production.<ResourceType>.Display.Houses=all     ; AffectedHouse (all | owner | allies | enemies | none)
+
+[SOMETIBERIUM]                                   ; TiberiumType
+ResourceType=                                    ; ResourceType
+ResourceValue=                                   ; integer, default to Value
+
+[SOMESUPERWEAPON]                                ; SuperWeaponType
+ResourceType.<ResourceType>.Amount=0             ; integer
+```
+
 ### Laser Trails
 
 ![Laser Trails](_static/images/lasertrails.gif)

@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include "NewSWType/NewSWType.h"
+#include <New/Type/ResourceTypeClass.h>
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
@@ -100,6 +101,7 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->SW_Link_RollChances)
 		.Process(this->Message_LinkedSWAcquired)
 		.Process(this->EVA_LinkedSWAcquired)
+		.Process(this->SW_ResourceAmounts)
 		.Process(this->Message_Activated_Owner)
 		.Process(this->Message_Activated_Allies)
 		.Process(this->Message_Activated_Enemies)
@@ -305,6 +307,24 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
 		pNewSWType->Initialize(const_cast<SWTypeExt*>(this), OwnerObject());
 		pNewSWType->LoadFromINI(const_cast<SWTypeExt*>(this), OwnerObject(), pINI);
+	}
+
+	const size_t resourceCount = ResourceTypeClass::Array.size();
+	this->SW_ResourceAmounts.resize(resourceCount, 0);
+
+	for (size_t i = 0; i < resourceCount; ++i)
+	{
+		const auto pResource = ResourceTypeClass::Array[i].get();
+		if (!pResource)
+			continue;
+
+		char tag[64];
+		sprintf_s(tag, "ResourceType.%s.Amount", (const char*)pResource->Name);
+		int amount = 0;
+		if (exINI.ReadInteger(pSection, tag, &amount))
+		{
+			this->SW_ResourceAmounts[i] = amount;
+		}
 	}
 }
 

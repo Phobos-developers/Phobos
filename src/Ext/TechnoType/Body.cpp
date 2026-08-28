@@ -1145,6 +1145,160 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
 	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
 
+	const size_t resourceCount = ResourceTypeClass::Array.size();
+	if (this->ResourceCosts.size() < resourceCount)
+		this->ResourceCosts.resize(resourceCount, 0);
+	if (this->ResourceBounties.size() < resourceCount)
+		this->ResourceBounties.resize(resourceCount, 0);
+	if (this->ResourceFriendlyBounties.size() < resourceCount)
+		this->ResourceFriendlyBounties.resize(resourceCount, 0);
+	if (this->ResourceSoylents.size() < resourceCount)
+		this->ResourceSoylents.resize(resourceCount, -1);
+
+	for (size_t i = 0; i < resourceCount; ++i)
+	{
+		const auto pResource = ResourceTypeClass::Array[i].get();
+		if (!pResource || pResource->IsPowerResource())
+			continue;
+
+		if (!pResource->IsMoneyResource())
+		{
+			char costTag[64];
+			sprintf_s(costTag, "Cost.%s", (const char*)pResource->Name);
+			int costVal = 0;
+			if (exINI.ReadInteger(pSection, costTag, &costVal))
+			{
+				this->ResourceCosts[i] = std::max(0, costVal);
+			}
+
+			char bountyTag[64];
+			sprintf_s(bountyTag, "Bounty.%s.Value", (const char*)pResource->Name);
+			int bountyVal = 0;
+			if (exINI.ReadInteger(pSection, bountyTag, &bountyVal))
+			{
+				this->ResourceBounties[i] = std::max(0, bountyVal);
+			}
+
+			char friendlyTag[64];
+			sprintf_s(friendlyTag, "Bounty.%s.FriendlyValue", (const char*)pResource->Name);
+			int friendlyVal = 0;
+			if (exINI.ReadInteger(pSection, friendlyTag, &friendlyVal))
+			{
+				this->ResourceFriendlyBounties[i] = -std::abs(friendlyVal);
+			}
+
+			char soylentTag[64];
+			sprintf_s(soylentTag, "Soylent.%s", (const char*)pResource->Name);
+			int soylentVal = 0;
+			if (exINI.ReadInteger(pSection, soylentTag, &soylentVal))
+			{
+				this->ResourceSoylents[i] = std::max(0, soylentVal);
+			}
+		}
+
+		// Check ResourceCollector.<ResourceName>
+		char collectorTag[64];
+		sprintf_s(collectorTag, "ResourceCollector.%s", (const char*)pResource->Name);
+		bool isCollector = false;
+		if (exINI.ReadBool(pSection, collectorTag, &isCollector))
+		{
+			const int resIdx = static_cast<int>(i);
+			auto it = std::find(this->ResourceCollectors.begin(), this->ResourceCollectors.end(), resIdx);
+			if (isCollector && it == this->ResourceCollectors.end())
+			{
+				this->ResourceCollectors.push_back(resIdx);
+			}
+			else if (!isCollector && it != this->ResourceCollectors.end())
+			{
+				this->ResourceCollectors.erase(it);
+			}
+		}
+
+		// Check Production.<ResourceName>, Production.<ResourceName>.Delay, Production.<ResourceName>.Startup
+		char amountTag[64];
+		sprintf_s(amountTag, "Production.%s", (const char*)pResource->Name);
+		char delayTag[64];
+		sprintf_s(delayTag, "Production.%s.Delay", (const char*)pResource->Name);
+		char startupTag[64];
+		sprintf_s(startupTag, "Production.%s.Startup", (const char*)pResource->Name);
+
+		int amount = 0;
+		int delay = 0;
+		int startup = 0;
+
+		const bool hasAmount = exINI.ReadInteger(pSection, amountTag, &amount);
+		const bool hasDelay = exINI.ReadInteger(pSection, delayTag, &delay);
+		const bool hasStartup = exINI.ReadInteger(pSection, startupTag, &startup);
+
+		char displayOffsetTag[64];
+		sprintf_s(displayOffsetTag, "Production.%s.Display.Offset", (const char*)pResource->Name);
+		char displayColorTag[64];
+		sprintf_s(displayColorTag, "Production.%s.Display.Color", (const char*)pResource->Name);
+		char displayHousesTag[64];
+		sprintf_s(displayHousesTag, "Production.%s.Display.Houses", (const char*)pResource->Name);
+
+		Nullable<Point2D> displayOffset;
+		displayOffset.Read(exINI, pSection, displayOffsetTag);
+
+		Nullable<ColorStruct> displayColor;
+		displayColor.Read(exINI, pSection, displayColorTag);
+
+		Nullable<AffectedHouse> displayHouses;
+		displayHouses.Read(exINI, pSection, displayHousesTag);
+
+		const bool hasAnyProdTag = hasAmount || hasDelay || hasStartup || displayOffset.isset() || displayColor.isset() || displayHouses.isset();
+		if (hasAnyProdTag)
+		{
+			const int resIdx = static_cast<int>(i);
+			auto it = std::find_if(this->ResourceProductions.begin(), this->ResourceProductions.end(),
+				[resIdx](const ResourceProductionData& d) { return d.ResourceIndex == resIdx; });
+
+			if ((hasAmount && amount != 0 && hasDelay && delay > 0) || (hasStartup && startup != 0))
+			{
+				ResourceProductionData data {
+					resIdx,
+					amount,
+					delay,
+					startup,
+					displayOffset,
+					displayColor,
+					displayHouses
+				};
+
+				if (it != this->ResourceProductions.end())
+				{
+					if (!hasAmount) data.Amount = it->Amount;
+					if (!hasDelay) data.Delay = it->Delay;
+					if (!hasStartup) data.Startup = it->Startup;
+					if (!displayOffset.isset()) data.Display_Offset = it->Display_Offset;
+					if (!displayColor.isset()) data.Display_Color = it->Display_Color;
+					if (!displayHouses.isset()) data.Display_Houses = it->Display_Houses;
+					*it = data;
+				}
+				else
+				{
+					this->ResourceProductions.push_back(data);
+				}
+			}
+			else if (it != this->ResourceProductions.end())
+			{
+				if (hasAmount && amount == 0 && hasStartup && startup == 0)
+				{
+					this->ResourceProductions.erase(it);
+				}
+				else
+				{
+					if (hasAmount) it->Amount = amount;
+					if (hasDelay) it->Delay = delay;
+					if (hasStartup) it->Startup = startup;
+					if (displayOffset.isset()) it->Display_Offset = displayOffset;
+					if (displayColor.isset()) it->Display_Color = displayColor;
+					if (displayHouses.isset()) it->Display_Houses = displayHouses;
+				}
+			}
+		}
+	}
+
 	this->Ammo_AutoConvertMinimumAmount.Read(exINI, pSection, "Ammo.AutoConvertMinimumAmount");
 	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
 	this->Ammo_AutoConvertType.Read(exINI, pSection, "Ammo.AutoConvertType");
@@ -1785,6 +1939,12 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->VoiceEliteWeaponAttacks)
 
 		.Process(this->TeamMember_ConsideredAs)
+		.Process(this->ResourceCosts)
+		.Process(this->ResourceBounties)
+		.Process(this->ResourceFriendlyBounties)
+		.Process(this->ResourceSoylents)
+		.Process(this->ResourceProductions)
+		.Process(this->ResourceCollectors)
 
 		.Process(this->AttackFriendlies)
 

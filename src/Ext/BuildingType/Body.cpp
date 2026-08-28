@@ -307,7 +307,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AircraftDockingDir_DefaultToPoseDir.Read(exArtINI, pArtSection, "AircraftDockingDir.DefaultToPoseDir");
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
-
 	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
 
 	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);

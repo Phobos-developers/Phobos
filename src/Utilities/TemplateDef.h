@@ -1119,6 +1119,166 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ResourceDisplayCondition>(ResourceDisplayCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "always") == 0)
+			{
+				value = ResourceDisplayCondition::Always;
+				return true;
+			}
+			else if (_strcmpi(str, "greaterthanzero") == 0 || _strcmpi(str, "positive") == 0 || _strcmpi(str, ">0") == 0)
+			{
+				value = ResourceDisplayCondition::GreaterThanZero;
+				return true;
+			}
+			else if (_strcmpi(str, "hascollector") == 0 || _strcmpi(str, "collector") == 0)
+			{
+				value = ResourceDisplayCondition::HasCollector;
+				return true;
+			}
+			else if (_strcmpi(str, "never") == 0 || _strcmpi(str, "none") == 0 || _strcmpi(str, "hidden") == 0 || _strcmpi(str, "no") == 0 || _strcmpi(str, "false") == 0)
+			{
+				value = ResourceDisplayCondition::Never;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display condition can be Always, GreaterThanZero, HasCollector or Never/None/Hidden");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourceDisplayOrientation>(ResourceDisplayOrientation& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "vertical") == 0)
+			{
+				value = ResourceDisplayOrientation::Vertical;
+				return true;
+			}
+			else if (_strcmpi(str, "horizontal") == 0)
+			{
+				value = ResourceDisplayOrientation::Horizontal;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display orientation can be Vertical or Horizontal");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourcePowerDisplayMode>(ResourcePowerDisplayMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "netandtotal") == 0 || _strcmpi(str, "net/total") == 0 || _strcmpi(str, "surplus/total") == 0 || _strcmpi(str, "nettotal") == 0)
+			{
+				value = ResourcePowerDisplayMode::NetAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "net") == 0 || _strcmpi(str, "delta") == 0 || _strcmpi(str, "surplus") == 0 || _strcmpi(str, "remaining") == 0)
+			{
+				value = ResourcePowerDisplayMode::Net;
+				return true;
+			}
+			else if (_strcmpi(str, "drainandtotal") == 0 || _strcmpi(str, "drain/total") == 0 || _strcmpi(str, "used/total") == 0 || _strcmpi(str, "demand/total") == 0 || _strcmpi(str, "usedandtotal") == 0)
+			{
+				value = ResourcePowerDisplayMode::DrainAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "drain") == 0 || _strcmpi(str, "used") == 0 || _strcmpi(str, "demand") == 0 || _strcmpi(str, "consumption") == 0)
+			{
+				value = ResourcePowerDisplayMode::Drain;
+				return true;
+			}
+			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "output") == 0 || _strcmpi(str, "production") == 0)
+			{
+				value = ResourcePowerDisplayMode::Total;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Power display mode can be NetAndTotal, Net, DrainAndTotal, Drain, or Total");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourceHarvesterDisplayMode>(ResourceHarvesterDisplayMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "activeandtotal") == 0 || _strcmpi(str, "active/total") == 0 || _strcmpi(str, "all") == 0 || _strcmpi(str, "both") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::ActiveAndTotal;
+				return true;
+			}
+			else if (_strcmpi(str, "active") == 0 || _strcmpi(str, "activeonly") == 0 || _strcmpi(str, "working") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::Active;
+				return true;
+			}
+			else if (_strcmpi(str, "total") == 0 || _strcmpi(str, "totalonly") == 0 || _strcmpi(str, "max") == 0)
+			{
+				value = ResourceHarvesterDisplayMode::Total;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Harvester display mode can be ActiveAndTotal, Active, or Total");
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ResourceDisplayAnchor>(ResourceDisplayAnchor& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "topright") == 0)
+			{
+				value = ResourceDisplayAnchor::TopRight;
+				return true;
+			}
+			else if (_strcmpi(str, "topleft") == 0)
+			{
+				value = ResourceDisplayAnchor::TopLeft;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomright") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomRight;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomleft") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomLeft;
+				return true;
+			}
+			else if (_strcmpi(str, "sidebar") == 0)
+			{
+				value = ResourceDisplayAnchor::Sidebar;
+				return true;
+			}
+			else if (_strcmpi(str, "topcenter") == 0 || _strcmpi(str, "topcentre") == 0)
+			{
+				value = ResourceDisplayAnchor::TopCenter;
+				return true;
+			}
+			else if (_strcmpi(str, "bottomcenter") == 0 || _strcmpi(str, "bottomcentre") == 0)
+			{
+				value = ResourceDisplayAnchor::BottomCenter;
+				return true;
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Resource display anchor can be TopRight, TopLeft, TopCenter, BottomRight, BottomLeft, BottomCenter or Sidebar");
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1743,12 +1903,21 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	template <typename Lookuper, typename T>
 	void parse_indexes(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
+		char* comment = strchr(parser.value(), ';');
+		if (comment)
+			*comment = 0;
+
 		for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 		{
 			std::string_view&& cur { part.begin(),part.end() };
-			// you forgot to trim, suckers
-			auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
-			*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+			if (cur.empty())
+				continue;
+			auto first = cur.find_first_not_of(" \t\r");
+			if (first == std::string_view::npos)
+				continue;
+			auto last = cur.find_last_not_of(" \t\r");
+			auto pCur = cur.data() + first;
+			*const_cast<char*>(cur.data() + last + 1) = 0;
 			int idx = Lookuper::FindIndex(pCur);
 			if (idx != -1)
 				vector.push_back(idx);

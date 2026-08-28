@@ -28,6 +28,10 @@ enum class PhobosTriggerAction : unsigned int
 	SetTeamDelay = 610,
 	SetNextScanario = 611,
 
+	SetCustomResource = 620,
+	AddCustomResource = 621,
+	SubtractCustomResource = 622,
+
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
 	DeleteBanner = 802,
@@ -95,6 +99,7 @@ public:
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);
 	ACTION_FUNC(DeleteBanner);
+	ACTION_FUNC(ModifyCustomResource);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

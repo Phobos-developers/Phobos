@@ -3,6 +3,7 @@
 #include <Phobos.CRT.h>
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
+#include <New/Type/ResourceTypeClass.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 
@@ -21,7 +22,7 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 	item.PixelOffset = pixelOffset;
 	item.CreationFrame = Unsorted::CurrentFrame;
 	item.Color = Drawing::RGB_To_Int(color);
-	PhobosCRT::wstrCopy(item.Text, text, 0x20);
+	PhobosCRT::wstrCopy(item.Text, text, 0x40);
 	Data.emplace_back(item);
 }
 
@@ -43,18 +44,72 @@ void FlyingStrings::AddMoneyString(int amount, ObjectClass* pSource, HouseClass*
 	swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
 
 	int width = 0, height = 0;
-	BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
-	pixelOffset.X -= (width / 2);
+	if (BitFont::Instance)
+	{
+		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+		pixelOffset.X -= (width / 2);
+	}
 
 	FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
 }
 
-void FlyingStrings::UpdateAll()
+void FlyingStrings::AddResourceString(const ResourceTypeClass* pResource, int amount, ObjectClass* pSource, HouseClass* pOwner,
+	AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset, const ColorStruct* pColorOverride)
 {
-	if (Data.empty())
+	if (!pResource || amount == 0 || MapClass::Instance.IsLocationShrouded(coords))
 		return;
 
-	for (int i = Data.size() - 1; i >= 0; --i)
+	if (displayToHouses != AffectedHouse::All && !EnumFunctions::CanTargetHouse(displayToHouses, pOwner, HouseClass::CurrentPlayer))
+		return;
+
+	if (pSource && pSource->VisualCharacter(false, nullptr) == VisualType::Hidden)
+		return;
+
+	const bool isPositive = amount > 0;
+	ColorStruct color;
+	if (pColorOverride && *pColorOverride != ColorStruct { 0, 0, 0 })
+		color = *pColorOverride;
+	else
+	{
+		const ColorStruct resColor = pResource->Display_Color.Get();
+		color = (resColor != ColorStruct { 0, 0, 0 }) ? resColor : (isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 });
+	}
+
+	wchar_t resStr[0x20];
+	const wchar_t* label = pResource->Display_Label.Get();
+	const bool useSpace = pResource->Display_Label_UseSpace.Get();
+	if (label && *label)
+	{
+		if (pResource->Display_Label_InvertPosition.Get())
+		{
+			swprintf_s(resStr, useSpace ? L"%ls%d %ls" : L"%ls%d%ls", isPositive ? L"+" : L"-", std::abs(amount), label);
+		}
+		else
+		{
+			swprintf_s(resStr, useSpace ? L"%ls%ls %d" : L"%ls%ls%d", isPositive ? L"+" : L"-", label, std::abs(amount));
+		}
+	}
+	else
+	{
+		swprintf_s(resStr, L"%ls%d", isPositive ? L"+" : L"-", std::abs(amount));
+	}
+
+	int width = 0, height = 0;
+	if (BitFont::Instance)
+	{
+		BitFont::Instance->GetTextDimension(resStr, &width, &height, 120);
+		pixelOffset.X -= (width / 2);
+	}
+
+	FlyingStrings::Add(resStr, coords, color, pixelOffset);
+}
+
+void FlyingStrings::UpdateAll()
+{
+	if (Data.empty() || !TacticalClass::Instance || !DSurface::Temp)
+		return;
+
+	for (int i = static_cast<int>(Data.size()) - 1; i >= 0; --i)
 	{
 		auto& dataItem = Data[i];
 

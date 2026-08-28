@@ -460,3 +460,46 @@ enum class AdditionalAbility : unsigned char
 };
 
 constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);
+
+enum class ResourceDisplayCondition : unsigned char
+{
+	Always = 0,
+	GreaterThanZero = 1,
+	HasCollector = 2,
+	Never = 3
+};
+
+enum class ResourceDisplayOrientation : unsigned char
+{
+	Vertical = 0,
+	Horizontal = 1
+};
+
+enum class ResourcePowerDisplayMode : unsigned char
+{
+	NetAndTotal = 0,
+	Net = 1,
+	DrainAndTotal = 2,
+	Drain = 3,
+	Total = 4
+};
+
+enum class ResourceHarvesterDisplayMode : unsigned char
+{
+	ActiveAndTotal = 0,
+	Active = 1,
+	Total = 2
+};
+
+
+enum class ResourceDisplayAnchor : unsigned char
+{
+	TopRight = 0,
+	TopLeft = 1,
+	BottomRight = 2,
+	BottomLeft = 3,
+	Sidebar = 4,
+	TopCenter = 5,
+	BottomCenter = 6
+};
+

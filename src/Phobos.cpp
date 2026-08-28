@@ -12,6 +12,7 @@
 #include "Utilities/Parser.h"
 
 #include <Ext/Rules/Body.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #ifdef TESTING_BUILD
 bool HideWarning = false;
@@ -339,6 +340,8 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		coordY = rect.Height;
 	}
 #endif // !RELEASE
+
+	ResourceTypeClass::DrawResourceHUD(DSurface::Composite, false);
 
 	if (!Phobos::Config::ShowGameTime || !RulesExt::Global()->ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
 		return 0;

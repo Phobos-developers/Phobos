@@ -87,6 +87,10 @@ public:
 	Powerup DropCrateType;
 
 	bool PreventCrewEscape;
+	std::vector<ResourceProductionTimer> ResourceProductionTimers;
+	bool ResourceStartupGranted;
+	bool ResourceInitialized;
+	bool CollectorRegistered;
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
@@ -137,6 +141,10 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, ResourceProductionTimers {}
+		, ResourceStartupGranted { false }
+		, ResourceInitialized { false }
+		, CollectorRegistered { false }
 	{ }
 
 	void OnEarlyUpdate();
@@ -156,6 +164,10 @@ public:
 	// else. Overridden by FootExt, which owns the tunnel state.
 	virtual bool IsInTunnelState() const { return false; }
 
+	void UpdateResourceProductions();
+	void InitializeResourceProductions();
+	void ApplyCollectorRegistration(bool registering, HouseClass* pHouse = nullptr);
+	static int GetResourceRefund(TechnoClass* pTechno, int resourceIdx, bool isGrinder = false);
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
 	void EatPassengers();
@@ -231,7 +243,7 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
-	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
+	static void ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller = nullptr, HouseClass* pHouseKiller = nullptr);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static bool HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);

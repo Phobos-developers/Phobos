@@ -5,6 +5,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
+#include <Misc/FlyingStrings.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #include <unordered_set>
 
@@ -36,6 +38,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
+
+	pTypeExt->ApplyResourceAmounts(pSW);
 
 	pTypeExt->ApplyActivatedMessage(pSW);
 
@@ -486,6 +490,46 @@ void SWTypeExt::ApplyLinkedSW(SuperClass* pSW)
 
 		MessageListClass::Instance.PrintMessage(this->Message_LinkedSWAcquired.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
+}
+
+void SWTypeExt::ApplyResourceAmounts(SuperClass* pSW)
+{
+	if (!pSW || !pSW->Owner)
+		return;
+
+	if (const auto pOwnerExt = HouseExt::TryFetch(pSW->Owner))
+	{
+		for (size_t i = 0; i < this->SW_ResourceAmounts.size(); ++i)
+		{
+			const int amount = this->SW_ResourceAmounts[i];
+			if (amount != 0)
+			{
+				pOwnerExt->UpdateResourceAmount(static_cast<int>(i), amount);
+			}
+		}
+	}
+}
+
+bool SWTypeExt::AreResourcesSufficient(HouseClass* pHouse) const
+{
+	if (!pHouse)
+		return false;
+
+	const auto pOwnerExt = HouseExt::TryFetch(pHouse);
+	if (!pOwnerExt)
+		return false;
+
+	for (size_t i = 0; i < this->SW_ResourceAmounts.size(); ++i)
+	{
+		const int amount = this->SW_ResourceAmounts[i];
+		if (amount < 0) // Negative amount = required cost
+		{
+			if (pOwnerExt->GetResourceAmount(static_cast<int>(i)) < std::abs(amount))
+				return false;
+		}
+	}
+
+	return true;
 }
 
 void SWTypeExt::ApplyActivatedMessage(SuperClass* pSW) const

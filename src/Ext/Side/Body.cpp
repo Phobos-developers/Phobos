@@ -45,6 +45,11 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_PowerDelta_ColorRed.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
 	this->Sidebar_PowerDelta_ColorGrey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
+	this->Sidebar_ResourceTypes_Offset.Read(exINI, pSection, "Sidebar.ResourceTypes.Offset");
+	this->Sidebar_ResourceTypes_Color.Read(exINI, pSection, "Sidebar.ResourceTypes.Color");
+	this->Sidebar_ResourceTypes_Align.Read(exINI, pSection, "Sidebar.ResourceTypes.Align");
+	this->Sidebar_ResourceTypes_Types.Read(exINI, pSection, "Sidebar.ResourceTypes.Types");
+
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
@@ -55,9 +60,31 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
 	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
+
+	this->Display_ResourceTypes_Orientation.Read(exINI, pSection, "Display.ResourceTypes.Orientation");
+	this->Display_ResourceTypes_Anchor.Read(exINI, pSection, "Display.ResourceTypes.Anchor");
+	this->Display_ResourceTypes_BaseOffset.Read(exINI, pSection, "Display.ResourceTypes.BaseOffset");
+	this->Display_ResourceTypes_Spacing.Read(exINI, pSection, "Display.ResourceTypes.Spacing");
+	this->Display_ResourceTypes_Align.Read(exINI, pSection, "Display.ResourceTypes.Align");
+
+	this->Display_ResourceTypes_Background_PCX.Read(pINI, pSection, "Display.ResourceTypes.BackgroundPCX");
+	this->Display_ResourceTypes_Background_PCX.Read(pINI, pSection, "Display.ResourceTypes.Background.PCX");
+
+	this->Display_ResourceTypes_Background_SHP.Read(exINI, pSection, "Display.ResourceTypes.Background");
+	this->Display_ResourceTypes_Background_SHP.Read(exINI, pSection, "Display.ResourceTypes.Background.SHP");
+	this->Display_ResourceTypes_Background_SHP.Read(exINI, pSection, "Display.ResourceTypes.Background.Shape");
+
+	this->Display_ResourceTypes_Background_Offset.Read(exINI, pSection, "Display.ResourceTypes.Background.Offset");
+	this->Display_ResourceTypes_Background_Offset.Read(exINI, pSection, "Display.ResourceTypes.BackgroundOffset");
+	this->Display_ResourceTypes_Background_Offset.Read(exINI, pSection, "Display.ResourceTypes.BackgroundPCX.Offset");
+	this->Display_ResourceTypes_Background_Offset.Read(exINI, pSection, "Display.ResourceTypes.BackgroundPCXOffset");
+	this->Display_ResourceTypes_Background_Palette.LoadFromINI(pINI, pSection, "Display.ResourceTypes.Background.Palette");
+	this->Display_ResourceTypes_Background_Palette.LoadFromINI(pINI, pSection, "Display.ResourceTypes.Background.SHP.Palette");
+
+	this->Display_ResourceTypes_Background_Horizontal_ResourcesInside.Read(exINI, pSection, "Display.ResourceTypes.Background.Horizontal.ResourcesInside");
 }
 
-// =============================
+// =============
 // load / save
 
 template <typename T>
@@ -81,6 +108,10 @@ void SideExt::Serialize(T& Stm)
 		.Process(this->Sidebar_PowerDelta_ColorRed)
 		.Process(this->Sidebar_PowerDelta_ColorGrey)
 		.Process(this->Sidebar_PowerDelta_Align)
+		.Process(this->Sidebar_ResourceTypes_Offset)
+		.Process(this->Sidebar_ResourceTypes_Color)
+		.Process(this->Sidebar_ResourceTypes_Align)
+		.Process(this->Sidebar_ResourceTypes_Types)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
@@ -93,6 +124,16 @@ void SideExt::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_TopPCX)
 		.Process(this->SuperWeaponSidebar_CenterPCX)
 		.Process(this->SuperWeaponSidebar_BottomPCX)
+		.Process(this->Display_ResourceTypes_Orientation)
+		.Process(this->Display_ResourceTypes_Anchor)
+		.Process(this->Display_ResourceTypes_BaseOffset)
+		.Process(this->Display_ResourceTypes_Spacing)
+		.Process(this->Display_ResourceTypes_Align)
+		.Process(this->Display_ResourceTypes_Background_PCX)
+		.Process(this->Display_ResourceTypes_Background_SHP)
+		.Process(this->Display_ResourceTypes_Background_Palette)
+		.Process(this->Display_ResourceTypes_Background_Offset)
+		.Process(this->Display_ResourceTypes_Background_Horizontal_ResourcesInside)
 		;
 }
 

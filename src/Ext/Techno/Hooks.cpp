@@ -660,6 +660,7 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 // AFAIK, only used by the teleport of the Chronoshift SW
 DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
 {
+	GET(HouseClass*, pHouse, EDI);
 	GET(TechnoClass*, pVictim, ESI);
 
 	// Drop crate if is dead
@@ -670,6 +671,8 @@ DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
 		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
 		TechnoExt::TryToCreateCrate(pVictim->Location, selectedPowerup);
 	}
+
+	TechnoExt::ObjectKilledBy(pVictim, nullptr, pHouse);
 
 	return 0;
 }

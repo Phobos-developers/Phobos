@@ -8,6 +8,8 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
+#include <New/Type/ResourceTypeClass.h>
+#include <Misc/FlyingStrings.h>
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
@@ -15,6 +17,8 @@
 
 TechnoExt::~TechnoExt()
 {
+	this->ApplyCollectorRegistration(false);
+
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	auto const pThis = this->OwnerObject();
@@ -1218,7 +1222,222 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
 		.Process(this->PreventCrewEscape)
+		.Process(this->ResourceProductionTimers)
+		.Process(this->ResourceStartupGranted)
+		.Process(this->ResourceInitialized)
+		.Process(this->CollectorRegistered)
 		;
+}
+
+void TechnoExt::InitializeResourceProductions()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+	if (!pThis || !pTypeExt)
+		return;
+
+	this->ResourceInitialized = true;
+	this->ApplyCollectorRegistration(true);
+
+	this->ResourceProductionTimers.clear();
+	int startupStackOffsetY = 0;
+	for (const auto& prod : pTypeExt->ResourceProductions)
+	{
+		if (prod.Delay > 0 && prod.Amount != 0)
+		{
+			this->ResourceProductionTimers.push_back(ResourceProductionTimer {
+				prod.ResourceIndex,
+				prod.Delay,
+				prod.Amount,
+				prod.Delay
+			});
+		}
+
+		if (!this->ResourceStartupGranted && prod.Startup != 0)
+		{
+			if (const auto pHouseExt = HouseExt::TryFetch(pThis->Owner))
+			{
+				if (pHouseExt->IsResourceEnabled(prod.ResourceIndex))
+				{
+					pHouseExt->UpdateResourceAmount(prod.ResourceIndex, prod.Startup);
+					if (prod.ResourceIndex < static_cast<int>(ResourceTypeClass::Array.size()))
+					{
+						if (const auto pResource = ResourceTypeClass::Array[prod.ResourceIndex].get())
+						{
+							Point2D offset = prod.Display_Offset.Get(Point2D::Empty);
+							offset.Y += startupStackOffsetY;
+							const ColorStruct* pColor = prod.Display_Color.isset() ? &prod.Display_Color.Get() : nullptr;
+							const AffectedHouse houses = prod.Display_Houses.Get(AffectedHouse::All);
+
+							FlyingStrings::AddResourceString(
+								pResource,
+								prod.Startup,
+								pThis,
+								pThis->Owner,
+								houses,
+								pThis->GetCoords(),
+								offset,
+								pColor
+							);
+							startupStackOffsetY -= 14;
+						}
+					}
+				}
+			}
+		}
+	}
+	this->ResourceStartupGranted = true;
+}
+
+void TechnoExt::UpdateResourceProductions()
+{
+	const auto pThis = this->OwnerObject();
+	if (!pThis || !pThis->Owner || pThis->InLimbo || pThis->IsBeingWarpedOut() || !pThis->IsAlive)
+		return;
+
+	if (pThis->TemporalTargetingMe || pThis->IsIronCurtained() || pThis->Deactivated || pThis->IsUnderEMP())
+		return;
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		auto const pBuilding = static_cast<BuildingClass*>(pThis);
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
+			return;
+	}
+
+	const auto pTypeExt = this->TypeExtData;
+	if (!pTypeExt)
+		return;
+
+	if (this->ResourceProductionTimers.empty() && !pTypeExt->ResourceProductions.empty())
+	{
+		this->InitializeResourceProductions();
+	}
+
+	const auto pHouseExt = HouseExt::TryFetch(pThis->Owner);
+	if (!pHouseExt)
+		return;
+
+	int periodicStackOffsetY = 0;
+	for (auto& entry : this->ResourceProductionTimers)
+	{
+		if (entry.Delay <= 0 || entry.Amount == 0)
+			continue;
+
+		if (!pHouseExt->IsResourceEnabled(entry.ResourceIndex))
+			continue;
+
+		--entry.Timer;
+		if (entry.Timer <= 0)
+		{
+			entry.Timer = entry.Delay;
+			pHouseExt->UpdateResourceAmount(entry.ResourceIndex, entry.Amount);
+			if (entry.ResourceIndex < static_cast<int>(ResourceTypeClass::Array.size()))
+			{
+				if (const auto pResource = ResourceTypeClass::Array[entry.ResourceIndex].get())
+				{
+					Point2D offset = Point2D::Empty;
+					const ColorStruct* pColor = nullptr;
+					AffectedHouse houses = AffectedHouse::All;
+
+					for (const auto& prod : pTypeExt->ResourceProductions)
+					{
+						if (prod.ResourceIndex == entry.ResourceIndex)
+						{
+							offset = prod.Display_Offset.Get(Point2D::Empty);
+							if (prod.Display_Color.isset())
+								pColor = &prod.Display_Color.Get();
+							houses = prod.Display_Houses.Get(AffectedHouse::All);
+							break;
+						}
+					}
+
+					offset.Y += periodicStackOffsetY;
+					FlyingStrings::AddResourceString(
+						pResource,
+						entry.Amount,
+						pThis,
+						pThis->Owner,
+						houses,
+						pThis->GetCoords(),
+						offset,
+						pColor
+					);
+					periodicStackOffsetY -= 14;
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::ApplyCollectorRegistration(bool registering, HouseClass* pHouse)
+{
+	const auto pThis = this->OwnerObject();
+	HouseClass* const pTargetHouse = pHouse ? pHouse : (pThis ? pThis->Owner : nullptr);
+	if (!pTargetHouse)
+		return;
+
+	const auto pTypeExt = this->TypeExtData;
+	if (!pTypeExt || pTypeExt->ResourceCollectors.empty())
+		return;
+
+	if (!pHouse && registering == this->CollectorRegistered)
+		return;
+
+	const auto pHouseExt = HouseExt::TryFetch(pTargetHouse);
+	if (!pHouseExt)
+		return;
+
+	for (int resIdx : pTypeExt->ResourceCollectors)
+	{
+		if (resIdx >= 0)
+		{
+			if (resIdx >= static_cast<int>(pHouseExt->ResourceCollectorCounts.size()))
+				pHouseExt->ResourceCollectorCounts.resize(resIdx + 1, 0);
+
+			if (registering)
+				pHouseExt->ResourceCollectorCounts[resIdx]++;
+			else
+				pHouseExt->ResourceCollectorCounts[resIdx] = std::max(0, pHouseExt->ResourceCollectorCounts[resIdx] - 1);
+		}
+	}
+
+	if (!pHouse)
+		this->CollectorRegistered = registering;
+}
+
+int TechnoExt::GetResourceRefund(TechnoClass* pTechno, int resourceIdx, bool isGrinder)
+{
+	if (!pTechno || resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
+		return 0;
+
+	const auto pType = pTechno->GetTechnoType();
+	if (!pType)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	if (!pTypeExt)
+		return 0;
+
+	const int resourceCost = (resourceIdx < static_cast<int>(pTypeExt->ResourceCosts.size())) ? pTypeExt->ResourceCosts[resourceIdx] : 0;
+	const int specificSoylent = (isGrinder && resourceIdx < static_cast<int>(pTypeExt->ResourceSoylents.size())) ? pTypeExt->ResourceSoylents[resourceIdx] : -1;
+
+	double baseRefund = 0.0;
+	if (isGrinder && specificSoylent >= 0)
+	{
+		baseRefund = static_cast<double>(specificSoylent);
+	}
+	else if (isGrinder && pType->Soylent >= 0 && pType->Cost > 0)
+	{
+		baseRefund = static_cast<double>(resourceCost) * (static_cast<double>(pType->Soylent) / static_cast<double>(pType->Cost));
+	}
+	else
+	{
+		baseRefund = static_cast<double>(resourceCost) * RulesClass::Instance->RefundPercent;
+	}
+
+	const double healthRatio = pTechno->GetHealthPercentage();
+	return static_cast<int>(std::round(baseRefund * healthRatio));
 }
 
 void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)

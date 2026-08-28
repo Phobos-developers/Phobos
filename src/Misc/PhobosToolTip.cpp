@@ -8,6 +8,7 @@
 #include <Ext/Surface/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #include <sstream>
 #include <iomanip>
@@ -132,10 +133,50 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 	const int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
-	oss << pType->UIName << L"\n"
-		<< (cost < 0 ? L"+" : L"")
-		<< Phobos::UI::CostLabel << std::abs(cost) << L" "
-		<< Phobos::UI::TimeLabel
+	oss << pType->UIName << L"\n";
+
+	bool hasPreceding = false;
+
+	if (cost != 0)
+	{
+		oss << Phobos::UI::CostLabel << std::abs(cost);
+		hasPreceding = true;
+	}
+
+	for (size_t i = 0; i < pData->ResourceCosts.size(); ++i)
+	{
+		const int resCost = pData->ResourceCosts[i];
+		if (resCost > 0 && i < ResourceTypeClass::Array.size())
+		{
+			const auto pResource = ResourceTypeClass::Array[i].get();
+			if (pResource)
+			{
+				if (hasPreceding)
+					oss << L" ";
+
+				const wchar_t* label = pResource->Display_Label.Get();
+				const bool useSpace = pResource->Display_Label_UseSpace.Get();
+				if (label && *label)
+				{
+					if (pResource->Display_Label_InvertPosition.Get())
+						oss << resCost << (useSpace ? L" " : L"") << label;
+					else
+						oss << label << (useSpace ? L" " : L"") << resCost;
+				}
+				else
+				{
+					oss << resCost;
+				}
+
+				hasPreceding = true;
+			}
+		}
+	}
+
+	if (hasPreceding)
+		oss << L" ";
+
+	oss << Phobos::UI::TimeLabel
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 		<< std::setw(2) << std::setfill(L'0') << nSec;
 
@@ -161,32 +202,76 @@ void PhobosToolTip::HelpText_Super(int swidx)
 
 	std::wostringstream oss;
 	oss << pType->UIName;
-	bool showSth = false;
+	bool lineStarted = false;
 
-	if (const int nCost = std::abs(pData->Money_Amount))
+	if (const int nCost = pData->Money_Amount)
 	{
 		oss << L"\n";
+		lineStarted = true;
 
-		if (pData->Money_Amount > 0)
-			oss << '+';
+		// Negative money amount means granting money upon launch (+)
+		if (nCost < 0)
+			oss << L"+";
 
-		oss << Phobos::UI::CostLabel << nCost;
-		showSth = true;
+		oss << Phobos::UI::CostLabel << std::abs(nCost);
+	}
+
+	for (size_t i = 0; i < pData->SW_ResourceAmounts.size(); ++i)
+	{
+		const int nAmount = pData->SW_ResourceAmounts[i];
+		if (nAmount != 0)
+		{
+			if (!lineStarted)
+			{
+				oss << L"\n";
+				lineStarted = true;
+			}
+			else
+			{
+				oss << L" ";
+			}
+
+			const auto pResource = (i < ResourceTypeClass::Array.size()) ? ResourceTypeClass::Array[i].get() : nullptr;
+			const wchar_t* label = pResource ? pResource->Display_Label.Get() : L"";
+			const bool useSpace = pResource ? pResource->Display_Label_UseSpace.Get() : true;
+
+			// Negative resource amount means granting resource upon launch (+)
+			const bool isGrant = (nAmount < 0);
+
+			if (pResource && pResource->Display_Label_InvertPosition.Get())
+			{
+				if (isGrant)
+					oss << L"+";
+				oss << std::abs(nAmount) << (useSpace ? L" " : L"") << label;
+			}
+			else
+			{
+				if (isGrant)
+					oss << L"+";
+				oss << label << (useSpace ? L" " : L"") << std::abs(nAmount);
+			}
+		}
 	}
 
 	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{
-		if (!showSth)
+		if (!lineStarted)
+		{
 			oss << L"\n";
+			lineStarted = true;
+		}
+		else
+		{
+			oss << L" ";
+		}
 
 		const int nSec = rechargeTime % 60;
 		const int nMin = rechargeTime / 60;
 
-		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
+		oss << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
-		showSth = true;
 	}
 
 	auto const& sw_ext = HouseExt::Fetch(HouseClass::CurrentPlayer)->SuperExts[swidx];
@@ -194,12 +279,19 @@ void PhobosToolTip::HelpText_Super(int swidx)
 	const int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
 	if (sw_shots > 0)
 	{
-		if (!showSth)
+		if (!lineStarted)
+		{
 			oss << L"\n";
+			lineStarted = true;
+		}
+		else
+		{
+			oss << L" ";
+		}
 
 		wchar_t buffer[64];
 		swprintf_s(buffer, Phobos::UI::SWShotsFormat, remain_shots, sw_shots);
-		oss << (showSth ? L" " : L"") << buffer;
+		oss << buffer;
 	}
 
 	if (auto const pDesc = this->GetUIDescription(pData))

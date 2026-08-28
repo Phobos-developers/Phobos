@@ -8,6 +8,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/ResourceTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
@@ -32,6 +33,7 @@ public:
 	{
 		return static_cast<TechnoTypeClass*>(this->GetAttachedObject());
 	}
+
 
 	Valueable<bool> HealthBar_Hide;
 	Valueable<bool> HealthBar_HidePips;
@@ -456,6 +458,13 @@ public:
 	Nullable<bool> Unsellable;
 	Nullable<bool> KeepAlive;
 
+	std::vector<int> ResourceCosts;
+	std::vector<int> ResourceBounties;
+	std::vector<int> ResourceFriendlyBounties;
+	std::vector<int> ResourceSoylents;
+	std::vector<ResourceProductionData> ResourceProductions;
+	std::vector<int> ResourceCollectors;
+
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -861,6 +870,12 @@ public:
 		// Ares 3.0
 		, Unsellable {}
 		, KeepAlive {}
+		, ResourceCosts {}
+		, ResourceBounties {}
+		, ResourceFriendlyBounties {}
+		, ResourceSoylents {}
+		, ResourceProductions {}
+		, ResourceCollectors {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

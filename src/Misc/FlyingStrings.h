@@ -9,6 +9,8 @@ By AlexB and Joshy
 #include <HouseClass.h>
 #include <Utilities/Enum.h>
 
+class ResourceTypeClass;
+
 class FlyingStrings
 {
 private:
@@ -18,7 +20,7 @@ private:
 		CoordStruct Location;
 		Point2D PixelOffset;
 		int CreationFrame;
-		wchar_t Text[0x20];
+		wchar_t Text[0x40];
 		COLORREF Color;
 
 	};
@@ -31,5 +33,6 @@ private:
 public:
 	static void Add(const wchar_t* text, const CoordStruct& coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
 	static void AddMoneyString(int amount, ObjectClass* pSource, HouseClass* pOwner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset = Point2D::Empty);
+	static void AddResourceString(const ResourceTypeClass* pResource, int amount, ObjectClass* pSource, HouseClass* pOwner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset = Point2D::Empty, const ColorStruct* pColorOverride = nullptr);
 	static void UpdateAll();
 };

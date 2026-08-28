@@ -1,5 +1,15 @@
+#include "Body.h"
+
+#include <AirstrikeClass.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/InfantryType/Body.h>
+#include <Misc/FlyingStrings.h>
+#include <New/Type/ResourceTypeClass.h>
 
 // Unsorted methods
 
@@ -15,11 +25,18 @@ void TechnoExt::InitializeLaserTrails()
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
 }
 
-void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
+void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, HouseClass* pHouseKiller)
 {
-	auto const pKillerType = pKiller->GetTechnoType();
-	auto const pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner)
-		? pKiller->SpawnOwner : pKiller;
+	TechnoClass* pObjectKiller = nullptr;
+
+	if (pKiller)
+	{
+		pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+			pKiller->SpawnOwner : pKiller;
+
+		if (!pObjectKiller)
+			return;
+	}
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
@@ -27,6 +44,35 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 		{
 			auto const pKillerTechnoData = FootExt::Fetch(pFootKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
+		}
+	}
+
+	HouseClass* pHouse = pKiller ? pKiller->Owner : pHouseKiller;
+
+	if (pHouse && pHouse != pVictim->Owner)
+	{
+		if (auto pHouseExt = HouseExt::TryFetch(pHouse))
+		{
+			const size_t resourceCount = ResourceTypeClass::Array.size();
+			for (size_t i = 0; i < resourceCount; ++i)
+			{
+				const int bounty = pHouseExt->CalculateResourceBounty(static_cast<int>(i), pVictim);
+				if (bounty != 0)
+				{
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), bounty);
+					if (const auto pResource = ResourceTypeClass::Array[i].get())
+					{
+						FlyingStrings::AddResourceString(
+							pResource,
+							bounty,
+							pVictim,
+							pHouse,
+							AffectedHouse::All,
+							pVictim->GetRenderCoords()
+						);
+					}
+				}
+			}
 		}
 	}
 }

@@ -5,10 +5,30 @@ DEFINE_PATCH(0x5F3E70, 0x83, 0xEC, 0x10, 0x55, 0x56) // Disbale Ares::ObjectClas
 
 static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 {
-	if (!pSource || !pSource->IsAlive)
+	if (!pSource || !*(void**)pSource || pSource->UniqueID <= 0 || !pSource->IsAlive)
 		return;
 
-	const auto pSourceType = pSource->GetType();
+	ObjectTypeClass* pSourceType = nullptr;
+	switch (pSource->WhatAmI())
+	{
+	case AbstractType::Building:
+		pSourceType = static_cast<BuildingClass*>(pSource)->Type;
+		break;
+	case AbstractType::Unit:
+		pSourceType = static_cast<UnitClass*>(pSource)->Type;
+		break;
+	case AbstractType::Infantry:
+		pSourceType = static_cast<InfantryClass*>(pSource)->Type;
+		break;
+	case AbstractType::Aircraft:
+		pSourceType = static_cast<AircraftClass*>(pSource)->Type;
+		break;
+	case AbstractType::Anim:
+		pSourceType = static_cast<AnimClass*>(pSource)->Type;
+		break;
+	default:
+		return;
+	}
 
 	if (!pSourceType)
 		return;
