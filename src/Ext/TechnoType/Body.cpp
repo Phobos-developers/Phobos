@@ -1156,8 +1156,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, pSection, "FallingDownDamage.AllowEMP");
 
-	this->DetectDisguise_Percent.Read(exINI, pSection, "DetectDisguise.Percent");
-
 	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
 
 	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
