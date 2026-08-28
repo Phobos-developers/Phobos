@@ -774,6 +774,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
 
 #### Phobos fixes:
+- Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
@@ -854,6 +855,7 @@ HideShakeEffects=false           ; boolean
 #### TBD
 
 ##### Phobos fixes:
+- Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
