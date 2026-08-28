@@ -99,12 +99,8 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		return false;
 
 	// Prerequisite.RequiredTheaters check
-	if (pItemExt->Prerequisite_RequiredTheaters.size() > 0)
-	{
-		int currentTheaterIndex = (int)ScenarioClass::Instance->Theater;
-		if (pItemExt->Prerequisite_RequiredTheaters.IndexOf(currentTheaterIndex) < 0)
-			return false;
-	}
+	if (!(pItemExt->PrerequisiteTheaters & (1u << static_cast<int>(ScenarioClass::Instance->Theater))))
+		return false;
 
 	// TechLevel check
 	if (pThis->TechLevel < pItem->TechLevel)

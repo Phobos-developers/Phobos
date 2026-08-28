@@ -1284,18 +1284,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
-	// Prerequisite.RequiredTheaters contains a list of theader names
+	// Prerequisite.RequiredTheaters contains a list of theater names
 	if (pINI->ReadString(pSection, "Prerequisite.RequiredTheaters", "", Phobos::readBuffer) > 0)
 	{
 		char* context = nullptr;
-		this->Prerequisite_RequiredTheaters.clear();
+		this->PrerequisiteTheaters = 0;
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			int index = Theater::FindIndex(cur);
 
 			if (index != -1)
-				this->Prerequisite_RequiredTheaters.push_back(index);
+				this->PrerequisiteTheaters |= (1u << index);
+			else
+				Debug::INIParseFailed(pSection, "Prerequisite.RequiredTheaters", cur);
 		}
 	}
 
@@ -1624,7 +1626,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->Explodes_DuringBuildup)
-		.Process(this->Prerequisite_RequiredTheaters)
+		.Process(this->PrerequisiteTheaters)
 		.Process(this->Prerequisite)
 		.Process(this->Prerequisite_Negative)
 		.Process(this->Prerequisite_Lists)

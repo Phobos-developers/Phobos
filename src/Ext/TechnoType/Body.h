@@ -444,7 +444,7 @@ public:
 		std::vector<std::string> Secret_ForbiddenHouses;
 
 		// Ares 0.1
-		ValueableVector<int> Prerequisite_RequiredTheaters;
+		DWORD PrerequisiteTheaters;
 		ValueableVector<int> Prerequisite;
 		ValueableVector<int> Prerequisite_Negative;
 		Valueable<int> Prerequisite_Lists;
@@ -858,6 +858,7 @@ public:
 			, VoiceWeaponAttacks {}
 			, VoiceEliteWeaponAttacks {}
 
+			, PrerequisiteTheaters { 0xFFFFFFFF }
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
