@@ -432,6 +432,8 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
+	Nullable<bool> ExitThroughRoof;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -836,6 +838,8 @@ public:
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
 
+		, ExitThroughRoof {}
+
 		// Ares 0.2
 		, RadarJamRadius { 0 }
 
@@ -868,6 +872,7 @@ public:
 	void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 	void CalculateSpawnerRange();
 	bool IsSecondary(int nWeaponIndex) const;
+	const std::string GetGunnerID(int idx) const;
 
 	int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget) const;
 	int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;

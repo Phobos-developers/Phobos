@@ -569,6 +569,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
   - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fixed a bug that computer player record cannot be log normally in non English mode
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -750,6 +752,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
   - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
   - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
