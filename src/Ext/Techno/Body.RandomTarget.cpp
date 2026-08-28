@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/Script/Body.h>
 #include <ScenarioClass.h>
 #include <BuildingClass.h>
@@ -100,7 +101,20 @@ AbstractClass* TechnoExt::FindRandomTarget(TechnoClass* pFirer, AbstractClass* p
 		}
 	}
 
-	const int weaponIndex = (pFirer->GetWeapon(1) && pFirer->GetWeapon(1)->WeaponType == pWeapon) ? 1 : 0;
+	int weaponIndex = 0;
+	if (auto const pType = pFirer->GetTechnoType())
+	{
+		const bool isElite = pFirer->Veterancy.IsElite();
+		const int weaponCount = Math::max(pType->WeaponCount, 2);
+		for (int i = 0; i < weaponCount; ++i)
+		{
+			if (TechnoTypeExt::GetWeaponType(pType, i, isElite) == pWeapon)
+			{
+				weaponIndex = i;
+				break;
+			}
+		}
+	}
 	const double spread = static_cast<double>(range) / Unsorted::LeptonsPerCell;
 	const bool includeInAir = pWeapon->Projectile && pWeapon->Projectile->AA;
 
