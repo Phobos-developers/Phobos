@@ -905,6 +905,27 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 PowerPlantEnhancer.MaxCount=-1     ; integer
 ```
 
+### Roof production anim
+
+- Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
+  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType, with Factory=InfantryType or Factory=UnitType
+RoofProductionAnim=                ; AnimationType, falls back to ProductionAnim if unset
+RoofProductionAnimDamaged=         ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimGarrisoned=      ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimX=               ; integer, defaults to ProductionAnimX
+RoofProductionAnimY=               ; integer, defaults to ProductionAnimY
+RoofProductionAnimYSort=           ; integer, defaults to ProductionAnimYSort
+RoofProductionAnimZAdjust=         ; integer, defaults to ProductionAnimZAdjust
+RoofProductionAnimPowered=         ; boolean, defaults to ProductionAnimPowered
+RoofProductionAnimPoweredLight=    ; boolean, defaults to ProductionAnimPoweredLight
+RoofProductionAnimPoweredEffect=   ; boolean, defaults to ProductionAnimPoweredEffect
+RoofProductionAnimPoweredSpecial=  ; boolean, defaults to ProductionAnimPoweredSpecial
+```
+
 ### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
