@@ -1193,6 +1193,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
 	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
+	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1820,6 +1821,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health)
 
 		.Process(this->ExitThroughRoof)
+		.Process(this->PsychicDetectable)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

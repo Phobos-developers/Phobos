@@ -433,6 +433,7 @@ public:
 	Nullable<TechnoTypeClass*> Convert_Health;
 
 	Nullable<bool> ExitThroughRoof;
+	Valueable<bool> PsychicDetectable;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -837,6 +838,8 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+		
+		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
 
