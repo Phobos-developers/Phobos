@@ -372,8 +372,9 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	auto const pToInfantry = abstract_cast<InfantryClass*>(pToTechno);
 	if (pFromBuilding)
 	{
-		if (pFromBuilding->CurrentMission == Mission::Selling)
+		if (pFromBuilding->CurrentMission == Mission::None)
 			return false;
+		pFromBuilding->ForceMission(Mission::None);
 
 		auto const buildingCell = CellClass::Coord2Cell(location);
 		auto const tmpCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pFromBuilding->Type, buildingCell);
