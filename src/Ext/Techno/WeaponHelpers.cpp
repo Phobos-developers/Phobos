@@ -12,15 +12,20 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
 	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
 
-	if (!pWeaponStructOne && !pWeaponStructTwo)
+	bool hasOne = pWeaponStructOne && pWeaponStructOne->WeaponType;
+	bool hasTwo = pWeaponStructTwo && pWeaponStructTwo->WeaponType;
+
+	if (!hasOne && !hasTwo)
 		return -1;
-	else if (!pWeaponStructTwo)
+	else if (!hasTwo)
 		return weaponIndexOne;
-	else if (!pWeaponStructOne)
+	else if (!hasOne)
 		return weaponIndexTwo;
 
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
 	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
+	if (!pSecondExt)
+		return weaponIndexOne;
 
 	CellClass* pTargetCell = nullptr;
 
@@ -50,8 +55,11 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		}
 	}
 
-	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile && pWeaponTwo->Projectile->AA;
 	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
+	if (!pFirstExt)
+		return weaponIndexTwo;
+
 	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
 	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
@@ -421,8 +429,18 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 
 		if (pTechno)
 		{
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+			const bool isFakeEngineer = pWHExt->FakeEngineer_CanCaptureBuildings
+				|| pWHExt->FakeEngineer_CanRepairBridges
+				|| pWHExt->FakeEngineer_CanDestroyBridges
+				|| pWHExt->FakeEngineer_BombDisarm;
+
+			bool houseAllowed = EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner);
+			if (!houseAllowed && isFakeEngineer && pTechnoOwner != pOwner && pTechnoOwner->IsNeutral())
+				houseAllowed = true;
+
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
+				|| !houseAllowed
 				|| !pWeaponExt->IsHealthInThreshold(pTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 			{
@@ -478,18 +496,17 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			}
 		}
 
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+		const bool isFakeEngineer = pWHExt->FakeEngineer_CanCaptureBuildings
+			|| pWHExt->FakeEngineer_CanRepairBridges
+			|| pWHExt->FakeEngineer_CanDestroyBridges
+			|| pWHExt->FakeEngineer_BombDisarm;
+
+		if (isFakeEngineer)
+			return true;
+
 		if (pTechnoType->Immune)
-		{
-			bool canBypassImmune = WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanCaptureBuildings
-				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanRepairBridges
-				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanDestroyBridges
-				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_BombDisarm;
-
-			if (canBypassImmune)
-				return true;
-
 			return false;
-		}
 
 		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
 			return false;

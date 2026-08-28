@@ -63,17 +63,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
 
-	// Repair/Destroy bridges at Bridge Repair Huts buildings
-	if (pBuilding && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
-	{
-		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
-		bool destroyBridge = !isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
-		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, nullptr, pSourceHouse, destroyBridge);
-	}
+	// Capture enemy/neutral buildings
+	const bool canCaptureHouse = pBuilding && pBuilding->Owner != pSourceHouse
+		&& (!pSourceHouse->IsAlliedWith(pTargetHouse) || pBuilding->Owner->IsNeutral());
 
-	// Capture enemy buildings
-	if (pBuilding && pWHExt->FakeEngineer_CanCaptureBuildings
-		&& !pSourceHouse->IsAlliedWith(pTargetHouse)
+	if (canCaptureHouse && pWHExt->FakeEngineer_CanCaptureBuildings
 		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
 	{
 		// Send engineer's "enter" event

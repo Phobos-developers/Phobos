@@ -464,5 +464,4 @@ public:
 
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
-	static void DetonateAtBridgeRepairHut(AbstractClass* pTarget, TechnoClass* pOwner = nullptr, HouseClass* pFiringHouse = nullptr, bool destroyBridge = false);
 };

@@ -138,3 +138,18 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
+
+// Pass actual target to SelectWeapon instead of -1 during What_Action evaluation
+DEFINE_HOOK(0x51E6D8, InfantryClass_WhatAction_WhatWeaponShouldIUse, 0x9)
+{
+	GET(InfantryClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, ESI);
+
+	int weaponIdx = (pThis && pTarget) ? pThis->SelectWeapon(pTarget) : -1;
+
+	R->EAX(weaponIdx);
+
+	return 0x51E6E1;
+}
+
+

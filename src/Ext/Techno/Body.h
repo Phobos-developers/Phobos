@@ -273,6 +273,7 @@ public:
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 	static bool CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pBuilding, bool checkBridge = false, bool checkCapturableBuilding = false, bool checkAttachedBombs = false);
+	static void RepairOrDestroyBridgeHut(BuildingClass* pBuilding, TechnoClass* pOwner = nullptr, HouseClass* pFiringHouse = nullptr, bool destroyBridge = false);
 	static bool CannotMove(UnitClass* pThis);
 
 	// WeaponHelpers.cpp

@@ -11,6 +11,7 @@
 
 #include <Utilities/AresFunctions.h>
 #include <Ext/WarheadType/Body.h>
+#include <RadarEventClass.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
@@ -635,6 +636,9 @@ AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 
 bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTarget, bool checkBridge, bool checkCapturableBuilding, bool checkAttachedBombs)
 {
+	if (!pThis || !pTarget)
+		return false;
+
 	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	// Force weapon check
@@ -649,12 +653,21 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTa
 	if (nWeaponIndex < 0)
 		return false;
 
-	const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-
-	if (!pWeapon || !pTarget)
+	const auto pWeaponStruct = pThis->GetWeapon(nWeaponIndex);
+	if (!pWeaponStruct || !pWeaponStruct->WeaponType || !pWeaponStruct->WeaponType->Warhead)
 		return false;
 
+	const auto pWeapon = pWeaponStruct->WeaponType;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (!pWHExt->FakeEngineer_CanCaptureBuildings
+		&& !pWHExt->FakeEngineer_CanRepairBridges
+		&& !pWHExt->FakeEngineer_CanDestroyBridges
+		&& !pWHExt->FakeEngineer_BombDisarm)
+	{
+		return false;
+	}
+
 	bool canAffectCapturableBuildings = false;
 	bool canAffectBridges = false;
 	bool canAffectAttachedBombs = false;
@@ -688,12 +701,77 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTa
 		&& isBuilding
 		&& pWHExt->FakeEngineer_CanCaptureBuildings
 		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer)
-		&& !pThis->Owner->IsAlliedWith(pBuilding)) // Anti-crash check
+		&& pBuilding->Owner != pThis->Owner
+		&& (!pThis->Owner->IsAlliedWith(pBuilding) || pBuilding->Owner->IsNeutral()))
 	{
 		canAffectCapturableBuildings = true;
 	}
 
 	return canAffectCapturableBuildings || canAffectBridges || canAffectAttachedBombs;
+}
+
+void TechnoExt::RepairOrDestroyBridgeHut(BuildingClass* pBuilding, TechnoClass* pOwner, HouseClass* pFiringHouse, bool destroyBridge)
+{
+	if (!pBuilding || !pBuilding->Type->BridgeRepairHut || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return;
+
+	const CoordStruct targetCoords = pBuilding->GetCenterCoords();
+	const CellStruct baseCell = pBuilding->GetMapCoords();
+
+	// Send engineer's "enter" event
+	auto const pTag = pBuilding->AttachedTag;
+
+	if (pTag && pOwner)
+		pTag->RaiseEvent(TriggerEvent::EnteredBy, pOwner, CellStruct::Empty);
+
+	// Check a 5x5 area for bridge tiles to determine if we should repair or destroy
+	bool foundWoodBridge = false;
+
+	for (int y = -2; y <= 2; ++y)
+	{
+		for (int x = -2; x <= 2; ++x)
+		{
+			CellStruct checkCellCoords = { static_cast<short>(baseCell.X + x), static_cast<short>(baseCell.Y + y) };
+			auto const checkCell = MapClass::Instance.GetCellAt(checkCellCoords);
+
+			if (checkCell && (checkCell->Tile_Is_WoodBridge() || (checkCell->OverlayTypeIndex >= 74 && checkCell->OverlayTypeIndex <= 101)))
+				foundWoodBridge = true;
+
+			if (foundWoodBridge)
+				break;
+		}
+
+		if (foundWoodBridge)
+			break;
+	}
+
+	// Destroying bridges
+	if (destroyBridge)
+	{
+		if (foundWoodBridge) // Destroy wood bridges
+			MapClass::Instance.DestroyWoodBridgeAt(baseCell);
+		else // Destroy concrete bridges
+			MapClass::Instance.DestroyConcreteBridgeAt(baseCell);
+
+		return;
+	}
+
+	auto const pFiringOwner = pOwner ? pOwner->Owner : pFiringHouse;
+
+	// Repairing bridges
+	if (pFiringOwner && pFiringOwner->IsControlledByCurrentPlayer())
+	{
+		if (RadarEventClass::Create(RadarEventType::BridgeRepaired, baseCell))
+			VoxClass::PlayIndex(VoxClass::FindIndex("EVA_BridgeRepaired"));
+	}
+
+	if (RulesClass::Instance->RepairBridgeSound != -1)
+		VocClass::PlayAt(RulesClass::Instance->RepairBridgeSound, targetCoords, nullptr);
+
+	if (foundWoodBridge) // Repair wood bridges
+		MapClass::Instance.RepairWoodBridgeAt(baseCell);
+	else // Repair concrete bridges
+		MapClass::Instance.RepairConcreteBridgeAt(baseCell);
 }
 
 void TechnoExt::ExtData::ResetDelayedFireTimer()

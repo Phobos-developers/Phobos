@@ -7,59 +7,69 @@
 
 #pragma region FakeEngineer
 
-// Skipping the next 2 small checks permits the AI to target structures, if used correctly (for example with the compation of AttackFriendlies)
-DEFINE_HOOK(0x6F85C8, TechnoClass_EvaluateObject_RemovingWhatMakesGuardModeAutotargetSelectionUnableToTargetStructures, 0x7)
+// Skipping the next 2 small checks permits the AI to target structures, if used correctly (for example with the combination of AttackFriendlies)
+DEFINE_HOOK(0x6F85C8, TechnoClass_EvaluateObject_TargetStructures, 0x7)
 {
-	enum { skipCode = 0x74049F };
-
 	return 0x6F866D;
 }
 
 // Skipping the Immune check
-DEFINE_HOOK(0x740414, UnitClass_WhatAction_Immune_FakeEngineer1, 0x5)
+DEFINE_HOOK(0x740402, UnitClass_WhatAction_Immune_FakeEngineer1, 0xA)
 {
-	enum { ForceNewValue = 0x74049F };
+	enum { ForceNewValue = 0x740440 };
 
-	GET(TechnoClass* const, pThis, ESI);
-	GET(TechnoClass* const, pTarget, EDI);
+	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTarget, ESI);
 
-	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
-	bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
-
-	if (canBeAttacked)
+	if (pThis && pTarget)
 	{
-		if (canBeDefused)
-			R->EBX(Action::DisarmBomb);
-		else
-			R->EBX(Action::Attack);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+		if (pBuilding)
+		{
+			bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+			bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
 
-		return ForceNewValue;
+			if (canBeAttacked)
+			{
+				if (canBeDefused)
+					R->EBX(Action::DisarmBomb);
+				else
+					R->EBX(Action::Attack);
+
+				return ForceNewValue;
+			}
+		}
 	}
 
 	return 0;
 }
 
-// Skipping the Immune check
-DEFINE_HOOK(0x74049A, UnitClass_WhatAction_Immune_FakeEngineer2, 0x5)
+// Skipping the C4 check
+DEFINE_HOOK(0x740486, UnitClass_WhatAction_Immune_FakeEngineer2, 0xA)
 {
 	enum { ForceNewValue = 0x74049F };
 
-	GET(TechnoClass* const, pThis, ESI);
-	GET(TechnoClass* const, pTarget, EDI);
+	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTarget, ESI);
 
-	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
-	bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
-
-	if (canBeAttacked)
+	if (pThis && pTarget)
 	{
-		if (canBeDefused)
-			R->EBX(Action::DisarmBomb);
-		else
-			R->EBX(Action::Attack);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+		if (pBuilding)
+		{
+			bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+			bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
 
-		return ForceNewValue;
+			if (canBeAttacked)
+			{
+				if (canBeDefused)
+					R->EBX(Action::DisarmBomb);
+				else
+					R->EBX(Action::Attack);
+
+				return ForceNewValue;
+			}
+		}
 	}
 
 	return 0;
@@ -72,10 +82,13 @@ DEFINE_HOOK(0x417F63, AircraftClass_WhatAction_Immune_FakeEngineer, 0x5)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(BuildingClass* const, pBuilding, EDI);
 
-	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+	if (pThis && pBuilding)
+	{
+		bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
 
-	if (canBeAttacked)
-		return ForceNewValue;
+		if (canBeAttacked)
+			return ForceNewValue;
+	}
 
 	return 0;
 }
@@ -87,17 +100,20 @@ DEFINE_HOOK(0x447527, BuildingClass_WhatAction_Immune_FakeEngineer, 0x5)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(BuildingClass* const, pBuilding, EBP);
 
-	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
-	bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
-
-	if (canBeAttacked)
+	if (pThis && pBuilding)
 	{
-		if (canBeDefused)
-			R->EBP(Action::DisarmBomb);
-		else
-			R->EBP(Action::Attack);
+		bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+		bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
 
-		return ForceNewValue;
+		if (canBeAttacked)
+		{
+			if (canBeDefused)
+				R->EBP(Action::DisarmBomb);
+			else
+				R->EBP(Action::Attack);
+
+			return ForceNewValue;
+		}
 	}
 
 	return 0;
@@ -110,26 +126,29 @@ DEFINE_HOOK(0x51F179, InfantryClass_WhatAction_Immune_FakeEngineer, 0x5)
 	GET(TechnoClass* const, pThis, EDI);
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
-	bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
-
-	if (canBeAttacked)
+	if (pThis && pBuilding)
 	{
-		if (canBeDefused)
-			R->EBP(Action::DisarmBomb);
-		else
-			R->EBP(Action::Attack);
+		bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true, true);
+		bool canBeDefused = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, false, true);
 
-		return ForceNewValue;
+		if (canBeAttacked)
+		{
+			if (canBeDefused)
+				R->EBP(Action::DisarmBomb);
+			else
+				R->EBP(Action::Attack);
+
+			return ForceNewValue;
+		}
 	}
 
 	return 0;
 }
 
+
+
 DEFINE_HOOK(0x6FC31C, TechnoClass_CanFire_ForceWeapon, 0xF)
 {
-	enum { UseWeaponIndex = 0x0 };
-
 	GET(AbstractClass* const, pThis, ESI);
 	GET(AbstractClass* const, pTarget, EBX);
 	REF_STACK(int, nWeaponIdx, STACK_OFFSET(0x10, 0xC));
@@ -157,64 +176,70 @@ DEFINE_HOOK(0x6FC31C, TechnoClass_CanFire_ForceWeapon, 0xF)
 		if (newIndex >= 0)
 			nWeaponIdx = newIndex;
 	}
-	
+
 	return 0;
 }
 
-DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer_CanCaptureBuildings, 0x5)
+DEFINE_HOOK(0x6FC705, TechnoClass_CanFire_CivilianBlock_FakeEngineer, 0x7)
 {
-	enum { ForceNewValue = 0x6FCBA6 };
+	enum { BypassEntireBlock = 0x6FC879, ContinueVanilla = 0 };
 
-	GET_STACK(AbstractClass* const, pThis, STACK_OFFSET(0x10, 0x18));
-	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(int, nWeaponIdx, STACK_OFFSET(0x10, 0xC));
+	GET_STACK(WeaponTypeClass*, pWeapon, 0x10);
 
-	const auto pFirer = abstract_cast<TechnoClass*>(pThis);
-	const auto pVictim = abstract_cast<TechnoClass*>(pTarget);
-
-	if (!pFirer || !pVictim)
-		return 0;
-
-	const auto pWeapon = pFirer->GetWeapon(nWeaponIdx)->WeaponType;
-	if (!pWeapon)
-		return 0;
-
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	const int weaponRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
-	const int currentRange = pFirer->DistanceFrom(pVictim);
-
-	if (pVictim->AttachedBomb
-		&& pWHExt->FakeEngineer_BombDisarm)
+	if (pWeapon && pWeapon->Warhead)
 	{
-		if (currentRange <= weaponRange)
-			R->EAX(FireError::OK);
-		else
-			R->EAX(FireError::RANGE); // Out of range
-
-		return ForceNewValue;
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		if (pWHExt->FakeEngineer_CanCaptureBuildings
+			|| pWHExt->FakeEngineer_CanRepairBridges
+			|| pWHExt->FakeEngineer_CanDestroyBridges
+			|| pWHExt->FakeEngineer_BombDisarm)
+		{
+			return BypassEntireBlock;
+		}
 	}
 
-	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	return ContinueVanilla;
+}
 
-	if (!pBuilding
-		|| !pBuilding->IsAlive
-		|| pBuilding->Health <= 0
-		|| pFirer->Owner->IsAlliedWith(pVictim)
-		|| (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer))
+DEFINE_HOOK(0x6FCB53, TechnoClass_CanFire_FakeEngineer, 0x9)
+{
+	enum { BypassToHeightAndRangeChecks = 0x6FCC5D, ContinueVanilla = 0 };
+
+	GET(TechnoClass* const, pFirer, ESI);
+	GET_STACK(AbstractClass* const, pTarget, 0x24);
+	GET_STACK(WeaponTypeClass* const, pWeapon, 0x10);
+
+	if (pFirer && pTarget && pWeapon && pWeapon->Warhead)
 	{
-		return 0;
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		const auto pVictim = abstract_cast<TechnoClass*>(pTarget);
+
+		if (pVictim && pVictim->AttachedBomb && pWHExt->FakeEngineer_BombDisarm)
+			return BypassToHeightAndRangeChecks;
+
+		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+		if (pBuilding && pBuilding->IsAlive && pBuilding->Health > 0)
+		{
+			if (pBuilding->Type->BridgeRepairHut
+				&& (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+			{
+				return BypassToHeightAndRangeChecks;
+			}
+
+			const bool canCaptureHouse = pBuilding->Owner != pFirer->Owner
+				&& (!pFirer->Owner->IsAlliedWith(pBuilding->Owner) || pBuilding->Owner->IsNeutral());
+
+			if (canCaptureHouse
+				&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer)
+				&& pWHExt->FakeEngineer_CanCaptureBuildings)
+			{
+				return BypassToHeightAndRangeChecks;
+			}
+		}
 	}
 
-	if (!pWHExt->FakeEngineer_CanCaptureBuildings)
-		return 0;
-
-	if (currentRange <= weaponRange)
-		R->EAX(FireError::OK);
-	else
-		R->EAX(FireError::RANGE); // Out of range
-
-	return ForceNewValue;
+	return ContinueVanilla;
 }
 
 #pragma endregion

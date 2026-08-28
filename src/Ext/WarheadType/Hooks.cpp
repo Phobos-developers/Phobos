@@ -351,14 +351,19 @@ DEFINE_HOOK(0x4423B7, BuildingClass_ReceiveDamage_BridgeRepairHut, 0xC)
 	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x9C, 0x18));
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-
-	if (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges)
+	if (pThis && pWarhead)
 	{
-		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
-		bool destroyBridge = isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(pThis->GetMapCoords());
 
-		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, pSource, pHouse, destroyBridge);
+		if (!isBridgeDestroyed && pWHExt->FakeEngineer_CanDestroyBridges)
+		{
+			TechnoExt::RepairOrDestroyBridgeHut(pThis, pSource, pHouse, true);
+		}
+		else if (isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges)
+		{
+			TechnoExt::RepairOrDestroyBridgeHut(pThis, pSource, pHouse, false);
+		}
 	}
 
 	return 0;

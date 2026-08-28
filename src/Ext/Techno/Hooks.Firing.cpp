@@ -94,8 +94,11 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
 	enum { UseWeaponIndex = 0x6F37AF };
 
-	GET(TechnoClass*, pThis, ECX);
+	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
+
+	if (!pThis || !pTarget)
+		return 0;
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 

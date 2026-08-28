@@ -30,8 +30,11 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 		if (affectsAllies && isAllies)
 			return pOwner != pHouse;
 
-		if (this->AffectsEnemies && !isAllies)
-			return true;
+		if (this->AffectsEnemies && (!isAllies || (this->FakeEngineer_CanCaptureBuildings && pOwner->IsNeutral())))
+			return pOwner != pHouse;
+
+		if (this->FakeEngineer_CanCaptureBuildings && pOwner->IsNeutral())
+			return pOwner != pHouse;
 
 		return false;
 	}
@@ -109,72 +112,6 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
 	this->DamageAreaTarget = nullptr;
 	return result;
-}
-
-void WarheadTypeExt::DetonateAtBridgeRepairHut(AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse, bool destroyBridge)
-{
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-
-	if (!pBuilding || !pBuilding->Type->BridgeRepairHut || !pBuilding->IsAlive || pBuilding->Health <= 0)
-		return;
-
-	const CoordStruct targetCoords = pTarget->GetCenterCoords();
-	const CellStruct baseCell = CellClass::Coord2Cell(targetCoords);
-
-	// Send engineer's "enter" event
-	auto const pTag = pBuilding->AttachedTag;
-
-	if (pTag && pOwner)
-		pTag->RaiseEvent(TriggerEvent::EnteredBy, pOwner, CellStruct::Empty);
-
-	// Check a 5x5 area for bridge tiles to determine if we should repair or destroy
-	bool foundWoodBridge = false;
-
-	for (int y = -2; y <= 2; ++y)
-	{
-		for (int x = -2; x <= 2; ++x)
-		{
-			CellStruct checkCellCoords = { static_cast<short>(baseCell.X + x), static_cast<short>(baseCell.Y + y) };
-			auto const checkCell = MapClass::Instance.GetCellAt(checkCellCoords);
-
-			if (checkCell->Tile_Is_WoodBridge() || (checkCell->OverlayTypeIndex >= 74 && checkCell->OverlayTypeIndex <= 101))
-				foundWoodBridge = true;
-
-			if (foundWoodBridge)
-				break;
-		}
-
-		if (foundWoodBridge)
-			break;
-	}
-
-	// Destroying bridges
-	if (destroyBridge)
-	{
-		if (foundWoodBridge) // Repair wood bridges
-			MapClass::Instance.DestroyWoodBridgeAt(baseCell);
-		else // Destroy concrete bridges
-			MapClass::Instance.DestroyConcreteBridgeAt(baseCell);
-
-		return;
-	}
-
-	auto const pFiringOwner = pOwner ? pOwner->Owner : pFiringHouse;
-
-	// Repairing bridges
-	if (pFiringOwner && pFiringOwner->IsControlledByCurrentPlayer())
-	{
-		if (RadarEventClass::Create(RadarEventType::BridgeRepaired, CellClass::Coord2Cell(targetCoords)))
-			VoxClass::PlayIndex(VoxClass::FindIndex("EVA_BridgeRepaired"));
-	}
-
-	if (RulesClass::Instance->RepairBridgeSound != -1)
-		VocClass::PlayAt(RulesClass::Instance->RepairBridgeSound, targetCoords, nullptr);
-
-	if (foundWoodBridge) // Repair wood bridges
-		MapClass::Instance.RepairWoodBridgeAt(baseCell);
-	else // Repair concrete bridges
-		MapClass::Instance.RepairConcreteBridgeAt(baseCell);
 }
 
 // =============================

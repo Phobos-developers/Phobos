@@ -68,8 +68,10 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		{
 			if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pTargetType))
 			{
-				if ((pBuildingType->Capturable || pBuildingType->NeedsEngineer)
-					&& !pThis->Owner->IsAlliedWith(pTargetTechno->Owner))
+				const bool canCaptureHouse = pTargetTechno->Owner != pThis->Owner
+					&& (!pThis->Owner->IsAlliedWith(pTargetTechno->Owner) || pTargetTechno->Owner->IsNeutral());
+
+				if ((pBuildingType->Capturable || pBuildingType->NeedsEngineer) && canCaptureHouse)
 					forceWeaponIndex = this->ForceWeapon_Capture;
 			}
 		}
