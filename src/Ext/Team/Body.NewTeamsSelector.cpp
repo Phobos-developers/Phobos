@@ -308,7 +308,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	int destroyedBridgesCount = 0;
 	int undamagedBridgesCount = 0;
 	std::map<TechnoTypeClass*, int> ownedRecruitables;
-	std::map<BuildingTypeClass*, int> ownedBuildings;
 	bool hasInfantryFactory = false;
 	bool hasUnitFactory = false;
 	bool hasNavalFactory = false;
@@ -328,7 +327,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 			if (pTechno->Owner == pHouse)
 			{
-				++ownedBuildings[static_cast<BuildingTypeClass*>(pBuildingType)];
 
 				switch (pBuildingType->Factory)
 				{
@@ -799,7 +797,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 					// Meets the production prerequisites?
 					if (canBeBuilt)
-						canBeBuilt = HouseExt::PrerequisitesMet(pHouse, entry.Type, ownedBuildings, false);
+						canBeBuilt = HouseExt::PrerequisitesMet(pHouse, entry.Type, false);
 
 					if (!canBeBuilt)
 					{

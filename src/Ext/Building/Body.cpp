@@ -493,13 +493,6 @@ void BuildingExt::ExtData::UpdateSecretLabAI()
 
 	if (possibleCandidates.Count > 0)
 	{
-		std::map<BuildingTypeClass*, int> ownedBuildings;
-
-		for (auto building : pOwner->Buildings)
-		{
-			++ownedBuildings[building->Type];
-		}
-
 		for (const auto& boon : possibleCandidates)
 		{
 			auto pExt = TechnoTypeExt::ExtMap.Find(boon);
@@ -516,7 +509,7 @@ void BuildingExt::ExtData::UpdateSecretLabAI()
 
 				if (pOwner->Type->ArrayIndex == houseIdx)
 				{
-					bool canBeBuilt = HouseExt::PrerequisitesMet(pOwner, boon, ownedBuildings, true);
+					bool canBeBuilt = HouseExt::PrerequisitesMet(pOwner, boon, true);
 
 					if (canBeBuilt)
 					{

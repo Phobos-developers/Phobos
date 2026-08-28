@@ -1,11 +1,56 @@
 #include "body.h"
 
+bool HouseExt::HasGenericPrerequisite(int idx, HouseClass* const pHouse)
+{
+	if (idx >= 0 || !pHouse)
+		return false;
+
+	int absoluteIndex = std::abs(idx);
+	if (absoluteIndex >= RulesExt::Global()->GenericPrerequisites.Count)
+		return false;
+
+	DynamicVectorClass<int> selectedPrerequisite = RulesExt::Global()->GenericPrerequisites.GetItem(absoluteIndex);
+	if (selectedPrerequisite.Count == 0)
+		return false;
+
+	for (auto idxItem : selectedPrerequisite)
+	{
+		if (pHouse->ActiveBuildingTypes.GetItemCount(idxItem) > 0)
+			return true;
+	}
+
+	return false;
+}
+
+int HouseExt::FindGenericPrerequisite(const char* id)
+{
+	if (BuildingTypeClass::FindIndex(id) >= 0)
+		return INT32_MAX;
+
+	if (RulesExt::Global()->GenericPrerequisitesNames.Count == 0)
+		RulesExt::FillDefaultPrerequisites();
+
+	int i = 0;
+	for (auto str : RulesExt::Global()->GenericPrerequisitesNames)
+	{
+		if (_strcmpi(id, str) == 0)
+			return i;
+
+		--i;
+	}
+
+	return INT32_MAX; // Error
+}
+
 bool HouseExt::IsAvailableToHouse(HouseClass* const pHouse, TechnoTypeClass* const pItem)
 {
 	if (!pHouse || !pItem)
 		return false;
 
 	const auto pType = pHouse->Type;
+	if (!pType)
+		return false;
+
 	DWORD const bitHouse = 1u << pType->ArrayIndex2;
 
 	bool inOwners = pItem->InOwners(bitHouse);
@@ -32,7 +77,7 @@ bool HouseExt::IsAvailableToHouse(HouseClass* const pHouse, TechnoTypeClass* con
 	return inOwners && inRequired && !inForbidden;
 }
 
-bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const std::map<BuildingTypeClass*, int>& ownedBuildings, bool skipSecretLabChecks)
+bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, bool skipSecretLabChecks)
 {
 	if (!pThis || !pItem)
 		return false;
@@ -45,12 +90,12 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	if (!pItemExt)
 		return false;
 
-	// If the unit is available after capturing a SecretLab=yes must be evaluated if meets the prerequisite
-	if (!skipSecretLabChecks && pItemExt->ConsideredSecretLabTech && !pThis->HasFromSecretLab(pItem))
-		return false;
-
 	// Check if it appears in Owner=, RequiredHouses= and ForbiddenHouses= (including ParentCountry support)
 	if (!HouseExt::IsAvailableToHouse(pThis, pItem))
+		return false;
+
+	// If the unit is available after capturing a SecretLab=yes must be evaluated if meets the prerequisite
+	if (!skipSecretLabChecks && pItemExt->ConsideredSecretLabTech && !pThis->HasFromSecretLab(pItem))
 		return false;
 
 	// Prerequisite.RequiredTheaters check
@@ -66,44 +111,44 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		return false;
 
 	// BuildLimit checks
-	int nInstances = 0;
-
-	for (const auto pTechno : TechnoClass::Array)
+	if (pItem->BuildLimit > 0)
 	{
-		if (pTechno->Owner == pThis
-			&& pTechno->GetTechnoType() == pItem
-			&& pTechno->IsAlive
-			&& pTechno->Health > 0)
+		int nInstances = 0;
+		for (const auto pTechno : TechnoClass::Array)
 		{
-			nInstances++;
+			if (pTechno->Owner == pThis
+				&& pTechno->GetTechnoType() == pItem
+				&& pTechno->IsAlive
+				&& pTechno->Health > 0)
+			{
+				nInstances++;
 
-			if (nInstances >= pItem->BuildLimit)
-				return false;
+				if (nInstances >= pItem->BuildLimit)
+					return false;
+			}
 		}
 	}
-
-	if (pItem->BuildLimit < 1)
+	else if (pItem->BuildLimit == 0)
+	{
 		return false;
-
-	bool prerequisiteNegativeMet = false; // Only one coincidence is needed
+	}
 
 	// Ares Prerequisite.Negative list
 	if (pItemExt->Prerequisite_Negative.size() > 0)
 	{
 		for (int idx : pItemExt->Prerequisite_Negative)
 		{
-			if (idx < 0) // Can be used generic prerequisites in this Ares tag? I have to investigate it but for now we support it...
+			bool negFound = false;
+			if (idx < 0)
 			{
-				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				prerequisiteNegativeMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
+				negFound = HouseExt::HasGenericPrerequisite(idx, pThis);
 			}
 			else
 			{
-				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
-					prerequisiteNegativeMet = true;
+				negFound = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
 			}
 
-			if (prerequisiteNegativeMet)
+			if (negFound)
 				return false;
 		}
 	}
@@ -112,143 +157,100 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	if (skipSecretLabChecks)
 		return true;
 
+	// PrerequisiteOverride (OR logic: if ANY entry is owned, prerequisites are considered met)
 	DynamicVectorClass<int> prerequisiteOverride = pItem->PrerequisiteOverride;
-
-	bool prerequisiteMet = false; // All buildings must appear in the buildings list owner by the house
-	bool prerequisiteOverrideMet = false; // This tag uses an OR comparator: Only one coincidence is needed
-
-	if (prerequisiteOverride.Count > 0)
+	for (int idx : prerequisiteOverride)
 	{
-		for (int idx : prerequisiteOverride)
+		if (idx < 0)
 		{
-			if (prerequisiteOverrideMet)
-				break;
-
-			if (idx < 0)
-			{
-				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				prerequisiteOverrideMet = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
-			}
-			else
-			{
-				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
-					prerequisiteOverrideMet = true;
-			}
+			if (HouseExt::HasGenericPrerequisite(idx, pThis))
+				return true;
+		}
+		else
+		{
+			if (pThis->ActiveBuildingTypes.GetItemCount(idx) > 0)
+				return true;
 		}
 	}
 
+	// Main Prerequisite list (AND logic: ALL entries must be satisfied)
+	bool prerequisiteMet = true;
 	if (pItemExt->Prerequisite.size() > 0)
 	{
-		bool found = false;
-
 		for (int idx : pItemExt->Prerequisite)
 		{
-			found = false;
+			bool found = false;
 
 			if (idx < 0)
 			{
-				// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-				found = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
-			}
-			else
-			{
-				//auto debugType = BuildingTypeClass::Array.GetItem(idx);
-				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
-					found = true;
-			}
-
-			if (!found)
-				break;
-		}
-
-		prerequisiteMet = found;
-	}
-	else
-	{
-		// No prerequisites list means that always is buildable
-		prerequisiteMet = true;
-	}
-
-	bool prerequisiteListsMet = false;
-
-	// Ares Prerequisite lists
-	if (pItemExt->Prerequisite_Lists.Get() > 0)
-	{
-		bool found = false;
-
-		for (auto list : pItemExt->Prerequisite_ListVector)
-		{
-			if (found)
-				break;
-
-			for (int idx : list)
-			{
-				if (idx < 0)
+				// Also check slave miner as alternative for PROC (-6)
+				if (idx == -6 &&
+					RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+					pThis->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
 				{
-					// Default prerequisites like POWER, PROC, BARRACKS, FACTORY, ...
-					found = HouseExt::HasGenericPrerequisite(idx, ownedBuildings);
+					found = true;
 				}
 				else
 				{
-					found = false;
+					found = HouseExt::HasGenericPrerequisite(idx, pThis);
+				}
+			}
+			else
+			{
+				found = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
+			}
 
-					if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
+			if (!found)
+			{
+				prerequisiteMet = false;
+				break;
+			}
+		}
+	}
+
+	// Ares Prerequisite lists (OR logic between lists, AND logic within each list)
+	bool prerequisiteListsMet = false;
+	if (pItemExt->Prerequisite_Lists.Get() > 0 && !pItemExt->Prerequisite_ListVector.empty())
+	{
+		for (const auto& list : pItemExt->Prerequisite_ListVector)
+		{
+			bool listSatisfied = true;
+			for (int idx : list)
+			{
+				bool found = false;
+
+				if (idx < 0)
+				{
+					if (idx == -6 &&
+						RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+						pThis->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+					{
 						found = true;
+					}
+					else
+					{
+						found = HouseExt::HasGenericPrerequisite(idx, pThis);
+					}
+				}
+				else
+				{
+					found = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
 				}
 
 				if (!found)
+				{
+					listSatisfied = false;
 					break;
+				}
+			}
+
+			if (listSatisfied)
+			{
+				prerequisiteListsMet = true;
+				break;
 			}
 		}
-
-		prerequisiteListsMet = found;
 	}
 
-	return prerequisiteMet || prerequisiteListsMet || prerequisiteOverrideMet;
-}
-
-bool HouseExt::HasGenericPrerequisite(int idx, const std::map<BuildingTypeClass*, int>& ownedBuildings)
-{
-	if (idx >= 0)
-		return false;
-
-	DynamicVectorClass<int> selectedPrerequisite = RulesExt::Global()->GenericPrerequisites.GetItem(std::abs(idx));
-	const char* selectedPrerequisiteName = RulesExt::Global()->GenericPrerequisitesNames[std::abs(idx)];// Only used for easy debug
-
-	if (selectedPrerequisite.Count == 0)
-		return false;
-
-	bool found = false;
-
-	for (auto idxItem : selectedPrerequisite)
-	{
-		if (found)
-			break;
-
-		//auto debugType = BuildingTypeClass::Array.GetItem(idxItem);
-		if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idxItem)) > 0)
-			found = true;
-	}
-
-	return found;
-}
-
-int HouseExt::FindGenericPrerequisite(const char* id)
-{
-	if (BuildingTypeClass::FindIndex(id) >= 0)
-		return INT32_MAX;
-
-	if (RulesExt::Global()->GenericPrerequisitesNames.Count == 0)
-		RulesExt::FillDefaultPrerequisites(); // needed!
-
-	int i = 0;
-	for (auto str : RulesExt::Global()->GenericPrerequisitesNames)
-	{
-		if (_strcmpi(id, str) == 0)
-			return i;
-
-		--i;
-	}
-
-	return INT32_MAX; // Error
+	return prerequisiteMet || prerequisiteListsMet;
 }
