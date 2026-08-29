@@ -858,10 +858,11 @@ msgstr ""
 "visibility)（by NetsuNegi）"
 
 msgid ""
-"[Customize whether mind-controlled Insignificant technos can be auto-"
+"[Customize whether mind-controlled `Insignificant` technos can be auto-"
 "targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-"
-"Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)"
+"insignificant-technos-can-be-auto-targeted) (by Noble_Fish)"
 msgstr ""
+"[自定义 `Insignificant` 的单位是否会因被心控而变得可以被主动寻敌索到](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-insignificant-technos-can-be-auto-targeted)（by Noble_Fish）"
 
 msgid ""
 "[AutoDeath based on player power status and player credits](New-or-"

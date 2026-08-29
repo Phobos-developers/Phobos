@@ -2578,9 +2578,10 @@ msgstr ""
 "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
 
 msgid ""
-"Customize whether mind-controlled Insignificant technos can be auto-"
+"Customize whether mind-controlled `Insignificant` technos can be auto-"
 "targeted"
 msgstr ""
+"自定义 `Insignificant` 的单位是否会因被心控而变得可以被主动寻敌索到"
 
 msgid "Roof production anim"
 msgstr "天窗生产动画"

@@ -568,7 +568,7 @@ LeptonMindControlOffset=70    ; integer, in leptons
 MindControlRingOffset=140     ; integer, in leptons
 ```
 
-### Customize whether mind-controlled Insignificant technos can be auto-targeted
+### Customize whether mind-controlled `Insignificant` technos can be auto-targeted
 
 - In vanilla Red Alert 2, non-building technos with `Insignificant=yes` can never be acquired as auto targets, even when mind-controlled. In vanilla Yuri's Revenge, such technos become targetable once they are mind-controlled. Now you can customize it.
 
