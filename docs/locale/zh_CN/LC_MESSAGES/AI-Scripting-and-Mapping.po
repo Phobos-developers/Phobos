@@ -1435,46 +1435,56 @@ msgstr "非载具类对象无效。"
 
 msgid "`513` Set mission timer properties"
 msgstr ""
+"设置任务计时器属性"
 
 msgid ""
 "Set the method to display mission timer and whether the timer should be "
 "displayed reversedly based on given value."
 msgstr ""
+"设置任务计时器的显示方式，以及是否根据给定值倒序显示计时器。"
 
 msgid ""
 "For behaviours `0`, `1`, and `2`, the second parameter decides the base "
 "value for percentage timer type or reversed timer that'll be used for "
 "calculation."
 msgstr ""
+"对于行为 `0`、`1` 和 `2`，第二个参数决定百分比计时器类型或倒序计时器用于计算的基础值。"
 
 msgid ""
 "For behaviours `3` and `4`, the second parameter decides the index of "
 "variable that'll be displayed. If the local/global variable does not "
 "exist, 0 will be displayed."
 msgstr ""
+"对于行为 `3` 和 `4`，第二个参数决定要显示变量的索引。如果该局部／全局变量不存则显示 0。"
 
 msgid "*Behaviour*"
 msgstr "*行为*"
 
 msgid "Show normal timer"
 msgstr ""
+"显示常规计时器"
 
 msgid "show percentage based on the given value"
 msgstr ""
+"基于给定值显示百分比"
 
 msgid "Show timer in digit form"
 msgstr ""
+"以数字格式显示计时器"
 
 msgid "Show value of the selected local variable"
 msgstr ""
+"显示所选局部变量的值"
 
 msgid "Show value of the selected global variable"
 msgstr ""
+"显示所选全局变量的值"
 
 msgid ""
 "This won't affect how the global mission timer really ticks, so it'll "
 "still end after the mission tiemr expired."
 msgstr ""
+"这不会影响全局任务计时器的实际计时方式，因此它仍会在任务计时器到期后结束。"
 
 msgid "`600` Configure Drop Crate"
 msgstr "`600` 配置掉落箱子行为"

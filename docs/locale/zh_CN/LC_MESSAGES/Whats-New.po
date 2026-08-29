@@ -899,6 +899,8 @@ msgid ""
 "[`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-"
 "mission-timer-properties) (by Ollerus)"
 msgstr ""
+"[`513` 设置任务计时器属性](AI-Scripting-and-Mapping.md#set-"
+"mission-timer-properties)（by Ollerus）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

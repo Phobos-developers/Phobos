@@ -788,7 +788,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
   - Fix a game crash when parsing string list with null entry
-  - `513` Set mission timer type
+  - `513` Set mission timer properties
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

@@ -2677,8 +2677,9 @@ msgstr "自定义乘客能否在运输工具移动时向外开火"
 msgid "Fix a game crash when parsing string list with null entry"
 msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃"
 
-msgid "`513` Set mission timer type"
+msgid "`513` Set mission timer properties"
 msgstr ""
+"设置任务计时器属性"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
