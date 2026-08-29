@@ -103,49 +103,47 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			percentageUnclassifiedTriggers = 0.0;
 		}
 
-		percentageUnclassifiedTriggers = percentageUnclassifiedTriggers < 0.0 || percentageUnclassifiedTriggers > 1.0 ? 0.0 : percentageUnclassifiedTriggers;
-		percentageGroundTriggers = percentageGroundTriggers < 0.0 || percentageGroundTriggers > 1.0 ? 0.0 : percentageGroundTriggers;
-		percentageNavalTriggers = percentageNavalTriggers < 0.0 || percentageNavalTriggers > 1.0 ? 0.0 : percentageNavalTriggers;
-		percentageAirTriggers = percentageAirTriggers < 0.0 || percentageAirTriggers > 1.0 ? 0.0 : percentageAirTriggers;
-		percentageInfantryTriggers = percentageInfantryTriggers < 0.0 || percentageInfantryTriggers > 1.0 ? 0.0 : percentageInfantryTriggers;
+		percentageUnclassifiedTriggers = (percentageUnclassifiedTriggers < 0.0) ? 0.0 : percentageUnclassifiedTriggers;
+		percentageGroundTriggers = (percentageGroundTriggers < 0.0) ? 0.0 : percentageGroundTriggers;
+		percentageNavalTriggers = (percentageNavalTriggers < 0.0) ? 0.0 : percentageNavalTriggers;
+		percentageAirTriggers = (percentageAirTriggers < 0.0) ? 0.0 : percentageAirTriggers;
+		percentageInfantryTriggers = (percentageInfantryTriggers < 0.0) ? 0.0 : percentageInfantryTriggers;
 
-		double totalPercengates = percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers + percentageInfantryTriggers;
-		if (totalPercengates > 1.0 || totalPercengates <= 0.0)
-			splitTriggersByCategory = false;
+		double const totalPercentages = percentageUnclassifiedTriggers + percentageGroundTriggers
+			+ percentageNavalTriggers + percentageAirTriggers + percentageInfantryTriggers;
 
-		if (splitTriggersByCategory)
+		if (totalPercentages <= 0.0)
 		{
-			int categoryDice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
-			int unclassifiedValue = (int)(percentageUnclassifiedTriggers * 100.0);
-			int groundValue = (int)(percentageGroundTriggers * 100.0);
-			int airValue = (int)(percentageAirTriggers * 100.0);
-			int navalValue = (int)(percentageNavalTriggers * 100.0);
-			int infantryValue = (int)(percentageInfantryTriggers * 100.0);
+			splitTriggersByCategory = false;
+		}
+		else
+		{
+			double const categoryRoll = ScenarioClass::Instance->Random.RandomDouble() * totalPercentages;
+			double accumulated = 0.0;
 
 			// Pick what type of team will be selected in this round
-			if (percentageUnclassifiedTriggers > 0.0 && categoryDice <= unclassifiedValue)
+			if (percentageUnclassifiedTriggers > 0.0 && categoryRoll < (accumulated += percentageUnclassifiedTriggers))
 			{
 				validCategory = teamCategory::Unclassified;
 			}
-			else if (percentageGroundTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue))
+			else if (percentageGroundTriggers > 0.0 && categoryRoll < (accumulated += percentageGroundTriggers))
 			{
 				validCategory = teamCategory::Ground;
 			}
-			else if (percentageAirTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue))
+			else if (percentageAirTriggers > 0.0 && categoryRoll < (accumulated += percentageAirTriggers))
 			{
 				validCategory = teamCategory::Air;
 			}
-			else if (percentageNavalTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue))
+			else if (percentageNavalTriggers > 0.0 && categoryRoll < (accumulated += percentageNavalTriggers))
 			{
 				validCategory = teamCategory::Naval;
 			}
-			else if (percentageInfantryTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue + infantryValue))
+			else if (percentageInfantryTriggers > 0.0 && categoryRoll < (accumulated += percentageInfantryTriggers))
 			{
 				validCategory = teamCategory::Infantry;
 			}
 			else
 			{
-				// If the sum of all percentages is less than 100% then that empty space will work like "no categories"
 				splitTriggersByCategory = false;
 			}
 		}
@@ -181,32 +179,27 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 	}
 
-	int houseIdx = pHouse->ArrayIndex;
-
 	auto houseDifficulty = pHouse->AIDifficulty;
 	int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
 	int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 	int activeDefenseTeamsCount = 0;
 	int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
 
-	// Check if the running teams by the house already reached all the limits
-	DynamicVectorClass<TeamClass*> activeTeamsList;
+	// Check running teams owned by this house with O(1) type lookup
+	std::unordered_map<TeamTypeClass*, int> activeTeamCounts;
 
 	for (auto const pRunningTeam : TeamClass::Array)
 	{
 		totalActiveTeams++;
-		int teamHouseIdx = pRunningTeam->Owner->ArrayIndex;
-
-		if (teamHouseIdx != houseIdx)
+		if (pRunningTeam->Owner != pHouse)
 			continue;
 
-		activeTeamsList.AddItem(pRunningTeam);
+		activeTeams++;
+		activeTeamCounts[pRunningTeam->Type]++;
 
 		if (pRunningTeam->Type->IsBaseDefense)
 			activeDefenseTeamsCount++;
 	}
-
-	activeTeams = activeTeamsList.Count;
 
 	// We will use these values for discarding triggers
 	int defensiveTeamsLimit = RulesClass::Instance->UseMinDefenseRule ? minBaseDefenseTeams : maxBaseDefenseTeams;
@@ -511,15 +504,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				continue;
 
 			// If this type of Team reached the max then skip it
-			int count = 0;
+			auto const itTeam1 = activeTeamCounts.find(pTrigger->Team1);
+			int const currentTeam1Count = (itTeam1 != activeTeamCounts.end()) ? itTeam1->second : 0;
 
-			for (auto team : activeTeamsList)
-			{
-				if (team->Type == pTrigger->Team1)
-					count++;
-			}
-
-			if (count >= pTrigger->Team1->Max)
+			if (currentTeam1Count >= pTrigger->Team1->Max)
 				continue;
 
 			teamCategory teamIsCategory = teamCategory::None;
@@ -795,13 +783,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	Debug::Log("AITeamsSelector - House %d [%s](%s) selected trigger [%s]: %s.\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, selectedTrigger->ID, selectedTrigger->Team1->Name);
 
 	// Team 1 creation
-	int count1 = 0;
-
-	for (auto team : activeTeamsList)
-	{
-		if (team->Type == selectedTrigger->Team1)
-			count1++;
-	}
+	auto const itTeam1 = activeTeamCounts.find(selectedTrigger->Team1);
+	int const count1 = (itTeam1 != activeTeamCounts.end()) ? itTeam1->second : 0;
 
 	if (count1 < selectedTrigger->Team1->Max)
 	{
@@ -810,16 +793,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	}
 
 	// Team 2 creation (if set)
-	auto pTriggerTeam2Type = selectedTrigger->Team2;
-	if (pTriggerTeam2Type)
+	if (auto const pTriggerTeam2Type = selectedTrigger->Team2)
 	{
-		int count2 = 0;
-
-		for (auto team : activeTeamsList)
-		{
-			if (team->Type == pTriggerTeam2Type)
-				count2++;
-		}
+		auto const itTeam2 = activeTeamCounts.find(pTriggerTeam2Type);
+		int const count2 = (itTeam2 != activeTeamCounts.end()) ? itTeam2->second : 0;
 
 		if (count2 < pTriggerTeam2Type->Max)
 		{
@@ -938,9 +915,10 @@ bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, TechnoTypeClass* pItem)
 	int counter = 0;
 	if (pItem)
 	{
+		int const civilianSideIndex = SideClass::FindIndex("Civilian");
 		for (auto const pOtherHouse : HouseClass::Array)
 		{
-			if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") == 0)
+			if (pOtherHouse->Type->SideIndex == civilianSideIndex)
 			{
 				counter += pOtherHouse->CountOwnedAndPresent(pItem);
 			}
@@ -952,13 +930,14 @@ bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, TechnoTypeClass* pItem)
 bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list)
 {
 	int counter = 0;
+	int const civilianSideIndex = SideClass::FindIndex("Civilian");
 	for (auto const pItem : list)
 	{
 		if (!pItem) continue;
 
 		for (auto const pOtherHouse : HouseClass::Array)
 		{
-			if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") == 0)
+			if (pOtherHouse->Type->SideIndex == civilianSideIndex)
 			{
 				counter += pOtherHouse->CountOwnedAndPresent(pItem);
 			}
@@ -1024,9 +1003,10 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, const std::vector<Techno
 	if (list.empty())
 		return false;
 
+	int const civilianSideIndex = SideClass::FindIndex("Civilian");
 	for (auto const pOtherHouse : HouseClass::Array)
 	{
-		if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") != 0)
+		if (pOtherHouse->Type->SideIndex != civilianSideIndex)
 			continue;
 
 		bool allMet = true;
