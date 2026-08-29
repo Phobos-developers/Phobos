@@ -887,6 +887,7 @@ msgid ""
 "or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-"
 "psychic-detector) (by Noble_Fish)"
 msgstr ""
+"[自定义单位能否被心灵感应](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector)（by Noble_Fish）"
 
 #, fuzzy
 msgid ""

@@ -2591,6 +2591,7 @@ msgstr "自定义单位是否从天窗退出"
 
 msgid "Customize whether the unit can be detected by psychic detector"
 msgstr ""
+"自定义单位能否被心灵感应"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

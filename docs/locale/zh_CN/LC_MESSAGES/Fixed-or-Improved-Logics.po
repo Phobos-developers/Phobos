@@ -4672,11 +4672,13 @@ msgstr "如果缺少微观定义将会使用全局值，如果全局值也未定
 
 msgid "Customize whether the unit can be detected by psychic detector"
 msgstr ""
+"自定义单位能否被心灵感应"
 
 msgid ""
 "Now you can use the following flag to define whether the unit can be "
 "detected by buildings that have `PsychicDetectionRadius`."
 msgstr ""
+"现在你可以通过下面的语句定义单位能否被拥有 `PsychicDetectionRadius` 的建筑感应。"
 
 msgid "Customize whether the unit exits from the roof"
 msgstr "自定义单位是否从天窗退出"
