@@ -726,7 +726,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],521,0,0,[MissionTimerType],[BaseValue or VariableIndex],[ReverseTimer],0,A,[ActionX]
+ID=ActionCount,[Action1],513,0,0,[MissionTimerType],[BaseValue or VariableIndex],[ReverseTimer],0,A,[ActionX]
 ...
 ```
 

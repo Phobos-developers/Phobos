@@ -1,7 +1,6 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>

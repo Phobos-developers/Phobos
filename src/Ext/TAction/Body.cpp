@@ -499,9 +499,6 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 
 	for (auto const pTechno : TechnoClass::Array)
 	{
-		if (pTechno->WhatAmI() == AbstractType::BuildingType)
-			continue;
-
 		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
 		if (!pFoot)
 			continue;
@@ -509,7 +506,25 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 		if (pFoot->WhatAmI() != AbstractType::Unit)
 			continue;
 
-		if (!pFoot->AttachedTag || !pFoot->AttachedTag->ContainsTrigger(pTrigger))
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
 			continue;
 
 		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
@@ -674,7 +689,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	for (auto pTechno : TechnoClass::Array)
+	for (const auto pTechno : TechnoClass::Array)
 	{
 		const auto pAttachedTag = pTechno->AttachedTag;
 
