@@ -316,369 +316,339 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		if (!pTrigger || !pTrigger->Team1 || !pTrigger->IsEnabled)
 			continue;
 
-		// Ignore offensive teams if the next trigger must be defensive
-		if ((onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense) || (hasReachedMaxDefensiveTeamsLimit && pTrigger->IsForBaseDefense))
+		// If VIP triggers were found, discard any non-VIP trigger immediately
+		if (onlyCheckImportantTriggers && pTrigger->Weight_Current < maxPriority)
 			continue;
 
 		if (pTrigger->Team1->TechLevel > pHouse->TechLevel)
 			continue;
 
-		// ignore it if isn't set for the house AI difficulty
-		if ((int)houseDifficulty == 0 && !pTrigger->Enabled_Hard
-			|| (int)houseDifficulty == 1 && !pTrigger->Enabled_Normal
-			|| (int)houseDifficulty == 2 && !pTrigger->Enabled_Easy)
+		// Ignore it if isn't set for the house AI difficulty
+		if (((int)houseDifficulty == 0 && !pTrigger->Enabled_Hard)
+			|| ((int)houseDifficulty == 1 && !pTrigger->Enabled_Normal)
+			|| ((int)houseDifficulty == 2 && !pTrigger->Enabled_Easy))
 		{
 			continue;
 		}
 
-		// The trigger must be compatible with the owner
+		// Ignore offensive teams if the next trigger must be defensive
+		if ((onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense) || (hasReachedMaxDefensiveTeamsLimit && pTrigger->IsForBaseDefense))
+			continue;
+
+		// If this type of Team reached the max then skip it immediately
+		auto const itTeam1 = activeTeamCounts.find(pTrigger->Team1);
+		int const currentTeam1Count = (itTeam1 != activeTeamCounts.end()) ? itTeam1->second : 0;
+
+		if (currentTeam1Count >= pTrigger->Team1->Max)
+			continue;
+
+		teamCategory teamIsCategory = teamCategory::None;
+
+		// Analyze what kind of category is this main team if the feature is enabled
+		if (splitTriggersByCategory)
 		{
-			// "ConditionType=-1" will be skipped, always is valid
-			if ((int)pTrigger->ConditionType >= 0)
+			// TaskForces are limited to 6 entries
+			for (int i = 0; i < 6; i++)
 			{
-				if ((int)pTrigger->ConditionType == 0)
-				{
-					// Simulate case 0: "enemy owns"
-					if (!pTrigger->ConditionObject || !TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, pTrigger->ConditionObject))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 1)
-				{
-					// Simulate case 1: "house owns"
-					if (!pTrigger->ConditionObject || !TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 4)
-				{
-					// Simulate case 4: "Enemy house economy threshold?"
-					if (!pTrigger->HouseCredits(nullptr, targetHouse))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 5)
-				{
-					// Simulate case 5: "Iron Curtain is charged?"
-					if (!pTrigger->IronCurtainCharged(pHouse, nullptr))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 6)
-				{
-					// Simulate case 6: "Chronosphere is charged?"
-					if (!pTrigger->ChronoSphereCharged(pHouse, nullptr))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 7)
-				{
-					// Simulate case 7: "civilian owns"
-					if (!pTrigger->ConditionObject || !TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 8)
-				{
-					// Simulate case 8: "enemy owns" across all enemies
-					if (!pTrigger->ConditionObject || !TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 9)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 10)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::HouseOwns(pTrigger, pHouse, false, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 11)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::NeutralOwns(pTrigger, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 12)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 13)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::HouseOwns(pTrigger, pHouse, true, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 14)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 15)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::HouseOwnsAll(pTrigger, pHouse, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 16)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::NeutralOwnsAll(pTrigger, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 17)
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-					{
-						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
-						if (!TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, list))
-							continue;
-					}
-				}
-				else if ((int)pTrigger->ConditionType == 18)
-				{
-					// New case 18: Check destroyed bridges
-					if (!TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount))
-						continue;
-				}
-				else if ((int)pTrigger->ConditionType == 19)
-				{
-					// New case 19: Check undamaged bridges
-					if (!TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount))
-						continue;
-				}
-				else
-				{
-					// Other cases from vanilla game
-					if (!pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit))
-						continue;
-				}
-			}
+				const auto& entry = pTrigger->Team1->TaskForce->Entries[i];
+				teamCategory entryIsCategory = teamCategory::Ground;
 
-			// All triggers below maxPriority (usually 5000) in current weight will get discarded if this mode is enabled
-			if (onlyCheckImportantTriggers)
-			{
-				if (pTrigger->Weight_Current < maxPriority)
-					continue;
-			}
-
-			// No more defensive teams needed
-			if (pTrigger->Team1->IsBaseDefense && hasReachedMaxDefensiveTeamsLimit)
-				continue;
-
-			// If this type of Team reached the max then skip it
-			auto const itTeam1 = activeTeamCounts.find(pTrigger->Team1);
-			int const currentTeam1Count = (itTeam1 != activeTeamCounts.end()) ? itTeam1->second : 0;
-
-			if (currentTeam1Count >= pTrigger->Team1->Max)
-				continue;
-
-			teamCategory teamIsCategory = teamCategory::None;
-
-			// Analyze what kind of category is this main team if the feature is enabled
-			if (splitTriggersByCategory)
-			{
-				// TaskForces are limited to 6 entries
-				for (int i = 0; i < 6; i++)
-				{
-					auto entry = pTrigger->Team1->TaskForce->Entries[i];
-					teamCategory entryIsCategory = teamCategory::Ground;
-
-					if (entry.Amount > 0)
-					{
-						if (!entry.Type)
-							continue;
-
-						if (entry.Type->WhatAmI() == AbstractType::AircraftType
-							|| entry.Type->ConsideredAircraft)
-						{
-							// This unit is from air category
-							entryIsCategory = teamCategory::Air;
-						}
-						else
-						{
-							auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(entry.Type);
-
-							if (pTechnoTypeExt && (pTechnoTypeExt->ConsideredNaval
-								|| (entry.Type->Naval
-									&& (entry.Type->MovementZone != MovementZone::Amphibious
-										&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
-										&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher))))
-							{
-								// This unit is from naval category
-								entryIsCategory = teamCategory::Naval;
-							}
-							else if (entry.Type->WhatAmI() == AbstractType::InfantryType
-								&& (!pTechnoTypeExt || !pTechnoTypeExt->ConsideredVehicle))
-							{
-								// This unit is from infantry category
-								entryIsCategory = teamCategory::Infantry;
-							}
-							else
-							{
-								// This unit is from ground vehicles category
-								entryIsCategory = teamCategory::Ground;
-							}
-						}
-
-						// if a team have multiple categories it will be a mixed category
-						teamIsCategory = teamIsCategory == teamCategory::None || teamIsCategory == entryIsCategory ? entryIsCategory : teamCategory::Unclassified;
-
-						if (teamIsCategory == teamCategory::Unclassified)
-							break;
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				// If this value is set and the team is MIXED, override category type
-				if (teamIsCategory == teamCategory::Unclassified
-					&& mergeUnclassifiedCategoryWith >= 0)
-				{
-					teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
-				}
-
-				if (!isFallbackEnabled && validCategory != teamCategory::None && validCategory != teamIsCategory)
-					continue;
-			}
-
-			bool allObjectsCanBeBuiltOrRecruited = true;
-
-			if (pTrigger->Team1->Autocreate && canAutocreate)
-			{
-				for (auto entry : pTrigger->Team1->TaskForce->Entries)
+				if (entry.Amount > 0)
 				{
 					if (!entry.Type)
 						continue;
 
-					if (entry.Amount == 0) // As soon as there are empty slots the check finish
-						break;
-
-					bool canBeBuilt = true;
-
-					// Exists the required factory for producing the checked unit?
-					switch (entry.Type->WhatAmI())
+					if (entry.Type->WhatAmI() == AbstractType::AircraftType
+						|| entry.Type->ConsideredAircraft)
 					{
-					case AbstractType::InfantryType:
-						if (!hasInfantryFactory)
-							canBeBuilt = false;
-						break;
+						// This unit is from air category
+						entryIsCategory = teamCategory::Air;
+					}
+					else
+					{
+						auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(entry.Type);
 
-					case AbstractType::AircraftType:
-						if (!hasAircraftFactory)
-							canBeBuilt = false;
-						break;
-
-					case AbstractType::UnitType:
-						if (entry.Type->Naval)
+						if (pTechnoTypeExt && (pTechnoTypeExt->ConsideredNaval
+							|| (entry.Type->Naval
+								&& (entry.Type->MovementZone != MovementZone::Amphibious
+									&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
+									&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher))))
 						{
-							if (!hasNavalFactory)
-								canBeBuilt = false;
+							// This unit is from naval category
+							entryIsCategory = teamCategory::Naval;
+						}
+						else if (entry.Type->WhatAmI() == AbstractType::InfantryType
+							&& (!pTechnoTypeExt || !pTechnoTypeExt->ConsideredVehicle))
+						{
+							// This unit is from infantry category
+							entryIsCategory = teamCategory::Infantry;
 						}
 						else
 						{
-							if (!hasUnitFactory)
-								canBeBuilt = false;
+							// This unit is from ground vehicles category
+							entryIsCategory = teamCategory::Ground;
 						}
-						break;
-
-					default:
-						break;
 					}
 
-					// Meets the production prerequisites?
-					if (canBeBuilt)
-						canBeBuilt = HouseExt::PrerequisitesMet(pHouse, entry.Type, false);
+					// If a team has multiple categories it will be a mixed category
+					teamIsCategory = (teamIsCategory == teamCategory::None || teamIsCategory == entryIsCategory) ? entryIsCategory : teamCategory::Unclassified;
 
-					if (!canBeBuilt)
+					if (teamIsCategory == teamCategory::Unclassified)
+						break;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			// If this value is set and the team is MIXED, override category type
+			if (teamIsCategory == teamCategory::Unclassified
+				&& mergeUnclassifiedCategoryWith >= 0)
+			{
+				teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
+			}
+
+			// Early discard if fallback is disabled and category does not match
+			if (!isFallbackEnabled && validCategory != teamCategory::None && validCategory != teamIsCategory)
+				continue;
+		}
+
+		// The trigger must be compatible with the owner ("ConditionType=-1" is always valid)
+		if ((int)pTrigger->ConditionType >= 0)
+		{
+			bool conditionMet = true;
+
+			switch ((int)pTrigger->ConditionType)
+			{
+			case 0:
+				// Case 0: "enemy owns"
+				conditionMet = pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, pTrigger->ConditionObject);
+				break;
+
+			case 1:
+				// Case 1: "house owns"
+				conditionMet = pTrigger->ConditionObject && TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject);
+				break;
+
+			case 4:
+				// Case 4: "Enemy house economy threshold?"
+				conditionMet = pTrigger->HouseCredits(nullptr, targetHouse);
+				break;
+
+			case 5:
+				// Case 5: "Iron Curtain is charged?"
+				conditionMet = pTrigger->IronCurtainCharged(pHouse, nullptr);
+				break;
+
+			case 6:
+				// Case 6: "Chronosphere is charged?"
+				conditionMet = pTrigger->ChronoSphereCharged(pHouse, nullptr);
+				break;
+
+			case 7:
+				// Case 7: "civilian owns"
+				conditionMet = pTrigger->ConditionObject && TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject);
+				break;
+
+			case 8:
+				// Case 8: "enemy owns" across all enemies
+				conditionMet = pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject);
+				break;
+
+			case 9:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 10:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::HouseOwns(pTrigger, pHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 11:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::NeutralOwns(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 12:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 13:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::HouseOwns(pTrigger, pHouse, true, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 14:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 15:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::HouseOwnsAll(pTrigger, pHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 16:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::NeutralOwnsAll(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 17:
+				{
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+						&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, RulesExt::Global()->AITargetTypesLists[listIdx]);
+				}
+				break;
+
+			case 18:
+				// Case 18: Check destroyed bridges
+				conditionMet = TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount);
+				break;
+
+			case 19:
+				// Case 19: Check undamaged bridges
+				conditionMet = TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount);
+				break;
+
+			default:
+				// Other cases from vanilla game
+				conditionMet = pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit);
+				break;
+			}
+
+			if (!conditionMet)
+				continue;
+		}
+
+		bool allObjectsCanBeBuiltOrRecruited = true;
+
+		if (pTrigger->Team1->Autocreate && canAutocreate)
+		{
+			for (const auto& entry : pTrigger->Team1->TaskForce->Entries)
+			{
+				if (!entry.Type)
+					continue;
+
+				if (entry.Amount == 0) // As soon as there are empty slots the check finish
+					break;
+
+				bool canBeBuilt = true;
+
+				// Exists the required factory for producing the checked unit?
+				switch (entry.Type->WhatAmI())
+				{
+				case AbstractType::InfantryType:
+					if (!hasInfantryFactory)
+						canBeBuilt = false;
+					break;
+
+				case AbstractType::AircraftType:
+					if (!hasAircraftFactory)
+						canBeBuilt = false;
+					break;
+
+				case AbstractType::UnitType:
+					if (entry.Type->Naval)
+					{
+						if (!hasNavalFactory)
+							canBeBuilt = false;
+					}
+					else
+					{
+						if (!hasUnitFactory)
+							canBeBuilt = false;
+					}
+					break;
+
+				default:
+					break;
+				}
+
+				// Meets the production prerequisites?
+				if (canBeBuilt)
+					canBeBuilt = HouseExt::PrerequisitesMet(pHouse, entry.Type, false);
+
+				if (!canBeBuilt)
+				{
+					allObjectsCanBeBuiltOrRecruited = false;
+					break;
+				}
+			}
+		}
+		else
+		{
+			allObjectsCanBeBuiltOrRecruited = false;
+		}
+
+		if (!allObjectsCanBeBuiltOrRecruited && pTrigger->Team1->Recruiter)
+		{
+			allObjectsCanBeBuiltOrRecruited = true;
+
+			for (const auto& entry : pTrigger->Team1->TaskForce->Entries)
+			{
+				if (!entry.Type)
+					continue;
+
+				// Check if each unit in the taskforce has the available recruitable units in the map
+				if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
+				{
+					auto const it = ownedRecruitables.find(entry.Type);
+					int const recruits = (it != ownedRecruitables.end()) ? it->second : 0;
+
+					if (recruits < entry.Amount)
 					{
 						allObjectsCanBeBuiltOrRecruited = false;
 						break;
 					}
 				}
 			}
-			else
-			{
-				allObjectsCanBeBuiltOrRecruited = false;
-			}
-
-			if (!allObjectsCanBeBuiltOrRecruited && pTrigger->Team1->Recruiter)
-			{
-				allObjectsCanBeBuiltOrRecruited = true;
-
-				for (auto entry : pTrigger->Team1->TaskForce->Entries)
-				{
-					if (!entry.Type)
-						continue;
-
-					// Check if each unit in the taskforce has the available recruitable units in the map
-					if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
-					{
-						auto const it = ownedRecruitables.find(entry.Type);
-						int const recruits = (it != ownedRecruitables.end()) ? it->second : 0;
-
-						if (recruits < entry.Amount)
-						{
-							allObjectsCanBeBuiltOrRecruited = false;
-							break;
-						}
-					}
-				}
-			}
-
-			// We can't let AI cheat in this trigger because doesn't have the required tech tree available
-			if (!allObjectsCanBeBuiltOrRecruited)
-				continue;
-
-			// Special case: triggers become very important if they reach the max priority (usually 5000, see maxPriority).
-			// They get stored in an elitist list and all previous triggers are discarded
-			if (pTrigger->Weight_Current >= maxPriority && !onlyCheckImportantTriggers)
-			{
-				validCandidates.clear();
-				onlyCheckImportantTriggers = true;
-				validCategory = teamCategory::None;
-				splitTriggersByCategory = false; // VIP teams break the categories logic (on purpose)
-			}
-
-			// Passed all checks, save this trigger for later.
-			double const weight = (pTrigger->Weight_Current < 1.0) ? 1.0 : pTrigger->Weight_Current;
-			validCandidates.push_back({ pTrigger, weight, teamIsCategory });
 		}
+
+		// We can't let AI cheat in this trigger because doesn't have the required tech tree available
+		if (!allObjectsCanBeBuiltOrRecruited)
+			continue;
+
+		// Special case: triggers become very important if they reach the max priority (usually 5000, see maxPriority).
+		// They get stored in an elitist list and all previous triggers are discarded
+		if (pTrigger->Weight_Current >= maxPriority && !onlyCheckImportantTriggers)
+		{
+			validCandidates.clear();
+			onlyCheckImportantTriggers = true;
+			validCategory = teamCategory::None;
+			splitTriggersByCategory = false; // VIP teams break the categories logic (on purpose)
+		}
+
+		// Passed all checks, save this trigger for later.
+		double const weight = (pTrigger->Weight_Current < 1.0) ? 1.0 : pTrigger->Weight_Current;
+		validCandidates.push_back({ pTrigger, weight, teamIsCategory });
 	}
 
 	if (validCandidates.empty())
