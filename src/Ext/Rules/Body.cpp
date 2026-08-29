@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <cmath>
+
+#include <Utilities/SequenceRates.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -507,6 +511,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Global default per-sequence animation rates for infantry.
+	for (size_t i = 0; i < SequenceRates::Entries.size(); ++i)
+	{
+		char key[64];
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultRate", SequenceRates::Entries[i].Name);
+		exINI.ReadInteger(GameStrings::AudioVisual, key, &this->CustomSequenceRates[i]);
+
+		bool normalized;
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultNormalized", SequenceRates::Entries[i].Name);
+		if (exINI.ReadBool(GameStrings::AudioVisual, key, &normalized))
+			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
+	}
+
 }
 
 // this should load everything that TypeData is not dependant on
@@ -839,7 +857,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowBeaconHotKeyInSinglePlayer)
 		.Process(this->StartFacing)
 		.Process(this->StartFacing_Random)
-		;
+		.Process(this->CustomSequenceRates)
+		.Process(this->CustomSequenceNormalized)
+    ;
 }
 
 void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

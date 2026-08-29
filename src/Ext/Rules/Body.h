@@ -404,6 +404,12 @@ public:
 		Valueable<int> StartFacing;
 		Valueable<bool> StartFacing_Random;
 
+		// Global default per-sequence animation rates for infantry
+		std::vector<int> CustomSequenceRates;
+
+		// Global default per-sequence game-speed normalization flags for infantry
+		std::vector<int> CustomSequenceNormalized;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -747,6 +753,9 @@ public:
 
 			, StartFacing { 0 }
 			, StartFacing_Random { false }
+
+			, CustomSequenceRates(42, -1)
+			, CustomSequenceNormalized(42, -1)
 		{ }
 
 		virtual ~ExtData() = default;
