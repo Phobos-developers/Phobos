@@ -509,6 +509,14 @@ msgid ""
 msgstr ""
 "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题（by Starkku）"
 
+msgid ""
+"Fixed the bug that slaves would be handed over to the neutral house "
+"instead of respecting `Slaved.OwnerWhenMasterKilled` when their master "
+"was sold or self-destructed (by frg2089)"
+msgstr ""
+"修复了奴隶矿场被出售或自毁时，奴隶会归于中立阵营而不是遵守 `Slaved.OwnerWhenMasterKilled` 设置的问题（by "
+"frg2089）"
+
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
 

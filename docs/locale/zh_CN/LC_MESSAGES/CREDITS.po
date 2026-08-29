@@ -1668,3 +1668,6 @@ msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
 msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
 
+msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+

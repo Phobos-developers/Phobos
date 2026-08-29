@@ -1223,6 +1223,12 @@ msgid ""
 msgstr ""
 "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题。"
 
+msgid ""
+"Fixed the bug that `Slaved.OwnerWhenMasterKilled` was not respected when "
+"the slave miner was sold or self-destructed, as the slaves would be "
+"handed over to the neutral house (the vanilla fallback) instead."
+msgstr "修复了奴隶矿场被出售或自毁时，奴隶会归于中立阵营而不是遵守 `Slaved.OwnerWhenMasterKilled` 设置的问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
