@@ -19,6 +19,7 @@ public:
 		Nullable<double> NewTeamsSelector_GroundCategoryPercentage;
 		Nullable<double> NewTeamsSelector_NavalCategoryPercentage;
 		Nullable<double> NewTeamsSelector_AirCategoryPercentage;
+		Nullable<double> NewTeamsSelector_InfantryCategoryPercentage;
 
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, NewTeamsSelector_MergeUnclassifiedCategoryWith { }
@@ -26,6 +27,7 @@ public:
 			, NewTeamsSelector_GroundCategoryPercentage { }
 			, NewTeamsSelector_NavalCategoryPercentage { }
 			, NewTeamsSelector_AirCategoryPercentage { }
+			, NewTeamsSelector_InfantryCategoryPercentage { }
 		{ }
 
 		virtual ~ExtData() = default;

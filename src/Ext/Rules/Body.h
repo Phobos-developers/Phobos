@@ -274,6 +274,7 @@ public:
 		Valueable<double> NewTeamsSelector_GroundCategoryPercentage;
 		Valueable<double> NewTeamsSelector_NavalCategoryPercentage;
 		Valueable<double> NewTeamsSelector_AirCategoryPercentage;
+		Valueable<double> NewTeamsSelector_InfantryCategoryPercentage;
 
 		Valueable<AffectedHouse> BerzerkTargeting;
 
@@ -439,10 +440,11 @@ public:
 			, NewTeamsSelector_SplitTriggersByCategory { true }
 			, NewTeamsSelector_EnableFallback { false }
 			, NewTeamsSelector_MergeUnclassifiedCategoryWith { -1 }
-			, NewTeamsSelector_UnclassifiedCategoryPercentage { 0.25 }
-			, NewTeamsSelector_GroundCategoryPercentage { 0.25 }
-			, NewTeamsSelector_NavalCategoryPercentage { 0.25 }
-			, NewTeamsSelector_AirCategoryPercentage { 0.25 }
+			, NewTeamsSelector_UnclassifiedCategoryPercentage { 0.20 }
+			, NewTeamsSelector_GroundCategoryPercentage { 0.20 }
+			, NewTeamsSelector_NavalCategoryPercentage { 0.20 }
+			, NewTeamsSelector_AirCategoryPercentage { 0.20 }
+			, NewTeamsSelector_InfantryCategoryPercentage { 0.20 }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }

@@ -4,10 +4,11 @@
 enum class teamCategory : int
 {
 	None = 0, // No category. Should be default value
-	Ground = 1,
-	Air = 2,
-	Naval = 3,
-	Unclassified = 4
+	Ground = 1, // Ground vehicles (Tanks, etc.)
+	Air = 2, // Aircrafts & jumpjets
+	Naval = 3, // Naval units
+	Infantry = 4, // Infantry units
+	Unclassified = 5 // Mixed teams
 };
 
 struct CandidateTrigger
@@ -63,14 +64,16 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	double percentageGroundTriggers = 0.0;
 	double percentageNavalTriggers = 0.0;
 	double percentageAirTriggers = 0.0;
+	double percentageInfantryTriggers = 0.0;
 
 	if (splitTriggersByCategory)
 	{
 		mergeUnclassifiedCategoryWith = pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.isset() ? pHouseTypeExt->NewTeamsSelector_MergeUnclassifiedCategoryWith.Get() : RulesExt::Global()->NewTeamsSelector_MergeUnclassifiedCategoryWith;  // Should mixed teams be merged into another category?
 		percentageUnclassifiedTriggers = pHouseTypeExt->NewTeamsSelector_UnclassifiedCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_UnclassifiedCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_UnclassifiedCategoryPercentage; // Mixed teams
-		percentageGroundTriggers = pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_GroundCategoryPercentage; // Only ground
+		percentageGroundTriggers = pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_GroundCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_GroundCategoryPercentage; // Only ground vehicles
 		percentageNavalTriggers = pHouseTypeExt->NewTeamsSelector_NavalCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_NavalCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_NavalCategoryPercentage; // Only Naval=yes
 		percentageAirTriggers = pHouseTypeExt->NewTeamsSelector_AirCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_AirCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_AirCategoryPercentage; // Only Aircrafts & jumpjets
+		percentageInfantryTriggers = pHouseTypeExt->NewTeamsSelector_InfantryCategoryPercentage.isset() ? pHouseTypeExt->NewTeamsSelector_InfantryCategoryPercentage.Get() : RulesExt::Global()->NewTeamsSelector_InfantryCategoryPercentage; // Only infantry
 
 		// Merge mixed category with another category, if set
 		if (mergeUnclassifiedCategoryWith >= 0)
@@ -89,6 +92,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				percentageNavalTriggers += percentageUnclassifiedTriggers;
 				break;
 
+			case (int)teamCategory::Infantry:
+				percentageInfantryTriggers += percentageUnclassifiedTriggers;
+				break;
+
 			default:
 				break;
 			}
@@ -100,11 +107,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		percentageGroundTriggers = percentageGroundTriggers < 0.0 || percentageGroundTriggers > 1.0 ? 0.0 : percentageGroundTriggers;
 		percentageNavalTriggers = percentageNavalTriggers < 0.0 || percentageNavalTriggers > 1.0 ? 0.0 : percentageNavalTriggers;
 		percentageAirTriggers = percentageAirTriggers < 0.0 || percentageAirTriggers > 1.0 ? 0.0 : percentageAirTriggers;
+		percentageInfantryTriggers = percentageInfantryTriggers < 0.0 || percentageInfantryTriggers > 1.0 ? 0.0 : percentageInfantryTriggers;
 
-		double totalPercengates = percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers;
+		double totalPercengates = percentageUnclassifiedTriggers + percentageGroundTriggers + percentageNavalTriggers + percentageAirTriggers + percentageInfantryTriggers;
 		if (totalPercengates > 1.0 || totalPercengates <= 0.0)
 			splitTriggersByCategory = false;
-
 
 		if (splitTriggersByCategory)
 		{
@@ -113,6 +120,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			int groundValue = (int)(percentageGroundTriggers * 100.0);
 			int airValue = (int)(percentageAirTriggers * 100.0);
 			int navalValue = (int)(percentageNavalTriggers * 100.0);
+			int infantryValue = (int)(percentageInfantryTriggers * 100.0);
 
 			// Pick what type of team will be selected in this round
 			if (percentageUnclassifiedTriggers > 0.0 && categoryDice <= unclassifiedValue)
@@ -131,6 +139,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			{
 				validCategory = teamCategory::Naval;
 			}
+			else if (percentageInfantryTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue + infantryValue))
+			{
+				validCategory = teamCategory::Infantry;
+			}
 			else
 			{
 				// If the sum of all percentages is less than 100% then that empty space will work like "no categories"
@@ -144,7 +156,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		switch (validCategory)
 		{
 		case teamCategory::Ground:
-			Debug::Log("AITeamsSelector - This time only GROUND teams will be picked.\n");
+			Debug::Log("AITeamsSelector - This time only GROUND VEHICLE teams will be picked.\n");
+			break;
+
+		case teamCategory::Infantry:
+			Debug::Log("AITeamsSelector - This time only INFANTRY teams will be picked.\n");
 			break;
 
 		case teamCategory::Unclassified:
@@ -531,24 +547,25 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						else
 						{
 							auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(entry.Type);
-							if (!pTechnoTypeExt)
-								continue;
 
-							if (pTechnoTypeExt->ConsideredNaval
+							if (pTechnoTypeExt && (pTechnoTypeExt->ConsideredNaval
 								|| (entry.Type->Naval
 									&& (entry.Type->MovementZone != MovementZone::Amphibious
 										&& entry.Type->MovementZone != MovementZone::AmphibiousDestroyer
-										&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher)))
+										&& entry.Type->MovementZone != MovementZone::AmphibiousCrusher))))
 							{
 								// This unit is from naval category
 								entryIsCategory = teamCategory::Naval;
 							}
-
-							if (pTechnoTypeExt->ConsideredVehicle
-								|| (entryIsCategory != teamCategory::Naval
-									&& entryIsCategory != teamCategory::Air))
+							else if (entry.Type->WhatAmI() == AbstractType::InfantryType
+								&& (!pTechnoTypeExt || !pTechnoTypeExt->ConsideredVehicle))
 							{
-								// This unit is from ground category
+								// This unit is from infantry category
+								entryIsCategory = teamCategory::Infantry;
+							}
+							else
+							{
+								// This unit is from ground vehicles category
 								entryIsCategory = teamCategory::Ground;
 							}
 						}
@@ -572,7 +589,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
 				}
 
-				if (validCategory != teamIsCategory)
+				if (!isFallbackEnabled && validCategory != teamCategory::None && validCategory != teamIsCategory)
 					continue;
 			}
 
