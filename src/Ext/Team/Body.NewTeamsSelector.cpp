@@ -236,7 +236,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	for (auto const pTechno : TechnoClass::Array)
 	{
-		if (!TechnoExt::IsValidTechno(pTechno)) continue;
+		if (!TechnoExt::IsValidTechno(pTechno) || !pTechno->IsAlive || pTechno->Health <= 0)
+			continue;
 
 		if (pTechno->WhatAmI() == AbstractType::Building)
 		{
@@ -268,17 +269,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					break;
 				}
 			}
-			else
+			else if (pBuildingType->BridgeRepairHut)
 			{
-				if (pBuildingType->BridgeRepairHut)
-				{
-					CellStruct cell = pTechno->GetCell()->MapCoords;
+				CellStruct cell = pTechno->GetCell()->MapCoords;
 
-					if (MapClass::Instance.IsLinkedBridgeDestroyed(cell))
-						destroyedBridgesCount++;
-					else
-						undamagedBridgesCount++;
-				}
+				if (MapClass::Instance.IsLinkedBridgeDestroyed(cell))
+					destroyedBridgesCount++;
+				else
+					undamagedBridgesCount++;
 			}
 
 			continue;
@@ -287,8 +285,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		auto const pFoot = static_cast<FootClass*>(pTechno);
 
 		if (!pFoot
-			|| !pTechno->IsAlive
-			|| pTechno->Health <= 0
 			|| !pTechno->IsOnMap // Note: underground movement is considered "IsOnMap == false"
 			|| pTechno->Transporter
 			|| pTechno->Absorbed
