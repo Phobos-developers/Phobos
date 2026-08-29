@@ -389,13 +389,63 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	FillDefaultPrerequisites();
 }
 
-// this should load everything that TypeData is not dependant on
-// i.e. InfantryElectrocuted= can go here since nothing refers to it
-// but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	INI_EX exINI(pINI);
 
+	this->GenericPrerequisitesAlternates.Clear();
+
+	auto loadAlternates = [&](const char* name) -> DynamicVectorClass<TechnoTypeClass*>
+	{
+		DynamicVectorClass<TechnoTypeClass*> alternates;
+		char keyName[0x80];
+		char formattedName[0x80];
+		strcpy_s(formattedName, name);
+
+		if (formattedName[0] >= 'a' && formattedName[0] <= 'z')
+			formattedName[0] = static_cast<char>(formattedName[0] - 'a' + 'A');
+		for (size_t k = 1; formattedName[k] != '\0'; ++k)
+		{
+			if (formattedName[k] >= 'A' && formattedName[k] <= 'Z')
+				formattedName[k] = static_cast<char>(formattedName[k] - 'A' + 'a');
+		}
+
+		_snprintf_s(keyName, _TRUNCATE, "Prerequisite%sAlternate", formattedName);
+
+		if (pINI->ReadString("General", keyName, "", Phobos::readBuffer) > 0)
+		{
+			char* context = nullptr;
+			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (auto const pType = TechnoTypeClass::Find(cur))
+				{
+					alternates.AddItem(pType);
+				}
+			}
+		}
+
+		return alternates;
+	};
+
+	// Index 0: "-" dummy
+	DynamicVectorClass<TechnoTypeClass*> emptyList;
+	this->GenericPrerequisitesAlternates.AddItem(emptyList);
+
+	for (int i = 1; i < this->GenericPrerequisitesNames.Count; ++i)
+	{
+		const char* name = this->GenericPrerequisitesNames[i];
+		auto alternates = loadAlternates(name);
+
+		if (_stricmp(name, "PROC") == 0)
+		{
+			if (alternates.Count == 0 && pThis->PrerequisiteProcAlternate)
+			{
+				alternates.AddItem(pThis->PrerequisiteProcAlternate);
+			}
+		}
+
+		this->GenericPrerequisitesAlternates.AddItem(alternates);
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -624,6 +674,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->GenericPrerequisites)
 		.Process(this->GenericPrerequisitesNames)
+		.Process(this->GenericPrerequisitesAlternates)
 		.Process(this->NewTeamsSelector)
 		.Process(this->NewTeamsSelector_SplitTriggersByCategory)
 		.Process(this->NewTeamsSelector_EnableFallback)

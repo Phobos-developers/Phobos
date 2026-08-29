@@ -6,17 +6,27 @@ bool HouseExt::HasGenericPrerequisite(int idx, HouseClass* const pHouse)
 		return false;
 
 	int absoluteIndex = std::abs(idx);
-	if (absoluteIndex >= RulesExt::Global()->GenericPrerequisites.Count)
+	auto const pRulesExt = RulesExt::Global();
+	if (absoluteIndex >= pRulesExt->GenericPrerequisites.Count)
 		return false;
 
-	DynamicVectorClass<int> selectedPrerequisite = RulesExt::Global()->GenericPrerequisites.GetItem(absoluteIndex);
-	if (selectedPrerequisite.Count == 0)
-		return false;
-
+	// Check buildings matching this generic prerequisite
+	DynamicVectorClass<int> selectedPrerequisite = pRulesExt->GenericPrerequisites.GetItem(absoluteIndex);
 	for (auto idxItem : selectedPrerequisite)
 	{
 		if (pHouse->ActiveBuildingTypes.GetItemCount(idxItem) > 0)
 			return true;
+	}
+
+	// Check alternate technos (vehicles, infantry, aircraft, etc.)
+	if (absoluteIndex < pRulesExt->GenericPrerequisitesAlternates.Count)
+	{
+		DynamicVectorClass<TechnoTypeClass*> selectedAlternates = pRulesExt->GenericPrerequisitesAlternates.GetItem(absoluteIndex);
+		for (auto pTechnoType : selectedAlternates)
+		{
+			if (pHouse->CountOwnedNow(pTechnoType) > 0)
+				return true;
+		}
 	}
 
 	return false;
@@ -196,17 +206,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 
 			if (idx < 0)
 			{
-				// Also check slave miner as alternative for PROC (-6)
-				if (idx == -6 &&
-					RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
-					pThis->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
-				{
-					found = true;
-				}
-				else
-				{
-					found = HouseExt::HasGenericPrerequisite(idx, pThis);
-				}
+				found = HouseExt::HasGenericPrerequisite(idx, pThis);
 			}
 			else
 			{
@@ -234,16 +234,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 
 				if (idx < 0)
 				{
-					if (idx == -6 &&
-						RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
-						pThis->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
-					{
-						found = true;
-					}
-					else
-					{
-						found = HouseExt::HasGenericPrerequisite(idx, pThis);
-					}
+					found = HouseExt::HasGenericPrerequisite(idx, pThis);
 				}
 				else
 				{

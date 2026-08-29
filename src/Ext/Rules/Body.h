@@ -264,6 +264,7 @@ public:
 
 		DynamicVectorClass<DynamicVectorClass<int>> GenericPrerequisites;
 		DynamicVectorClass<const char*> GenericPrerequisitesNames;
+		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> GenericPrerequisitesAlternates;
 
 		Valueable<bool> NewTeamsSelector;
 		Valueable<bool> NewTeamsSelector_SplitTriggersByCategory;
@@ -433,6 +434,7 @@ public:
 			, ShowDesignatorRange { true }
 			, GenericPrerequisites { }
 			, GenericPrerequisitesNames { }
+			, GenericPrerequisitesAlternates { }
 			, NewTeamsSelector { false }
 			, NewTeamsSelector_SplitTriggersByCategory { true }
 			, NewTeamsSelector_EnableFallback { false }
