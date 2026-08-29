@@ -868,6 +868,7 @@ msgid ""
 "[AutoDeath based on player power status and player credits](New-or-"
 "Enhanced-Logics.md#kill-object-automatically) (by Flactine)"
 msgstr ""
+"[基于玩家电力状态和玩家资金自毁](New-or-Enhanced-Logics.md#kill-object-automatically)（by Flactine）"
 
 msgid ""
 "[Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) "

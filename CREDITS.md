@@ -900,7 +900,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
-  - Add a new AutoDeath condition based on the owner's power status
+  - Add new AutoDeath conditions based on the owner's power status and the player's credits
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

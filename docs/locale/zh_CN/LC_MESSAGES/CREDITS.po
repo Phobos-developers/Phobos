@@ -3074,8 +3074,9 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
-msgid "Add a new AutoDeath condition based on the owner's power status"
+msgid "Add new AutoDeath conditions based on the owner's power status and the player's credits"
 msgstr ""
+"添加了基于所有者电力状态和玩家资金的新自毁条件"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
