@@ -7,14 +7,22 @@ ScriptExt::ExtContainer ScriptExt::ExtMap;
 // =============================
 // load / save
 
+template <typename T>
+void ScriptExt::Serialize(T& Stm)
+{
+	//Stm;
+}
+
 void ScriptExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	// Nothing yet
+	AbstractExt::LoadFromStream(Stm);
+	this->Serialize(Stm);
 }
 
 void ScriptExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	// Nothing yet
+	AbstractExt::SaveToStream(Stm);
+	this->Serialize(Stm);
 }
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
@@ -24,6 +32,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 
 	switch (static_cast<PhobosScripts>(action))
 	{
+	case PhobosScripts::PlaySpeech:
+		ScriptExt::PlaySpeech(pTeam);
+		break;
 	case PhobosScripts::TimedAreaGuard:
 		ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
 		break;
@@ -1242,6 +1253,13 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
 
 	return isAvailable;
+}
+
+void ScriptExt::PlaySpeech(TeamClass* pTeam)
+{
+	const int index = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+	VoxClass::PlayIndex(index);
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::Log(const char* pFormat, ...)

@@ -18,21 +18,36 @@ public:
 
 	void AI();
 	void AI_Temporal();
-	void KillAnim();
-	void CreateAnim();
-	void UpdateCumulativeAnim();
-	void TransferCumulativeAnim(AttachEffectClass* pSource);
 
-	bool CanShowAnim(bool skipAnimCheck = false) const
+	void KillAnim()
+	{
+		if (this->Animation)
+		{
+			this->Animation->UnInit();
+			this->Animation = nullptr;
+		}
+	}
+
+	void CreateAnim();
+	void UpdateCumulativeAnim(int count);
+
+	bool CanShowAnim() const
 	{
 		const auto pType = this->Type;
-		return (pType->Animation || skipAnimCheck || this->HasCumulativeAnim)
+		return (pType->Animation || (pType->Cumulative && pType->CumulativeAnimations.size() > 0))
 			&& (this->IsOnline || pType->Animation_OfflineAction != AttachedAnimFlag::Hides)
 			&& (!this->IsUnderTemporal || pType->Animation_TemporalAction != AttachedAnimFlag::Hides)
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 
-	void SetAnimationTunnelState(bool visible);
+	void SetAnimationTunnelState(bool visible)
+	{
+		if (!this->IsInTunnel && !visible)
+			this->KillAnim();
+
+		this->IsInTunnel = !visible;
+	}
+
 	AttachEffectTypeClass* GetType() const { return this->Type; }
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
@@ -42,12 +57,13 @@ public:
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
+	HouseClass* GetInvokerHouse() const { return this->InvokerHouse; }
 	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
 
 	bool IsActiveIgnorePowered() const
 	{
 		if (this->IsSelfOwned())
-			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->ShouldRefreshDuration;
 		else
 			return this->Duration;
 	}
@@ -62,8 +78,8 @@ public:
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
+	inline void CloakCheck();
 	void OnlineCheck();
-	void CloakCheck();
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
@@ -93,16 +109,19 @@ private:
 	bool IsOnline;
 	bool IsCloaked;
 	bool HasInitialized;
-	bool NeedsDurationRefresh;
+	bool ShouldRefreshDuration;
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
 	LaserTrailClass* LaserTrail;
+	Sequence LastSequenceCheck;
 
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
-	bool NeedsRecalculateStat;
+	bool ShouldRecalculateStats;
+	int FiringCount;
+	int ReceivedDamageCount;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -120,6 +139,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasOnDamageDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -136,6 +156,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasOnDamageDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }

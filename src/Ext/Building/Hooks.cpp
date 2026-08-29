@@ -4,6 +4,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
 #pragma region Update
@@ -290,9 +291,26 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	GET(BuildingClass* const, pBld, ESI);
 
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
+	{
 		pExt->IsCreatedFromMapFile = true;
 
+		GET_STACK(bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
+
+		if (hasPower)
+			pExt->HasPowerFromMapFile = true;
+	}
+
 	return 0;
+}
+
+DEFINE_HOOK(0x44FDC5, CreateBuildingFromINIFile_AfterCTOR_AfterUnlimbo, 0xA)
+{
+	GET(BuildingClass* const, pBld, ESI);
+
+	if (auto const pExt = BuildingExt::TryFetch(pBld))
+		pExt->HasPowerFromMapFile = false;
+
+	return 0x44FDD3;
 }
 
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
@@ -327,8 +345,18 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EBP);
 
-	AnimExt::Fetch(pAnim)->ParentBuilding = pThis;
-	TechnoExt::Fetch(pThis)->AnimRefCount++;
+	// This runs while a savegame is loading too, where neither extension exists yet:
+	// the building's is restored from the extension stream and attached once the load
+	// settles, and an animation the game creates along the way gets one then as well.
+	// The reference count only makes sense if both ends are there, so skip both.
+	auto const pAnimExt = AnimExt::TryFetch(pAnim);
+	auto const pExt = TechnoExt::TryFetch(pThis);
+
+	if (pAnimExt && pExt)
+	{
+		pAnimExt->ParentBuilding = pThis;
+		pExt->AnimRefCount++;
+	}
 
 	return 0;
 }
@@ -969,7 +997,7 @@ DEFINE_HOOK(0x44939F, BuildingClass_Captured_BuildupFix, 0x7)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change. 
+	// If we're supposed to be playing buildup during/after owner change reset any changes to mission or BState made during owner change.
 	if (pThis->CurrentMission == Mission::Construction && pThis->BState == (int)BStateType::Construction)
 	{
 		pThis->IsReadyToCommence = false;
@@ -1014,10 +1042,104 @@ static __inline bool AllowBuildingProductionAnim(BuildingTypeClass* pType)
 	if (pType->ConstructionYard)
 		return true;
 
-	if (pType->Factory == AbstractType::BuildingType && GeneralUtils::IsValidString(pType->BuildingAnim[(int)BuildingAnimSlot::Production].Anim))
+	if (pType->Factory == AbstractType::BuildingType && GeneralUtils::IsValidString(pType->GetBuildingAnim(BuildingAnimSlot::Production).Anim))
 		return true;
 
 	return false;
+}
+
+static bool IsRoofExitTechno(TechnoTypeClass* pType)
+{
+	return TechnoTypeExt::Fetch(pType)->ExitThroughRoof.Get(pType->JumpJet || pType->BalloonHover);
+}
+
+static bool IsRoofExitBuildingUnit(BuildingClass* pBuilding)
+{
+	const auto pUnit = pBuilding->GetNthLink();
+	return pUnit && IsRoofExitTechno(pUnit->GetTechnoType());
+}
+
+DEFINE_HOOK(0x43D0CF, BuildingClass_DrawDoorAnim_ExitThroughRoof, 0x6)
+{
+	enum { UseRoof = 0x43D0D9, UseGate = 0x43D0E7 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	return TechnoTypeExt::Fetch(pType)->ExitThroughRoof.Get(pType->JumpJet) ? UseRoof : UseGate; // 0x43D0CF, JumpJet Only
+}
+
+DEFINE_HOOK(0x43D363, BuildingClass_DrawUnderDoorAnim_ExitThroughRoof, 0x6)
+{
+	enum { MarkRoof = 0x43D381, Skip = 0x43D386 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	return IsRoofExitTechno(pType) ? MarkRoof : Skip;
+}
+
+static AnimTypeClass* PickRoofProductionAnim(BuildingTypeExt* pTypeExt, bool isDamaged, bool garrisoned)
+{
+	if (garrisoned && pTypeExt->RoofProductionAnimGarrisoned.Get() != nullptr)
+		return pTypeExt->RoofProductionAnimGarrisoned.Get();
+
+	if (isDamaged && pTypeExt->RoofProductionAnimDamaged.Get() != nullptr)
+		return pTypeExt->RoofProductionAnimDamaged.Get();
+
+	return pTypeExt->RoofProductionAnim.Get();
+}
+
+static void PlayRoofProductionAnim(BuildingClass* pBuilding, BuildingTypeExt* pTypeExt, bool isDamaged, bool garrisoned)
+{
+	const char* animName = nullptr;
+
+	if (auto pAnimType = PickRoofProductionAnim(pTypeExt, isDamaged, garrisoned))
+	{
+		animName = pAnimType->get_ID();
+	}
+	else
+	{
+		// Fall back to the plain ProductionAnim only, so the roof line stays independent
+		// of the ProductionAnimDamaged/Garrisoned branches.
+		animName = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production).Anim;
+	}
+
+	if (!GeneralUtils::IsValidString(animName))
+		return;
+
+	// The roof anim needs its own placement and power values without affecting
+	// the plain line, so apply them only for the duration of this PlayAnim
+	// call.
+	auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+
+	const Point2D savedPosition = prodAnim.Position;
+	const int savedZAdjust = prodAnim.ZAdjust;
+	const int savedYSort = prodAnim.YSort;
+	const bool savedPowered = prodAnim.Powered;
+	const bool savedPoweredLight = prodAnim.PoweredLight;
+	const bool savedPoweredEffect = prodAnim.PoweredEffect;
+	const bool savedPoweredSpecial = prodAnim.PoweredSpecial;
+
+	prodAnim.Position.X = pTypeExt->RoofProductionAnimX.Get(savedPosition.X);
+	prodAnim.Position.Y = pTypeExt->RoofProductionAnimY.Get(savedPosition.Y);
+	prodAnim.ZAdjust = pTypeExt->RoofProductionAnimZAdjust.Get(savedZAdjust);
+	prodAnim.YSort = pTypeExt->RoofProductionAnimYSort.Get(savedYSort);
+	prodAnim.Powered = pTypeExt->RoofProductionAnimPowered.Get(savedPowered);
+	prodAnim.PoweredLight = pTypeExt->RoofProductionAnimPoweredLight.Get(savedPoweredLight);
+	prodAnim.PoweredEffect = pTypeExt->RoofProductionAnimPoweredEffect.Get(savedPoweredEffect);
+	prodAnim.PoweredSpecial = pTypeExt->RoofProductionAnimPoweredSpecial.Get(savedPoweredSpecial);
+
+	auto pExt = BuildingExt::Fetch(pBuilding);
+	pExt->IsPlayingRoofProductionAnim = true;
+	pBuilding->PlayAnim(animName, BuildingAnimSlot::Production, isDamaged, garrisoned, 0);
+	pExt->IsPlayingRoofProductionAnim = false;
+
+	prodAnim.Position = savedPosition;
+	prodAnim.ZAdjust = savedZAdjust;
+	prodAnim.YSort = savedYSort;
+	prodAnim.Powered = savedPowered;
+	prodAnim.PoweredLight = savedPoweredLight;
+	prodAnim.PoweredEffect = savedPoweredEffect;
+	prodAnim.PoweredSpecial = savedPoweredSpecial;
 }
 
 DEFINE_HOOK(0x43CC73, BuildingClass_ReceiveMessage_ProductionAnim, 0x6)
@@ -1042,22 +1164,69 @@ DEFINE_HOOK(0x44B7AE, BuildingClass_Mission_Repair_ProductionAnim, 0x6)
 	return SkipGameCode;
 }
 
+// isRoofExit tells whether the produced unit leaves through the roof hatch;
+// each caller decides it from its own reliable source.
+static bool TryPlayRoofProductionAnim(BuildingClass* pBuilding, bool isDamaged, bool isRoofExit)
+{
+	if (!isRoofExit)
+		return false;
+
+	auto pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
+	const bool garrisoned = pBuilding->GetOccupantCount() > 0;
+
+	const auto& prodAnim = pBuilding->Type->GetBuildingAnim(BuildingAnimSlot::Production);
+	if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding,
+		pTypeExt->RoofProductionAnimPowered.Get(prodAnim.Powered),
+		pTypeExt->RoofProductionAnimPoweredLight.Get(prodAnim.PoweredLight),
+		pTypeExt->RoofProductionAnimPoweredEffect.Get(prodAnim.PoweredEffect),
+		pTypeExt->RoofProductionAnimPoweredSpecial.Get(prodAnim.PoweredSpecial)))
+		return true;
+
+	PlayRoofProductionAnim(pBuilding, pTypeExt, isDamaged, garrisoned);
+	return true;
+}
+
+DEFINE_HOOK(0x44DDF0, BuildingClass_Unload_RoofProductionAnim, 0x6)
+{
+	enum { SkipGameCode = 0x44E267 };
+
+	GET(BuildingClass*, pBuilding, EBP);
+
+	return TryPlayRoofProductionAnim(pBuilding, false, IsRoofExitBuildingUnit(pBuilding)) ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x44DDDE, BuildingClass_Unload_RoofProductionAnim_Damaged, 0x6)
+{
+	enum { SkipGameCode = 0x44E267 };
+
+	GET(BuildingClass*, pBuilding, EBP);
+
+	return TryPlayRoofProductionAnim(pBuilding, true, IsRoofExitBuildingUnit(pBuilding)) ? SkipGameCode : 0;
+}
+
 DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
+	// The roof check must use the unit that is actually leaving the factory.
+	GET(TechnoClass*, pUnit, EDI);
 
 	auto const pType = pThis->Type;
 
 	if (pType->Factory == AbstractType::InfantryType)
 	{
-		bool isDamaged = false;
-		auto anim = pType->BuildingAnim[(int)BuildingAnimSlot::Production].Anim;
+		const bool isDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
-		if (pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow)
+		if (pUnit && IsRoofExitTechno(pUnit->GetTechnoType()))
 		{
-			isDamaged = true;
-			anim = pType->BuildingAnim[(int)BuildingAnimSlot::Production].Damaged;
+			pThis->DestroyNthAnim(BuildingAnimSlot::Idle);
+			TryPlayRoofProductionAnim(pThis, isDamaged, true);
+			return 0;
 		}
+
+		auto anim = pType->GetBuildingAnim(BuildingAnimSlot::Production).Anim;
+
+		if (isDamaged)
+			anim = pType->GetBuildingAnim(BuildingAnimSlot::Production).Damaged;
 
 		if (GeneralUtils::IsValidString(anim))
 		{
@@ -1065,6 +1234,22 @@ DEFINE_HOOK(0x444D11, BuildingClass_ExitObject_ProductionAnimForInfantryFactory,
 			pThis->PlayAnim(anim, BuildingAnimSlot::Production, isDamaged, false, 0);
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4501AF, AI_ConYard_CompleteProduction_ProductionAnim, 0x5)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(TechnoClass*, pObject, EDI);
+
+	if (pBuilding->Owner->IsControlledByHuman())
+		return 0;
+
+	if (!pObject || pObject->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	pBuilding->SendCommand(RadioCommand::RequestEndProduction, pBuilding);
 
 	return 0;
 }
@@ -1346,12 +1531,12 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (abstract_cast<FootClass*>(pThis))
+	if (pThis->AbstractFlags & AbstractFlags::Foot)
 		return 0;
 
 	const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
-	if (BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
+	if (pBuilding->Type->LaserFence || BuildingExt::Fetch(pBuilding)->IsCreatedFromMapFile)
 		return 0;
 
 	R->AH(static_cast<BYTE>(GetBuildingStartFacing(pBuilding)));

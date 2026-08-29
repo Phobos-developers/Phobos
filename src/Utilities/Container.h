@@ -156,6 +156,12 @@ public:
 	// called after loading once all pointers (including the owner) have been remapped
 	virtual void PostLoad() { }
 
+	// Called when the extension is created only after its owner already exists: the
+	// game constructed the owner while a savegame was loading, so the game hook that
+	// normally initializes the extension right after construction found none to
+	// initialize. Extensions that rely on such a hook have to catch up here.
+	virtual void OnDeferredAllocation() { }
+
 protected:
 	AbstractClass* GetAttachedObject() const
 	{
@@ -419,6 +425,13 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
+// Extensions of owners that are persisted inline within the owner's own savegame
+// block (cells) instead of the centralized extension stream. Their owners are
+// re-constructed in place while a savegame is loading, so the constructor must not
+// allocate an extension that the owner's load path is about to create anyway.
+template <class T>
+concept SavedInline = requires(T) { { T::SavedInline } -> std::convertible_to<bool>; } && T::SavedInline;
+
 // resolves the data class of an extension: the extension class itself for the
 // flattened hierarchy, or the nested ExtData class of the legacy shells (EBolt).
 // slot-mode extensions are their own data class and are resolved directly: their
@@ -444,6 +457,10 @@ private:
 
 	map_type MappedItems;
 	std::vector<extension_type_ptr> Items;
+
+	// owners whose constructor ran while a savegame was loading; emptied by
+	// AllocatePendingExtensions once the extension stream has been relinked
+	std::vector<base_type_ptr> PendingAllocations;
 
 	const char* Name;
 
@@ -515,11 +532,54 @@ protected:
 public:
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
-		// during savegame load extensions are restored from the stream instead
 		if (Phobos::IsLoadingSaveGame)
+		{
+			// The game runs these constructors both for the objects it restores from the
+			// savegame - whose extensions come from the extension stream and must not be
+			// shadowed by a second one - and for objects it genuinely creates while
+			// restoring the scenario, which get no extension at all otherwise. Which is
+			// which is only known once the stream has been relinked, so remember the
+			// owner and settle it there. Owners persisted inline (cells) are created by
+			// their own load path and need no bookkeeping.
+			if constexpr (!SavedInline<T>)
+				this->PendingAllocations.emplace_back(key);
+
 			return nullptr;
+		}
 
 		return this->AllocateUnchecked(key);
+	}
+
+	// Called once the extension stream has been relinked: every owner constructed
+	// during the load window that the stream did not cover is an object the game
+	// created itself and still needs an extension. Returns whether it created any -
+	// the deferred initialization can make the game create further objects, which
+	// register themselves the same way while the load is still settling.
+	bool AllocatePendingExtensions()
+	{
+		bool allocated = false;
+
+		// drained rather than iterated: allocating can append to PendingAllocations
+		while (!this->PendingAllocations.empty())
+		{
+			std::vector<base_type_ptr> pending;
+			pending.swap(this->PendingAllocations);
+
+			for (auto const key : pending)
+			{
+				if (this->TryFindRaw(key))
+					continue;
+
+				auto const val = this->AllocateUnchecked(key);
+				allocated = true;
+
+				// the legacy shells (EBolt) are not AbstractExt and have no such hook
+				if constexpr (requires { val->OnDeferredAllocation(); })
+					val->OnDeferredAllocation();
+			}
+		}
+
+		return allocated;
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
@@ -571,6 +631,10 @@ public:
 
 	void Remove(base_type_ptr key)
 	{
+		// the owner is gone, so it must not be revisited once the load settles
+		if (!this->PendingAllocations.empty())
+			std::erase(this->PendingAllocations, key);
+
 		if (auto Item = FindRaw(key))
 		{
 			auto& vec = this->Items;
@@ -637,6 +701,9 @@ public:
 
 	void Clear()
 	{
+		// the owners these refer to are being discarded along with everything else
+		this->PendingAllocations.clear();
+
 		if (this->Items.size())
 		{
 			Debug::Log("Cleared %u items from %s.\n", this->Items.size(), this->Name);

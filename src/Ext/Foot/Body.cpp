@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
@@ -19,11 +17,19 @@ void FootExt::UpdateTiberiumEater()
 		return;
 
 	const int transDelay = pEaterType->TransDelay;
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || (!pEaterType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
+	{
+		if (transDelay && this->TiberiumEater_Timer.InProgress())
+			this->TiberiumEater_Timer.StartTime++;
+
+		return;
+	}
 
 	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
@@ -238,7 +244,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	// Remove from limbo reloaders if no longer applicable
-	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !pNewTypeExt->ReloadInTransport)
+	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport) && !pNewTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
@@ -493,7 +499,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Rebuild a CaptureManager
 			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
 		}
-		else if (pOldTypeExt->Convert_ResetMindControl)
+		else if (pOldTypeExt->Convert_ResetMindControl.Get(RulesExt::Global()->Convert_ResetMindControl))
 		{
 			if (!infiniteCapture && pCaptureManager->GetControlledCount() > maxCapture)
 			{
@@ -509,7 +515,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pCaptureManager->InfiniteMindControl = infiniteCapture;
 		}
 	}
-	else if (pCaptureManager && pOldTypeExt->Convert_ResetMindControl)
+	else if (pCaptureManager && pOldTypeExt->Convert_ResetMindControl.Get(RulesExt::Global()->Convert_ResetMindControl))
 	{
 		// Remove CaptureManager completely
 		pCaptureManager->FreeAll();
@@ -713,6 +719,8 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				this->JumpjetSpeed = pCurrentType->JumpjetSpeed; // keep the cached speed in sync (0x54D138 hook reads it every frame)
+				pJJLoco->MaxSpeed = pCurrentType->JumpjetSpeed;
 				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
@@ -815,6 +823,48 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 }
 
+void FootExt::AmmoAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Ammo_AutoConvertType.isset())
+		return;
+
+	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Ammo_AutoConvertType);
+}
+
+void FootExt::HealthAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Convert_Health.isset())
+		return;
+
+	const double min = pTypeExt->Convert_Health_AbovePercent;
+	const double max = pTypeExt->Convert_Health_BelowPercent;
+
+	if (min < 0 && max < 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	if (TechnoExt::IsHealthInThreshold(pThis, min, max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
+}
+
 // =============================
 // load / save
 
@@ -835,6 +885,7 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->ResetLocomotor)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
+		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
 		;
 }
 

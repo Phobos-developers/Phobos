@@ -98,6 +98,20 @@ void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
+bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial)
+{
+	auto const pType = pBuilding->Type;
+
+	if (!((pType->Powered && pType->PowerDrain > 0 && (powered || poweredLight || poweredEffect))
+		|| (pType->PoweredSpecial && poweredSpecial)))
+		return false;
+
+	return pBuilding->CurrentMission != Mission::Construction
+		&& pBuilding->CurrentMission != Mission::Selling
+		&& !pBuilding->IsPowerOnline()
+		&& !BuildingExt::Fetch(pBuilding)->HasPowerFromMapFile;
+}
+
 int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
 {
 	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
@@ -217,6 +231,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
 
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
+	this->NoAlphaImageOnBuildup.Read(exINI, pSection, "NoAlphaImageOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
 	this->Adjacent_Disallowed_Prohibit.Read(exINI, pSection, "Adjacent.Disallowed.Prohibit");
@@ -264,6 +279,10 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			this->PowersUp_Buildings.emplace_back(pPowerUpType);
 	}
 
+	this->SetTabBySelecting.Read(exINI, pSection, "SetTabBySelecting");
+
+	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		std::optional<DirType> empty;
@@ -285,8 +304,35 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
 	}
+	this->AircraftDockingDir_DefaultToPoseDir.Read(exArtINI, pArtSection, "AircraftDockingDir.DefaultToPoseDir");
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
+
+	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
+
+	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);
+	preProdAnim.Powered = pArtINI->ReadBool(pArtSection, "PreProductionAnimPowered", preProdAnim.Powered);
+	preProdAnim.PoweredLight = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredLight", preProdAnim.PoweredLight);
+	preProdAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredEffect", preProdAnim.PoweredEffect);
+	preProdAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredSpecial", preProdAnim.PoweredSpecial);
+
+	auto& prodAnim = pThis->GetBuildingAnim(BuildingAnimSlot::Production);
+	prodAnim.Powered = pArtINI->ReadBool(pArtSection, "ProductionAnimPowered", prodAnim.Powered);
+	prodAnim.PoweredLight = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredLight", prodAnim.PoweredLight);
+	prodAnim.PoweredEffect = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredEffect", prodAnim.PoweredEffect);
+	prodAnim.PoweredSpecial = pArtINI->ReadBool(pArtSection, "ProductionAnimPoweredSpecial", prodAnim.PoweredSpecial);
+
+	this->RoofProductionAnim.Read(exArtINI, pArtSection, "RoofProductionAnim");
+	this->RoofProductionAnimDamaged.Read(exArtINI, pArtSection, "RoofProductionAnimDamaged");
+	this->RoofProductionAnimGarrisoned.Read(exArtINI, pArtSection, "RoofProductionAnimGarrisoned");
+	this->RoofProductionAnimX.Read(exArtINI, pArtSection, "RoofProductionAnimX");
+	this->RoofProductionAnimY.Read(exArtINI, pArtSection, "RoofProductionAnimY");
+	this->RoofProductionAnimZAdjust.Read(exArtINI, pArtSection, "RoofProductionAnimZAdjust");
+	this->RoofProductionAnimYSort.Read(exArtINI, pArtSection, "RoofProductionAnimYSort");
+	this->RoofProductionAnimPowered.Read(exArtINI, pArtSection, "RoofProductionAnimPowered");
+	this->RoofProductionAnimPoweredLight.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredLight");
+	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
+	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -334,6 +380,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.A
 	this->RubbleIntact.Read(exINI, pSection, "Rubble.Intact");
 	this->RubbleIntactRemove.Read(exINI, pSection, "Rubble.Intact.Remove");
+
+	// Ares 0.E
+	this->Tunnel = exINI.ReadString(pSection, "Tunnel");
 
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
@@ -391,6 +440,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
 		.Process(this->FactoryPlant_MaxCount)
@@ -402,6 +452,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Units_RepairPercent)
 		.Process(this->Units_UseRepairCost)
 		.Process(this->NoBuildAreaOnBuildup)
+		.Process(this->NoAlphaImageOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->Adjacent_Disallowed_Prohibit)
@@ -431,6 +482,20 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->TurretAnim_FiringFrames)
 		.Process(this->StartFacing)
 		.Process(this->StartFacing_Random)
+		.Process(this->SetTabBySelecting)
+		.Process(this->RevealToAll_Radius)
+		.Process(this->DeployFireDelay)
+		.Process(this->RoofProductionAnim)
+		.Process(this->RoofProductionAnimDamaged)
+		.Process(this->RoofProductionAnimGarrisoned)
+		.Process(this->RoofProductionAnimX)
+		.Process(this->RoofProductionAnimY)
+		.Process(this->RoofProductionAnimZAdjust)
+		.Process(this->RoofProductionAnimYSort)
+		.Process(this->RoofProductionAnimPowered)
+		.Process(this->RoofProductionAnimPoweredLight)
+		.Process(this->RoofProductionAnimPoweredEffect)
+		.Process(this->RoofProductionAnimPoweredSpecial)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -438,6 +503,9 @@ void BuildingTypeExt::Serialize(T& Stm)
 		// Ares 0.A
 		.Process(this->RubbleIntact)
 		.Process(this->RubbleIntactRemove)
+
+		// Ares 0.E
+		.Process(this->Tunnel)
 
 		// Ares 3.0
 		.Process(this->UnitSell)

@@ -2,7 +2,11 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/AresFunctions.h>
+
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+
+PhobosMap<BombClass*, WeaponTypeExt*> WeaponTypeExt::BombExtMap;
 
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
@@ -81,6 +85,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
+	this->ProjectileRange_ApplyModifiers.Read(exINI, pSection, "ProjectileRange.ApplyModifiers");
 
 	for (int idx = 0; idx < 3; ++idx)
 	{
@@ -95,6 +100,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
+	this->IvanBomb_Visibility.Read(exINI, pSection, "IvanBomb.Visibility");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -118,6 +124,8 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
+	if (this->LaserPositionUpdate != PositionFollow::None)
+		Phobos::Optimizations::DisableLaserTracking = false;
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
@@ -220,12 +228,14 @@ void WeaponTypeExt::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->ProjectileRange)
+		.Process(this->ProjectileRange_ApplyModifiers)
 		.Process(this->Bolt_Color)
 		.Process(this->Bolt_Disable)
 		.Process(this->Bolt_ParticleSystem)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)
+		.Process(this->IvanBomb_Visibility)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
@@ -326,6 +336,7 @@ bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
 }
 
@@ -333,7 +344,16 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
+}
+
+WeaponTypeExt* WeaponTypeExt::GetBombExtData(BombClass* pBomb)
+{
+	if (const auto pAresMap = AresFunctions::BombExtMap)
+		return WeaponTypeExt::Fetch(*pAresMap->get_or_default(pBomb));
+
+	return WeaponTypeExt::BombExtMap.get_or_default(pBomb);
 }
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
@@ -410,7 +430,7 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 		if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
 			continue;
 
-		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
+		range = GeneralUtils::SafeMultiply(range, Math::max(type->WeaponRange_Multiplier, 0.0));
 		extraRange += type->WeaponRange_ExtraRange;
 	}
 
@@ -439,15 +459,15 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 
 	if (pHouse && pHouse->IsControlledByHuman())
 	{
-		if (!pExt->KeepRange_AllowPlayer)
+		if (!pExt->KeepRange_AllowPlayer.Get(RulesExt::Global()->KeepRange_AllowPlayer))
 			return 0;
 	}
-	else if (!pExt->KeepRange_AllowAI)
+	else if (!pExt->KeepRange_AllowAI.Get(RulesExt::Global()->KeepRange_AllowAI))
 	{
 		return 0;
 	}
 
-	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame)
+	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame.Get(RulesExt::Global()->KeepRange_EarlyStopFrame))
 		return 0;
 
 	if (!pFirer->RearmTimer.InProgress())

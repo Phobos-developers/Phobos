@@ -1,7 +1,7 @@
 #include "Body.h"
 
-#include <MessageListClass.h>
-
+#include <ScenarioClass.h>
+#include <TriggerTypeClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <New/Entity/BannerClass.h>
@@ -69,6 +69,11 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetFollowsIndexForVehicle:
 		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetMissionTimer:
+		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::SetDropCrate:
+		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -80,6 +85,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetTeamDelay:
 		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextScanario:
+		return TActionExt::SetNextScanario(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::CreateBannerLocal:
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
@@ -492,9 +499,6 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 
 	for (auto const pTechno : TechnoClass::Array)
 	{
-		if (pTechno->WhatAmI() == AbstractType::BuildingType)
-			continue;
-
 		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
 		if (!pFoot)
 			continue;
@@ -502,7 +506,25 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 		if (pFoot->WhatAmI() != AbstractType::Unit)
 			continue;
 
-		if (!pFoot->AttachedTag || !pFoot->AttachedTag->ContainsTrigger(pTrigger))
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
 			continue;
 
 		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
@@ -665,6 +687,43 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	return true;
 }
 
+bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	for (const auto pTechno : TechnoClass::Array)
+	{
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
+			continue;
+
+		// Overwrite the default techno's crate properties
+		const auto pExt = TechnoExt::Fetch(pTechno);
+		pExt->DropCrate = pThis->Value;
+
+		if (pExt->DropCrate == 1)
+			pExt->DropCrateType = static_cast<Powerup>(pThis->Param3);
+
+	}
+
+	return true;
+}
+
 bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	if (pHouse->IsControlledByHuman())
@@ -714,6 +773,39 @@ bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHous
 	{
 		Timer.Start(time);
 	}
+
+	return true;
+}
+
+bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (SessionClass::Instance.IsCampaign())
+	{
+		const char* pText = pThis->Text;
+
+		if (strcmp(pText, "") && strcmp(pText, "0"))
+		{
+			// When you can customize it as you like, there’s no longer a need for additional branches.
+			ScenarioClass* const pScenario = ScenarioClass::Instance;
+			_snprintf_s(pScenario->AltNextScenario, sizeof(pScenario->AltNextScenario), pText);
+			_snprintf_s(pScenario->NextScenario, sizeof(pScenario->NextScenario), pText);
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const int type = pThis->Param3;
+	const int reverse = pThis->Param5;
+	ScenarioExt::Global()->MissionTimer_Variable = pThis->Param4;
+
+	if (0 <= type && 4 >= type)
+		ScenarioExt::Global()->MissionTimer_Type = type;
+
+	if (0 <= reverse && 1 >= reverse)
+		ScenarioExt::Global()->MissionTimer_Reverse = (bool)reverse;
 
 	return true;
 }

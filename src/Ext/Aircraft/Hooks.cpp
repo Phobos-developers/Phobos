@@ -6,7 +6,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BulletType/Body.h>
-#include <RulesClass.h>
 
 #pragma region Mission_Attack
 
@@ -215,7 +214,8 @@ static inline int GetDelay(AircraftClass* pThis, bool isLastShot)
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 	int delay = pWeapon->ROF;
 
-	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5) || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
+	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5)
+		|| (pWeaponExt->Strafing_UseAmmoPerShot.Get(RulesExt::Global()->Strafing_UseAmmoPerShot) && !pThis->Ammo))
 	{
 		pExt->Strafe_TargetCell = nullptr;
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
@@ -231,7 +231,7 @@ DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 
 	auto const pExt = AircraftExt::Fetch(pThis);
 
-	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell)
+	if (WeaponTypeExt::Fetch(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell.Get(RulesExt::Global()->Strafing_TargetCell))
 		pExt->Strafe_TargetCell = MapClass::Instance.GetCellAt(pThis->Target->GetCoords());
 
 	pThis->IsLocked = true;
@@ -321,7 +321,7 @@ DEFINE_HOOK(0x41879D, AircraftClass_Mission_Attack_StrafeCell, 0x6)
 
 		AircraftExt::FireWeapon(pThis, pTargetCell);
 
-		if (AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter)
+		if (AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter))
 			pTargetCell->ScatterContent(pThis->Location, true, false, false);
 
 		pThis->SetDestination(pTargetCell, true);
@@ -345,13 +345,13 @@ DEFINE_HOOK_AGAIN(0x418B46, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x44);
+	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter) ? 0 : (R->Origin() + 0x44);
 }
 
 DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x5)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x43);
+	return AircraftTypeExt::Fetch(pThis->Type)->FiringForceScatter.Get(RulesExt::Global()->AircraftFiringForceScatter) ? 0 : (R->Origin() + 0x43);
 }
 
 #pragma endregion
@@ -421,7 +421,7 @@ DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 
 static DirType __fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 {
-	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
+	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding, true);
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x446F67, AircraftClass_PoseDir_Wrapper); // BuildingClass_GrandOpening
 
@@ -440,7 +440,7 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AircraftClass*, pAircraft, EBP);
 
-	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
+	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis, true));
 
 	if (AircraftTypeExt::Fetch(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		pAircraft->PrimaryFacing.SetCurrent(dir);
@@ -466,7 +466,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 
 	auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
-	if (pWeaponExt->KickOutPassengers)
+	if (pWeaponExt->KickOutPassengers.Get(RulesExt::Global()->AircraftWeapon_KickOutPassengers))
 		return 0;
 
 	return SkipKickOutPassengers;
@@ -500,7 +500,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	GET(AircraftClass* const, pThis, ESI);
 	GET(CoordStruct const* const, pCoords, EAX);
 
-	if (pThis->Team || pThis->Airstrike || pThis->Spawned)
+	if (pThis->Team || pThis->Airstrike || pThis->IsALoaner)
 		return 0;
 
 	const auto pType = pThis->Type;
@@ -726,7 +726,7 @@ DEFINE_HOOK(0x4CE42A, FlyLocomotionClass_StateUpdate_NoLanding, 0x6) // Prevent 
 	if (!pAircraft || !AircraftTypeExt::Fetch(pAircraft->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		return 0;
 
-	if (pAircraft->Airstrike || pAircraft->Spawned || pAircraft->GetCurrentMission() == Mission::Enter)
+	if (pAircraft->Airstrike || pAircraft->IsALoaner || pAircraft->GetCurrentMission() == Mission::Enter)
 		return 0;
 
 	return SkipGameCode;
@@ -738,7 +738,7 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 
 	const auto pType = pThis->Type;
 
-	if (pThis->IsAlive && pType->AirportBound && !pThis->Airstrike && !pThis->Spawned)
+	if (pThis->IsAlive && pType->AirportBound && !pThis->Airstrike && !pThis->IsALoaner)
 	{
 		const bool extendedMissions = AircraftTypeExt::Fetch(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
@@ -801,7 +801,7 @@ DEFINE_HOOK(0x41A5C7, AircraftClass_Mission_Guard_StartAreaGuard, 0x6)
 	GET(AircraftClass* const, pThis, ESI);
 
 	if (!AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
-		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->IsALoaner)
 	{
 		return 0;
 	}
@@ -825,7 +825,7 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 	GET(AircraftClass* const, pThis, ESI);
 
 	if (!AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
-		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->Spawned)
+		|| pThis->Team || !pThis->IsArmed() || pThis->Airstrike || pThis->IsALoaner)
 	{
 		return 0;
 	}
@@ -982,7 +982,7 @@ DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6
 
 	if (!pThis->Target)
 	{
-		if (!AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions) || pThis->Airstrike || pThis->Spawned)
+		if (!AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions) || pThis->Airstrike || pThis->IsALoaner)
 			return Continue;
 
 		if (pThis->MegaMissionIsAttackMove() && pThis->MegaDestination)
@@ -1021,7 +1021,7 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 	GET(AircraftClass* const, pThis, ESI);
 
 	if (AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
-		&& !pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
+		&& !pThis->Ammo && !pThis->Airstrike && !pThis->IsALoaner)
 	{
 		if (!SessionClass::IsCampaign()) // To avoid AI's aircrafts team repeatedly attempting to attack the target when no ammo
 		{
@@ -1043,7 +1043,7 @@ DEFINE_HOOK(0x4179F7, AircraftClass_EnterIdleMode_NoCrash, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (pThis->Airstrike || pThis->Spawned)
+	if (pThis->Airstrike || pThis->IsALoaner)
 		return 0;
 
 	if (AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions_UnlandDamage.Get(RulesExt::Global()->ExtendedAircraftMissions_UnlandDamage) < 0)
@@ -1097,7 +1097,7 @@ DEFINE_HOOK(0x4425B6, BuildingClass_ReceiveDamage_NoDestroyLink, 0xA)
 static AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
 	if (AircraftTypeExt::Fetch(pThis->Type)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions)
-		&& !pThis->Team && pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
+		&& !pThis->Team && pThis->Ammo && !pThis->Airstrike && !pThis->IsALoaner)
 	{
 		if (const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType)
 			threatType |= pPrimaryWeapon->AllowedThreats();
@@ -1300,6 +1300,28 @@ DEFINE_HOOK(0x4CD54C, FlyLocomotionClass_EdgeOfTheWorldAI_Paradrop, 0x8)
 	}
 
 	return ReturnFromFunction;
+}
+
+#pragma endregion
+
+#pragma region CargoPlane
+
+DEFINE_HOOK(0x4143A8, AircraftClass_UnLimbo_CargoPlane, 0x6)
+{
+	enum { SkipGameCode = 0x4143F2 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
+
+	if (pTypeExt->IsALoaner.isset())
+	{
+		pThis->IsALoaner = pTypeExt->IsALoaner.Get();
+		return SkipGameCode;
+	}
+
+	return 0;
 }
 
 #pragma endregion

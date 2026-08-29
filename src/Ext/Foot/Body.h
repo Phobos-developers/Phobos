@@ -22,6 +22,7 @@ public:
 	bool ResetLocomotor;
 	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 	int AttackMoveFollowerTempCount;
+	bool IsOwnerChangeFromRevertOnExit;
 
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 		, LastKillWasTeamTarget { false }
@@ -37,6 +38,7 @@ public:
 		, ResetLocomotor { false }
 		, JumpjetStraightAscend { false }
 		, AttackMoveFollowerTempCount { 0 }
+		, IsOwnerChangeFromRevertOnExit { false }
 	{ }
 
 	FootClass* OwnerObject() const
@@ -61,6 +63,8 @@ public:
 	void UpdateOnTunnelEnter();
 	void UpdateOnTunnelExit();
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
+	void HealthAutoConvertActions();
+	void AmmoAutoConvertActions();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

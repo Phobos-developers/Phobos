@@ -139,7 +139,7 @@ DEFINE_HOOK(0x70C862, TechnoClass_Railgun_AmbientDamageIgnoreTarget1, 0x5)
 
 	GET_BASE(WeaponTypeClass*, pWeapon, 0x14);
 
-	if (WeaponTypeExt::Fetch(pWeapon)->AmbientDamage_IgnoreTarget)
+	if (WeaponTypeExt::Fetch(pWeapon)->AmbientDamage_IgnoreTarget.Get(RulesExt::Global()->AmbientDamage_IgnoreTarget))
 		return IgnoreTarget;
 
 	return 0;
@@ -152,7 +152,7 @@ DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
 	GET_BASE(WeaponTypeClass*, pWeapon, 0x14);
 	REF_STACK(DynamicVectorClass<ObjectClass*>, objects, STACK_OFFSET(0xC0, -0xAC));
 
-	if (WeaponTypeExt::Fetch(pWeapon)->AmbientDamage_IgnoreTarget)
+	if (WeaponTypeExt::Fetch(pWeapon)->AmbientDamage_IgnoreTarget.Get(RulesExt::Global()->AmbientDamage_IgnoreTarget))
 	{
 		R->EAX(objects.Count);
 		return IgnoreTarget;
@@ -179,7 +179,7 @@ DEFINE_HOOK(0x75F39D, WaveClass_DamageAI_AmbientDamageWarhead, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	auto const pTypeExt = WeaponTypeExt::Fetch(pWeapon);
-	FireAtTemp::IgnoreTargetForWaveAmbientDamage = pTypeExt->AmbientDamage_IgnoreTarget;
+	FireAtTemp::IgnoreTargetForWaveAmbientDamage = pTypeExt->AmbientDamage_IgnoreTarget.Get(RulesExt::Global()->AmbientDamage_IgnoreTarget);
 	R->EAX(pTypeExt->AmbientDamage_Warhead.Get(pWeapon->Warhead));
 
 	return SkipGameCode;

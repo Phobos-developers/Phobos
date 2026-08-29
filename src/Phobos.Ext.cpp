@@ -10,7 +10,6 @@
 #include <Ext/EBolt/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
-#include <Ext/ParticleType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Script/Body.h>
@@ -18,6 +17,7 @@
 #include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <Ext/Tiberium/Body.h>
 #include <Ext/VoxelAnim/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -185,6 +185,27 @@ struct RelinkExtensionsAction
 	}
 };
 
+// calls:
+// T::ExtMap.AllocatePendingExtensions()
+struct AllocatePendingExtensionsAction
+{
+	// whether the last sweep created anything; the dispatch folds with && and would
+	// short-circuit on a false result, so the outcome travels out of band
+	static inline bool AllocatedAny = false;
+
+	template <typename T>
+	static bool Process()
+	{
+		if constexpr (HasExtMap<T>)
+		{
+			if (T::ExtMap.AllocatePendingExtensions())
+				AllocatedAny = true;
+		}
+
+		return true;
+	}
+};
+
 // this is a complicated thing that calls methods on classes. add types to the
 // instantiation of this type, and the most appropriate method for each type
 // will be called with no overhead of virtual functions.
@@ -226,6 +247,18 @@ struct TypeRegistry
 		dispatch_mass_action<RelinkExtensionsAction>();
 	}
 
+	__forceinline static void AllocatePendingExtensions()
+	{
+		// a sweep can make the game create objects tracked by a container that was
+		// already swept, so repeat until one full pass turns up nothing new
+		do
+		{
+			AllocatePendingExtensionsAction::AllocatedAny = false;
+			dispatch_mass_action<AllocatePendingExtensionsAction>();
+		}
+		while (AllocatePendingExtensionsAction::AllocatedAny);
+	}
+
 private:
 	// TAction: the method dispatcher class to call with each type
 	// ArgTypes: the argument types to call the method dispatcher's Process() method
@@ -255,6 +288,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CellExt,
 	EBoltExt,
+	FootExt,
 	HouseExt,
 	HouseTypeExt,
 	InfantryExt,
@@ -273,6 +307,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	TechnoExt,
 	TechnoTypeExt,
 	TerrainTypeExt,
+	TEventExt,
 	TiberiumExt,
 	UnitExt,
 	UnitTypeExt,
@@ -362,6 +397,9 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
+	// with the restored extensions in place, the owners left over are the objects the
+	// game created itself while loading; they get their extensions now
+	PhobosTypeRegistry::AllocatePendingExtensions();
 	return 0;
 }
 
@@ -369,7 +407,14 @@ DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));
 
+	// Bleeding-edge builds (local and nightly) skip the version offset entirely: each one is a
+	// unique snapshot, so version-based filtering would both falsely claim compatibility between
+	// same-version nightlies and hide saves from other bleeding-edge snapshots. Only release and
+	// pre-release builds get the offset, which makes saves from different Phobos versions filter
+	// out of each other's load lists.
+#if defined(RELEASE)
 	Info.InternalVersion = Info.InternalVersion + SAVEGAME_ID;
+#endif
 	strncat(Info.ExecutableName.data(),
 		" + Phobos " FILE_VERSION_STR,
 		Info.ExecutableName.Size - sizeof(" + Phobos " FILE_VERSION_STR)
@@ -381,8 +426,10 @@ DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 DEFINE_HOOK_AGAIN(0x67FD9D, LoadOptionsClass_GetFileInfo, 0x7)
 DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 {
+#if defined(RELEASE)
 	GET(SavegameInformation*, Info, ESI);
 	Info->InternalVersion = Info->InternalVersion - SAVEGAME_ID;
+#endif
 	return 0;
 }
 
@@ -393,6 +440,35 @@ DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 
 #include <Dbghelp.h>
 #include <tlhelp32.h>
+
+/**
+ *  Sets up to close Syringe when the game exits.
+ *  We don't do it immediately so that the client doesn't think
+ *  the game has exited once Syringe closes.
+ *
+ *  Ported from Vinifera
+ *  @author: ZivDero, secsome
+ */
+static DWORD DebuggerPID = 0;
+
+void _cdecl Kill_Debugger()
+{
+	if (DebuggerPID != 0)
+	{
+		HANDLE handle = OpenProcess(PROCESS_TERMINATE, FALSE, DebuggerPID);
+		if (handle)
+		{
+			TerminateProcess(handle, EXIT_SUCCESS);
+			CloseHandle(handle);
+		}
+	}
+}
+
+void Setup_Kill_Debugger(DWORD pid)
+{
+	DebuggerPID = pid;
+	atexit(Kill_Debugger);
+}
 
 bool Phobos::DetachFromDebugger()
 {
@@ -447,13 +523,8 @@ bool Phobos::DetachFromDebugger()
 				status = NtRemoveProcessDebug(hCurrentProcess, hDebug);
 				if (0 <= status)
 				{
-					HANDLE hDbgProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-					if (INVALID_HANDLE_VALUE != hDbgProcess)
-					{
-						BOOL ret = TerminateProcess(hDbgProcess, EXIT_SUCCESS);
-						CloseHandle(hDbgProcess);
-						return ret;
-					}
+					Setup_Kill_Debugger(pid);
+					return true;
 				}
 			}
 			NtClose(hDebug);

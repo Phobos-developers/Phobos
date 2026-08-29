@@ -4,7 +4,12 @@
 
 DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
+	enum { SkipGameCode = 0x4401D2 };
+
 	GET(BuildingClass*, pBuilding, ESI);
+
+	if (pBuilding->IsUnderEMP())
+		return SkipGameCode;
 
 	auto const pOwner = pBuilding->Owner;
 	const int index = pOwner->ProducingAircraftTypeIndex;
@@ -139,8 +144,9 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::Fetch(pFactory->Owner);
-	auto const pType = pTechno->GetTechnoType();
-	const bool forbid = TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues;
+	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	const bool forbid = pTypeExt->ForbidParallelAIQueues;
 
 	switch (pTechno->WhatAmI())
 	{

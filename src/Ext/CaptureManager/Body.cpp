@@ -81,17 +81,18 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	{
 		const auto pOwnerTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
-		if (!pOwnerTypeExt->MindControl_IgnoreSize)
+		if (!pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 		{
 			const int totalSize = CaptureManagerExt::GetControlledTotalSize(pManager);
-			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim ? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
+			const int available = pOwnerTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim)
+				? pManager->MaxControlNodes : pManager->MaxControlNodes - totalSize;
 
 			if (TechnoTypeExt::Fetch(pTargetType)->MindControlSize > available)
 				return false;
 		}
 		else
 		{
-			if (pManager->ControlNodes.Count >= pManager->MaxControlNodes && !pOwnerTypeExt->MultiMindControl_ReleaseVictim)
+			if (pManager->ControlNodes.Count >= pManager->MaxControlNodes && !pOwnerTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim))
 				return false;
 		}
 	}
@@ -113,18 +114,18 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 {
 	if (pTarget)
 	{
-		auto& mindControlRingAnim = pTarget->MindControlRingAnim;
-		int nSound = pTarget->GetTechnoType()->MindClearedSound;
-		auto const coord = pTarget->GetCoords();
-
-		if (nSound == -1)
-			nSound = RulesClass::Instance->MindClearedSound;
-
 		for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
 		{
 			const auto pNode = pManager->ControlNodes[i];
 			if (pTarget == pNode->Unit)
 			{
+				auto& mindControlRingAnim = pTarget->MindControlRingAnim;
+				int nSound = pTarget->GetTechnoType()->MindClearedSound;
+				auto const coord = pTarget->GetCoords();
+
+				if (nSound == -1)
+					nSound = RulesClass::Instance->MindClearedSound;
+
 				if (mindControlRingAnim)
 				{
 					mindControlRingAnim->UnInit();
@@ -172,16 +173,16 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			}
 			else if (pManager->ControlNodes.Count > 0 && removeFirst)
 			{
-				const auto pOwnerTypeExt = TechnoTypeExt::Fetch(pManager->Owner->GetTechnoType());
+				const auto pOwnerTypeExt = TechnoExt::Fetch(pManager->Owner)->TypeExtData;
 
-				if (pOwnerTypeExt->MindControl_IgnoreSize)
+				if (pOwnerTypeExt->MindControl_IgnoreSize.Get(RulesExt::Global()->MindControl_IgnoreSize))
 				{
 					if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
 						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 				}
 				else
 				{
-					const auto pTargetTypeExt = TechnoTypeExt::Fetch(pTarget->GetTechnoType());
+					const auto pTargetTypeExt = TechnoExt::Fetch(pTarget)->TypeExtData;
 
 					while (pManager->ControlNodes.Count && pTargetTypeExt->MindControlSize > pManager->MaxControlNodes - CaptureManagerExt::GetControlledTotalSize(pManager))
 						CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
@@ -238,7 +239,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
 		const auto pTechnoTypeExt = TechnoExt::Fetch(pManager->Owner)->TypeExtData;
-		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim, pControlledAnimType, false, threatDelay);
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim.Get(RulesExt::Global()->MultiMindControl_ReleaseVictim), pControlledAnimType, false, threatDelay);
 	}
 
 	return false;

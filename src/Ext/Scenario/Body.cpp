@@ -120,6 +120,19 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 	}
 }
 
+void ScenarioExt::ExtData::RegisterAutoDeath(TechnoClass* pTechno)
+{
+	if (auto const pExt = TechnoExt::Fetch(pTechno))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = this->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -178,6 +191,10 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
 		.Process(this->EVAIndex)
+		.Process(this->FiringAnimUpdateCount)
+		.Process(this->MissionTimer_Type)
+		.Process(this->MissionTimer_Variable)
+		.Process(this->MissionTimer_Reverse)
 		;
 }
 

@@ -25,12 +25,21 @@ public:
 	void SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
 	void SetRespawnRestartInCombat();
-	void KillAnim();
+
+	void KillAnim()
+	{
+		if (auto& pAnim = this->IdleAnim)
+		{
+			pAnim->UnInit();
+			pAnim = nullptr;
+		}
+	}
+
 	void AI_Temporal();
 	void AI();
 
 	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
-	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+	void DrawShieldBar_Other(const int length, RectangleStruct* pBound, bool isInfantry);
 
 	double GetHealthRatio() const
 	{
@@ -71,8 +80,16 @@ public:
 
 	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
 	int GetFramesSinceLastBroken() const { return Unsorted::CurrentFrame - this->LastBreakFrame; }
-	void SetAnimationVisibility(bool visible);
 	void UpdateTint();
+
+	void SetAnimationVisibility(bool visible)
+	{
+		if (!this->AreAnimsHidden && !visible)
+			this->KillAnim();
+
+		this->AreAnimsHidden = !visible;
+	}
+
 	void ConvertCheck(TechnoTypeClass* pTechnoType);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
@@ -107,9 +124,18 @@ private:
 	template <typename T>
 	bool Serialize(T& Stm);
 
-	void SelfHealing();
-	int GetPercentageAmount(double iStatus);
+	int GetPercentageAmount(double iStatus)
+	{
+		if (iStatus == 0)
+			return 0;
 
+		if (iStatus >= -1.0 && iStatus <= 1.0)
+			return (int)std::round(this->Type->Strength * iStatus);
+
+		return (int)std::trunc(iStatus);
+	}
+
+	void SelfHealing();
 	void RespawnShield();
 
 	void CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType = nullptr);
@@ -119,13 +145,13 @@ private:
 	void WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim);
 	void ResponseAttack();
 
-	void CloakCheck();
+	inline void CloakCheck();
+	inline void TemporalCheck();
 	void OnlineCheck();
-	void TemporalCheck();
 	void EnabledByCheck();
 
-	int DrawShieldBar_Pip(const bool isBuilding) const;
-	int DrawShieldBar_PipAmount(const int length) const;
+	inline int DrawShieldBar_Pip(const bool isBuilding) const;
+	inline int DrawShieldBar_PipAmount(const int length) const;
 
 	/// Properties ///
 	TechnoClass* Techno;
@@ -139,6 +165,7 @@ private:
 	bool Attached;
 	bool AreAnimsHidden;
 	bool IsSelfHealingEnabled;
+	int BracketDelta;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;

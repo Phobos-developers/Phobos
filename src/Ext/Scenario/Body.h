@@ -50,6 +50,12 @@ public:
 
 		int EVAIndex;
 
+		int FiringAnimUpdateCount;
+
+		int MissionTimer_Type;
+		int MissionTimer_Variable;
+		bool MissionTimer_Reverse;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -68,6 +74,10 @@ public:
 			, SpecialTracker {}
 			, FallingDownTracker {}
 			, EVAIndex { -2 }
+			, FiringAnimUpdateCount { 0 }
+			, MissionTimer_Type { 0 }
+			, MissionTimer_Variable { 0 }
+			, MissionTimer_Reverse { false }
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
@@ -84,6 +94,7 @@ public:
 
 		void UpdateAutoDeathObjectsInLimbo();
 		void UpdateTransportReloaders();
+		void RegisterAutoDeath(TechnoClass* pTechno);
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

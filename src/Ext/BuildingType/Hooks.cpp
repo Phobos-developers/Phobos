@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
 #include <Ext/Rules/Body.h>
 
 DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
@@ -433,7 +434,7 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 
 	const auto pOwner = pThis->Owner;
 	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner, pThis);
-	 
+
 	if (pThis->UpgradeLevel)
 	{
 		for (const auto pUpgrade : pThis->Upgrades)
@@ -485,3 +486,74 @@ DEFINE_HOOK(0x73F5A7, UnitClass_IsCellOccupied_UnlimboDirection, 0x8)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x446816, BuildingClass_Place_RevealToAll_UpdateSight, 0x5)
+{
+	enum { SkipGameCode = 0x44682F };
+
+	GET(BuildingClass*, pThis, EBP);
+	const auto pType = pThis->Type;
+	const auto pTypeExt = BuildingTypeExt::Fetch(pType);
+
+	const int radius = pTypeExt->RevealToAll_Radius.Get(pType->Sight);
+	pThis->UpdateSight(false, false, true, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4ADE55, Sub_4ADCD0_RevealToAll_UpdateSight, 0x6)
+{
+	enum { SkipGameCode = 0x4ADE6E };
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto pType = pThis->Type;
+	const auto pTypeExt = BuildingTypeExt::Fetch(pType);
+
+	const int radius = pTypeExt->RevealToAll_Radius.Get(pType->Sight);
+	pThis->UpdateSight(false, false, true, reinterpret_cast<DWORD>(HouseClass::CurrentPlayer), radius);
+	return SkipGameCode;
+}
+
+// Don't allow anims to be created if they require power to be shown and the building isn't powered (Upgrade / Production / PreProduction).
+// Upgrade anims additionally require the building to be upgraded and the anim to be the current upgrade level.
+static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
+{
+	auto const pType = pBuilding->Type;
+
+	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->GetAnim(anim))
+	{
+		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
+
+		if (animIndex < 0 || (int)anim != animIndex)
+			return false;
+
+		auto const animData = pType->GetBuildingAnim(anim);
+
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
+			return false;
+	}
+	else if (anim == BuildingAnimSlot::Production || anim == BuildingAnimSlot::PreProduction)
+	{
+		if (anim == BuildingAnimSlot::Production && BuildingExt::Fetch(pBuilding)->IsPlayingRoofProductionAnim)
+			return true;
+
+		auto const animData = pType->GetBuildingAnim(anim);
+
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
+			return false;
+	}
+
+	return true;
+}
+
+DEFINE_HOOK(0x45189D, BuildingClass_PlayAnim_BlockPoweredAnims, 0x6)
+{
+	enum { SkipAnim = 0x451B2C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(BuildingAnimSlot, anim, STACK_OFFSET(0x34, 0x8));
+
+	if (!AllowPoweredAnim(pThis, anim))
+		return SkipAnim;
+
+	return 0;
+}

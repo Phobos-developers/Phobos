@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 
@@ -100,18 +98,13 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
+	if (resultOfAres != CanBuildResult::Buildable)
+		return 0;
+
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
-		if (resultOfAres == CanBuildResult::Buildable && BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
-			R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
-	}
-
-	if (resultOfAres == CanBuildResult::Buildable)
-	{
-		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
-
-		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
-			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+		if (BuildingTypeExt::Fetch(pBuilding)->PowersUp_Buildings.size() > 0)
+			R->EAX(HouseExt::BuildLimitGroupUpgradeCheck(pThis, pItem, buildLimitOnly, includeInProduction));
 	}
 
 	return 0;
@@ -233,43 +226,6 @@ DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
 		R->EAX(animIndex);
 		return SkipGameCode;
 	}
-
-	return 0;
-}
-
-// Don't allow upgrade anims to be created if building is not upgraded or they require power to be shown and the building isn't powered.
-static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
-{
-	auto const pType = pBuilding->Type;
-
-	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
-	{
-		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
-
-		if (animIndex < 0 || (int)anim != animIndex)
-			return false;
-
-		auto const animData = pType->BuildingAnim[int(anim)];
-
-		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect)) || (pType->PoweredSpecial && animData.PoweredSpecial))
-			&& !(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-DEFINE_HOOK(0x45189D, BuildingClass_AnimUpdate_Upgrades, 0x6)
-{
-	enum { SkipAnim = 0x451B2C };
-
-	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(BuildingAnimSlot, anim, STACK_OFFSET(0x34, 0x8));
-
-	if (!AllowUpgradeAnim(pThis, anim))
-		return SkipAnim;
 
 	return 0;
 }

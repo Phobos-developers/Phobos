@@ -1,9 +1,6 @@
-#include "Body.h"
-
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
@@ -30,7 +27,7 @@ TechnoExt::~TechnoExt()
 	}
 
 	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
-		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport.Get(RulesExt::Global()->ReloadInTransport))
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
@@ -65,7 +62,7 @@ TechnoExt::~TechnoExt()
 		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
-bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
+bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -73,12 +70,6 @@ bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
 		&& !pThis->BeingWarpedOut
-		;
-}
-
-bool TechnoExt::IsActive(TechnoClass* pThis)
-{
-	return TechnoExt::IsActiveIgnoreEMP(pThis)
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
@@ -181,6 +172,23 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+bool TechnoExt::HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability)
+{
+	if (!pThis || (!pThis->Veterancy.IsVeteran() && !pThis->Veterancy.IsElite()))
+		return false;
+
+	const auto index = static_cast<size_t>(ability);
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	if (pThis->Veterancy.IsElite())
+	{
+		return pTypeExt->AdditionalVeteranAbilities.test(index)
+			|| pTypeExt->AdditionalEliteAbilities.test(index);
+	}
+
+	return pTypeExt->AdditionalVeteranAbilities.test(index);
+}
+
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
@@ -227,9 +235,9 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	return mult;
 }
 
-double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse, WarheadTypeClass* pWarhead)
 {
-	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse) *
 		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
 }
 
@@ -495,38 +503,50 @@ bool TechnoExt::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEff
 
 	for (auto const& type : attachEffectTypes)
 	{
-		for (auto const& attachEffect : this->AttachedEffects)
+		if (type->Cumulative)
 		{
-			if (attachEffect->GetType() == type && attachEffect->IsActive())
+			const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+			bool matched = cumulativeCount > 0;
+			const unsigned int minSize = minCounts ? minCounts->size() : 0;
+			const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+
+			if (matched && minSize > 0)
 			{
-				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
-					continue;
+				if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
+					matched = false;
+			}
 
-				const unsigned int minSize = minCounts ? minCounts->size() : 0;
-				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+			if (matched && maxSize > 0)
+			{
+				if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+					matched = false;
+			}
 
-				if (type->Cumulative && (minSize > 0 || maxSize > 0))
-				{
-					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
-
-					if (minSize > 0)
-					{
-						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
-							continue;
-					}
-					if (maxSize > 0)
-					{
-						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
-							continue;
-					}
-				}
-
+			if (matched)
+			{
 				// Only need to find one match, can stop here.
 				if (!requireAll)
 					return true;
 
 				foundCount++;
-				break;
+			}
+		}
+		else
+		{
+			for (auto const& attachEffect : this->AttachedEffects)
+			{
+				if (attachEffect->GetType() == type && attachEffect->IsActive())
+				{
+					if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
+						continue;
+
+					// Only need to find one match, can stop here.
+					if (!requireAll)
+						return true;
+
+					foundCount++;
+					break;
+				}
 			}
 		}
 
@@ -553,9 +573,6 @@ bool TechnoExt::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEff
 /// <returns>Number of active cumulative AttachEffect type instances on the techno. 0 if the AttachEffect type is not cumulative.</returns>
 int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource) const
 {
-	if (!pAttachEffectType->Cumulative)
-		return 0;
-
 	unsigned int foundCount = 0;
 	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
@@ -571,6 +588,87 @@ int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEf
 	}
 
 	return foundCount;
+}
+
+// Check adjacent cells from the center
+// The current MapClass::Instance.PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
+{
+	CellStruct centerCell = CellClass::Coord2Cell(location);
+	short currentRange = 0;
+	bool placed = false;
+
+	do
+	{
+		short x = -currentRange;
+		short y = -currentRange;
+
+		CellStruct checkedCell;
+		checkedCell.Y = centerCell.Y + y;
+
+		// Check upper line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.Y = centerCell.Y + (short)std::abs(y);
+
+		// Check lower line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + x;
+
+		// Check left line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + (short)std::abs(x);
+
+		// Check right line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		currentRange++;
+	}
+	while (!placed && currentRange < (short)maxCellRange);
+
+	if (!placed)
+		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
+
+	return placed;
 }
 
 void TechnoExt::ResetDelayedFireTimer()
@@ -590,9 +688,11 @@ void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimTy
 {
 	if (pAnimType)
 	{
-		auto coords = pThis->GetCenterCoords();
+		CoordStruct coords;
 
-		if (!center)
+		if (center)
+			coords = pThis->GetCenterCoords();
+		else
 			coords = TechnoExt::GetFLHAbsoluteCoords(pThis, firingCoords, onTurret);
 
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
@@ -897,7 +997,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 		const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-		if (passive && pTypeExt->DriverKilled_KeptPassengers)
+		if (passive && pTypeExt->DriverKilled_KeptPassengers.Get(RulesExt::Global()->DriverKilled_KeptPassengers))
 			break;
 
 		const bool kill = pTypeExt->DriverKilled_KillPassengers.Get(RulesExt::Global()->DriverKilled_KillPassengers);
@@ -993,14 +1093,33 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 int TechnoExt::GetSight()
 {
 	double sight = this->TypeExtData->OwnerObject()->Sight;
-	
+
 	for (auto& callback : TechnoExtInterop::CalculateSightCallbacks)
 	{
 		if (callback)
 			sight = callback(this->OwnerObject(), sight);
 	}
-	
+
 	return static_cast<int>(sight);
+}
+
+bool TechnoExt::CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse)
+{
+	if (pThis->Berzerk)
+		return false;
+
+	if (pThis->GetTechnoType()->Spawned)
+		return false;
+
+	if (pThis->SlaveOwner)
+		return false;
+
+	auto const pOwner = pThis->GetOwningHouse();
+
+	if (pOwner != pHouse && !(pHouse->IsCurrentPlayer() && pOwner->IsControlledByCurrentPlayer()))
+		return false;
+
+	return true;
 }
 
 bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
@@ -1080,6 +1199,8 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->DropCrate)
+		.Process(this->DropCrateType)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
 		.Process(this->TintColorOwner)
@@ -1094,6 +1215,8 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
+		.Process(this->ShouldBeDead)
+		.Process(this->PreventCrewEscape)
 		;
 }
 

@@ -2,6 +2,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <BuildingTypeClass.h>
 
 class BuildingTypeExt final : public TechnoTypeExt
 {
@@ -30,7 +31,7 @@ public:
 	Valueable<bool> CanC4_AllowZeroDamage;
 	Valueable<bool> Refinery_UseStorage;
 	Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-	Valueable<bool> Cloning_Powered { true };
+	Valueable<bool> Cloning_Powered;
 	Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 	ValueableIdx<VocClass> Grinding_Sound;
@@ -63,11 +64,12 @@ public:
 	Valueable<bool> ZShapePointMove_OnBuildup;
 	Valueable<int> SellBuildupLength;
 	Valueable<bool> IsDestroyableObstacle;
-	Valueable<bool> Explodes_DuringBuildup;
+	Nullable<bool> Explodes_DuringBuildup;
 
 	Valueable<bool> IsAnimDelayedBurst;
 
 	std::vector<std::optional<DirType>> AircraftDockingDirs;
+		Nullable<bool> AircraftDockingDir_DefaultToPoseDir;
 
 	ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 	ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
@@ -79,6 +81,7 @@ public:
 	Nullable<bool> Units_UseRepairCost;
 
 	Valueable<bool> NoBuildAreaOnBuildup;
+	Nullable<bool> NoAlphaImageOnBuildup;
 	ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 	ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 	Valueable<bool> Adjacent_Disallowed_Prohibit;
@@ -120,12 +123,33 @@ public:
 	Nullable<int> StartFacing;
 	Nullable<bool> StartFacing_Random;
 
+	Valueable<int> SetTabBySelecting;
+
+	Nullable<int> RevealToAll_Radius;
+
+	Nullable<int> DeployFireDelay;
+
+	Valueable<AnimTypeClass*> RoofProductionAnim;
+	Valueable<AnimTypeClass*> RoofProductionAnimDamaged;
+	Valueable<AnimTypeClass*> RoofProductionAnimGarrisoned;
+	Nullable<int> RoofProductionAnimX;
+	Nullable<int> RoofProductionAnimY;
+	Nullable<int> RoofProductionAnimZAdjust;
+	Nullable<int> RoofProductionAnimYSort;
+	Nullable<bool> RoofProductionAnimPowered;
+	Nullable<bool> RoofProductionAnimPoweredLight;
+	Nullable<bool> RoofProductionAnimPoweredEffect;
+	Nullable<bool> RoofProductionAnimPoweredSpecial;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
 	// Ares 0.A
 	Valueable<BuildingTypeClass*> RubbleIntact;
 	Valueable<bool> RubbleIntactRemove;
+
+	// Ares 0.E
+	Valueable<bool> Tunnel; // temporarily bool: Ares stores TunnelType name (string -> index), not mapped here
 
 	// Ares 3.0
 	Nullable<bool> UnitSell;
@@ -143,6 +167,7 @@ public:
 		, Powered_KillSpawns { false }
 		, CanC4_AllowZeroDamage { false }
 		, InitialStrength_Cloning { { 1.0 } }
+		, Cloning_Powered { true }
 		, ExcludeFromMultipleFactoryBonus { false }
 		, Refinery_UseStorage { false }
 		, Grinding_AllowAllies { false }
@@ -176,12 +201,13 @@ public:
 		, FactoryPlant_MaxCount { -1 }
 		, IsAnimDelayedBurst { true }
 		, IsDestroyableObstacle { false }
-		, Explodes_DuringBuildup { true }
+		, Explodes_DuringBuildup {}
 		, Units_RepairRate {}
 		, Units_RepairStep {}
 		, Units_RepairPercent {}
 		, Units_UseRepairCost {}
 		, NoBuildAreaOnBuildup { false }
+		, NoAlphaImageOnBuildup {}
 		, Adjacent_Allowed {}
 		, Adjacent_Disallowed {}
 		, Adjacent_Disallowed_Prohibit { false }
@@ -211,6 +237,21 @@ public:
 		, TurretAnim_FiringRate { 1 }
 		, StartFacing{}
 		, StartFacing_Random{}
+		, SetTabBySelecting { -1 }
+		, RevealToAll_Radius {}
+		, DeployFireDelay {}
+
+		, RoofProductionAnim { nullptr }
+		, RoofProductionAnimDamaged { nullptr }
+		, RoofProductionAnimGarrisoned { nullptr }
+		, RoofProductionAnimX {}
+		, RoofProductionAnimY {}
+		, RoofProductionAnimZAdjust {}
+		, RoofProductionAnimYSort {}
+		, RoofProductionAnimPowered { }
+		, RoofProductionAnimPoweredLight { }
+		, RoofProductionAnimPoweredEffect { }
+		, RoofProductionAnimPoweredSpecial { }
 
 		// Ares 0.2
 		, CloningFacility { false }
@@ -218,6 +259,9 @@ public:
 		// Ares 0.A
 		, RubbleIntact { nullptr }
 		, RubbleIntactRemove { false }
+
+		// Ares 0.E
+		, Tunnel { false }
 
 		// Ares 3.0
 		, UnitSell {}
@@ -271,6 +315,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
+	static bool IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial);
 
 	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant = nullptr);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
