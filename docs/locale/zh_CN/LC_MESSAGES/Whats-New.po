@@ -917,6 +917,12 @@ msgid ""
 msgstr ""
 "修复有乘客建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug（by Noble_Fish）"
 
+msgid ""
+"Fixed the issue where vehicles always finish turret resetting first "
+"before turn to a new attack target, now it should turn to new target "
+"immediately (by NetsuNegi)"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -3094,12 +3100,6 @@ msgid ""
 "updates due to the accumulation of a large amount of radsite in a short "
 "time (by NetsuNegi)"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
-
-msgid ""
-"Fixed the issue where vehicles always finish turret resetting first "
-"before turn to a new attack target, now it should turn to new target "
-"immediately (by NetsuNegi)"
-msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标（by NetsuNegi）"
 
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
