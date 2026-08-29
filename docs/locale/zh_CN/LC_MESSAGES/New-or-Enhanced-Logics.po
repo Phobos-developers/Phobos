@@ -1892,13 +1892,10 @@ msgstr ""
 "现在，你可以用 `RoofProductionAnim*` 系列语句在所生产的步兵和载具从天窗离开工厂时替代 `ProductionAnim*` "
 "系列语句使用。"
 
-#, fuzzy
 msgid ""
-"The criterion for exiting through the roof hatch is the same as "
-"`RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or "
-"`BalloonHover=yes`."
+"Whether technos exit from the roof depends on [`ExitThroughRoof`](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof). The criterion for it defaulting to true is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`."
 msgstr ""
-"从天窗离开的判定标准与原版中 `RoofDeployingAnim` 相同：单位拥有 `Jumpjet=yes` 或 "
+"单位是否从天窗离开取决于 [`ExitThroughRoof`](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof)。其默认为 true 的标准与原版中换用 `RoofDeployingAnim` 相同：单位拥有 `Jumpjet=yes` 或 "
 "`BalloonHover=yes`。"
 
 msgid "Spy effects"
