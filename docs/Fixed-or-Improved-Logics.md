@@ -146,7 +146,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
-- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
@@ -803,18 +802,11 @@ ExcludeFromMultipleFactoryBonus=false  ; boolean
 
 ### Gates connecting with Walls
 
-- It is possible to add new gates which can be connected with any Walls by specifing them as `EWGates` and `NSGates` like `xxGateOne` and `xxGateTwo` do.
-  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
-
-![image](_static/images/ewgates.gif)  
+![image](_static/images/ewgates.gif)
 *A Gate EW is built onto the Concrete Walls in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-In `rulesmd.ini`:
-```ini
-[AI]
-NSGates=      ; List of BuildingTypes, vanilla tag
-ESGates=      ; List of BuildingTypes, vanilla tag
-```
+- It is possible to add new gates which can be connected with any Walls by specifing them as `[AI] -> EWGates` and `[AI] -> NSGates` like `xxGateOne` and `xxGateTwo` do.
+  - In the in-game orientation, north points to the upper right, so `NSGates` correspond to buildings with `Foundation=1x3`, and `EWGates` correspond to buildings with `Foundation=3x1`.
 
 ### Unit repair customization
 
@@ -832,6 +824,18 @@ Units.RepairRate=     ; floating point value, ingame minutes
 Units.RepairStep=     ; integer
 Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
+```
+
+## Overlays
+
+### `ZAdjust` for OverlayTypes
+
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+
+In `artmd.ini`:
+```ini
+[SOMEOVERLAY]  ; OverlayType Image
+ZAdjust=0      ; integer
 ```
 
 ## Particle systems

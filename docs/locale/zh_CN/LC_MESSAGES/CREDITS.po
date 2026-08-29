@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:17+0800\n"
+"POT-Creation-Date: 2026-06-30 21:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -702,6 +702,9 @@ msgstr "Attach Effect"
 msgid "Air unit tracking fix for large range / `CellSpread`"
 msgstr "大范围目标检索和 `CellSpread` 对空中单位的追踪"
 
+msgid "`ZAdjust` for OverlayTypes"
+msgstr "覆盖物的 `ZAdjust`"
+
 msgid "Extra tint intensity for Iron Curtain & Force Shield"
 msgstr "铁幕和力场护盾的额外染色强度"
 
@@ -779,8 +782,10 @@ msgstr "围墙卖坦克 Bug 的修复"
 msgid ""
 "Fix vehicles disguised as trees incorrectly displaying veterancy insignia"
 " when they shouldn't"
-msgstr ""
-"修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+msgstr "修复了伪装成树的载具错误显示出军衔（能打人的精英树）的问题"
+
+msgid "GapGen + SpySat desync fix"
+msgstr "裂缝产生器和间谍卫星的不同步修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1261,6 +1266,35 @@ msgid ""
 "death by vanish will cause tank get stuck and game will crash quickly"
 msgstr "修复了坦克碉堡中的载具使用 `AutoDeath.Behavior=vanish` 会导致坦克卡住并且游戏立即崩溃的 Bug"
 
+msgid ""
+"Fix the issue that power output of building on tooltip won't consider "
+"power enhancer"
+msgstr "修复了建筑拓展工具提示信息中的发电量数值未考虑电厂增幅器的问题"
+
+msgid ""
+"Fix the bug that the upgrade building's power-enhancing effect depends "
+"only on its parent building and is not related to the upgrade building "
+"itself"
+msgstr "修复了加载物建筑的电厂增幅效果仅取决于其基底建筑而非加载物建筑自身的 Bug"
+
+msgid ""
+"Fix a bug where updating the `OpenTopped` attribute during convert did "
+"not update the coordinates of passengers"
+msgstr "修复了类型转换会更新 `OpenTopped` 属性却不更新乘客坐标的 Bug"
+
+msgid ""
+"Fix the bug where passengers, when their transport unit is removed, would"
+" cause incorrect `LimboTracker` counts due to either having their "
+"destructor called directly (bypassing `UnInit`) or nested `UnInit` calls "
+"resetting the deletion flag too early, thereby breaking auto-death and "
+"superweapon auxiliary techno checks"
+msgstr ""
+"修复了乘客在其所在的运输工具被移除时，因被直接调用析构函数（绕过 `UnInit` ）或 `UnInit` 嵌套调用导致删除标志过早重置，从而使 "
+"`LimboTracker` 计数错误，进而影响自动死亡及超武辅助单位判定的 Bug"
+
+msgid "Fix the bug that the vanilla `SecondSpawnOffset` no longer takes effect"
+msgstr "修复了原版 `SecondSpawnOffset` 不再生效的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1457,6 +1491,60 @@ msgid ""
 " buffer"
 msgstr "修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃问题"
 
+msgid "**Noble Fish**:"
+msgstr "**Noble Fish**："
+
+msgid "Documentation maintenance"
+msgstr "文档维护工作"
+
+msgid "Chinese documentation maintenance and translation"
+msgstr "中文文档维护和翻译"
+
+msgid "Established Community Chinese docs"
+msgstr "创建了社区中文文档"
+
+msgid "Took over and completely rewrite the Official Chinese docs during Release v0.4"
+msgstr "在 Release v0.4 接管并完全重写了官方中文文档"
+
+msgid ""
+"Fix frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` "
+"instead of `TXT_DISPLAY_DAMAGE_DESC`"
+msgstr ""
+"修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
+"`TXT_FRAME_BY_FRAME_DESC` 的问题"
+
+msgid ""
+"Remove the hardcoded wall interaction of NoSecondaryWeaponFallback that "
+"was erroneously introduced by Phobos"
+msgstr "移除 Phobos 错误引入的 `NoSecondaryWeaponFallback` 与墙交互硬编码"
+
+msgid "Fix a read bug when setting the SHP file name in INI"
+msgstr "修复了一个在 INI 中设置 SHP 文件名的读取 Bug"
+
+msgid ""
+"Fix an issue where shadow matrix scaling was incorrectly applied to "
+"`TurretOffset` causing turret shadow misplacement"
+msgstr "修复了一个影子矩阵缩放错误地应用于 `TurretOffset` 而导致炮塔影子错位的问题"
+
+msgid ""
+"Fix a bug where a unit's turrets would also get locked when the unit "
+"became deactivated for reasons other than being under EMP"
+msgstr "修复了由于非 EMP 原因而进入瘫痪状态的单位其炮塔也同样会被锁死的 Bug"
+
+msgid ""
+"Fix the bug where `WeaponRange.AllowWeapons` and "
+"`WeaponRange.DisallowWeapons` only support weapons listed in the "
+"`[WeaponTypes]` list"
+msgstr ""
+"修复了 `WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` 仅支持通过 "
+"`[WeaponTypes]` 注册的武器这一 Bug"
+
+msgid ""
+"Fix the bug that `MissileSpawn=true` causes the spawnee launcher to crash"
+" immediately when attacking"
+msgstr ""
+"修复了 `MissileSpawn=true` 会导致子机发射者攻击立即崩溃的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -1586,14 +1674,6 @@ msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
 msgid ""
-"**Noble Fish** - some minor improvements and fixes, established Community"
-" Chinese docs, took over and completely rewrite the Official Chinese docs"
-" during Build#46"
-msgstr ""
-"**Noble Fish** - 一些小改进与修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 "
-"接管并完全重写了官方中文文档）"
-
-msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位协助，逆向工程方面的协助与指导、YR 二进制映射"
@@ -1665,8 +1745,11 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-msgid "**CnCRazer** - Wall overlay unit sell exploit fix"
-msgstr "**CnCRazer** - 围墙卖坦克 Bug 的修复"
+msgid "**RAZER**:"
+msgstr "**RAZER**："
+
+msgid "Multiplayer gamespeed fix for RealTimeTimers"
+msgstr "多人联机所用游戏速度下的实时计时器修复"
 
 msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
 msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
