@@ -437,7 +437,7 @@ DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
 		auto location = pLinkedTo->GetCoords();
 		GameCreate<AnimClass>(pAnimType, location, 0, 1, 0x600u, false);
 	}
-	
+
 	return 0;
 }
 
@@ -1105,6 +1105,19 @@ DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // P
 
 #pragma endregion
 
+DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if (pThis && !TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
+	{
+		R->EAX(0);
+		return 0x43B4B0;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 {
 	enum { Continue = 0x738B6D, GoAreaGuardDecision = 0x738BA4, GoGuard = 0x738C98 };
@@ -1120,8 +1133,8 @@ DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 
 		if (hasExplicit && !modes.empty() && (modes.size() != 1 || modes[0] != -1))
 			return modes.Contains(pThis->CurrentWeaponNumber) ? GoAreaGuardDecision : GoGuard;
+
 	}
 
 	return 0;
 }
-

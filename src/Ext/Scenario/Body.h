@@ -52,6 +52,10 @@ public:
 
 		int FiringAnimUpdateCount;
 
+		int MissionTimer_Type;
+		int MissionTimer_Variable;
+		bool MissionTimer_Reverse;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -71,6 +75,9 @@ public:
 			, FallingDownTracker {}
 			, EVAIndex { -2 }
 			, FiringAnimUpdateCount { 0 }
+			, MissionTimer_Type { 0 }
+			, MissionTimer_Variable { 0 }
+			, MissionTimer_Reverse { false }
 		{ }
 
 		static void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

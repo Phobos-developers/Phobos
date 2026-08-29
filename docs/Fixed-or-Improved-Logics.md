@@ -330,6 +330,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button.
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
+- Fixed the bug that computer player record cannot be log normally in non English mode.
 
 ## Fixes / interactions with other extensions
 
@@ -2097,6 +2099,26 @@ In `rulesmd.ini`:
 [SOMETECHNO]                     ; TechnoType, with Gunner=yes
 DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
 DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
+```
+
+### Customize whether the unit can be detected by psychic detector
+
+- Now you can use the following flag to define whether the unit can be detected by buildings that have `PsychicDetectionRadius`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+PsychicDetectable=true  ; boolean
+```
+
+### Customize whether the unit exits from the roof
+
+- In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from the roof. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
 ### Damaged speed customization

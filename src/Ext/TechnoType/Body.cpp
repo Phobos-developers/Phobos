@@ -828,6 +828,14 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
+	this->AutoDeath_PlayerPowerState.Read(exINI, pSection, "AutoDeath.PlayerPowerState");
+	this->AutoDeath_PlayerMoney_Max.Read(exINI, pSection, "AutoDeath.PlayerMoney.Max");
+	this->AutoDeath_PlayerMoney_Min.Read(exINI, pSection, "AutoDeath.PlayerMoney.Min");
+
+	if ((this->AutoDeath_PlayerMoney_Max != -1)
+		&& (this->AutoDeath_PlayerMoney_Min != -1)
+		&& (this->AutoDeath_PlayerMoney_Max < this->AutoDeath_PlayerMoney_Min))
+		Debug::Log("[Developer warning][%s] AutoDeath.PlayerMoney.Min is bigger than AutoDeath.PlayerMoney.Max, AutoDeath will never activate!\n", pSection);
 
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
@@ -1184,6 +1192,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
+	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
+	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
+
+	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
+	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
 	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
 
@@ -1495,6 +1510,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
+		.Process(this->AutoDeath_PlayerPowerState)
+		.Process(this->AutoDeath_PlayerMoney_Max)
+		.Process(this->AutoDeath_PlayerMoney_Min)
 
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
@@ -1811,6 +1829,13 @@ void TechnoTypeExt::Serialize(T& Stm)
 			
 		.Process(this->DefaultToGuardArea_Modes)
 		.Process(this->DefaultToGuardArea_AIModes)
+
+		.Process(this->ExitThroughRoof)
+		.Process(this->PsychicDetectable)
+
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
