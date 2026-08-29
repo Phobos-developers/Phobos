@@ -3,7 +3,6 @@
 #include "Body.h"
 
 #include <Ext/TerrainType/Body.h>
-#include <Ext/CaptureManager/Body.h>
 #include <Ext/Building/Body.h>
 
 #pragma region AllowDeployControlledMCV
@@ -18,82 +17,12 @@ DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::Ca
 
 #pragma endregion
 
-static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
-{
-	const auto pAnimType = pTechnoFrom->MindControlRingAnim
-		? pTechnoFrom->MindControlRingAnim->Type
-		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
-
-	if (const auto Controller = pTechnoFrom->MindControlledBy)
-	{
-		if (const auto Manager = Controller->CaptureManager)
-		{
-			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
-
-			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, pAnimType, true))
-			{
-				if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechnoTo))
-				{
-					// Capturing the building after unlimbo before buildup has finished or even started appears to throw certain things off,
-					// Hopefully this is enough to fix most of it like anims playing prematurely etc.
-					pBld->ActuallyPlacedOnMap = false;
-					pBld->DestroyNthAnim(BuildingAnimSlot::All);
-
-					pBld->BeginMode(BStateType::Construction);
-					pBld->QueueMission(Mission::Construction, false);
-				}
-			}
-			else
-			{
-				int nSound = pTechnoTo->GetTechnoType()->MindClearedSound;
-				if (nSound == -1)
-					nSound = RulesClass::Instance->MindClearedSound;
-
-				if (nSound != -1)
-					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
-			}
-		}
-	}
-	else if (const auto MCHouse = pTechnoFrom->MindControlledByHouse)
-	{
-		pTechnoTo->MindControlledByHouse = MCHouse;
-		pTechnoFrom->MindControlledByHouse = nullptr;
-	}
-	else if (pTechnoFrom->MindControlledByAUnit) // Perma MC
-	{
-		pTechnoTo->MindControlledByAUnit = true;
-
-		const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechnoTo);
-		CoordStruct location = pTechnoTo->GetCoords();
-
-		location.Z += pBuilding
-			? pBuilding->Type->Height * Unsorted::LevelHeight
-			: pTechnoTo->GetTechnoType()->MindControlRingOffset;
-
-		const auto pAnim = pAnimType
-			? GameCreate<AnimClass>(pAnimType, location, 0, 1)
-			: nullptr;
-
-		if (pAnim)
-		{
-			if (pBuilding)
-				pAnim->ZAdjust = -1024;
-
-			pTechnoTo->MindControlRingAnim = pAnim;
-			pAnim->SetOwnerObject(pTechnoTo);
-		}
-	}
-}
-
 DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
-	TransferMindControlOnDeploy(pUnit, pStructure);
-	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
-	TechnoExt::SyncInvulnerability(pUnit, pStructure);
-	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
+	TechnoExt::TransferStatus(pUnit, pStructure);
 
 	return 0;
 }
@@ -103,10 +32,7 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
 
-	TransferMindControlOnDeploy(pStructure, pUnit);
-	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
-	TechnoExt::SyncInvulnerability(pStructure, pUnit);
-	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
+	TechnoExt::TransferStatus(pStructure, pUnit);
 
 	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
 	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future
@@ -127,6 +53,23 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 	}
 
 	return 0x449E34;
+}
+
+DEFINE_HOOK(0x7000DF, TechnoClass_WhatAction_Deploy, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
+	{
+		if (!FootExt::CanDeployIntoBuilding(pInfantry, true))
+		{
+			R->EAX(Action::NoDeploy);
+
+			return 0x7000E4;
+		}
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
@@ -151,7 +94,7 @@ DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 	REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 
-	if (!UnitExt::CanDeployIntoBuilding(pThis))
+	if (!FootExt::CanDeployIntoBuilding(pThis))
 		action = Action::NoDeploy;
 
 	return SkipGameCode;
@@ -196,7 +139,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
 	{
-		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = FootExt::Deployer ? FootExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -210,7 +153,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == UnitExt::Deployer)
+				if (pObject == FootExt::Deployer)
 				{
 					skipFlag = true;
 				}
@@ -245,14 +188,14 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else
 	{
-		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = FootExt::Deployer ? FootExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == UnitExt::Deployer)
+				if (pObject == FootExt::Deployer)
 					skipFlag = true;
 				else
 					return CanNotExistHere;
@@ -266,7 +209,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 		}
 
-		if (!builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x1F : 0x3F)))
+		if (!builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x02 : 0x3F)))
 			return CanNotExistHere;
 	}
 

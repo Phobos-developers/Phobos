@@ -349,8 +349,8 @@ void SWTypeExt::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 
 void SWTypeExt::ApplyTypeConversion(SuperClass* pSW)
 {
-	for (const auto pTargetFoot : FootClass::Array)
-		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+	for (const auto pTarget : TechnoClass::Array)
+		TypeConvertGroup::Convert(pTarget, this->Convert_Pairs, pSW->Owner);
 }
 
 void SWTypeExt::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const

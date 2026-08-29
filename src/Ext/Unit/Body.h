@@ -50,13 +50,10 @@ public:
 	void UpdateRecoilData();
 	void RecordRecoilData();
 
-	static UnitClass* Deployer;
-
 	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(UnitClass* pThis);
 	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
-	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit, UnitTypeExt* pData);
 
 	UnitClass* OwnerObject() const
