@@ -638,21 +638,19 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	}
 
 	// Calculate category stats and candidate counts
-	double categoryTotalWeight = 0.0;
-	int categoryCandidatesCount = 0;
-	if (validCategory != teamCategory::None)
+	double totalPoolWeight = 0.0;
+	int poolCandidatesCount = 0;
+
+	for (const auto& candidate : validCandidates)
 	{
-		for (const auto& candidate : validCandidates)
+		if (validCategory == teamCategory::None || candidate.Category == validCategory)
 		{
-			if (candidate.Category == validCategory)
-			{
-				categoryTotalWeight += candidate.Weight;
-				categoryCandidatesCount++;
-			}
+			totalPoolWeight += candidate.Weight;
+			poolCandidatesCount++;
 		}
 	}
 
-	if (validCategory != teamCategory::None && categoryCandidatesCount == 0)
+	if (validCategory != teamCategory::None && poolCandidatesCount == 0)
 	{
 		Debug::Log("AITeamsSelector - The house %d [%s](%s) has no valid triggers of category %d. A new attempt should be done later...\n",
 			pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, static_cast<int>(validCategory));
@@ -662,45 +660,35 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		Debug::Log("... but FALLBACK MODE is enabled so now all available triggers will be checked.\n");
 		validCategory = teamCategory::None;
+
+		for (const auto& candidate : validCandidates)
+			totalPoolWeight += candidate.Weight;
+
+		poolCandidatesCount = static_cast<int>(validCandidates.size());
 	}
 
 	AITriggerTypeClass* selectedTrigger = nullptr;
 
 	// Roulette Wheel Selection (Discrete Distribution)
-	if (validCategory != teamCategory::None && categoryTotalWeight > 0.0)
+	if (totalPoolWeight > 0.0)
 	{
-		double const weightDice = ScenarioClass::Instance->Random.RandomDouble() * categoryTotalWeight;
-		Debug::Log("AITeamsSelector - Picking 1 team (of category %d) from the %d available (Total Weight: %f, Roll: %f)...\n",
-			static_cast<int>(validCategory), categoryCandidatesCount, categoryTotalWeight, weightDice);
+		double const weightDice = ScenarioClass::Instance->Random.RandomDouble() * totalPoolWeight;
+
+		if (validCategory != teamCategory::None)
+		{
+			Debug::Log("AITeamsSelector - Picking 1 team (of category %d) from the %d available (Total Weight: %f, Roll: %f)...\n",
+				static_cast<int>(validCategory), poolCandidatesCount, totalPoolWeight, weightDice);
+		}
+		else
+		{
+			Debug::Log("AITeamsSelector - Picking 1 team from the %d available (Total Weight: %f, Roll: %f)...\n",
+				poolCandidatesCount, totalPoolWeight, weightDice);
+		}
 
 		double accumulated = 0.0;
 		for (const auto& candidate : validCandidates)
 		{
-			if (candidate.Category == validCategory)
-			{
-				accumulated += candidate.Weight;
-				if (weightDice < accumulated)
-				{
-					selectedTrigger = candidate.Trigger;
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		double totalWeight = 0.0;
-		for (const auto& candidate : validCandidates)
-			totalWeight += candidate.Weight;
-
-		if (totalWeight > 0.0)
-		{
-			double const weightDice = ScenarioClass::Instance->Random.RandomDouble() * totalWeight;
-			Debug::Log("AITeamsSelector - Picking 1 team from the %d available (Total Weight: %f, Roll: %f)...\n",
-				validCandidates.size(), totalWeight, weightDice);
-
-			double accumulated = 0.0;
-			for (const auto& candidate : validCandidates)
+			if (validCategory == teamCategory::None || candidate.Category == validCategory)
 			{
 				accumulated += candidate.Weight;
 				if (weightDice < accumulated)
