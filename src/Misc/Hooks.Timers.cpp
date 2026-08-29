@@ -1,11 +1,7 @@
-#include <ColorScheme.h>
 #include <GameOptionsClass.h>
 #include <FPSCounter.h>
-#include <SessionClass.h>
-#include <Phobos.h>
 
 #include <Ext/Rules/Body.h>
-#include <Utilities/Macro.h>
 
 namespace TimerValueTemp
 {
@@ -20,35 +16,76 @@ DEFINE_HOOK(0x6D4B50, PrintTimerOnTactical_Start, 0x6)
 	REF_STACK(int, value, STACK_OFFSET(0, 0x4));
 	TimerValueTemp::oldValue = value;
 
+	const bool isMP = SessionClass::IsMultiplayer();
+
+	// In SP/Skirmish, GameSpeed 0 is unlimited (no frame delay) so use adaptive FPS path.
+	// In MP, GameSpeed 0 is 60 FPS (valid fixed speed), so it must not enter this path.
 	if (Phobos::Config::RealTimeTimers_Adaptive
-		|| GameOptionsClass::Instance.GameSpeed == 0
-		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
+		|| (!isMP && GameOptionsClass::Instance.GameSpeed == 0)
+		|| (Phobos::Misc::CustomGS && !isMP))
 	{
 		value = (int)((double)value / (std::max((double)FPSCounter::CurrentFrameRate, 1.0) / 15.0));
 		return 0;
 	}
 
-	switch (GameOptionsClass::Instance.GameSpeed)
+	const int gs = GameOptionsClass::Instance.GameSpeed;
+
+	if (isMP)
 	{
-	case 1:	// 60 FPS
-		value = value / 4;
-		break;
-	case 2:	// 30 FPS
-		value = value / 2;
-		break;
-	case 3:	// 20 FPS
-		value = (value * 3) / 4;
-		break;
-	case 4:	// 15 FPS
-		break;
-	case 5:	// 12 FPS
-		value = (value * 5) / 4;
-		break;
-	case 6:	// 10 FPS
-		value = (value * 3) / 2;
-		break;
-	default:
-		break;
+		// MP GameSpeed indices (0-6): 60, 45, 30, 20, 15, 12, 10 FPS
+		// MP has an extra 45 FPS option (index 1) that SP/Skirmish does not.
+		switch (gs)
+		{
+		case 0: // 60 FPS
+			value = value / 4;
+			break;
+		case 1: // 45 FPS
+			value = value / 3;
+			break;
+		case 2: // 30 FPS
+			value = value / 2;
+			break;
+		case 3: // 20 FPS
+			value = (value * 3) / 4;
+			break;
+		case 4: // 15 FPS
+			break;
+		case 5: // 12 FPS
+			value = (value * 5) / 4;
+			break;
+		case 6: // 10 FPS
+			value = (value * 3) / 2;
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		// SP/Skirmish GameSpeed indices (1-6): 60, 30, 20, 15, 12, 10 FPS
+		// Index 0 (unlimited) is already handled above via the adaptive path.
+		switch (gs)
+		{
+		case 1: // 60 FPS
+			value = value / 4;
+			break;
+		case 2: // 30 FPS
+			value = value / 2;
+			break;
+		case 3: // 20 FPS
+			value = (value * 3) / 4;
+			break;
+		case 4: // 15 FPS
+			break;
+		case 5: // 12 FPS
+			value = (value * 5) / 4;
+			break;
+		case 6: // 10 FPS
+			value = (value * 3) / 2;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;

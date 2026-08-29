@@ -1,9 +1,5 @@
 #include "Body.h"
 
-#include <Ext/Scenario/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Debug.h>
-
 DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 {
 	enum { SkipGameCode = 0x6873AB };

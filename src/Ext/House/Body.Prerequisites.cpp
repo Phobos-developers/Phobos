@@ -16,7 +16,7 @@ bool HouseExt::HasBuildingPrerequisite(HouseClass* const pHouse, int const idxBu
 	if (!pType)
 		return false;
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = BuildingTypeExt::Fetch(pType);
 	bool const isUpgrade = (pType->PowersUpBuilding[0] != '\0') || (pTypeExt && !pTypeExt->PowersUp_Buildings.empty());
 
 	if (isUpgrade)
@@ -145,11 +145,11 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	if (!pThis || !pItem)
 		return false;
 
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	auto pHouseExt = HouseExt::Fetch(pThis);
 	if (!pHouseExt)
 		return false;
 
-	auto pItemExt = TechnoTypeExt::ExtMap.Find(pItem);
+	auto pItemExt = TechnoTypeExt::Fetch(pItem);
 	if (!pItemExt)
 		return false;
 

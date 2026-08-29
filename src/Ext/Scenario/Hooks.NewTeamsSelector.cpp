@@ -2,6 +2,7 @@
 
 #include <AITriggerTypeClass.h>
 #include <Ext/House/Body.h>
+#include <Ext/Rules/Body.h>
 
 DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 {
@@ -12,7 +13,7 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 
 	struct HousePreloadInfo
 	{
-		HouseExt::ExtData* pExt;
+		HouseExt* pExt;
 		int HouseTypeIdx;
 		int SideTypeIdx;
 		AIDifficulty Difficulty;
@@ -24,7 +25,7 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 	// Pre-cache house metadata once
 	for (HouseClass* pHouse : HouseClass::Array)
 	{
-		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		auto pHouseExt = HouseExt::Fetch(pHouse);
 		if (!pHouseExt)
 			continue;
 
@@ -70,7 +71,7 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 
 	for (HouseClass* pHouse : HouseClass::Array)
 	{
-		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		auto pHouseExt = HouseExt::Fetch(pHouse);
 		if (pHouseExt)
 		{
 			Debug::Log("AITeamsSelector - The house %d [%s](%s) should be able to use %d AI triggers in this map.\n",

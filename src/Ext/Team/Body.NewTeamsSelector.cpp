@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/Techno/Body.h>
 #include <unordered_map>
 
 enum class teamCategory : int
@@ -36,7 +37,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	if (houseIsHuman || pHouse->Type->MultiplayPassive || !pHouse->AITriggersActive)
 		return SkipCode;
 
-	auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
+	auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
 	if (!pHouseTypeExt)
 		return SkipCode;
 
@@ -305,7 +306,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	bool onlyCheckImportantTriggers = false;
 
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pHouseExt = HouseExt::Fetch(pHouse);
 	double maxPriority = 5000.0;
 
 	// Gather all the trigger candidates into one place for posterior fast calculations
@@ -358,7 +359,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					}
 					else
 					{
-						auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(entry.Type);
+						auto pTechnoTypeExt = TechnoTypeExt::Fetch(entry.Type);
 
 						if (pTechnoTypeExt && (pTechnoTypeExt->ConsideredNaval
 							|| (entry.Type->Naval
@@ -960,20 +961,20 @@ bool TeamExt::CountConditionMet(AITriggerTypeClass* pThis, int nObjects)
 	if (!pThis || nObjects < 0)
 		return false;
 
-	switch (pThis->Conditions[0].ComparatorOperand)
+	switch (pThis->Conditions[0].ComparatorType)
 	{
-	case 0:
-		return nObjects < pThis->Conditions[0].ComparatorType;
-	case 1:
-		return nObjects <= pThis->Conditions[0].ComparatorType;
-	case 2:
-		return nObjects == pThis->Conditions[0].ComparatorType;
-	case 3:
-		return nObjects >= pThis->Conditions[0].ComparatorType;
-	case 4:
-		return nObjects > pThis->Conditions[0].ComparatorType;
-	case 5:
-		return nObjects != pThis->Conditions[0].ComparatorType;
+	case AITriggerConditionComparatorType::Less:
+		return nObjects < pThis->Conditions[0].ComparatorOperand;
+	case AITriggerConditionComparatorType::LessOrEqual:
+		return nObjects <= pThis->Conditions[0].ComparatorOperand;
+	case AITriggerConditionComparatorType::Equal:
+		return nObjects == pThis->Conditions[0].ComparatorOperand;
+	case AITriggerConditionComparatorType::GreaterOrEqual:
+		return nObjects >= pThis->Conditions[0].ComparatorOperand;
+	case AITriggerConditionComparatorType::Greater:
+		return nObjects > pThis->Conditions[0].ComparatorOperand;
+	case AITriggerConditionComparatorType::NotEqual:
+		return nObjects != pThis->Conditions[0].ComparatorOperand;
 	default:
 		return true;
 	}

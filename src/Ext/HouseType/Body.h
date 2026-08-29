@@ -1,63 +1,80 @@
 #pragma once
+
 #include <HouseTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class HouseTypeExt
+#include <New/Type/EVATypeClass.h>
+
+class HouseTypeExt final : public AbstractTypeExt
 {
 public:
 	using base_type = HouseTypeClass;
-	static constexpr DWORD Canary = 0x11112222;
 
-	class ExtData final : public Extension<HouseTypeClass>
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = HouseTypeExt;
+
+	static constexpr DWORD Canary = 0xAFFEAFFE;
+
+public:
+	// typed owner accessor
+	HouseTypeClass* OwnerObject() const
 	{
-	public:
-		Nullable<int> NewTeamsSelector_MergeUnclassifiedCategoryWith;
-		Nullable<double> NewTeamsSelector_UnclassifiedCategoryPercentage;
-		Nullable<double> NewTeamsSelector_GroundCategoryPercentage;
-		Nullable<double> NewTeamsSelector_NavalCategoryPercentage;
-		Nullable<double> NewTeamsSelector_AirCategoryPercentage;
-		Nullable<double> NewTeamsSelector_InfantryCategoryPercentage;
+		return static_cast<HouseTypeClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
-			, NewTeamsSelector_MergeUnclassifiedCategoryWith { }
-			, NewTeamsSelector_UnclassifiedCategoryPercentage { }
-			, NewTeamsSelector_GroundCategoryPercentage { }
-			, NewTeamsSelector_NavalCategoryPercentage { }
-			, NewTeamsSelector_AirCategoryPercentage { }
-			, NewTeamsSelector_InfantryCategoryPercentage { }
-		{ }
+	EVAType EVATag;
 
-		virtual ~ExtData() = default;
+	Nullable<int> NewTeamsSelector_MergeUnclassifiedCategoryWith;
+	Nullable<double> NewTeamsSelector_UnclassifiedCategoryPercentage;
+	Nullable<double> NewTeamsSelector_GroundCategoryPercentage;
+	Nullable<double> NewTeamsSelector_NavalCategoryPercentage;
+	Nullable<double> NewTeamsSelector_AirCategoryPercentage;
+	Nullable<double> NewTeamsSelector_InfantryCategoryPercentage;
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
-		virtual void CompleteInitialization();
+	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
+		, EVATag { -2 }
+		, NewTeamsSelector_MergeUnclassifiedCategoryWith { }
+		, NewTeamsSelector_UnclassifiedCategoryPercentage { }
+		, NewTeamsSelector_GroundCategoryPercentage { }
+		, NewTeamsSelector_NavalCategoryPercentage { }
+		, NewTeamsSelector_AirCategoryPercentage { }
+		, NewTeamsSelector_InfantryCategoryPercentage { }
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-		}
+	virtual ~HouseTypeExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual void Initialize() override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<HouseTypeExt>
 	{
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool Load(HouseTypeClass* pThis, IStream* pStm) override;
 	};
 
-	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static ExtContainer ExtMap;
+
+	static HouseTypeExt* Fetch(const HouseTypeClass* pThis)
+	{
+		return AbstractExt::Fetch<HouseTypeExt>(pThis);
+	}
+
+	static HouseTypeExt* TryFetch(const HouseTypeClass* pThis)
+	{
+		return AbstractExt::TryFetch<HouseTypeExt>(pThis);
+	}
 };

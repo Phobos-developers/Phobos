@@ -3,13 +3,12 @@
 #include <set>
 #include <unordered_map>
 
-#include <Ext/TEvent/Body.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned char
+enum class DiscardCondition : unsigned int
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -18,7 +17,17 @@ enum class DiscardCondition : unsigned char
 	Drain = 0x8,
 	InRange = 0x10,
 	OutOfRange = 0x20,
-	Firing = 0x40
+	Firing = 0x40,
+	Selling = 0x80,
+	Undeploying = 0x100,
+	Harvesting = 0x200,
+	InvokerDie = 0x400,
+	Ammo = 0x800,
+	Health = 0x1000,
+	Mission = 0x2000,
+	LandType = 0x4000,
+	Sequence = 0x8000,
+	ReceivedDamage = 0x10000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -49,12 +58,26 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
+	Valueable<int> DiscardOn_Ammo_MinimumAmount;
+	Valueable<int> DiscardOn_Ammo_MaximumAmount;
+	Nullable<double> DiscardOn_Health_BelowPercent;
+	Nullable<double> DiscardOn_Health_AbovePercent;
+	Valueable<int> DiscardOn_Firing_Count;
+	Valueable<int> DiscardOn_ReceivedDamage_Count;
+	Valueable<AffectedHouse> DiscardOn_ReceivedDamage_AffectsHouse;
+	ValueableVector<Mission> DiscardOn_Missions;
+	NullableVector<Mission> DiscardOn_AIMissions;
+	Valueable<LandTypeFlags> DiscardOn_LandTypes;
+	ValueableVector<Sequence> DiscardOn_Sequences;
+	Nullable<bool>DiscardOn_Sequences_Immediate;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<bool> DiscardOn_MoveBasedOnDestination;
+	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
 	ValueableVector<TechnoTypeClass*> IgnoreTypes;
-	Valueable<AffectedTarget> AffectTargets;
+	Valueable<AffectedTarget> AffectsTarget;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
@@ -74,6 +97,9 @@ public:
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
+	Valueable<double> ArmorMultiplier_Chance;
+	Valueable<AffectedHouse> ArmorMultiplier_AffectsHouse;
+	ValueableVector<AnimTypeClass*> ArmorMultiplier_HitAnim;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -88,13 +114,13 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
-	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
 	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
-	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
 	Valueable<double> ReflectDamage_Chance;
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
@@ -103,6 +129,8 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	bool RequiresRecalculation;
+	bool RestrictedArmorMultiplier;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -112,12 +140,26 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
+		, DiscardOn_Ammo_MinimumAmount { -1 }
+		, DiscardOn_Ammo_MaximumAmount { -1 }
+		, DiscardOn_Health_BelowPercent { -1 }
+		, DiscardOn_Health_AbovePercent { -1 }
+		, DiscardOn_Firing_Count { 1 }
+		, DiscardOn_ReceivedDamage_Count { 1 }
+		, DiscardOn_ReceivedDamage_AffectsHouse { AffectedHouse::All }
+		, DiscardOn_Missions {}
+		, DiscardOn_AIMissions {}
+		, DiscardOn_LandTypes { LandTypeFlags::None }
+		, DiscardOn_Sequences {}
+		, DiscardOn_Sequences_Immediate {}
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_MoveBasedOnDestination {}
+		, DiscardOn_ConsiderHarvestingAsStationary {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
 		, IgnoreTypes {}
-		, AffectTargets { AffectedTarget::All }
+		, AffectsTarget { AffectedTarget::All }
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
@@ -137,6 +179,9 @@ public:
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}
 		, ArmorMultiplier_DisallowWarheads {}
+		, ArmorMultiplier_Chance { 1.0 }
+		, ArmorMultiplier_AffectsHouse { AffectedHouse::All }
+		, ArmorMultiplier_HitAnim {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -151,13 +196,13 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage { false }
 		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
-		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage_Chance { 1.0 }
 		, ReflectDamage_Override {}
 		, ReflectDamage_UseInvokerAsOwner { false }
@@ -165,6 +210,8 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, RequiresRecalculation { false }
+		, RestrictedArmorMultiplier { false }
 	{};
 
 	bool HasTint() const
@@ -177,7 +224,7 @@ public:
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
-		if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
+		if (cumulativeCount < 0)
 			return nullptr;
 
 		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
@@ -210,6 +257,7 @@ struct AEAttachParams
 	int Delay;
 	int InitialDelay;
 	int RecreationDelay;
+	int CumulativeSourceMaxCount;
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
@@ -219,6 +267,7 @@ struct AEAttachParams
 		, Delay { 0 }
 		, InitialDelay { 0 }
 		, RecreationDelay { -1 }
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
@@ -231,6 +280,7 @@ class AEAttachInfoTypeClass
 {
 public:
 	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<int> CumulativeSourceMaxCount;
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
@@ -251,6 +301,7 @@ public:
 
 	AEAttachInfoTypeClass() :
 		AttachTypes {}
+		, CumulativeSourceMaxCount { -1 }
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
@@ -268,4 +319,26 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+};
+
+// Container for AE attached weapons
+struct AEWeaponParams
+{
+	WeaponTypeClass* Weapon;
+	TechnoClass* Invoker;
+	HouseClass* InvokerHouse;
+
+	AEWeaponParams() :
+		Weapon {}
+		, Invoker {}
+		, InvokerHouse {}
+	{
+	}
+
+	AEWeaponParams(WeaponTypeClass* pWeapon, TechnoClass* pInvoker, HouseClass* pInvokerHouse) :
+		Weapon { pWeapon }
+		, Invoker { pInvoker }
+		, InvokerHouse { pInvokerHouse }
+	{
+	}
 };

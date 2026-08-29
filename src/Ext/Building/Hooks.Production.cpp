@@ -4,13 +4,18 @@
 
 DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
+	enum { SkipGameCode = 0x4401D2 };
+
 	GET(BuildingClass*, pBuilding, ESI);
+
+	if (pBuilding->IsUnderEMP())
+		return SkipGameCode;
 
 	auto const pOwner = pBuilding->Owner;
 	const int index = pOwner->ProducingAircraftTypeIndex;
 	auto const pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 
-	if (RulesExt::Global()->AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues))
+	if (RulesExt::Global()->AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues))
 		return 0;
 
 	if (pOwner->Type->MultiplayPassive
@@ -23,7 +28,7 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 		if (pBuilding->Factory
 			&& !BuildingExt::HasFreeDocks(pBuilding))
 		{
-			if (auto const pBldExt = BuildingExt::ExtMap.TryFind(pBuilding))
+			if (auto const pBldExt = BuildingExt::TryFetch(pBuilding))
 				pBldExt->UpdatePrimaryFactoryAI();
 		}
 	}
@@ -38,7 +43,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 
 	if (pOwner->Production && RulesExt::Global()->AllowParallelAIQueues)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+		auto const pOwnerExt = HouseExt::Fetch(pOwner);
 		auto const pFactory = pThis->Type->Factory;
 		const bool naval = pThis->Type->Naval;
 		BuildingClass** currFactory = nullptr;
@@ -101,14 +106,14 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 				if (naval ? RulesExt::Global()->ForbidParallelAIQueues_Navy : RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
 					return Skip;
 
-				index = naval ? HouseExt::ExtMap.Find(pOwner)->ProducingNavalUnitTypeIndex : pOwner->ProducingUnitTypeIndex;
+				index = naval ? HouseExt::Fetch(pOwner)->ProducingNavalUnitTypeIndex : pOwner->ProducingUnitTypeIndex;
 				pType = index >= 0 ? UnitTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			default:
 				break;
 			}
 
-			if (pType && TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues)
+			if (pType && TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues)
 				return Skip;
 		}
 	}
@@ -138,9 +143,10 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 	if (!RulesExt::Global()->AllowParallelAIQueues)
 		return 0;
 
-	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
-	auto const pType = pTechno->GetTechnoType();
-	const bool forbid = TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues;
+	auto const pOwnerExt = HouseExt::Fetch(pFactory->Owner);
+	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	const bool forbid = pTypeExt->ForbidParallelAIQueues;
 
 	switch (pTechno->WhatAmI())
 	{
@@ -180,7 +186,7 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 	GET(UnitClass*, pUnit, EDI);
 	GET(BuildingClass*, pFactory, ESI);
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
+	auto const pHouseExt = HouseExt::Fetch(pFactory->Owner);
 
 	if (pUnit->Type->Naval && pHouseExt->Factory_NavyType == pFactory)
 		pHouseExt->Factory_NavyType = nullptr;
@@ -194,7 +200,7 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType_Phobos, 0x6)
 {
 	GET(BuildingClass*, pFactory, ESI);
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
+	auto const pHouseExt = HouseExt::Fetch(pFactory->Owner);
 
 	if (pHouseExt->Factory_InfantryType == pFactory)
 		pHouseExt->Factory_InfantryType = nullptr;
@@ -206,7 +212,7 @@ DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType_Phobos, 0xA)
 {
 	GET(BuildingClass*, pFactory, ESI);
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
+	auto const pHouseExt = HouseExt::Fetch(pFactory->Owner);
 
 	if (pHouseExt->Factory_BuildingType == pFactory)
 		pHouseExt->Factory_BuildingType = nullptr;
@@ -218,7 +224,7 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 {
 	GET(BuildingClass*, pFactory, ESI);
 
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
+	auto const pHouseExt = HouseExt::Fetch(pFactory->Owner);
 
 	if (pHouseExt->Factory_AircraftType == pFactory)
 		pHouseExt->Factory_AircraftType = nullptr;
