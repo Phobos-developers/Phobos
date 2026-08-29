@@ -46,6 +46,7 @@ public:
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }
 		, TurretAnimRateTick { 0 }
+		, ConstructionStartFacing { -1 }
 	{ }
 
 	// typed owner accessor (shadows the TechnoClass one from the base)
