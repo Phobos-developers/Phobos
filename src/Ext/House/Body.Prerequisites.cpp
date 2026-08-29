@@ -132,10 +132,19 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 		}
 	}
+	else if (pItem->BuildLimit < 0)
+	{
+		if (pThis->CountOwnedEver(pItem) >= -pItem->BuildLimit)
+			return false;
+	}
 	else if (pItem->BuildLimit == 0)
 	{
 		return false;
 	}
+
+	// Phobos BuildLimitGroup check
+	if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
+		return false;
 
 	// Ares Prerequisite.Negative list
 	if (pItemExt->Prerequisite_Negative.size() > 0)
