@@ -10,53 +10,11 @@ enum class teamCategory : int
 	Unclassified = 4
 };
 
-struct TriggerElementWeight
+struct CandidateTrigger
 {
-	double Weight = 0.0;
 	AITriggerTypeClass* Trigger = nullptr;
+	double Weight = 0.0;
 	teamCategory Category = teamCategory::None;
-
-	//need to define a == operator so it can be used in array classes
-	bool operator==(const TriggerElementWeight& other) const
-	{
-		return (Trigger == other.Trigger && Weight == other.Weight && Category == other.Category);
-	}
-
-	//unequality
-	bool operator!=(const TriggerElementWeight& other) const
-	{
-		return (Trigger != other.Trigger || Weight != other.Weight || Category == other.Category);
-	}
-
-	bool operator<(const TriggerElementWeight& other) const
-	{
-		return (Weight < other.Weight);
-	}
-
-	bool operator<(const double other) const
-	{
-		return (Weight < other);
-	}
-
-	bool operator>(const TriggerElementWeight& other) const
-	{
-		return (Weight > other.Weight);
-	}
-
-	bool operator>(const double other) const
-	{
-		return (Weight > other);
-	}
-
-	bool operator==(const double other) const
-	{
-		return (Weight == other);
-	}
-
-	bool operator!=(const double other) const
-	{
-		return (Weight != other);
-	}
 };
 
 DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
@@ -88,16 +46,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	int totalActiveTeams = 0;
 	int activeTeams = 0;
 
-	int totalGroundCategoryTriggers = 0;
-	int totalUnclassifiedCategoryTriggers = 0;
-	int totalNavalCategoryTriggers = 0;
-	int totalAirCategoryTriggers = 0;
-
-	DynamicVectorClass<TriggerElementWeight> validTriggerCandidates;
-	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesGroundOnly;
-	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesNavalOnly;
-	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesAirOnly;
-	DynamicVectorClass<TriggerElementWeight> validTriggerCandidatesUnclassifiedOnly;
+	std::vector<CandidateTrigger> validCandidates;
 
 	int dice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
 
@@ -223,11 +172,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 	int activeDefenseTeamsCount = 0;
 	int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
-	double totalWeight = 0.0;
-	double totalWeightGroundOnly = 0.0;
-	double totalWeightNavalOnly = 0.0;
-	double totalWeightAirOnly = 0.0;
-	double totalWeightUnclassifiedOnly = 0.0;
 
 	// Check if the running teams by the house already reached all the limits
 	DynamicVectorClass<TeamClass*> activeTeamsList;
@@ -724,195 +668,102 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			// They get stored in an elitist list and all previous triggers are discarded
 			if (pTrigger->Weight_Current >= maxPriority && !onlyCheckImportantTriggers)
 			{
-				// First time only
-				if (validTriggerCandidates.Count > 0)
-				{
-					validTriggerCandidates.Clear();
-					validTriggerCandidatesGroundOnly.Clear();
-					validTriggerCandidatesNavalOnly.Clear();
-					validTriggerCandidatesAirOnly.Clear();
-					validTriggerCandidatesUnclassifiedOnly.Clear();
-					validCategory = teamCategory::None;
-				}
-
-				// Reset the current ones and now only will be added important triggers to the list
+				validCandidates.clear();
 				onlyCheckImportantTriggers = true;
-				totalWeight = 0.0;
-				splitTriggersByCategory = false; // VIP teams breaks the categories logic (on purpose)
+				validCategory = teamCategory::None;
+				splitTriggersByCategory = false; // VIP teams break the categories logic (on purpose)
 			}
 
 			// Passed all checks, save this trigger for later.
-			totalWeight += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
-			TriggerElementWeight item;
-			item.Trigger = pTrigger;
-			item.Weight = totalWeight;
-			item.Category = teamIsCategory;
+			double const weight = (pTrigger->Weight_Current < 1.0) ? 1.0 : pTrigger->Weight_Current;
+			validCandidates.push_back({ pTrigger, weight, teamIsCategory });
+		}
+	}
 
-			validTriggerCandidates.AddItem(item);
+	if (validCandidates.empty())
+	{
+		Debug::Log("AITeamsSelector - The house %d [%s](%s) has no valid triggers for now. A new attempt will be done later...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
+		return SkipCode;
+	}
 
-			if (splitTriggersByCategory)
+	// Calculate category stats and candidate counts
+	double categoryTotalWeight = 0.0;
+	int categoryCandidatesCount = 0;
+	if (validCategory != teamCategory::None)
+	{
+		for (const auto& candidate : validCandidates)
+		{
+			if (candidate.Category == validCategory)
 			{
-				TriggerElementWeight itemGroundOnly;
-				TriggerElementWeight itemAirOnly;
-				TriggerElementWeight itemNavalOnly;
-				TriggerElementWeight itemUnclassifiedOnly;
-
-				switch (teamIsCategory)
-				{
-				case teamCategory::Ground:
-					totalWeightGroundOnly += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
-
-					itemGroundOnly.Trigger = pTrigger;
-					itemGroundOnly.Weight = totalWeightGroundOnly;
-					itemGroundOnly.Category = teamIsCategory;
-
-					validTriggerCandidatesGroundOnly.AddItem(itemGroundOnly);
-					totalGroundCategoryTriggers++;
-					break;
-
-				case teamCategory::Air:
-					totalWeightAirOnly += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
-
-					itemAirOnly.Trigger = pTrigger;
-					itemAirOnly.Weight = totalWeightAirOnly;
-					itemAirOnly.Category = teamIsCategory;
-
-					validTriggerCandidatesAirOnly.AddItem(itemAirOnly);
-					totalAirCategoryTriggers++;
-					break;
-
-				case teamCategory::Naval:
-					totalWeightNavalOnly += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
-
-					itemNavalOnly.Trigger = pTrigger;
-					itemNavalOnly.Weight = totalWeightNavalOnly;
-					itemNavalOnly.Category = teamIsCategory;
-
-					validTriggerCandidatesNavalOnly.AddItem(itemNavalOnly);
-					totalNavalCategoryTriggers++;
-					break;
-
-				case teamCategory::Unclassified:
-					totalWeightUnclassifiedOnly += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
-
-					itemUnclassifiedOnly.Trigger = pTrigger;
-					itemUnclassifiedOnly.Weight = totalWeightUnclassifiedOnly;
-					itemUnclassifiedOnly.Category = teamIsCategory;
-
-					validTriggerCandidatesUnclassifiedOnly.AddItem(itemUnclassifiedOnly);
-					totalUnclassifiedCategoryTriggers++;
-					break;
-
-				default:
-					break;
-				}
+				categoryTotalWeight += candidate.Weight;
+				categoryCandidatesCount++;
 			}
 		}
 	}
 
-	if (validTriggerCandidates.Count == 0)
+	if (validCategory != teamCategory::None && categoryCandidatesCount == 0)
 	{
-		Debug::Log("AITeamsSelector - The house %d [%s](%s) have no valid triggers for now. A new attempt will be done later...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
-		return SkipCode;
-	}
-
-	if ((validCategory == teamCategory::Ground && totalGroundCategoryTriggers == 0)
-		|| (validCategory == teamCategory::Unclassified && totalUnclassifiedCategoryTriggers == 0)
-		|| (validCategory == teamCategory::Air && totalAirCategoryTriggers == 0)
-		|| (validCategory == teamCategory::Naval && totalNavalCategoryTriggers == 0))
-	{
-		Debug::Log("AITeamsSelector - The house %d [%s](%s) have no valid triggers of this category. A new attempt should be done later...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
+		Debug::Log("AITeamsSelector - The house %d [%s](%s) has no valid triggers of category %d. A new attempt should be done later...\n",
+			pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, static_cast<int>(validCategory));
 
 		if (!isFallbackEnabled)
 			return SkipCode;
 
-		Debug::Log("... but FALLBACK MODE is enabled so now will be checked all available triggers.\n");
+		Debug::Log("... but FALLBACK MODE is enabled so now all available triggers will be checked.\n");
 		validCategory = teamCategory::None;
 	}
 
 	AITriggerTypeClass* selectedTrigger = nullptr;
-	double weightDice = 0.0;
-	bool found = false;
 
-	switch (validCategory)
+	// Roulette Wheel Selection (Discrete Distribution)
+	if (validCategory != teamCategory::None && categoryTotalWeight > 0.0)
 	{
-	case teamCategory::None:
-		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeight) * 1.0;
-		Debug::Log("AITeamsSelector - Picking 1 team from the %d available...\n", validTriggerCandidates.Count);
+		double const weightDice = ScenarioClass::Instance->Random.RandomDouble() * categoryTotalWeight;
+		Debug::Log("AITeamsSelector - Picking 1 team (of category %d) from the %d available (Total Weight: %f, Roll: %f)...\n",
+			static_cast<int>(validCategory), categoryCandidatesCount, categoryTotalWeight, weightDice);
 
-		for (auto element : validTriggerCandidates)
+		double accumulated = 0.0;
+		for (const auto& candidate : validCandidates)
 		{
-			if (weightDice < element.Weight && !found)
+			if (candidate.Category == validCategory)
 			{
-				selectedTrigger = element.Trigger;
-				found = true;
+				accumulated += candidate.Weight;
+				if (weightDice < accumulated)
+				{
+					selectedTrigger = candidate.Trigger;
+					break;
+				}
 			}
 		}
-		break;
+	}
+	else
+	{
+		double totalWeight = 0.0;
+		for (const auto& candidate : validCandidates)
+			totalWeight += candidate.Weight;
 
-	case teamCategory::Ground:
-		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightGroundOnly) * 1.0;
-		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'GROUND') from the %d available...\n", validTriggerCandidatesGroundOnly.Count);
-
-		for (auto element : validTriggerCandidatesGroundOnly)
+		if (totalWeight > 0.0)
 		{
-			if (weightDice < element.Weight && !found)
+			double const weightDice = ScenarioClass::Instance->Random.RandomDouble() * totalWeight;
+			Debug::Log("AITeamsSelector - Picking 1 team from the %d available (Total Weight: %f, Roll: %f)...\n",
+				validCandidates.size(), totalWeight, weightDice);
+
+			double accumulated = 0.0;
+			for (const auto& candidate : validCandidates)
 			{
-				selectedTrigger = element.Trigger;
-				found = true;
+				accumulated += candidate.Weight;
+				if (weightDice < accumulated)
+				{
+					selectedTrigger = candidate.Trigger;
+					break;
+				}
 			}
 		}
-		break;
-
-	case teamCategory::Unclassified:
-		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightUnclassifiedOnly) * 1.0;
-		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'UNCLASSIFIED') from the %d available...\n", validTriggerCandidatesUnclassifiedOnly.Count);
-
-		for (auto element : validTriggerCandidatesUnclassifiedOnly)
-		{
-			if (weightDice < element.Weight && !found)
-			{
-				selectedTrigger = element.Trigger;
-				found = true;
-			}
-		}
-		break;
-
-	case teamCategory::Naval:
-		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightNavalOnly) * 1.0;
-		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'NAVAL') from the %d available...\n", validTriggerCandidatesNavalOnly.Count);
-
-		for (auto element : validTriggerCandidatesNavalOnly)
-		{
-			if (weightDice < element.Weight && !found)
-			{
-				selectedTrigger = element.Trigger;
-				found = true;
-			}
-		}
-		break;
-
-	case teamCategory::Air:
-		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightAirOnly) * 1.0;
-		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'AIR') from the %d available...\n", validTriggerCandidatesAirOnly.Count);
-
-		for (auto element : validTriggerCandidatesAirOnly)
-		{
-			if (weightDice < element.Weight && !found)
-			{
-				selectedTrigger = element.Trigger;
-				found = true;
-			}
-		}
-		break;
-
-	default:
-		break;
 	}
 
 	if (!selectedTrigger)
 	{
-		Debug::Log("AITeamsSelector - Failed picking a new trigger for the House %d [%s](%s). A new attempt Will be done later...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
+		Debug::Log("AITeamsSelector - Failed picking a new trigger for the House %d [%s](%s). A new attempt will be done later...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
 		return SkipCode;
 	}
 
