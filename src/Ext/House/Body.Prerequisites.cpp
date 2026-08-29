@@ -1,4 +1,41 @@
 #include "body.h"
+#include <BuildingClass.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/Rules/Body.h>
+
+bool HouseExt::HasBuildingPrerequisite(HouseClass* const pHouse, int const idxBuildingType)
+{
+	if (!pHouse || idxBuildingType < 0 || idxBuildingType >= BuildingTypeClass::Array.Count)
+		return false;
+
+	if (pHouse->ActiveBuildingTypes.GetItemCount(idxBuildingType) > 0)
+		return true;
+
+	// Check if this building type is an upgrade attached to an active building
+	auto const pType = BuildingTypeClass::Array.GetItem(idxBuildingType);
+	if (!pType)
+		return false;
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	bool const isUpgrade = (pType->PowersUpBuilding[0] != '\0') || (pTypeExt && !pTypeExt->PowersUp_Buildings.empty());
+
+	if (isUpgrade)
+	{
+		for (auto const pBld : pHouse->Buildings)
+		{
+			if (!pBld || !pBld->IsAlive || pBld->Health <= 0)
+				continue;
+
+			for (auto const pUpgrade : pBld->Upgrades)
+			{
+				if (pUpgrade == pType)
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 bool HouseExt::HasGenericPrerequisite(int idx, HouseClass* const pHouse)
 {
@@ -10,18 +47,26 @@ bool HouseExt::HasGenericPrerequisite(int idx, HouseClass* const pHouse)
 	if (absoluteIndex >= pRulesExt->GenericPrerequisites.Count)
 		return false;
 
-	// Check buildings matching this generic prerequisite
-	DynamicVectorClass<int> selectedPrerequisite = pRulesExt->GenericPrerequisites.GetItem(absoluteIndex);
+	// Check buildings and nested generic prerequisites matching this generic prerequisite
+	DynamicVectorClass<int> const& selectedPrerequisite = pRulesExt->GenericPrerequisites.GetItem(absoluteIndex);
 	for (auto idxItem : selectedPrerequisite)
 	{
-		if (pHouse->ActiveBuildingTypes.GetItemCount(idxItem) > 0)
-			return true;
+		if (idxItem < 0)
+		{
+			if (HouseExt::HasGenericPrerequisite(idxItem, pHouse))
+				return true;
+		}
+		else
+		{
+			if (HouseExt::HasBuildingPrerequisite(pHouse, idxItem))
+				return true;
+		}
 	}
 
 	// Check alternate technos (vehicles, infantry, aircraft, etc.)
 	if (absoluteIndex < pRulesExt->GenericPrerequisitesAlternates.Count)
 	{
-		DynamicVectorClass<TechnoTypeClass*> selectedAlternates = pRulesExt->GenericPrerequisitesAlternates.GetItem(absoluteIndex);
+		DynamicVectorClass<TechnoTypeClass*> const& selectedAlternates = pRulesExt->GenericPrerequisitesAlternates.GetItem(absoluteIndex);
 		for (auto pTechnoType : selectedAlternates)
 		{
 			if (pHouse->CountOwnedNow(pTechnoType) > 0)
@@ -30,6 +75,14 @@ bool HouseExt::HasGenericPrerequisite(int idx, HouseClass* const pHouse)
 	}
 
 	return false;
+}
+
+bool HouseExt::HasPrerequisite(HouseClass* const pHouse, int const idx)
+{
+	if (idx < 0)
+		return HouseExt::HasGenericPrerequisite(idx, pHouse);
+
+	return HouseExt::HasBuildingPrerequisite(pHouse, idx);
 }
 
 int HouseExt::FindGenericPrerequisite(const char* id)
@@ -157,21 +210,11 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		return false;
 
 	// Ares Prerequisite.Negative list
-	if (pItemExt->Prerequisite_Negative.size() > 0)
+	if (!pItemExt->Prerequisite_Negative.empty())
 	{
 		for (int idx : pItemExt->Prerequisite_Negative)
 		{
-			bool negFound = false;
-			if (idx < 0)
-			{
-				negFound = HouseExt::HasGenericPrerequisite(idx, pThis);
-			}
-			else
-			{
-				negFound = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
-			}
-
-			if (negFound)
+			if (HouseExt::HasPrerequisite(pThis, idx))
 				return false;
 		}
 	}
@@ -181,39 +224,20 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 		return true;
 
 	// PrerequisiteOverride (OR logic: if ANY entry is owned, prerequisites are considered met)
-	DynamicVectorClass<int> prerequisiteOverride = pItem->PrerequisiteOverride;
+	DynamicVectorClass<int> const& prerequisiteOverride = pItem->PrerequisiteOverride;
 	for (int idx : prerequisiteOverride)
 	{
-		if (idx < 0)
-		{
-			if (HouseExt::HasGenericPrerequisite(idx, pThis))
-				return true;
-		}
-		else
-		{
-			if (pThis->ActiveBuildingTypes.GetItemCount(idx) > 0)
-				return true;
-		}
+		if (HouseExt::HasPrerequisite(pThis, idx))
+			return true;
 	}
 
 	// Main Prerequisite list (AND logic: ALL entries must be satisfied)
 	bool prerequisiteMet = true;
-	if (pItemExt->Prerequisite.size() > 0)
+	if (!pItemExt->Prerequisite.empty())
 	{
 		for (int idx : pItemExt->Prerequisite)
 		{
-			bool found = false;
-
-			if (idx < 0)
-			{
-				found = HouseExt::HasGenericPrerequisite(idx, pThis);
-			}
-			else
-			{
-				found = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
-			}
-
-			if (!found)
+			if (!HouseExt::HasPrerequisite(pThis, idx))
 			{
 				prerequisiteMet = false;
 				break;
@@ -230,18 +254,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			bool listSatisfied = true;
 			for (int idx : list)
 			{
-				bool found = false;
-
-				if (idx < 0)
-				{
-					found = HouseExt::HasGenericPrerequisite(idx, pThis);
-				}
-				else
-				{
-					found = pThis->ActiveBuildingTypes.GetItemCount(idx) > 0;
-				}
-
-				if (!found)
+				if (!HouseExt::HasPrerequisite(pThis, idx))
 				{
 					listSatisfied = false;
 					break;

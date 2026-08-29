@@ -159,7 +159,9 @@ public:
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 	static bool IsAvailableToHouse(HouseClass* const pHouse, TechnoTypeClass* const pItem);
 	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, bool skipSecretLabChecks = false);
+	static bool HasBuildingPrerequisite(HouseClass* const pHouse, int idxBuildingType);
 	static bool HasGenericPrerequisite(int idx, HouseClass* const pHouse);
+	static bool HasPrerequisite(HouseClass* const pHouse, int idx);
 	static int FindGenericPrerequisite(const char* id);
 
 	static bool IsDisabledFromShell(
