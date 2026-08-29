@@ -1673,6 +1673,26 @@ BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location.
+  - You can also set whether cloak units kick out parasites.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Cloak.KickOutParasite=false   ; boolean
+
+[AudioVisual]
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
+
+[SOMETECHNO]                  ; TechnoType
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
+```
+
 ### Convert TechnoType on owner house change
 
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
@@ -2580,26 +2600,6 @@ Ammo.AutoDeployMinimumAmount=-1    ; integer
 Ammo.AutoDeployMaximumAmount=-1    ; integer
 Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
-```
-
-### Cloak Enhancement
-
-- When unit start cloak or stop cloaking, an animation can play on his location
-  - You can also set whether cloak units kick out parasites
-
-In `rulesmd.ini`:
-```ini
-[General]
-Cloak.KickOutParasite=false   ; boolean
-
-[AudioVisual]
-CloakAnims=                   ; List of Animation
-DecloakAnims=                 ; List of Animation
-
-[SOMETECHNO]
-CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
-DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
-Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
 ### Custom hover vehicles shutdown drowning death

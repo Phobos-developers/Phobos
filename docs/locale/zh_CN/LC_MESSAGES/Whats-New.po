@@ -889,12 +889,11 @@ msgid ""
 msgstr ""
 "[自定义单位能否被心灵感应](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector)（by Noble_Fish）"
 
-#, fuzzy
 msgid ""
 "[Cloak Enhancement](New-or-Enhanced-Logics.md#cloak-enhancement) (by "
 "NetsuNegi)"
 msgstr ""
-"隐形增强（by NetsuNegi）"
+"[隐形增强](New-or-Enhanced-Logics.md#cloak-enhancement)（by NetsuNegi）"
 
 msgid ""
 "[`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-"
