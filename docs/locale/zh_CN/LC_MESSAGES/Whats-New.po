@@ -923,6 +923,11 @@ msgid ""
 "immediately (by NetsuNegi)"
 msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标（by NetsuNegi）"
 
+msgid ""
+"Fixed the bug that computer player record cannot be log normally in non "
+"English mode (by NetsuNegi)"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -5132,11 +5137,6 @@ msgid ""
 msgstr ""
 "修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃（EIP 0x42A525、0x42C507、0x42C554）问题（by "
 "CrimRecya）"
-
-msgid ""
-"Fixed the bug that computer player record cannot be log normally in non "
-"English mode (by NetsuNegi)"
-msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug（by NetsuNegi）"
 
 msgid ""
 "Fixed a few errors of calling for superweapon launch by `LaunchSW` or "
