@@ -2569,11 +2569,13 @@ msgid ""
 "Fix the bug that buildings with passengers cannot unload via the Deploy "
 "hotkey or command bar button"
 msgstr ""
+"修复有乘客建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
 
 msgid ""
 "Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy "
 "hotkey or command bar button"
 msgstr ""
+"修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
 
 msgid ""
 "Customize whether mind-controlled Insignificant technos can be auto-"
