@@ -185,7 +185,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	int activeDefenseTeamsCount = 0;
 	int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
 
-	// Check running teams owned by this house with O(1) type lookup
+	// Check running teams owned by this house
 	std::unordered_map<TeamTypeClass*, int> activeTeamCounts;
 
 	for (auto const pRunningTeam : TeamClass::Array)
