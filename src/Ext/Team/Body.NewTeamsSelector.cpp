@@ -323,14 +323,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		if (pTrigger->Team1->TechLevel > pHouse->TechLevel)
 			continue;
 
-		// Ignore it if isn't set for the house AI difficulty
-		if (((int)houseDifficulty == 0 && !pTrigger->Enabled_Hard)
-			|| ((int)houseDifficulty == 1 && !pTrigger->Enabled_Normal)
-			|| ((int)houseDifficulty == 2 && !pTrigger->Enabled_Easy))
-		{
-			continue;
-		}
-
 		// Ignore offensive teams if the next trigger must be defensive
 		if ((onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense) || (hasReachedMaxDefensiveTeamsLimit && pTrigger->IsForBaseDefense))
 			continue;
