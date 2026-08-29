@@ -548,92 +548,72 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				continue;
 		}
 
-		bool allObjectsCanBeBuiltOrRecruited = true;
+		if (!pTrigger->Team1->Autocreate && !pTrigger->Team1->Recruiter)
+			continue;
 
+		bool canProduce = false;
+
+		// Check if the team can be produced via autocreate
 		if (pTrigger->Team1->Autocreate && canAutocreate)
 		{
+			canProduce = true;
+
 			for (const auto& entry : pTrigger->Team1->TaskForce->Entries)
 			{
-				if (!entry.Type)
-					continue;
-
-				if (entry.Amount == 0) // As soon as there are empty slots the check finish
+				if (!entry.Type || entry.Amount == 0)
 					break;
 
-				bool canBeBuilt = true;
-
-				// Exists the required factory for producing the checked unit?
+				bool hasFactory = false;
 				switch (entry.Type->WhatAmI())
 				{
 				case AbstractType::InfantryType:
-					if (!hasInfantryFactory)
-						canBeBuilt = false;
+					hasFactory = hasInfantryFactory;
 					break;
 
 				case AbstractType::AircraftType:
-					if (!hasAircraftFactory)
-						canBeBuilt = false;
+					hasFactory = hasAircraftFactory;
 					break;
 
 				case AbstractType::UnitType:
-					if (entry.Type->Naval)
-					{
-						if (!hasNavalFactory)
-							canBeBuilt = false;
-					}
-					else
-					{
-						if (!hasUnitFactory)
-							canBeBuilt = false;
-					}
+					hasFactory = entry.Type->Naval ? hasNavalFactory : hasUnitFactory;
 					break;
 
 				default:
 					break;
 				}
 
-				// Meets the production prerequisites?
-				if (canBeBuilt)
-					canBeBuilt = HouseExt::PrerequisitesMet(pHouse, entry.Type, false);
-
-				if (!canBeBuilt)
+				if (!hasFactory || !HouseExt::PrerequisitesMet(pHouse, entry.Type, false))
 				{
-					allObjectsCanBeBuiltOrRecruited = false;
+					canProduce = false;
 					break;
 				}
 			}
 		}
-		else
-		{
-			allObjectsCanBeBuiltOrRecruited = false;
-		}
 
-		if (!allObjectsCanBeBuiltOrRecruited && pTrigger->Team1->Recruiter)
+		// Check if the team can be recruited from existing map units
+		if (!canProduce && pTrigger->Team1->Recruiter)
 		{
-			allObjectsCanBeBuiltOrRecruited = true;
+			bool canRecruit = true;
 
 			for (const auto& entry : pTrigger->Team1->TaskForce->Entries)
 			{
-				if (!entry.Type)
-					continue;
+				if (!entry.Type || entry.Amount == 0)
+					break;
 
-				// Check if each unit in the taskforce has the available recruitable units in the map
-				if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
+				auto const it = ownedRecruitables.find(entry.Type);
+				int const availableRecruits = (it != ownedRecruitables.end()) ? it->second : 0;
+
+				if (availableRecruits < entry.Amount)
 				{
-					auto const it = ownedRecruitables.find(entry.Type);
-					int const recruits = (it != ownedRecruitables.end()) ? it->second : 0;
-
-					if (recruits < entry.Amount)
-					{
-						allObjectsCanBeBuiltOrRecruited = false;
-						break;
-					}
+					canRecruit = false;
+					break;
 				}
 			}
+
+			canProduce = canRecruit;
 		}
 
-		// We can't let AI cheat in this trigger because doesn't have the required tech tree available
-		if (!allObjectsCanBeBuiltOrRecruited)
+		if (!canProduce)
 			continue;
 
 		// Special case: triggers become very important if they reach the max priority (usually 5000, see maxPriority).
