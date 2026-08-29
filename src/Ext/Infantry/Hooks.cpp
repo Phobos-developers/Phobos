@@ -209,3 +209,16 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK_AGAIN(0x51CDD9, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
+DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
+{
+	GET(InfantryClass* const, pThis, ESI);
+	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
+
+	double idleActionFrequency = pTypeExt->IdleActionFrequency.Get(RulesClass::Instance->IdleActionFrequency);
+
+	__asm { fld idleActionFrequency }
+
+	return R->Origin() + 0x6;
+}

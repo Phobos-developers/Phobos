@@ -756,6 +756,7 @@ This page lists all the individual contributions to the project by their author.
   - Roof production anim
   - Customize whether the unit exits from the roof
   - Customize whether the unit can be detected by psychic detector
+  - Customize `IdleActionFrequency`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
