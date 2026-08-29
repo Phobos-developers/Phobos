@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <unordered_map>
 
 enum class teamCategory : int
 {
@@ -168,22 +169,18 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			if (percentageUnclassifiedTriggers > 0.0 && categoryDice <= unclassifiedValue)
 			{
 				validCategory = teamCategory::Unclassified;
-				//Debug::Log("New AI team category selection: dice %d <= %d (MIXED)\n", categoryDice, unclassifiedValue);
 			}
 			else if (percentageGroundTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue))
 			{
 				validCategory = teamCategory::Ground;
-				//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + GROUND: %d%%)\n", categoryDice, (unclassifiedValue + groundValue), unclassifiedValue, groundValue);
 			}
 			else if (percentageAirTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue))
 			{
 				validCategory = teamCategory::Air;
-				//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + AIR: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue), unclassifiedValue, groundValue, airValue);
 			}
 			else if (percentageNavalTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue))
 			{
 				validCategory = teamCategory::Naval;
-				//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + air: %d%% + NAVAL: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue + navalValue), unclassifiedValue, groundValue, airValue, navalValue);
 			}
 			else
 			{
@@ -219,13 +216,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 	}
 
-	int parentCountryTypeIdx = pHouse->Type->FindParentCountryIndex(); // ParentCountry can change the House in a SP map
-	int houseTypeIdx = parentCountryTypeIdx >= 0 ? parentCountryTypeIdx : pHouse->Type->ArrayIndex; // Indexes in AITriggers section are 1-based
 	int houseIdx = pHouse->ArrayIndex;
-
-	int parentCountrySideTypeIdx = parentCountryTypeIdx >= 0 ? pHouse->Type->FindParentCountry()->SideIndex : pHouse->Type->SideIndex;
-	int sideTypeIdx = parentCountrySideTypeIdx >= 0 ? parentCountrySideTypeIdx + 1 : pHouse->Type->SideIndex + 1; // Side indexes in AITriggers section are 1-based
-	int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based -> unused variable!!
 
 	auto houseDifficulty = pHouse->AIDifficulty;
 	int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
@@ -259,28 +250,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	// We will use these values for discarding triggers
 	int defensiveTeamsLimit = RulesClass::Instance->UseMinDefenseRule ? minBaseDefenseTeams : maxBaseDefenseTeams;
-	bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
-	bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount < defensiveTeamsLimit ? false : true;
-
-	/*Debug::Log("\n=====================\n[%s] ACTIVE TEAMS: %d / %d (of them, defensive teams: %d / %d)\n", pHouse->Type->ID, activeTeams, maxTeamsLimit, activeDefenseTeamsCount, defensiveTeamsLimit);
-	for (auto team : activeTeamsList)
-	{
-		Debug::Log("[%s](%d) : %s%s\n", team->Type->ID, team->TotalObjects, team->Type->Name, team->Type->IsBaseDefense ? " -> is DEFENDER team" : "");
-		Debug::Log("    IsMoving: %d, IsFullStrength: %d, IsUnderStrength: %d\n", team->IsMoving, team->IsFullStrength, team->IsUnderStrength);
-		int i = 0;
-
-		for (auto entry : team->Type->TaskForce->Entries)
-		{
-			if (entry.Type && entry.Amount > 0)
-			{
-				if (entry.Type)
-					Debug::Log("\t[%s]: %d / %d\n", entry.Type->ID, team->CountObjects[i], entry.Amount);
-			}
-
-			i++;
-		}
-	}
-	Debug::Log("\n=====================\n");*/
+	bool hasReachedMaxTeamsLimit = activeTeams >= maxTeamsLimit;
+	bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount >= defensiveTeamsLimit;
 
 	// Check if the next team must be a defensive team
 	bool onlyPickDefensiveTeams = false;
@@ -290,12 +261,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	if ((defensiveDice < defenseTeamSelectionThreshold) && !hasReachedMaxDefensiveTeamsLimit && !isCampaign)
 		onlyPickDefensiveTeams = true;
 
-	//if (hasReachedMaxDefensiveTeamsLimit)
-		//Debug::Log("AITeamsSelector - House [%s] (idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
-
 	if (hasReachedMaxTeamsLimit)
 	{
-		//Debug::Log("AITeamsSelector - House [%s] (idx: %d) reached the TotalAITeamCap value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
 		Debug::Log("AITeamsSelector - House %d [%s](%s) reached the TotalAITeamCap (%d)! Skipping operation this time...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, defenseTeamSelectionThreshold);
 		return SkipCode;
 	}
@@ -307,7 +274,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	int destroyedBridgesCount = 0;
 	int undamagedBridgesCount = 0;
-	std::map<TechnoTypeClass*, int> ownedRecruitables;
+	std::unordered_map<TechnoTypeClass*, int> ownedRecruitables;
 	bool hasInfantryFactory = false;
 	bool hasUnitFactory = false;
 	bool hasNavalFactory = false;
@@ -327,7 +294,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 			if (pTechno->Owner == pHouse)
 			{
-
 				switch (pBuildingType->Factory)
 				{
 				case AbstractType::InfantryType:
@@ -384,25 +350,16 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	if (hasInfantryFactory || hasUnitFactory || hasAircraftFactory || hasNavalFactory)
 		canAutocreate = true;
 
-	/*Debug::Log("AITeamsSelector - The house %d [%s](%s) have these buildings:\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID);
-
-	for (auto pBuilding : ownedBuildings)
-	{
-		Debug::Log("[%d] => %s : %d\n", pBuilding.first->ArrayIndex, pBuilding.first->ID, pBuilding.second);
-	}*/
-
 	HouseClass* targetHouse = nullptr;
 	if (pHouse->EnemyHouseIndex >= 0)
 		targetHouse = HouseClass::Array.GetItem(pHouse->EnemyHouseIndex);
 
 	bool onlyCheckImportantTriggers = false;
-	bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	double maxPriority = 5000.0;
 
 	// Gather all the trigger candidates into one place for posterior fast calculations
-	//for (auto const pTrigger : *AITriggerTypeClass::Array)
 	for (int triggerIdx : pHouseExt->AITriggers_ValidList)
 	{
 		const auto pTrigger = AITriggerTypeClass::Array.GetItem(triggerIdx);
@@ -414,10 +371,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		if ((onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense) || (hasReachedMaxDefensiveTeamsLimit && pTrigger->IsForBaseDefense))
 			continue;
 
-		int triggerHouse = pTrigger->HouseIndex;
-		int triggerSide = pTrigger->SideIndex;
-
-		//pTrigger->OwnerHouseType;
 		if (pTrigger->Team1->TechLevel > pHouse->TechLevel)
 			continue;
 
@@ -430,7 +383,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 
 		// The trigger must be compatible with the owner
-		//if ((triggerHouse == -1 || houseTypeIdx == triggerHouse) && (triggerSide == 0 || sideTypeIdx == triggerSide))
 		{
 			// "ConditionType=-1" will be skipped, always is valid
 			if ((int)pTrigger->ConditionType >= 0)
@@ -438,210 +390,145 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				if ((int)pTrigger->ConditionType == 0)
 				{
 					// Simulate case 0: "enemy owns"
-					if (!pTrigger->ConditionObject)
-						continue;
-
-					std::vector<TechnoTypeClass*> list;
-					list.push_back(pTrigger->ConditionObject);
-					bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, list);
-
-					if (!isConditionMet)
+					if (!pTrigger->ConditionObject || !TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, pTrigger->ConditionObject))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 1)
 				{
 					// Simulate case 1: "house owns"
-					if (!pTrigger->ConditionObject)
+					if (!pTrigger->ConditionObject || !TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject))
 						continue;
-
-					std::vector<TechnoTypeClass*> list;
-					list.push_back(pTrigger->ConditionObject);
-					bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
-
-					if (!isConditionMet)
-						continue;
-				}// TO-DO: Case 2 & 3: https://modenc.renegadeprojects.com/AITriggerTypes
+				}
 				else if ((int)pTrigger->ConditionType == 4)
 				{
-					// Simulate case 5: "Enemy house economy threshold?"
-					bool isConditionMet = pTrigger->HouseCredits(nullptr, targetHouse);
-
-					if (!isConditionMet)
+					// Simulate case 4: "Enemy house economy threshold?"
+					if (!pTrigger->HouseCredits(nullptr, targetHouse))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 5)
 				{
-					// Simulate case 5: "Iron Courtain is charged?"
-					bool isConditionMet = pTrigger->IronCurtainCharged(pHouse, nullptr);
-
-					if (!isConditionMet)
+					// Simulate case 5: "Iron Curtain is charged?"
+					if (!pTrigger->IronCurtainCharged(pHouse, nullptr))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 6)
 				{
 					// Simulate case 6: "Chronosphere is charged?"
-					bool isConditionMet = pTrigger->ChronoSphereCharged(pHouse, nullptr);
-
-					if (!isConditionMet)
+					if (!pTrigger->ChronoSphereCharged(pHouse, nullptr))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 7)
 				{
 					// Simulate case 7: "civilian owns"
-					if (!pTrigger->ConditionObject)
-						continue;
-
-					std::vector<TechnoTypeClass*> list;
-					list.push_back(pTrigger->ConditionObject);
-					bool isConditionMet = TeamExt::NeutralOwns(pTrigger, list);
-
-					if (!isConditionMet)
+					if (!pTrigger->ConditionObject || !TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 8)
 				{
-					// Simulate case 0: "enemy owns" but instead of restrict it against the main enemy house it is done against all enemies
-					if (!pTrigger->ConditionObject)
-						continue;
-
-					std::vector<TechnoTypeClass*> list;
-					list.push_back(pTrigger->ConditionObject);
-					bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list);
-
-					if (!isConditionMet)
+					// Simulate case 8: "enemy owns" across all enemies
+					if (!pTrigger->ConditionObject || !TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 9)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 9: Like in case 0 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the enemy.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 10)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 10: Like in case 1 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the house.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::HouseOwns(pTrigger, pHouse, false, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 11)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 11: Like in case 7 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the Civilians.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::NeutralOwns(pTrigger, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::NeutralOwns(pTrigger, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 12)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 12: Like in case 0 & 9 but instead of a specific enemy this checks in all enemies.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 13)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 13: Like in case 1 & 10 but instead checking the house now checks the allies.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, true, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::HouseOwns(pTrigger, pHouse, true, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 14)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 14: Like in case 9 but instead of meet any comparison now is required all.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 15)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 15: Like in case 10 but instead of meet any comparison now is required all.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::HouseOwnsAll(pTrigger, pHouse, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::HouseOwnsAll(pTrigger, pHouse, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 16)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 16: Like in case 11 but instead of meet any comparison now is required all.
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::NeutralOwnsAll(pTrigger, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::NeutralOwnsAll(pTrigger, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 17)
 				{
-					if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
+					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+					if (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
 					{
-						// New case 17: Like in case 14 but instead of meet any comparison now is required all. Check all enemies
-						// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
-						std::vector<TechnoTypeClass*> list = RulesExt::Global()->AITargetTypesLists.at(pTrigger->Conditions[3].ComparatorOperand);
-						bool isConditionMet = TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, list);
-
-						if (!isConditionMet)
+						const auto& list = RulesExt::Global()->AITargetTypesLists[listIdx];
+						if (!TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, list))
 							continue;
 					}
 				}
 				else if ((int)pTrigger->ConditionType == 18)
 				{
 					// New case 18: Check destroyed bridges
-					bool isConditionMet = TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount);
-
-					if (!isConditionMet)
+					if (!TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount))
 						continue;
 				}
 				else if ((int)pTrigger->ConditionType == 19)
 				{
 					// New case 19: Check undamaged bridges
-					bool isConditionMet = TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount);
-
-					if (!isConditionMet)
+					if (!TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount))
 						continue;
 				}
 				else
@@ -680,7 +567,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			// Analyze what kind of category is this main team if the feature is enabled
 			if (splitTriggersByCategory)
 			{
-				//Debug::Log("DEBUG: TaskForce [%s] members:\n", pTrigger->Team1->TaskForce->ID);
 				// TaskForces are limited to 6 entries
 				for (int i = 0; i < 6; i++)
 				{
@@ -697,7 +583,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						{
 							// This unit is from air category
 							entryIsCategory = teamCategory::Air;
-							//Debug::Log("\t[%s](%d) is in AIR category.\n", entry.Type->ID, entry.Amount);
 						}
 						else
 						{
@@ -713,7 +598,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							{
 								// This unit is from naval category
 								entryIsCategory = teamCategory::Naval;
-								//Debug::Log("\t[%s](%d) is in NAVAL category.\n", entry.Type->ID, entry.Amount);
 							}
 
 							if (pTechnoTypeExt->ConsideredVehicle
@@ -722,7 +606,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							{
 								// This unit is from ground category
 								entryIsCategory = teamCategory::Ground;
-								//Debug::Log("\t[%s](%d) is in GROUND category.\n", entry.Type->ID, entry.Amount);
 							}
 						}
 
@@ -738,12 +621,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					}
 				}
 
-				//Debug::Log("DEBUG: This team is a category %d (1:Ground, 2:Air, 3:Naval, 4:Mixed).\n", teamIsCategory);
-				// Si existe este valor y el team es MIXTO se sobreescribe el tipo de categoría
+				// If this value is set and the team is MIXED, override category type
 				if (teamIsCategory == teamCategory::Unclassified
 					&& mergeUnclassifiedCategoryWith >= 0)
 				{
-					//Debug::Log("DEBUG: MIXED category forced to work as category %d.\n", mergeUnclassifiedCategoryWith);
 					teamIsCategory = (teamCategory)mergeUnclassifiedCategoryWith;
 				}
 
@@ -823,7 +704,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					// Check if each unit in the taskforce has the available recruitable units in the map
 					if (allObjectsCanBeBuiltOrRecruited && entry.Amount > 0)
 					{
-						int recruits = ownedRecruitables.count(entry.Type) > 0 ? ownedRecruitables[entry.Type] : 0;
+						auto const it = ownedRecruitables.find(entry.Type);
+						int const recruits = (it != ownedRecruitables.end()) ? it->second : 0;
 
 						if (recruits < entry.Amount)
 						{
@@ -860,7 +742,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			}
 
 			// Passed all checks, save this trigger for later.
-			// The idea behind this is to simulate an ordered list of weights and once we throw the dice we'll know the winner trigger: More weight means more possibilities to be selected.
 			totalWeight += pTrigger->Weight_Current < 1.0 ? 1.0 : pTrigger->Weight_Current;
 			TriggerElementWeight item;
 			item.Trigger = pTrigger;
@@ -951,26 +832,16 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	AITriggerTypeClass* selectedTrigger = nullptr;
 	double weightDice = 0.0;
-	double lastWeight = 0.0;
 	bool found = false;
 
 	switch (validCategory)
 	{
 	case teamCategory::None:
 		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeight) * 1.0;
-		//Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 		Debug::Log("AITeamsSelector - Picking 1 team from the %d available...\n", validTriggerCandidates.Count);
-		// Debug
-		/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
-		for (TriggerElementWeight element : validTriggerCandidates)
-		{
-			Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
-		}*/
 
 		for (auto element : validTriggerCandidates)
 		{
-			lastWeight = element.Weight;
-
 			if (weightDice < element.Weight && !found)
 			{
 				selectedTrigger = element.Trigger;
@@ -981,20 +852,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	case teamCategory::Ground:
 		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightGroundOnly) * 1.0;
-		//Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'GROUND') from the %d available...\n", validTriggerCandidatesGroundOnly.Count);
-
-		// Debug
-		/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
-		for (TriggerElementWeight element : validTriggerCandidatesGroundOnly)
-		{
-			Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
-		}*/
 
 		for (auto element : validTriggerCandidatesGroundOnly)
 		{
-			lastWeight = element.Weight;
-
 			if (weightDice < element.Weight && !found)
 			{
 				selectedTrigger = element.Trigger;
@@ -1005,20 +866,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	case teamCategory::Unclassified:
 		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightUnclassifiedOnly) * 1.0;
-		//Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'UNCLASSIFIED') from the %d available...\n", validTriggerCandidatesUnclassifiedOnly.Count);
-
-		// Debug
-		/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
-		for (TriggerElementWeight element : validTriggerCandidatesUnclassifiedOnly)
-		{
-			Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
-		}*/
 
 		for (auto element : validTriggerCandidatesUnclassifiedOnly)
 		{
-			lastWeight = element.Weight;
-
 			if (weightDice < element.Weight && !found)
 			{
 				selectedTrigger = element.Trigger;
@@ -1029,20 +880,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	case teamCategory::Naval:
 		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightNavalOnly) * 1.0;
-		//Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'NAVAL') from the %d available...\n", validTriggerCandidatesNavalOnly.Count);
-
-		// Debug
-		/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
-		for (TriggerElementWeight element : validTriggerCandidatesNavalOnly)
-		{
-			Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
-		}*/
 
 		for (auto element : validTriggerCandidatesNavalOnly)
 		{
-			lastWeight = element.Weight;
-
 			if (weightDice < element.Weight && !found)
 			{
 				selectedTrigger = element.Trigger;
@@ -1053,20 +894,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	case teamCategory::Air:
 		weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightAirOnly) * 1.0;
-		//Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 		Debug::Log("AITeamsSelector - Picking 1 team (of the category 'AIR') from the %d available...\n", validTriggerCandidatesAirOnly.Count);
-
-		// Debug
-		/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
-		for (TriggerElementWeight element : validTriggerCandidatesAirOnly)
-		{
-			Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
-		}*/
 
 		for (auto element : validTriggerCandidatesAirOnly)
 		{
-			lastWeight = element.Weight;
-
 			if (weightDice < element.Weight && !found)
 			{
 				selectedTrigger = element.Trigger;
@@ -1096,15 +927,15 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	Debug::Log("AITeamsSelector - House %d [%s](%s) selected trigger [%s]: %s.\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, selectedTrigger->ID, selectedTrigger->Team1->Name);
 
 	// Team 1 creation
-	int count = 0;
+	int count1 = 0;
 
 	for (auto team : activeTeamsList)
 	{
 		if (team->Type == selectedTrigger->Team1)
-			count++;
+			count1++;
 	}
 
-	if (count < selectedTrigger->Team1->Max)
+	if (count1 < selectedTrigger->Team1->Max)
 	{
 		if (TeamClass* newTeam1 = selectedTrigger->Team1->CreateTeam(pHouse))
 			newTeam1->NeedsToDisappear = false;
@@ -1114,15 +945,15 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	auto pTriggerTeam2Type = selectedTrigger->Team2;
 	if (pTriggerTeam2Type)
 	{
-		int count = 0;
+		int count2 = 0;
 
 		for (auto team : activeTeamsList)
 		{
 			if (team->Type == pTriggerTeam2Type)
-				count++;
+				count2++;
 		}
 
-		if (count < pTriggerTeam2Type->Max)
+		if (count2 < pTriggerTeam2Type->Max)
 		{
 			if (TeamClass* newTeam2 = pTriggerTeam2Type->CreateTeam(pHouse))
 				newTeam2->NeedsToDisappear = false;
@@ -1132,365 +963,244 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	return SkipCode;
 }
 
-bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, std::vector<TechnoTypeClass*> list)
+bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, TechnoTypeClass* pItem)
 {
-	bool result = false;
 	int counter = 0;
-
-	// Count all objects of the list, like an OR operator
-	for (auto pItem : list)
+	if (pItem && pHouse)
 	{
-		for (auto pObject : TechnoClass::Array)
+		if (!allies)
 		{
-			if (!TechnoExt::IsValidTechno(pObject)) continue;
-
-			if (((!allies && pObject->Owner == pHouse) || (allies && pHouse != pObject->Owner && pHouse->IsAlliedWith(pObject->Owner)))
-				&& !pObject->Owner->Type->MultiplayPassive
-				&& pObject->GetTechnoType() == pItem)
+			counter = pHouse->CountOwnedAndPresent(pItem);
+		}
+		else
+		{
+			for (auto const pOtherHouse : HouseClass::Array)
 			{
-				counter++;
+				if (pOtherHouse != pHouse && pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Type->MultiplayPassive)
+				{
+					counter += pOtherHouse->CountOwnedAndPresent(pItem);
+				}
 			}
 		}
 	}
-
-	switch (pThis->Conditions->ComparatorOperand)
-	{
-	case 0:
-		result = counter < pThis->Conditions->ComparatorType;
-		break;
-	case 1:
-		result = counter <= pThis->Conditions->ComparatorType;
-		break;
-	case 2:
-		result = counter == pThis->Conditions->ComparatorType;
-		break;
-	case 3:
-		result = counter >= pThis->Conditions->ComparatorType;
-		break;
-	case 4:
-		result = counter > pThis->Conditions->ComparatorType;
-		break;
-	case 5:
-		result = counter != pThis->Conditions->ComparatorType;
-		break;
-	default:
-		break;
-	}
-
-	return result;
+	return TeamExt::CountConditionMet(pThis, counter);
 }
 
-bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pSpecificEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list)
+bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, const std::vector<TechnoTypeClass*>& list)
 {
-	bool result = false;
 	int counter = 0;
-
-	pSpecificEnemy = pSpecificEnemy && pHouse->IsAlliedWith(pSpecificEnemy) ? nullptr : pSpecificEnemy;
-	pSpecificEnemy = onlySelectedEnemy ? pSpecificEnemy : nullptr;
-
-	// Count all objects of the list, like an OR operator
-	for (auto const pItem : list)
+	if (pHouse)
 	{
-		for (auto const pObject : TechnoClass::Array)
-		{
-			if (!TechnoExt::IsValidTechno(pObject)) continue;
-
-			const auto pItemType = pObject->GetTechnoType();
-			if (pItemType == pItem
-				&& pObject->Owner != pHouse
-				&& (!pSpecificEnemy && !pHouse->IsAlliedWith(pObject->Owner) || (pSpecificEnemy && pSpecificEnemy == pObject->Owner))
-				&& !pObject->Owner->Type->MultiplayPassive)
-			{
-				counter++;
-			}
-		}
-	}
-
-	switch (pThis->Conditions->ComparatorOperand)
-	{
-	case 0:
-		result = counter < pThis->Conditions->ComparatorType;
-		break;
-	case 1:
-		result = counter <= pThis->Conditions->ComparatorType;
-		break;
-	case 2:
-		result = counter == pThis->Conditions->ComparatorType;
-		break;
-	case 3:
-		result = counter >= pThis->Conditions->ComparatorType;
-		break;
-	case 4:
-		result = counter > pThis->Conditions->ComparatorType;
-		break;
-	case 5:
-		result = counter != pThis->Conditions->ComparatorType;
-		break;
-	default:
-		break;
-	}
-
-	return result;
-}
-
-bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list)
-{
-	bool result = false;
-	int counter = 0;
-
-	for (auto const pHouse : HouseClass::Array)
-	{
-		if (_stricmp(SideClass::Array.GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
-			continue;
-
-		// Count all objects of the list, like an OR operator
 		for (auto const pItem : list)
 		{
-			for (auto const pObject : TechnoClass::Array)
-			{
-				if (!TechnoExt::IsValidTechno(pObject)) continue;
+			if (!pItem) continue;
 
-				if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
-					counter++;
+			if (!allies)
+			{
+				counter += pHouse->CountOwnedAndPresent(pItem);
+			}
+			else
+			{
+				for (auto const pOtherHouse : HouseClass::Array)
+				{
+					if (pOtherHouse != pHouse && pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Type->MultiplayPassive)
+					{
+						counter += pOtherHouse->CountOwnedAndPresent(pItem);
+					}
+				}
 			}
 		}
 	}
-
-	switch (pThis->Conditions->ComparatorOperand)
-	{
-	case 0:
-		result = counter < pThis->Conditions->ComparatorType;
-		break;
-	case 1:
-		result = counter <= pThis->Conditions->ComparatorType;
-		break;
-	case 2:
-		result = counter == pThis->Conditions->ComparatorType;
-		break;
-	case 3:
-		result = counter >= pThis->Conditions->ComparatorType;
-		break;
-	case 4:
-		result = counter > pThis->Conditions->ComparatorType;
-		break;
-	case 5:
-		result = counter != pThis->Conditions->ComparatorType;
-		break;
-	default:
-		break;
-	}
-
-	return result;
+	return TeamExt::CountConditionMet(pThis, counter);
 }
 
-bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::vector<TechnoTypeClass*> list)
+bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, TechnoTypeClass* pItem)
 {
-	bool result = true;
+	int counter = 0;
+	if (pItem && pHouse)
+	{
+		if (onlySelectedEnemy && pEnemy && !pHouse->IsAlliedWith(pEnemy))
+		{
+			counter = pEnemy->CountOwnedAndPresent(pItem);
+		}
+		else
+		{
+			for (auto const pOtherHouse : HouseClass::Array)
+			{
+				if (pOtherHouse != pHouse && !pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Type->MultiplayPassive)
+				{
+					counter += pOtherHouse->CountOwnedAndPresent(pItem);
+				}
+			}
+		}
+	}
+	return TeamExt::CountConditionMet(pThis, counter);
+}
 
-	if (list.size() == 0)
-		return false;
+bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, const std::vector<TechnoTypeClass*>& list)
+{
+	int counter = 0;
+	if (pHouse)
+	{
+		for (auto const pItem : list)
+		{
+			if (!pItem) continue;
 
-	// Count all objects of the list, like an AND operator
+			if (onlySelectedEnemy && pEnemy && !pHouse->IsAlliedWith(pEnemy))
+			{
+				counter += pEnemy->CountOwnedAndPresent(pItem);
+			}
+			else
+			{
+				for (auto const pOtherHouse : HouseClass::Array)
+				{
+					if (pOtherHouse != pHouse && !pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Type->MultiplayPassive)
+					{
+						counter += pOtherHouse->CountOwnedAndPresent(pItem);
+					}
+				}
+			}
+		}
+	}
+	return TeamExt::CountConditionMet(pThis, counter);
+}
+
+bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, TechnoTypeClass* pItem)
+{
+	int counter = 0;
+	if (pItem)
+	{
+		for (auto const pOtherHouse : HouseClass::Array)
+		{
+			if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") == 0)
+			{
+				counter += pOtherHouse->CountOwnedAndPresent(pItem);
+			}
+		}
+	}
+	return TeamExt::CountConditionMet(pThis, counter);
+}
+
+bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list)
+{
+	int counter = 0;
 	for (auto const pItem : list)
 	{
-		if (!result)
-			break;
+		if (!pItem) continue;
 
-		int counter = 0;
-		result = true;
-
-		for (auto const pObject : TechnoClass::Array)
+		for (auto const pOtherHouse : HouseClass::Array)
 		{
-			if (!TechnoExt::IsValidTechno(pObject)) continue;
-
-			if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
-				counter++;
-		}
-
-		switch (pThis->Conditions->ComparatorOperand)
-		{
-		case 0:
-			result = counter < pThis->Conditions->ComparatorType;
-			break;
-		case 1:
-			result = counter <= pThis->Conditions->ComparatorType;
-			break;
-		case 2:
-			result = counter == pThis->Conditions->ComparatorType;
-			break;
-		case 3:
-			result = counter >= pThis->Conditions->ComparatorType;
-			break;
-		case 4:
-			result = counter > pThis->Conditions->ComparatorType;
-			break;
-		case 5:
-			result = counter != pThis->Conditions->ComparatorType;
-			break;
-		default:
-			break;
+			if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") == 0)
+			{
+				counter += pOtherHouse->CountOwnedAndPresent(pItem);
+			}
 		}
 	}
-
-	return result;
+	return TeamExt::CountConditionMet(pThis, counter);
 }
 
-bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, std::vector<TechnoTypeClass*> list)
+bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, const std::vector<TechnoTypeClass*>& list)
 {
-	bool result = true;
+	if (list.empty() || !pHouse)
+		return false;
+
+	for (auto const pItem : list)
+	{
+		if (!pItem) continue;
+
+		int const counter = pHouse->CountOwnedAndPresent(pItem);
+		if (!TeamExt::CountConditionMet(pThis, counter))
+			return false;
+	}
+
+	return true;
+}
+
+bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, const std::vector<TechnoTypeClass*>& list)
+{
+	if (list.empty() || !pHouse)
+		return false;
 
 	if (pEnemy && pHouse->IsAlliedWith(pEnemy))
 		pEnemy = nullptr;
 
-	if (list.size() == 0)
-		return false;
-
-	// Count all objects of the list, like an AND operator
 	for (auto const pItem : list)
 	{
-		if (!result)
-			break;
+		if (!pItem) continue;
 
 		int counter = 0;
-		result = true;
-
-		for (auto const pObject : TechnoClass::Array)
+		if (pEnemy)
 		{
-			if (!TechnoExt::IsValidTechno(pObject)) continue;
-
-			if (pObject->Owner != pHouse
-				&& (!pEnemy || (pEnemy && !pHouse->IsAlliedWith(pEnemy)))
-				&& !pObject->Owner->Type->MultiplayPassive
-				&& pObject->GetTechnoType() == pItem)
+			counter = pEnemy->CountOwnedAndPresent(pItem);
+		}
+		else
+		{
+			for (auto const pOtherHouse : HouseClass::Array)
 			{
-				counter++;
+				if (pOtherHouse != pHouse && !pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Type->MultiplayPassive)
+				{
+					counter += pOtherHouse->CountOwnedAndPresent(pItem);
+				}
 			}
 		}
 
-		switch (pThis->Conditions->ComparatorOperand)
-		{
-		case 0:
-			result = counter < pThis->Conditions->ComparatorType;
-			break;
-		case 1:
-			result = counter <= pThis->Conditions->ComparatorType;
-			break;
-		case 2:
-			result = counter == pThis->Conditions->ComparatorType;
-			break;
-		case 3:
-			result = counter >= pThis->Conditions->ComparatorType;
-			break;
-		case 4:
-			result = counter > pThis->Conditions->ComparatorType;
-			break;
-		case 5:
-			result = counter != pThis->Conditions->ComparatorType;
-			break;
-		default:
-			break;
-		}
+		if (!TeamExt::CountConditionMet(pThis, counter))
+			return false;
 	}
 
-	return result;
+	return true;
 }
 
-bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list)
+bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list)
 {
-	bool result = true;
-
-	if (list.size() == 0)
+	if (list.empty())
 		return false;
 
-	// Any neutral house should be capable to meet the prerequisites
-	for (auto const pHouse : HouseClass::Array)
+	for (auto const pOtherHouse : HouseClass::Array)
 	{
-		if (!result)
-			break;
-
-		bool foundAll = true;
-
-		if (_stricmp(SideClass::Array.GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
+		if (_stricmp(SideClass::Array.GetItem(pOtherHouse->Type->SideIndex)->Name, "Civilian") != 0)
 			continue;
 
-		// Count all objects of the list, like an AND operator
+		bool allMet = true;
 		for (auto const pItem : list)
 		{
-			if (!foundAll)
-				break;
+			if (!pItem) continue;
 
-			int counter = 0;
-
-			for (auto const pObject : TechnoClass::Array)
+			int const counter = pOtherHouse->CountOwnedAndPresent(pItem);
+			if (!TeamExt::CountConditionMet(pThis, counter))
 			{
-				if (!TechnoExt::IsValidTechno(pObject)) continue;
-
-				if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
-					counter++;
-			}
-
-			switch (pThis->Conditions->ComparatorOperand)
-			{
-			case 0:
-				foundAll = counter < pThis->Conditions->ComparatorType;
-				break;
-			case 1:
-				foundAll = counter <= pThis->Conditions->ComparatorType;
-				break;
-			case 2:
-				foundAll = counter == pThis->Conditions->ComparatorType;
-				break;
-			case 3:
-				foundAll = counter >= pThis->Conditions->ComparatorType;
-				break;
-			case 4:
-				foundAll = counter > pThis->Conditions->ComparatorType;
-				break;
-			case 5:
-				foundAll = counter != pThis->Conditions->ComparatorType;
-				break;
-			default:
+				allMet = false;
 				break;
 			}
 		}
 
-		if (!foundAll)
-			result = false;
+		if (allMet)
+			return true;
 	}
 
-	return result;
+	return false;
 }
 
 bool TeamExt::CountConditionMet(AITriggerTypeClass* pThis, int nObjects)
 {
-	bool result = true;
-
-	if (nObjects < 0)
+	if (!pThis || nObjects < 0)
 		return false;
 
-	switch (pThis->Conditions->ComparatorOperand)
+	switch (pThis->Conditions[0].ComparatorOperand)
 	{
 	case 0:
-		result = nObjects < pThis->Conditions->ComparatorType;
-		break;
+		return nObjects < pThis->Conditions[0].ComparatorType;
 	case 1:
-		result = nObjects <= pThis->Conditions->ComparatorType;
-		break;
+		return nObjects <= pThis->Conditions[0].ComparatorType;
 	case 2:
-		result = nObjects == pThis->Conditions->ComparatorType;
-		break;
+		return nObjects == pThis->Conditions[0].ComparatorType;
 	case 3:
-		result = nObjects >= pThis->Conditions->ComparatorType;
-		break;
+		return nObjects >= pThis->Conditions[0].ComparatorType;
 	case 4:
-		result = nObjects > pThis->Conditions->ComparatorType;
-		break;
+		return nObjects > pThis->Conditions[0].ComparatorType;
 	case 5:
-		result = nObjects != pThis->Conditions->ComparatorType;
-		break;
+		return nObjects != pThis->Conditions[0].ComparatorType;
 	default:
-		break;
+		return true;
 	}
-
-	return result;
 }
