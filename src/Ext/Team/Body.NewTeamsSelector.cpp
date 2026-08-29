@@ -216,7 +216,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	if (hasReachedMaxTeamsLimit)
 	{
-		Debug::Log("AITeamsSelector - House %d [%s](%s) reached the TotalAITeamCap (%d)! Skipping operation this time...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, defenseTeamSelectionThreshold);
+		Debug::Log("AITeamsSelector - House %d [%s](%s) reached the TotalAITeamCap (%d)! Skipping operation this time...\n", pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, maxTeamsLimit);
 		return SkipCode;
 	}
 
