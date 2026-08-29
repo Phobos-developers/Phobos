@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:18+0800\n"
+"POT-Creation-Date: 2026-08-29 16:39+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1433,6 +1433,49 @@ msgstr "设置关联对象的跟随者，参数为要跟随者单位的索引。
 msgid "Invalid for non-vehicle objects."
 msgstr "非载具类对象无效。"
 
+msgid "`513` Set mission timer properties"
+msgstr ""
+
+msgid ""
+"Set the method to display mission timer and whether the timer should be "
+"displayed reversedly based on given value."
+msgstr ""
+
+msgid ""
+"For behaviours `0`, `1`, and `2`, the second parameter decides the base "
+"value for percentage timer type or reversed timer that'll be used for "
+"calculation."
+msgstr ""
+
+msgid ""
+"For behaviours `3` and `4`, the second parameter decides the index of "
+"variable that'll be displayed. If the local/global variable does not "
+"exist, 0 will be displayed."
+msgstr ""
+
+msgid "*Behaviour*"
+msgstr "*行为*"
+
+msgid "Show normal timer"
+msgstr ""
+
+msgid "show percentage based on the given value"
+msgstr ""
+
+msgid "Show timer in digit form"
+msgstr ""
+
+msgid "Show value of the selected local variable"
+msgstr ""
+
+msgid "Show value of the selected global variable"
+msgstr ""
+
+msgid ""
+"This won't affect how the global mission timer really ticks, so it'll "
+"still end after the mission tiemr expired."
+msgstr ""
+
 msgid "`600` Configure Drop Crate"
 msgstr "`600` 配置掉落箱子行为"
 
@@ -1441,9 +1484,6 @@ msgstr "设置或覆盖受影响对象的 `DropCrate`。"
 
 msgid "Only functions when used as attached triggers within objects."
 msgstr "仅通过关联标签附加到对象上时生效。"
-
-msgid "*Behaviour*"
-msgstr "*行为*"
 
 msgid "Use default Techno settings"
 msgstr "使用单位的默认设置"
@@ -1913,13 +1953,13 @@ msgid ""
 msgstr "如果值 **小于 0**（默认值：`-1`），则保留原版游戏行为。"
 
 msgid "Customized transport plane for teams"
-msgstr ""
-"为作战小队自定义运输机"
+msgstr "为作战小队自定义运输机"
 
 msgid ""
 "You can now use `ParaDropAircraft` to specify a new transport aircraft "
 "type for teams with `Droppod=yes`, which will override the global "
 "settings for `Ares` and `Vanilla`."
 msgstr ""
-"现在你可以用 `ParaDropAircraft` 为 `Droppod=yes` 的作战小队指定新的运输机类型，这会覆盖 Ares 和原版的全局设置。"
+"现在你可以用 `ParaDropAircraft` 为 `Droppod=yes` 的作战小队指定新的运输机类型，这会覆盖 Ares "
+"和原版的全局设置。"
 

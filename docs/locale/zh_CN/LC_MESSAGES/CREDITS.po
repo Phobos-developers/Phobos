@@ -1,14 +1,9 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2025, The Phobos Contributors
-# This file is distributed under the same license as the Phobos package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-21 08:32+0800\n"
+"POT-Creation-Date: 2026-08-29 16:39+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -480,8 +475,7 @@ msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
 msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
 
 msgid "Modify ammo on impact"
-msgstr ""
-"修改弹药弹头"
+msgstr "修改弹药弹头"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -1892,6 +1886,19 @@ msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新
 msgid "Customize ivan bomb visibility"
 msgstr "自定义伊文炸弹可见性"
 
+msgid ""
+"Fix the issue where vehicles always finish turret resetting first before "
+"turn to a new attack target, now it should turn to new target immediately"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标"
+
+msgid ""
+"Fixed a bug that computer player record cannot be log normally in non "
+"English mode"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"
+
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2558,6 +2565,30 @@ msgid ""
 "did not play `ProductionAnim` when placing a produced building"
 msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
 
+msgid ""
+"Fix the bug that buildings with passengers cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr ""
+
+msgid ""
+"Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr ""
+
+msgid ""
+"Customize whether mind-controlled Insignificant technos can be auto-"
+"targeted"
+msgstr ""
+
+msgid "Roof production anim"
+msgstr "天窗生产动画"
+
+msgid "Customize whether the unit exits from the roof"
+msgstr "自定义单位是否从天窗退出"
+
+msgid "Customize whether the unit can be detected by psychic detector"
+msgstr ""
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2641,6 +2672,9 @@ msgstr "自定义乘客能否在运输工具移动时向外开火"
 
 msgid "Fix a game crash when parsing string list with null entry"
 msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃"
+
+msgid "`513` Set mission timer type"
+msgstr ""
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3037,6 +3071,9 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
+msgid "Add a new AutoDeath condition based on the owner's power status"
+msgstr ""
+
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
 
@@ -3227,6 +3264,10 @@ msgstr "**obsidianus** - 自动根据血量变形"
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
 
-msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
-msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being "
+"respected when the master is sold or self-destructed"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
+"不被遵守的问题"
 
