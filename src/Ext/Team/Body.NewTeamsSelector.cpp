@@ -228,9 +228,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	int destroyedBridgesCount = 0;
 	int undamagedBridgesCount = 0;
 	std::unordered_map<TechnoTypeClass*, int> ownedRecruitables;
-	std::vector<CellStruct> landUnitFactories;
-	std::vector<CellStruct> infantryFactories;
-	std::vector<CellStruct> enemyTargets;
 	bool hasInfantryFactory = false;
 	bool hasUnitFactory = false;
 	bool hasNavalFactory = false;
@@ -255,7 +252,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				{
 				case AbstractType::InfantryType:
 					hasInfantryFactory = true;
-					infantryFactories.push_back(pTechno->GetCell()->MapCoords);
 					break;
 
 				case AbstractType::AircraftType:
@@ -264,23 +260,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 				case AbstractType::UnitType:
 					if (pBuildingType->Naval)
-					{
 						hasNavalFactory = true;
-					}
 					else
-					{
 						hasUnitFactory = true;
-						landUnitFactories.push_back(pTechno->GetCell()->MapCoords);
-					}
 					break;
 
 				default:
 					break;
 				}
-			}
-			else if (pTechno->Owner != pHouse && !pHouse->IsAlliedWith(pTechno->Owner) && !pTechno->Owner->Type->MultiplayPassive)
-			{
-				enemyTargets.push_back(pTechno->GetCell()->MapCoords);
 			}
 			else if (pBuildingType->BridgeRepairHut)
 			{
@@ -295,11 +282,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			continue;
 		}
 
-		if (pTechno->Owner != pHouse && !pHouse->IsAlliedWith(pTechno->Owner) && !pTechno->Owner->Type->MultiplayPassive)
-		{
-			enemyTargets.push_back(pTechno->GetCell()->MapCoords);
-		}
-
 		auto const pFoot = static_cast<FootClass*>(pTechno);
 
 		if (!pFoot
@@ -312,46 +294,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 
 		++ownedRecruitables[pTechno->GetTechnoType()];
-	}
-
-	bool hasReachableEnemyForVehicles = false;
-	bool hasReachableEnemyForInfantry = false;
-
-	for (const auto& enemyCoord : enemyTargets)
-	{
-		int const enemyZone = MapClass::Instance.GetMovementZoneType(enemyCoord, MovementZone::Normal, false);
-
-		if (enemyZone != -1)
-		{
-			if (!hasReachableEnemyForVehicles)
-			{
-				for (const auto& factoryCoord : landUnitFactories)
-				{
-					int const factoryZone = MapClass::Instance.GetMovementZoneType(factoryCoord, MovementZone::Normal, false);
-					if (factoryZone != -1 && factoryZone == enemyZone)
-					{
-						hasReachableEnemyForVehicles = true;
-						break;
-					}
-				}
-			}
-
-			if (!hasReachableEnemyForInfantry)
-			{
-				for (const auto& barracksCoord : infantryFactories)
-				{
-					int const barracksZone = MapClass::Instance.GetMovementZoneType(barracksCoord, MovementZone::Normal, false);
-					if (barracksZone != -1 && barracksZone == enemyZone)
-					{
-						hasReachableEnemyForInfantry = true;
-						break;
-					}
-				}
-			}
-		}
-
-		if (hasReachableEnemyForVehicles && hasReachableEnemyForInfantry)
-			break;
 	}
 
 	if (hasInfantryFactory || hasUnitFactory || hasAircraftFactory || hasNavalFactory)
@@ -393,7 +335,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			continue;
 
 		teamCategory teamIsCategory = teamCategory::None;
-		bool isStrictlyGroundOnly = true;
 
 		// Analyze what kind of category is this main team if the feature is enabled
 		if (splitTriggersByCategory)
@@ -408,22 +349,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				{
 					if (!entry.Type)
 						continue;
-
-					if (entry.Type->WhatAmI() == AbstractType::AircraftType
-						|| entry.Type->ConsideredAircraft
-						|| entry.Type->Naval
-						|| entry.Type->SpeedType == SpeedType::Hover
-						|| entry.Type->SpeedType == SpeedType::Amphibious
-						|| entry.Type->SpeedType == SpeedType::Winged
-						|| entry.Type->MovementZone == MovementZone::Amphibious
-						|| entry.Type->MovementZone == MovementZone::AmphibiousCrusher
-						|| entry.Type->MovementZone == MovementZone::AmphibiousDestroyer
-						|| entry.Type->MovementZone == MovementZone::WaterBeach
-						|| entry.Type->MovementZone == MovementZone::Subterrannean
-						|| entry.Type->MovementZone == MovementZone::Fly)
-					{
-						isStrictlyGroundOnly = false;
-					}
 
 					if (entry.Type->WhatAmI() == AbstractType::AircraftType
 						|| entry.Type->ConsideredAircraft)
@@ -479,24 +404,6 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			// Early discard if fallback is disabled and category does not match
 			if (!isFallbackEnabled && validCategory != teamCategory::None && validCategory != teamIsCategory)
 				continue;
-		}
-
-		// Discard strictly ground-only offensive triggers if no enemy targets are reachable by land from factories
-		if (!pTrigger->IsForBaseDefense && isStrictlyGroundOnly)
-		{
-			if (teamIsCategory == teamCategory::Ground && !hasReachableEnemyForVehicles)
-			{
-				Debug::Log("AITeamsSelector - House %d [%s](%s) trigger [%s]: %s discarded because no enemy targets are reachable by land from unit factories.\n",
-					pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, pTrigger->ID, pTrigger->Team1->Name);
-				continue;
-			}
-
-			if (teamIsCategory == teamCategory::Infantry && !hasReachableEnemyForInfantry)
-			{
-				Debug::Log("AITeamsSelector - House %d [%s](%s) trigger [%s]: %s discarded because no enemy targets are reachable by land from infantry factories.\n",
-					pHouse->ArrayIndex, pHouse->PlainName, pHouse->Type->ID, pTrigger->ID, pTrigger->Team1->Name);
-				continue;
-			}
 		}
 
 		// The trigger must be compatible with the owner ("ConditionType=-1" is always valid)
