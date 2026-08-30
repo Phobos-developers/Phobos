@@ -2686,6 +2686,18 @@ In `rulesmd.ini`:
 HarvesterLoadRate=                    ; integer, default to [General] -> HarvesterLoadRate
 ```
 
+### Customize `IdleActionFrequency`
+
+- Now `IdleActionFrequency` can be customized on each infantry.
+  - With a single value, the interval is a random value between `IdleActionFrequency * 450` and `IdleActionFrequency * 1800` frames, which customizes the frequency the same way the global value does.
+  - With two values, the first one directly sets the lower bound and the second one the upper bound of the random interval in frames.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                        ; InfantryType
+IdleActionFrequency=                  ; a single floating point value, or a pair of integers defining the random delay range in frames (min, max), defaults to [AudioVisual] -> IdleActionFrequency
+```
+
 ### Customize type selection for IFV
 
 - In vanilla game, when using type selection command on IFVs, all of them will be selected regardless of their current modes, which is allowed to customize now.

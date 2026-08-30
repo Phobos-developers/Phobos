@@ -33,6 +33,7 @@ void InfantryTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+	this->IdleActionFrequency.Read(exINI, pSection, "IdleActionFrequency");
 }
 
 template <typename T>
@@ -55,6 +56,7 @@ void InfantryTypeExt::Serialize(T& Stm)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->InfantryAutoDeploy)
+		.Process(this->IdleActionFrequency)
 		;
 }
 
