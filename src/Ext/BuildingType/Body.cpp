@@ -284,7 +284,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
 
 	this->NewEvaVoice_Tag.Read(pINI, pSection, "NewEVAVoice.Tag");
-	this->NewEvaVoice_Tag.Read(pINI, pSection, "NewEVAVoice.Index");
 	this->NewEvaVoice_Priority.Read(exINI, pSection, "NewEVAVoice.Priority");
 	this->NewEvaVoice_RecheckOnDeath.Read(exINI, pSection, "NewEVAVoice.RecheckOnDeath");
 	this->NewEvaVoice_InitialMessage.Read(exINI, pSection, "NewEVAVoice.InitialMessage");
