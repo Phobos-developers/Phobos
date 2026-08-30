@@ -27,7 +27,7 @@ public:
 	std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 	std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 	Nullable<bool> InfantryAutoDeploy;
-	Nullable<double> IdleActionFrequency;
+	Nullable<PartialVector2D<double>> IdleActionFrequency;
 
 	explicit InfantryTypeExt(InfantryTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }

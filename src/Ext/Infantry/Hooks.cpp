@@ -216,9 +216,27 @@ DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
 	GET(InfantryClass* const, pThis, ESI);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	double idleActionFrequency = pTypeExt->IdleActionFrequency.Get(RulesClass::Instance->IdleActionFrequency);
+	if (auto const pRange = pTypeExt->IdleActionFrequency.GetEx())
+	{
+		const bool isUpperBound = R->Origin() == 0x51CDD9;
+		double value;
 
-	__asm { fld idleActionFrequency }
+		if (pRange->ValueCount >= 2)
+		{
+			// Two values set the delay range directly in frames,
+			const double lower = std::min(pRange->X, pRange->Y);
+			const double upper = std::max(pRange->X, pRange->Y);
+			value = isUpperBound ? upper / 1800.0 : lower / 450.0;
+		}
+		else
+		{
+			value = pRange->X;
+		}
 
-	return R->Origin() + 0x6;
+		__asm { fld value }
+
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
 }
