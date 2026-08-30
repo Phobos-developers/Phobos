@@ -743,6 +743,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
+  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
