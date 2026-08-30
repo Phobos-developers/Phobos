@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -111,6 +112,18 @@ enum class AffectedTarget : unsigned char
 
 MAKE_ENUM_FLAGS(AffectedTarget);
 
+enum class AffectedVeterancy : unsigned char
+{
+	None = 0x0,
+	Rookie = 0x1,
+	Veteran = 0x2,
+	Elite = 0x4,
+
+	All = Rookie | Veteran | Elite
+};
+
+MAKE_ENUM_FLAGS(AffectedVeterancy);
+
 enum class AffectedHouse : unsigned char
 {
 	None = 0x0,
@@ -169,11 +182,28 @@ enum class SlaveChangeOwnerType
 	Neutral = 4,
 };
 
+enum class PositionFollow : BYTE
+{
+	None = 0x0,
+	Firer = 0x1,
+	Target = 0x2,
+	All = Firer | Target
+};
+
+MAKE_ENUM_FLAGS(PositionFollow)
+
 enum class AutoDeathBehavior
 {
 	Kill = 0,     // default death option
 	Vanish = 1,
 	Sell = 2,     // buildings only
+};
+
+enum class PowerStatus
+{
+	None = 0,
+	Full = 1,   // not low power
+	Low = 2, // low power
 };
 
 enum class SelfHealGainType
@@ -231,6 +261,18 @@ enum class DamageDisplayType
 	Intercept = 2
 };
 
+enum class StackingMode
+{
+	Override = 0,
+	SetIfZero = 1,
+	Min = 2,
+	Max = 3,
+	Add = 4,
+	Subtract = 5,
+	Multiply = 6,
+	Divide = 7
+};
+
 enum class ChronoSparkleDisplayPosition : unsigned char
 {
 	None = 0x0,
@@ -263,7 +305,6 @@ enum class VerticalPosition : BYTE
 	Center = 1,
 	Bottom = 2
 };
-
 //hexagon
 enum class BuildingSelectBracketPosition :BYTE
 {
@@ -319,6 +360,18 @@ enum class BannerNumberType : int
 	Variable = 1,
 	Prefixed = 2,
 	Suffixed = 3
+};
+
+enum class DynamicTeamDelayType : int
+{
+	StartingPoint = 0,
+	PlayerCount = 1,
+	Allies = 2,
+	Enemies = 3,
+	AliveCount = 4,
+	AliveAllies = 5,
+	AliveEnemies = 6,
+	None = 7
 };
 
 class MouseCursorHotSpotX
@@ -382,3 +435,28 @@ public:
 		return false;
 	}
 };
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
+};
+
+enum class EdgeType : BYTE
+{
+	Owner = 0,
+	Closest = 1,
+	Random = 2
+};
+
+// Phobos extension abilities that augment the vanilla veteran/elite ability
+// lists (VeteranAbilities / EliteAbilities). Do not extend the vanilla Ability
+// enum, whose storage is a fixed-size AbilitiesStruct.
+enum class AdditionalAbility : unsigned char
+{
+	Reload = 0,
+	EmptyReload = 1,
+	Count
+};
+
+constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);
