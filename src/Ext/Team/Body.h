@@ -91,6 +91,13 @@ public:
 	static bool NeutralOwns(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list);
 	static bool NeutralOwnsAll(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list);
 	static bool CountConditionMet(AITriggerTypeClass* pThis, int nObjects);
+	static bool EvaluateTriggerCondition(
+		AITriggerTypeClass* pTrigger,
+		HouseClass* pHouse,
+		HouseClass* pTargetHouse = nullptr,
+		bool hasReachedMaxDefensiveTeamsLimit = false,
+		int destroyedBridgesCount = 0,
+		int undamagedBridgesCount = 0);
 
 	static TeamExt* Fetch(const TeamClass* pThis)
 	{

@@ -407,139 +407,8 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				continue;
 		}
 
-		// The trigger must be compatible with the owner ("ConditionType=-1" is always valid)
-		if ((int)pTrigger->ConditionType >= 0)
-		{
-			bool conditionMet = true;
-
-			switch ((int)pTrigger->ConditionType)
-			{
-			case 0:
-				// Case 0: "enemy owns"
-				conditionMet = pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, true, pTrigger->ConditionObject);
-				break;
-
-			case 1:
-				// Case 1: "house owns"
-				conditionMet = pTrigger->ConditionObject && TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject);
-				break;
-
-			case 4:
-				// Case 4: "Enemy house economy threshold?"
-				conditionMet = pTrigger->HouseCredits(nullptr, targetHouse);
-				break;
-
-			case 5:
-				// Case 5: "Iron Curtain is charged?"
-				conditionMet = pTrigger->IronCurtainCharged(pHouse, nullptr);
-				break;
-
-			case 6:
-				// Case 6: "Chronosphere is charged?"
-				conditionMet = pTrigger->ChronoSphereCharged(pHouse, nullptr);
-				break;
-
-			case 7:
-				// Case 7: "civilian owns"
-				conditionMet = pTrigger->ConditionObject && TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject);
-				break;
-
-			case 8:
-				// Case 8: "enemy owns" across all enemies
-				conditionMet = pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject);
-				break;
-
-			case 9:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::EnemyOwns(pTrigger, pHouse, targetHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 10:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::HouseOwns(pTrigger, pHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 11:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::NeutralOwns(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 12:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 13:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::HouseOwns(pTrigger, pHouse, true, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 14:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, targetHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 15:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::HouseOwnsAll(pTrigger, pHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 16:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::NeutralOwnsAll(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 17:
-				{
-					auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
-					conditionMet = (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
-						&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, RulesExt::Global()->AITargetTypesLists[listIdx]);
-				}
-				break;
-
-			case 18:
-				// Case 18: Check destroyed bridges
-				conditionMet = TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount);
-				break;
-
-			case 19:
-				// Case 19: Check undamaged bridges
-				conditionMet = TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount);
-				break;
-
-			default:
-				// Other cases from vanilla game
-				conditionMet = pTrigger->ConditionMet(pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit);
-				break;
-			}
-
-			if (!conditionMet)
-				continue;
-		}
+		if (!TeamExt::EvaluateTriggerCondition(pTrigger, pHouse, targetHouse, hasReachedMaxDefensiveTeamsLimit, destroyedBridgesCount, undamagedBridgesCount))
+			continue;
 
 		if (!pTrigger->Team1->Autocreate && !pTrigger->Team1->Recruiter)
 			continue;
@@ -977,5 +846,116 @@ bool TeamExt::CountConditionMet(AITriggerTypeClass* pThis, int nObjects)
 		return nObjects != pThis->Conditions[0].ComparatorOperand;
 	default:
 		return true;
+	}
+}
+
+bool TeamExt::EvaluateTriggerCondition(
+	AITriggerTypeClass* pTrigger,
+	HouseClass* pHouse,
+	HouseClass* pTargetHouse,
+	bool hasReachedMaxDefensiveTeamsLimit,
+	int destroyedBridgesCount,
+	int undamagedBridgesCount)
+{
+	if (!pTrigger || !pHouse)
+		return false;
+
+	if ((int)pTrigger->ConditionType < 0)
+		return true;
+
+	switch ((int)pTrigger->ConditionType)
+	{
+	case 0:
+		return pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, pTargetHouse, true, pTrigger->ConditionObject);
+
+	case 1:
+		return pTrigger->ConditionObject && TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject);
+
+	case 4:
+		return pTrigger->HouseCredits(nullptr, pTargetHouse);
+
+	case 5:
+		return pTrigger->IronCurtainCharged(pHouse, nullptr);
+
+	case 6:
+		return pTrigger->ChronoSphereCharged(pHouse, nullptr);
+
+	case 7:
+		return pTrigger->ConditionObject && TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject);
+
+	case 8:
+		return pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject);
+
+	case 9:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::EnemyOwns(pTrigger, pHouse, pTargetHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 10:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::HouseOwns(pTrigger, pHouse, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 11:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::NeutralOwns(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 12:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 13:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::HouseOwns(pTrigger, pHouse, true, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 14:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, pTargetHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 15:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::HouseOwnsAll(pTrigger, pHouse, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 16:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::NeutralOwnsAll(pTrigger, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 17:
+		{
+			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
+			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
+				&& TeamExt::EnemyOwnsAll(pTrigger, pHouse, nullptr, RulesExt::Global()->AITargetTypesLists[listIdx]);
+		}
+
+	case 18:
+		return TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount);
+
+	case 19:
+		return TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount);
+
+	default:
+		return pTrigger->ConditionMet(pHouse, pTargetHouse, hasReachedMaxDefensiveTeamsLimit);
 	}
 }
