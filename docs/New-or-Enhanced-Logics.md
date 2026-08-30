@@ -831,97 +831,62 @@ The effective rate of a normalized sequence is `rate` adjusted by the game speed
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Sequence.Ready.DefaultRate=0                   ; integer
-Sequence.Ready.DefaultNormalized=no            ; boolean
-Sequence.Guard.DefaultRate=0                   ; integer
-Sequence.Guard.DefaultNormalized=no            ; boolean
-Sequence.Prone.DefaultRate=6                   ; integer
-Sequence.Prone.DefaultNormalized=no            ; boolean
-Sequence.Walk.DefaultRate=3                    ; integer
-Sequence.Walk.DefaultNormalized=no             ; boolean
-Sequence.FireUp.DefaultRate=1                  ; integer
-Sequence.FireUp.DefaultNormalized=no           ; boolean
-Sequence.Down.DefaultRate=1                    ; integer
-Sequence.Down.DefaultNormalized=no             ; boolean
-Sequence.Crawl.DefaultRate=1                   ; integer
-Sequence.Crawl.DefaultNormalized=no            ; boolean
-Sequence.Up.DefaultRate=1                      ; integer
-Sequence.Up.DefaultNormalized=no               ; boolean
-Sequence.FireProne.DefaultRate=1               ; integer
-Sequence.FireProne.DefaultNormalized=no        ; boolean
-Sequence.Idle1.DefaultRate=3                   ; integer
-Sequence.Idle1.DefaultNormalized=yes           ; boolean
-Sequence.Idle2.DefaultRate=3                   ; integer
-Sequence.Idle2.DefaultNormalized=yes           ; boolean
-Sequence.Die1.DefaultRate=1                    ; integer
-Sequence.Die1.DefaultNormalized=no             ; boolean
-Sequence.Die2.DefaultRate=1                    ; integer
-Sequence.Die2.DefaultNormalized=no             ; boolean
-Sequence.Die3.DefaultRate=1                    ; integer
-Sequence.Die3.DefaultNormalized=no             ; boolean
-Sequence.Die4.DefaultRate=1                    ; integer
-Sequence.Die4.DefaultNormalized=no             ; boolean
-Sequence.Die5.DefaultRate=1                    ; integer
-Sequence.Die5.DefaultNormalized=no             ; boolean
-Sequence.Tread.DefaultRate=3                   ; integer
-Sequence.Tread.DefaultNormalized=no            ; boolean
-Sequence.Swim.DefaultRate=1                    ; integer
-Sequence.Swim.DefaultNormalized=no             ; boolean
-Sequence.WetIdle1.DefaultRate=3                ; integer
-Sequence.WetIdle1.DefaultNormalized=yes        ; boolean
-Sequence.WetIdle2.DefaultRate=3                ; integer
-Sequence.WetIdle2.DefaultNormalized=yes        ; boolean
-Sequence.WetDie1.DefaultRate=1                 ; integer
-Sequence.WetDie1.DefaultNormalized=no          ; boolean
-Sequence.WetDie2.DefaultRate=1                 ; integer
-Sequence.WetDie2.DefaultNormalized=no          ; boolean
-Sequence.WetAttack.DefaultRate=1               ; integer
-Sequence.WetAttack.DefaultNormalized=no        ; boolean
-Sequence.Hover.DefaultRate=2                   ; integer
-Sequence.Hover.DefaultNormalized=yes           ; boolean
-Sequence.Fly.DefaultRate=1                     ; integer
-Sequence.Fly.DefaultNormalized=no              ; boolean
-Sequence.Tumble.DefaultRate=1                  ; integer
-Sequence.Tumble.DefaultNormalized=no           ; boolean
-Sequence.FireFly.DefaultRate=1                 ; integer
-Sequence.FireFly.DefaultNormalized=no          ; boolean
-Sequence.Deploy.DefaultRate=1                  ; integer
-Sequence.Deploy.DefaultNormalized=no           ; boolean
-Sequence.Deployed.DefaultRate=1                ; integer
-Sequence.Deployed.DefaultNormalized=no         ; boolean
-Sequence.DeployedFire.DefaultRate=1            ; integer
-Sequence.DeployedFire.DefaultNormalized=no     ; boolean
-Sequence.DeployedIdle.DefaultRate=1            ; integer
-Sequence.DeployedIdle.DefaultNormalized=no     ; boolean
-Sequence.Undeploy.DefaultRate=1                ; integer
-Sequence.Undeploy.DefaultNormalized=no         ; boolean
-Sequence.Cheer.DefaultRate=3                   ; integer
-Sequence.Cheer.DefaultNormalized=yes           ; boolean
-Sequence.Paradrop.DefaultRate=1                ; integer
-Sequence.Paradrop.DefaultNormalized=no         ; boolean
-Sequence.AirDeathStart.DefaultRate=3           ; integer
-Sequence.AirDeathStart.DefaultNormalized=no    ; boolean
-Sequence.AirDeathFalling.DefaultRate=1         ; integer
-Sequence.AirDeathFalling.DefaultNormalized=no  ; boolean
-Sequence.AirDeathFinish.DefaultRate=3          ; integer
-Sequence.AirDeathFinish.DefaultNormalized=no   ; boolean
-Sequence.Panic.DefaultRate=4                   ; integer
-Sequence.Panic.DefaultNormalized=no            ; boolean
-Sequence.Shovel.DefaultRate=6                  ; integer
-Sequence.Shovel.DefaultNormalized=no           ; boolean
-Sequence.Carry.DefaultRate=3                   ; integer
-Sequence.Carry.DefaultNormalized=no            ; boolean
-Sequence.SecondaryFire.DefaultRate=1           ; integer
-Sequence.SecondaryFire.DefaultNormalized=no    ; boolean
-Sequence.SecondaryProne.DefaultRate=1          ; integer
-Sequence.SecondaryProne.DefaultNormalized=no   ; boolean
+Sequence.<Sequence>.DefaultRate=0         ; integer
+Sequence.<Sequence>.DefaultNormalized=no  ; boolean
+```
+
+```{dropdown} Default value table
+| Name            | DefaultRate | Normalized |
+|-----------------|-------------|------------|
+| Ready           | 0           | false      |
+| Guard           | 0           | false      |
+| Prone           | 6           | false      |
+| Walk            | 3           | false      |
+| FireUp          | 1           | false      |
+| Down            | 1           | false      |
+| Crawl           | 1           | false      |
+| Up              | 1           | false      |
+| FireProne       | 1           | false      |
+| Idle1           | 3           | true       |
+| Idle2           | 3           | true       |
+| Die1            | 1           | false      |
+| Die2            | 1           | false      |
+| Die3            | 1           | false      |
+| Die4            | 1           | false      |
+| Die5            | 1           | false      |
+| Tread           | 3           | false      |
+| Swim            | 1           | false      |
+| WetIdle1        | 3           | true       |
+| WetIdle2        | 3           | true       |
+| WetDie1         | 1           | false      |
+| WetDie2         | 1           | false      |
+| WetAttack       | 1           | false      |
+| Hover           | 2           | true       |
+| Fly             | 1           | false      |
+| Tumble          | 1           | false      |
+| FireFly         | 1           | false      |
+| Deploy          | 1           | false      |
+| Deployed        | 1           | false      |
+| DeployedFire    | 1           | false      |
+| DeployedIdle    | 1           | false      |
+| Undeploy        | 1           | false      |
+| Cheer           | 3           | true       |
+| Paradrop        | 1           | false      |
+| AirDeathStart   | 3           | false      |
+| AirDeathFalling | 1           | false      |
+| AirDeathFinish  | 3           | false      |
+| Panic           | 4           | false      |
+| Shovel          | 6           | false      |
+| Carry           | 3           | false      |
+| SecondaryFire   | 1           | false      |
+| SecondaryProne  | 1           | false      |
 ```
 
 In `artmd.ini`:
 ```ini
-[SEQUENCE]             ; Sequence
-<Sequence>Rate=        ; integer, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultRate
-<Sequence>Normalized=  ; boolean, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultNormalized
+[SEQUENCE]                                ; Sequence
+<Sequence>Rate=                           ; integer, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultRate
+<Sequence>Normalized=                     ; boolean, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultNormalized
 ```
 
 ### Customizable `SlavesFreeSound`
