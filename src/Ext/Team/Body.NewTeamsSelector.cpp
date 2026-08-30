@@ -866,27 +866,35 @@ bool TeamExt::EvaluateTriggerCondition(
 	switch ((int)pTrigger->ConditionType)
 	{
 	case 0:
+		// Target enemy owns specified object
 		return pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, pTargetHouse, true, pTrigger->ConditionObject);
 
 	case 1:
+		// House owns specified object
 		return pTrigger->ConditionObject && TeamExt::HouseOwns(pTrigger, pHouse, false, pTrigger->ConditionObject);
 
 	case 4:
+		// Target enemy credits threshold
 		return pTrigger->HouseCredits(nullptr, pTargetHouse);
 
 	case 5:
+		// Iron Curtain is charged
 		return pTrigger->IronCurtainCharged(pHouse, nullptr);
 
 	case 6:
+		// Chronosphere is charged
 		return pTrigger->ChronoSphereCharged(pHouse, nullptr);
 
 	case 7:
+		// Neutral/civilian house owns specified object
 		return pTrigger->ConditionObject && TeamExt::NeutralOwns(pTrigger, pTrigger->ConditionObject);
 
 	case 8:
+		// Any enemy owns specified object
 		return pTrigger->ConditionObject && TeamExt::EnemyOwns(pTrigger, pHouse, nullptr, false, pTrigger->ConditionObject);
 
 	case 9:
+		// Target enemy owns at least one object from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -894,6 +902,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 10:
+		// House owns at least one object from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -901,6 +910,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 11:
+		// Neutral/civilian house owns at least one object from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -908,6 +918,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 12:
+		// Any enemy owns at least one object from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -915,6 +926,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 13:
+		// House or allies own at least one object from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -922,6 +934,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 14:
+		// Target enemy owns all objects from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -929,6 +942,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 15:
+		// House owns all objects from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -936,6 +950,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 16:
+		// Neutral/civilian house owns all objects from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -943,6 +958,7 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 17:
+		// Any enemy owns all objects from list
 		{
 			auto const listIdx = pTrigger->Conditions[3].ComparatorOperand;
 			return (listIdx >= 0 && (size_t)listIdx < RulesExt::Global()->AITargetTypesLists.size())
@@ -950,12 +966,15 @@ bool TeamExt::EvaluateTriggerCondition(
 		}
 
 	case 18:
+		// Destroyed bridges count
 		return TeamExt::CountConditionMet(pTrigger, destroyedBridgesCount);
 
 	case 19:
+		// Undamaged bridges count
 		return TeamExt::CountConditionMet(pTrigger, undamagedBridgesCount);
 
 	default:
+		// Fallback to vanilla condition evaluator
 		return pTrigger->ConditionMet(pHouse, pTargetHouse, hasReachedMaxDefensiveTeamsLimit);
 	}
 }
