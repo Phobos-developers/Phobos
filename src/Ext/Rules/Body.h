@@ -346,8 +346,6 @@ public:
 		int TintColorForceShield;
 		int TintColorBerserk;
 
-		std::vector<std::string> EVAIndexList;
-
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
@@ -838,8 +836,6 @@ public:
 
 			, AttackMove_IgnoreWeaponCheck { false }
 
-			, EVAIndexList {}
-
 			, Parasite_GrappleAnim {}
 			, Parasite_AllowWaterExit {}
 			, InfantryAutoDeploy { false }
@@ -1055,7 +1051,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ReplaceVoxelLightSources();
-		void LoadEvaVoices();
 
 	private:
 		template <typename T>

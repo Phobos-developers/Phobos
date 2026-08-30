@@ -5,6 +5,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/EVATypeClass.h>
+
 class SideExt final : public AbstractTypeExt
 {
 public:
@@ -51,7 +53,7 @@ public:
 	PhobosPCXFile SuperWeaponSidebar_TopPCX;
 	PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 	PhobosPCXFile SuperWeaponSidebar_BottomPCX;
-	Nullable<char*> EVA_Tag;
+	EVAType EVATag;
 
 	SideExt(SideClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, ArrayIndex { -1 }
@@ -83,7 +85,7 @@ public:
 		, SuperWeaponSidebar_TopPCX {}
 		, SuperWeaponSidebar_CenterPCX {}
 		, SuperWeaponSidebar_BottomPCX {}
-		, EVA_Tag { }
+		, EVATag { -2 }
 	{ }
 
 	virtual ~SideExt() = default;

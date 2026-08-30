@@ -283,7 +283,8 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RevealToAll_Radius.Read(exINI, pSection, "RevealToAll.Radius");
 
-	this->NewEvaVoice_Index.Read(exINI, pSection, "NewEVAVoice.Index");
+	this->NewEvaVoice_Tag.Read(pINI, pSection, "NewEVAVoice.Tag");
+	this->NewEvaVoice_Tag.Read(pINI, pSection, "NewEVAVoice.Index");
 	this->NewEvaVoice_Priority.Read(exINI, pSection, "NewEVAVoice.Priority");
 	this->NewEvaVoice_RecheckOnDeath.Read(exINI, pSection, "NewEVAVoice.RecheckOnDeath");
 	this->NewEvaVoice_InitialMessage.Read(exINI, pSection, "NewEVAVoice.InitialMessage");
@@ -476,7 +477,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
-		.Process(this->NewEvaVoice_Index)
+		.Process(this->NewEvaVoice_Tag)
 		.Process(this->NewEvaVoice_Priority)
 		.Process(this->NewEvaVoice_RecheckOnDeath)
 		.Process(this->NewEvaVoice_InitialMessage)

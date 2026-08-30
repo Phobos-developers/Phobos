@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/Side/Body.h>
 
 DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
 {
@@ -13,7 +14,19 @@ DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
 	{
 		if (const auto pHouse = HouseClass::CurrentPlayer)
 		{
-			const int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
+			int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
+
+			if (EVAIndex == -2)
+			{
+				if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
+				{
+					if (const auto pSideExt = SideExt::Fetch(pSide))
+					{
+						if (pSideExt->EVATag >= 0)
+							EVAIndex = pSideExt->EVATag;
+					}
+				}
+			}
 
 			if (EVAIndex != -2)
 				VoxClass::EVAIndex = EVAIndex;
@@ -27,7 +40,19 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 {
 	if (const auto pHouse = HouseClass::CurrentPlayer)
 	{
-		const int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
+		int EVAIndex = HouseTypeExt::Fetch(pHouse->Type)->EVATag;
+
+		if (EVAIndex == -2)
+		{
+			if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
+			{
+				if (const auto pSideExt = SideExt::Fetch(pSide))
+				{
+					if (pSideExt->EVATag >= 0)
+						EVAIndex = pSideExt->EVATag;
+				}
+			}
+		}
 
 		if (EVAIndex != -2)
 			VoxClass::EVAIndex = EVAIndex;

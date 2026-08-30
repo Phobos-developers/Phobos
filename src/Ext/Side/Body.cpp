@@ -4,6 +4,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/HouseType/Body.h>
 
 SideExt::ExtContainer SideExt::ExtMap;
 
@@ -61,92 +62,105 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
 
-	pINI->ReadString(pSection, "EVA.Tag", "", Phobos::readBuffer);
-
-	if (std::strlen(Phobos::readBuffer) > 0)
-		this->EVA_Tag = _strdup(Phobos::readBuffer);
+	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 }
 
 void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 {
+	if (!pThis || !pThis->Type)
+		return;
+
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if (!pTypeExt->NewEvaVoice_Index.isset())
+	if (pTypeExt->NewEvaVoice_Tag < 0)
 		return;
 
 	const auto pHouse = pThis->Owner;
 
-	if (!pHouse->IsControlledByCurrentPlayer())
+	if (!pHouse || !pHouse->IsControlledByCurrentPlayer())
 		return;
 
 	int newPriority = -1;
 	int newEvaIndex = VoxClass::EVAIndex;
+	BuildingTypeExt* pWinningTypeExt = nullptr;
 
 	for (const auto pBuilding : pHouse->Buildings)
 	{
+		if (!pBuilding || !pBuilding->Type || pBuilding->CurrentMission == Mission::Selling)
+			continue;
+
 		const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
 
 		// Special case that must be avoided here because can be the current EVA changer
-		if (!pBuildingTypeExt->NewEvaVoice_Index.isset() || pBuilding->CurrentMission == Mission::Selling)
+		if (pBuildingTypeExt->NewEvaVoice_Tag < 0)
 			continue;
 
 		// The first highest priority takes precedence over lower ones
 		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
 		{
 			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
-			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Index;
+			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Tag;
+			pWinningTypeExt = pBuildingTypeExt;
 		}
 	}
 
 	if (pThis->CurrentMission != Mission::Selling && pTypeExt->NewEvaVoice_Priority > newPriority)
 	{
 		newPriority = pTypeExt->NewEvaVoice_Priority;
-		newEvaIndex = pTypeExt->NewEvaVoice_Index;
+		newEvaIndex = pTypeExt->NewEvaVoice_Tag;
+		pWinningTypeExt = pTypeExt;
 	}
 
-	if (newPriority > 0 && VoxClass::EVAIndex != newEvaIndex)
+	if (newPriority >= 0 && VoxClass::EVAIndex != newEvaIndex)
 	{
 		VoxClass::EVAIndex = newEvaIndex;
 
 		// Greeting of the new EVA voice
-		int idxPlay = pTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+		if (pWinningTypeExt)
+		{
+			int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
 
-		if (idxPlay != -1)
-			VoxClass::PlayIndex(idxPlay);
+			if (idxPlay != -1)
+				VoxClass::PlayIndex(idxPlay);
+		}
 	}
 	else if (newPriority < 0)
 	{
-		// Restore the original EVA voice of the owner's side
-		const auto pSide = SideClass::Array.GetItem(pHouse->SideIndex);
-		const auto pSideExt = SideExt::Fetch(pSide);
-		newEvaIndex = 0; // By default is set the "Allies" EVA voice
+		// Hierarchical Fallback:
+		// 1. HouseType (Country) EVA.Tag
+		// 2. Side EVA.Tag
+		// 3. Vanilla SideIndex (0: Allied, 1: Russian, 2: Yuri)
+		int fallbackIndex = -1;
 
-		if (pSideExt->EVA_Tag.isset())
+		if (const auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type))
 		{
-			const auto evaTag = pSideExt->EVA_Tag.Get();
+			if (pHouseTypeExt->EVATag >= 0)
+				fallbackIndex = pHouseTypeExt->EVATag;
+		}
 
-			for (size_t i = 0; i < RulesExt::Global()->EVAIndexList.size(); i++)
+		if (fallbackIndex < 0)
+		{
+			if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
 			{
-				const auto item = RulesExt::Global()->EVAIndexList[i].c_str();
-
-				if (_strcmpi(item, evaTag) == 0)
+				if (const auto pSideExt = SideExt::Fetch(pSide))
 				{
-					newEvaIndex = i;
-					break;
+					if (pSideExt->EVATag >= 0)
+						fallbackIndex = pSideExt->EVATag;
 				}
 			}
 		}
-		else
+
+		if (fallbackIndex < 0)
 		{
-			if (pHouse->SideIndex == 0)
-				newEvaIndex = 0; // Allied
 			if (pHouse->SideIndex == 1)
-				newEvaIndex = 1; // Russian
+				fallbackIndex = 1; // Russian
 			else if (pHouse->SideIndex == 2)
-				newEvaIndex = 2; // Yuri
+				fallbackIndex = 2; // Yuri
+			else
+				fallbackIndex = 0; // Allied / Default
 		}
 
-		VoxClass::EVAIndex = newEvaIndex;
+		VoxClass::EVAIndex = fallbackIndex;
 	}
 }
 
@@ -186,7 +200,7 @@ void SideExt::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_TopPCX)
 		.Process(this->SuperWeaponSidebar_CenterPCX)
 		.Process(this->SuperWeaponSidebar_BottomPCX)
-		.Process(this->EVA_Tag)
+		.Process(this->EVATag)
 		;
 }
 

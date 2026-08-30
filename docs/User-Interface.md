@@ -31,16 +31,23 @@ IngameScore.LoseTheme=  ; Soundtrack theme ID
 ### New EVA voice after deploying a building
 
 - You can now replace the current EVA voice when a specific building is placed/deployed.
-- If any buiding is undeployed/sold/destroyed EVA voice will be evaluated again looking all the `NewEVAVoice.Index`.
-- `NewEVAVoice.Index` is the index of the new EVA voice. Ares is hightly recomended because these indexes are reading the new section `[EVATypes]` at `evamd.ini` introduced by Ares. Look at Ares documentation regarding new EVA voices for more information.
-- In case of multiple buildings with different `NewEVAVoice.Index` EVA voices then `NewEVAVoice.Priority` establish a priority queue, being the highest value the selected one.
-- `NewEVAVoice.RecheckOnDeath` re-checks a new EVA voice after the destruction/undeployment of of of these buildings.
-- `NewEVAVoice.InitialMessage` plays an EVA message to the player when a different EVA has been selected.
+- If any building is undeployed/sold/destroyed, the EVA voice will be evaluated again across all active player buildings defining `NewEVAVoice.Tag` (or `NewEVAVoice.Index`).
+- `NewEVAVoice.Tag` specifies the EVA voice name (defined under `[EVATypes]` in `evamd.ini` via Ares, or vanilla voices `Allied`, `Russian`, `Yuri`). Numeric indices are also accepted.
+- In case of multiple buildings with different EVA voices, `NewEVAVoice.Priority` establishes a priority queue, where the building with the highest value is selected.
+- `NewEVAVoice.RecheckOnDeath` controls whether to re-evaluate the active EVA voice upon building destruction or sale.
+- `NewEVAVoice.InitialMessage` plays an EVA sound message to the player when a new EVA voice is activated.
+- When no buildings with `NewEVAVoice` remain, the EVA voice automatically falls back hierarchically:
+  1. `[HouseType] -> EVA.Tag` (Country-specific EVA voice)
+  2. `[Side] -> EVA.Tag` (Side-specific EVA voice)
+  3. Default vanilla voice according to side index (Allied, Russian, Yuri)
 
 In `rulesmd.ini`:
 ```ini
+[SOMESIDE]                        ; Side
+EVA.Tag=                          ; EVA type name from [EVATypes] or Allied/Russian/Yuri
+
 [SOMEBUILDING]                    ; BuildingType
-NewEVAVoice.Index=                ; integer
+NewEVAVoice.Tag=                  ; EVA type name from [EVATypes] or Allied/Russian/Yuri / integer index
 NewEVAVoice.Priority=1            ; integer
 NewEVAVoice.RecheckOnDeath=false  ; boolean
 NewEVAVoice.InitialMessage=       ; EVA entry

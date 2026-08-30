@@ -408,9 +408,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DistributeTargetingFrame.Read(exINI, GameStrings::General, "DistributeTargetingFrame");
 	this->DistributeTargetingFrame_AIOnly.Read(exINI, GameStrings::General, "DistributeTargetingFrame.AIOnly");
 
-	// Reading Ares section [EVATypes] at evamd.ini
-	LoadEvaVoices();
-
 	this->CanTargetAI_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTargetAI.IronCurtained");
 	this->CanTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "CanTarget.IronCurtained");
 	this->AutoTarget_IronCurtained.Read(exINI, GameStrings::CombatDamage, "AutoTarget.IronCurtained");
@@ -967,7 +964,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintColorForceShield)
 		.Process(this->TintColorBerserk)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
-		.Process(this->EVAIndexList)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->Parasite_AllowWaterExit)
 		.Process(this->InfantryAutoDeploy)
@@ -1161,49 +1157,6 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 
 	if (needCacheFlush)
 		Game::DestroyVoxelCaches();
-}
-
-void RulesExt::ExtData::LoadEvaVoices()
-{
-	CCFileClass pEvamdFile("evamd.ini");
-
-	if (pEvamdFile.Exists() && pEvamdFile.Open(FileAccessMode::Read))
-	{
-		CCINIClass iniEva;
-		iniEva.ReadCCFile(&pEvamdFile, true);
-		iniEva.CurrentSection = nullptr;
-		iniEva.CurrentSectionName = nullptr;
-		const auto pEvaSection = "EVATypes";
-
-		if (iniEva.GetSection(pEvaSection))
-		{
-			this->EVAIndexList.clear();
-
-			// Default EVA voices
-			this->EVAIndexList.emplace_back(GameStrings::Allied);
-			this->EVAIndexList.emplace_back(GameStrings::Russian);
-			this->EVAIndexList.emplace_back(GameStrings::Yuri);
-
-			// New EVA voices due to a new Ares section in evamd.ini
-			const auto count = (std::size_t)iniEva.GetKeyCount(pEvaSection);
-
-			for (std::size_t i = 0; i < count; i++)
-			{
-				const auto pEvaKey = iniEva.GetKeyName(pEvaSection, i);
-
-				if (iniEva.ReadString(pEvaSection, pEvaKey, "", Phobos::readBuffer) > 0)
-				{
-					std::string buffer = Phobos::readBuffer;
-					bool found = std::find(this->EVAIndexList.begin(), this->EVAIndexList.end(), buffer) != this->EVAIndexList.end();
-
-					if (!found)
-						this->EVAIndexList.emplace_back(buffer);
-				}
-			}
-		}
-	}
-
-	pEvamdFile.Close();
 }
 
 // =============================
