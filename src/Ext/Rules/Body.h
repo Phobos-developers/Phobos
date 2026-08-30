@@ -346,6 +346,7 @@ public:
 		Valueable<double> NewTeamsSelector_NavalCategoryPercentage;
 		Valueable<double> NewTeamsSelector_AirCategoryPercentage;
 		Valueable<double> NewTeamsSelector_InfantryCategoryPercentage;
+		Valueable<double> NewTeamsSelector_VIPWeight;
 
 		Valueable<AffectedHouse> BerzerkTargeting;
 		Valueable<bool> AllowBerzerkOnAllies;
@@ -772,6 +773,7 @@ public:
 			, NewTeamsSelector_NavalCategoryPercentage { 0.20 }
 			, NewTeamsSelector_AirCategoryPercentage { 0.20 }
 			, NewTeamsSelector_InfantryCategoryPercentage { 0.20 }
+			, NewTeamsSelector_VIPWeight { 5000.0 }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }

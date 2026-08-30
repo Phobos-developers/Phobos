@@ -307,7 +307,18 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 	bool onlyCheckImportantTriggers = false;
 
 	const auto pHouseExt = HouseExt::Fetch(pHouse);
-	double maxPriority = 5000.0;
+	double const vipWeight = pHouseTypeExt->NewTeamsSelector_VIPWeight.isset()
+		? pHouseTypeExt->NewTeamsSelector_VIPWeight.Get()
+		: RulesExt::Global()->NewTeamsSelector_VIPWeight;
+
+	auto const isTriggerVIP = [vipWeight](AITriggerTypeClass* pTrig) -> bool
+	{
+		if (vipWeight < 0.0)
+			return pTrig->Weight_Current >= pTrig->Weight_Maximum && pTrig->Weight_Maximum > 0.0;
+		if (vipWeight > 0.0)
+			return pTrig->Weight_Current >= vipWeight;
+		return false;
+	};
 
 	// Gather all the trigger candidates into one place for posterior fast calculations
 	for (int triggerIdx : pHouseExt->AITriggers_ValidList)
@@ -318,7 +329,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			continue;
 
 		// If VIP triggers were found, discard any non-VIP trigger immediately
-		if (onlyCheckImportantTriggers && pTrigger->Weight_Current < maxPriority)
+		if (onlyCheckImportantTriggers && !isTriggerVIP(pTrigger))
 			continue;
 
 		if (pTrigger->Team1->TechLevel > pHouse->TechLevel)
@@ -478,9 +489,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		if (!canProduce)
 			continue;
 
-		// Special case: triggers become very important if they reach the max priority (usually 5000, see maxPriority).
-		// They get stored in an elitist list and all previous triggers are discarded
-		if (pTrigger->Weight_Current >= maxPriority && !onlyCheckImportantTriggers)
+		// Special case: triggers become VIP if they meet the configured VIP weight threshold.
+		// They get stored in an elitist list and all previous non-VIP triggers are discarded.
+		if (isTriggerVIP(pTrigger) && !onlyCheckImportantTriggers)
 		{
 			validCandidates.clear();
 			onlyCheckImportantTriggers = true;
@@ -568,11 +579,18 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		return SkipCode;
 	}
 
-	if (selectedTrigger->Weight_Current >= maxPriority
-		&& selectedTrigger->Weight_Minimum <= (maxPriority - 1))
+	if (isTriggerVIP(selectedTrigger))
 	{
-		// Next time this trigger will be out of the elitist triggers list
-		selectedTrigger->Weight_Current = maxPriority - 1;
+		if (vipWeight < 0.0)
+		{
+			if (selectedTrigger->Weight_Minimum < selectedTrigger->Weight_Current)
+				selectedTrigger->Weight_Current -= 1.0;
+		}
+		else if (vipWeight > 0.0)
+		{
+			if (selectedTrigger->Weight_Minimum <= (vipWeight - 1.0))
+				selectedTrigger->Weight_Current = vipWeight - 1.0;
+		}
 	}
 
 	// We have a winner trigger here

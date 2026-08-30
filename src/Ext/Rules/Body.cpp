@@ -677,6 +677,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NewTeamsSelector_AirCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.AirCategoryPercentage");
 	this->NewTeamsSelector_NavalCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.NavalCategoryPercentage");
 	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.InfantryCategoryPercentage");
+	this->NewTeamsSelector_VIPWeight.Read(exINI, "AI", "NewTeamsSelector.VIPWeight");
 
 	// Section Generic Prerequisites
 	FillDefaultPrerequisites();
@@ -1049,6 +1050,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NewTeamsSelector_AirCategoryPercentage)
 		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
 		.Process(this->NewTeamsSelector_InfantryCategoryPercentage)
+		.Process(this->NewTeamsSelector_VIPWeight)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)

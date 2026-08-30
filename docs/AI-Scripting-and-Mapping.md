@@ -169,14 +169,17 @@ ShowBriefing=true  ; boolean
 ## New AI Teams Selector
 
 - New AI system for selecting valid triggers in multiplayer randomly. Unlike the original method this one checks prerequisites and take care of other details.
-- It can split the valid triggers into 4 categories: ground, air, naval & mixed categories. If set, AI picks a random trigger in a random category.
-- Categories can have different chance probabilities. It can be set globally or customized per house. by default each category has a 25% chance to be selected.
+- It can split the valid triggers into 5 categories: ground vehicles, infantry, air, naval & mixed categories. If set, AI picks a random trigger in a random category.
+- Categories can have different chance probabilities. It can be set globally or customized per house. By default each category has a 20% chance to be selected.
 - `NewTeamsSelector.MergeUnclassifiedCategoryWith` can be used for merging the mixed category (units are from different categories) into one of the main categories.
 - In case of picking a category without valid triggers exist a fallback mode that allow picking a trigger from all valid triggers like if categories were disabled.
-- if `Autocreate=yes` AI will care about all units prerequisites so if the house's tech tree is incomplete for the trigger it gets discarded. It understand Ares tags like  `Prerequisite.RequiredTheaters`, `Prerequisite.Negative`, `Prerequisite.Lists` & `Generic prerequisites` section.
-- If it finds a trigger with 5000 current probability weight then discard valid triggers all and start searching all valid triggers with weight 5000. AI will pick 1 randomly and decrease by 1 the current weight of the selected trigger (so if nothing happens in the next teams selection loop it won't appear in this special list). Under this scenario categories are disabled.
+- If `Autocreate=yes` AI will care about all units prerequisites so if the house's tech tree is incomplete for the trigger it gets discarded. It understands Ares tags like `Prerequisite.RequiredTheaters`, `Prerequisite.Negative`, `Prerequisite.Lists` & `Generic prerequisites` section.
+- `NewTeamsSelector.VIPWeight` controls the VIP trigger threshold. If a trigger meets this threshold, AI discards non-VIP candidates and picks exclusively from VIP triggers with equal chance (categories are bypassed in VIP mode).
+  - Defaults to `5000.0` (vanilla behavior).
+  - Setting `NewTeamsSelector.VIPWeight=-1` enables dynamic VIP mode where each trigger becomes VIP when its `Weight_Current >= Weight_Maximum`.
+  - Setting `NewTeamsSelector.VIPWeight=0` disables VIP mode completely.
 - Units can override the category using `ConsideredVehicle` and `ConsideredNaval` boolean tags.
-- AI is be able to use unlocked units in captured Secret Labs.
+- AI is able to use unlocked units in captured Secret Labs.
 
 In `rulesmd.ini`:
 ```ini
@@ -184,18 +187,22 @@ In `rulesmd.ini`:
 NewTeamsSelector=false                               ; boolean
 NewTeamsSelector.SplitTriggersByCategory=true        ; boolean
 NewTeamsSelector.EnableFallback=false                ; boolean
-NewTeamsSelector.GroundCategoryPercentage=0.25       ; floating point value, percents or absolute
-NewTeamsSelector.NavalCategoryPercentage=0.25        ; floating point value, percents or absolute
-NewTeamsSelector.AirCategoryPercentage=0.25          ; floating point value, percents or absolute
-NewTeamsSelector.UnclassifiedCategoryPercentage=0.25 ; floating point value, percents or absolute
-NewTeamsSelector.MergeUnclassifiedCategoryWith=-1    ; Integer - Ground: 1, Air: 2, Naval: 3
+NewTeamsSelector.GroundCategoryPercentage=0.20       ; floating point value, percents or absolute
+NewTeamsSelector.InfantryCategoryPercentage=0.20     ; floating point value, percents or absolute
+NewTeamsSelector.NavalCategoryPercentage=0.20        ; floating point value, percents or absolute
+NewTeamsSelector.AirCategoryPercentage=0.20          ; floating point value, percents or absolute
+NewTeamsSelector.UnclassifiedCategoryPercentage=0.20 ; floating point value, percents or absolute
+NewTeamsSelector.MergeUnclassifiedCategoryWith=-1    ; Integer - Ground: 1, Air: 2, Naval: 3, Infantry: 4
+NewTeamsSelector.VIPWeight=5000.0                    ; floating point value, -1 for dynamic max weight, 0 to disable
 
 [SOMEHOUSE]                                       ; HouseType
-NewTeamsSelector.MergeUnclassifiedCategoryWith=   ; boolean
+NewTeamsSelector.MergeUnclassifiedCategoryWith=   ; Integer - Ground: 1, Air: 2, Naval: 3, Infantry: 4
 NewTeamsSelector.UnclassifiedCategoryPercentage=  ; floating point value, percents or absolute
 NewTeamsSelector.GroundCategoryPercentage=        ; floating point value, percents or absolute
-NewTeamsSelector.AirCategoryPercentage            ; floating point value, percents or absolute
-NewTeamsSelector.NavalCategoryPercentage          ; floating point value, percents or absolute
+NewTeamsSelector.InfantryCategoryPercentage=      ; floating point value, percents or absolute
+NewTeamsSelector.AirCategoryPercentage=           ; floating point value, percents or absolute
+NewTeamsSelector.NavalCategoryPercentage=         ; floating point value, percents or absolute
+NewTeamsSelector.VIPWeight=                       ; floating point value, -1 for dynamic max weight, 0 to disable
 
 [SOMETECHNO]        ; TechnoType
 ConsideredNaval=    ; boolean

@@ -25,6 +25,7 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->NewTeamsSelector_AirCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.AirCategoryPercentage");
 	this->NewTeamsSelector_NavalCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.NavalCategoryPercentage");
 	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.InfantryCategoryPercentage");
+	this->NewTeamsSelector_VIPWeight.Read(exINI, pSection, "NewTeamsSelector.VIPWeight");
 }
 
 template <typename T>
@@ -38,6 +39,7 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->NewTeamsSelector_AirCategoryPercentage)
 		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
 		.Process(this->NewTeamsSelector_InfantryCategoryPercentage)
+		.Process(this->NewTeamsSelector_VIPWeight)
 		;
 }
 
