@@ -3642,3 +3642,14 @@ DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
 	R->EDI(tint.Blue);
 	return ContinueIn;
 }
+
+DEFINE_HOOK(0x4DA90E, FootClass_AI_WalkRateZeroProtect, 0x6)
+{
+	GET(TechnoTypeClass*, pType, ECX);
+
+	if (pType->WalkRate != 0)
+		return 0;
+
+	R->EDX(1);
+	return 0x4DA914;
+}
