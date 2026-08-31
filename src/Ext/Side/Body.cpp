@@ -86,16 +86,22 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 
 	for (const auto pBuilding : pHouse->Buildings)
 	{
-		if (!pBuilding || !pBuilding->Type || pBuilding->CurrentMission == Mission::Selling)
+		if (!pBuilding || !pBuilding->Type)
+			continue;
+
+		// If this is pThis and pThis is dying, being sold, or in limbo, skip it
+		if (pBuilding == pThis && (!pThis->IsAlive || pThis->Health <= 0 || pThis->InLimbo || pThis->CurrentMission == Mission::Selling))
+			continue;
+
+		if (!pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo || pBuilding->CurrentMission == Mission::Selling)
 			continue;
 
 		const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
 
-		// Special case that must be avoided here because can be the current EVA changer
 		if (pBuildingTypeExt->NewEvaVoice_Tag < 0)
 			continue;
 
-		// The first highest priority takes precedence over lower ones
+		// The highest priority takes precedence over lower ones
 		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
 		{
 			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
@@ -104,27 +110,23 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 		}
 	}
 
-	if (pThis->CurrentMission != Mission::Selling && pTypeExt->NewEvaVoice_Priority > newPriority)
+	if (newPriority >= 0)
 	{
-		newPriority = pTypeExt->NewEvaVoice_Priority;
-		newEvaIndex = pTypeExt->NewEvaVoice_Tag;
-		pWinningTypeExt = pTypeExt;
-	}
-
-	if (newPriority >= 0 && VoxClass::EVAIndex != newEvaIndex)
-	{
-		VoxClass::EVAIndex = newEvaIndex;
-
-		// Greeting of the new EVA voice
-		if (pWinningTypeExt)
+		if (VoxClass::EVAIndex != newEvaIndex)
 		{
-			int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+			VoxClass::EVAIndex = newEvaIndex;
 
-			if (idxPlay != -1)
-				VoxClass::PlayIndex(idxPlay);
+			// Greeting of the new EVA voice
+			if (pWinningTypeExt)
+			{
+				int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+
+				if (idxPlay != -1)
+					VoxClass::PlayIndex(idxPlay);
+			}
 		}
 	}
-	else if (newPriority < 0)
+	else
 	{
 		// Hierarchical Fallback:
 		// 1. HouseType (Country) EVA.Tag
