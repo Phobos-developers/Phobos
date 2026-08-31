@@ -5,7 +5,6 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Side/Body.h>
-#include <Utilities/Debug.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <unordered_set>
@@ -170,11 +169,7 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 		}
 
 		if (pBuildingExt->GetTypeExtData()->NewEvaVoice_Tag >= 0)
-		{
-			Debug::Log("[EVA Voice SW] LimboDeliver creating '%s' with NewEVAVoice.Tag=%d\n",
-				pType->ID, pBuildingExt->GetTypeExtData()->NewEvaVoice_Tag.Get());
 			SideExt::UpdateMainEvaVoice(pBuilding);
-		}
 
 	}
 }
@@ -270,10 +265,7 @@ void SWTypeExt::ApplyLimboKill(HouseClass* pHouse)
 
 		auto const pBldTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 		if (pBldTypeExt->NewEvaVoice_Tag >= 0 && pBldTypeExt->NewEvaVoice_RecheckOnDeath)
-		{
-			Debug::Log("[EVA Voice SW] LimboKill destroying '%s' (RecheckOnDeath=true)\n", pBuildingType->ID);
 			SideExt::UpdateMainEvaVoice(pBuilding);
-		}
 
 		pBuilding->UnInit();
 	}
