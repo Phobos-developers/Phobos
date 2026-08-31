@@ -5,6 +5,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Utilities/Debug.h>
 
 SideExt::ExtContainer SideExt::ExtMap;
 
@@ -72,6 +73,12 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
+	Debug::Log("[EVA Voice] UpdateMainEvaVoice called for '%s' (Tag: %d, Priority: %d, Owner: '%s', Mission: %d, Alive: %d, Health: %d, Limbo: %d, IsPlayer: %d)\n",
+		pThis->Type->ID, pTypeExt->NewEvaVoice_Tag.Get(), pTypeExt->NewEvaVoice_Priority.Get(),
+		pThis->Owner && pThis->Owner->Type ? pThis->Owner->Type->ID : "Unknown",
+		(int)pThis->CurrentMission, (int)pThis->IsAlive, pThis->Health, (int)pThis->InLimbo,
+		pThis->Owner ? (int)pThis->Owner->IsControlledByCurrentPlayer() : 0);
+
 	if (pTypeExt->NewEvaVoice_Tag < 0)
 		return;
 
@@ -84,13 +91,20 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 	int newEvaIndex = VoxClass::EVAIndex;
 	BuildingTypeExt* pWinningTypeExt = nullptr;
 
+	// If pThis is active (alive, not in limbo, not selling), consider it as candidate
+	const bool pThisIsActive = pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo && pThis->CurrentMission != Mission::Selling;
+	if (pThisIsActive && pTypeExt->NewEvaVoice_Tag >= 0)
+	{
+		newPriority = pTypeExt->NewEvaVoice_Priority;
+		newEvaIndex = pTypeExt->NewEvaVoice_Tag;
+		pWinningTypeExt = pTypeExt;
+		Debug::Log("[EVA Voice] pThis '%s' is active candidate (Tag: %d, Priority: %d)\n",
+			pThis->Type->ID, newEvaIndex, newPriority);
+	}
+
 	for (const auto pBuilding : pHouse->Buildings)
 	{
-		if (!pBuilding || !pBuilding->Type)
-			continue;
-
-		// If this is pThis and pThis is dying, being sold, or in limbo, skip it
-		if (pBuilding == pThis && (!pThis->IsAlive || pThis->Health <= 0 || pThis->InLimbo || pThis->CurrentMission == Mission::Selling))
+		if (!pBuilding || !pBuilding->Type || pBuilding == pThis)
 			continue;
 
 		if (!pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo || pBuilding->CurrentMission == Mission::Selling)
@@ -100,6 +114,9 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 
 		if (pBuildingTypeExt->NewEvaVoice_Tag < 0)
 			continue;
+
+		Debug::Log("[EVA Voice] Candidate building '%s' (Tag: %d, Priority: %d)\n",
+			pBuilding->Type->ID, pBuildingTypeExt->NewEvaVoice_Tag.Get(), pBuildingTypeExt->NewEvaVoice_Priority.Get());
 
 		// The highest priority takes precedence over lower ones
 		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
@@ -112,6 +129,9 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 
 	if (newPriority >= 0)
 	{
+		Debug::Log("[EVA Voice] Winner building determined: Tag=%d, Priority=%d (Previous VoxClass::EVAIndex=%d)\n",
+			newEvaIndex, newPriority, VoxClass::EVAIndex);
+
 		if (VoxClass::EVAIndex != newEvaIndex)
 		{
 			VoxClass::EVAIndex = newEvaIndex;
@@ -122,7 +142,10 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 				int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
 
 				if (idxPlay != -1)
+				{
+					Debug::Log("[EVA Voice] Playing InitialMessage Vox index %d\n", idxPlay);
 					VoxClass::PlayIndex(idxPlay);
+				}
 			}
 		}
 	}
@@ -137,7 +160,10 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 		if (const auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type))
 		{
 			if (pHouseTypeExt->EVATag >= 0)
+			{
 				fallbackIndex = pHouseTypeExt->EVATag;
+				Debug::Log("[EVA Voice] Fallback Level 1 (Country '%s'): Tag=%d\n", pHouse->Type->ID, fallbackIndex);
+			}
 		}
 
 		if (fallbackIndex < 0)
@@ -147,7 +173,10 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 				if (const auto pSideExt = SideExt::Fetch(pSide))
 				{
 					if (pSideExt->EVATag >= 0)
+					{
 						fallbackIndex = pSideExt->EVATag;
+						Debug::Log("[EVA Voice] Fallback Level 2 (Side '%s'): Tag=%d\n", pSide->Name, fallbackIndex);
+					}
 				}
 			}
 		}
@@ -160,8 +189,11 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 				fallbackIndex = 2; // Yuri
 			else
 				fallbackIndex = 0; // Allied / Default
+
+			Debug::Log("[EVA Voice] Fallback Level 3 (Vanilla SideIndex %d): Index=%d\n", pHouse->SideIndex, fallbackIndex);
 		}
 
+		Debug::Log("[EVA Voice] Setting VoxClass::EVAIndex to fallback %d (Previous: %d)\n", fallbackIndex, VoxClass::EVAIndex);
 		VoxClass::EVAIndex = fallbackIndex;
 	}
 }

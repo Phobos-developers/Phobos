@@ -5,6 +5,8 @@
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
 
+#include <Utilities/Debug.h>
+
 class EVAType : public Valueable<int>
 {
 public:
@@ -35,6 +37,9 @@ public:
 				buffer = 1;
 			else if (!strcmp(Phobos::readBuffer, "Yuri"))
 				buffer = 2;
+
+			Debug::Log("[EVAType::Read] [%s] %s='%s' -> Ares=%d, ResolvedIndex=%d\n",
+				pSection, pKey, Phobos::readBuffer, (int)AresHelper::CanUseAres, buffer);
 		}
 
 		if (buffer >= 0 || INIClass::IsBlank(Phobos::readBuffer))

@@ -9,6 +9,7 @@
 #include <Ext/Side/Body.h>
 #include <TacticalClass.h>
 #include <PlanningTokenClass.h>
+#include <Utilities/Debug.h>
 
 #pragma region Update
 
@@ -323,7 +324,10 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 	GET(BuildingClass* const, pThis, ESI);
 
 	if (BuildingTypeExt::Fetch(pThis->Type)->NewEvaVoice_Tag >= 0)
+	{
+		Debug::Log("[EVA Voice Hook] BuildingClass_Unlimbo for '%s'\n", pThis->Type->ID);
 		SideExt::UpdateMainEvaVoice(pThis);
+	}
 
 	if (SessionClass::IsCampaign())
 	{
@@ -549,7 +553,10 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->NewEvaVoice_Tag >= 0 && pTypeExt->NewEvaVoice_RecheckOnDeath)
+	{
+		Debug::Log("[EVA Voice Hook] BuildingClass_Limbo for '%s' (RecheckOnDeath=true)\n", pThis->Type->ID);
 		SideExt::UpdateMainEvaVoice(pThis);
+	}
 
 	if (pTypeExt->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
