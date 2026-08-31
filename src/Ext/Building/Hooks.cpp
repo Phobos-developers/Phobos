@@ -414,6 +414,9 @@ DEFINE_HOOK(0x448A78, BuildingClass_SetOwningHouse_RemoveOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pOwner);
 
+	if (pTypeExt->NewEvaVoice_Tag >= 0 && pTypeExt->NewEvaVoice_RecheckOnDeath)
+		SideExt::UpdateMainEvaVoice(pThis, pOwner);
+
 	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		auto& vec = pOwnerExt->PowerPlantEnhancers;
@@ -429,6 +432,9 @@ DEFINE_HOOK(0x449197, BuildingClass_SetOwningHouse_AddOwned, 0x6)
 	GET(HouseClass*, pNewOwner, EBP);
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pNewOwnerExt = HouseExt::Fetch(pNewOwner);
+
+	if (pTypeExt->NewEvaVoice_Tag >= 0)
+		SideExt::UpdateMainEvaVoice(pThis, pNewOwner);
 
 	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pNewOwnerExt->PowerPlantEnhancers.push_back(pThis);

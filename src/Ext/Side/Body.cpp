@@ -65,7 +65,7 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 }
 
-void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
+void SideExt::UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse)
 {
 	if (!pThis || !pThis->Type)
 		return;
@@ -75,7 +75,8 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 	if (pTypeExt->NewEvaVoice_Tag < 0)
 		return;
 
-	const auto pHouse = pThis->Owner;
+	if (!pHouse)
+		pHouse = pThis->Owner;
 
 	if (!pHouse || !pHouse->IsControlledByCurrentPlayer())
 		return;
@@ -84,8 +85,8 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 	int newEvaIndex = VoxClass::EVAIndex;
 	BuildingTypeExt* pWinningTypeExt = nullptr;
 
-	// If pThis is active (alive, not in limbo, not selling), consider it as candidate
-	const bool pThisIsActive = pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo && pThis->CurrentMission != Mission::Selling;
+	// If pThis belongs to pHouse and is active (alive, not in limbo, not selling), consider it as candidate
+	const bool pThisIsActive = pThis->Owner == pHouse && pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo && pThis->CurrentMission != Mission::Selling;
 	if (pThisIsActive && pTypeExt->NewEvaVoice_Tag >= 0)
 	{
 		newPriority = pTypeExt->NewEvaVoice_Priority;

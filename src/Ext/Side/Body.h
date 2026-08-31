@@ -122,7 +122,7 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static void UpdateMainEvaVoice(BuildingClass* pThis);
+	static void UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse = nullptr);
 	static int GetOwnerEVAIndex(HouseClass* pHouse);
 };
 
