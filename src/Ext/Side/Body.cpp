@@ -4,6 +4,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 
 SideExt::ExtContainer SideExt::ExtMap;
@@ -81,8 +82,11 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse)
 	if (!pHouse || !pHouse->IsControlledByCurrentPlayer())
 		return;
 
+	const auto pHouseExt = HouseExt::Fetch(pHouse);
+
 	int newPriority = -1;
 	int newEvaIndex = VoxClass::EVAIndex;
+	BuildingTypeClass* pWinningBuildingType = nullptr;
 	BuildingTypeExt* pWinningTypeExt = nullptr;
 
 	// If pThis belongs to pHouse and is active (alive, not in limbo, not selling), consider it as candidate
@@ -91,6 +95,7 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse)
 	{
 		newPriority = pTypeExt->NewEvaVoice_Priority;
 		newEvaIndex = pTypeExt->NewEvaVoice_Tag;
+		pWinningBuildingType = pThis->Type;
 		pWinningTypeExt = pTypeExt;
 	}
 
@@ -112,29 +117,49 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse)
 		{
 			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
 			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Tag;
+			pWinningBuildingType = pBuilding->Type;
 			pWinningTypeExt = pBuildingTypeExt;
 		}
 	}
 
-	if (newPriority >= 0)
+	if (newPriority < 0)
 	{
-		if (VoxClass::EVAIndex != newEvaIndex)
+		newEvaIndex = SideExt::GetOwnerEVAIndex(pHouse);
+		pWinningBuildingType = nullptr;
+		pWinningTypeExt = nullptr;
+	}
+
+	if (VoxClass::EVAIndex != newEvaIndex)
+	{
+		// 1. If outgoing custom voice building defined an EndingMessage, play it with the outgoing voice
+		if (pHouseExt && pHouseExt->ActiveEvaVoiceBuildingType)
 		{
-			VoxClass::EVAIndex = newEvaIndex;
-
-			// Greeting of the new EVA voice
-			if (pWinningTypeExt)
+			if (const auto pOldTypeExt = BuildingTypeExt::Fetch(pHouseExt->ActiveEvaVoiceBuildingType))
 			{
-				int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
-
-				if (idxPlay != -1)
-					VoxClass::PlayIndex(idxPlay);
+				int idxEnding = pOldTypeExt->NewEvaVoice_EndingMessage.Get(-1);
+				if (idxEnding != -1)
+					VoxClass::PlayIndex(idxEnding);
 			}
 		}
+
+		// 2. Switch EVA index and update active building type
+		VoxClass::EVAIndex = newEvaIndex;
+
+		if (pHouseExt)
+			pHouseExt->ActiveEvaVoiceBuildingType = pWinningBuildingType;
+
+		// 3. If incoming custom voice building defines an InitialMessage, play greeting with the new voice
+		if (pWinningTypeExt)
+		{
+			int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+
+			if (idxPlay != -1)
+				VoxClass::PlayIndex(idxPlay);
+		}
 	}
-	else
+	else if (pHouseExt)
 	{
-		VoxClass::EVAIndex = SideExt::GetOwnerEVAIndex(pHouse);
+		pHouseExt->ActiveEvaVoiceBuildingType = pWinningBuildingType;
 	}
 }
 

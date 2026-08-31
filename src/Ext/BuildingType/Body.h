@@ -159,6 +159,7 @@ public:
 	Valueable<int> NewEvaVoice_Priority;
 	Valueable<bool> NewEvaVoice_RecheckOnDeath;
 	NullableIdx<VoxClass> NewEvaVoice_InitialMessage;
+	NullableIdx<VoxClass> NewEvaVoice_EndingMessage;
 
 	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
 		, PowersUp_Owner { AffectedHouse::Owner }
@@ -276,6 +277,7 @@ public:
 		, NewEvaVoice_Priority { 0 }
 		, NewEvaVoice_RecheckOnDeath { false }
 		, NewEvaVoice_InitialMessage { }
+		, NewEvaVoice_EndingMessage { }
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)
