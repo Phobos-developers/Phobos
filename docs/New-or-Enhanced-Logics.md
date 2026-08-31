@@ -3719,8 +3719,6 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
-<<<<<<< HEAD
-=======
 
 ### Manually detonate Ivan bomb
 
