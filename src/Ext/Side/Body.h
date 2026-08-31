@@ -123,5 +123,6 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void UpdateMainEvaVoice(BuildingClass* pThis);
+	static int GetOwnerEVAIndex(HouseClass* pHouse);
 };
 

@@ -133,42 +133,39 @@ void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
 	}
 	else
 	{
-		// Hierarchical Fallback:
-		// 1. HouseType (Country) EVA.Tag
-		// 2. Side EVA.Tag
-		// 3. Vanilla SideIndex (0: Allied, 1: Russian, 2: Yuri)
-		int fallbackIndex = -1;
-
-		if (const auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type))
-		{
-			if (pHouseTypeExt->EVATag >= 0)
-				fallbackIndex = pHouseTypeExt->EVATag;
-		}
-
-		if (fallbackIndex < 0)
-		{
-			if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
-			{
-				if (const auto pSideExt = SideExt::Fetch(pSide))
-				{
-					if (pSideExt->EVATag >= 0)
-						fallbackIndex = pSideExt->EVATag;
-				}
-			}
-		}
-
-		if (fallbackIndex < 0)
-		{
-			if (pHouse->SideIndex == 1)
-				fallbackIndex = 1; // Russian
-			else if (pHouse->SideIndex == 2)
-				fallbackIndex = 2; // Yuri
-			else
-				fallbackIndex = 0; // Allied / Default
-		}
-
-		VoxClass::EVAIndex = fallbackIndex;
+		VoxClass::EVAIndex = SideExt::GetOwnerEVAIndex(pHouse);
 	}
+}
+
+int SideExt::GetOwnerEVAIndex(HouseClass* pHouse)
+{
+	if (!pHouse || !pHouse->Type)
+		return 0;
+
+	// 1. HouseType (Country) EVA.Tag
+	if (const auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type))
+	{
+		if (pHouseTypeExt->EVATag >= 0)
+			return pHouseTypeExt->EVATag;
+	}
+
+	// 2. Side EVA.Tag
+	if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
+	{
+		if (const auto pSideExt = SideExt::Fetch(pSide))
+		{
+			if (pSideExt->EVATag >= 0)
+				return pSideExt->EVATag;
+		}
+	}
+
+	// 3. Vanilla SideIndex (0: Allied, 1: Russian, 2: Yuri)
+	if (pHouse->SideIndex == 1)
+		return 1; // Russian
+	if (pHouse->SideIndex == 2)
+		return 2; // Yuri
+
+	return 0; // Allied / Default
 }
 
 // =============================
