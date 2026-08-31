@@ -3759,4 +3759,3 @@ ActiveAnimFour.MoneyAmount=4000  ; integar
 ```{note}
 All four configuration entries default to `-1`. The feature will only be enabled when all entries have been configured.
 ```
->>>>>>> 45acb034 (initial)
