@@ -24,7 +24,6 @@ public:
 		return static_cast<WeaponTypeClass*>(this->GetAttachedObject());
 	}
 
-
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
 	Nullable<bool> ProjectileRange_ApplyModifiers;
@@ -112,6 +111,13 @@ public:
 	Nullable<bool> AttackFriendlies;
 	Nullable<bool> AttackCursorOnFriendlies;
 	Nullable<bool> AttackNoThreatBuildings;
+
+	Valueable<double> RandomTarget;
+	Valueable<bool> RandomTarget_Spawners_MultipleTargets;
+	Valueable<bool> RandomTarget_Spawners_RememberTargets;
+	Valueable<double> RandomTarget_MissChance;
+	Valueable<double> RandomTarget_FriendlyFireChance;
+	ValueableVector<TechnoTypeClass*> OnlyTargetTechnos;
 
 	Nullable<bool> Anim_Update;
 
@@ -208,9 +214,16 @@ public:
 		, AttackFriendlies {}
 		, AttackCursorOnFriendlies {}
 		, AttackNoThreatBuildings {}
-		, CylinderRangefinding {}
+		, RandomTarget { 0.0 }
+		, RandomTarget_Spawners_MultipleTargets { false }
+		, RandomTarget_Spawners_RememberTargets { true }
+		, RandomTarget_MissChance { 0.0 }
+		, RandomTarget_FriendlyFireChance { 0.0 }
+		, OnlyTargetTechnos {}
 		, Anim_Update {}
 	{ }
+
+	bool CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const;
 
 	int GetBurstDelay(int burstIndex) const;
 	bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;

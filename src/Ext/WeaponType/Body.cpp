@@ -73,6 +73,22 @@ int WeaponTypeExt::GetBurstDelay(int burstIndex) const
 	return burstDelay;
 }
 
+bool WeaponTypeExt::CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const
+{
+	if (!pType)
+		return false;
+
+	if (this->OnlyTargetTechnos.size() > 0)
+	{
+		if (this->OnlyTargetTechnos.Contains(pType))
+			return true;
+		else
+			return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -197,6 +213,13 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
 	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
+	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
+	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
+	this->RandomTarget_Spawners_RememberTargets.Read(exINI, pSection, "RandomTarget.Spawners.RememberTargets");
+	this->RandomTarget_Spawners_RememberTargets.Read(exINI, pSection, "RandomTarget.Spawners.RememberTarget");
+	this->RandomTarget_MissChance.Read(exINI, pSection, "RandomTarget.MissChance");
+	this->RandomTarget_FriendlyFireChance.Read(exINI, pSection, "RandomTarget.FriendlyFireChance");
+	this->OnlyTargetTechnos.Read(exINI, pSection, "OnlyTargetTechnos");
 	this->ExtraRange_TargetMoving.Read(exINI, GameStrings::General, "ExtraRange.TargetMoving");
 	this->ExtraRange_FirerMoving.Read(exINI, GameStrings::General, "ExtraRange.FirerMoving");
 	this->ExtraRange_Prefiring.Read(exINI, GameStrings::General, "ExtraRange.Prefiring");
@@ -295,6 +318,12 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->Beam_Amplitude)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->LaserThickness)
+		.Process(this->RandomTarget)
+		//.Process(this->RandomTarget_DistributeBurst)
+		.Process(this->RandomTarget_Spawners_MultipleTargets)
+		.Process(this->RandomTarget_Spawners_RememberTargets)
+		.Process(this->RandomTarget_MissChance)
+		.Process(this->RandomTarget_FriendlyFireChance)
 		.Process(this->SkipWeaponPicking)
 		.Process(this->DelayedFire_Duration)
 		.Process(this->DelayedFire_SkipInTransport)

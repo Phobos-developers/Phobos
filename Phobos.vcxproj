@@ -173,7 +173,9 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Misc.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Pips.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.RandomTarget.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
+    <ClCompile Include="src\Ext\Techno\Body.RandomTarget.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TargetEvaluation.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Targeting.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
