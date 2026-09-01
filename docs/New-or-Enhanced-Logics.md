@@ -3736,6 +3736,6 @@ In `rulesmd.ini`:
 IvanBomb.Detonate=true                    ; boolean
 IvanBomb.Detonate.InvokerOnly=false       ; boolean
 IvanBomb.Detonate.PenetrateTransport=true ; boolean
-IvanBomb.Detonate.PenetrateBuilding=true  ; boolean
+IvanBomb.Detonate.PenetrateGarrison=true  ; boolean
 IvanBomb.Detonate.AffectsType=HTNK,E1     ; List of Registration Name, use empty list for all types
 ```
