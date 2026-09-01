@@ -1061,7 +1061,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		this->RecalculateStatMultipliers();
 
 	// Add new ones.
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true);
 }
 
 // Updates CumulativeAnimations AE's on techno.
