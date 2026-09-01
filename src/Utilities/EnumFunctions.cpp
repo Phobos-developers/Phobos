@@ -6,17 +6,23 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 {
 	if (flags == AffectedHouse::All)
 		return true;
-	if (ownerHouse == targetHouse)
-		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
-	if (ownerHouse->IsAlliedWith(targetHouse))
-		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
-	if ((flags & AffectedHouse::Enemies) != AffectedHouse::None)
-		return true;
+
+	// Civilian/Special/Neutral are matched by house identity rather than by
+	// alliance status, because their alliance bits are not stable: the Special
+	// house is mutually allied with all players in vanilla, while some spawners
+	// make it an enemy, and Neutral/Civilian are typically not allied at all.
 	if ((flags & AffectedHouse::Civilian) != AffectedHouse::None && targetHouse == HouseClass::FindCivilianSide())
 		return true;
 	if ((flags & AffectedHouse::Special) != AffectedHouse::None && targetHouse == HouseClass::FindSpecial())
 		return true;
 	if ((flags & AffectedHouse::Neutral) != AffectedHouse::None && targetHouse == HouseClass::FindNeutral())
+		return true;
+
+	if (ownerHouse == targetHouse)
+		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (ownerHouse->IsAlliedWith(targetHouse))
+		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
+	if ((flags & AffectedHouse::Enemies) != AffectedHouse::None)
 		return true;
 	return false;
 }

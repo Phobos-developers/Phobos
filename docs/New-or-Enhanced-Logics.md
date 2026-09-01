@@ -3705,7 +3705,7 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only) that the target's health must be above and/or below/equal to, respectively. If target has zero health left this check is bypassed.
-  - `civilian`, `special` and `neutral` can be used to specifically allow the corresponding houses to be targeted. Note that these houses are not allied with other houses, so they are also matched by `enemies` as before.
+  - `civilian`, `special` and `neutral` can be used to specifically allow the corresponding houses to be targeted by house identity, regardless of their alliance status. `civilian` and `neutral` houses are not allied with other houses, so they are also matched by `enemies` as before. The `special` house is mutually allied with all players in vanilla, so it is matched by `allies`; note that some older spawners made it an enemy, while newer (YRpp-based) spawners can toggle this behaviour in `spawn.ini`, defaulting to the vanilla allied behaviour.
 
 In `rulesmd.ini`:
 ```ini
