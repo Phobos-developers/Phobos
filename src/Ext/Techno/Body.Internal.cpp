@@ -154,7 +154,7 @@ void TechnoExt::InitializeAttachEffects()
 	auto const pThis = this->OwnerObject();
 	auto const pOwner = pThis->Owner;
 
-	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects);
+	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects, true);
 
 	switch (pType->WhatAmI())
 	{

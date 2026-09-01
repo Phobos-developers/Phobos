@@ -12,7 +12,7 @@ public:
 	AttachEffectClass();
 
 	AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay);
+		AbstractClass* pSource, bool selfOwned, int durationOverride, int delay, int initialDelay, int recreationDelay);
 
 	~AttachEffectClass();
 
@@ -52,7 +52,7 @@ public:
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
-	bool IsSelfOwned() const { return this->Source == this->Techno; }
+	bool IsSelfOwned() const { return this->SelfOwned; }
 	bool HasExpired() const { return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration; }
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
@@ -72,7 +72,7 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo);
+	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false);
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
@@ -83,7 +83,7 @@ private:
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
+		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool checkCumulative = true);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
 	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
@@ -113,6 +113,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
+	bool SelfOwned;
 	LaserTrailClass* LaserTrail;
 	Sequence LastSequenceCheck;
 
