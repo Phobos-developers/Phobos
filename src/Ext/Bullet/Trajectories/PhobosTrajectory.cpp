@@ -451,6 +451,22 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	return 0;
 }
 
+// The vanilla Ranged check would override the trajectory's detonation decision, so trajectories opt out via ShouldSkipRangedCheck().
+DEFINE_HOOK(0x467C1C, BulletClass_AI_RangedCheck_Trajectories, 0x6)
+{
+	enum { SkipToNoRanged = 0x467C26 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory && pExt->Trajectory->ShouldSkipRangedCheck())
+			return SkipToNoRanged;
+	}
+
+	return 0;
+}
+
 /* ROT > 0. We temporarily do not need to make changes to the Bridge interaction for this scenario, but we will leave it here for now, as it may be used later.
 DEFINE_HOOK(0x46703E, BulletClass_AI_SkipBridgeCheck1, 0x6)
 {
