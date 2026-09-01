@@ -1584,12 +1584,10 @@ DEFINE_HOOK(0x450DDC, BuildingClass_UpdateAnimation_DestroyAnim, 0x6)
 				R->EAX(Grade);
 				R->ECX(pBuildingExt->MoneyGrade);
 				pBuildingExt->MoneyGrade = Grade;
-				return 0;
 			}
 		}
 	}
 
-	__asm { mov ecx, [esi + 0x6F0] }
 	return 0;
 }
 
@@ -1610,17 +1608,10 @@ DEFINE_HOOK(0x450E3E, BuildingClass_UpdateAnimation_CalcMoneyGrade, 0x9)
 			{
 				int Grade = pBuildingExt->MoneyGrade;
 				R->EAX(Grade);
-				__asm { cmp eax, 3 }
-				return 0;
 			}
 		}
 	}
 
-	__asm 
-	{
-        cmp eax, 3           
-        mov [esi + 0x6F0], eax 
-    }
 	return 0;
 }
 
