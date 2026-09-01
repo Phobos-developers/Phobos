@@ -222,6 +222,12 @@ public:
 
 	Valueable<AffectedTarget> AirstrikeTargets;
 
+	Valueable<bool> Webby;
+	ValueableVector<AnimTypeClass*> Webby_Anims;
+	Valueable<int> Webby_Duration;
+	Valueable<int> Webby_DurationVariation;
+	Valueable<int> Webby_Cap;
+
 	Valueable<double> AffectsBelowPercent;
 	Valueable<double> AffectsAbovePercent;
 	Valueable<AffectedVeterancy> AffectsVeterancy;
@@ -493,6 +499,11 @@ public:
 		, ElectricAssaultLevel { 1 }
 
 		, AirstrikeTargets { AffectedTarget::Building }
+		, Webby { false }
+		, Webby_Anims {}
+		, Webby_Duration { 0 }
+		, Webby_DurationVariation { 0 }
+		, Webby_Cap { -1 }
 
 		, AffectsBelowPercent { 1.0 }
 		, AffectsAbovePercent { 0.0 }
@@ -615,6 +626,7 @@ private:
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
+	void ApplyWebby(TechnoClass* pTarget);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>

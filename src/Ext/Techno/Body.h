@@ -83,6 +83,11 @@ public:
 
 	bool ShouldBeDead;
 
+	CDTimerClass WebbyDurationTimer;
+	AnimClass* WebbyAnim;
+	AbstractClass* WebbyLastTarget;
+	Mission WebbyLastMission;
+
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
 
@@ -134,6 +139,10 @@ public:
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
 		, ShouldBeDead { false }
+		, WebbyDurationTimer {}
+		, WebbyAnim { nullptr }
+		, WebbyLastTarget { nullptr }
+		, WebbyLastMission { Mission::Sleep }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
@@ -182,7 +191,9 @@ public:
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
 	void UpdateLastTargetCrd();
+	void WebbyUpdate();
 	int GetSight();
+	bool IsWebbed() const;
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 

@@ -2,6 +2,10 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/TEvent/Body.h>
+#include <InfantryClass.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresFunctions.h>
@@ -235,6 +239,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
+
+	if (this->Webby)
+		this->ApplyWebby(pTarget);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -930,4 +937,86 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::ApplyWebby(TechnoClass* pTarget)
+{
+	auto const pInf = abstract_cast<InfantryClass*, true>(pTarget);
+	if (!pInf || this->Webby_Duration <= 0)
+		return;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pInf->Type);
+	if (pTypeExt->ImmuneToWeb.Get() || pTypeExt->Webby_Modifier <= 0.0)
+		return;
+
+	auto const pExt = TechnoExt::Fetch(pInf);
+
+	if (!pExt->WebbyAnim && (this->Webby_Anims.size() > 0 || pTypeExt->Webby_Anims.size() > 0))
+	{
+		bool hasCustomAnims = pTypeExt->Webby_Anims.size() > 0;
+		int max = hasCustomAnims ? pTypeExt->Webby_Anims.size() - 1 : this->Webby_Anims.size() - 1;
+		int selectedIndex = ScenarioClass::Instance->Random.RandomRanged(0, max);
+		auto const pAnimType = hasCustomAnims ? pTypeExt->Webby_Anims[selectedIndex] : this->Webby_Anims[selectedIndex];
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, pInf->Location, 0, 1, 0x600, 0, false);
+
+		if (pAnim)
+		{
+			pExt->WebbyAnim = pAnim;
+			pExt->WebbyAnim->SetOwnerObject(pInf);
+		}
+	}
+
+	int duration = this->Webby_Duration.Get();
+	int durationVariation = pTypeExt->Webby_DurationVariation.Get(this->Webby_DurationVariation.Get());
+	durationVariation = durationVariation < 0 ? 0 : durationVariation;
+	int minDuration = duration - durationVariation;
+	minDuration = minDuration <= 0 ? 0 : minDuration;
+	int maxDuration = duration + durationVariation;
+
+	duration = ScenarioClass::Instance->Random.RandomRanged(minDuration, maxDuration);
+
+	if (pTypeExt->Webby_Modifier != 1.0)
+		duration = static_cast<int>(duration * pTypeExt->Webby_Modifier);
+
+	int cap = this->Webby_Cap;
+	int webbyCountDown = pExt->WebbyDurationTimer.GetTimeLeft();
+
+	if (cap == 0)
+	{
+		// Makes this Web effect stackable, but uncapped
+		duration += webbyCountDown;
+	}
+	else if (cap > 0)
+	{
+		if (webbyCountDown > cap)
+		{
+			// If current duration effect is greater than the new attempt don't change the values
+			duration = webbyCountDown;
+		}
+		else
+		{
+			// Makes this Web effect stackable, but capped
+			duration += webbyCountDown;
+			duration = duration > cap ? cap : duration;
+		}
+	}
+	else
+	{
+		// Cap=-1 case: The target’s Web counter is set to this absolute number of frames specified by Web.Duration, unless the target’s Web counter is already greater than this
+		if (webbyCountDown > duration)
+			duration = webbyCountDown;
+	}
+
+	pExt->WebbyLastTarget = pInf->Target;
+	pExt->WebbyLastMission = pInf->CurrentMission;
+
+	pExt->WebbyDurationTimer.Start(duration);
+
+	if (pInf->Locomotor && pInf->Locomotor->Is_Moving())
+		pInf->Locomotor->Stop_Moving();
+
+	pInf->ParalysisTimer.Start(duration);
+
+	if (auto pTag = pInf->AttachedTag)
+		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderWebby, pInf, CellStruct::Empty);
 }

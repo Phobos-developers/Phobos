@@ -12,6 +12,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
+#include <Ext/TEvent/Body.h>
 #include <Misc/FlyingStrings.h>
 
 #pragma region GetTechnoType
@@ -1100,6 +1101,23 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x518FBC, InfantryClass_DrawIt_DontRenderSHP, 0x6)
+{
+	enum { SkipDrawCode = 0x5192B5 };
+
+	GET(InfantryClass*, pThis, EBP);
+
+	if (!pThis)
+		return 0;
+
+	auto pExt = TechnoExt::Fetch(pThis);
+
+	if (pExt->IsWebbed())
+		return SkipDrawCode;
+
+	return 0;
+}
 
 #pragma region SetTarget
 

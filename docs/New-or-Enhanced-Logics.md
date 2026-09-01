@@ -3371,6 +3371,43 @@ UnlimboDetonate.KeepSelected=true      ; boolean
 `UnlimboDetonate` cannot be used in conjunction with `Parasite`.
 ```
 
+### Web logic against infantry
+
+- Infantry will be temporally paralyzed by warheads with `Webby=true`.
+- `Webby.Duration` specifies the duration, in frames, of the warhead's web effect.
+- `Webby.DurationVariation` allows for random variance to the duration of the warhead's web effect.
+- When `Webby.Anims` contains more than 1 animation then the new animation will be picked randomly.
+- `Webby.Cap` works like in EMP logic developed by Ares.
+  -  `Webby.Cap=-1` case: The target’s web counter is set to this absolute number of frames specified by `Web.Duration`, unless the target’s web counter is already greater than this.
+  -  `Webby.Cap=0` case: Makes this web effect stackable, but uncapped.
+  -  `Webby.Cap >0` case: Makes this web effect stackable, but maximum value capped to `Webby.Cap` value.
+- Infantry can define a duration multiplier with `Webby.Modifier` to modify the duration of the web effect applied to them, as well as an optional `Webby.DurationVariation` to override the warhead's variation.
+- Infantry with `ImmuneToWeb=true` are not affected by `Webby=true` warheads.
+- `ForceWeapon.Webby` specify what weapon should use the attacker against the affected unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; Warhead
+Webby=false                ; boolean
+Webby.Anims=               ; list of animations
+Webby.Duration=0           ; integer, game frames
+Webby.DurationVariation=0  ; integer
+Webby.Cap=-1               ; integer
+
+[SOMEINFANTRY]             ; InfantryType
+ImmuneToWeb=false          ; boolean
+Webby.Anims=               ; list of animations
+Webby.Modifier=1.0         ; floating point value, duration multiplier
+Webby.DurationVariation=   ; integer, overrides the warhead variation if set
+
+[SOMETECHNO]               ; TechnoType
+ForceWeapon.Webby=-1       ; integer
+```
+
+```{warning}
+`Webby.Anims` animations must be played in infinite loop with `LoopCount=-1` in artmd.ini
+```
+
 ### Customize whether warhead can prevent crew escape from techno
 
 - Now you can customize on warheads whether to prevent survivors/passengers/occupant infantry from appearing when destroying a target.

@@ -1065,6 +1065,16 @@ ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
 ```
 
+### `607` A webby weapon hit the tagged infantry
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,607,0,0,...
+...
+```
+
 ## Teams
 
 ### Adjust recruitable status on team member liberate

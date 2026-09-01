@@ -96,6 +96,13 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 		{
 			forceWeaponIndex = this->ForceWeapon_UnderEMP;
 		}
+		else if (this->ForceWeapon_Webby >= 0)
+		{
+			const auto pTargetExt = TechnoExt::Fetch(pTargetTechno);
+
+			if (pTargetExt->IsWebbed())
+				forceWeaponIndex = this->ForceWeapon_Webby;
+		}
 	}
 
 	if (forceWeaponIndex == -1
@@ -921,6 +928,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
 	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
 	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Webby.Read(exINI, pSection, "ForceWeapon.Webby");
 	this->ForceWeapon_Buildings.Read(exINI, pSection, "ForceWeapon.Buildings");
 	this->ForceWeapon_Defenses.Read(exINI, pSection, "ForceWeapon.Defenses");
 	this->ForceWeapon_Infantry.Read(exINI, pSection, "ForceWeapon.Infantry");
@@ -936,6 +944,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ForceWeapon_Cloaked >= 0
 		|| this->ForceWeapon_Disguised >= 0
 		|| this->ForceWeapon_UnderEMP >= 0
+		|| this->ForceWeapon_Webby >= 0
 		|| !this->ForceWeapon_InRange.empty()
 		|| !this->ForceAAWeapon_InRange.empty()
 		|| this->ForceWeapon_Buildings >= 0
@@ -1007,6 +1016,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->EmptySpawnsPipFrame.Read(exINI, pSection, "EmptySpawnsPipFrame");
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
+
+	this->Webby_Anims.Read(exINI, pSection, "Webby.Anims");
+	this->ImmuneToWeb.Read(exINI, pSection, "ImmuneToWeb");
+	this->Webby_Modifier.Read(exINI, pSection, "Webby.Modifier");
+	this->Webby_DurationVariation.Read(exINI, pSection, "Webby.DurationVariation");
 
 	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
@@ -1586,6 +1600,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ForceAAWeapon_InRange)
 		.Process(this->ForceAAWeapon_InRange_Overrides)
 		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceWeapon_Webby)
 		.Process(this->ForceWeapon_Buildings)
 		.Process(this->ForceWeapon_Defenses)
 		.Process(this->ForceWeapon_Infantry)
@@ -1647,6 +1662,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
 
+		.Process(this->Webby_Anims)
+		.Process(this->ImmuneToWeb)
+		.Process(this->Webby_Modifier)
+		.Process(this->Webby_DurationVariation)
 		.Process(this->DroppodType)
 
 		.Process(this->TiberiumEaterType)

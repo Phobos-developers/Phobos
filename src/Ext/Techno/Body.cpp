@@ -1103,6 +1103,11 @@ int TechnoExt::GetSight()
 	return static_cast<int>(sight);
 }
 
+bool TechnoExt::IsWebbed() const
+{
+	return this->WebbyDurationTimer.HasTimeLeft();
+}
+
 bool TechnoExt::CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse)
 {
 	if (pThis->Berzerk)
@@ -1217,6 +1222,10 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
 		.Process(this->PreventCrewEscape)
+		.Process(this->WebbyDurationTimer)
+		.Process(this->WebbyAnim)
+		.Process(this->WebbyLastTarget)
+		.Process(this->WebbyLastMission)
 		;
 }
 

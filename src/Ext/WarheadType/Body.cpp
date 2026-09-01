@@ -399,6 +399,12 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
 
+	this->Webby.Read(exINI, pSection, "Webby");
+	this->Webby_Anims.Read(exINI, pSection, "Webby.Anims");
+	this->Webby_Duration.Read(exINI, pSection, "Webby.Duration");
+	this->Webby_DurationVariation.Read(exINI, pSection, "Webby.DurationVariation");
+	this->Webby_Cap.Read(exINI, pSection, "Webby.Cap");
+
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
 	this->AffectsVeterancy.Read(exINI, pSection, "AffectsVeterancy");
@@ -517,6 +523,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
 		|| this->Ammo
+		|| this->Webby
 	);
 
 	char tempBuffer[32];
@@ -776,7 +783,11 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->AirstrikeTargets)
 
-		.Process(this->CanKill)
+		.Process(this->Webby)
+		.Process(this->Webby_Anims)
+		.Process(this->Webby_Duration)
+		.Process(this->Webby_DurationVariation)
+		.Process(this->Webby_Cap)
 
 		.Process(this->ReverseEngineer)
 

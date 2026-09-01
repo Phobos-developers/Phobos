@@ -194,6 +194,7 @@ public:
 	Valueable<int> ForceAAWeapon_Infantry;
 	Valueable<int> ForceAAWeapon_Units;
 	Valueable<int> ForceAAWeapon_Aircraft;
+	Valueable<int> ForceWeapon_Webby;
 
 	Valueable<bool> Ammo_Shared;
 	Valueable<int> Ammo_Shared_Group;
@@ -245,6 +246,11 @@ public:
 	Valueable<int> EmptySpawnsPipFrame;
 	Nullable<Point2D> SpawnsPipSize;
 	Valueable<Point2D> SpawnsPipOffset;
+
+	ValueableVector<AnimTypeClass*> Webby_Anims;
+	Valueable<bool> ImmuneToWeb;
+	Valueable<double> Webby_Modifier;
+	Nullable<int> Webby_DurationVariation;
 
 	Valueable<TechnoTypeClass*> Convert_Undeploy;
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
@@ -613,6 +619,7 @@ public:
 		, ForceAAWeapon_Infantry { -1 }
 		, ForceAAWeapon_Units { -1 }
 		, ForceAAWeapon_Aircraft { -1 }
+		, ForceWeapon_Webby { -1 }
 
 		, Ammo_Shared { false }
 		, Ammo_Shared_Group { -1 }
@@ -665,6 +672,11 @@ public:
 		, EmptySpawnsPipFrame { 0 }
 		, SpawnsPipSize {}
 		, SpawnsPipOffset { { 0,0 } }
+
+		, Webby_Anims {}
+		, ImmuneToWeb { false }
+		, Webby_Modifier { 1.0 }
+		, Webby_DurationVariation {}
 
 		, DroppodType {}
 		, TiberiumEaterType {}
