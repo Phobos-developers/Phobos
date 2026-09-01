@@ -857,6 +857,14 @@ msgid ""
 msgstr ""
 "[修改弹药弹头](New-or-Enhanced-Logics.md#modify-ammo-on-impact)（by FS-21）"
 
+msgid ""
+"[Extended `CanTargetHouses` to allow targeting civilian, special and "
+"neutral houses](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by "
+"weiyongxuan)"
+msgstr ""
+"[扩展 `CanTargetHouses` 以允许瞄准平民、特殊和中立所属方](New-or-Enhanced-Logics.md#"
+"weapon-targeting-filter)（by weiyongxuan）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

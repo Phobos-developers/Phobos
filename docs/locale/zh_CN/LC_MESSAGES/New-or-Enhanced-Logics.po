@@ -7335,6 +7335,13 @@ msgstr ""
 "用于设置可被攻击的（仅单位）目标所需的血量阈值，分别要求目标血量必须高于和／或低于／等于的限制。若目标血量为 0 则跳过检查。"
 
 msgid ""
+"`civilian`, `special` and `neutral` can be used to specifically allow the "
+"corresponding houses to be targeted. Note that these houses are not allied "
+"with other houses, so they are also matched by `enemies` as before."
+msgstr ""
+"`civilian`、`special` 和 `neutral` 可用于专门允许瞄准对应的所属方。注意这些所属方与其他所属方并不结盟，因此它们也会像之前一样被 `enemies` 命中。"
+
+msgid ""
 "`CanTarget` explicitly requires either `all` or `empty` to be listed for "
 "the weapon to be able to fire at cells containing no TechnoTypes."
 msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"

@@ -10,7 +10,15 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
 	if (ownerHouse->IsAlliedWith(targetHouse))
 		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
-	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
+	if ((flags & AffectedHouse::Enemies) != AffectedHouse::None)
+		return true;
+	if ((flags & AffectedHouse::Civilian) != AffectedHouse::None && targetHouse == HouseClass::FindCivilianSide())
+		return true;
+	if ((flags & AffectedHouse::Special) != AffectedHouse::None && targetHouse == HouseClass::FindSpecial())
+		return true;
+	if ((flags & AffectedHouse::Neutral) != AffectedHouse::None && targetHouse == HouseClass::FindNeutral())
+		return true;
+	return false;
 }
 
 bool EnumFunctions::CanTargetVeterancy(AffectedVeterancy flags, TechnoClass* pTechno)

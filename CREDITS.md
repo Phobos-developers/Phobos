@@ -894,6 +894,8 @@ This page lists all the individual contributions to the project by their author.
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
   - Add a new AutoDeath condition based on the owner's power status
+- **weiyongxuan**
+  - Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

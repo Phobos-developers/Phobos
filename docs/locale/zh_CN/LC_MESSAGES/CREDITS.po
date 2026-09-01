@@ -3037,6 +3037,12 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
+msgid "**weiyongxuan**"
+msgstr "**weiyongxuan**："
+
+msgid "Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses"
+msgstr "扩展 `CanTargetHouses` 以允许瞄准平民、特殊和中立所属方"
+
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
 
