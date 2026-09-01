@@ -1874,6 +1874,22 @@ msgid ""
 "means no limitation."
 msgstr "`PowerPlantEnhancer.MaxCount` 决定了此类建筑中参与电厂增幅的数量上限。负值代表无上限。"
 
+msgid "Roof production anim"
+msgstr "天窗生产动画"
+
+msgid ""
+"Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch."
+msgstr ""
+"现在，你可以用 `RoofProductionAnim*` 系列语句在所生产的步兵和载具从天窗离开工厂时替代 `ProductionAnim*` 系列语句使用。"
+
+msgid ""
+"The criterion for exiting through the roof hatch is the same as "
+"`RoofDeployingAnim` in vanilla: the unit has `Jumpjet=yes` or "
+"`BalloonHover=yes`."
+msgstr ""
+"从天窗离开的判定标准与原版中 `RoofDeployingAnim` 相同：单位拥有 `Jumpjet=yes` 或 "
+"`BalloonHover=yes`。"
+
 msgid "Spy effects"
 msgstr "间谍效果"
 
@@ -5383,6 +5399,16 @@ msgid ""
 msgstr ""
 "`Ammo.DeployUnlockMinimumAmount` & `Ammo.DeployUnlockMaximumAmount` "
 "分别设定载具启用部署功能所需的最低与最高弹药量阈值，负值表示禁用检查。"
+
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
+msgid "When unit start cloak or stop cloaking, "
+"an animation can play on his location"
+msgstr "当单位开始或停止隐形时，可以在其位置播放动画"
+
+msgid "You can also set whether cloak units kick out parasites"
+msgstr "您也可以设置隐形单位是否踢出寄生者"
 
 msgid "Custom hover vehicles shutdown drowning death"
 msgstr "自定义悬浮载具溺死"

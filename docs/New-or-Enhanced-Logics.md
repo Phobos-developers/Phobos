@@ -745,6 +745,27 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 PowerPlantEnhancer.MaxCount=-1     ; integer
 ```
 
+### Roof production anim
+
+- Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
+  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType, with Factory=InfantryType or Factory=UnitType
+RoofProductionAnim=                ; AnimationType, falls back to ProductionAnim if unset
+RoofProductionAnimDamaged=         ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimGarrisoned=      ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimX=               ; integer, defaults to ProductionAnimX
+RoofProductionAnimY=               ; integer, defaults to ProductionAnimY
+RoofProductionAnimYSort=           ; integer, defaults to ProductionAnimYSort
+RoofProductionAnimZAdjust=         ; integer, defaults to ProductionAnimZAdjust
+RoofProductionAnimPowered=         ; boolean, defaults to ProductionAnimPowered
+RoofProductionAnimPoweredLight=    ; boolean, defaults to ProductionAnimPoweredLight
+RoofProductionAnimPoweredEffect=   ; boolean, defaults to ProductionAnimPoweredEffect
+RoofProductionAnimPoweredSpecial=  ; boolean, defaults to ProductionAnimPoweredSpecial
+```
+
 ### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
@@ -2556,6 +2577,26 @@ Ammo.AutoDeployMinimumAmount=-1    ; integer
 Ammo.AutoDeployMaximumAmount=-1    ; integer
 Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
+```
+
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location
+  - You can also set whether cloak units kick out parasites
+
+In `rulesmd.ini`:
+```ini
+[General]
+Cloak.KickOutParasite=false   ; boolean
+
+[AudioVisual]
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
+
+[SOMETECHNO]
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
 ### Custom hover vehicles shutdown drowning death

@@ -569,6 +569,9 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
   - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fixed a bug that computer player record cannot be log normally in non English mode
+  - Cloak Enhancement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -750,6 +753,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
   - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
   - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
+  - Customize whether the unit can be detected by psychic detector
+  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -782,6 +789,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
   - Fix a game crash when parsing string list with null entry
+  - `513` Set mission timer type
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

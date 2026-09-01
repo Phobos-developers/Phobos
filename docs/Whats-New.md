@@ -205,6 +205,9 @@ HideShakeEffects=false           ; boolean
   70=AITargetTypes index,0
   71=AttachEffectType,0
   72=DropCrate Behavior,0
+  73=Unit Index,0
+  74=Mission Timer Type,0
+  75=Reverse Mission Timer,0
   101=BannerType,0
   102=Horizontal position,0
   103=Vertical position,0
@@ -263,20 +266,22 @@ HideShakeEffects=false           ; boolean
   502=Generate random number... (Phobos),0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1
   503=Print variable value... (Phobos),0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0
   504=Binary operation... (Phobos),0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
-  505=Fire Super Weapon at specified location... (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
-  506=Fire Super Weapon at specified waypoint... (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
-  510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  505=Fire Super Weapon at specified location... (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random.,0,1,505
+  506=Fire Super Weapon at specified waypoint... (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random.,0,1,506
+  510=Toggle MCV Redeployablility... (Phobos),0,0,15,0,0,0,0,0,0,Set MCVRedeploys to the given value.,0,1,510
   511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
-  600=Configure dropped crate... (Phobos),0,72,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when the attached object is destroyed. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate,0,1,600
+  512=Set Follower for Associated Unit... (Phobos),0,0,73,0,0,0,0,0,0,Sets the follower for the associated object. The parameter is the index of the follower unit.,0,1,512
+  513=Set Mission Timer Properties... (Phobos),0,0,74,48,75,0,0,0,0,Set the method to display mission timer and whether the timer should be displayed reversedly based on given value. Method 0=default, 1=percentage based on given value, 2=digit, 3=local variable, 4=global variable.,0,1,513
+  600=Configure dropped crate... (Phobos),0,72,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when the attached object is destroyed. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate.,0,1,600
   606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy... (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
   609=Set radar mode... (Phobos),0,0,15,0,0,0,0,0,0, Trigger's house can modify the current radar mode. 0 for requires full-power and building, 1 for free radar, 2 for forced enable, 3 for forced disable.,0,1,609
   610=Set team delay... (Phobos),0,0,6,0,0,0,0,0,0, Trigger's house can customize TeamDelay. When the value is less than 0 in [General] ->TeamDelays.,0,1,610
   611=Set next scenario... (Phobos),-4,105,0,0,0,0,0,0,0, Set the next campaign to load after winning the current one. Works only in Campaign Mode and requires setting [Basic] -> SkipMapSelect=yes.,0,1,611
-  800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
-  801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
-  802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
+  800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID.,0,1,800
+  801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID.,0,1,801
+  802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID.,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -423,11 +428,17 @@ HideShakeEffects=false           ; boolean
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
+- [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
+- [Customize whether the unit exits from the roof](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)
+- [Customize whether the unit can be detected by psychic detector](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector) (by Noble_Fish)
+- Cloak Enhancement (by NetsuNegi)
+- [`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
 - [Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by weiyongxuan)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -798,6 +809,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -1259,6 +1271,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
+- Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
