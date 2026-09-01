@@ -3719,3 +3719,23 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
+
+### Manually detonate Ivan bomb
+
+![image](_static/images/IvanBombDetonate.gif)
+
+- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+- Use `IvanBomb.Detonate.InvokerOnly` to configure whether the warhead can detonate Ivan bombs from other sources.
+- Use `IvanBomb.Detonate.PenetrateTransport` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
+- Use `IvanBomb.Detonate.PenetrateGarrison` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
+- Use `IvanBomb.Detonate.AffectsType` to configure which targets' Ivan bombs can be detonated by warhead, use empty for all types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                             ; WarheadType
+IvanBomb.Detonate=true                    ; boolean
+IvanBomb.Detonate.InvokerOnly=false       ; boolean
+IvanBomb.Detonate.PenetrateTransport=true ; boolean
+IvanBomb.Detonate.PenetrateGarrison=true  ; boolean
+IvanBomb.Detonate.AffectsType=HTNK,E1     ; List of Registration Name, use empty list for all types
+```

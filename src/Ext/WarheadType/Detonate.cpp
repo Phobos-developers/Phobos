@@ -235,7 +235,10 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
-
+		
+	if(this->IvanBomb_Detonate)
+		this->IvanBombDetonate(pOwner,pTarget);
+		
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
@@ -930,4 +933,86 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
+{
+	if (!pOwner)
+        return; 
+
+	if(auto pBomb = pTarget->AttachedBomb)
+	{
+		bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
+						  || this->IvanBomb_Detonate_AffectsType.Contains(pTarget->GetTechnoType()); 
+		
+		if(this->IvanBomb_Detonate_InvokerOnly)
+		{
+			if(pBomb->Owner == pOwner && CanAffects)
+				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		}
+		else
+		{
+			if(CanAffects)
+				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		}
+	}
+
+	if(this->IvanBomb_Detonate_PenetrateTransport)
+	{
+		PassengersClass& Passengers = pTarget->Passengers;
+
+		if(auto pCurPassenger = Passengers.FirstPassenger)
+		{
+			while (pCurPassenger)
+			{
+				auto pNextPassenger = abstract_cast<FootClass*>(pCurPassenger->NextObject);
+				bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
+						  		  || this->IvanBomb_Detonate_AffectsType.Contains(pCurPassenger->GetTechnoType());
+
+				if(auto pPassengerBomb = pCurPassenger->AttachedBomb)
+				{
+					if(this->IvanBomb_Detonate_InvokerOnly)
+					{
+						if(pPassengerBomb->Owner == pOwner && CanAffects)
+							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
+					}
+					else
+					{
+						if(CanAffects)
+							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
+					}
+				}
+				pCurPassenger = pNextPassenger;
+			}
+		}
+	}
+
+	if(this->IvanBomb_Detonate_PenetrateGarrison)
+	{
+		if(pTarget->WhatAmI() != AbstractType::Building)
+			return;
+
+		auto& Occupants = abstract_cast<BuildingClass*>(pTarget)->Occupants;
+
+		for(int i = 0;i < Occupants.Count;i++)
+		{
+			auto pOccupant = Occupants.Items[i];
+			bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
+						  	  || this->IvanBomb_Detonate_AffectsType.Contains(pOccupant->GetTechnoType());
+
+			if(auto pOccupantBomb = pOccupant->AttachedBomb)
+			{
+				if(this->IvanBomb_Detonate_InvokerOnly)
+				{
+					if(pOccupantBomb->Owner == pOwner && CanAffects)
+						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
+				}
+				else
+				{
+					if(CanAffects)
+						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
+				}
+			}
+		}
+	}
 }
