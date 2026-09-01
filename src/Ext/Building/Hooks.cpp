@@ -1551,64 +1551,58 @@ DEFINE_HOOK(0x450DDC, BuildingClass_UpdateAnimation_DestroyAnim, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
+	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if(auto pTypeExt = BuildingTypeExt::Fetch(pType))
+	if(pTypeExt->ActiveAnim_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
+       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
 	{
-		if(pTypeExt->ActiveAnim_MoneyAmount != -1
-	       && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
-       	   && pTypeExt->ActiveAnimThree_MoneyAmount != -1
-	       && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
 		{
-			if(auto pBuildingExt = BuildingExt::Fetch(pThis))
-			{
-				long PlayerMoney = pThis->Owner->Available_Money();
-				int Grade = pBuildingExt->MoneyGrade;
+			long playerMoney = pThis->Owner->Available_Money();
+			int grade = pBuildingExt->moneyGrade;
 
-				if(PlayerMoney > pTypeExt->ActiveAnimFour_MoneyAmount)
-				{
-					Grade = 3;
-				}
-				else if(PlayerMoney > pTypeExt->ActiveAnimThree_MoneyAmount)
-				{
-					Grade = 2;
-				}
-				else if(PlayerMoney > pTypeExt->ActiveAnimTwo_MoneyAmount)
-				{
-					Grade = 1;
-				}
-				else if(PlayerMoney > pTypeExt->ActiveAnim_MoneyAmount)
-				{
-					Grade = 0;
-				}
-				R->EAX(Grade);
-				R->ECX(pBuildingExt->MoneyGrade);
-				pBuildingExt->MoneyGrade = Grade;
+			if(playerMoney > pTypeExt->ActiveAnimFour_MoneyAmount)
+			{
+				grade = 3;
 			}
+			else if(playerMoney > pTypeExt->ActiveAnimThree_MoneyAmount)
+			{
+				grade = 2;
+			}
+			else if(playerMoney > pTypeExt->ActiveAnimTwo_MoneyAmount)
+			{
+				grade = 1;
+			}
+			else if(playerMoney > pTypeExt->ActiveAnim_MoneyAmount)
+			{
+				grade = 0;
+			}
+			R->EAX(grade);
+			R->ECX(pBuildingExt->moneyGrade);
+			pBuildingExt->moneyGrade = grade;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x450E3E, BuildingClass_UpdateAnimation_CalcMoneyGrade, 0x9)
+DEFINE_HOOK(0x450E3E, BuildingClass_UpdateAnimation_CalcmoneyGrade, 0x9)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
+	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if(auto pTypeExt = BuildingTypeExt::Fetch(pType))
+	if(pTypeExt->ActiveAnim_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
+       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
 	{
-		if(pTypeExt->ActiveAnim_MoneyAmount != -1
-	       && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
-       	   && pTypeExt->ActiveAnimThree_MoneyAmount != -1
-	       && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
 		{
-			if(auto pBuildingExt = BuildingExt::Fetch(pThis))
-			{
-				int Grade = pBuildingExt->MoneyGrade;
-				R->EAX(Grade);
-			}
+			int grade = pBuildingExt->moneyGrade;
+			R->EAX(grade);
 		}
 	}
 

@@ -717,7 +717,7 @@ HideShakeEffects=false           ; boolean
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)
-- Money switch building active animation (by dh381)
+- [Money switch building active animation](New-or-Enhanced-Logics.md#Money-switch-building-active-animation) (by dh381)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
