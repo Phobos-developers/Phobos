@@ -1145,6 +1145,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
 	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
 
+	this->PenetratesGarrison_Allowed.Read(exINI, pSection, "PenetratesGarrison.Allowed");
+
 	this->Ammo_AutoConvertMinimumAmount.Read(exINI, pSection, "Ammo.AutoConvertMinimumAmount");
 	this->Ammo_AutoConvertMaximumAmount.Read(exINI, pSection, "Ammo.AutoConvertMaximumAmount");
 	this->Ammo_AutoConvertType.Read(exINI, pSection, "Ammo.AutoConvertType");
@@ -1760,6 +1762,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
 		.Process(this->FallingDownDamage_AllowEMP)
+
+		.Process(this->PenetratesGarrison_Allowed)
 
 		.Process(this->Ammo_AutoConvertMinimumAmount)
 		.Process(this->Ammo_AutoConvertMaximumAmount)

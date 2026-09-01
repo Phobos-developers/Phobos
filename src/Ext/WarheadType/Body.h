@@ -262,6 +262,11 @@ public:
 	Valueable<bool> PenetratesTransport_DamageAll;
 	ValueableIdx<VocClass> PenetratesTransport_CleanSound;
 
+	Valueable<bool> PenetratesGarrison;
+	Valueable<bool> PenetratesGarrison_RandomTarget;
+	Valueable<PartialVector2D<double>> PenetratesGarrison_DamageMultiplier;
+	NullableIdx<VocClass> PenetratesGarrison_CleanSound;
+
 	Valueable<bool> Taunt;
 
 	Nullable<StackingMode> Psychedelic_StackingMode;
@@ -512,6 +517,11 @@ public:
 		, PenetratesTransport_DamageAll { false }
 		, PenetratesTransport_CleanSound { -1 }
 
+		, PenetratesGarrison { false }
+		, PenetratesGarrison_RandomTarget { true }
+		, PenetratesGarrison_DamageMultiplier { { 1.0, 1.0 } }
+		, PenetratesGarrison_CleanSound { }
+
 		, AffectsEnemies { true }
 		, AffectsOwner {}
 		, EffectsRequireVerses { true }
@@ -613,6 +623,7 @@ private:
 	void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 	void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
+	void ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, int damage, const CoordStruct& coords);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
 

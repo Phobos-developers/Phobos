@@ -67,6 +67,7 @@ public:
 	Nullable<bool> Harvester_Counted;
 	Nullable<bool> Promote_IncludeSpawns;
 	Valueable<bool> ImmuneToCrit;
+	Valueable<bool> PenetratesGarrison_Allowed;
 	Nullable<bool> MultiMindControl_ReleaseVictim;
 	Valueable<int> CameoPriority;
 	PhobosPCXFile AltCameoPCX;
@@ -496,6 +497,7 @@ public:
 		, Harvester_Counted {}
 		, Promote_IncludeSpawns {}
 		, ImmuneToCrit { false }
+		, PenetratesGarrison_Allowed { true }
 		, MultiMindControl_ReleaseVictim {}
 		, CameoPriority { 0 }
 		, AltCameoPCX {}

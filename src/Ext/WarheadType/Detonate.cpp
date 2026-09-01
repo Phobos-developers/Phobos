@@ -233,6 +233,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->PenetratesTransport_Level > 0 && damage)
 		this->ApplyPenetratesTransport(pTarget, pOwner, pHouse, coords, damage, distance);
 
+	if (this->PenetratesGarrison && damage)
+		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, damage, coords);
+
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
@@ -923,11 +926,62 @@ void WarheadTypeExt::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass*
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
+void WarheadTypeExt::ApplyAmmoModifier(TechnoClass* pTarget)
 {
 	const int maxAmmo = pTarget->GetTechnoType()->Ammo;
 	int newCurrentAmmo = this->Ammo + pTarget->Ammo;
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, int damage, const CoordStruct& coords)
+{
+	auto const pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+
+	if (!pBuilding || !pBuilding->Occupants.Count)
+		return;
+
+	auto const pTargetTypeExt = TechnoTypeExt::Fetch(pBuilding->Type);
+
+	if (!pTargetTypeExt->PenetratesGarrison_Allowed)
+		return;
+
+	auto const pWH = this->OwnerObject();
+	auto const& location = pTarget->GetCenterCoords();
+	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
+	const int distance = static_cast<int>(location.DistanceFrom(coords));
+
+	auto doDamage = [=](int index)
+	{
+		auto const pPassenger = pBuilding->Occupants.GetItem(index);
+		auto const pType = pPassenger->Type;
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+		if (!pTypeExt->PenetratesGarrison_Allowed)
+			return;
+
+		pPassenger->SetLocation(location);
+
+		int applyDamage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
+		pPassenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse);
+	};
+
+	if (occupantIndex < 0)
+	{
+		for (int i = pBuilding->Occupants.Count - 1; i >= 0; i--)
+			doDamage(i);
+	}
+	else
+	{
+		doDamage(occupantIndex);
+	}
+
+	if (!pBuilding->Occupants.Count)
+	{
+		pBuilding->Mark(MarkType::Change);
+
+		if (this->PenetratesGarrison_CleanSound.isset())
+			VocClass::PlayAt(this->PenetratesGarrison_CleanSound.Get(), location);
+	}
 }
