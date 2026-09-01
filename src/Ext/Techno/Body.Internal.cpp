@@ -1,4 +1,5 @@
 #include <Ext/Foot/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
@@ -149,12 +150,30 @@ void TechnoExt::InitializeDisplayInfo()
 void TechnoExt::InitializeAttachEffects()
 {
 	auto const pTypeExt = this->TypeExtData;
-
-	if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
-		return;
-
+	auto const pType = pTypeExt->OwnerObject();
 	auto const pThis = this->OwnerObject();
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	auto const pOwner = pThis->Owner;
+
+	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects);
+
+	switch (pType->WhatAmI())
+	{
+	case AbstractType::BuildingType:
+		if (static_cast<BuildingTypeClass*>(pType)->BuildCat == BuildCat::Combat)
+			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings);
+		else
+			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Defenses);
+		break;
+	case AbstractType::InfantryType:
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings);
+		break;
+	case AbstractType::UnitType:
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Units);
+		break;
+	case AbstractType::AircraftType:
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Aircraft);
+		break;
+	}
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
