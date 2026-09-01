@@ -16,6 +16,7 @@ decltype(AresFunctions::DetailsCurrentlyEnabled) AresFunctions::DetailsCurrently
 decltype(AresFunctions::SendPDPlane) AresFunctions::SendPDPlane = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
+PhobosMap<BombClass*, WeaponTypeClass**>* AresFunctions::BombExtMap = nullptr;
 
 decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
 decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
@@ -64,6 +65,7 @@ void AresFunctions::InitAres3_0()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
+	NOTE_ARES_FUN(BombExtMap, 0xC1DE0);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
@@ -113,6 +115,7 @@ void AresFunctions::InitAres3_0p1()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
+	NOTE_ARES_FUN(BombExtMap, 0xC2DFC);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);

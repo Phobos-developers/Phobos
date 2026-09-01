@@ -1517,6 +1517,22 @@ static size_t __fastcall HexStr2Int_replacement(const char* str)
 DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
 DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
+#define Hook_AIPlayerLogFix(addr, mode, size, reg1, reg2) \
+DEFINE_HOOK(addr, ##mode##_AIPlayerLogFix, size) \
+{ \
+	GET(HouseClass*, pHouse, reg1); \
+	if (!pHouse->IsControlledByHuman()) \
+		R->reg2(L"Computer"); \
+	return 0; \
+}
+
+// Fix the bug that computer's record may cannot log normally.
+Hook_AIPlayerLogFix(0x49B83B, Sub_49B7E0, 0x6, ESI, EDI)
+Hook_AIPlayerLogFix(0x46DAFA, Sub_46DA70, 0x5, EDI, EBX)
+Hook_AIPlayerLogFix(0x5C9927, Sub_5C98A0, 0x5, EDI, EBX)
+
+#undef Hook_AIPlayerLogFix
+
 #pragma region Sensors
 
 DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
@@ -3625,4 +3641,15 @@ DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
 
 	R->EDI(tint.Blue);
 	return ContinueIn;
+}
+
+DEFINE_HOOK(0x4DA90E, FootClass_AI_WalkRateZeroProtect, 0x6)
+{
+	GET(TechnoTypeClass*, pType, ECX);
+
+	if (pType->WalkRate != 0)
+		return 0;
+
+	R->EDX(1);
+	return 0x4DA914;
 }

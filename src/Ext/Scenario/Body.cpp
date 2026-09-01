@@ -707,6 +707,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_AllowableUnitMaximumsLists)
 		.Process(this->DropshipLoadout_ActiveTeamSuffixes)
 		.Process(this->FiringAnimUpdateCount)
+		.Process(this->MissionTimer_Type)
+		.Process(this->MissionTimer_Variable)
+		.Process(this->MissionTimer_Reverse)
 		;
 
 	int numDropships = (int)this->DropshipLoadout_FixedUnits.size();

@@ -8,7 +8,7 @@
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned short
+enum class DiscardCondition : unsigned int
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -26,7 +26,8 @@ enum class DiscardCondition : unsigned short
 	Health = 0x1000,
 	Mission = 0x2000,
 	LandType = 0x4000,
-	Sequence = 0x8000
+	Sequence = 0x8000,
+	ReceivedDamage = 0x10000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -61,6 +62,9 @@ public:
 	Valueable<int> DiscardOn_Ammo_MaximumAmount;
 	Nullable<double> DiscardOn_Health_BelowPercent;
 	Nullable<double> DiscardOn_Health_AbovePercent;
+	Valueable<int> DiscardOn_Firing_Count;
+	Valueable<int> DiscardOn_ReceivedDamage_Count;
+	Valueable<AffectedHouse> DiscardOn_ReceivedDamage_AffectsHouse;
 	ValueableVector<Mission> DiscardOn_Missions;
 	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
@@ -140,6 +144,9 @@ public:
 		, DiscardOn_Ammo_MaximumAmount { -1 }
 		, DiscardOn_Health_BelowPercent { -1 }
 		, DiscardOn_Health_AbovePercent { -1 }
+		, DiscardOn_Firing_Count { 1 }
+		, DiscardOn_ReceivedDamage_Count { 1 }
+		, DiscardOn_ReceivedDamage_AffectsHouse { AffectedHouse::All }
 		, DiscardOn_Missions {}
 		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }

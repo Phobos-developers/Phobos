@@ -687,8 +687,15 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	{
 		for (const auto& attachEffect : pExt->AttachedEffects)
 		{
-			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
-				attachEffect->ShouldBeDiscarded = true;
+			const auto pType = attachEffect->GetType();
+
+			if ((pType->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+			{
+				attachEffect->FiringCount++;
+
+				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
+					attachEffect->ShouldBeDiscarded = true;
+			}
 		}
 	}
 

@@ -70,6 +70,21 @@ DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_IronCurtain, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6F8364, TechnoClass_CanAutoTargetObject_InsignificantWhenMindControlled, 0x6)
+{
+	enum { SkipMindControlChecks = 0x6F838E };
+
+	GET(TechnoClass*, pTarget, ESI);
+
+	if (!RulesExt::Global()->AutoTarget_InsignificantWhenMindControlled
+		&& pTarget->GetTechnoType()->Insignificant)
+	{
+		return SkipMindControlChecks;
+	}
+
+	return 0;
+}
+
 // WW adds an optimization that: If the techno get a target in 1/4 or 1/2 of their targeting range, then it will not checking other targets.
 DEFINE_HOOK(0x6F9AF4, TechnoClass_SelectAutoTarget_DisableStupid, 0x6)
 {

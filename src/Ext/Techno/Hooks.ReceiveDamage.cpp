@@ -388,85 +388,102 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 		return 0;
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pWarhead);
-
-	if (pWHExt->Reflected)
-		return 0;
-
 	auto const pExt = TechnoExt::Fetch(pThis);
-	auto& random = ScenarioClass::Instance->Random;
-	const auto& suppressType = pWHExt->SuppressReflectDamage_Types;
-	const auto& suppressGroup = pWHExt->SuppressReflectDamage_Groups;
-	const bool suppress = pWHExt->SuppressReflectDamage;
-	const bool suppressByType = suppressType.size() > 0;
-	const bool suppressByGroup = suppressGroup.size() > 0;
 
-	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
+	if (!pWHExt->Reflected)
+	{
+		auto& random = ScenarioClass::Instance->Random;
+		const auto& suppressType = pWHExt->SuppressReflectDamage_Types;
+		const auto& suppressGroup = pWHExt->SuppressReflectDamage_Groups;
+		const bool suppress = pWHExt->SuppressReflectDamage;
+		const bool suppressByType = suppressType.size() > 0;
+		const bool suppressByGroup = suppressGroup.size() > 0;
+
+		if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
+		{
+			for (auto const& attachEffect : pExt->AttachedEffects)
+			{
+				if (!attachEffect->IsActive())
+					continue;
+
+				auto const pType = attachEffect->GetType();
+
+				if (!pType->ReflectDamage)
+					continue;
+
+				if (pType->ReflectDamage_Chance < random.RandomDouble())
+					continue;
+
+				if (suppress)
+				{
+					if (suppressByType && suppressType.Contains(pType))
+						continue;
+
+					if (suppressByGroup && pType->HasGroups(suppressGroup, false))
+						continue;
+				}
+
+				auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+				int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
+
+				if (pType->ReflectDamage_UseInvokerAsOwner)
+				{
+					auto const pInvoker = attachEffect->GetInvoker();
+
+					if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
+					{
+						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+						pWHExtRef->Reflected = true;
+
+						if (pType->ReflectDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
+						else
+							pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
+
+						pWHExtRef->Reflected = false;
+					}
+					else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
+					{
+						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+						pWHExtRef->Reflected = true;
+
+						if (pType->ReflectDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
+						else
+							pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
+
+						pWHExtRef->Reflected = false;
+					}
+				}
+				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
+				{
+					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+					pWHExtRef->Reflected = true;
+
+					if (pType->ReflectDamage_Warhead_Detonate)
+						WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
+					else
+						pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+
+					pWHExtRef->Reflected = false;
+				}
+			}
+		}
+	}
+
+	if (pExt->AE.HasOnDamageDiscardables)
 	{
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
-			if (!attachEffect->IsActive())
-				continue;
+			const auto pType = attachEffect->GetType();
 
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->ReflectDamage)
-				continue;
-
-			if (pType->ReflectDamage_Chance < random.RandomDouble())
-				continue;
-
-			if (suppress)
+			if ((pType->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
+				&& EnumFunctions::CanTargetHouse(pType->DiscardOn_ReceivedDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
-				if (suppressByType && suppressType.Contains(pType))
-					continue;
+				attachEffect->ReceivedDamageCount++;
 
-				if (suppressByGroup && pType->HasGroups(suppressGroup, false))
-					continue;
-			}
-
-			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
-
-			if (pType->ReflectDamage_UseInvokerAsOwner)
-			{
-				auto const pInvoker = attachEffect->GetInvoker();
-
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
-				{
-					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-					pWHExtRef->Reflected = true;
-
-					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
-					else
-						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
-
-					pWHExtRef->Reflected = false;
-				}
-				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
-				{
-					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-					pWHExtRef->Reflected = true;
-
-					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
-					else
-						pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
-
-					pWHExtRef->Reflected = false;
-				}
-			}
-			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
-			{
-				auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-				pWHExtRef->Reflected = true;
-
-				if (pType->ReflectDamage_Warhead_Detonate)
-					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
-				else
-					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
-
-				pWHExtRef->Reflected = false;
+				if (attachEffect->ReceivedDamageCount >= pType->DiscardOn_ReceivedDamage_Count)
+					attachEffect->ShouldBeDiscarded = true;
 			}
 		}
 	}
