@@ -426,6 +426,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [New ScriptTypeActions `19017, 19018, 19020, 19024, 19025, 19026, 19027, 19046, 19047, 19051, 19056, 19058` that require ID as argument](AI-Scripting-and-Mapping.md#new-scripttypeactions-that-require-id-as-argument) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
