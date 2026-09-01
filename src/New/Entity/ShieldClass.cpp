@@ -189,9 +189,10 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	auto const pWH = args->WH;
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+	auto const pAttacker = args->Attacker;
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
-	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, args->Attacker))
+	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, pAttacker))
 		return damage;
 
 	auto const pTechnoType = this->TechnoID;
@@ -204,8 +205,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	int healthDamage = 0;
 	double armorMultiplier = 1.0;
 	auto const pType = this->Type;
+	auto const pSourceHouse = pAttacker ? pAttacker->Owner : args->SourceHouse;
 
-	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
+	if (pWHExt->CanTargetHouse(pSourceHouse, pTechno) && !pWH->Temporal)
 	{
 		if (damage >= 0)
 		{
@@ -213,7 +215,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			if (pType->ApplyArmorMult.Get(RulesExt::Global()->ShieldApplyArmorMult))
 			{
-				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, args->SourceHouse, pWH);
+				armorMultiplier = TechnoExt::GetCurrentArmorMultiplier(pTechno, pTechnoType, pSourceHouse, pWH);
 				nDamage = Math::max(static_cast<int>(nDamage / armorMultiplier), 0);
 			}
 
