@@ -987,7 +987,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 		}
 	}
 
-	if(this->IvanBomb_Detonate_PenetrateBuilding)
+	if(this->IvanBomb_Detonate_PenetrateGarrison)
 	{
 		if(pTarget->WhatAmI() != AbstractType::Building)
 			return;
