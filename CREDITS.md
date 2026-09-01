@@ -902,8 +902,6 @@ This page lists all the individual contributions to the project by their author.
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
   - Add a new AutoDeath condition based on the owner's power status
-- **weiyongxuan**
-  - Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -956,3 +954,4 @@ This page lists all the individual contributions to the project by their author.
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses
