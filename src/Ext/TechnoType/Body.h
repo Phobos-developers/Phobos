@@ -461,6 +461,17 @@ public:
 	Nullable<bool> Unsellable;
 	Nullable<bool> KeepAlive;
 
+	Nullable<bool> ConsideredNaval;
+	Nullable<bool> ConsideredVehicle;
+	Valueable<bool> ConsideredSecretLabTech;
+	std::vector<std::string> Secret_RequiredHouses;
+	std::vector<std::string> Secret_ForbiddenHouses;
+	DWORD PrerequisiteTheaters;
+	ValueableVector<int> Prerequisite;
+	ValueableVector<int> Prerequisite_Negative;
+	Valueable<int> Prerequisite_Lists;
+	std::vector<DynamicVectorClass<int>> Prerequisite_ListVector;
+
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -872,6 +883,17 @@ public:
 		// Ares 3.0
 		, Unsellable {}
 		, KeepAlive {}
+
+		, ConsideredNaval {}
+		, ConsideredVehicle {}
+		, ConsideredSecretLabTech { false }
+		, Secret_RequiredHouses {}
+		, Secret_ForbiddenHouses {}
+		, PrerequisiteTheaters { 0xFFFFFFFF }
+		, Prerequisite {}
+		, Prerequisite_Negative {}
+		, Prerequisite_Lists { -1 }
+		, Prerequisite_ListVector {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;

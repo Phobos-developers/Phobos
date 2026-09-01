@@ -3,6 +3,8 @@
 #include <cmath>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <Ext/House/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -665,15 +667,90 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	this->NewTeamsSelector.Read(exINI, "AI", "NewTeamsSelector");
+	this->NewTeamsSelector_SplitTriggersByCategory.Read(exINI, "AI", "NewTeamsSelector.SplitTriggersByCategory");
+	this->NewTeamsSelector_EnableFallback.Read(exINI, "AI", "NewTeamsSelector.EnableFallback");
+	this->NewTeamsSelector_MergeUnclassifiedCategoryWith.Read(exINI, "AI", "NewTeamsSelector.MergeUnclassifiedCategoryWith");
+	this->NewTeamsSelector_UnclassifiedCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.UnclassifiedCategoryPercentage");
+	this->NewTeamsSelector_GroundCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.GroundCategoryPercentage");
+	this->NewTeamsSelector_AirCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.AirCategoryPercentage");
+	this->NewTeamsSelector_NavalCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.NavalCategoryPercentage");
+	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.InfantryCategoryPercentage");
+	this->NewTeamsSelector_VIPWeight.Read(exINI, "AI", "NewTeamsSelector.VIPWeight");
+
+	// Section Generic Prerequisites
+	FillDefaultPrerequisites();
 }
 
-// this should load everything that TypeData is not dependant on
-// i.e. InfantryElectrocuted= can go here since nothing refers to it
-// but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	INI_EX exINI(pINI);
 
+	this->GenericPrerequisitesAlternates.Clear();
+
+	auto loadAlternates = [&](const char* name) -> DynamicVectorClass<TechnoTypeClass*>
+	{
+		DynamicVectorClass<TechnoTypeClass*> alternates;
+		char keyName[0x80];
+		char formattedName[0x80];
+		strcpy_s(formattedName, name);
+
+		if (formattedName[0] >= 'a' && formattedName[0] <= 'z')
+			formattedName[0] = static_cast<char>(formattedName[0] - 'a' + 'A');
+		for (size_t k = 1; formattedName[k] != '\0'; ++k)
+		{
+			if (formattedName[k] >= 'A' && formattedName[k] <= 'Z')
+				formattedName[k] = static_cast<char>(formattedName[k] - 'A' + 'a');
+		}
+
+		bool found = false;
+		_snprintf_s(keyName, _TRUNCATE, "Prerequisite%sAlternate", formattedName);
+		if (pINI->ReadString("General", keyName, "", Phobos::readBuffer) > 0)
+		{
+			found = true;
+		}
+		else
+		{
+			_snprintf_s(keyName, _TRUNCATE, "Prerequisite%sAlternate", name);
+			if (pINI->ReadString("General", keyName, "", Phobos::readBuffer) > 0)
+				found = true;
+		}
+
+		if (found)
+		{
+			char* context = nullptr;
+			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (auto const pType = TechnoTypeClass::Find(cur))
+				{
+					alternates.AddItem(pType);
+				}
+			}
+		}
+
+		return alternates;
+	};
+
+	// Index 0: "-" dummy
+	DynamicVectorClass<TechnoTypeClass*> emptyList;
+	this->GenericPrerequisitesAlternates.AddItem(emptyList);
+
+	for (int i = 1; i < this->GenericPrerequisitesNames.Count; ++i)
+	{
+		const char* name = this->GenericPrerequisitesNames[i];
+		auto alternates = loadAlternates(name);
+
+		if (_stricmp(name, "PROC") == 0)
+		{
+			if (alternates.Count == 0 && pThis->PrerequisiteProcAlternate)
+			{
+				alternates.AddItem(pThis->PrerequisiteProcAlternate);
+			}
+		}
+
+		this->GenericPrerequisitesAlternates.AddItem(alternates);
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -690,6 +767,84 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
+}
+
+void RulesExt::FillDefaultPrerequisites()
+{
+	if (RulesExt::Global()->GenericPrerequisitesNames.Count != 0)
+		return;
+
+	DynamicVectorClass<int> empty;
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("-"); // Official index: 0
+	RulesExt::Global()->GenericPrerequisites.AddItem(empty);
+
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("POWER"); // Official index: -1
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisitePower);
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("FACTORY"); // -2
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteFactory);
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("BARRACKS"); // -3
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteBarracks);
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("RADAR"); // -4
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteRadar);
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("TECH"); // -5
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteTech);
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("PROC"); // -6
+	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisiteProc);
+
+	// If [GenericPrerequisites] is present will be added after these.
+	// Also the originals can be replaced by new ones
+	int genericPreqsCount = CCINIClass::INI_Rules->GetKeyCount("GenericPrerequisites");
+
+	for (int i = 0; i < genericPreqsCount; ++i)
+	{
+		DynamicVectorClass<int> objectsList;
+		char* context = nullptr;
+		const char* keyName = CCINIClass::INI_Rules->GetKeyName("GenericPrerequisites", i);
+		if (!keyName || keyName[0] == '\0')
+			continue;
+
+		CCINIClass::INI_Rules->ReadString("GenericPrerequisites", keyName, "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			int idx = BuildingTypeClass::FindIndex(cur);
+			if (idx >= 0)
+			{
+				objectsList.AddItem(idx);
+			}
+			else
+			{
+				int genIdx = HouseExt::FindGenericPrerequisite(cur);
+				if (genIdx < 0)
+					objectsList.AddItem(genIdx);
+			}
+		}
+
+		// Find existing name using case-insensitive comparison
+		int existingIndex = -1;
+		for (int k = 0; k < RulesExt::Global()->GenericPrerequisitesNames.Count; ++k)
+		{
+			if (_strcmpi(RulesExt::Global()->GenericPrerequisitesNames[k], keyName) == 0)
+			{
+				existingIndex = k;
+				break;
+			}
+		}
+
+		if (existingIndex > 0)
+		{
+			// Overwrites an existing generic prerequisite (vanilla or custom)
+			RulesExt::Global()->GenericPrerequisites[existingIndex] = objectsList;
+		}
+		else
+		{
+			// New generic prerequisite
+			RulesExt::Global()->GenericPrerequisitesNames.AddItem(keyName);
+			RulesExt::Global()->GenericPrerequisites.AddItem(objectsList);
+		}
+
+		objectsList.Clear();
+	}
 }
 
 // =============================
@@ -883,6 +1038,19 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->ShowPowerPlantEnhancerRange)
 		.Process(this->ShowGameTime)
+		.Process(this->GenericPrerequisites)
+		.Process(this->GenericPrerequisitesNames)
+		.Process(this->GenericPrerequisitesAlternates)
+		.Process(this->NewTeamsSelector)
+		.Process(this->NewTeamsSelector_SplitTriggersByCategory)
+		.Process(this->NewTeamsSelector_EnableFallback)
+		.Process(this->NewTeamsSelector_MergeUnclassifiedCategoryWith)
+		.Process(this->NewTeamsSelector_UnclassifiedCategoryPercentage)
+		.Process(this->NewTeamsSelector_GroundCategoryPercentage)
+		.Process(this->NewTeamsSelector_AirCategoryPercentage)
+		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
+		.Process(this->NewTeamsSelector_InfantryCategoryPercentage)
+		.Process(this->NewTeamsSelector_VIPWeight)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)

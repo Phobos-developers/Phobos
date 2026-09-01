@@ -102,6 +102,7 @@
     <ClCompile Include="src\Ext\Event\Body.cpp" />
     <!-- src\Ext\House -->
     <ClCompile Include="src\Ext\House\Body.cpp" />
+    <ClCompile Include="src\Ext\House\Body.Prerequisites.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
@@ -128,6 +129,7 @@
     <!-- src\Ext\Scenario -->
     <ClCompile Include="src\Ext\Scenario\Body.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Hooks.NewTeamsSelector.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Waypoints.cpp" />
     <!-- src\Ext\Script -->
@@ -159,6 +161,7 @@
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <!-- src\Ext\Team -->
     <ClCompile Include="src\Ext\Team\Body.cpp" />
+    <ClCompile Include="src\Ext\Team\Body.NewTeamsSelector.cpp" />
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />
     <!-- src\Ext\TeamType -->
     <ClCompile Include="src\Ext\TeamType\Body.cpp" />

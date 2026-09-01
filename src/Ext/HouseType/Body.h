@@ -27,8 +27,23 @@ public:
 
 	EVAType EVATag;
 
+	Nullable<int> NewTeamsSelector_MergeUnclassifiedCategoryWith;
+	Nullable<double> NewTeamsSelector_UnclassifiedCategoryPercentage;
+	Nullable<double> NewTeamsSelector_GroundCategoryPercentage;
+	Nullable<double> NewTeamsSelector_NavalCategoryPercentage;
+	Nullable<double> NewTeamsSelector_AirCategoryPercentage;
+	Nullable<double> NewTeamsSelector_InfantryCategoryPercentage;
+	Nullable<double> NewTeamsSelector_VIPWeight;
+
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
+		, NewTeamsSelector_MergeUnclassifiedCategoryWith { }
+		, NewTeamsSelector_UnclassifiedCategoryPercentage { }
+		, NewTeamsSelector_GroundCategoryPercentage { }
+		, NewTeamsSelector_NavalCategoryPercentage { }
+		, NewTeamsSelector_AirCategoryPercentage { }
+		, NewTeamsSelector_InfantryCategoryPercentage { }
+		, NewTeamsSelector_VIPWeight { }
 	{ }
 
 	virtual ~HouseTypeExt() = default;
@@ -65,4 +80,3 @@ public:
 		return AbstractExt::TryFetch<HouseTypeExt>(pThis);
 	}
 };
-

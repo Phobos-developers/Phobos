@@ -333,6 +333,21 @@ public:
 
 		Valueable<bool> AnimCraterDestroyTiberium;
 
+		DynamicVectorClass<DynamicVectorClass<int>> GenericPrerequisites;
+		DynamicVectorClass<const char*> GenericPrerequisitesNames;
+		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> GenericPrerequisitesAlternates;
+
+		Valueable<bool> NewTeamsSelector;
+		Valueable<bool> NewTeamsSelector_SplitTriggersByCategory;
+		Valueable<bool> NewTeamsSelector_EnableFallback;
+		Valueable<int> NewTeamsSelector_MergeUnclassifiedCategoryWith;
+		Valueable<double> NewTeamsSelector_UnclassifiedCategoryPercentage;
+		Valueable<double> NewTeamsSelector_GroundCategoryPercentage;
+		Valueable<double> NewTeamsSelector_NavalCategoryPercentage;
+		Valueable<double> NewTeamsSelector_AirCategoryPercentage;
+		Valueable<double> NewTeamsSelector_InfantryCategoryPercentage;
+		Valueable<double> NewTeamsSelector_VIPWeight;
+
 		Valueable<AffectedHouse> BerzerkTargeting;
 		Valueable<bool> AllowBerzerkOnAllies;
 
@@ -746,6 +761,19 @@ public:
 			, ShowDesignatorRange { true }
 			, ShowPowerPlantEnhancerRange { true }
 			, ShowGameTime { true }
+			, GenericPrerequisites { }
+			, GenericPrerequisitesNames { }
+			, GenericPrerequisitesAlternates { }
+			, NewTeamsSelector { false }
+			, NewTeamsSelector_SplitTriggersByCategory { true }
+			, NewTeamsSelector_EnableFallback { false }
+			, NewTeamsSelector_MergeUnclassifiedCategoryWith { -1 }
+			, NewTeamsSelector_UnclassifiedCategoryPercentage { 0.20 }
+			, NewTeamsSelector_GroundCategoryPercentage { 0.20 }
+			, NewTeamsSelector_NavalCategoryPercentage { 0.20 }
+			, NewTeamsSelector_AirCategoryPercentage { 0.20 }
+			, NewTeamsSelector_InfantryCategoryPercentage { 0.20 }
+			, NewTeamsSelector_VIPWeight { 5000.0 }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -1079,4 +1107,6 @@ public:
 	{
 		Allocate(RulesClass::Instance);
 	}
+
+	static void FillDefaultPrerequisites();
 };

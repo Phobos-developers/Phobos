@@ -68,8 +68,11 @@ public:
 
 	Valueable<bool> IsAnimDelayedBurst;
 
+	Valueable<bool> Secret_RecalcOnCapture;
+	NullableVector<TechnoTypeClass*> PossibleBoons;
+
 	std::vector<std::optional<DirType>> AircraftDockingDirs;
-		Nullable<bool> AircraftDockingDir_DefaultToPoseDir;
+	Nullable<bool> AircraftDockingDir_DefaultToPoseDir;
 
 	ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 	ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
@@ -262,6 +265,9 @@ public:
 
 		// Ares 0.E
 		, Tunnel { false }
+
+		, Secret_RecalcOnCapture { false }
+		, PossibleBoons {}
 
 		// Ares 3.0
 		, UnitSell {}

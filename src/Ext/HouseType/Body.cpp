@@ -18,6 +18,14 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
+
+	this->NewTeamsSelector_MergeUnclassifiedCategoryWith.Read(exINI, pSection, "NewTeamsSelector.MergeUnclassifiedCategoryWith");
+	this->NewTeamsSelector_UnclassifiedCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.UnclassifiedCategoryPercentage");
+	this->NewTeamsSelector_GroundCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.GroundCategoryPercentage");
+	this->NewTeamsSelector_AirCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.AirCategoryPercentage");
+	this->NewTeamsSelector_NavalCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.NavalCategoryPercentage");
+	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.InfantryCategoryPercentage");
+	this->NewTeamsSelector_VIPWeight.Read(exINI, pSection, "NewTeamsSelector.VIPWeight");
 }
 
 template <typename T>
@@ -25,6 +33,13 @@ void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
+		.Process(this->NewTeamsSelector_MergeUnclassifiedCategoryWith)
+		.Process(this->NewTeamsSelector_UnclassifiedCategoryPercentage)
+		.Process(this->NewTeamsSelector_GroundCategoryPercentage)
+		.Process(this->NewTeamsSelector_AirCategoryPercentage)
+		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
+		.Process(this->NewTeamsSelector_InfantryCategoryPercentage)
+		.Process(this->NewTeamsSelector_VIPWeight)
 		;
 }
 
