@@ -968,6 +968,26 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
+	this->DetectDisguise_Percent.Read(exINI, pSection, "DetectDisguise.Percent");
+	{
+		auto& percent = *this->DetectDisguise_Percent.GetEx();
+		if (percent.ValueCount == 1)
+		{
+			percent.Y = percent.X;
+			percent.Z = percent.X;
+			percent.ValueCount = 3;
+		}
+		else if (percent.ValueCount == 2)
+		{
+			percent.Z = percent.Y;
+			percent.ValueCount = 3;
+		}
+
+		percent.X = std::clamp(percent.X, 0.0, 1.0);
+		percent.Y = std::clamp(percent.Y, 0.0, 1.0);
+		percent.Z = std::clamp(percent.Z, 0.0, 1.0);
+	}
+
 	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
 	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
@@ -1646,6 +1666,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->EmptySpawnsPipFrame)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
+
+		.Process(this->DetectDisguise_Percent)
 
 		.Process(this->DroppodType)
 

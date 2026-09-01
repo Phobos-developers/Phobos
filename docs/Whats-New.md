@@ -426,6 +426,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [Customizable disguised target evaluation behaviour in new ScriptType attack actions](Fixed-or-Improved-Logics.md#customizable-disguised-target-evaluation-behaviour-in-new-scripttype-attack-actions) (by FS-21)
 - [Customize whether mind-controlled Insignificant technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-Insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
@@ -1035,6 +1036,7 @@ HideShakeEffects=false           ; boolean
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when `PlacementPreview` is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit)
+- Customizable disguised target evaluation behaviour in new ScriptType attack actions (by FS-21)
 - Show briefing screen on singleplayer mission start (by Starkku)
 - Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
