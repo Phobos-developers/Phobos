@@ -3719,3 +3719,21 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
+
+### Money switch building active animation
+
+- Now you can use `ActiveAnim.MoneyAmount`, `ActiveAnimTwo.MoneyAmount`, `ActiveAnimThree.MoneyAmount`, `ActiveAnimFour.MoneyAmount` to switch active animation of building.
+- When funds are greater than `ActiveAnimFour.MoneyAmount`, `ActiveAnimFour` is played; when funds are greater than `ActiveAnimThree.MoneyAmount` but less than `ActiveAnimFour.MoneyAmount`, ActiveAnimThree is played, and so on. If the corresponding animation does not exist, no switch will occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                   ; BuildingType
+ActiveAnim.MoneyAmount=1000      ; integar
+ActiveAnimTwo.MoneyAmount=2000   ; integar
+ActiveAnimThree.MoneyAmount=3000 ; integar
+ActiveAnimFour.MoneyAmount=4000  ; integar
+```
+
+```{note}
+All four configuration entries default to `-1`. The feature will only be enabled when all entries have been configured.
+```

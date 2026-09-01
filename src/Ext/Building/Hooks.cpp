@@ -1544,3 +1544,69 @@ DEFINE_HOOK(0x6F6D9E, TechnoClass_Unlimbo_BuildingStartFacing, 0x7)
 }
 
 #pragma endregion
+
+#pragma region MoneyChangeAnim
+
+DEFINE_HOOK(0x450DDC, BuildingClass_UpdateAnimation_DestroyAnim, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+
+	if(pTypeExt->ActiveAnim_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
+       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+	{
+		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
+		{
+			long playerMoney = pThis->Owner->Available_Money();
+			int grade = pBuildingExt->moneyGrade;
+
+			if(playerMoney > pTypeExt->ActiveAnimFour_MoneyAmount)
+			{
+				grade = 3;
+			}
+			else if(playerMoney > pTypeExt->ActiveAnimThree_MoneyAmount)
+			{
+				grade = 2;
+			}
+			else if(playerMoney > pTypeExt->ActiveAnimTwo_MoneyAmount)
+			{
+				grade = 1;
+			}
+			else if(playerMoney > pTypeExt->ActiveAnim_MoneyAmount)
+			{
+				grade = 0;
+			}
+			R->EAX(grade);
+			R->ECX(pBuildingExt->moneyGrade);
+			pBuildingExt->moneyGrade = grade;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x450E3E, BuildingClass_UpdateAnimation_CalcmoneyGrade, 0x9)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+
+	if(pTypeExt->ActiveAnim_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
+       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
+	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+	{
+		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
+		{
+			int grade = pBuildingExt->moneyGrade;
+			R->EAX(grade);
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
