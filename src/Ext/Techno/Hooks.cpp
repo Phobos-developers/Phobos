@@ -1877,12 +1877,12 @@ static int GetMultiWeaponRange(TechnoClass* pThis, TechnoTypeExt* pTypeExt)
 
 	if (pTypeExt->MultiWeapon)
 	{
-		int selectCount = Math::min(pTypeExt->OwnerObject()->WeaponCount, pTypeExt->MultiWeapon_SelectCount);
+		const int selectCount = Math::min(pTypeExt->OwnerObject()->WeaponCount, pTypeExt->MultiWeapon_SelectCount);
 		range = 0;
 
 		for (int index = selectCount - 1; index >= 0; --index)
 		{
-			int weaponRange = pThis->GetWeaponRange(index);
+			const int weaponRange = pThis->GetWeaponRange(index);
 
 			if (weaponRange > range)
 				range = weaponRange;
@@ -1925,8 +1925,8 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 		}
 		else
 		{
-			int weaponRange0 = pThis->GetWeaponRange(0);
-			int weaponRange1 = pThis->GetWeaponRange(1);
+			const int weaponRange0 = pThis->GetWeaponRange(0);
+			const int weaponRange1 = pThis->GetWeaponRange(1);
 
 			if (weaponRange0 < weaponRange1)
 				range = weaponRange1;
@@ -1938,11 +1938,11 @@ static int GetGuardRange(TechnoClass* pThis, int control)
 	// Game doubles the range likely to make area guard behave better for shorter range units.
 	// From observed results does not seem to affect target scan range otherwise f.ex on guard mission.
 	range *= 2;
-	int maxRange = pTypeExt->MaxGuardRange.Get();
+	const int maxRange = pTypeExt->MaxGuardRange.Get();
 
 	if (control == 2) // Control = 2, used for Patrol mission.
 	{
-		int patrolMinRange = 1792;
+		const int patrolMinRange = 1792;
 
 		if (range >= patrolMinRange)
 		{
@@ -1971,7 +1971,7 @@ DEFINE_HOOK(0x707E63, TechnoClass_GetGuardRange, 0x7)
 	enum { SkipGameCode = 0x707F4B };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, control, STACK_OFFSET(0xC, 0x4));
+	GET_STACK(const int, control, STACK_OFFSET(0xC, 0x4));
 
 	R->EAX(GetGuardRange(pThis, control));
 
@@ -1985,7 +1985,7 @@ DEFINE_HOOK(0x6F90DE, TechnoClass_GreatestThreat_MultiWeapon, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (int result = GetMultiWeaponRange(pThis, TechnoExt::Fetch(pThis)->TypeExtData); result != -1)
+	if (const int result = GetMultiWeaponRange(pThis, TechnoExt::Fetch(pThis)->TypeExtData); result != -1)
 	{
 		R->EAX(result);
 		return SkipGameCode;
