@@ -571,6 +571,53 @@ DEFINE_HOOK(0x442290, BuildingClass_ReceiveDamage_Nonprovocative1, 0x6)
 	return pTypeExt->Nonprovocative ? SkipEvents : 0;
 }
 
+DEFINE_HOOK(0x442046, BuildingClass_ReceiveDamage_Immune_FakeEngineer, 0x6)
+{
+	enum { BypassImmuneExit = 0x44204C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	if (pThis && pWarhead)
+	{
+		auto const pWHExt = WarheadTypeExt::Fetch(pWarhead);
+		if (pWHExt->FakeEngineer_CanCaptureBuildings
+			|| pWHExt->FakeEngineer_CanRepairBridges
+			|| pWHExt->FakeEngineer_CanDestroyBridges
+			|| pWHExt->FakeEngineer_BombDisarm)
+		{
+			return BypassImmuneExit;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4423B7, BuildingClass_ReceiveDamage_BridgeRepairHut, 0xC)
+{
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x9C, 0x10));
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x9C, 0x18));
+	GET(BuildingClass*, pThis, ESI);
+
+	if (pThis && pWarhead)
+	{
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(pThis->GetMapCoords());
+
+		if (!isBridgeDestroyed && pWHExt->FakeEngineer_CanDestroyBridges)
+		{
+			TechnoExt::RepairOrDestroyBridgeHut(pThis, pSource, pHouse, true);
+		}
+		else if (isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges)
+		{
+			TechnoExt::RepairOrDestroyBridgeHut(pThis, pSource, pHouse, false);
+		}
+	}
+
+	return 0;
+}
+
 // Suppress all events and alerts that come from attacking a building, unlike Ares' Malicious this includes all EVA notifications AND events
 DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
 {

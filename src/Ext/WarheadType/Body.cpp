@@ -1,6 +1,9 @@
 #include "Body.h"
 
 #include <Ext/Techno/Body.h>
+#include <Utilities/EnumFunctions.h>
+#include <RadarEventClass.h>
+#include <Ext/WeaponType/Body.h>
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
@@ -11,6 +14,13 @@ bool WarheadTypeExt::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) co
 	if (pHouse && pTarget)
 	{
 		const auto pOwner = pTarget->Owner;
+
+		if (this->FakeEngineer_BombDisarm && pTarget->AttachedBomb)
+			return true;
+
+		const bool isFakeEngineerBuilding = (this->FakeEngineer_CanCaptureBuildings || this->FakeEngineer_CanRepairBridges || this->FakeEngineer_CanDestroyBridges);
+		if (isFakeEngineerBuilding && pOwner->IsNeutral() && pOwner != pHouse)
+			return true;
 
 		if (!this->AffectsNeutral && pOwner->IsNeutral())
 			return false;
@@ -25,8 +35,11 @@ bool WarheadTypeExt::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) co
 		if (affectsAllies && isAllies)
 			return pOwner != pHouse;
 
-		if (this->AffectsEnemies && !isAllies)
-			return true;
+		if (this->AffectsEnemies && (!isAllies || (isFakeEngineerBuilding && pOwner->IsNeutral())))
+			return pOwner != pHouse;
+
+		if (isFakeEngineerBuilding && pOwner->IsNeutral())
+			return pOwner != pHouse;
 
 		return false;
 	}
@@ -490,6 +503,11 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
 	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
+	this->FakeEngineer_CanRepairBridges.Read(exINI, pSection, "FakeEngineer.CanRepairBridges");
+	this->FakeEngineer_CanDestroyBridges.Read(exINI, pSection, "FakeEngineer.CanDestroyBridges");
+	this->FakeEngineer_CanCaptureBuildings.Read(exINI, pSection, "FakeEngineer.CanCaptureBuildings");
+	this->FakeEngineer_BombDisarm.Read(exINI, pSection, "FakeEngineer.BombDisarm");
+
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::Detonate
 	this->PossibleCellSpreadDetonate = (
@@ -821,6 +839,10 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
 
+		.Process(this->FakeEngineer_CanRepairBridges)
+		.Process(this->FakeEngineer_CanDestroyBridges)
+		.Process(this->FakeEngineer_CanCaptureBuildings)
+		.Process(this->FakeEngineer_BombDisarm)
 		.Process(this->Ammo)
 		;
 }

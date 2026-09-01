@@ -92,8 +92,11 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
 	enum { UseWeaponIndex = 0x6F37AF };
 
-	GET(TechnoClass*, pThis, ECX);
+	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
+
+	if (!pThis || !pTarget)
+		return 0;
 
 	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
@@ -136,6 +139,37 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	if (!pTargetTechno)
 		return Primary;
+
+	if (TechnoExt::CanBeAffectedByFakeEngineer(pThis, pTargetTechno, true, true, true))
+	{
+		auto const pSecWeapon = pThis->GetWeapon(1);
+		if (pSecWeapon && pSecWeapon->WeaponType && pSecWeapon->WeaponType->Warhead)
+		{
+			auto const pSecWHExt = WarheadTypeExt::Fetch(pSecWeapon->WeaponType->Warhead);
+			const bool secHasFakeEngineer = pSecWHExt->FakeEngineer_CanCaptureBuildings
+				|| pSecWHExt->FakeEngineer_CanRepairBridges
+				|| pSecWHExt->FakeEngineer_CanDestroyBridges
+				|| pSecWHExt->FakeEngineer_BombDisarm;
+
+			if (secHasFakeEngineer)
+			{
+				auto const pPriWeapon = pThis->GetWeapon(0);
+				if (!pPriWeapon || !pPriWeapon->WeaponType || !pPriWeapon->WeaponType->Warhead)
+					return Secondary;
+
+				auto const pPriWHExt = WarheadTypeExt::Fetch(pPriWeapon->WeaponType->Warhead);
+				const bool priHasFakeEngineer = pPriWHExt->FakeEngineer_CanCaptureBuildings
+					|| pPriWHExt->FakeEngineer_CanRepairBridges
+					|| pPriWHExt->FakeEngineer_CanDestroyBridges
+					|| pPriWHExt->FakeEngineer_BombDisarm;
+
+				if (!priHasFakeEngineer)
+					return Secondary;
+			}
+		}
+
+		return Primary;
+	}
 
 	const auto pTargetExt = TechnoExt::Fetch(pTargetTechno);
 

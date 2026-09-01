@@ -194,6 +194,7 @@ public:
 	Valueable<int> ForceAAWeapon_Infantry;
 	Valueable<int> ForceAAWeapon_Units;
 	Valueable<int> ForceAAWeapon_Aircraft;
+	Valueable<int> ForceWeapon_Capture;
 
 	Valueable<bool> Ammo_Shared;
 	Valueable<int> Ammo_Shared_Group;

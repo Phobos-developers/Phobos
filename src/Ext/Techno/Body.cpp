@@ -9,6 +9,8 @@
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Ext/WarheadType/Body.h>
+#include <RadarEventClass.h>
 #include <Utilities/AresHelper.h>
 #include <Interop/TechnoExt.h>
 
@@ -669,6 +671,175 @@ bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, 
 		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
 
 	return placed;
+}
+
+AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	if (pAircraft->IsGreenHP())
+	{
+		return pAircraft->Type;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		auto const pType = pAircraft->Type;
+		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pAircraft->Type;
+
+}
+
+bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTarget, bool checkBridge, bool checkCapturableBuilding, bool checkAttachedBombs)
+{
+	if (!pThis || !pTarget)
+		return false;
+
+	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	const bool isBuilding = pBuilding && pBuilding->IsAlive && pBuilding->Health > 0;
+
+	auto checkWeaponWarhead = [&](WeaponTypeClass* pWeapon) -> bool
+	{
+		if (!pWeapon || !pWeapon->Warhead)
+			return false;
+
+		const auto pWHExt = WarheadTypeExt::Fetch(pWeapon->Warhead);
+		if (!pWHExt->FakeEngineer_CanCaptureBuildings
+			&& !pWHExt->FakeEngineer_CanRepairBridges
+			&& !pWHExt->FakeEngineer_CanDestroyBridges
+			&& !pWHExt->FakeEngineer_BombDisarm)
+		{
+			return false;
+		}
+
+		if (checkAttachedBombs
+			&& pWHExt->FakeEngineer_BombDisarm
+			&& pTarget->AttachedBomb)
+		{
+			return true;
+		}
+
+		if (checkBridge && isBuilding && pBuilding->Type->BridgeRepairHut)
+		{
+			CellStruct bridgeRepairHutCell = pBuilding->GetMapCoords();
+			bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+			if ((isBridgeDamaged && pWHExt->FakeEngineer_CanRepairBridges)
+				|| (!isBridgeDamaged && pWHExt->FakeEngineer_CanDestroyBridges))
+			{
+				return true;
+			}
+		}
+
+		if (checkCapturableBuilding
+			&& isBuilding
+			&& pWHExt->FakeEngineer_CanCaptureBuildings
+			&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer)
+			&& pBuilding->Owner != pThis->Owner
+			&& (!pThis->Owner->IsAlliedWith(pBuilding) || pBuilding->Owner->IsNeutral()))
+		{
+			return true;
+		}
+
+		return false;
+	};
+
+	// 1. Check Primary and Secondary weapons
+	if (const auto pPrimary = pThis->GetWeapon(0))
+	{
+		if (checkWeaponWarhead(pPrimary->WeaponType))
+			return true;
+	}
+	if (const auto pSecondary = pThis->GetWeapon(1))
+	{
+		if (checkWeaponWarhead(pSecondary->WeaponType))
+			return true;
+	}
+
+	// 2. Check deploy fire weapon
+	int deployWeaponIdx = -1;
+	if (auto const pDeployWeapon = TechnoExt::GetDeployFireWeapon(pThis, pThis->GetTechnoType(), deployWeaponIdx))
+	{
+		if (checkWeaponWarhead(pDeployWeapon))
+			return true;
+	}
+
+	return false;
+}
+
+void TechnoExt::RepairOrDestroyBridgeHut(BuildingClass* pBuilding, TechnoClass* pOwner, HouseClass* pFiringHouse, bool destroyBridge)
+{
+	if (!pBuilding || !pBuilding->Type->BridgeRepairHut || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return;
+
+	const CoordStruct targetCoords = pBuilding->GetCenterCoords();
+	const CellStruct baseCell = pBuilding->GetMapCoords();
+
+	// Send engineer's "enter" event
+	auto const pTag = pBuilding->AttachedTag;
+
+	if (pTag && pOwner)
+		pTag->RaiseEvent(TriggerEvent::EnteredBy, pOwner, CellStruct::Empty);
+
+	// Check a 5x5 area for bridge tiles to determine if we should repair or destroy
+	bool foundWoodBridge = false;
+
+	for (int y = -2; y <= 2; ++y)
+	{
+		for (int x = -2; x <= 2; ++x)
+		{
+			CellStruct checkCellCoords = { static_cast<short>(baseCell.X + x), static_cast<short>(baseCell.Y + y) };
+			auto const checkCell = MapClass::Instance.GetCellAt(checkCellCoords);
+
+			if (checkCell && (checkCell->Tile_Is_WoodBridge() || (checkCell->OverlayTypeIndex >= 74 && checkCell->OverlayTypeIndex <= 101)))
+				foundWoodBridge = true;
+
+			if (foundWoodBridge)
+				break;
+		}
+
+		if (foundWoodBridge)
+			break;
+	}
+
+	// Destroying bridges
+	if (destroyBridge)
+	{
+		if (foundWoodBridge) // Destroy wood bridges
+			MapClass::Instance.DestroyWoodBridgeAt(baseCell);
+		else // Destroy concrete bridges
+			MapClass::Instance.DestroyConcreteBridgeAt(baseCell);
+
+		return;
+	}
+
+	auto const pFiringOwner = pOwner ? pOwner->Owner : pFiringHouse;
+
+	// Repairing bridges
+	if (pFiringOwner && pFiringOwner->IsControlledByCurrentPlayer())
+	{
+		if (RadarEventClass::Create(RadarEventType::BridgeRepaired, baseCell))
+			VoxClass::PlayIndex(VoxClass::FindIndex("EVA_BridgeRepaired"));
+	}
+
+	if (RulesClass::Instance->RepairBridgeSound != -1)
+		VocClass::PlayAt(RulesClass::Instance->RepairBridgeSound, targetCoords, nullptr);
+
+	if (foundWoodBridge) // Repair wood bridges
+		MapClass::Instance.RepairWoodBridgeAt(baseCell);
+	else // Repair concrete bridges
+		MapClass::Instance.RepairConcreteBridgeAt(baseCell);
 }
 
 void TechnoExt::ResetDelayedFireTimer()

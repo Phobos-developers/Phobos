@@ -1,3 +1,8 @@
+#include "Body.h"
+
+#include <TacticalClass.h>
+#include <RadarEventClass.h>
+#include <BombClass.h>
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/InfantryType/Body.h>
@@ -80,6 +85,27 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			damage = calculateDamage ? calculateDamage : sgnDamage;
 		}
 	}
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+	// Capture enemy/neutral buildings
+	const bool canCaptureHouse = pBuilding && pBuilding->Owner != pSourceHouse
+		&& (!pSourceHouse->IsAlliedWith(pTargetHouse) || pBuilding->Owner->IsNeutral());
+
+	if (canCaptureHouse && pWHExt->FakeEngineer_CanCaptureBuildings
+		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		// Send engineer's "enter" event
+		auto const pTag = pBuilding->AttachedTag;
+		if (args->Attacker && pTag)
+			pTag->RaiseEvent(TriggerEvent::EnteredBy, args->Attacker, CellStruct::Empty);
+
+		pBuilding->SetOwningHouse(pSourceHouse, true);
+	}
+
+	// Disarm bomb
+	if (pThis->AttachedBomb && pWHExt->FakeEngineer_BombDisarm)
+		pThis->AttachedBomb->Disarm();
 
 	// Raise Combat Alert
 	if (RulesExt::Global()->CombatAlert && damage > 1)

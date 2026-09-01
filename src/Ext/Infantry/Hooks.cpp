@@ -209,3 +209,18 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 
 	return 0;
 }
+
+// Pass actual target to SelectWeapon instead of -1 during What_Action evaluation
+DEFINE_HOOK(0x51E6D8, InfantryClass_WhatAction_WhatWeaponShouldIUse, 0x9)
+{
+	GET(InfantryClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, ESI);
+
+	int weaponIdx = (pThis && pTarget) ? pThis->SelectWeapon(pTarget) : -1;
+
+	R->EAX(weaponIdx);
+
+	return 0x51E6E1;
+}
+
+

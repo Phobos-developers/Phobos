@@ -236,6 +236,11 @@ public:
 
 	Valueable<bool> ReverseEngineer;
 
+	Valueable<bool> FakeEngineer_CanRepairBridges;
+	Valueable<bool> FakeEngineer_CanDestroyBridges;
+	Valueable<bool> FakeEngineer_CanCaptureBuildings;
+	Valueable<bool> FakeEngineer_BombDisarm;
+
 	Valueable<bool> CanKill;
 
 	Valueable<bool> UnlimboDetonate;
@@ -458,6 +463,10 @@ public:
 		, JumpjetNoWobbles {}
 		, JumpjetDeviation {}
 
+		, FakeEngineer_CanRepairBridges { false }
+		, FakeEngineer_CanDestroyBridges { false }
+		, FakeEngineer_CanCaptureBuildings { false }
+		, FakeEngineer_BombDisarm { false }
 		, Nonprovocative { false }
 
 		, MergeBuildingDamage {}

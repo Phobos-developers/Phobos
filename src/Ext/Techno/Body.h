@@ -262,6 +262,11 @@ public:
 	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
 	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTypeClass* pWeapon, int weaponIndex, int frame, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
+	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
+	static bool CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pBuilding, bool checkBridge = false, bool checkCapturableBuilding = false, bool checkAttachedBombs = false);
+	static void RepairOrDestroyBridgeHut(BuildingClass* pBuilding, TechnoClass* pOwner = nullptr, HouseClass* pFiringHouse = nullptr, bool destroyBridge = false);
+	static bool CannotMove(UnitClass* pThis);
 	static void ShowPromoteAnim(TechnoClass* pThis);
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
