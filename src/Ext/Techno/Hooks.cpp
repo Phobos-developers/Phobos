@@ -50,27 +50,6 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	if (pExt->AttackMoveFollowerTempCount)
 		pExt->AttackMoveFollowerTempCount--;
 
-	// Check speed multipliers for zero, update things like allowing
-	// locomotor to process destination again.
-	if (FootExt::GetCurrentSpeedMultiplier(pThis) > 0.0)
-	{
-		bool wasZeroSpeed = pExt->IsZeroSpeed;
-		pExt->IsZeroSpeed = false;
-
-		if (wasZeroSpeed)
-		{
-			if (auto const pDest = pThis->Destination)
-			{
-				pThis->Destination = nullptr; // Force it to update.
-				pThis->SetDestination(pDest, false);
-			}
-		}
-	}
-	else
-	{
-		pExt->IsZeroSpeed = true;
-	}
-
 	return 0;
 }
 
