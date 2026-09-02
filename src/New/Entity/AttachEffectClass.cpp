@@ -1065,25 +1065,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		if (pType == attachEffect->Type)
 		{
 			detachedCount++;
-
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
-			{
-				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->Invoker)
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pTarget, pTarget->Owner });
-					}
-				}
-			}
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Remove, expireWeapons, stackCount != 1);
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 				cumulativeAnimTypes.insert(pType);
@@ -1218,6 +1200,33 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			pTargetExt->UpdateTintValues();
 		}
 	}
+}
+
+#pragma endregion
+
+#pragma region Helpers
+
+void AttachEffectClass::AddExpireWeaponParams(ExpireWeaponCondition condition, std::vector<AEWeaponParams>& expireWeapons, bool ignoreCumulativeCountCheck) const
+{
+	if (!this->Type->ExpireWeapon || (this->Type->ExpireWeapon_TriggerOn & condition) == ExpireWeaponCondition::None)
+		return;
+
+	if (this->Type->Cumulative && this->Type->ExpireWeapon_CumulativeOnlyOnce && (ignoreCumulativeCountCheck || TechnoExt::Fetch(this->Techno)->GetAttachedEffectCumulativeCount(this->Type) >= 1))
+		return;
+
+	if (this->Type->ExpireWeapon_UseInvokerAsOwner)
+	{
+		if (auto const pInvoker = this->GetInvoker())
+		{
+			expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, pInvoker, pInvoker->Owner });
+			return;
+		}
+
+		expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, nullptr, this->GetInvokerHouse() });
+		return;
+	}
+
+	expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, this->Techno, this->Techno->Owner });
 }
 
 #pragma endregion

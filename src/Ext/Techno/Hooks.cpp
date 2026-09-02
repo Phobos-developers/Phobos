@@ -403,6 +403,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<AEWeaponParams> expireWeapons;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
@@ -423,6 +424,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 				continue;
 			}
 
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
 			it = pExt->AttachedEffects.erase(it);
 		}
 		else
@@ -438,6 +440,13 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	{
 		pExt->OwnerObject()->MarkForRedraw();
 		pExt->UpdateTintValues();
+	}
+
+	auto const coords = pThis->GetCoords();
+
+	for (auto const& info : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
 	return pThis->TechnoClass::Limbo();
