@@ -757,6 +757,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether the unit exits from the roof
   - Customize whether the unit can be detected by psychic detector
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
+  - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
+  - Customizable infantry sequence rates
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

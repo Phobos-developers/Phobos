@@ -875,6 +875,12 @@ msgstr ""
 "[扩展 `CanTargetHouses` 以允许瞄准中立所属方](New-or-Enhanced-Logics.md#"
 "weapon-targeting-filter)（by weiyongxuan）"
 
+msgid ""
+"[Customizable infantry sequence rates](New-or-Enhanced-Logics.md"
+"#customizable-infantry-sequence-rates) (by Noble_Fish)"
+msgstr ""
+"[自定义步兵序列播放速率](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates)（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
