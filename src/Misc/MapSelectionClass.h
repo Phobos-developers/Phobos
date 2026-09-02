@@ -120,6 +120,7 @@ private:
 	std::string clickRegionSound {};
 	std::string mouseOnMapSound {};
 	std::string mouseOffMapSound {};
+	std::string typeSound {};
 	std::string themeName {};
 
 	// Choices / Progression
