@@ -748,7 +748,10 @@ PowerPlantEnhancer.MaxCount=-1     ; integer
 ### Roof production anim
 
 - Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
-  - The criterion for exiting through the roof hatch is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+
+```{hint}
+Whether technos exit from the roof depends on [`ExitThroughRoof`](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof). The criterion for it defaulting to true is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+```
 
 In `artmd.ini`:
 ```ini
@@ -1753,6 +1756,26 @@ BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location.
+  - You can also set whether cloak units kick out parasites.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Cloak.KickOutParasite=false   ; boolean
+
+[AudioVisual]
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
+
+[SOMETECHNO]                  ; TechnoType
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
+```
+
 ### Convert TechnoType on owner house change
 
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
@@ -2660,26 +2683,6 @@ Ammo.AutoDeployMinimumAmount=-1    ; integer
 Ammo.AutoDeployMaximumAmount=-1    ; integer
 Ammo.DeployUnlockMinimumAmount=-1  ; integer
 Ammo.DeployUnlockMaximumAmount=-1  ; integer
-```
-
-### Cloak Enhancement
-
-- When unit start cloak or stop cloaking, an animation can play on his location
-  - You can also set whether cloak units kick out parasites
-
-In `rulesmd.ini`:
-```ini
-[General]
-Cloak.KickOutParasite=false   ; boolean
-
-[AudioVisual]
-CloakAnims=                   ; List of Animation
-DecloakAnims=                 ; List of Animation
-
-[SOMETECHNO]
-CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
-DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
-Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
 ### Custom hover vehicles shutdown drowning death
