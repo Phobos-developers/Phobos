@@ -19,6 +19,25 @@ class AresTechnoTypeExtData;
 class AresHouseExtData;
 class AresSWTypeExtData;
 
+// Wrapper of values passed to Ares' SW target picker.
+class AresSWTargetInfo
+{
+public:
+	SuperClass* SW;
+	HouseClass* Owner;
+	void* Ext;  // Ares' SWTypeExt
+	void* Unk1; // Unknown
+	void* Unk2; // Unknown
+};
+
+// What Ares' SW target picker sets and returns.
+class AresSWTargetResult
+{
+public:
+	CellStruct TargetCell;
+	bool WasSuccessful;
+};
+
 class AresFunctions
 {
 public:
@@ -47,6 +66,8 @@ public:
 	static bool (*DetailsCurrentlyEnabled)();
 
 	static void(*SendPDPlane)(HouseClass* pOwner, CellClass* pDestination, AircraftTypeClass* pPlaneType, Iterator<TechnoTypeClass*> Types, Iterator<int> Nums);
+
+	static AresSWTargetResult*(__stdcall* PickSuperWeaponTarget)(AresSWTargetResult*, AresSWTargetInfo*);
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
