@@ -47,6 +47,7 @@ public:
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }
 		, TurretAnimRateTick { 0 }
+		, ConstructionStartFacing { -1 }
 		, IsPlayingRoofProductionAnim { false }
 	{ }
 
