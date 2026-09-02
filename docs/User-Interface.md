@@ -654,6 +654,88 @@ In `uimd.ini`:
 DisableEmptySpawnPositions=false  ; boolean
 ```
 
+## Mission selection screen
+
+- In vanilla Yuri's Revenge, branching campaign progression was disabled and skipped. Now you can use the Tiberian Sun interactive mission selection screen between campaign missions with full support for territory hover zones, mission briefings, voiceovers, video cutscenes, overlay animations, target cursors, and soundtrack themes.
+  - Configuration is read from `mapselmd.ini`.
+  - `[Sides]` and faction sections map the player's side/house to campaign stages.
+  - Each stage section defines the map background, videos, animations, target coordinates, sounds, and selectable mission choices.
+  - `MapVQ` specifies the introductory cutscene movie or video background.
+  - `Map` specifies an optional static background SHP image.
+  - `MapPCX` specifies an optional static background PCX image (taking precedence over `Map`).
+  - `Palette` specifies the palette used for UI rendering and animations (defaults to `mapsel.pal`).
+  - `OverlayPalette` specifies the palette used for territory overlay rendering (defaults to `msovrly.pal`).
+  - `Overlays` specifies a comma-separated list of territory overlay SHP files that sweep into the map after the intro video.
+  - `OverlaysPCX` specifies a comma-separated list of PCX overlay files (taking precedence over `Overlays`).
+  - `Targets` defines the count and (X,Y) coordinates of animated mission target crosshairs on the map.
+  - `TargetFlyIn` specifies the target zoom-in SHP animation (defaults to `TARGET1.SHP`).
+  - `TargetFlyInPCX` specifies a base PCX filename for the target zoom-in animation (declaring `TARGET1.PCX` or `TARGET1 0000.PCX` automatically loads the sequence of frame files `TARGET1 0000.PCX`, `TARGET1 0001.PCX`, etc., taking precedence over `TargetFlyIn`).
+  - `TargetMarker` specifies the target crosshair marker SHP animation (defaults to `TARGET2.SHP`).
+  - `TargetMarkerPCX` specifies a base PCX filename for the target crosshair marker animation (declaring `TARGET2.PCX` or `TARGET2 0000.PCX` automatically loads the sequence of frame files `TARGET2 0000.PCX`, `TARGET2 0001.PCX`, etc., taking precedence over `TargetMarker`).
+  - `Anim<N>` defines stage-specific decorative SHP animations (`<file.shp>,<x>,<y>,<delay>[,<palette.pal>]`) on the map interface (logos, radar sweeps, spinning globes, beacons). An optional custom palette filename can be provided (defaulting to `Palette`).
+  - `Anim<N>PCX` defines stage-specific decorative multi-frame PCX animations (`<base.pcx>,<x>,<y>,<delay>`). Declaring `<base.pcx>` (or `<base 0000.pcx>`) automatically loads the sequence of frame files (`base 0000.PCX`, `base 0001.PCX`, etc.) and takes precedence over `Anim<N>`.
+  - `[Anims]` defines global SHP animations shared across all stages (`<index>=<file.shp>,<x>,<y>,<delay>[,<palette.pal>]`). An optional custom palette filename can be provided (defaulting to `Palette`).
+  - `[AnimsPCX]` defines global multi-frame PCX animations shared across all stages (`<index>=<base.pcx>,<x>,<y>,<delay>`).
+  - `ClickMap` specifies an 8-bit indexed 256-color PCX mask image. Color indices `0` and `255` represent non-clickable background areas (oceans, borders, or transparent zones), while palette color indices `1` through `254` represent clickable territory zones (referenced by `<mask's color index>=`).
+  - `<mask's color index>=<StageName>` binds a palette color index from the `ClickMap` PCX to a mission choice section (e.g. `3=NODB03` and `4=NODA03`). When the player hovers over pixels painted with palette color index `3`, the game highlights and displays the briefing for `[NODB03]`, and launches its scenario upon clicking. Up to 254 unique clickable territory zones per screen are supported.
+  - `VoiceOver` defines the spoken audio brief played when hovering over a mission (or opening the stage).
+  - `HoverSound` defines an optional SFX sound when hovering over a mission choice.
+  - `ClickSound` defines the sound played when confirming a mission selection.
+  - `OverlaySound` defines the sound played during the territory overlay sweep.
+  - `TargetSound` defines the sound played during target crosshair zoom-in animation.
+  - `MouseOnMapSound` / `MouseOffMapSound` defines sounds played when cursor enters or leaves the map window.
+  - `Theme` specifies an optional soundtrack theme played during map selection.
+  - `TextColor` specifies the text color (`R,G,B`) for the mission briefing (defaults to the active player's house color).
+  - `TextRect` specifies an optional custom bounding rectangle (`<x>,<y>,<width>,<height>`) for the mission briefing text, relative to the map window (defaults to `92,322,332,78` matching Tiberian Sun's HUD plate).
+  - `Description` specifies the CSF string key or text for the mission briefing, displayed in the metallic briefing panel with automatic multi-line word wrapping and typewriter animation.
+
+In `mapselmd.ini`:
+```ini
+[Sides]
+<index>=                                 ; Side
+
+[SOMESIDE]                               ; Side
+<index>=                                 ; Stage
+
+[SOMESTAGE]                              ; Stage
+Scenario=                                ; Scenario filename
+Description=                             ; CSF label or text
+Map=                                     ; SHP filename
+MapPCX=                                  ; PCX filename
+Palette=mapsel.pal                       ; Palette filename
+OverlayPalette=msovrly.pal               ; Palette filename
+MapVQ=                                   ; video filename
+Overlays=                                ; list of SHP filenames
+OverlaysPCX=                             ; list of PCX filenames
+Targets=                                 ; integer, point list
+TargetFlyIn=TARGET1.SHP                  ; SHP filename
+TargetFlyInPCX=                          ; PCX filename
+TargetMarker=TARGET2.SHP                 ; SHP filename
+TargetMarkerPCX=                         ; PCX filename
+ClickMap=                                ; PCX filename
+Theme=                                   ; Soundtrack theme ID
+VoiceOver=                               ; WAV sound filename
+OverlaySound=                            ; WAV sound filename
+TargetSound=                             ; WAV sound filename
+HoverSound=                              ; WAV sound filename
+ClickSound=                              ; WAV sound filename
+EnterRegionSound=                        ; WAV sound filename
+ExitRegionSound=                         ; WAV sound filename
+MouseOnMapSound=                         ; WAV sound filename
+MouseOffMapSound=                        ; WAV sound filename
+TextColor=<player house color>           ; ColorStruct (R,G,B)
+TextRect=92,322,332,78                   ; Rectangle (x,y,width,height)
+Anim<N>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+Anim<N>PCX=                              ; Animation PCX (base.pcx,x,y,delay)
+<mask's color index>=                    ; Choice Stage
+
+[Anims]                                  ; Optional global SHP animations
+<index>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+
+[AnimsPCX]                               ; Optional global PCX animations
+<index>=                                 ; Animation PCX (base.pcx,x,y,delay)
+```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
