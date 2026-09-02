@@ -1108,7 +1108,7 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if (pThis && !TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
+	if (!TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
 	{
 		R->EAX(0);
 		return 0x43B4B0;
