@@ -67,6 +67,7 @@ public:
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void HealthAutoConvertActions();
 	void AmmoAutoConvertActions();
+	void HandleTemporaryZeroSpeed();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

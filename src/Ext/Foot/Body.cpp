@@ -1,6 +1,7 @@
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
+#include <WalkLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
@@ -914,6 +915,36 @@ bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 	}
 
 	return false;
+}
+
+// Check speed multipliers for zero, update things like allowing
+// locomotor to process destination again.
+void FootExt::HandleTemporaryZeroSpeed()
+{
+	const auto pThis = this->OwnerObject();
+	const bool isZeroSpeed = FootExt::GetCurrentSpeedMultiplier(pThis) <= 0.0;
+	const bool wasZeroSpeed = this->IsZeroSpeed;
+	this->IsZeroSpeed = isZeroSpeed;
+
+	if (isZeroSpeed && !wasZeroSpeed)
+	{
+		// Walk locomotor requires manual reset of movement state when immobilized.
+		if (auto const pWalkLoco = locomotion_cast<WalkLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
+		{
+			pWalkLoco->Destination = CoordStruct::Empty;
+			pWalkLoco->HeadToCoord = CoordStruct::Empty;
+			pWalkLoco->Stop_Moving();
+		}
+	}
+	else if (!isZeroSpeed && wasZeroSpeed)
+	{
+		// Set destination again if it exists.
+		if (auto const pDest = pThis->Destination)
+		{
+			pThis->Destination = nullptr;
+			pThis->SetDestination(pDest, false);
+		}
+	}
 }
 
 // =============================
