@@ -2599,6 +2599,7 @@ msgid ""
 "Fix the bug where `Ranged=true` causes projectiles using the new "
 "Trajectory to ignore settings such as `BounceTimes`"
 msgstr ""
+"修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
 
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
