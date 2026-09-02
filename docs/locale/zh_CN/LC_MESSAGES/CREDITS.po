@@ -1,14 +1,9 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2025, The Phobos Contributors
-# This file is distributed under the same license as the Phobos package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-21 08:32+0800\n"
+"POT-Creation-Date: 2026-09-02 16:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -480,8 +475,7 @@ msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
 msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
 
 msgid "Modify ammo on impact"
-msgstr ""
-"修改弹药弹头"
+msgstr "修改弹药弹头"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -1893,17 +1887,15 @@ msgid "Customize ivan bomb visibility"
 msgstr "自定义伊文炸弹可见性"
 
 msgid ""
-"Fix the issue where vehicles always finish turret resetting first "
-"before turn to a new attack target, now it should turn to "
-"new target immediately"
+"Fix the issue where vehicles always finish turret resetting first before "
+"turn to a new attack target, now it should turn to new target immediately"
 msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标"
 
 msgid ""
-"Fixed a bug that computer player record cannot be log normally "
-"in non English mode"
+"Fix a bug that computer player record cannot be log normally in non "
+"English mode"
 msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"
 
-msgid ""
 msgid "Cloak Enhancement"
 msgstr "隐形增强"
 
@@ -2573,11 +2565,41 @@ msgid ""
 "did not play `ProductionAnim` when placing a produced building"
 msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
 
+msgid ""
+"Fix the bug that buildings with passengers cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr "修复有乘客建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
+
+msgid ""
+"Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
+
+msgid ""
+"Customize whether mind-controlled `Insignificant` technos can be auto-"
+"targeted"
+msgstr "自定义 `Insignificant` 的单位是否会因被心控而变得可以被主动寻敌索到"
+
 msgid "Roof production anim"
 msgstr "天窗生产动画"
 
 msgid "Customize whether the unit exits from the roof"
 msgstr "自定义单位是否从天窗退出"
+
+msgid "Customize whether the unit can be detected by psychic detector"
+msgstr "自定义单位能否被心灵感应"
+
+msgid ""
+"Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game "
+"(integer divide-by-zero) the moment an object of that type started moving"
+msgstr ""
+"修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
+
+msgid ""
+"Fix the bug where `Ranged=true` causes projectiles using the new "
+"Trajectory to ignore settings such as `BounceTimes`"
+msgstr ""
+"修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
 
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
@@ -2665,6 +2687,9 @@ msgstr "自定义乘客能否在运输工具移动时向外开火"
 
 msgid "Fix a game crash when parsing string list with null entry"
 msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃"
+
+msgid "`513` Set mission timer properties"
+msgstr "设置任务计时器属性"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3061,6 +3086,11 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr "针对特定接收者的超武激活消息与 EVA 语音"
 
+msgid ""
+"Add new AutoDeath conditions based on the owner's power status and the "
+"player's credits"
+msgstr "添加了基于所有者电力状态和玩家资金的新自毁条件"
+
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
 
@@ -3251,6 +3281,10 @@ msgstr "**obsidianus** - 自动根据血量变形"
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
 
-msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
-msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being "
+"respected when the master is sold or self-destructed"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
+"不被遵守的问题"
 
