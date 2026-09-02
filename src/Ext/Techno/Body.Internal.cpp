@@ -133,12 +133,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
-void TechnoExt::InitializeDisplayInfo()
+void TechnoExt::InitializeDisplayInfo(TechnoTypeClass* pType)
 {
 	const auto pThis = this->OwnerObject();
 	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
 
-	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
+	if (pPrimary && pType->LandTargeting != LandTargetingType::Land_Not_OK)
 		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
 	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
 		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
@@ -231,13 +231,12 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 }
 
 // This is still not even correct, but let's see how far this can help us
-void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
+void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis, TechnoTypeClass* pType)
 {
 	pThis->ShouldScanForTarget = false;
 	pThis->ShouldEnterAbsorber = false;
 	pThis->ShouldEnterOccupiable = false;
 	pThis->ShouldGarrisonStructure = false;
-	auto const pType = pThis->GetTechnoType();
 
 	if (pThis->HasAnyLink() || pType->ResourceGatherer) // Don't want miners to stop
 		return;
