@@ -3251,6 +3251,6 @@ msgstr "**Nuke** - 升级时调整装填速率"
 msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
 msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
 
-msgid "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting civilian, special and neutral houses"
-msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准平民、特殊和中立所属方"
+msgid "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses"
+msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"
 

@@ -835,8 +835,6 @@ namespace detail
 				{"ally", AffectedHouse::Allies},
 				{"enemies", AffectedHouse::Enemies},
 				{"enemy", AffectedHouse::Enemies},
-				{"civilian", AffectedHouse::Civilian},
-				{"special", AffectedHouse::Special},
 				{"neutral", AffectedHouse::Neutral},
 				{"team", AffectedHouse::Team},
 				{"others", AffectedHouse::NotOwner},

@@ -6,23 +6,13 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 {
 	if (flags == AffectedHouse::All)
 		return true;
-
-	// Match civilian/special/neutral by house identity instead of alliance
-	// status, as their ally/enemy relation to other houses varies by spawner.
-	if ((flags & AffectedHouse::Civilian) != AffectedHouse::None && targetHouse == HouseClass::FindCivilianSide())
-		return true;
-	if ((flags & AffectedHouse::Special) != AffectedHouse::None && targetHouse == HouseClass::FindSpecial())
-		return true;
-	if ((flags & AffectedHouse::Neutral) != AffectedHouse::None && targetHouse == HouseClass::FindNeutral())
-		return true;
-
 	if (ownerHouse == targetHouse)
 		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (targetHouse->IsNeutral() && (flags & AffectedHouse::Neutral) != AffectedHouse::None)
+		return true;
 	if (ownerHouse->IsAlliedWith(targetHouse))
 		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
-	if ((flags & AffectedHouse::Enemies) != AffectedHouse::None)
-		return true;
-	return false;
+	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool EnumFunctions::CanTargetVeterancy(AffectedVeterancy flags, TechnoClass* pTechno)
