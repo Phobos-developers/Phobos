@@ -2593,6 +2593,7 @@ msgid ""
 "Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game "
 "(integer divide-by-zero) the moment an object of that type started moving"
 msgstr ""
+"修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
 
 msgid ""
 "Fix the bug where `Ranged=true` causes projectiles using the new "

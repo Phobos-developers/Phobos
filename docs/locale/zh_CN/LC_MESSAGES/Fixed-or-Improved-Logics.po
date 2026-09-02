@@ -1729,6 +1729,7 @@ msgid ""
 "animation/footstep tick never fires, so a moving unit behaves as if "
 "standing still."
 msgstr ""
+"修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）；现在 `WalkRate=0` 与 `IdleRate=0` 同样处理——移动动画／移动音效永不触发，移动中的单位表现为静止（滑行）。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

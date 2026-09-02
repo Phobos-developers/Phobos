@@ -944,6 +944,7 @@ msgid ""
 "(integer divide-by-zero) the moment an object of that type started moving"
 " (by Noble_Fish)"
 msgstr ""
+"修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）（by Noble_Fish）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
