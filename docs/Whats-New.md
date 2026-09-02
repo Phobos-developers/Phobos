@@ -758,6 +758,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
+- Fixed the bug that restored cyborg legs when the soldier left transport (by FS-21)
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
 - Fixed the bug that ai will try to product aircraft even the airport has no free dock for it (by NetsuNegi)
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units (by TaranDahl)
