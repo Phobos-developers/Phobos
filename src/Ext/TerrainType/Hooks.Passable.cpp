@@ -267,8 +267,11 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots)
 				: (pCell->Passability != PassabilityType::Passable);
 
+			// Check if cell has overlay and if it is buildable on.
+			const bool invalidOverlay = pCell->OverlayTypeIndex != -1 && !OverlayTypeExt::CanPlaceBuildingOnOverlay(pCell->OverlayTypeIndex, nullptr, false);
+
 			if ((pCell->BaseSpacerOfHouses & mask) != 0
-				|| pCell->OverlayTypeIndex != -1
+				|| invalidOverlay
 				|| invalidPassability
 				|| pCell->SlopeIndex
 				|| pCell->GetBuilding())
