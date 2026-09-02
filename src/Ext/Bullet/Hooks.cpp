@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -58,6 +58,11 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletTypeExt;
+
+	// VectorRevibed：多实例并存调度（挂载 + 每帧 Step + 结果合并）
+	// 结果供 0x467E53 禁爆判定与 0x467FEE 位移应用使用
+	if (pBulletTypeExt && (pBulletExt->VectorList.size() || pBulletTypeExt->Vector_Types.size()))
+		pBulletExt->VectorAI();
 
 	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
 	{
@@ -656,5 +661,72 @@ DEFINE_HOOK(0x467B8E, BulletClass_AI_Ranged, 0x6)
 	}
 
 	pThis->SetLocation(coordNew);
+	return 0;
+}
+
+// ============================================================================
+// VectorRevibed：位移应用（Kratos OnUpdateEnd_Vector 语义）
+// 0x467FEE 位于引爆判定（0x467E53）之后、帧尾位置结算处。Vector 激活时
+// 每帧应用合并位移：TeleportTo 瞬移 / MoveDisp（Force=yes 帧首快照+偏移，
+// Force=no 当前+增量）/ Freeze 绝对 FrozenPos / Force 钉回帧首位置。
+// ============================================================================
+DEFINE_HOOK(0x467FEE, BulletClass_AI_UpdateEnd_Vector, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::Fetch(pThis);
+	if (!pExt->HasActiveVector())
+		return 0;
+
+	auto& lr = pExt->LastResult;
+	CoordStruct prev = pThis->GetCoords();
+	CoordStruct target = prev;
+	bool moved = false;
+
+	if (!(lr.TeleportTo == CoordStruct::Empty))
+	{
+		// 瞬移（SpeedEndOnReach 到达帧，VectorAI 已判定唯一活跃）
+		target = lr.TeleportTo;
+		lr.TeleportTo = CoordStruct::Empty;
+		moved = true;
+	}
+	else if (!(lr.MoveDisp == CoordStruct::Empty))
+	{
+		// Kratos 语义：Force=yes → 帧首快照 + 偏移（MoveTo 的 FLH 位移不逐帧叠加）；
+		// Force=no → 当前 + 增量（Circle/Reach/Speed 是增量型）
+		target = lr.Force ? pExt->VectorStartPos + lr.MoveDisp : prev + lr.MoveDisp;
+		lr.MoveDisp = CoordStruct::Empty;
+		moved = true;
+	}
+	else if (lr.Freeze)
+	{
+		target = lr.FrozenPos;
+		moved = true;
+	}
+	else if (lr.Force)
+	{
+		// Force 非运动帧：钉回帧首位置（抵消引擎本帧移动）
+		target = pExt->VectorStartPos;
+		moved = true;
+	}
+
+	if (moved)
+	{
+		pThis->SetLocation(target);
+		pThis->SourceCoords = target;
+
+		if (lr.AllowRotateUnit && !(target == prev))
+		{
+			double dx = (double)(target.X - prev.X);
+			double dy = (double)(target.Y - prev.Y);
+			double dz = (double)(target.Z - prev.Z);
+			double mag = std::sqrt(dx * dx + dy * dy + dz * dz);
+			if (mag > 1e-6) { dx /= mag; dy /= mag; dz /= mag; }
+			pThis->Velocity.X = dx;
+			pThis->Velocity.Y = dy;
+			pThis->Velocity.Z = dz;
+		}
+	}
+
 	return 0;
 }

@@ -266,6 +266,7 @@
     <ClCompile Include="src\New\Entity\BannerClass.cpp" />
     <ClCompile Include="src\New\Entity\LaserTrailClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
+    <ClCompile Include="src\New\Entity\VectorRevibedState.cpp" />
     <!-- src\New\Type -->
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
@@ -275,6 +276,7 @@
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\SelectBoxTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\VectorTypeClass.cpp" />
     <!-- src\New\Type\Affiliated -->
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />

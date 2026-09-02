@@ -1,4 +1,4 @@
-#include "StraightTrajectory.h"
+﻿#include "StraightTrajectory.h"
 #include "BombardTrajectory.h"
 #include "ParabolaTrajectory.h"
 
@@ -476,6 +476,10 @@ DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
 	GET(BulletClass*, pThis, EBP);
 
 	auto const pExt = BulletExt::Fetch(pThis);
+
+	// VectorRevibed：Vector 激活时跳过引爆（HasActiveVector → 0x467FBA，跳过预爆动画 → Detonate → UnInit）
+	if (pExt->HasActiveVector())
+		return 0x467FBA;
 
 	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIPreDetonate(pThis);

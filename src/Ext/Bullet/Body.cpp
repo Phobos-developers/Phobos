@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <Ext/Anim/Body.h>
 #include <Ext/RadSite/Body.h>
@@ -497,6 +497,126 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 }
 
 // =============================
+// VectorRevibed：多实例并存调度（挂载 + 每帧 Step + 结果合并 + Next 列表分叉/移除）
+// =============================
+void BulletExt::VectorAI()
+{
+	BulletClass* pBullet = static_cast<BulletClass*>(this->OwnerObject());
+	ObjectClass* pLauncher = pBullet ? pBullet->Owner : nullptr;
+
+	LastResult = VectorRevibedResult();
+	VectorStartPos = pBullet->GetCoords();
+
+	// 挂载：一次性（VectorStarted 防止 Duration 结束后重挂）。
+	// 仅弹体首次进入 AI 时从 BulletType 的 Vector_Types 初始化（Vector=Vector1,Vector2 并存）
+	if (!VectorStarted && VectorList.empty() && TypeExtData && TypeExtData->Vector_Types.size())
+	{
+		VectorStarted = true;
+		// 官方 ValueableIdxVector 遍历给 int 索引，用 Array[idx].get() 转指针
+		for (auto idx : TypeExtData->Vector_Types)
+		{
+			auto pType = VectorTypeClass::Array[idx].get();
+			if (!pType)
+				continue;
+			VectorBulletRuntime rt;
+			rt.Type = pType;
+			rt.NeedInit = true;
+			VectorList.push_back(rt);
+		}
+	}
+	else if (!VectorStarted && TypeExtData && !TypeExtData->Vector_Types.size())
+	{
+		// 该抛射体没有 Vector=：置标记避免每帧空查（防御）
+		VectorStarted = true;
+	}
+
+	// 每帧：各自 Init/Step，结果并存合并
+	// Next 分叉新段先收集到 pendingNext，循环结束后统一追加——
+	// vector::insert/reallocation 会使 rt 引用与 it 失效，不能在循环内插
+	std::vector<VectorBulletRuntime> pendingNext;
+	auto it = VectorList.begin();
+	while (it != VectorList.end())
+	{
+		auto& rt = *it;
+		if (rt.NeedInit)
+		{
+			rt.State = VectorRevibedState();
+			VectorRevibedAI_Init(rt.State, rt.Type->Data, pBullet, pLauncher, nullptr, rt.Type->Duration.Get());
+			rt.NeedInit = false;
+		}
+
+		VectorRevibedResult r;
+		VectorRevibedAI_Step(rt.State, rt.Type->Data, pBullet, pLauncher, nullptr, rt.Type->Duration.Get(), r);
+
+		// 段真实帧计时：无条件推进（Step 内 Freeze/Disabled/TimeStep 跳帧分支不
+		// AdvanceFrame，_elapsedFrames 不能当到期时钟）。Duration 到期据此强制结束。
+		rt.State._lifeFrames++;
+
+		// 并存位移求和（官方 YRpp 的 Vector3D 无 IsEmpty，用 == CoordStruct::Empty）
+		if (LastResult.MoveDisp == CoordStruct::Empty)
+			LastResult.MoveDisp = r.MoveDisp;
+		else if (!(r.MoveDisp == CoordStruct::Empty))
+			LastResult.MoveDisp += r.MoveDisp;
+		LastResult.Force |= r.Force;
+		LastResult.Freeze |= r.Freeze;
+		LastResult.AllowRotateUnit |= r.AllowRotateUnit;
+		if (LastResult.Freeze && LastResult.FrozenPos == CoordStruct::Empty)
+			LastResult.FrozenPos = r.FrozenPos;
+
+		// 瞬移：仅唯一活跃 Vector 时生效（并存时忽略，该 Vector 结束引擎接管）
+		if (!(r.TeleportTo == CoordStruct::Empty) && VectorList.size() == 1)
+			LastResult.TeleportTo = r.TeleportTo;
+
+		// 结束：Deactivate 或 Duration 到期（段真实帧 _lifeFrames）→ Next 列表 / 移除
+		// Freeze 期间 _elapsedFrames 不推进，Duration 判定必须用 _lifeFrames，
+		// 否则 Freeze 段永不结束（Kratos 的到期时钟在 AE 层，移植后归此）
+		bool ended = r.Deactivate
+			|| (rt.Type->Duration.Get() >= 0 && rt.State._lifeFrames >= rt.Type->Duration.Get());
+
+		if (ended)
+		{
+			// Next 全列表生效（多值分叉并存）：首个复用本槽，其余收集待追加；
+			// 空/全无效 = 链尾移除
+			std::vector<VectorTypeClass*> nexts;
+			nexts.reserve(rt.Type->Next.size());
+			for (auto idx : rt.Type->Next)
+			{
+				auto pCandidate = VectorTypeClass::Array[idx].get();
+				if (pCandidate)
+					nexts.push_back(pCandidate);
+			}
+
+			if (nexts.empty())
+			{
+				it = VectorList.erase(it);
+			}
+			else
+			{
+				rt.Type = nexts[0];
+				rt.State = VectorRevibedState();
+				rt.NeedInit = true;
+				for (size_t i = 1; i < nexts.size(); ++i)
+				{
+					VectorBulletRuntime nrt;
+					nrt.Type = nexts[i];
+					nrt.NeedInit = true;
+					pendingNext.push_back(nrt);
+				}
+				++it;
+			}
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	// 分叉新段统一挂入（下帧 Init + Step）
+	if (!pendingNext.empty())
+		VectorList.insert(VectorList.end(), pendingNext.begin(), pendingNext.end());
+}
+
+// =============================
 // load / save
 
 template <typename T>
@@ -517,6 +637,11 @@ void BulletExt::Serialize(T& Stm)
 		.Process(this->FirepowerMult)
 		.Process(this->IsSplitFromAirburst)
 		.Process(this->DistanceTraveled)
+
+		.Process(this->VectorList)
+		.Process(this->LastResult)
+		.Process(this->VectorStartPos)
+		.Process(this->VectorStarted)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
@@ -86,6 +86,11 @@ void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
 	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
 
+	// VectorRevibed：Vector= 是行为属性，挂在 ProjectileTypes 自己的 rules 段（pSection=ID）。
+	// 必须在 ImageFile 切换之前读取——官方 LaserTrail.Types 是 art 视觉属性才跟随 Image 段
+	// （切换后 pSection=ImageFile，如 DRAGON，去 rules 找 [DRAGON] 必然为空）。
+	this->Vector_Types.Read(exINI, pSection, "Vector");
+
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
 	if (strlen(pThis->ImageFile))
@@ -141,6 +146,7 @@ void BulletTypeExt::Serialize(T& Stm)
 		.Process(this->Interceptable_DeleteOnIntercept)
 		.Process(this->Interceptable_WeaponOverride)
 		.Process(this->LaserTrail_Types)
+		.Process(this->Vector_Types)
 		.Process(this->Gravity)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->VerticalInitialFacing)

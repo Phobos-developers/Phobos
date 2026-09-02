@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <BulletTypeClass.h>
 
 #include <Ext/ObjectType/Body.h>
@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/VectorTypeClass.h>
 
 #include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
 
@@ -32,6 +33,8 @@ public:
 	Valueable<bool> Interceptable_DeleteOnIntercept;
 	Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 	ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
+	// VectorRevibed：Vector=Vector1,Vector2 显式引用（并存叠加）
+	ValueableIdxVector<VectorTypeClass> Vector_Types;
 	Nullable<double> Gravity;
 	Nullable<bool> Vertical_AircraftFix;
 	Nullable<bool> VerticalInitialFacing;
@@ -99,6 +102,7 @@ public:
 		, Interceptable_DeleteOnIntercept { false }
 		, Interceptable_WeaponOverride {}
 		, LaserTrail_Types {}
+		, Vector_Types {}
 		, Gravity {}
 		, Vertical_AircraftFix {}
 		, VerticalInitialFacing {}

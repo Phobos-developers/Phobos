@@ -1,10 +1,37 @@
-#pragma once
+﻿#pragma once
 #include <BulletClass.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <Ext/Object/Body.h>
+#include <New/Entity/VectorRevibedState.h>
+#include <New/Type/VectorTypeClass.h>
+
+// VectorRevibed 弹体侧运行时：一个 Vector 实例（类型 + 状态）
+struct VectorBulletRuntime
+{
+	VectorTypeClass* Type = nullptr;
+	VectorRevibedState State;
+	bool NeedInit = true; // 首次 / 链切换后置真，Step 前 Init
+
+	void Reset()
+	{
+		Type = nullptr;
+		State = VectorRevibedState();
+		NeedInit = true;
+	}
+
+	template <typename T>
+	bool Process(T& stream)
+	{
+		return stream
+			.Process(this->Type)
+			.Process(this->NeedInit)
+			.Process(this->State)
+			.Success();
+	}
+};
 
 struct RadialFireStruct
 {
@@ -47,6 +74,20 @@ public:
 
 	TrajectoryPointer Trajectory;
 
+	// VectorRevibed：多实例并存 + 每帧合并结果（HasActiveVector 判据 + UpdateEnd 应用）
+	std::vector<VectorBulletRuntime> VectorList;
+	VectorRevibedResult LastResult;
+	CoordStruct VectorStartPos; // VectorAI 每帧开头快照（Kratos _vectorStartPos 语义）
+	bool VectorStarted = false; // 挂载一次性标记：true=已挂载过（含已结束），禁止 Duration 结束后重挂
+
+	bool HasActiveVector() const
+	{
+		// 官方 YRpp 的 Vector3D 无 IsEmpty，用 == CoordStruct::Empty
+		return LastResult.Force || !(LastResult.MoveDisp == CoordStruct::Empty) || LastResult.Freeze;
+	}
+
+	void VectorAI();
+
 	BulletExt(BulletClass* OwnerObject) : ObjectExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, FirerHouse { nullptr }
@@ -56,6 +97,9 @@ public:
 		, DetonateOnInterception { true }
 		, LaserTrails {}
 		, Trajectory { nullptr }
+		, VectorList {}
+		, LastResult {}
+		, VectorStartPos {}
 		, SnappedToTarget { false }
 		, DamageNumberOffset { INT32_MIN }
 		, ParabombFallRate { 0 }
