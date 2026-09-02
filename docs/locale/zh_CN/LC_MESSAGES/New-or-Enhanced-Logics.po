@@ -1981,7 +1981,7 @@ msgid "`GameSpeed` goes from `0` (fastest) to `6` (slowest)."
 msgstr "`GameSpeed` 的取值范围为 `0`（最快）到 `6`（最慢）。"
 
 msgid "Default value table"
-msgstr ""
+msgstr "默认值表"
 
 msgid "Customizable `SlavesFreeSound`"
 msgstr "自定义 `SlavesFreeSound`"
