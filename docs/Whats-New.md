@@ -438,10 +438,12 @@ HideShakeEffects=false           ; boolean
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug that slaves would be handed over to the neutral house instead of respecting `Slaved.OwnerWhenMasterKilled` when their master was sold or self-destructed (by frg2089)
+- Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

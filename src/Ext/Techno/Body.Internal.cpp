@@ -154,7 +154,7 @@ void TechnoExt::InitializeAttachEffects()
 		return;
 
 	auto const pThis = this->OwnerObject();
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true);
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
