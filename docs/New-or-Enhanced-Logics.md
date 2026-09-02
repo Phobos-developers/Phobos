@@ -806,6 +806,89 @@ DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
 DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 ```
 
+### Customizable infantry sequence rates
+
+In vanilla, the number of game frames each animation frame of the infantry sequence stays (i.e., its playback rate) is hardcoded. Now it can be customized for each sequence in each infantry's sequence section.
+- `<Sequence>Rate` defines the number of game logic frames that 1 animation frame stays; 0 means still, for example, the `Ready` and `Guard` sequences in vanilla are still.
+- `<Sequence>Normalized` defines whether the playback rate is affected by game speed, for example, the `Idle1`, `Idle2`, `WetIdle1`, `WetIdle2`, `Hover`, and `Cheer` sequences in vanilla are affected by game speed.
+
+```{note}
+The effective rate of a normalized sequence is `rate` adjusted by the game speed:
+
+- `rate < 5`: from the table below (`rate` row, `GameSpeed` column).
+- `rate >= 5`: `rate * 8 / (GameSpeed + 1)`.
+
+| Rate \ GameSpeed | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ---------------- | - | - | - | - | - | - | - |
+| 1                | 2 | 2 | 1 | 1 | 1 | 1 | 1 |
+| 2                | 3 | 3 | 3 | 2 | 2 | 2 | 1 |
+| 3                | 5 | 4 | 4 | 3 | 3 | 2 | 2 |
+| 4                | 7 | 6 | 5 | 4 | 4 | 4 | 3 |
+
+`GameSpeed` goes from `0` (fastest) to `6` (slowest).
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Sequence.<Sequence>.DefaultRate=0         ; integer
+Sequence.<Sequence>.DefaultNormalized=no  ; boolean
+```
+
+```{dropdown} Default value table
+| Name            | DefaultRate | Normalized |
+|-----------------|-------------|------------|
+| Ready           | 0           | false      |
+| Guard           | 0           | false      |
+| Prone           | 6           | false      |
+| Walk            | 3           | false      |
+| FireUp          | 1           | false      |
+| Down            | 1           | false      |
+| Crawl           | 1           | false      |
+| Up              | 1           | false      |
+| FireProne       | 1           | false      |
+| Idle1           | 3           | true       |
+| Idle2           | 3           | true       |
+| Die1            | 1           | false      |
+| Die2            | 1           | false      |
+| Die3            | 1           | false      |
+| Die4            | 1           | false      |
+| Die5            | 1           | false      |
+| Tread           | 3           | false      |
+| Swim            | 1           | false      |
+| WetIdle1        | 3           | true       |
+| WetIdle2        | 3           | true       |
+| WetDie1         | 1           | false      |
+| WetDie2         | 1           | false      |
+| WetAttack       | 1           | false      |
+| Hover           | 2           | true       |
+| Fly             | 1           | false      |
+| Tumble          | 1           | false      |
+| FireFly         | 1           | false      |
+| Deploy          | 1           | false      |
+| Deployed        | 1           | false      |
+| DeployedFire    | 1           | false      |
+| DeployedIdle    | 1           | false      |
+| Undeploy        | 1           | false      |
+| Cheer           | 3           | true       |
+| Paradrop        | 1           | false      |
+| AirDeathStart   | 3           | false      |
+| AirDeathFalling | 1           | false      |
+| AirDeathFinish  | 3           | false      |
+| Panic           | 4           | false      |
+| Shovel          | 6           | false      |
+| Carry           | 3           | false      |
+| SecondaryFire   | 1           | false      |
+| SecondaryProne  | 1           | false      |
+```
+
+In `artmd.ini`:
+```ini
+[SEQUENCE]                                ; Sequence
+<Sequence>Rate=                           ; integer, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultRate
+<Sequence>Normalized=                     ; boolean, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultNormalized
+```
+
 ### Customizable `SlavesFreeSound`
 
 - `SlavesFreeSound` can now be set individually for each enslavable infantry type.
