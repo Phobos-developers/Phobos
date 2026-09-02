@@ -68,9 +68,8 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 			{
 				const auto pOwnerHouse = pFoot->Owner;
 				const bool IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
-				const bool IsCivilian = pOwnerHouse == HouseClass::FindCivilianSide() || pOwnerHouse->IsNeutral();
 
-				if (!IsAlly && !IsCivilian)
+				if (!IsAlly && !pOwnerHouse->IsNeutral())
 				{
 					if (const auto pEnemyUIName = TechnoExt::Fetch(pFoot)->TypeExtData->EnemyUIName.Get().Text)
 						pDecidedUIName = pEnemyUIName;
@@ -81,7 +80,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 				const auto pOwnerHouse = pFoot->Owner;
 				const auto pDisguiseHouse = pFoot->DisguisedAsHouse;
 				const bool IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer) || pDisguiseHouse->IsAlliedWith(HouseClass::CurrentPlayer);
-				const bool IsCivilian = pDisguiseHouse == HouseClass::FindCivilianSide() || (pDisguiseHouse && pDisguiseHouse->IsNeutral());
+				const bool IsCivilian = pDisguiseHouse && pDisguiseHouse->IsNeutral();
 
 				if (!IsAlly && !IsCivilian)
 				{

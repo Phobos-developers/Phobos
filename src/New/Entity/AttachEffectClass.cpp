@@ -637,15 +637,13 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if ((discardOn & DiscardCondition::Health) != DiscardCondition::None)
 	{
-		if (auto const pTypeData = pTechno->GetTechnoType())
+		const double min = pType->DiscardOn_Health_AbovePercent;
+		const double max = pType->DiscardOn_Health_BelowPercent;
+
+		if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
 		{
-			const double min = pType->DiscardOn_Health_AbovePercent;
-			const double max = pType->DiscardOn_Health_BelowPercent;
-			if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
-			{
-				this->LastDiscardCheckValue = true;
-				return true;
-			}
+			this->LastDiscardCheckValue = true;
+			return true;
 		}
 	}
 

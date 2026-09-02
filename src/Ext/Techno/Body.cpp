@@ -469,17 +469,12 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	return true;
 }
 
-bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource)
 {
-	if (!pThis || !pSource)
+	if (!pSource || !pType->TypeImmune)
 		return false;
 
-	auto const pType = pThis->GetTechnoType();
-
-	if (!pType->TypeImmune)
-		return false;
-
-	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+	if (pThis->Owner == pSource->Owner && pType == pSource->GetTechnoType())
 		return true;
 
 	return false;

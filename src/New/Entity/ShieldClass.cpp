@@ -189,15 +189,15 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	auto const pWH = args->WH;
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
-	auto const pAttacker = args->Attacker;
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
-	if (!IC || this->CanBePenetrated(pWH) || TechnoExt::IsTypeImmune(pTechno, pAttacker))
+	if (!IC || this->CanBePenetrated(pWH))
 		return damage;
 
+	auto const pAttacker = args->Attacker;
 	auto const pTechnoType = this->TechnoID;
 
-	if (pTechnoType->Immune)
+	if (pTechnoType->Immune || TechnoExt::IsTypeImmune(pTechno, pTechnoType, pAttacker))
 		return damage;
 
 	int nDamage = 0;
