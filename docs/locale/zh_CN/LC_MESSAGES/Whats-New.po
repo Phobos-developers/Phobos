@@ -867,6 +867,12 @@ msgstr ""
 msgid "Cloak Enhancement (by NetsuNegi)"
 msgstr "隐形增强（by NetsuNegi）"
 
+msgid ""
+"[Customizable infantry sequence rates](New-or-Enhanced-Logics.md"
+"#customizable-infantry-sequence-rates) (by Noble_Fish)"
+msgstr ""
+"[自定义步兵序列播放速率](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates)（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

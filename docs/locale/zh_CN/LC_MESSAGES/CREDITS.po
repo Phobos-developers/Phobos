@@ -2579,6 +2579,9 @@ msgstr "天窗生产动画"
 msgid "Customize whether the unit exits from the roof"
 msgstr "自定义单位是否从天窗退出"
 
+msgid "Customizable infantry sequence rates"
+msgstr "自定义步兵序列播放速率"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
