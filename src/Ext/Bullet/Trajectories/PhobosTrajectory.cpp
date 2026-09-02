@@ -458,7 +458,7 @@ DEFINE_HOOK(0x467C1C, BulletClass_AI_RangedCheck_Trajectories, 0x6)
 
 	GET(BulletClass*, pThis, EBP);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	if (auto const pExt = BulletExt::TryFetch(pThis))
 	{
 		if (pExt->Trajectory && pExt->Trajectory->ShouldSkipRangedCheck())
 			return SkipToNoRanged;
