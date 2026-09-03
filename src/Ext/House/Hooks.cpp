@@ -469,7 +469,7 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 		return;
 	}
 
-	std::vector<SuperClass*> readySupers;
+	std::vector<SuperClass*> allReadySupers;
 
 	for (int i = 0; i < pThis->Supers.Count; ++i)
 	{
@@ -481,54 +481,57 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 		if (pSuper->ChargeDrainState == ChargeDrainState::Draining)
 			continue;
 
-		SWTypeExt* pExt = SWTypeExt::Fetch(pSuper->Type);
-
-		if (pExt && !pExt->SW_CooldownGroup.empty())
-			readySupers.push_back(pSuper);
+		allReadySupers.push_back(pSuper);
 	}
 
-	std::vector<SuperClass*> maskedSupers;
+	if (allReadySupers.empty())
+		return;
 
-	if (readySupers.size() > 1)
+	std::vector<bool> inGroupCluster(allReadySupers.size(), false);
+	std::vector<SuperClass*> candidates;
+
+	for (size_t i = 0; i < allReadySupers.size(); ++i)
 	{
-		std::vector<bool> visited(readySupers.size(), false);
+		if (inGroupCluster[i])
+			continue;
 
-		for (size_t i = 0; i < readySupers.size(); ++i)
+		SWTypeExt* pExtI = SWTypeExt::Fetch(allReadySupers[i]->Type);
+
+		if (!pExtI || pExtI->SW_CooldownGroup.empty())
 		{
-			if (visited[i])
+			candidates.push_back(allReadySupers[i]);
+			continue;
+		}
+
+		std::vector<SuperClass*> cluster;
+		cluster.push_back(allReadySupers[i]);
+		inGroupCluster[i] = true;
+
+		for (size_t j = i + 1; j < allReadySupers.size(); ++j)
+		{
+			if (inGroupCluster[j])
 				continue;
 
-			std::vector<SuperClass*> cluster;
-			cluster.push_back(readySupers[i]);
-			visited[i] = true;
+			SWTypeExt* pExtJ = SWTypeExt::Fetch(allReadySupers[j]->Type);
 
-			SWTypeExt* pExtI = SWTypeExt::Fetch(readySupers[i]->Type);
+			if (!pExtJ || pExtJ->SW_CooldownGroup.empty())
+				continue;
 
-			for (size_t j = i + 1; j < readySupers.size(); ++j)
+			bool sharesGroup = false;
+
+			for (SuperClass* pMember : cluster)
 			{
-				if (visited[j])
-					continue;
+				SWTypeExt* pMemberExt = SWTypeExt::Fetch(pMember->Type);
 
-				SWTypeExt* pExtJ = SWTypeExt::Fetch(readySupers[j]->Type);
-				bool sharesGroup = false;
-
-				for (SuperClass* pMember : cluster)
+				for (const std::string& group1 : pMemberExt->SW_CooldownGroup)
 				{
-					SWTypeExt* pMemberExt = SWTypeExt::Fetch(pMember->Type);
-
-					for (const std::string& group1 : pMemberExt->SW_CooldownGroup)
+					for (const std::string& group2 : pExtJ->SW_CooldownGroup)
 					{
-						for (const std::string& group2 : pExtJ->SW_CooldownGroup)
+						if (_stricmp(group1.c_str(), group2.c_str()) == 0)
 						{
-							if (_stricmp(group1.c_str(), group2.c_str()) == 0)
-							{
-								sharesGroup = true;
-								break;
-							}
-						}
-
-						if (sharesGroup)
+							sharesGroup = true;
 							break;
+						}
 					}
 
 					if (sharesGroup)
@@ -536,47 +539,85 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 				}
 
 				if (sharesGroup)
-				{
-					cluster.push_back(readySupers[j]);
-					visited[j] = true;
-				}
+					break;
 			}
 
-			if (cluster.size() > 1)
+			if (sharesGroup)
 			{
-				int chosenIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(cluster.size()) - 1);
-
-				std::string groupNames;
-
-				for (const std::string& groupName : pExtI->SW_CooldownGroup)
-				{
-					if (!groupNames.empty())
-						groupNames += ", ";
-
-					groupNames += groupName;
-				}
-
-				Debug::Log("[SW.CooldownGroup] House '%s' has %d ready superweapons in group '%s'; randomly selected [%s].\n",
-					pThis->get_ID(), static_cast<int>(cluster.size()), groupNames.c_str(), cluster[chosenIndex]->Type->get_ID());
-
-				for (size_t k = 0; k < cluster.size(); ++k)
-				{
-					if (static_cast<int>(k) != chosenIndex)
-					{
-						cluster[k]->IsReady = false;
-						maskedSupers.push_back(cluster[k]);
-					}
-				}
+				cluster.push_back(allReadySupers[j]);
+				inGroupCluster[j] = true;
 			}
+		}
+
+		if (cluster.size() > 1)
+		{
+			int chosenIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(cluster.size()) - 1);
+
+			std::string groupNames;
+
+			for (const std::string& groupName : pExtI->SW_CooldownGroup)
+			{
+				if (!groupNames.empty())
+					groupNames += ", ";
+
+				groupNames += groupName;
+			}
+
+			Debug::Log("[SW.CooldownGroup] House '%s' has %d ready superweapons in group '%s'; randomly selected [%s].\n",
+				pThis->get_ID(), static_cast<int>(cluster.size()), groupNames.c_str(), cluster[chosenIndex]->Type->get_ID());
+
+			for (size_t k = 0; k < cluster.size(); ++k)
+			{
+				if (static_cast<int>(k) != chosenIndex)
+					cluster[k]->IsReady = false;
+			}
+
+			candidates.push_back(cluster[chosenIndex]);
+		}
+		else
+		{
+			candidates.push_back(allReadySupers[i]);
 		}
 	}
 
-	pThis->AI_TryFireSW();
+	const bool randomizePriority = RulesExt::Global()->RandomizeSuperWeaponPriority.Get();
 
-	for (SuperClass* pMasked : maskedSupers)
+	if (!randomizePriority || candidates.size() <= 1)
 	{
-		if (pMasked->RechargeTimer.TimeLeft == 0)
-			pMasked->IsReady = true;
+		pThis->AI_TryFireSW();
+	}
+	else
+	{
+		// Fisher-Yates shuffle of candidates using synchronized engine PRNG
+		for (int i = static_cast<int>(candidates.size()) - 1; i > 0; --i)
+		{
+			int j = ScenarioClass::Instance->Random.RandomRanged(0, i);
+			std::swap(candidates[i], candidates[j]);
+		}
+
+		for (size_t i = 0; i < candidates.size(); ++i)
+		{
+			SuperClass* pCandidate = candidates[i];
+
+			for (size_t j = 0; j < candidates.size(); ++j)
+			{
+				if (j != i)
+					candidates[j]->IsReady = false;
+			}
+
+			pCandidate->IsReady = true;
+
+			pThis->AI_TryFireSW();
+
+			if (!pCandidate->IsReady || pCandidate->RechargeTimer.TimeLeft > 0)
+				break;
+		}
+	}
+
+	for (SuperClass* pSuper : allReadySupers)
+	{
+		if (pSuper->RechargeTimer.TimeLeft == 0 && pSuper->IsPresent)
+			pSuper->IsReady = true;
 	}
 }
 

@@ -1486,6 +1486,17 @@ SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
 ```
 
+### Randomize AI superweapon priority
+
+- AI houses now can evaluate their ready superweapons in a randomized order each firing cycle rather than always checking them in fixed array order.
+  - `RandomizeSuperWeaponPriority` controls whether AI houses randomize the evaluation order of all currently ready superweapons each firing cycle. When set to `true`, the AI shuffles all ready superweapons (including individual superweapons and group representatives) using the synchronized engine PRNG, eliminating the bias where superweapons defined earlier in `[SuperWeaponTypes]` are always prioritized. If the first randomly chosen candidate has no valid tactical target, the AI gracefully falls back to evaluate the remaining ready candidates in shuffled order. Defaults to `false`.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+RandomizeSuperWeaponPriority=false ; boolean
+```
+
 ### Recipient-specific message and EVA on superweapon activation
 
 - Superweapons can now display messages and play EVA voices for specific recipient groups when activated.

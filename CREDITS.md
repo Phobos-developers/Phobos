@@ -162,6 +162,7 @@ This page lists all the individual contributions to the project by their author.
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
   - Superweapon cooldown groups
+  - Randomize AI superweapon priority
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
