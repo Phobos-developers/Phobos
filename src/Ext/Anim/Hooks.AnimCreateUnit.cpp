@@ -12,7 +12,7 @@ DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 
 	R->ECX(R->ESI());
 	UnitExt::Fetch(pThis)->ReceiveDamage = true;
-	auto pAttacker = receiveDamageArgs.Attacker;
+	auto const pAttacker = receiveDamageArgs.Attacker;
 	AnimTypeExt::ProcessDestroyAnims(pThis, pAttacker ? pAttacker->Owner : receiveDamageArgs.SourceHouse);
 	pThis->Destroy();
 

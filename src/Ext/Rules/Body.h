@@ -550,6 +550,12 @@ public:
 		ValueableVector<AnimTypeClass*> DecloakAnims;
 		Valueable<bool> Cloak_KickOutParasite;
 
+		// Global default per-sequence animation rates for infantry
+		std::vector<int> CustomSequenceRates;
+
+		// Global default per-sequence game-speed normalization flags for infantry
+		std::vector<int> CustomSequenceNormalized;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1036,6 +1042,9 @@ public:
 			, CloakAnims {}
 			, DecloakAnims {}
 			, Cloak_KickOutParasite { false }
+
+			, CustomSequenceRates(42, -1)
+			, CustomSequenceNormalized(42, -1)
 		{ }
 
 		virtual ~ExtData() = default;
