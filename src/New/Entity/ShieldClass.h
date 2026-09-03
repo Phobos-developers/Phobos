@@ -64,7 +64,7 @@ public:
 
 	bool IsBrokenAndNonRespawning() const
 	{
-		return this->HP <= 0 && !this->Type->Respawn;
+		return this->HP <= 0 && !(this->Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Warhead : this->Type->Respawn);
 	}
 
 	ShieldTypeClass* GetType() const
