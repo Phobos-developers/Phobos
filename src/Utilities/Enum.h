@@ -456,6 +456,9 @@ enum class AdditionalAbility : unsigned char
 {
 	Reload = 0,
 	EmptyReload = 1,
+	Range = 2,
+	CritImmune = 3,
+	CritChance = 4,
 	Count
 };
 
