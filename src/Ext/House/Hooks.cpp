@@ -481,6 +481,16 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 		if (pSuper->ChargeDrainState == ChargeDrainState::Draining)
 			continue;
 
+		auto const pExt = SWTypeExt::Fetch(pSuper->Type);
+
+		if (pExt && pExt->SW_Shots > 0)
+		{
+			auto const pHouseExt = HouseExt::Fetch(pThis);
+
+			if (pHouseExt && pHouseExt->SuperExts[pSuper->Type->ArrayIndex].ShotCount >= pExt->SW_Shots)
+				continue;
+		}
+
 		allReadySupers.push_back(pSuper);
 	}
 
@@ -580,11 +590,21 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 		}
 	}
 
+	SuperClass* pFired = nullptr;
 	const bool randomizePriority = RulesExt::Global()->RandomizeSuperWeaponPriority.Get();
 
 	if (!randomizePriority || candidates.size() <= 1)
 	{
 		pThis->AI_TryFireSW();
+
+		for (SuperClass* pCand : candidates)
+		{
+			if (!pCand->IsReady || pCand->RechargeTimer.TimeLeft > 0)
+			{
+				pFired = pCand;
+				break;
+			}
+		}
 	}
 	else
 	{
@@ -610,14 +630,29 @@ void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 			pThis->AI_TryFireSW();
 
 			if (!pCandidate->IsReady || pCandidate->RechargeTimer.TimeLeft > 0)
+			{
+				pFired = pCandidate;
 				break;
+			}
 		}
 	}
 
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+
 	for (SuperClass* pSuper : allReadySupers)
 	{
-		if (pSuper->RechargeTimer.TimeLeft == 0 && pSuper->IsPresent)
+		if (pSuper != pFired && pSuper->IsPresent && pSuper->RechargeTimer.TimeLeft == 0)
+		{
+			auto const pExt = SWTypeExt::Fetch(pSuper->Type);
+
+			if (pExt && pExt->SW_Shots > 0 && pHouseExt)
+			{
+				if (pHouseExt->SuperExts[pSuper->Type->ArrayIndex].ShotCount >= pExt->SW_Shots)
+					continue;
+			}
+
 			pSuper->IsReady = true;
+		}
 	}
 }
 
