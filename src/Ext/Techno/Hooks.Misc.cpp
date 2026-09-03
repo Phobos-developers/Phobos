@@ -200,7 +200,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	{
 		if (pNode->Unit)
 		{
-			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->GetTechnoType(); });
+			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->Type; });
 			if (it != vec.end())
 				vec.erase(it);
 		}
@@ -976,7 +976,7 @@ DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
 	enum { SkipGameCode = 0x4DED4B };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	const float multiplier = pTypeExt->CrashSpin_Multiplier;
 
 	if (multiplier > 0.0f)
@@ -1108,7 +1108,7 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if (pThis && !TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
+	if (!TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
 	{
 		R->EAX(0);
 		return 0x43B4B0;

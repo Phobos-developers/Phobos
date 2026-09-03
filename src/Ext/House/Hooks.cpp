@@ -277,7 +277,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 			}
 
 			if (!I_am_human)
-				TechnoExt::ChangeOwnerMissionFix(pMe);
+				TechnoExt::ChangeOwnerMissionFix(pMe, pType);
 		}
 
 		pThis->Owner->RecheckTechTree = true;

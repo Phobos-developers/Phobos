@@ -299,7 +299,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 		this->Shield = std::make_unique<ShieldClass>(pThis);
 
 	this->InitializeAttachEffects();
-	this->InitializeDisplayInfo();
+	this->InitializeDisplayInfo(pType);
 	this->InitializeLaserTrails();
 
 	if (!this->AE.HasTint) // already updated when initializing attach effect
@@ -403,6 +403,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<AEWeaponParams> expireWeapons;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
@@ -423,6 +424,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 				continue;
 			}
 
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
 			it = pExt->AttachedEffects.erase(it);
 		}
 		else
@@ -438,6 +440,13 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	{
 		pExt->OwnerObject()->MarkForRedraw();
 		pExt->UpdateTintValues();
+	}
+
+	auto const coords = pThis->GetCoords();
+
+	for (auto const& info : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
 	return pThis->TechnoClass::Limbo();
@@ -2149,8 +2158,8 @@ DEFINE_HOOK(0x70AFEF, TechnoClass_UpdateSight_DynamicSight2, 0x6)
 
 static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
 {
-	auto const pType = pTechno->GetTechnoType();
-	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
+	auto const pType = static_cast<AircraftClass*>(pTechno)->Type;
+	auto const pTypeExt = AircraftTypeExt::Fetch(pType);
 
 	if (pTypeExt->LandingAnim.isset())
 		return pTypeExt->LandingAnim.Get();
@@ -2176,8 +2185,8 @@ static AnimTypeClass* GetLandingAnim(TechnoClass* pTechno)
 DEFINE_HOOK(0x4CEB59, FlyLocomotionClass_ProcessLanding_ForceDropship, 0x6)
 {
 	GET(FlyLocomotionClass*, pLoco, ESI);
-	auto const pType = pLoco->LinkedTo->GetTechnoType();
-	const bool force = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType))->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
+	auto const pType = static_cast<AircraftClass*>(pLoco->LinkedTo)->Type;
+	const bool force = AircraftTypeExt::Fetch(pType)->LandingAnim.isset() || RulesExt::Global()->DefaultLandingAnim != nullptr;
 
 	R->CL(force || pType->IsDropship);
 	return 0x4CEB5F;
