@@ -435,6 +435,7 @@ HideShakeEffects=false           ; boolean
 - [Cloak Enhancement](New-or-Enhanced-Logics.md#cloak-enhancement) (by NetsuNegi)
 - [`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
 - [Customizable infantry sequence rates](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates) (by Noble_Fish)
+- `<Player @ X>` can now be used as owner for triggers on skirmish and multiplayer maps (by Starkku)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
