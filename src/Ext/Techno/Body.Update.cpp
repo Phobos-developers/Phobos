@@ -207,6 +207,32 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
+	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
+	{
+		const bool isLowPower = pOwner->HasLowPower();
+		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
+		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
+
+		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
+	{
+		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
+		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
+		const int currentMoney = pOwner->Available_Money();
+
+		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+			return true;
+		}
+	}
+
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
@@ -919,24 +945,10 @@ void TechnoExt::UpdateAttachEffects()
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 				cumulativeAnimTypes.insert(pType);
 
-			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
-			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
-					}
-				}
-			}
+			if (hasExpired)
+				attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Expire, expireWeapons);
+			else if (shouldDiscard)
+				attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
 
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
@@ -998,24 +1010,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
-					}
-				}
-			}
-
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Expire, expireWeapons);
 			it = this->AttachedEffects.erase(it);
 		}
 		else
@@ -1031,11 +1026,11 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
-	// Add new ones.
-	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
-
-	if (requiresRecalc && !count)
+	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
+
+	// Add new ones.
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true);
 }
 
 // Updates CumulativeAnimations AE's on techno.

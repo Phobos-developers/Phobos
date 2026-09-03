@@ -17,6 +17,7 @@ AttachEffectClass::AttachEffectClass()
 	, ShouldRecalculateStats { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
+	, SelfOwned { false }
 	, LastSequenceCheck { Sequence::Nothing }
 	, FiringCount { 0 }
 	, ReceivedDamageCount { 0 }
@@ -26,8 +27,8 @@ AttachEffectClass::AttachEffectClass()
 }
 
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno, HouseClass* pInvokerHouse,
-	TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
-	: Type { pType }, Techno { pTechno }, InvokerHouse { pInvokerHouse }, Invoker { pInvoker }, Source { pSource },
+	TechnoClass* pInvoker, AbstractClass* pSource, bool selfOwned, int durationOverride, int delay, int initialDelay, int recreationDelay)
+	: Type { pType }, Techno { pTechno }, InvokerHouse { pInvokerHouse }, Invoker { pInvoker }, Source { pSource }, SelfOwned { selfOwned },
 	DurationOverride { durationOverride }, Delay { delay }, InitialDelay { initialDelay }, RecreationDelay { recreationDelay }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
@@ -636,15 +637,13 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if ((discardOn & DiscardCondition::Health) != DiscardCondition::None)
 	{
-		if (auto const pTypeData = pTechno->GetTechnoType())
+		const double min = pType->DiscardOn_Health_AbovePercent;
+		const double max = pType->DiscardOn_Health_BelowPercent;
+
+		if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
 		{
-			const double min = pType->DiscardOn_Health_AbovePercent;
-			const double max = pType->DiscardOn_Health_BelowPercent;
-			if (TechnoExt::IsHealthInThreshold(pTechno, min, max))
-			{
-				this->LastDiscardCheckValue = true;
-				return true;
-			}
+			this->LastDiscardCheckValue = true;
+			return true;
 		}
 	}
 
@@ -755,7 +754,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachEffectInfo">AttachEffect attach info.</param>
 /// <returns>Number of AttachEffect instances created and attached.</returns>
-int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo)
+int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned)
 {
 	auto const& types = attachEffectInfo.AttachTypes;
 
@@ -768,7 +767,6 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	bool markForRedraw = false;
 	bool decloak = false;
 	double ROFModifier = 1.0;
-	const bool selfOwned = pTarget == pSource;
 	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
 
 	for (size_t i = 0; i < types.size(); i++)
@@ -776,7 +774,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 		auto const pType = types[i];
 		auto const params = attachEffectInfo.GetAttachParams(i, selfOwned);
 
-		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params))
+		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params, selfOwned))
 		{
 			attachedCount++;
 
@@ -838,7 +836,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 /// <param name="checkCumulative">Whether cumulative AE needs to be processed.</param>
 /// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
 AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
-	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams, bool checkCumulative)
+	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachParams const& attachParams, bool selfOwned, bool checkCumulative)
 {
 	if (!pType)
 		return nullptr;
@@ -923,7 +921,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
+	targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, selfOwned, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
 	auto const pAE = targetAEs.back().get();
 
 	if (!currentTypeCount && cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1067,25 +1065,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		if (pType == attachEffect->Type)
 		{
 			detachedCount++;
-
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
-			{
-				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->Invoker)
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pTarget, pTarget->Owner });
-					}
-				}
-			}
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Remove, expireWeapons, stackCount != 1);
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 				cumulativeAnimTypes.insert(pType);
@@ -1137,7 +1117,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 	int transferCount = 0;
 	const auto pSourceExt = TechnoExt::Fetch(pSource);
 	const auto pTargetExt = TechnoExt::Fetch(pTarget);
-	const auto pTargetType = pTarget->GetTechnoType();
+	const auto pTargetType = pTargetExt->TypeExtData->OwnerObject();
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pSourceExt->AttachedEffects.begin(); it != pSourceExt->AttachedEffects.end(); )
@@ -1195,7 +1175,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, false))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, attachEffect->IsSelfOwned(), false))
 				pAE->Duration = attachEffect->Duration;
 		}
 
@@ -1220,6 +1200,33 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			pTargetExt->UpdateTintValues();
 		}
 	}
+}
+
+#pragma endregion
+
+#pragma region Helpers
+
+void AttachEffectClass::AddExpireWeaponParams(ExpireWeaponCondition condition, std::vector<AEWeaponParams>& expireWeapons, bool ignoreCumulativeCountCheck) const
+{
+	if (!this->Type->ExpireWeapon || (this->Type->ExpireWeapon_TriggerOn & condition) == ExpireWeaponCondition::None)
+		return;
+
+	if (this->Type->Cumulative && this->Type->ExpireWeapon_CumulativeOnlyOnce && (ignoreCumulativeCountCheck || TechnoExt::Fetch(this->Techno)->GetAttachedEffectCumulativeCount(this->Type) >= 1))
+		return;
+
+	if (this->Type->ExpireWeapon_UseInvokerAsOwner)
+	{
+		if (auto const pInvoker = this->GetInvoker())
+		{
+			expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, pInvoker, pInvoker->Owner });
+			return;
+		}
+
+		expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, nullptr, this->GetInvokerHouse() });
+		return;
+	}
+
+	expireWeapons.push_back(AEWeaponParams { this->Type->ExpireWeapon, this->Techno, this->Techno->Owner });
 }
 
 #pragma endregion
@@ -1257,6 +1264,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastActiveStat)
 		.Process(this->LaserTrail)
 		.Process(this->ShouldRecalculateStats)
+		.Process(this->SelfOwned)
 		.Process(this->LastSequenceCheck)
 		.Process(this->FiringCount)
 		.Process(this->ReceivedDamageCount)

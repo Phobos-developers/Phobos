@@ -4,6 +4,7 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ## Bugfixes and Miscellanous
 
+- `<Player @ X>` can now be used as owner for pre-placed objects as well as owner for triggers on skirmish and multiplayer maps. Triggers with owners that are not present in the game are destroyed and never sprung.
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
 - Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
@@ -714,6 +715,32 @@ In `mycampaign.map`:
 ...
 ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
+```
+
+### `513` Set mission timer properties
+
+- Set the method to display mission timer and whether the timer should be displayed reversedly based on given value.
+  - For behaviours `0`, `1`, and `2`, the second parameter decides the base value for percentage timer type or reversed timer that'll be used for calculation.
+  - For behaviours `3` and `4`, the second parameter decides the index of variable that'll be displayed. If the local/global variable does not exist, 0 will be displayed.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],513,0,0,[MissionTimerType],[BaseValue or VariableIndex],[ReverseTimer],0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*                              |
+| :---------: | :----------------------------------------- |
+| 0           | Show normal timer                          |
+| 1           | show percentage based on the given value   |
+| 2           | Show timer in digit form                   |
+| 3           | Show value of the selected local variable  |
+| 4           | Show value of the selected global variable |
+
+```{note}
+This won't affect how the global mission timer really ticks, so it'll still end after the mission tiemr expired.
 ```
 
 ### `600` Configure Drop Crate

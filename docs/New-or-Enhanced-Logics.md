@@ -745,6 +745,30 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 PowerPlantEnhancer.MaxCount=-1     ; integer
 ```
 
+### Roof production anim
+
+- Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
+
+```{hint}
+Whether technos exit from the roof depends on [`ExitThroughRoof`](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof). The criterion for it defaulting to true is the same as `RoofDeployingAnim` in vanilla: the techno has `JumpJet=yes` or `BalloonHover=yes`.
+```
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType, with Factory=InfantryType or Factory=UnitType
+RoofProductionAnim=                ; AnimationType, falls back to ProductionAnim if unset
+RoofProductionAnimDamaged=         ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimGarrisoned=      ; AnimationType, falls back to RoofProductionAnim if unset
+RoofProductionAnimX=               ; integer, defaults to ProductionAnimX
+RoofProductionAnimY=               ; integer, defaults to ProductionAnimY
+RoofProductionAnimYSort=           ; integer, defaults to ProductionAnimYSort
+RoofProductionAnimZAdjust=         ; integer, defaults to ProductionAnimZAdjust
+RoofProductionAnimPowered=         ; boolean, defaults to ProductionAnimPowered
+RoofProductionAnimPoweredLight=    ; boolean, defaults to ProductionAnimPoweredLight
+RoofProductionAnimPoweredEffect=   ; boolean, defaults to ProductionAnimPoweredEffect
+RoofProductionAnimPoweredSpecial=  ; boolean, defaults to ProductionAnimPoweredSpecial
+```
+
 ### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
@@ -783,6 +807,89 @@ PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
 ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
 DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
 DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
+```
+
+### Customizable infantry sequence rates
+
+In vanilla, the number of game frames each animation frame of the infantry sequence stays (i.e., its playback rate) is hardcoded. Now it can be customized for each sequence in each infantry's sequence section.
+- `<Sequence>Rate` defines the number of game logic frames that 1 animation frame stays; 0 means still, for example, the `Ready` and `Guard` sequences in vanilla are still.
+- `<Sequence>Normalized` defines whether the playback rate is affected by game speed, for example, the `Idle1`, `Idle2`, `WetIdle1`, `WetIdle2`, `Hover`, and `Cheer` sequences in vanilla are affected by game speed.
+
+```{note}
+The effective rate of a normalized sequence is `rate` adjusted by the game speed:
+
+- `rate < 5`: from the table below (`rate` row, `GameSpeed` column).
+- `rate >= 5`: `rate * 8 / (GameSpeed + 1)`.
+
+| Rate \ GameSpeed | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ---------------- | - | - | - | - | - | - | - |
+| 1                | 2 | 2 | 1 | 1 | 1 | 1 | 1 |
+| 2                | 3 | 3 | 3 | 2 | 2 | 2 | 1 |
+| 3                | 5 | 4 | 4 | 3 | 3 | 2 | 2 |
+| 4                | 7 | 6 | 5 | 4 | 4 | 4 | 3 |
+
+`GameSpeed` goes from `0` (fastest) to `6` (slowest).
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Sequence.<Sequence>.DefaultRate=0         ; integer
+Sequence.<Sequence>.DefaultNormalized=no  ; boolean
+```
+
+```{dropdown} Default value table
+| Name            | DefaultRate | Normalized |
+|-----------------|-------------|------------|
+| Ready           | 0           | false      |
+| Guard           | 0           | false      |
+| Prone           | 6           | false      |
+| Walk            | 3           | false      |
+| FireUp          | 1           | false      |
+| Down            | 1           | false      |
+| Crawl           | 1           | false      |
+| Up              | 1           | false      |
+| FireProne       | 1           | false      |
+| Idle1           | 3           | true       |
+| Idle2           | 3           | true       |
+| Die1            | 1           | false      |
+| Die2            | 1           | false      |
+| Die3            | 1           | false      |
+| Die4            | 1           | false      |
+| Die5            | 1           | false      |
+| Tread           | 3           | false      |
+| Swim            | 1           | false      |
+| WetIdle1        | 3           | true       |
+| WetIdle2        | 3           | true       |
+| WetDie1         | 1           | false      |
+| WetDie2         | 1           | false      |
+| WetAttack       | 1           | false      |
+| Hover           | 2           | true       |
+| Fly             | 1           | false      |
+| Tumble          | 1           | false      |
+| FireFly         | 1           | false      |
+| Deploy          | 1           | false      |
+| Deployed        | 1           | false      |
+| DeployedFire    | 1           | false      |
+| DeployedIdle    | 1           | false      |
+| Undeploy        | 1           | false      |
+| Cheer           | 3           | true       |
+| Paradrop        | 1           | false      |
+| AirDeathStart   | 3           | false      |
+| AirDeathFalling | 1           | false      |
+| AirDeathFinish  | 3           | false      |
+| Panic           | 4           | false      |
+| Shovel          | 6           | false      |
+| Carry           | 3           | false      |
+| SecondaryFire   | 1           | false      |
+| SecondaryProne  | 1           | false      |
+```
+
+In `artmd.ini`:
+```ini
+[SEQUENCE]                                ; Sequence
+<Sequence>Rate=                           ; integer, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultRate
+<Sequence>Normalized=                     ; boolean, defaults to [AudioVisual] -> Sequence.<Sequence>.DefaultNormalized
 ```
 
 ### Customizable `SlavesFreeSound`
@@ -1649,6 +1756,26 @@ BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location.
+  - You can also set whether cloak units kick out parasites.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Cloak.KickOutParasite=false   ; boolean
+
+[AudioVisual]
+CloakAnims=                   ; List of Animation
+DecloakAnims=                 ; List of Animation
+
+[SOMETECHNO]                  ; TechnoType
+CloakAnims=                   ; List of Animation, default to [AudioVisual] -> CloakAnims
+DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> DecloakAnims
+Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
+```
+
 ### Convert TechnoType on owner house change
 
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
@@ -2084,6 +2211,13 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
+  - `PlayerPowerState`: The object will die if its owner's power status matches the configured state.
+    - `low` / `consumer`: Trigger when the owner is in low power.
+    - `full` / `normal`: Trigger when the owner is not in low power.
+  - `PlayerMoney.Max` / `PlayerMoney.Min`: The object will die based on the owner's available credits.
+    - If only `PlayerMoney.Max` is set, triggers when money is not above this value.
+    - If only `PlayerMoney.Min` is set, triggers when money is not below this value.
+    - If both are set, triggers when money is **inside the range**.
 
 - The auto-death behavior can be chosen from the following:
   - `kill`: The object will be destroyed normally.
@@ -2119,6 +2253,9 @@ AutoDeath.TechnosExist=                           ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                   ; boolean
 AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
 AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.PlayerPowerState=none                   ; Player Power Enumeration (none|low/consumer|full/normal)
+AutoDeath.PlayerMoneyLessThan=-1                  ; integer
+AutoDeath.PlayerMoneyMoreThan=-1                  ; integer
 ```
 
 ```{note}

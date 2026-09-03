@@ -316,7 +316,7 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 
 	if (pUnit && pUnit->InAir)
 	{
-		auto const pType = pUnit->GetTechnoType();
+		auto const pType = pUnit->Type;
 
 		if (pType->DeployToLand)
 		{

@@ -158,7 +158,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General] -> ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
-- `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - Stop command (`[S]` by default) behavior is now more correct:
@@ -330,6 +329,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button.
+- Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
+- Fixed the bug that computer player record cannot be log normally in non English mode.
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 
 ## Fixes / interactions with other extensions
 
@@ -564,6 +566,16 @@ Warhead.PreventScatter=false  ; boolean
 [AudioVisual]
 LeptonMindControlOffset=70    ; integer, in leptons
 MindControlRingOffset=140     ; integer, in leptons
+```
+
+### Customize whether mind-controlled `Insignificant` technos can be auto-targeted
+
+- In vanilla Red Alert 2, non-building technos with `Insignificant=yes` can never be acquired as auto targets, even when mind-controlled. In vanilla Yuri's Revenge, such technos become targetable once they are mind-controlled. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+AutoTarget.InsignificantWhenMindControlled=true  ; boolean
 ```
 
 ### Customizing effect of level lighting on air units
@@ -2076,6 +2088,26 @@ FlyNoWobbles=  ; boolean
 
 [SOMETECHNO]   ; TechnoType with Locomotor=Fly
 FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
+```
+
+### Customize whether the unit can be detected by psychic detector
+
+- Now you can use the following flag to define whether the unit can be detected by buildings that have `PsychicDetectionRadius`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+PsychicDetectable=true  ; boolean
+```
+
+### Customize whether the unit exits from the roof
+
+- In vanilla, units with `BalloonHover=true` or `JumpJet=true` exit from the roof. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
 ### Damaged speed customization

@@ -546,6 +546,17 @@ public:
 		Valueable<bool> KeepAlive_Aircraft;
 		Valueable<bool> KeepAlive_Buildings;
 		Valueable<bool> KeepAlive_Defenses;
+		Valueable<bool> AutoTarget_InsignificantWhenMindControlled;
+
+		ValueableVector<AnimTypeClass*> CloakAnims;
+		ValueableVector<AnimTypeClass*> DecloakAnims;
+		Valueable<bool> Cloak_KickOutParasite;
+
+		// Global default per-sequence animation rates for infantry
+		std::vector<int> CustomSequenceRates;
+
+		// Global default per-sequence game-speed normalization flags for infantry
+		std::vector<int> CustomSequenceNormalized;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -1029,6 +1040,15 @@ public:
 			, KeepAlive_Aircraft { false }
 			, KeepAlive_Buildings { true }
 			, KeepAlive_Defenses { true }
+
+			, AutoTarget_InsignificantWhenMindControlled { true }
+
+			, CloakAnims {}
+			, DecloakAnims {}
+			, Cloak_KickOutParasite { false }
+
+			, CustomSequenceRates(42, -1)
+			, CustomSequenceNormalized(42, -1)
 		{ }
 
 		virtual ~ExtData() = default;
