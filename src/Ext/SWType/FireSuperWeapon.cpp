@@ -34,6 +34,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->SW_Link.size() > 0)
 		pTypeExt->ApplyLinkedSW(pSW);
 
+	if (pTypeExt->SW_GroupAs.size() > 0)
+		pTypeExt->ApplyGroupAsReset(pSW);
+
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
@@ -486,6 +489,73 @@ void SWTypeExt::ApplyLinkedSW(SuperClass* pSW)
 
 		MessageListClass::Instance.PrintMessage(this->Message_LinkedSWAcquired.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
+}
+
+void SWTypeExt::ApplyGroupAsReset(SuperClass* pSW)
+{
+	if (!pSW || !pSW->Owner)
+		return;
+
+	HouseClass* pHouse = pSW->Owner;
+	const std::vector<std::string>& firedGroups = this->SW_GroupAs;
+
+	if (firedGroups.empty())
+		return;
+
+	auto sharesFiredGroup = [&firedGroups](SWTypeExt* pOtherExt) -> bool
+	{
+		if (!pOtherExt || pOtherExt->SW_GroupAs.empty())
+			return false;
+
+		for (const std::string& group : firedGroups)
+		{
+			for (const std::string& otherGroup : pOtherExt->SW_GroupAs)
+			{
+				if (_stricmp(group.c_str(), otherGroup.c_str()) == 0)
+					return true;
+			}
+		}
+
+		return false;
+	};
+
+	std::vector<SuperClass*> affectedSupers;
+	int maxRechargeTime = 0;
+	bool syncLongest = this->SW_GroupAs_SyncLongestCooldown;
+
+	for (int i = 0; i < pHouse->Supers.Count; ++i)
+	{
+		SuperClass* pOtherSuper = pHouse->Supers.GetItemOrDefault(i);
+
+		if (!pOtherSuper || !pOtherSuper->IsPresent || !pOtherSuper->Type)
+			continue;
+
+		SWTypeExt* pOtherExt = SWTypeExt::Fetch(pOtherSuper->Type);
+
+		if (sharesFiredGroup(pOtherExt))
+		{
+			affectedSupers.push_back(pOtherSuper);
+
+			int rechargeTime = pOtherSuper->GetRechargeTime();
+
+			if (rechargeTime > maxRechargeTime)
+				maxRechargeTime = rechargeTime;
+
+			if (pOtherExt->SW_GroupAs_SyncLongestCooldown)
+				syncLongest = true;
+		}
+	}
+
+	for (SuperClass* pSuperToReset : affectedSupers)
+	{
+		pSuperToReset->Reset();
+
+		if (syncLongest && maxRechargeTime > 0)
+			pSuperToReset->RechargeTimer.Start(maxRechargeTime);
+	}
+
+	if (pHouse->IsCurrentPlayer())
+		MouseClass::Instance.RepaintSidebar(1);
 }
 
 void SWTypeExt::ApplyActivatedMessage(SuperClass* pSW) const
