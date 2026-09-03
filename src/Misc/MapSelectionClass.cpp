@@ -2244,8 +2244,16 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 	ConvertClass* pDrawer = this->pPalette ? this->pPalette : FileSystem::PALETTE_PAL;
 	ConvertClass* pOverlayDrawer = this->pOverlayPalette ? this->pOverlayPalette : pDrawer;
 
+	if (WWMouseClass::Instance)
+		WWMouseClass::Instance->HideCursor();
+
+	while (ShowCursor(FALSE) >= 0);
+
+	::SetCursor(NULL);
+
 	auto pumpAndCheckSkip = [&]() -> bool
 	{
+		::SetCursor(NULL);
 		MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -2448,7 +2456,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 				}
 
 				GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
-				Sleep(35);
+				Sleep(50);
 			}
 		}
 		else if (this->pTargetFlyInSHP && this->pTargetFlyInSHP->Frames > 0)
@@ -2471,19 +2479,8 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 				DrawElement(pSurface, flyInRect, nullptr, this->pTargetFlyInSHP, pDrawer, f, -2, flag);
 
 				GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
-				Sleep(35);
+				Sleep(50);
 			}
-		}
-
-		// Small delay after target settles
-		for (int d = 0; d < 3; ++d)
-		{
-			if (pumpAndCheckSkip())
-				return;
-			this->UpdateAnimations();
-			renderBase(static_cast<int>(totalOverlays), static_cast<int>(t + 1));
-			GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
-			Sleep(35);
 		}
 	}
 }
@@ -2497,6 +2494,14 @@ bool MapSelectionClass::Run()
 		pSurface = DSurface::Primary;
 	if (!pSurface)
 		return false;
+
+	// Hide mouse cursor during video playback, overlays sweep, and target fly-ins (matching OpenTS Hide_Mouse())
+	if (WWMouseClass::Instance)
+		WWMouseClass::Instance->HideCursor();
+
+	while (ShowCursor(FALSE) >= 0);
+
+	::SetCursor(NULL);
 
 	// Play Bink video if MapVQ is specified and exists
 	if (!this->mapVQFileName.empty())
@@ -2548,6 +2553,10 @@ bool MapSelectionClass::Run()
 
 	// Ensure any audio is stopped before interactive loop starts
 	StopMapSelAudio();
+
+	// Intro presentation is finished and all target markers are placed on map; now show definitive cursor
+	while (ShowCursor(FALSE) >= 0);
+	::SetCursor(NULL);
 
 	if (DisplayClass::Instance.CurrentSWTypeIndex != -1)
 		DisplayClass::Instance.CurrentSWTypeIndex = -1;
@@ -2721,6 +2730,14 @@ bool MapSelectionClass::Run()
 	{
 		ThemeClass::Instance.Stop(true);
 	}
+
+	// Hide mouse cursor when leaving map selection (matching OpenTS Hide_Mouse())
+	if (WWMouseClass::Instance)
+		WWMouseClass::Instance->HideCursor();
+
+	while (ShowCursor(FALSE) >= 0);
+
+	::SetCursor(NULL);
 
 	if (this->selectedChoiceIdx >= 0 && this->selectedChoiceIdx < static_cast<int>(this->choices.size()))
 	{
