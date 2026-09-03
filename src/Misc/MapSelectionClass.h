@@ -15,13 +15,13 @@ class ScenarioClass;
 struct MapSelectChoice
 {
 	int Index { 0 };
-	std::string StageName {};
-	std::string ScenarioPath {};
-	std::string Description {};
-	std::string Summary {};
-	std::string VoiceOver {};
-	std::string HoverSound {};
-	std::string ClickSound {};
+	std::string StageName { };
+	std::string ScenarioPath { };
+	std::string Description { };
+	std::string Summary { };
+	std::string VoiceOver { };
+	std::string HoverSound { };
+	std::string ClickSound { };
 	Point2D TargetCoord { 0, 0 };
 	bool HasTargetCoord { false };
 	ColorStruct TextColor { 255, 239, 99 };
@@ -32,14 +32,14 @@ struct MapSelectAnim
 {
 	SHPStruct* SHP { nullptr };
 	std::vector<BSurface*> PCXFrames;
-	std::string PaletteName {};
+	std::string PaletteName { };
 	ConvertClass* Palette { nullptr };
 	int X { 0 };
 	int Y { 0 };
 	int FrameDelay { 5 };
 	int CurrentFrame { 0 };
 	int TotalFrames { 0 };
-	SysTimerClass Timer {};
+	SysTimerClass Timer { };
 };
 
 struct MapSelectPCX
@@ -70,74 +70,74 @@ private:
 	void DrawBriefing(DSurface* pSurface);
 	void PlayIntroSequence(DSurface* pSurface);
 
-	ScenarioClass* pCurrentScenario { nullptr };
-	std::string currentStageName {};
-	std::string selectedScenarioPath {};
+	ScenarioClass* CurrentScenario { nullptr };
+	std::string CurrentStageName { };
+	std::string SelectedScenarioPath { };
 
 	// Layout & resolution
-	RectangleStruct windowRectangle { 0, 0, 800, 600 };
-	RectangleStruct textRectangle { 92, 322, 332, 78 };
+	RectangleStruct WindowRectangle { 0, 0, 800, 600 };
+	RectangleStruct TextRectangle { 92, 322, 332, 78 };
 
 	// Background & Visual Assets
-	std::string backgroundFileName {};
-	std::string backgroundPCXFileName {};
-	std::string clickMapFileName {};
-	std::string paletteFileName { "mapsel.pal" };
-	std::string overlayPaletteFileName { "msovrly.pal" };
-	ConvertClass* pPalette { nullptr };
-	ConvertClass* pOverlayPalette { nullptr };
-	BSurface* pBackgroundPCX { nullptr };
-	SHPStruct* pBackgroundSHP { nullptr };
+	std::string BackgroundFileName { };
+	std::string BackgroundPCXFileName { };
+	std::string ClickMapFileName { };
+	std::string PaletteFileName { "mapsel.pal" };
+	std::string OverlayPaletteFileName { "msovrly.pal" };
+	ConvertClass* Palette { nullptr };
+	ConvertClass* OverlayPalette { nullptr };
+	BSurface* BackgroundPCX { nullptr };
+	SHPStruct* BackgroundSHP { nullptr };
 
-	std::string targetMarkerFileName {};
-	std::string targetFlyInFileName {};
-	std::vector<std::string> targetMarkerPCXNames;
-	std::vector<std::string> targetFlyInPCXNames;
-	SHPStruct* pTargetMarkerSHP { nullptr };
-	SHPStruct* pTargetFlyInSHP { nullptr };
-	std::vector<BSurface*> targetMarkerPCXSurfaces;
-	std::vector<BSurface*> targetFlyInPCXSurfaces;
+	std::string TargetMarkerFileName { };
+	std::string TargetFlyInFileName { };
+	std::vector<std::string> TargetMarkerPCXNames;
+	std::vector<std::string> TargetFlyInPCXNames;
+	SHPStruct* TargetMarkerSHP { nullptr };
+	SHPStruct* TargetFlyInSHP { nullptr };
+	std::vector<BSurface*> TargetMarkerPCXSurfaces;
+	std::vector<BSurface*> TargetFlyInPCXSurfaces;
 
-	int idleTargetAnimFrame { 0 };
-	int activeTargetAnimFrame { 32 };
-	SysTimerClass targetAnimTimer {};
-	MapSelectPCX clickMapData {};
+	int IdleTargetAnimFrame { 0 };
+	int ActiveTargetAnimFrame { 32 };
+	SysTimerClass TargetAnimTimer { };
+	MapSelectPCX ClickMapData { };
 
-	std::vector<std::string> overlaySHPNames;
-	std::vector<std::string> overlayPCXNames;
-	std::vector<SHPStruct*> overlaySHPs;
-	std::vector<BSurface*> overlayPCXs;
+	std::vector<std::string> OverlaySHPNames;
+	std::vector<std::string> OverlayPCXNames;
+	std::vector<SHPStruct*> OverlaySHPs;
+	std::vector<BSurface*> OverlayPCXs;
 
-	std::vector<MapSelectAnim> backgroundAnims;
+	std::vector<MapSelectAnim> BackgroundAnims;
 
 	// Sound & Audio & Video
-	std::string mapVQFileName {};
-	std::string voiceOverFileName {};
-	std::string overlaySound {};
-	std::string targetFlyInSound {};
-	std::string enterRegionSound {};
-	std::string exitRegionSound {};
-	std::string clickRegionSound {};
-	std::string mouseOnMapSound {};
-	std::string mouseOffMapSound {};
-	std::string typeSound {};
-	std::string themeName {};
+	std::string MapVQFileName { };
+	std::string VoiceOverFileName { };
+	std::string OverlaySound { };
+	std::string TargetFlyInSound { };
+	std::string EnterRegionSound { };
+	std::string ExitRegionSound { };
+	std::string ClickRegionSound { };
+	std::string MouseOnMapSound { };
+	std::string MouseOffMapSound { };
+	std::string TypeSound { };
+	std::string ThemeName { };
 
 	// Choices / Progression
-	std::vector<MapSelectChoice> choices;
-	int hoveredChoiceIdx { -1 };
-	int selectedChoiceIdx { -1 };
-	int lastHoveredChoiceIdx { -2 };
+	std::vector<MapSelectChoice> Choices;
+	int HoveredChoiceIdx { -1 };
+	int SelectedChoiceIdx { -1 };
+	int LastHoveredChoiceIdx { -2 };
 
 	// Briefing typewriter animation
-	int typewriterCharCount { 0 };
-	SysTimerClass typewriterTimer {};
-	SysTimerClass typeSoundTimer {};
-	std::vector<std::wstring> briefingLines;
+	int TypewriterCharCount { 0 };
+	SysTimerClass TypewriterTimer { };
+	SysTimerClass TypeSoundTimer { };
+	std::vector<std::wstring> BriefingLines;
 
-	ColorStruct defaultTextColor { 255, 239, 99 };
+	ColorStruct DefaultTextColor { 255, 239, 99 };
 
 	// State
-	bool repaintAll { true };
-	bool isInitialized { false };
+	bool RepaintAll { true };
+	bool IsInitialized { false };
 };
