@@ -159,7 +159,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-			else if (!pShieldData->IsAvailable() || pShieldData->GetHP() <= 0)
+			else if (pShieldData->GetHP() <= 0)
 			{
 				pShieldData->SetRespawnRestartInCombat();
 			}

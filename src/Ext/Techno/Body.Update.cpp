@@ -855,10 +855,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 void TechnoExt::UpdateTemporal()
 {
 	if (const auto pShieldData = this->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-			pShieldData->AI_Temporal();
-	}
+		pShieldData->AI_Temporal();
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();

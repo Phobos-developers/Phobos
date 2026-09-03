@@ -58,14 +58,8 @@ public:
 
 	bool IsActive() const
 	{
-		return this->Available
-			&& this->HP > 0
+		return this->HP > 0
 			&& this->Online;
-	}
-
-	bool IsAvailable() const
-	{
-		return this->Available;
 	}
 
 	bool IsBrokenAndNonRespawning() const
@@ -161,7 +155,6 @@ private:
 	bool Cloak;
 	bool Online;
 	bool Temporal;
-	bool Available;
 	bool Attached;
 	bool AreAnimsHidden;
 	bool IsSelfHealingEnabled;
