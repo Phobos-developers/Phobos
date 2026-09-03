@@ -458,7 +458,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x3)
 // When multiple superweapons in the same SW.CooldownGroup are ready at once,
 // picks one candidate at random via the synchronized PRNG and temporarily masks
 // the others so Ares doesn't always default to the first one in the vector.
-void HouseExt::AI_TryFireSW(HouseClass* pThis)
+void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 {
 	if (!pThis)
 		return;
@@ -546,6 +546,19 @@ void HouseExt::AI_TryFireSW(HouseClass* pThis)
 			{
 				int chosenIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(cluster.size()) - 1);
 
+				std::string groupNames;
+
+				for (const std::string& groupName : pExtI->SW_CooldownGroup)
+				{
+					if (!groupNames.empty())
+						groupNames += ", ";
+
+					groupNames += groupName;
+				}
+
+				Debug::Log("[SW.CooldownGroup] House '%s' has %d ready superweapons in group '%s'; randomly selected [%s].\n",
+					pThis->get_ID(), static_cast<int>(cluster.size()), groupNames.c_str(), cluster[chosenIndex]->Type->get_ID());
+
 				for (size_t k = 0; k < cluster.size(); ++k)
 				{
 					if (static_cast<int>(k) != chosenIndex)
@@ -581,7 +594,7 @@ DEFINE_HOOK(0x4FD799, HouseClass_ExpertAI_TryFireSW, 0x7)
 {
 	GET(HouseClass*, pThis, EBX);
 
-	HouseExt::AI_TryFireSW(pThis);
+	HouseExt::AI_TryFireSW_CooldownGroupAware(pThis);
 
 	return 0x4FD7A0;
 }
@@ -606,7 +619,7 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 	}
 
 	if (!SessionClass::IsCampaign() || pThis->IQLevel2 >= RulesClass::Instance->SuperWeapons)
-		HouseExt::AI_TryFireSW(pThis);
+		HouseExt::AI_TryFireSW_CooldownGroupAware(pThis);
 
 	return 0;
 }
