@@ -645,7 +645,7 @@ Due to technical constraints this cannot be customized per WeaponType.
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
+RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | neutral | all)
 ```
 
 ### Re-enable obsolete `[JumpjetControls]`
@@ -2401,7 +2401,7 @@ Power=0               ; integer, positive means output, negative means drain
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                         ; TechnoType
-RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
+RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
 ### Stop immediately if the target enters the range during ApproachTarget
@@ -3300,10 +3300,10 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), defau
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+IvanIconVisibility=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 
 [SOMEWEAPON]                ; WeaponType
-IvanBomb.Visibility=        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+IvanBomb.Visibility=        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ### Customizing whether passengers are kicked out when an aircraft fires

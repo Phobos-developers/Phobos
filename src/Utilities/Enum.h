@@ -130,11 +130,12 @@ enum class AffectedHouse : unsigned char
 	Owner = 0x1,
 	Allies = 0x2,
 	Enemies = 0x4,
+	Neutral = 0x8,
 
 	Team = Owner | Allies,
 	NotAllies = Owner | Enemies,
 	NotOwner = Allies | Enemies,
-	All = Owner | Allies | Enemies
+	All = Owner | Allies | Enemies | Neutral
 };
 
 MAKE_ENUM_FLAGS(AffectedHouse);
