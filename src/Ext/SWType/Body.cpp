@@ -106,8 +106,8 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->EVA_Activated_Owner)
 		.Process(this->EVA_Activated_Allies)
 		.Process(this->EVA_Activated_Enemies)
-		.Process(this->SW_GroupAs)
-		.Process(this->SW_GroupAs_SyncLongestCooldown)
+		.Process(this->SW_CooldownGroup)
+		.Process(this->SW_CooldownGroup_SyncLongest)
 		;
 }
 
@@ -244,8 +244,8 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
 
-	exINI.ParseStringList(this->SW_GroupAs, pSection, "SW.GroupAs");
-	this->SW_GroupAs_SyncLongestCooldown.Read(exINI, pSection, "SW.GroupAs.SyncLongestCooldown");
+	exINI.ParseStringList(this->SW_CooldownGroup, pSection, "SW.CooldownGroup");
+	this->SW_CooldownGroup_SyncLongest.Read(exINI, pSection, "SW.CooldownGroup.SyncLongest");
 
 	this->Message_Activated_Owner.Read(exINI, pSection, "Message.Activated.Owner");
 	this->Message_Activated_Allies.Read(exINI, pSection, "Message.Activated.Allies");

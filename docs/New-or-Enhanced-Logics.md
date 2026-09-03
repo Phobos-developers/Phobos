@@ -1447,18 +1447,18 @@ Message.LinkedSWAcquired=    ; CSF entry key
 EVA.LinkedSWAcquired=        ; EVA entry
 ```
 
-### Shared Cooldown / Group Superweapons
+### Cooldown groups
 
-- Superweapons can be grouped together using `SW.GroupAs`. When any superweapon belonging to a group is launched, all other currently active (`IsPresent`) superweapons belonging to that group for the firer house will have their countdown timers reset (`RechargeTimer`), implementing a shared cooldown mechanism.
-- `SW.GroupAs` accepts a comma-separated list of group names, allowing a superweapon to belong to multiple groups simultaneously.
-  - The reset is non-transitive: launching a superweapon only resets weapons that share at least one group with the *fired* weapon. Weapons reset collaterally do not propagate resets to other groups.
-- `SW.GroupAs.SyncLongestCooldown` controls whether all present superweapons in the affected group(s) synchronize their cooldown to the longest `RechargeTime` among the superweapons currently active (built) in the group for that player. If set to `false`, each superweapon resets to its own individual recharge time.
+- Superweapons can be grouped together using `SW.CooldownGroup`. When any superweapon belonging to a group is launched, all other currently active (`IsPresent`) superweapons belonging to that group for the firer house will have their countdown timers reset (`RechargeTimer`), implementing a shared cooldown mechanism.
+- `SW.CooldownGroup` accepts a comma-separated list of group names, allowing a superweapon to belong to multiple groups simultaneously.
+  - The reset is non-transitive: launching a superweapon only resets superweapons that share at least one group with the *launched* superweapon. Superweapons reset collaterally do not propagate resets to other groups.
+- `SW.CooldownGroup.SyncLongest` controls whether all present superweapons in the affected group(s) synchronize their cooldown to the longest `RechargeTime` among the superweapons currently active (built) in the group for that player. If set to `false`, each superweapon resets to its own individual recharge time.
 
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                                ; SuperWeaponType
-SW.GroupAs=                             ; List of group names (strings separated by commas)
-SW.GroupAs.SyncLongestCooldown=false    ; boolean
+SW.CooldownGroup=                       ; List of group names (strings separated by commas)
+SW.CooldownGroup.SyncLongest=false      ; boolean
 ```
 
 ### Next

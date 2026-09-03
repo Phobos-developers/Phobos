@@ -125,8 +125,8 @@ public:
 	ValueableIdx<VoxClass> EVA_Activated_Allies;
 	ValueableIdx<VoxClass> EVA_Activated_Enemies;
 
-	std::vector<std::string> SW_GroupAs;
-	Valueable<bool> SW_GroupAs_SyncLongestCooldown;
+	std::vector<std::string> SW_CooldownGroup;
+	Valueable<bool> SW_CooldownGroup_SyncLongest;
 
 	SWTypeExt(SuperWeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, TypeID { "" }
@@ -216,8 +216,8 @@ public:
 		, EVA_Activated_Owner { -1 }
 		, EVA_Activated_Allies { -1 }
 		, EVA_Activated_Enemies { -1 }
-		, SW_GroupAs { }
-		, SW_GroupAs_SyncLongestCooldown { false }
+		, SW_CooldownGroup { }
+		, SW_CooldownGroup_SyncLongest { false }
 	{ }
 
 	// Ares 0.A functions
@@ -244,7 +244,7 @@ public:
 
 	void ApplyLinkedSW(SuperClass* pSW);
 
-	void ApplyGroupAsReset(SuperClass* pSW);
+	void ApplyCooldownGroupReset(SuperClass* pSW);
 
 	void ApplyActivatedMessage(SuperClass* pSW) const;
 	void ApplyActivatedEva(SuperClass* pSW) const;

@@ -34,8 +34,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->SW_Link.size() > 0)
 		pTypeExt->ApplyLinkedSW(pSW);
 
-	if (pTypeExt->SW_GroupAs.size() > 0)
-		pTypeExt->ApplyGroupAsReset(pSW);
+	if (pTypeExt->SW_CooldownGroup.size() > 0)
+		pTypeExt->ApplyCooldownGroupReset(pSW);
 
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
@@ -491,25 +491,25 @@ void SWTypeExt::ApplyLinkedSW(SuperClass* pSW)
 	}
 }
 
-void SWTypeExt::ApplyGroupAsReset(SuperClass* pSW)
+void SWTypeExt::ApplyCooldownGroupReset(SuperClass* pSW)
 {
 	if (!pSW || !pSW->Owner)
 		return;
 
 	HouseClass* pHouse = pSW->Owner;
-	const std::vector<std::string>& firedGroups = this->SW_GroupAs;
+	const std::vector<std::string>& firedGroups = this->SW_CooldownGroup;
 
 	if (firedGroups.empty())
 		return;
 
 	auto sharesFiredGroup = [&firedGroups](SWTypeExt* pOtherExt) -> bool
 	{
-		if (!pOtherExt || pOtherExt->SW_GroupAs.empty())
+		if (!pOtherExt || pOtherExt->SW_CooldownGroup.empty())
 			return false;
 
 		for (const std::string& group : firedGroups)
 		{
-			for (const std::string& otherGroup : pOtherExt->SW_GroupAs)
+			for (const std::string& otherGroup : pOtherExt->SW_CooldownGroup)
 			{
 				if (_stricmp(group.c_str(), otherGroup.c_str()) == 0)
 					return true;
@@ -521,7 +521,7 @@ void SWTypeExt::ApplyGroupAsReset(SuperClass* pSW)
 
 	std::vector<SuperClass*> affectedSupers;
 	int maxRechargeTime = 0;
-	bool syncLongest = this->SW_GroupAs_SyncLongestCooldown;
+	bool syncLongest = this->SW_CooldownGroup_SyncLongest;
 
 	for (int i = 0; i < pHouse->Supers.Count; ++i)
 	{
@@ -541,7 +541,7 @@ void SWTypeExt::ApplyGroupAsReset(SuperClass* pSW)
 			if (rechargeTime > maxRechargeTime)
 				maxRechargeTime = rechargeTime;
 
-			if (pOtherExt->SW_GroupAs_SyncLongestCooldown)
+			if (pOtherExt->SW_CooldownGroup_SyncLongest)
 				syncLongest = true;
 		}
 	}
