@@ -174,7 +174,7 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		showSth = true;
 	}
 
-	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
+	const int rechargeTime = TickTimeToSeconds(pType->RechargeTime);
 	if (rechargeTime > 0)
 	{
 		if (!showSth)
@@ -186,6 +186,64 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
+
+		if (!pData->SW_CooldownGroup.empty())
+		{
+			int maxGroupFrames = pType->RechargeTime;
+			bool syncLongest = pData->SW_CooldownGroup_SyncLongest;
+			HouseClass* pCurrentPlayer = HouseClass::CurrentPlayer;
+
+			for (int i = 0; i < pCurrentPlayer->Supers.Count; ++i)
+			{
+				SuperClass* pOtherSuper = pCurrentPlayer->Supers.GetItemOrDefault(i);
+
+				if (!pOtherSuper || !pOtherSuper->IsPresent || !pOtherSuper->Type)
+					continue;
+
+				SWTypeExt* pOtherExt = SWTypeExt::Fetch(pOtherSuper->Type);
+
+				if (!pOtherExt || pOtherExt->SW_CooldownGroup.empty())
+					continue;
+
+				bool sharesGroup = false;
+
+				for (const std::string& g1 : pData->SW_CooldownGroup)
+				{
+					for (const std::string& g2 : pOtherExt->SW_CooldownGroup)
+					{
+						if (_stricmp(g1.c_str(), g2.c_str()) == 0)
+						{
+							sharesGroup = true;
+							break;
+						}
+					}
+
+					if (sharesGroup)
+						break;
+				}
+
+				if (sharesGroup)
+				{
+					if (pOtherSuper->Type->RechargeTime > maxGroupFrames)
+						maxGroupFrames = pOtherSuper->Type->RechargeTime;
+
+					if (pOtherExt->SW_CooldownGroup_SyncLongest)
+						syncLongest = true;
+				}
+			}
+
+			if (syncLongest && maxGroupFrames > pType->RechargeTime)
+			{
+				const int groupRechargeTime = TickTimeToSeconds(maxGroupFrames);
+				const int gSec = groupRechargeTime % 60;
+				const int gMin = groupRechargeTime / 60;
+
+				oss << L" ("
+					<< std::setw(2) << std::setfill(L'0') << gMin << L":"
+					<< std::setw(2) << std::setfill(L'0') << gSec << L")";
+			}
+		}
+
 		showSth = true;
 	}
 
