@@ -1,6 +1,5 @@
 #include "ToggleDesignatorRange.h"
 
-#include <MessageListClass.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* ToggleDesignatorRangeCommandClass::GetName() const

@@ -1,8 +1,5 @@
 #include "BombardTrajectory.h"
-#include "Memory.h"
 
-#include <LineTrail.h>
-#include <AnimClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 
@@ -171,7 +168,7 @@ void BombardTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 	if (pCoords.DistanceFrom(pBullet->Location) <= pType->TargetSnapDistance.Get())
 	{
-		const auto pExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pExt = BulletExt::Fetch(pBullet);
 		pExt->SnappedToTarget = true;
 		pBullet->SetLocation(pCoords);
 	}
@@ -231,7 +228,7 @@ void BombardTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			middleLocation = CoordStruct { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, static_cast<int>(this->Height) };
 		}
 
-		const auto pExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pExt = BulletExt::Fetch(pBullet);
 
 		if (pExt->LaserTrails.size())
 		{
@@ -316,7 +313,7 @@ void BombardTrajectory::CalculateTargetCoords(BulletClass* pBullet)
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
-		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		const auto pTypeExt = BulletTypeExt::Fetch(pBullet->Type);
 		const auto offsetMult = 0.0004 * pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords);
 		const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
 		const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
@@ -556,7 +553,7 @@ void BombardTrajectory::BulletVelocityChange(BulletClass* pBullet)
 					pBullet->Velocity = BulletVelocity::Empty;
 				}
 
-				const auto pExt = BulletExt::ExtMap.Find(pBullet);
+				const auto pExt = BulletExt::Fetch(pBullet);
 
 				if (pExt->LaserTrails.size())
 				{
@@ -612,4 +609,9 @@ void BombardTrajectory::RefreshBulletLineTrail(BulletClass* pBullet)
 		pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
 		pLineTrailer->Owner = pBullet;
 	}
+}
+
+bool BombardTrajectory::ShouldSkipBridgeCheck() const
+{
+	return !this->Type->SubjectToGround;
 }

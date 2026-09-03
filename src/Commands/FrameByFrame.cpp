@@ -1,10 +1,7 @@
 #include "FrameByFrame.h"
 
-#include <SessionClass.h>
-#include <TacticalClass.h>
+#include <Utilities/Debug.h>
 #include <Utilities/GeneralUtils.h>
-
-#include <Unsorted.h>
 
 size_t FrameByFrameCommandClass::FrameStepCount = 0;
 bool FrameByFrameCommandClass::FrameStep = false;

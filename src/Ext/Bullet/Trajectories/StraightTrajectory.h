@@ -113,6 +113,7 @@ public:
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
+	virtual bool ShouldSkipBridgeCheck() const override;
 
 	const StraightTrajectoryType* Type;
 	Leptons DetonationDistance;

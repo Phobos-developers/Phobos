@@ -1,15 +1,28 @@
-#include <TerrainClass.h>
 #include <IsometricTileTypeClass.h>
+
+#include "Body.h"
 
 #include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
-#include <Ext/WarheadType/Body.h>
+#include <Ext/Building/Body.h>
 
-static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+#pragma region AllowDeployControlledMCV
+
+DEFINE_HOOK_AGAIN(0x443770, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::CellClickedAction
+DEFINE_HOOK_AGAIN(0x443AB0, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::SetRallyPoint
+DEFINE_HOOK_AGAIN(0x44F614, TechnoClass_AllowDeployControlledMCV, 0x6)// BuildingClass::IsControllable
+DEFINE_HOOK(0x700ED0, TechnoClass_AllowDeployControlledMCV, 0x6)// UnitClass::CanDeploySlashUnload
+{
+	return RulesExt::Global()->AllowDeployControlledMCV ? R->Origin() + 0xE : 0;
+}
+
+#pragma endregion
+
+static inline void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type
-		: TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
+		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
 
 	if (const auto Controller = pTechnoFrom->MindControlledBy)
 	{
@@ -95,8 +108,9 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
 
-	pUnit->QueueMission(Mission::Hunt, true);
-	//Why?
+	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
+	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future
+	// pUnit->QueueMission(Mission::Hunt, true);
 	return 0;
 }
 
@@ -108,7 +122,7 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 	// Remember MC ring animation.
 	if (pStructure->IsMindControlled())
 	{
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pStructure);
+		auto const pTechnoExt = TechnoExt::Fetch(pStructure);
 		pTechnoExt->UpdateMindControlAnim();
 	}
 
@@ -137,7 +151,7 @@ DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 	REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 
-	if (!TechnoExt::CanDeployIntoBuilding(pThis))
+	if (!UnitExt::CanDeployIntoBuilding(pThis))
 		action = Action::NoDeploy;
 
 	return SkipGameCode;
@@ -156,6 +170,15 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	if (!Game::IsActive)
 		return CanExistHere;
 
+	auto isTerrainBuildable = [](TerrainClass* pTerrain) -> bool
+	{
+		auto const pType = pTerrain->Type;
+		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
+		return pType->SpawnsTiberium
+			? pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Tibtree_CanBeBuiltOn)
+			: pTypeExt->CanBeBuiltOn.Get(RulesExt::Global()->Terrain_CanBeBuiltOn);
+	};
+
 	if (pBuildingType->LaserFence)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -166,28 +189,28 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 			}
 		}
 	}
 	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
 	{
-		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				if (pObject == UnitExt::Deployer)
 				{
 					skipFlag = true;
 				}
@@ -222,21 +245,21 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else
 	{
-		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				if (pObject == UnitExt::Deployer)
 					skipFlag = true;
 				else
 					return CanNotExistHere;
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+				if (!isTerrainBuildable(pTerrain))
 					return CanNotExistHere;
 
 				builtOnCanBeBuiltOn = true;
@@ -248,6 +271,21 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 
 	return CanExistHere; // Continue check the overlays .etc
+}
+
+
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+{
+	GET(UnitClass*, pUnit, EBP);
+	GET(BuildingClass*, pStructure, EBX);
+
+	if (pUnit->Type->DeployToFire && pUnit->Target)
+		pStructure->LastTarget = pUnit->Target;
+
+	const auto pStructureExt = BuildingExt::Fetch(pStructure);
+	pStructureExt->DeployedTechno = true;
+
+	return 0;
 }
 
 #pragma endregion

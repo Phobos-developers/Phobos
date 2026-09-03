@@ -1,0 +1,154 @@
+; Phobos exception database (gamemd.edb)
+;
+; Known Yuri's Revenge 1.001 (gamemd.exe) internal-error addresses, matched
+; against the faulting instruction pointer to annotate the Phobos crash report
+; with a likely cause under "Additional information".
+;
+; Format (one entry per line, shared with Vinifera):
+;   0xADDRESS,canContinue,ignore,description
+; The two flags are parsed for format compatibility but not used. Lines that
+; are blank or start with ';' are ignored. Descriptions run to end of line.
+;
+; Source: https://modenc.renegadeprojects.com/Internal_Error (Except.txt list).
+; These addresses are cause hints, not guarantees; the same address can crash
+; for more than one reason. Cross-check with the stack dump in the report.
+
+0x00000002,0,0,Unknown. The cause depends on the stack dump.
+0x00000061,0,0,Encountered when launching RA2's unedited campaign missions but a new country was added to the Countries list. Can happen if RulesMD.ini is used by RA2 instead of Rules.ini (by manually renaming the file) and you forgot to add a ';' to entry 9 (which is set to YuriCountry for YR).
+0x004145BD,0,0,An AircraftType has a corrupted HVA (shows as "unknown" file type in XCC Mixer); or its image tag is missing / has no artmd section; or an aircraft has no name under AircraftTypes / the name is in the wrong section; or a SHP image is used for an aircraft (the game treats it as a voxel).
+0x004157E3,0,0,An AircraftType used as a spy plane has no Primary weapon.
+0x00417D05,0,0,An AircraftType has fired a weapon which has Suicide=yes set.
+0x004184AB,0,0,Likely a unit using a weapon that did not specify a valid projectile (error happens when the weapon is first used); or a unit died but its DeathWeapon is inadequate. Reported to be the same as 004157E3, pointing to a broken reference around airplane death and/or weapon handling.
+0x0041D88D,0,0,[General]->SovParaDropInf= definition missing, or the infantry-summoning airstrike is not set to a valid AirstrikeTeamType.
+0x0041D9B1,0,0,Something to do with the ColorAdd section or LaserTargetColor - there are only 16 colour slots in YR and the game's memory was corrupted.
+0x00422131,0,0,You set the explosion animation via AnimList for a warhead of a weapon that uses negative Damage, crashing the game while processing the animation's YSortAdjust. Fixed in Ares 0.2.
+0x004242DB,0,0,Using a TrailerAnim on an Animation but not setting TrailerSeperation (or setting it to 0). The default TrailerSeperation of zero is used as a divisor.
+0x00424A05,0,0,An Animation with MakeInfantry=X was played where X was greater than the number of AnimToInfantry list entries or less than 0 (e.g. AnimToInfantry position 0 lists an infantry type that no longer exists).
+0x00424A14,0,0,An Animation with MakeInfantry=X was played where X was greater than the number of AnimToInfantry list entries or less than 0.
+0x00429CD3,0,0,Appears to be a pathfinding issue with the train logic.
+0x0042E7AF,0,0,A Construction Yard does not have AIBuildThis=yes set and the owning side's AI was present in the game.
+0x00431718,0,0,The sidec0#.mix file for the side of the house that placed the beacon does not contain pbeacon.shp or rdrbeacn.shp.
+0x004407C1,0,0,A building with Wall=yes has not specified ToOverlay=<OverlayType> in the art.
+0x00441C28,0,0,You have set [AudioVisual]->ShakeScreen= to zero.
+0x00442832,0,0,Using a Sparky=yes warhead without three valid animations defined in [AudioVisual]->OnFire=. Crash happens when damaging a building into yellow or red health.
+0x00442892,0,0,Using a Sparky=yes warhead without three valid animations defined in [AudioVisual]->OnFire=. Crash happens when damaging a building into yellow or red health.
+0x004428DE,0,0,Using a Sparky=yes warhead without three valid animations defined in [AudioVisual]->OnFire=. Crash happens when damaging a building into yellow or red health.
+0x00447E0A,0,0,For buildings with UnitRepair=yes, setting NumberOfDocks to allow more than one vehicle to dock at once is not supported (and such buildings do not need NumberOfDocks). Under Ares this may also create another except.txt with EIP 77CEFC82.
+0x0044C71E,0,0,For buildings with UnitRepair=yes, setting NumberOfDocks to allow more than one vehicle to dock at once is not supported (and such buildings do not need NumberOfDocks). Under Ares this may also create another except.txt with EIP 77CEFC82.
+0x00452FDC,0,0,Failed to get the cell on the link path when creating a LaserFence.
+0x004586A9,0,0,PadAircraft problem - "What PadAircraft would you like?" / "You must have PadAircraft!!! I kill you!"
+0x004593BB,0,0,See the Tank Bunker / Sell Unit internal errors.
+0x0045EC90,0,0,Multiple reasons depending on the stack dump: if 00506115 appears near the top, some AI-controlled country in the game cannot build anything from [General]->Shipyard=.
+0x0045ED61,0,0,In the [General]->PadAircraft= list, an AircraftType's Dock= list has no valid BuildingType, or the aircraft is misspelled and does not exist.
+0x0045ED69,0,0,The [General]->PadAircraft= list is empty.
+0x0045ED71,0,0,The first AircraftType in the [General]->PadAircraft= list has no BuildingType listed as its Dock.
+0x0046650D,0,0,A unit's ShrapnelWeapon or DeathWeapon does not exist (broken reference).
+0x004687E5,0,0,Most likely assigning a Weapon value to a Warhead key, potentially on a ShrapnelWeapon (needs verification).
+0x00469EDA,0,0,Reproducible by firing a homing weapon whose projectile has Airburst=yes at the ground.
+0x0046A496,0,0,A sub-weapon created by ShrapnelWeapon whose Range value is higher than 11.
+0x0046B459,0,0,Creating a [NukePayload] descent-stage weapon failed to read the parent weapon's DetonationAltitude. Usually because the NukeMaker=yes parent weapon is itself a sub-weapon created via ShrapnelWeapon or AirburstWeapon (ShrapnelWeapon supported by Ares 0.5; AirburstWeapon by Phobos build #45).
+0x0047141E,0,0,An OverlayType has a CellAnim= referencing a non-existent Animation.
+0x00471CA4,0,0,A unit's initial primary (Primary/Weapon1) weapon's Warhead does not have MindControl=yes, but a weapon in another slot does. Triggered when moused-over a target, auto-targeting, or when an IFV / urban-combat building gains a mind-control weapon via passenger or garrison.
+0x0047C2E7,0,0,Crash while retrieving a cell's radar colour from a possibly corrupt Isometric Tile. Can happen loading a map that uses tiles that are not present.
+0x00482096,0,0,Your [AI]->BuildRefinery= is invalid, missing or blank, so the game cannot find the harvesters used to decide the unit.
+0x004895C7,0,0,You have a warhead with a CellSpread greater than 11.
+0x0049FA09,0,0,Reinforcements for a house arrive but there is no player or AI in the session, or the TeamType being spawned does not exist. Probably a TeamTypes / TriggerActions issue.
+0x004AEE5A,0,0,A YR scenario declared in missionmd.ini does not have LS800BkgdPal= defined (or it is commented out).
+0x004C2C19,0,0,A vehicle that did not achieve full "independent existence" fired a weapon with EBolt effects and the shooter's pointer was lost (e.g. a vehicle firing out of an OpenTopped transport that is then destroyed). Using an Infantry payload or particle-system effects instead of lasers is more stable.
+0x004C445E,0,0,A unit's Secondary weapon does not exist (broken reference) or its Warhead tag is missing/blank. E.g. the Secondary just finished constructing, or the EliteSecondary just after promotion.
+0x004D5108,0,0,A unit's Secondary weapon does not exist (broken reference) or its Warhead tag is missing/blank. E.g. the Secondary just finished constructing, or the EliteSecondary just after promotion.
+0x004D81DA,0,0,A Tube's exit cell is invalid/improperly defined. Happens when force-ending a Tube with F in the TS & RA2 Tunnel Drawer (which does not generate ending coordinates).
+0x004DEE36,0,0,The type specified for Disguise is null or nonexistent. See AlliedDisguise, SovietDisguise, ThirdDisguise and DefaultDisguise (Ares).
+0x004F0FEC,0,0,A unit's Primary weapon does not exist (broken reference) or its Warhead tag is missing/blank. E.g. the Primary just after construction/spawn, or the ElitePrimary just after promotion.
+0x004F65BF,0,0,Some House cannot build anything from [General]->BaseUnit=.
+0x004F671D,0,0,Due to Owner or other reasons, the AI cannot build any War Factory.
+0x004F710C,0,0,[General]->TeamDelays= does not exist.
+0x004F78E4,0,0,A Team was created without a teamtype.
+0x004F8CCD,0,0,[AI]->BuildConst= lists fewer than 3 BuildingTypes and your last listed Construction Yard was destroyed/sold while on low power, or you went to low power owning no Construction Yards.
+0x004F9FAD,0,0,A trigger action requires the trigger's house owner to be present in the game but that country (most likely America) is not playing. Crashes as soon as the action executes.
+0x004FE543,0,0,Due to Owner or other reasons, the AI cannot build any Ore Refinery.
+0x00502CC4,0,0,A reinforcement (7) TeamType without a valid House is being created (e.g. a reinforcement on a TeamType with House: <none>).
+0x00502CE1,0,0,Nobody is the House on a Trigger whose Action creates a reinforcement (7) TeamType belonging to that House.
+0x00505E41,0,0,An AI-controlled House that cannot construct a base (per rules) received a Construction Yard, triggering the AI base-planning routine. Happens when a mind-controlled MCV is released to the neutral side, or a neutral Engineer captures a Construction Yard. The engine assumes any base-building country can build at least 3 BuildingTypes.
+0x0050CD20,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CD20 - an InfantryType with Engineer=yes exists; AIIonCannonEngineerValue needs restoring.
+0x0050CD44,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CD44 - an InfantryType with VehicleThief=yes exists; AIIonCannonThiefValue needs restoring.
+0x0050CD79,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CD79 - a BuildingType with Factory=BuildingType exists; AIIonCannonConYardValue needs restoring.
+0x0050CDA2,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CDA2 - a BuildingType with Factory=UnitType and Naval=no exists; AIIonCannonWarFactoryValue needs restoring.
+0x0050CDCC,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CDCC - a BuildingType with a positive Power value exists; AIIonCannonPowerValue needs restoring.
+0x0050CDF0,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CDF0 - a BuildingType with IsBaseDefense=yes exists; AIIonCannonBaseDefenseValue needs restoring.
+0x0050CE14,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CE14 - a BuildingType with IsPlug=yes exists; AIIonCannonPlugValue needs restoring.
+0x0050CE38,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CE38 - a BuildingType with IsTemple=yes exists; AIIonCannonTempleValue needs restoring.
+0x0050CE5C,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CE5C - a BuildingType with HoverPad=yes exists; AIIonCannonHelipadValue needs restoring.
+0x0050CEA2,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CEA2 - a BuildingType listed in [AI]->BuildTech exists; AIIonCannonTechCenterValue needs restoring.
+0x0050CECC,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CECC - a VehicleType with Harvester=yes exists; AIIonCannonHarvesterValue needs restoring.
+0x0050CF15,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CF15 - a VehicleType with a positive Passengers value exists; AIIonCannonAPCValue needs restoring.
+0x0050CF2A,0,0,The AI is picking a Nuclear Missile / Weather Storm target but lacks a weighting value for an object on the map. Restore a [General]->AIIonCannonXValue= line: 0050CF2A - a VehicleType that DeploysInto a BuildingType listed in [AI]->BuildConst exists; AIIonCannonMCVValue needs restoring.
+0x00518369,0,0,An InfantryType is taking damage from a non-existent warhead.
+0x005213CB,0,0,An InfantryType with DeployFire=yes has no Secondary weapon set; crashes while retrieving the weapon's RadLevel.
+0x0054AF0E,0,0,A unit's Secondary points to a non-existent weapon.
+0x0054D10A,0,0,Re-coding the Battle Fortress with a SizeLimit above 2 (so it can load other tanks) and then ordering it into an amphibious transport. Not limited to the BFRT; the crash is occasional/random. (confirmed for RA2)
+0x00567B43,0,0,An Object has a negative sight.
+0x00568432,0,0,At least one TerrainType has Foundation=0x0.
+0x0056D388,0,0,An InfantryType or VehicleType does not have a valid movement zone.
+0x005B36EB,0,0,A team tries to execute Script Action #11 - Change Mission when the parameter is invalid or missing.
+0x005BDCEB,0,0,Ares crash: referenced a non-existent Cursor, such as Spyable=yes with Cursor.Spy=none.
+0x005D7387,0,0,Not having at least one valid InfantryType with AllowedToStartInMultiplayer=yes (default) for each house.
+0x005DA453,0,0,A crash in the network code around an object called FirewallHelper.
+0x005F4F88,0,0,An Animation has TiberiumSpawnType=SOME_OVERLAY where SOME_OVERLAY is one of the three last entries in [OverlayTypes].
+0x005F5155,0,0,You tried to construct a BuildingType with HasSpotlight=yes. Yuri's Revenge 1.001 does not support this; only patched versions do.
+0x00629FE7,0,0,Parasite=yes on the warhead but no other Parasite settings, so the parasite manager has no owner. The weapon fires several times before crashing.
+0x0062B662,0,0,An animation with SpawnsParticle that does not point to a valid ParticleSystem (broken reference).
+0x0062C67E,0,0,Crash obtaining a particle's frame playback rules via modulo StateAIAdvance, most likely because StateAIAdvance is an unreasonable value such as 0.
+0x0062D2E8,0,0,The WindEffect value of a particle exceeds 10.
+0x0062DCD2,0,0,An OverlayType with Explodes=yes was destroyed and BarrelParticle is blank; or firing a weapon with UseSparkParticles=yes / UseFireParticles=yes / IsRailgun=yes without a valid AttachedParticleSystem=.
+0x0062EE56,0,0,A particle generated by the smoke particle system with a NextParticle setting finished playing.
+0x0064003C,0,0,A buildable Construction Yard was started and then cancelled. Construction Yards should not be buildable - they should be deployed from vehicles.
+0x006407A6,0,0,A MapShot (not ScreenShot) saved as Map****.yrm is in your directory; the game tries to load it as a map at startup. Remove these MapShots.
+0x0065B73F,0,0,You have a Weapon whose RadLevel is less than [Radiation]->RadLightDelay=. Integer division of the two yields zero and another value is then divided by it (division by zero).
+0x0065D99F,0,0,A Task Force called by a Team has its last member with Strength=0, or uses a unit type already included in the Task Force.
+0x00684E55,0,0,A Trigger requires a house (via its events, actions or attached triggers) but the house on the trigger is not set.
+0x00691520,0,0,An invalid parameter was supplied to a script action, e.g. changing into an invalid script (using the script ID instead of the index), an Attack... with a building-type parameter, or jumping to an invalid script action.
+0x006915D6,0,0,An invalid parameter was supplied to a script action, e.g. changing into an invalid script (using the script ID instead of the index), an Attack... with a building-type parameter, or jumping to an invalid script action.
+0x00697F29,0,0,The game cannot find a valid gamemode. Your mpmodesmd.ini is corrupted.
+0x0069ACC6,0,0,A PKT file's [MultiMaps] section declares a map with no section of its own to define parameters, or the section lacks the CD entry.
+0x0069E58B,0,0,An ore-type OverlayType has a CellAnim= referencing a non-existent Animation, or the Animation has a MakeInfantry=<int> setting.
+0x006ABF96,0,0,Encountered immediately after loading (tested for skirmish with XWIS multiplayer-only components) when the resolution is set higher than 2560x1600.
+0x006AEBB8,0,0,Your ra2md.ini lists a game mode/map combination the game cannot satisfy (e.g. valid combinations changed between sessions or mods). LaunchBase works around this by saving/restoring configuration per mod.
+0x006B7718,0,0,A Spawned=yes object flew over the map border instead of landing. A known cause is Selectable=no on AircraftTypes that use the aircraft Locomotor.
+0x006B7987,0,0,A garrisonable building has non-existent weapons.
+0x006B7D30,0,0,An object has a weapon with Spawner=yes but no valid Spawns= definition (Spawns= initialises the Spawn Manager the Spawner=yes weapon then tries to access).
+0x006B7D51,0,0,Drawing a unit with NoSpawnAlt=yes that does not use Spawns= to specify a spawnee - usually a misspelled Spawns flag, or NoSpawnAlt=yes copied from another unit by mistake.
+0x006C1D28,0,0,A unit has Turret=yes but unittur.vxl does not exist. (It will not crash if no VXL or HVA exists at all.)
+0x006DE99D,0,0,A Trigger has an Action referencing the Trigger's House but that House does not exist (e.g. a trigger granting Iraq a superweapon crashes only if Iraq is not playing).
+0x006EA6AE,0,0,The game was coerced into creating an instance of an undefined TeamType, via map triggers or AI script actions.
+0x006F1FC6,0,0,A TeamType was defined without a TaskForce, or a TeamType is referenced without being defined.
+0x006F352E,0,0,A unit's ElitePrimary weapon does not exist (broken reference) or its Warhead tag is missing/blank, and that unit was just promoted to Elite.
+0x006F40A2,0,0,Started construction of a unit whose Primary weapon does not exist (broken reference) or whose Warhead tag is missing/blank. Also applies to turret changers (e.g. Weapon1 not valid).
+0x006F72EF,0,0,A unit's ElitePrimary weapon does not exist (broken reference) or its Warhead tag is missing/blank, and that unit was just promoted to Elite.
+0x006F9DB6,0,0,The game tried to check an ownerless unit's owner. Reported case was the Service Depot's allegiance check.
+0x006FC655,0,0,A unit has an EliteWeaponX that does not exist (broken reference) and that unit was just promoted to Elite.
+0x0070031E,0,0,A unit has a weapon that does not exist in the INI (broken reference) or whose Warhead tag is missing/blank (commonly an Elite weapon just after promotion).
+0x00702330,0,0,A building has missing or non-existent DebrisTypes (e.g. DebrisTypes=CRYSTAL1).
+0x00702339,0,0,The DebrisMaximums= list for a unit has fewer values than its DebrisTypes= list (so a value of -1 is used).
+0x0070A549,0,0,Crash caused by a zero-value SelfHealInfantryFrames calculation when rendering a Pip.
+0x0070A5B5,0,0,Crash caused by a zero-value SelfHealUnitFrames calculation when rendering a Pip.
+0x0070DF8A,0,0,A unit with IsGattling=yes is missing WeaponX/EliteWeaponX entries, or WeaponCount is less than 2x WeaponStages. Crashes when the unit would advance to the missing weapon stage.
+0x007120F7,0,0,A click-repairable BuildingType with Strength=0 or Strength below [General]->RepairStep=. Fixed in Phobos DevBuild #49.
+0x0071ADE9,0,0,Deploying an elite unit that does not have the elite secondary weapon.
+0x0071AF4D,0,0,Detonating a Temporal=yes warhead fired as a shrapnel weapon, from an occupied building (urban combat), or with a non-zero CellSpread.
+0x0071B173,0,0,Firing a death weapon that uses a Temporal=yes warhead.
+0x0071C661,0,0,Using a Sparky=yes warhead without two valid animations defined in [AudioVisual]->TreeFire=. Crash happens when damaging a wooden terrain object.
+0x0072652D,0,0,A trigger in the map wants to change a house's non-existent object to another house.
+0x00728F08,0,0,Something is wrong with this building's Secondary (missing/invalid).
+0x007387EB,0,0,[AudioVisual]->ShakeScreen= is missing or set to zero.
+0x0073B0C9,0,0,"Infantry Linking" can cause an IE when the linked infantry was modified in a later game-mode override file or a map and a human player scrolls to an AI-owned War Factory. Avoid Infantry Linking.
+0x0073B692,0,0,Crashed drawing a voxel.
+0x0073C762,0,0,The artmd.ini entry named by a voxel VehicleType's Image tag is missing; the game defaults to Voxel=no and tries to load a non-existent SHP.
+0x007564BD,0,0,A VoxelAnim specified by Image= does not exist.
+0x00756B2D,0,0,The ShadowIndex on an AircraftType or voxel VehicleType, or the VoxelIndex on a VoxelAnim turret part, addresses a section that does not exist.
+0x00772A98,0,0,A unit's ElitePrimary weapon does not exist (broken reference) or its Warhead tag is missing/blank on promotion. Also reported for firing a weapon with no projectile, and when building a custom building using the Korean flag Image with a secondary weapon like the GGI MissileLauncher.
+0x007BC1BA,0,0,A Spark-type ParticleSystem with LightSize greater than 75.
+0x007C9B92,0,0,Multiple reasons depending on the stack dump: 006DD5D2 / 006DD009 near the top means a malformed Map Action (a number was expected); 00843EEC means RefinerySmokeOffsetThree is invalid; a country has empty nodes in a campaign map (NodeCount mismatch); or an action's input goes beyond column 512 where the INI parser cuts off.
+0x007CAF66,0,0,Multiple reasons depending on the stack dump: if 0075DE19 appears near the top, a Warhead's Verses could not be processed. EBP is how many values remained to be parsed; (11 - EBP) is the 0-based index of the problematic value.
+0x007CFD30,0,0,If line 20 of the stack dump includes 61108B and line 23 includes 610CA0, you are likely using RockPatch's "Place Urban Areas" without the required snowmd.ini fix. See the RockPatch help.
+0x007FB178,0,0,Infantry are about to enter an occupiable building that has been removed and is not really dead.

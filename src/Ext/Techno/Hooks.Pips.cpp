@@ -1,7 +1,3 @@
-#include <AircraftTypeClass.h>
-#include <SpawnManagerClass.h>
-#include <TiberiumClass.h>
-#include <TacticalClass.h>
 #include "Body.h"
 
 DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
@@ -11,7 +7,7 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 
 	if (pTechno->IsSelected && Phobos::Config::EnableSelectBox)
 	{
-		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+		const auto pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
 
 		if (!pTypeExt->HealthBar_Hide && !pTypeExt->HideSelectBox)
 		{
@@ -29,7 +25,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 	GET(TechnoClass*, pThis, EBP);
 
-	if ((pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
+	if (pThis && (pThis->IsMouseHovering || TechnoExt::Fetch(pThis)->TypeExtData->HealthBar_Permanent)
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
 		return Permanent;
@@ -44,7 +40,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	const auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pTypeData = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (pTypeData->HealthBar_Hide)
 		return SkipDraw;
@@ -58,7 +54,7 @@ DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
+	const bool hidePips = TechnoExt::Fetch(pThis)->TypeExtData->HealthBar_HidePips;
 
 	return hidePips ? SkipDrawPips : 0;
 }
@@ -70,7 +66,7 @@ DEFINE_HOOK(0x6F67E8, TechnoClass_DrawHealthBar_PermanentPipScale, 0xA)			// Dra
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
+	const bool showPipScale = TechnoExt::Fetch(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
 
 	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? Permanent : 0;
 }
@@ -81,7 +77,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 	GET(const int, length, EBX);
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
 	{
@@ -109,7 +105,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
 	{
@@ -121,8 +117,9 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar_Other(length, pBound);
+			const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
+			const int length = isInfantry ? 8 : 17;
+			pShieldData->DrawShieldBar_Other(length, pBound, isInfantry);
 		}
 	}
 
@@ -172,7 +169,7 @@ DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 		else
 			size = RulesExt::Global()->Pips_Ammo_Size;
 
-		size = TechnoTypeExt::ExtMap.Find(pType)->AmmoPipSize.Get(size);
+		size = TechnoTypeExt::Fetch(pType)->AmmoPipSize.Get(size);
 	}
 	else
 	{
@@ -188,12 +185,12 @@ DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
+DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x0)
 {
 	enum { SkipGameDrawing = 0x709C27 };
 
 	GET(TechnoClass*, pThis, ECX);
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (!pTypeExt->ShowSpawnsPips)
 		return SkipGameDrawing;
@@ -240,7 +237,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	GET_STACK(const int, maxPips, STACK_OFFSET(0x74, -0x60));
 	GET(const int, yOffset, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	auto const pipOffset = pTypeExt->AmmoPipOffset.Get();
 	const int offsetWidth = offset->Width;
 	Point2D position = { offset->X + pipOffset.X, offset->Y + pipOffset.Y };
@@ -413,7 +410,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	const int offsetWidth = offset->Width;
 
-	for (int pip : pipsToDraw)
+	for (const int pip : pipsToDraw)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, pip,
 			&position, rect, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0,

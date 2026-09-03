@@ -6,14 +6,14 @@ ParticleTypeExt::ExtContainer ParticleTypeExt::ExtMap;
 // load / save
 
 template <typename T>
-void ParticleTypeExt::ExtData::Serialize(T& Stm)
+void ParticleTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Gas_MaxDriftSpeed)
 		;
 }
 
-void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void ParticleTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -29,15 +29,15 @@ void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 }
 
-void ParticleTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void ParticleTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<ParticleTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void ParticleTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void ParticleTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<ParticleTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -71,27 +71,14 @@ DEFINE_HOOK(0x644DBB, ParticleTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6457A0, ParticleTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x645660, ParticleTypeClass_SaveLoad_Prefix, 0x7)
+// Late in the destructor body, right before it chains into the base destructor.
+// Deliberately stacked on the exact address and size of Ares' own hook: any other
+// placement in this stretch would overlap its 5-byte JMP and corrupt the patch.
+DEFINE_HOOK(0x645A3B, ParticleTypeClass_DTOR, 0x7)
 {
-	GET_STACK(ParticleTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
+	GET(ParticleTypeClass*, pItem, ESI);
 
-	ParticleTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x64578C, ParticleTypeClass_Load_Suffix, 0x5)
-{
-	ParticleTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x64580A, ParticleTypeClass_Save_Suffix, 0x7)
-{
-	ParticleTypeExt::ExtMap.SaveStatic();
+	ParticleTypeExt::ExtMap.Remove(pItem);
 
 	return 0;
 }

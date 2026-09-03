@@ -1,10 +1,6 @@
 #pragma once
 
-#include <vector>
-
-#include <GeneralStructures.h>
-
-#include <Utilities/Savegame.h>
+#include <New/Type/BannerTypeClass.h>
 
 class BannerTypeClass;
 

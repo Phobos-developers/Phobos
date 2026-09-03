@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class DroppodTypeClass
 {

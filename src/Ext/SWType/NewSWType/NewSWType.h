@@ -1,7 +1,5 @@
 #pragma once
 #include <Ext/SWType/Body.h>
-#include <SuperClass.h>
-#include <HouseClass.h>
 
 class NewSWType
 {
@@ -18,8 +16,8 @@ public:
 
 	// selectable override
 
-	virtual void Initialize(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW) { }
-	virtual void LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW, CCINIClass* pINI) { }
+	virtual void Initialize(SWTypeExt* pData, SuperWeaponTypeClass* pSW) { }
+	virtual void LoadFromINI(SWTypeExt* pData, SuperWeaponTypeClass* pSW, CCINIClass* pINI) { }
 
 	// must be override
 

@@ -1,16 +1,6 @@
-#include <Phobos.h>
+#include "Body.h"
 
-#include <Helpers/Macro.h>
-#include <Utilities/Debug.h>
-#include <Utilities/Helpers.Alex.h>
-
-#include <CCINIClass.h>
-#include <RulesClass.h>
-#include <InfantryTypeClass.h>
-#include <UnitTypeClass.h>
-#include <AircraftTypeClass.h>
-
-void ReplaceImageInfantry(InfantryTypeClass* pType)
+static void ReplaceImageInfantry(InfantryTypeClass* pType)
 {
 	char nameBuffer[0x19];
 	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
@@ -22,7 +12,7 @@ void ReplaceImageInfantry(InfantryTypeClass* pType)
 	}
 }
 
-void ReplaceImageUnit(UnitTypeClass* pType)
+static void ReplaceImageUnit(UnitTypeClass* pType)
 {
 	char nameBuffer[0x19];
 	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)
@@ -45,7 +35,7 @@ void ReplaceImageUnit(UnitTypeClass* pType)
 	}
 }
 
-void ReplaceImageAircraft(AircraftTypeClass* pType)
+static void ReplaceImageAircraft(AircraftTypeClass* pType)
 {
 	char nameBuffer[0x19];
 	if (CCINIClass::INI_Art.ReadString(pType->ImageFile, "Image", 0, nameBuffer, 0x19) != 0)

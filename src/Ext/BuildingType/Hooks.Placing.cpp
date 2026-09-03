@@ -1,8 +1,6 @@
 #include "Body.h"
 
-#include <HouseClass.h>
-
-#include "Ext/Rules/Body.h"
+#include <Ext/Rules/Body.h>
 
 // AIConstructionYard Hook #1 -> sub_740810 - Check number of construction yard before deploy.
 DEFINE_HOOK(0x740A11, UnitClass_Mission_Guard_AIAutoDeployMCV, 0x6)
@@ -31,9 +29,9 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	{
 		GET(HouseClass*, pAI, EBX);
 
-		if (const auto count = pAI->ConYards.Count)
+		if (pAI->ConYards.Count > 1)
 		{
-			const auto wayPoint = pAI->GetSpawnPosition();
+			const int wayPoint = pAI->GetSpawnPosition();
 
 			if (wayPoint != -1)
 			{
@@ -41,13 +39,13 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 				auto newCenter = center;
 				double distanceSquared = 131072.0;
 
-				for (int i = 0; i < count; ++i)
+				for (int i = 0; i < pAI->ConYards.Count; ++i)
 				{
 					if (const auto pBuilding = pAI->ConYards.GetItem(i))
 					{
 						if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
 						{
-							const auto newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
+							const double newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
 
 							if (newDistanceSquared < distanceSquared)
 							{
@@ -136,26 +134,6 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 	}
 
 	return reinterpret_cast<bool(__thiscall*)(HouseClass*, BaseNodeClass*)>(0x50CAD0)(pBase->Owner, pBaseNode) ? Valid : Invalid;
-}
-
-// AIConstructionYard Hook #4-3 -> sub_7393C0 - Prohibit AI from building construction yard.
-DEFINE_HOOK(0x7397F4, UnitClass_TryToDeploy_SkipSetShouldRebuild, 0x7)
-{
-	enum { SkipRebuildFlag = 0x7397FB };
-
-	GET(BuildingClass* const, pBuilding, EBX);
-
-	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
-}
-
-// AIConstructionYard Hook #4-4 -> sub_440580 - Prohibit AI from building construction yard.
-DEFINE_HOOK(0x440B7A, BuildingClass_Unlimbo_SkipSetShouldRebuild, 0x7)
-{
-	enum { SkipRebuildFlag = 0x440B81 };
-
-	GET(BuildingClass* const, pBuilding, ESI);
-
-	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
 }
 
 // AIConstructionYard Hook #5-1 -> sub_588570 - Only expand walls on nodes.

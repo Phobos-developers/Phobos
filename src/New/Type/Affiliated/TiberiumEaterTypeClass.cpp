@@ -1,8 +1,5 @@
 #include "TiberiumEaterTypeClass.h"
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/TemplateDef.h>
-
 void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
@@ -46,6 +43,7 @@ void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	}
 
 	this->AnimMove.Read(exINI, pSection, "TiberiumEater.AnimMove");
+	this->UnderEMP.Read(exINI, pSection, "TiberiumEater.UnderEMP");
 }
 
 template <class T>
@@ -62,6 +60,7 @@ bool TiberiumEaterTypeClass::Serialize(T& stm)
 		.Process(this->Anims)
 		.Process(this->Anims_Tiberiums)
 		.Process(this->AnimMove)
+		.Process(this->UnderEMP)
 		.Success();
 }
 

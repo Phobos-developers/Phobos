@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Utilities/EnumFunctions.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/AnimType/Body.h>
+#include <Utilities/TemplateDef.h>
+
+class AnimTypeClass;
 
 class TypeConvertGroup
 {

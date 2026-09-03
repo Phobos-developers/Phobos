@@ -174,6 +174,10 @@ public:
 			{
 				std::string_view sv { part.begin(), part.end() };
 				auto s = sv.find_first_not_of(" \t\r");
+
+				if (s == std::string_view::npos)
+					continue;
+
 				auto e = sv.find_last_not_of(" \t\r");
 				values.emplace_back(sv.substr(s, e - s + 1));
 			}

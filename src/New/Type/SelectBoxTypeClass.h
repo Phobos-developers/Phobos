@@ -2,7 +2,6 @@
 
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Enum.h>
 
 class SelectBoxTypeClass final : public Enumerable<SelectBoxTypeClass>
 {
@@ -25,7 +24,7 @@ public:
 	Valueable<bool> GroundLine_Dashed;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
-		, Shape { FileSystem::LoadSHPFile("select.shp") }
+		, Shape { nullptr }
 		, Palette {}
 		, Frames {}
 		, Offset { Point2D::Empty }

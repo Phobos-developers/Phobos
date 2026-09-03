@@ -1,6 +1,8 @@
 #pragma once
 #include <GadgetClass.h>
 
+#include <Ext/SWType/Body.h>
+
 class SWButtonClass : public GadgetClass
 {
 public:

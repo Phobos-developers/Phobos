@@ -1,15 +1,7 @@
 #pragma once
 
-#include <SidebarClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <TechnoTypeClass.h>
-
-#include <Phobos.h>
-
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
-
-#include <string>
 
 struct StripClass;
 
@@ -19,8 +11,8 @@ public:
 	static PhobosToolTip Instance;
 
 private:
-	inline const wchar_t* GetUIDescription(TechnoTypeExt::ExtData* pData) const;
-	inline const wchar_t* GetUIDescription(SWTypeExt::ExtData* pData) const;
+	inline const wchar_t* GetUIDescription(TechnoTypeExt* pData) const;
+	inline const wchar_t* GetUIDescription(SWTypeExt* pData) const;
 	inline int GetBuildTime(TechnoTypeClass* pType) const;
 	inline int GetPower(TechnoTypeClass* pType) const;
 

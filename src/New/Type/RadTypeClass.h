@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 #include <Ext/Rules/Body.h>
 
 class WarheadTypeClass;
