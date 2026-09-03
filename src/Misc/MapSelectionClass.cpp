@@ -46,9 +46,7 @@ static void StopMapSelAudio()
 	PlaySoundA(NULL, NULL, 0);
 	AudioStream* pStream = AudioStream::Instance;
 	if (pStream)
-	{
 		pStream->PlayWAV("", false);
-	}
 }
 
 static std::string_view Trim(std::string_view sv)
@@ -76,9 +74,8 @@ static void PlayMapSelAudio(const char* pAudioName)
 	{
 		int vol = atoi(std::string(Trim(rawAudio.substr(commaPos + 1))).c_str());
 		if (vol > 0)
-		{
 			volumeFloat = std::clamp(vol, 1, 100) / 100.0f;
-		}
+
 		soundName = Trim(rawAudio.substr(0, commaPos));
 	}
 	else
@@ -116,6 +113,7 @@ static void PlayMapSelAudio(const char* pAudioName)
 
 				return;
 			}
+
 			testFile.Close();
 		}
 	}
@@ -152,6 +150,7 @@ static void PlayMapSelAudio(const char* pAudioName)
 
 			return;
 		}
+
 		testWav.Close();
 	}
 }
@@ -169,9 +168,8 @@ static void PlayMapSelSFX(const char* pAudioName)
 	{
 		int vol = atoi(std::string(Trim(rawAudio.substr(commaPos + 1))).c_str());
 		if (vol > 0)
-		{
 			volumeFloat = std::clamp(vol, 1, 100) / 100.0f;
-		}
+
 		soundName = Trim(rawAudio.substr(0, commaPos));
 	}
 	else
@@ -232,6 +230,7 @@ static int GetTypewriterVocIndex(const std::string& customTypeSound, float& outV
 				return s_DefaultTypeVocIdx;
 			}
 		}
+
 		s_DefaultTypeVocIdx = -1;
 		return s_DefaultTypeVocIdx;
 	}
@@ -243,9 +242,8 @@ static int GetTypewriterVocIndex(const std::string& customTypeSound, float& outV
 	{
 		int vol = atoi(std::string(Trim(rawAudio.substr(commaPos + 1))).c_str());
 		if (vol > 0)
-		{
 			outVolume = std::clamp(vol, 1, 100) / 100.0f;
-		}
+
 		soundName = Trim(rawAudio.substr(0, commaPos));
 	}
 	else
@@ -292,9 +290,7 @@ static bool PlayMapSelBinkVideo(const char* pVideoName)
 	{
 		std::string ext = movieName.substr(dotPos);
 		if (_stricmp(ext.c_str(), ".vqa") == 0 || _stricmp(ext.c_str(), ".bik") == 0)
-		{
 			movieName = movieName.substr(0, dotPos);
-		}
 	}
 
 	std::string bikNameLower = movieName + ".bik";
@@ -346,6 +342,7 @@ static void LoadExtraCSFFile(const char* pFileName)
 			file.Close();
 		}
 	}
+
 	if (raw.size() < 24)
 		return;
 
@@ -385,6 +382,7 @@ static void LoadExtraCSFFile(const char* pFileName)
 				WORD ch = *reinterpret_cast<const WORD*>(&raw[pos + c * 2]);
 				value.push_back(static_cast<wchar_t>(~ch));
 			}
+
 			pos += strLen * 2;
 
 			if (strSig == 0x53545257) // "WRTS"
@@ -397,11 +395,10 @@ static void LoadExtraCSFFile(const char* pFileName)
 			}
 
 			if (s == 0)
-			{
 				g_ExtraCSFMap[labelName] = value;
-			}
 		}
 	}
+
 	Debug::Log("[MapSelection] Loaded %zu strings from extra CSF '%s'\n", g_ExtraCSFMap.size(), pFileName);
 }
 
@@ -409,6 +406,7 @@ static void EnsureExtraCSFLoaded()
 {
 	if (g_ExtraCSFLoaded)
 		return;
+
 	g_ExtraCSFLoaded = true;
 
 	LoadExtraCSFFile("stringtable00.csf");
@@ -433,20 +431,18 @@ static std::vector<std::wstring> WordWrapText(const std::wstring& text, size_t m
 			if (!word.empty())
 			{
 				if (currentLine.empty())
-				{
 					currentLine = word;
-				}
 				else if (currentLine.length() + 1 + word.length() <= maxCharsPerLine)
-				{
 					currentLine += L" " + word;
-				}
 				else
 				{
 					lines.push_back(currentLine);
 					currentLine = word;
 				}
+
 				word.clear();
 			}
+
 			if (c == L'\n')
 			{
 				if (!currentLine.empty())
@@ -461,10 +457,10 @@ static std::vector<std::wstring> WordWrapText(const std::wstring& text, size_t m
 			word.push_back(c);
 		}
 	}
+
 	if (!currentLine.empty())
-	{
 		lines.push_back(currentLine);
-	}
+
 	return lines;
 }
 
@@ -499,9 +495,7 @@ static ColorStruct ParseColorString(const char* pStr, const ColorStruct& default
 	{
 		ColorScheme* pScheme = ColorScheme::Array.GetItemOrDefault(schemeIdx);
 		if (pScheme)
-		{
 			return ConvertSchemeColorToRGB(pScheme->BaseColor);
-		}
 	}
 
 	if (isdigit(static_cast<unsigned char>(s[0])))
@@ -511,9 +505,7 @@ static ColorStruct ParseColorString(const char* pStr, const ColorStruct& default
 		{
 			ColorScheme* pScheme = ColorScheme::Array.GetItemOrDefault(idx);
 			if (pScheme)
-			{
 				return ConvertSchemeColorToRGB(pScheme->BaseColor);
-			}
 		}
 	}
 
@@ -585,11 +577,13 @@ MapSelectionClass::~MapSelectionClass()
 		delete this->Palette;
 		this->Palette = nullptr;
 	}
+
 	if (this->OverlayPalette && this->OverlayPalette != this->Palette)
 	{
 		delete this->OverlayPalette;
 		this->OverlayPalette = nullptr;
 	}
+
 	for (auto& anim : this->BackgroundAnims)
 	{
 		if (anim.Palette && anim.Palette != this->Palette && anim.Palette != this->OverlayPalette)
@@ -610,9 +604,7 @@ static SHPStruct* LoadMapSelSHP(const char* pFileName)
 	{
 		CCFileClass file(pFileName);
 		if (file.Exists())
-		{
 			pSHP = static_cast<SHPStruct*>(file.ReadWholeFile());
-		}
 	}
 
 	Debug::Log("[MapSelection] LoadMapSelSHP '%s' -> %p\n", pFileName, pSHP);
@@ -711,12 +703,11 @@ static bool LoadMapSelPCXData(const char* pFileName, MapSelectPCX& out)
 				if (pos < raw.size())
 					val = raw[pos++];
 			}
+
 			for (int c = 0; c < count && x < bytesPerLine; ++c, ++x)
 			{
 				if (x < width)
-				{
 					out.Pixels[y * width + x] = val;
-				}
 			}
 		}
 	}
@@ -735,11 +726,15 @@ static bool MatchScenarioNames(const char* a, const char* b)
 		return true;
 
 	const char* baseA = strrchr(a, '/');
-	if (!baseA) baseA = strrchr(a, '\\');
+	if (!baseA)
+		baseA = strrchr(a, '\\');
+
 	baseA = baseA ? baseA + 1 : a;
 
 	const char* baseB = strrchr(b, '/');
-	if (!baseB) baseB = strrchr(b, '\\');
+	if (!baseB)
+		baseB = strrchr(b, '\\');
+
 	baseB = baseB ? baseB + 1 : b;
 
 	return _stricmp(baseA, baseB) == 0;
@@ -779,6 +774,7 @@ static bool DrawElement(
 		);
 		return true;
 	}
+
 	return false;
 }
 
@@ -814,9 +810,7 @@ bool MapSelectionClass::OpenMapSelectionWindow(ScenarioClass* pScenario)
 
 	MapSelectionClass mapSelect;
 	if (mapSelect.Initialize(pScenario))
-	{
 		return mapSelect.Run();
-	}
 
 	Debug::Log("[MapSelection] Initialize returned false, map selection aborted.\n");
 
@@ -903,13 +897,9 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	Debug::Log("[MapSelection] Matching stage for curScen='%s', nextScen='%s'\n", curScen ? curScen : "", nextScen ? nextScen : "");
 
 	if (nextScen && nextScen[0] && ini.GetSection(nextScen))
-	{
 		targetStage = nextScen;
-	}
 	else if (curScen && curScen[0] && ini.GetSection(curScen))
-	{
 		targetStage = curScen;
-	}
 
 	if (targetStage.empty())
 	{
@@ -983,42 +973,54 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 
 	SideClass* pSide = nullptr;
 	if (sideIdx >= 0 && sideIdx < SideClass::Array.Count)
-	{
 		pSide = SideClass::Array.GetItemOrDefault(sideIdx);
-	}
+
 	if (!pSide)
-	{
 		pSide = SideClass::Find(sideSection.c_str());
-	}
+
 	if (!pSide)
 	{
 		for (int s = 0; s < SideClass::Array.Count; ++s)
 		{
 			SideClass* pCheck = SideClass::Array.GetItemOrDefault(s);
-			if (!pCheck) continue;
+			if (!pCheck)
+				continue;
+
 			if ((pCheck->ID && _stricmp(pCheck->ID, sideSection.c_str()) == 0) ||
 			    (pCheck->Name && _stricmp(pCheck->Name, sideSection.c_str()) == 0))
+
 			{
 				pSide = pCheck;
 				break;
 			}
 		}
 	}
+
 	if (!pSide)
 	{
 		if (_stricmp(sideSection.c_str(), "Nod") == 0)
 		{
 			pSide = SideClass::Find("TSNodSide");
-			if (!pSide) pSide = SideClass::Find("Nod");
-			if (!pSide) pSide = SideClass::Find("Soviets");
-			if (!pSide) pSide = SideClass::Find("Soviet");
+			if (!pSide)
+				pSide = SideClass::Find("Nod");
+
+			if (!pSide)
+				pSide = SideClass::Find("Soviets");
+
+			if (!pSide)
+				pSide = SideClass::Find("Soviet");
 		}
 		else if (_stricmp(sideSection.c_str(), "GDI") == 0)
 		{
 			pSide = SideClass::Find("TSGDISide");
-			if (!pSide) pSide = SideClass::Find("GDI");
-			if (!pSide) pSide = SideClass::Find("Allies");
-			if (!pSide) pSide = SideClass::Find("Allied");
+			if (!pSide)
+				pSide = SideClass::Find("GDI");
+
+			if (!pSide)
+				pSide = SideClass::Find("Allies");
+
+			if (!pSide)
+				pSide = SideClass::Find("Allied");
 		}
 	}
 
@@ -1066,9 +1068,8 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	{
 		HouseClass* pHouse = HouseClass::CurrentPlayer;
 		if (!pHouse && pScenario && pScenario->HumanPlayerHouseTypeIndex >= 0 && pScenario->HumanPlayerHouseTypeIndex < HouseClass::Array.Count)
-		{
 			pHouse = HouseClass::Array.GetItemOrDefault(pScenario->HumanPlayerHouseTypeIndex);
-		}
+
 		if (pHouse && pHouse->ColorSchemeIndex >= 0 && pHouse->ColorSchemeIndex < ColorScheme::Array.Count)
 		{
 			ColorScheme* pScheme = ColorScheme::Array.GetItemOrDefault(pHouse->ColorSchemeIndex);
@@ -1126,9 +1127,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 
 	std::string resolvedSoundsSec;
 	if (soundsSecBuf[0])
-	{
 		resolvedSoundsSec = soundsSecBuf;
-	}
 	else
 	{
 		std::string sideSoundsNamed = "Sounds" + sideSection;
@@ -1137,18 +1136,13 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 			sprintf_s(sideSoundsIndexed, "Sounds%d", sideIdx);
 
 		if (ini.GetSection(sideSoundsNamed.c_str()))
-		{
 			resolvedSoundsSec = sideSoundsNamed;
-		}
 		else if (sideSoundsIndexed[0] && ini.GetSection(sideSoundsIndexed))
-		{
 			resolvedSoundsSec = sideSoundsIndexed;
-		}
 		else if (ini.GetSection("Sounds"))
-		{
 			resolvedSoundsSec = "Sounds";
-		}
 	}
+
 	const char* pSoundsSec = !resolvedSoundsSec.empty() ? resolvedSoundsSec.c_str() : nullptr;
 
 	auto readSoundKey = [&](const char* key) -> std::string {
@@ -1156,14 +1150,11 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		ini.ReadString(pStage, key, "", buf, sizeof(buf));
 
 		if (!buf[0] && pSoundsSec)
-		{
 			ini.ReadString(pSoundsSec, key, "", buf, sizeof(buf));
-		}
 
 		if (!buf[0] && ini.GetSection("Sounds"))
-		{
 			ini.ReadString("Sounds", key, "", buf, sizeof(buf));
-		}
+
 		return std::string(buf);
 	};
 
@@ -1192,6 +1183,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	ini.ReadString(pStage, "Map", "", bgSHPBuf, sizeof(bgSHPBuf));
 	if (!bgSHPBuf[0])
 		ini.ReadString(pStage, "MapVQ", "", bgSHPBuf, sizeof(bgSHPBuf));
+
 	this->BackgroundFileName = bgSHPBuf;
 
 	char rectBuf[64] = { 0 };
@@ -1200,9 +1192,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	{
 		int rx = 0, ry = 0, rw = 0, rh = 0;
 		if (sscanf_s(rectBuf, "%d,%d,%d,%d", &rx, &ry, &rw, &rh) == 4)
-		{
 			this->TextRectangle = { rx, ry, rw, rh };
-		}
 	}
 
 	// Overlays (PCX takes precedence over SHP if provided)
@@ -1216,10 +1206,10 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		{
 			while (*token == ' ')
 				token++;
+
 			if (*token)
-			{
 				this->OverlayPCXNames.push_back(token);
-			}
+
 			token = strtok_s(nullptr, ",", &context);
 		}
 	}
@@ -1234,10 +1224,10 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		{
 			while (*token == ' ')
 				token++;
+
 			if (*token)
-			{
 				this->OverlaySHPNames.push_back(token);
-			}
+
 			token = strtok_s(nullptr, ",", &context);
 		}
 	}
@@ -1247,6 +1237,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	ini.ReadString(pStage, "TargetFlyInAnimPCX", "", flyInPCXBuf, sizeof(flyInPCXBuf));
 	if (!flyInPCXBuf[0])
 		ini.ReadString(pStage, "TargetFlyInPCX", "", flyInPCXBuf, sizeof(flyInPCXBuf));
+
 	if (flyInPCXBuf[0])
 	{
 		char* context = nullptr;
@@ -1255,10 +1246,10 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		{
 			while (*token == ' ')
 				token++;
+
 			if (*token)
-			{
 				this->TargetFlyInPCXNames.push_back(token);
-			}
+
 			token = strtok_s(nullptr, ",", &context);
 		}
 	}
@@ -1271,6 +1262,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	ini.ReadString(pStage, "TargetMarkerAnimPCX", "", markerPCXBuf, sizeof(markerPCXBuf));
 	if (!markerPCXBuf[0])
 		ini.ReadString(pStage, "TargetMarkerPCX", "", markerPCXBuf, sizeof(markerPCXBuf));
+
 	if (markerPCXBuf[0])
 	{
 		char* context = nullptr;
@@ -1279,10 +1271,10 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		{
 			while (*token == ' ')
 				token++;
+
 			if (*token)
-			{
 				this->TargetMarkerPCXNames.push_back(token);
-			}
+
 			token = strtok_s(nullptr, ",", &context);
 		}
 	}
@@ -1291,6 +1283,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 	ini.ReadString(pStage, "TargetMarkerAnim", "", markerBuf, sizeof(markerBuf));
 	if (!markerBuf[0])
 		ini.ReadString(pStage, "TargetMarker", "", markerBuf, sizeof(markerBuf));
+
 	this->TargetMarkerFileName = markerBuf;
 
 	// Parse stage Targets list: Targets=<count>,<x1>,<y1>,<x2>,<y2>,...
@@ -1309,9 +1302,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 				char* tokX = strtok_s(nullptr, ",", &context);
 				char* tokY = strtok_s(nullptr, ",", &context);
 				if (tokX && tokY)
-				{
 					stageTargets.push_back({ atoi(tokX), atoi(tokY) });
-				}
 			}
 		}
 	}
@@ -1478,6 +1469,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 						if (frame.Exists())
 							anim.PCXFrames.push_back(frame.GetSurface());
 					}
+
 					if (!anim.PCXFrames.empty())
 					{
 						anim.TotalFrames = static_cast<int>(anim.PCXFrames.size());
@@ -1514,9 +1506,8 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 					anim.TotalFrames = pSHP->Frames;
 					anim.Timer.Start(anim.FrameDelay);
 					if (parsed >= 5 && animPal[0])
-					{
 						anim.PaletteName = animPal;
-					}
+
 					this->BackgroundAnims.push_back(anim);
 				}
 			}
@@ -1552,6 +1543,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 							if (frame.Exists())
 								anim.PCXFrames.push_back(frame.GetSurface());
 						}
+
 						if (!anim.PCXFrames.empty())
 						{
 							anim.TotalFrames = static_cast<int>(anim.PCXFrames.size());
@@ -1596,9 +1588,8 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 						anim.TotalFrames = pSHP->Frames;
 						anim.Timer.Start(anim.FrameDelay);
 						if (parsed >= 5 && animPal[0])
-						{
 							anim.PaletteName = animPal;
-						}
+
 						this->BackgroundAnims.push_back(anim);
 					}
 				}
@@ -1620,6 +1611,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 		sprintf_s(sideSecBuf, "Anims%d", sideIdx);
 		parseSHPAnimSection(sideSecBuf);
 	}
+
 	if (!sideSection.empty())
 	{
 		std::string sideNameSecPCX = "Anims" + sideSection + "PCX";
@@ -1664,6 +1656,7 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 							if (frame.Exists())
 								anim.PCXFrames.push_back(frame.GetSurface());
 						}
+
 						if (!anim.PCXFrames.empty())
 						{
 							anim.TotalFrames = static_cast<int>(anim.PCXFrames.size());
@@ -1698,9 +1691,8 @@ void MapSelectionClass::LoadConfig(ScenarioClass* pScenario)
 						anim.TotalFrames = pSHP->Frames;
 						anim.Timer.Start(anim.FrameDelay);
 						if (parsed >= 5 && animPal[0])
-						{
 							anim.PaletteName = animPal;
-						}
+
 						this->BackgroundAnims.push_back(anim);
 					}
 				}
@@ -1733,17 +1725,13 @@ void MapSelectionClass::LoadAssets()
 
 	// Background SHP (Map)
 	if (!this->BackgroundPCX && !this->BackgroundFileName.empty())
-	{
 		this->BackgroundSHP = LoadMapSelSHP(this->BackgroundFileName.c_str());
-	}
 
 	// Load custom palettes for animations if specified
 	for (auto& anim : this->BackgroundAnims)
 	{
 		if (!anim.PaletteName.empty())
-		{
 			anim.Palette = LoadMapSelPalette(anim.PaletteName.c_str(), pSurface);
-		}
 	}
 
 	// If no background was loaded, try deriving a map PCX from clickmap name
@@ -1775,13 +1763,10 @@ void MapSelectionClass::LoadAssets()
 
 	// ClickMap PCX (decoded for hit-testing)
 	if (!this->ClickMapFileName.empty())
-	{
 		LoadMapSelPCXData(this->ClickMapFileName.c_str(), this->ClickMapData);
-	}
+
 	if (this->ClickMapData.Pixels.empty())
-	{
 		LoadMapSelPCXData("GDICLK01.PCX", this->ClickMapData);
-	}
 
 	// Overlays (PCX takes preference over SHP)
 	if (!this->OverlayPCXNames.empty())
@@ -1790,20 +1775,17 @@ void MapSelectionClass::LoadAssets()
 		{
 			PhobosPCXFile pcx(name.c_str());
 			if (pcx.Exists())
-			{
 				this->OverlayPCXs.push_back(pcx.GetSurface());
-			}
 		}
 	}
+
 	if (this->OverlayPCXs.empty() && !this->OverlaySHPNames.empty())
 	{
 		for (const auto& name : this->OverlaySHPNames)
 		{
 			SHPStruct* pSHP = LoadMapSelSHP(name.c_str());
 			if (pSHP)
-			{
 				this->OverlaySHPs.push_back(pSHP);
-			}
 		}
 	}
 
@@ -1823,6 +1805,7 @@ void MapSelectionClass::LoadAssets()
 			}
 		}
 	}
+
 	if (this->TargetFlyInPCXSurfaces.empty())
 	{
 		const char* flyInName = !this->TargetFlyInFileName.empty() ? this->TargetFlyInFileName.c_str() : "TARGET1.SHP";
@@ -1845,6 +1828,7 @@ void MapSelectionClass::LoadAssets()
 			}
 		}
 	}
+
 	if (this->TargetMarkerPCXSurfaces.empty())
 	{
 		const char* markerName = !this->TargetMarkerFileName.empty() ? this->TargetMarkerFileName.c_str() : "TARGET2.SHP";
@@ -1917,6 +1901,7 @@ int MapSelectionClass::GetChoiceIndexAtPoint(int screenX, int screenY)
 				}
 			}
 		}
+
 		// Never select anything outside the designated mission color regions
 		return -1;
 	}
@@ -1940,13 +1925,9 @@ void MapSelectionClass::UpdateAnimations()
 	{
 		int totalFrames = 0;
 		if (!this->TargetMarkerPCXSurfaces.empty())
-		{
 			totalFrames = static_cast<int>(this->TargetMarkerPCXSurfaces.size());
-		}
 		else if (this->TargetMarkerSHP)
-		{
 			totalFrames = static_cast<int>(this->TargetMarkerSHP->Frames);
-		}
 
 		if (totalFrames > 1)
 		{
@@ -1960,6 +1941,7 @@ void MapSelectionClass::UpdateAnimations()
 			this->IdleTargetAnimFrame = 0;
 			this->ActiveTargetAnimFrame = 0;
 		}
+
 		this->TargetAnimTimer.Start(4);
 		this->RepaintAll = true;
 	}
@@ -1983,13 +1965,10 @@ void MapSelectionClass::UpdateAnimations()
 				float typeVol = 0.5f;
 				int typeIdx = GetTypewriterVocIndex(this->TypeSound, typeVol);
 				if (typeIdx >= 0)
-				{
 					VocClass::PlayGlobal(typeIdx, 0x2000, typeVol);
-				}
 				else if (!this->TypeSound.empty() && _stricmp(this->TypeSound.c_str(), "none") != 0 && _stricmp(this->TypeSound.c_str(), "no") != 0)
-				{
 					PlayMapSelSFX(this->TypeSound.c_str());
-				}
+
 				this->TypeSoundTimer.Start(3);
 			}
 		}
@@ -2016,9 +1995,7 @@ void MapSelectionClass::Render(DSurface* pSurface)
 		for (BSurface* pPCX : this->OverlayPCXs)
 		{
 			if (pPCX)
-			{
 				DrawElement(pSurface, this->WindowRectangle, pPCX, nullptr, nullptr, 0, -2);
-			}
 		}
 	}
 	else
@@ -2026,9 +2003,7 @@ void MapSelectionClass::Render(DSurface* pSurface)
 		for (SHPStruct* pOverlaySHP : this->OverlaySHPs)
 		{
 			if (pOverlaySHP)
-			{
 				DrawElement(pSurface, this->WindowRectangle, nullptr, pOverlaySHP, pOverlayDrawer, 0, -2);
-			}
 		}
 	}
 
@@ -2214,11 +2189,13 @@ void MapSelectionClass::DrawBriefing(DSurface* pSurface)
 					Point2D p1 = { 0, 0 };
 					pSurface->DrawText(settled.c_str(), &r1, &p1, textColor, 0, style);
 				}
+
 				{
 					RectangleStruct r2 = { drawX + wSettled, lineY, this->TextRectangle.Width - wSettled, lineHeight + 4 };
 					Point2D p2 = { 0, 0 };
 					pSurface->DrawText(fadeChar.c_str(), &r2, &p2, glowFade, 0, style);
 				}
+
 				{
 					RectangleStruct r3 = { drawX + wFade, lineY, this->TextRectangle.Width - wFade, lineHeight + 4 };
 					Point2D p3 = { 0, 0 };
@@ -2275,17 +2252,18 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 		{
 			if (msg.message == WM_QUIT)
 				return true;
+
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
 		Game::CallBack();
 		HWND hGameWnd = Game::hWnd;
 		HWND hActiveWnd = GetForegroundWindow();
 		bool isWindowActive = (hGameWnd && (hActiveWnd == hGameWnd || IsChild(hGameWnd, hActiveWnd)));
 		if (isWindowActive && ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) || (GetAsyncKeyState(VK_ESCAPE) & 0x8000)))
-		{
 			return true;
-		}
+
 		return false;
 	};
 
@@ -2302,9 +2280,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 			for (int o = 0; o < completedOverlays && o < static_cast<int>(this->OverlayPCXs.size()); ++o)
 			{
 				if (this->OverlayPCXs[o])
-				{
 					DrawElement(pSurface, this->WindowRectangle, this->OverlayPCXs[o], nullptr, nullptr, 0, -2);
-				}
 			}
 		}
 		else
@@ -2312,9 +2288,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 			for (int o = 0; o < completedOverlays && o < static_cast<int>(this->OverlaySHPs.size()); ++o)
 			{
 				if (this->OverlaySHPs[o])
-				{
 					DrawElement(pSurface, this->WindowRectangle, nullptr, this->OverlaySHPs[o], pOverlayDrawer, 0, -2);
-				}
 			}
 		}
 
@@ -2396,9 +2370,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 	for (size_t o = 0; o < totalOverlays; ++o)
 	{
 		if (!this->OverlaySound.empty())
-		{
 			PlayMapSelSFX(this->OverlaySound.c_str());
-		}
 
 		for (int stage = 0; stage < 4; ++stage)
 		{
@@ -2411,14 +2383,10 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 			if (!this->OverlayPCXs.empty())
 			{
 				if (this->OverlayPCXs[o])
-				{
 					DrawElement(pSurface, this->WindowRectangle, this->OverlayPCXs[o], nullptr, nullptr, 0, -2);
-				}
 			}
 			else if (o < this->OverlaySHPs.size() && this->OverlaySHPs[o])
-			{
 				DrawElement(pSurface, this->WindowRectangle, nullptr, this->OverlaySHPs[o], pOverlayDrawer, 0, -2, fadeFlags[stage]);
-			}
 
 			GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
 			Sleep(50);
@@ -2429,6 +2397,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 		{
 			if (pumpAndCheckSkip())
 				return;
+
 			this->UpdateAnimations();
 			renderBase(static_cast<int>(o + 1), 0);
 			GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
@@ -2444,9 +2413,7 @@ void MapSelectionClass::PlayIntroSequence(DSurface* pSurface)
 			continue;
 
 		if (!this->TargetFlyInSound.empty())
-		{
 			PlayMapSelSFX(this->TargetFlyInSound.c_str());
-		}
 
 		int drawX = this->WindowRectangle.X + choice.TargetCoord.X;
 		int drawY = this->WindowRectangle.Y + choice.TargetCoord.Y;
@@ -2506,8 +2473,10 @@ bool MapSelectionClass::Run()
 	DSurface* pSurface = DSurface::Hidden;
 	if (!pSurface)
 		pSurface = DSurface::Composite;
+
 	if (!pSurface)
 		pSurface = DSurface::Primary;
+
 	if (!pSurface)
 		return false;
 
@@ -2532,9 +2501,7 @@ bool MapSelectionClass::Run()
 			DispatchMessage(&drainMsg);
 		}
 		while ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) || (GetAsyncKeyState(VK_ESCAPE) & 0x8000) || (GetAsyncKeyState(VK_SPACE) & 0x8000))
-		{
 			Sleep(10);
-		}
 	}
 
 	pSurface->Fill(0);
@@ -2548,9 +2515,7 @@ bool MapSelectionClass::Run()
 	{
 		int themeIdx = ThemeClass::Instance.FindIndex(this->ThemeName.c_str());
 		if (themeIdx >= 0)
-		{
 			ThemeClass::Instance.Play(themeIdx);
-		}
 	}
 
 	// Drain any input after intro sequence
@@ -2562,9 +2527,7 @@ bool MapSelectionClass::Run()
 			DispatchMessage(&drainMsg);
 		}
 		while ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) || (GetAsyncKeyState(VK_ESCAPE) & 0x8000))
-		{
 			Sleep(10);
-		}
 	}
 
 	// Ensure any audio is stopped before interactive loop starts
@@ -2630,13 +2593,10 @@ bool MapSelectionClass::Run()
 		if (isMouseOnMap != wasMouseOnMap)
 		{
 			if (isMouseOnMap && !this->MouseOnMapSound.empty())
-			{
 				PlayMapSelSFX(this->MouseOnMapSound.c_str());
-			}
 			else if (!isMouseOnMap && !this->MouseOffMapSound.empty())
-			{
 				PlayMapSelSFX(this->MouseOffMapSound.c_str());
-			}
+
 			wasMouseOnMap = isMouseOnMap;
 		}
 
@@ -2664,6 +2624,7 @@ bool MapSelectionClass::Run()
 				std::wstring fullText = ResolveCSFOrText(choice.Description);
 				if (fullText.empty())
 					fullText = ResolveCSFOrText(choice.Summary);
+
 				if (fullText.empty())
 					fullText = std::wstring(choice.StageName.begin(), choice.StageName.end());
 
@@ -2672,27 +2633,19 @@ bool MapSelectionClass::Run()
 
 				// Play hover / enter region SFX sound first
 				if (!choice.HoverSound.empty())
-				{
 					PlayMapSelSFX(choice.HoverSound.c_str());
-				}
 				else if (!this->EnterRegionSound.empty())
-				{
 					PlayMapSelSFX(this->EnterRegionSound.c_str());
-				}
 
 				// Play VoiceOver speech
 				if (!choice.VoiceOver.empty())
-				{
 					PlayMapSelAudio(choice.VoiceOver.c_str());
-				}
 			}
 			else
 			{
 				this->BriefingLines.clear();
 				if (this->LastHoveredChoiceIdx >= 0 && !this->ExitRegionSound.empty())
-				{
 					PlayMapSelSFX(this->ExitRegionSound.c_str());
-				}
 			}
 
 			this->LastHoveredChoiceIdx = this->HoveredChoiceIdx;
@@ -2717,17 +2670,15 @@ bool MapSelectionClass::Run()
 
 					const auto& chosen = this->Choices[this->SelectedChoiceIdx];
 					if (!chosen.ClickSound.empty())
-					{
 						PlayMapSelSFX(chosen.ClickSound.c_str());
-					}
 					else if (!this->ClickRegionSound.empty())
-					{
 						PlayMapSelSFX(this->ClickRegionSound.c_str());
-					}
+
 					break;
 				}
 			}
 		}
+
 		wasLButtonDown = isLButtonDown;
 
 		this->UpdateAnimations();
@@ -2743,9 +2694,7 @@ bool MapSelectionClass::Run()
 	// Ensure any playing VoiceOver audio and custom theme music are stopped when loading begins
 	StopMapSelAudio();
 	if (!this->ThemeName.empty())
-	{
 		ThemeClass::Instance.Stop(true);
-	}
 
 	// Hide mouse cursor when leaving map selection (matching OpenTS Hide_Mouse())
 	if (WWMouseClass::Instance)
