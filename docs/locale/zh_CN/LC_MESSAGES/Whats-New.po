@@ -960,6 +960,7 @@ msgid ""
 "Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with "
 "on-discard trigger on entry (by Starkku)"
 msgstr ""
+"修复了 `DiscardOn=entry` 的 AE 不会在进入时触发以丢弃为触发条件的 `ExpireWeapon` 的 Bug（by Starkku）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
