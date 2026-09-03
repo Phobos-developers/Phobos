@@ -456,7 +456,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x3)
 
 // Wrapper around Ares' HouseClass::AI_TryFireSW (0x5098F0).
 // When multiple superweapons in the same SW.CooldownGroup are ready at once,
-// picks one candidate at random via the synchronized PRNG and temporarily masks
+// the AI picks one candidate at random via the synchronized PRNG and temporarily masks
 // the others so Ares doesn't always default to the first one in the vector.
 void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
 {
