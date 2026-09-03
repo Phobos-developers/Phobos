@@ -536,7 +536,7 @@ void SWTypeExt::ApplyCooldownGroupReset(SuperClass* pSW)
 		{
 			affectedSupers.push_back(pOtherSuper);
 
-			int rechargeTime = pOtherSuper->GetRechargeTime();
+			int rechargeTime = pOtherSuper->Type->RechargeTime;
 
 			if (rechargeTime > maxRechargeTime)
 				maxRechargeTime = rechargeTime;
@@ -546,12 +546,17 @@ void SWTypeExt::ApplyCooldownGroupReset(SuperClass* pSW)
 		}
 	}
 
+	Debug::Log("[SW.CooldownGroup] Fired [%s]. Resetting %d superweapons (syncLongest=%d, maxRechargeTime=%d frames / %.1f min).\n",
+		pSW->Type->get_ID(), static_cast<int>(affectedSupers.size()), syncLongest ? 1 : 0, maxRechargeTime, maxRechargeTime / 900.0);
+
 	for (SuperClass* pSuperToReset : affectedSupers)
 	{
-		pSuperToReset->Reset();
-
 		if (syncLongest && maxRechargeTime > 0)
-			pSuperToReset->RechargeTimer.Start(maxRechargeTime);
+			pSuperToReset->SetRechargeTime(maxRechargeTime);
+		else
+			pSuperToReset->ResetRechargeTime();
+
+		pSuperToReset->Reset();
 	}
 
 	if (pHouse->IsCurrentPlayer())
