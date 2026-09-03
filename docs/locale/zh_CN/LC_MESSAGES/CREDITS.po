@@ -1894,7 +1894,7 @@ msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，
 msgid ""
 "Fix a bug that computer player record cannot be log normally in non "
 "English mode"
-msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的bug"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug"
 
 msgid "Cloak Enhancement"
 msgstr "隐形增强"
