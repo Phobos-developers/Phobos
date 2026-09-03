@@ -1453,6 +1453,7 @@ EVA.LinkedSWAcquired=        ; EVA entry
 - `SW.CooldownGroup` accepts a comma-separated list of group names, allowing a superweapon to belong to multiple groups simultaneously.
   - The reset is non-transitive: launching a superweapon only resets superweapons that share at least one group with the *launched* superweapon. Superweapons reset collaterally do not propagate resets to other groups.
 - `SW.CooldownGroup.SyncLongest` controls whether all present superweapons in the affected group(s) synchronize their cooldown to the longest `RechargeTime` among the superweapons currently active (built) in the group for that player. If set to `false`, each superweapon resets to its own individual recharge time.
+- If the AI has multiple superweapons in the same group ready to fire simultaneously, it automatically and fairly selects one candidate at random each frame (using the engine's synchronized PRNG, preventing desyncs in multiplayer) rather than always defaulting to the first superweapon defined in `[SuperWeaponTypes]`.
 
 In `rulesmd.ini`:
 ```ini
