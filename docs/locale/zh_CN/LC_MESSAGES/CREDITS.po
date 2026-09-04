@@ -1900,9 +1900,9 @@ msgid "Cloak Enhancement"
 msgstr "隐形增强"
 
 msgid ""
-"Fix the bug that `Temporal=yes` warhead will cause target building "
-"animation poweroff"
-msgstr "修复了 `Temporal=yes` 弹头会触发目标建筑动画停电的 Bug"
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"

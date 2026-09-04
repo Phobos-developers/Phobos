@@ -723,6 +723,7 @@ HideShakeEffects=false           ; boolean
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
+- Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -814,7 +815,6 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue where `OmniFire` was ineffective on buildings with `Turret=yes` (by FlyStar)
 - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state (by FlyStar)
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
-- Fixed the bug that `Temporal=yes` warhead will cause target building animation poweroff (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

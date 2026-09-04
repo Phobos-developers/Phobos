@@ -3660,5 +3660,5 @@ DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	return pThis->TemporalTargetingMe ? ReturnFromFunction : 0;
+	return pThis->TemporalTargetingMe && !RulesExt::Global()->Temporal_KillPoweredAnim ? ReturnFromFunction : 0;
 }

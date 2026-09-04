@@ -1731,11 +1731,6 @@ msgid ""
 msgstr ""
 "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）；现在 `WalkRate=0` 与 `IdleRate=0` 同样处理——移动动画／移动音效永不触发，移动中的单位表现为静止（滑行）。"
 
-msgid ""
-"Fixed the bug that `Temporal=yes` warhead will cause target building "
-"animation poweroff."
-msgstr "修复了 `Temporal=yes` 弹头会触发目标建筑动画停电的 Bug。"
-
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -2654,6 +2649,11 @@ msgid ""
 "In vanilla, buildings are forbidden to use waypoints. Now you can allow "
 "that using the following flag."
 msgstr "在原版中，建筑被禁止使用路径点。现在你可以使用以下标签来允许使用。"
+
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
 
 msgid "Aircraft"
 msgstr "战机类型"

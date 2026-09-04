@@ -2647,6 +2647,11 @@ msgstr ""
 "类的标签（by Noble_Fish）"
 
 msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff (by NetsuNegi)"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电（by NetsuNegi）"
+
+msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold (by CrimRecya)"
 msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
@@ -3128,11 +3133,6 @@ msgid ""
 "updates due to the accumulation of a large amount of radsite in a short "
 "time (by NetsuNegi)"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
-
-msgid ""
-"Fixed the bug that `Temporal=yes` warhead will cause target building "
-"animation poweroff (by NetsuNegi)"
-msgstr "修复了 `Temporal=yes` 弹头会触发目标建筑动画停电的 Bug（by NetsuNegi）"
 
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "

@@ -493,6 +493,7 @@ public:
 
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
+		Valueable<bool> Temporal_KillPoweredAnim;
 
 		Valueable<bool> DiscardOn_Sequences_Immediate;
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
@@ -984,6 +985,7 @@ public:
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
+			, Temporal_KillPoweredAnim { true }
 			, DiscardOn_Sequences_Immediate { true }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, DiscardOn_ConsiderHarvestingAsStationary { true }
