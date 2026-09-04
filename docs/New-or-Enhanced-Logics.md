@@ -46,6 +46,8 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
     - `Animation.HideIfAttachedWith` contains list of other AttachEffectTypes that if attached to same techno as the current one, will hide this effect's animation.
+    - `Animation.DrawOffsetN` (where N is integer starting from 0) can be used to define draw offset rules for the animation. These are parsed starting from index 0 until offset with value 0,0 is encountered.
+      - `Animation.DrawOffsetN.RequiredTypes` contains list other AttachEffectTypes that need to be attached on the same techno as the current one for the draw offset rule to apply. Note that this does not currently work correctly together with `Animation.HideIfAttachedWith`, animations hidden by this may not cause drawing offset rules to be updated even if they should.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once and is transferred from the effect to another of same type (specifically one with longest remaining duration), if such exists, upon expiration or removal. Note that because `Cumulative.MaxCount` limits the number of effects of same type that can be applied this can cause animations to 'flicker' here as effects expire before new ones can be applied in some circumstances.
     - `CumulativeAnimations.RestartOnChange` determines if the animation playback is restarted when the type of animation changes, if not then playback resumes at frame at same position relative to the animation's length.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
@@ -129,7 +131,7 @@ DiscardOn.Health.BelowPercent=-1                   ; floating point value
 DiscardOn.Health.AbovePercent=-1                   ; floating point value
 DiscardOn.Firing.Count=1                           ; integer
 DiscardOn.ReceivedDamage.Count=1                   ; integer
-DiscardOn.ReceivedDamage.AffectsHouse=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DiscardOn.ReceivedDamage.AffectsHouse=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 DiscardOn.Missions=                                ; List of MissionTypes
 DiscardOn.AIMissions=                              ; List of MissionTypes, default to [AttachEffectType] -> DiscardOn.Missions
 DiscardOn.LandTypes=                               ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
@@ -149,6 +151,8 @@ Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hid
 Animation.TemporalAction=None                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false                  ; boolean
 Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
+Animation.DrawOffsetN=0,0                          ; X,Y, pixels relative to default
+Animation.DrawOffsetN.RequiredTypes=               ; List of AttachEffectTypes
 CumulativeAnimations=                              ; List of AnimationTypes
 CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
@@ -157,13 +161,13 @@ ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 ExpireWeapon.UseInvokerAsOwner=false               ; boolean
 Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
-Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
 ArmorMultiplier.AllowWarheads=                     ; List of WarheadTypes
 ArmorMultiplier.DisallowWarheads=                  ; List of WarheadTypes
 ArmorMultiplier.Chance=1.0                         ; floating point value
-ArmorMultiplier.AffectsHouse=all                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ArmorMultiplier.AffectsHouse=all                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ArmorMultiplier.HitAnim=                           ; List of AnimationTypes
 SpeedMultiplier=1.0                                ; floating point value
 ROFMultiplier=1.0                                  ; floating point value
@@ -179,13 +183,13 @@ Crit.ExtraChance=0.0                               ; floating point value
 Crit.AllowWarheads=                                ; List of WarheadTypes
 Crit.DisallowWarheads=                             ; List of WarheadTypes
 RevengeWeapon=                                     ; WeaponType
-RevengeWeapon.AffectsHouse=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.AffectsHouse=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouse=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouse=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
@@ -419,7 +423,7 @@ ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
 Tint.Color=                                 ; integer - Red,Green,Blue
 Tint.Intensity=0.0                          ; floating point value
-Tint.VisibleToHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -645,7 +649,7 @@ AttachedSystem=  ; ParticleSystemType
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                              ; AnimationType
-VisibleTo=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleTo=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 VisibleTo.ConsiderInvokerAsOwner=false  ; boolean
 RestrictVisibilityIfCloaked=false       ; boolean
 DetachOnCloak=true                      ; boolean
@@ -721,7 +725,7 @@ EngineerRepairAmount=0             ; integer
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]       ; BuildingType, as an upgrade
-PowersUp.Owner=Self  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PowersUp.Owner=Self  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 PowersUp.Buildings=  ; List of BuildingTypes
 ```
 
@@ -1023,7 +1027,7 @@ Interceptor.ApplyFirepowerMult=true         ; boolean
 Interceptor=false                           ; boolean
 Interceptor.Weapon=0                        ; integer, weapon slot index (0 or 1)
 Interceptor.TargetingDelay=1                ; integer, game frames
-Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Interceptor.CanTargetHouses=enemies         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 Interceptor.GuardRange=0.0                  ; floating point value
 Interceptor.VeteranGuardRange=              ; floating point value
 Interceptor.EliteGuardRange=                ; floating point value
@@ -1330,12 +1334,12 @@ In `rulesmd.ini`:
 [SOMESW]                        ; SuperWeaponType
 ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectsHouse=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectsHouse=owner     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ; where N = 0, 1, 2, ...
 ; or
 Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectsHouse=owner      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectsHouse=owner      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ```{warning}
@@ -1409,7 +1413,7 @@ LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs, -1 cannot be used
 LimboDelivery.RollChances=      ; List of percentages
 LimboDelivery.RandomWeightsN=   ; List of integers
-LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.AffectsHouse=self     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 LimboKill.IDs=                  ; List of numeric IDs
 LimboKill.Counts=               ; List of integers
 ```
@@ -1677,13 +1681,13 @@ PassengerDeletion.Rate.SizeMultiply=true        ; boolean
 PassengerDeletion.UseCostAsRate=false           ; boolean
 PassengerDeletion.CostMultiplier=1.0            ; floating point value, percents or absolute
 PassengerDeletion.CostRateCap=                  ; integer, game frames
-PassengerDeletion.AllowedHouses=all             ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.AllowedHouses=all             ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 PassengerDeletion.DontScore=false               ; boolean
 PassengerDeletion.Soylent=false                 ; boolean
 PassengerDeletion.SoylentMultiplier=1.0         ; floating point value, percents or absolute
-PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 PassengerDeletion.DisplaySoylent=false          ; boolean
-PassengerDeletion.DisplaySoylentToHouses=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PassengerDeletion.DisplaySoylentToHouses=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
 PassengerDeletion.ReportSound=                  ; Sound entry
 PassengerDeletion.Anim=                         ; List of AnimationTypes
@@ -1799,7 +1803,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]              ; TechnoType
 Tint.Color=               ; integer - Red,Green,Blue
 Tint.Intensity=0.0        ; floating point value
-Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ### Customizable disk drain logic
@@ -1814,7 +1818,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DrainMoneyDisplay=false                             ; boolean
-DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DrainMoneyDisplay.Houses=all                        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 DrainMoneyDisplay.OnTarget=false                    ; boolean
 DrainMoneyDisplay.OnTarget.UseDisplayIncome=true    ; boolean
 
@@ -1823,7 +1827,7 @@ DrainMoneyFrameDelay=                               ; integer, default to [Comba
 DrainMoneyAmount=                                   ; integer, default to [CombatDamage] -> DrainMoneyAmount
 DrainAnimationType=                                 ; AnimationType, default to [CombatDamage] -> DrainAnimationType
 DrainMoneyDisplay=                                  ; boolean, default to [AudioVisual] -> DrainMoneyDisplay
-DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
+DrainMoneyDisplay.Houses=                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), default to [AudioVisual] -> DrainMoneyDisplay.Houses
 DrainMoneyDisplay.Offset=0,0                        ; X,Y, pixels relative to default
 DrainMoneyDisplay.OnTarget=                         ; boolean, default to [AudioVisual] -> DrainMoneyDisplay.OnTarget
 DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
@@ -1907,11 +1911,11 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 In `rulesmd.ini`:
 ```ini
 [General]
-RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RadarJamHouses=enemies            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 RadarJamDelay=30                  ; integer
 
 [SOMETECHNO]                      ; TechnoType, with RadarJamRadius=
-RadarJamHouses=                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> RadarJamHouses
+RadarJamHouses=                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), default to [General] -> RadarJamHouses
 RadarJamDelay=                    ; integer, default to [General] -> RadarJamDelay
 RadarJamAffect=                   ; List of BuildingTypes
 RadarJamIgnore=                   ; List of BuildingTypes
@@ -1992,7 +1996,7 @@ AllowWeaponSelectAgainstWalls=           ; boolean, default to [CombatDamage] ->
 In `rulesmd.ini`:
 ```ini
 [General]
-DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 UseDisguiseMovementSpeed=false
 
 [SOMETECHNO]                      ; TechnoType
@@ -2248,11 +2252,11 @@ AutoDeath.AfterDelay=0                            ; positive integer
 AutoDeath.TechnosDontExist=                       ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false              ; boolean
 AutoDeath.TechnosDontExist.AllowLimboed=          ; boolean, default to [CombatDamage] -> AutoDeath.TechnosDontExist.AllowLimboed
-AutoDeath.TechnosDontExist.Houses=owner           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosDontExist.Houses=owner           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 AutoDeath.TechnosExist=                           ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                   ; boolean
 AutoDeath.TechnosExist.AllowLimboed=              ; boolean, default to [CombatDamage] -> AutoDeath.TechnosExist.AllowLimboed
-AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.TechnosExist.Houses=owner               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 AutoDeath.PlayerPowerState=none                   ; Player Power Enumeration (none|low/consumer|full/normal)
 AutoDeath.PlayerMoneyLessThan=-1                  ; integer
 AutoDeath.PlayerMoneyMoreThan=-1                  ; integer
@@ -2296,13 +2300,13 @@ In `rulesmd.ini`:
 ```ini
 [General]
 MindControl.IgnoreSize=true           ; boolean
-MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
 
 [SOMETECHNO]                          ; TechnoType, as Mind controllers
 MindControlRangeLimit=-1.0            ; floating point value
 MindControl.IgnoreSize=               ; boolean, default to [General] -> MindControl.IgnoreSize
-MindControlLink.VisibleToHouse=       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to [General] -> MindControlLink.VisibleToHouse
+MindControlLink.VisibleToHouse=       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), default to [General] -> MindControlLink.VisibleToHouse
 MultiMindControl.ReleaseVictim=       ; boolean, default to [General] -> MultiMindControl.ReleaseVictim
 
 [SOMETECHNO]                          ; TechnoType, as Mind controlled targets
@@ -2473,6 +2477,25 @@ CombatAlert.EVA=EVA_UnitsInCombat      ; EVA entry
 CombatAlert.Suppress=                  ; boolean
 ```
 
+### Weapon range adjustment on promotion
+
+- Now you can add `RANGE` to `VeteranAbilities` and `EliteAbilities` to adjust the weapon range of this TechnoType.
+  - `ProjectileRange` of the weapon's projectile will also be affected if `Projectile.ApplyModifiers` set to true.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranRange` will be applied to the range calculation. Values greater than `1.0` lengthen the range, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeteranRange=1.0        ; floating point value, multiplier
+
+[SOMETECHNO]            ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RANGE.
+VeteranRange=           ; floating point value, multiplier, default to [General] -> VeteranRange
+```
+
 ### Recount burst index
 
 - You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames).
@@ -2543,7 +2566,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                    ; TechnoType
 RevengeWeapon=                  ; WeaponType
-RevengeWeapon.AffectsHouse=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.AffectsHouse=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 
 [SOMEWARHEAD]                   ; WarheadType
 SuppressRevengeWeapons=false    ; boolean
@@ -2589,7 +2612,7 @@ VoiceCreated=                ; Sound entry
 In `rulesmd.ini`:
 ```ini
 [General]
-BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ### Tiberium eater
@@ -2614,7 +2637,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TiberiumEater.Display.Houses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -2922,10 +2945,19 @@ AffectsGround=true         ; boolean
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
-  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
+  - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits. You can also add `CRITIMMUNE` to the TechnoTypes' `VeteranAbilities` and `EliteAbilities` to grant them immunity when promoting.
+  - You can add `CRITCHANCE` to `VeteranAbilities` and `EliteAbilities` to adjust the critical hit chance of this TechnoType.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranCritChance` will be applied to the range calculation. Values greater than `1.0` increase the chance, values smaller than `1.0` decrease it, and `1.0` (the default) leaves it unchanged.
+```
 
 In `rulesmd.ini`:
 ```ini
+[General]
+VeteranCritChance=1.0                      ; floating point value
+
 [CombatDamage]
 Crit.ApplyChancePerTarget=false            ; boolean
 Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
@@ -2940,7 +2972,7 @@ Crit.ExtraDamage.ApplyFirepowerMult=       ; boolean, default to [CombatDamage] 
 Crit.Warhead=                              ; WarheadType
 Crit.Warhead.FullDetonation=true           ; boolean
 Crit.AffectsTarget=all                     ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouse=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectsHouse=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 Crit.AffectsBelowPercent=1.0               ; floating point value, percents or absolute (0.0-1.0)
 Crit.AffectsAbovePercent=0.0               ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                             ; List of AnimationTypes
@@ -2952,6 +2984,9 @@ Crit.SuppressWhenIntercepted=              ; boolean, default to [CombatDamage] 
 
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
+
+[SOMETECHNO]                               ; TechnoType, with VeteranAbilities and/or EliteAbilities containing CRITCHANCE.
+VeteranCritChance=                         ; floating point value, multiplier, default to [General] -> VeteranCritChance
 ```
 
 ```{warning}
@@ -2996,12 +3031,12 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                   ; WarheadType
 ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectsHouse=all       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectsHouse=all       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ; where N = 0, 1, 2, ...
 ; or
 Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectsHouse=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectsHouse=all        ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ```{warning}
@@ -3101,7 +3136,7 @@ PlayAnimAboveSurface=false            ; boolean
 DetonateOnAllMapObjects=false                ; boolean
 DetonateOnAllMapObjects.Full=true            ; boolean
 DetonateOnAllMapObjects.AffectsTarget=none   ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
-DetonateOnAllMapObjects.AffectsHouse=none    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DetonateOnAllMapObjects.AffectsHouse=none    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 DetonateOnAllMapObjects.AffectTypes=         ; List of TechnoTypes
 DetonateOnAllMapObjects.IgnoreTypes=         ; List of TechnoTypes
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
@@ -3124,8 +3159,8 @@ While this feature can provide better performance than a large `CellSpread` valu
 [SOMEWARHEAD]                         ; WarheadType
 KillWeapon=                           ; WeaponType
 KillWeapon.OnFirer=                   ; WeaponType
-KillWeapon.AffectsHouse=all           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.OnFirer.AffectsHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.AffectsHouse=all           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+KillWeapon.OnFirer.AffectsHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 KillWeapon.AffectsTarget=all          ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 KillWeapon.OnFirer.AffectsTarget=all  ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 
@@ -3151,7 +3186,7 @@ In `rulesmd.ini`:
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
-TransactMoney.Display.Houses=all     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Houses=all     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
@@ -3191,7 +3226,7 @@ LaunchSW.RealLaunch=true          ; boolean
 LaunchSW.IgnoreInhibitors=false   ; boolean
 LaunchSW.IgnoreDesignators=true   ; boolean
 LaunchSW.DisplayMoney=false       ; boolean
-LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
@@ -3289,7 +3324,7 @@ ReturnWarhead.Chance=0.0                    ; floating point value, percents or 
 ReturnWarhead.ApplyChancePerTarget=         ; boolean, default to [CombatDamage] -> ReturnWarhead.ApplyChancePerTarget
 ReturnWarhead.FullDetonation=true           ; boolean
 ReturnWarhead.AffectsTarget=all             ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReturnWarhead.AffectsHouse=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ```
 
 ```{warning}
@@ -3791,12 +3826,13 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only) that the target's health must be above and/or below/equal to, respectively. If target has zero health left this check is bypassed.
+  - `neutral` can be used to specifically allow the targeting of neutral houses (houses whose type has `MultiplayPassive=yes`).
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                ; WeaponType
 CanTarget=all               ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all         ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTargetHouses=all         ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 CanTarget.MaxHealth=1.0     ; floating point value, percents or absolute
 CanTarget.MinHealth=0.0     ; floating point value, percents or absolute
 CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rookie|veteran|elite|all)

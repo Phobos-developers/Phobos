@@ -280,7 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -308,6 +308,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -792,7 +793,8 @@ This page lists all the individual contributions to the project by their author.
   - Show game time
   - Fix a game crash when parsing string list with null entry
   - `513` Set mission timer properties
-  - Fix several shield respawn/self heal issues.
+  - More veteran and elite abilities
+  - Fix several shield respawn/self heal issues
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -957,3 +959,4 @@ This page lists all the individual contributions to the project by their author.
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
