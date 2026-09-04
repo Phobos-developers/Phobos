@@ -458,6 +458,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Tibtree_IsPassable.Read(exINI, GameStrings::General, "Tibtree.IsPassable");
 	this->Terrain_CanBeBuiltOn.Read(exINI, GameStrings::General, "Terrain.CanBeBuiltOn");
 	this->Tibtree_CanBeBuiltOn.Read(exINI, GameStrings::General, "Tibtree.CanBeBuiltOn");
+	this->Tiberium_CanBeBuiltOn.Read(exINI, GameStrings::General, "Tiberium.CanBeBuiltOn");
+	this->Wall_CanBeBuiltOn.Read(exINI, GameStrings::General, "Wall.CanBeBuiltOn");
+	this->Rock_CanBeBuiltOn.Read(exINI, GameStrings::General, "Rock.CanBeBuiltOn");
+	this->CanBeBuiltOnOverlay_Remove.Read(exINI, GameStrings::General, "CanBeBuiltOnOverlay.Remove");
 
 	this->Sinkable.Read(exINI, GameStrings::General, "Sinkable");
 	this->Sinkable_SquidGrab.Read(exINI, GameStrings::General, "Sinkable.SquidGrab");
@@ -1017,6 +1021,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Tibtree_IsPassable)
 		.Process(this->Terrain_CanBeBuiltOn)
 		.Process(this->Tibtree_CanBeBuiltOn)
+		.Process(this->Tiberium_CanBeBuiltOn)
+		.Process(this->Wall_CanBeBuiltOn)
+		.Process(this->Rock_CanBeBuiltOn)
+		.Process(this->CanBeBuiltOnOverlay_Remove)
 		.Process(this->Sinkable)
 		.Process(this->Sinkable_SquidGrab)
 		.Process(this->SinkSpeed)

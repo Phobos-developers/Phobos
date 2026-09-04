@@ -390,6 +390,10 @@ public:
 		Valueable<bool> Tibtree_IsPassable;
 		Valueable<bool> Terrain_CanBeBuiltOn;
 		Valueable<bool> Tibtree_CanBeBuiltOn;
+		Valueable<bool> Tiberium_CanBeBuiltOn;
+		Valueable<bool> Wall_CanBeBuiltOn;
+		Valueable<bool> Rock_CanBeBuiltOn;
+		Valueable<bool> CanBeBuiltOnOverlay_Remove;
 
 		Nullable<bool> Sinkable;
 		Valueable<bool> Sinkable_SquidGrab;
@@ -889,6 +893,10 @@ public:
 			, Tibtree_IsPassable { false }
 			, Terrain_CanBeBuiltOn { false }
 			, Tibtree_CanBeBuiltOn { false }
+			, Tiberium_CanBeBuiltOn { false }
+			, Wall_CanBeBuiltOn { false }
+			, Rock_CanBeBuiltOn { false }
+			, CanBeBuiltOnOverlay_Remove { true }
 
 			, Sinkable {}
 			, Sinkable_SquidGrab { true }

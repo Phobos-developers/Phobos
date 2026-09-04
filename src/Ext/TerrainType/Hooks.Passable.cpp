@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/OverlayType/Body.h>
 
 #include <Ext/Rules/Body.h>
 
@@ -142,6 +143,16 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 				TerrainTypeExt::Remove(pTerrain);
 			}
 		}
+
+		const int overlayTypeIndex = pCell->OverlayTypeIndex;
+
+		if (overlayTypeIndex != -1)
+		{
+			auto const pBuildingType = static_cast<BuildingTypeClass*>(pObject->GetType());
+
+			if (OverlayTypeExt::CanPlaceBuildingOnOverlay(overlayTypeIndex, pBuildingType, true))
+				OverlayTypeExt::RemoveOverlayFromCell(overlayTypeIndex, pCell, pObject->GetOwningHouse());
+		}
 	}
 
 	return 0;
@@ -256,8 +267,11 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots)
 				: (pCell->Passability != PassabilityType::Passable);
 
+			// Check if cell has overlay and if it is buildable on.
+			const bool invalidOverlay = pCell->OverlayTypeIndex != -1 && !OverlayTypeExt::CanPlaceBuildingOnOverlay(pCell->OverlayTypeIndex, nullptr, false);
+
 			if ((pCell->BaseSpacerOfHouses & mask) != 0
-				|| pCell->OverlayTypeIndex != -1
+				|| invalidOverlay
 				|| invalidPassability
 				|| pCell->SlopeIndex
 				|| pCell->GetBuilding())

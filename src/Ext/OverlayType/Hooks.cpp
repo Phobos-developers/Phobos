@@ -44,3 +44,38 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 
 	return SkipGameCode;
 }
+
+#pragma region CanBeBuiltOn
+
+DEFINE_HOOK(0x47C9A7, CellClass_IsClearToBuild_Overlays, 0x5)
+{
+	enum { ReturnFromFunction = 0x47C6D1, CheckTileLandType = 0x47C9CD };
+
+	GET(CellClass*, pThis, EDI);
+	GET_STACK(BuildingTypeClass*, pBuildingType, STACK_OFFSET(0x18, 0x8));
+
+	const int overlayTypeIndex = pThis->OverlayTypeIndex;
+
+	if (overlayTypeIndex != -1)
+	{
+		if (OverlayTypeExt::CanPlaceBuildingOnOverlay(overlayTypeIndex, pBuildingType, false))
+			return CheckTileLandType;
+	}
+
+	return ReturnFromFunction;
+}
+
+DEFINE_HOOK(0x45EF11, BuildingTypeClass_FlushForPlacement_Overlays, 0x6)
+{
+	enum { Continue = 0x45EF2C };
+
+	GET(BuildingTypeClass*, pThis, EBX);
+	GET(const int, overlayTypeIndex, ECX);
+
+	if (OverlayTypeExt::CanPlaceBuildingOnOverlay(overlayTypeIndex, pThis, false))
+		return Continue;
+
+	return 0;
+}
+
+#pragma endregion
