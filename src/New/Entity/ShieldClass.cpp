@@ -138,7 +138,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pToExt->Shield->HP = pFromExt->Shield->HP;
 
 		// handle shield conversion and tint
-		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject());
+		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), true);
 
 		if (pToExt->Shield)
 			pToExt->Shield->UpdateTint();
@@ -619,7 +619,7 @@ void ShieldClass::TemporalCheck()
 }
 
 // Is used for DeploysInto/UndeploysInto and Type conversion
-void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType)
+void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, bool renew)
 {
 	const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 	const auto pOldType = this->Type;
@@ -688,7 +688,7 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType)
 
 		const int newRate = respawn ? pNewType->Respawn_Rate : pNewType->SelfHealing_Rate;
 
-		if (respawn ? pOldType->Respawn : pOldType->SelfHealing)
+		if (!renew && respawn ? pOldType->Respawn : pOldType->SelfHealing)
 		{
 			const int oldRate = respawn ? pOldType->Respawn_Rate : pOldType->SelfHealing_Rate;
 
