@@ -3,6 +3,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <BuildingTypeClass.h>
+#include <New/Type/EVATypeClass.h>
 
 class BuildingTypeExt final : public TechnoTypeExt
 {
@@ -154,6 +155,12 @@ public:
 	// Ares 3.0
 	Nullable<bool> UnitSell;
 
+	EVAType NewEvaVoice_Tag;
+	Valueable<int> NewEvaVoice_Priority;
+	Valueable<bool> NewEvaVoice_RecheckOnDeath;
+	NullableIdx<VoxClass> NewEvaVoice_InitialMessage;
+	NullableIdx<VoxClass> NewEvaVoice_EndingMessage;
+
 	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
 		, PowersUp_Owner { AffectedHouse::Owner }
 		, PowersUp_Buildings {}
@@ -265,6 +272,12 @@ public:
 
 		// Ares 3.0
 		, UnitSell {}
+
+		, NewEvaVoice_Tag { -2 }
+		, NewEvaVoice_Priority { 0 }
+		, NewEvaVoice_RecheckOnDeath { false }
+		, NewEvaVoice_InitialMessage { }
+		, NewEvaVoice_EndingMessage { }
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)

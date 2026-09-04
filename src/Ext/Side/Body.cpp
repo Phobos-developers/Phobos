@@ -1,5 +1,12 @@
 #include "Body.h"
 
+#include <ThemeClass.h>
+
+#include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
+
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::Initialize()
@@ -55,6 +62,136 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
 	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
+
+	this->EVATag.Read(pINI, pSection, "EVA.Tag");
+}
+
+void SideExt::UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse)
+{
+	if (!pThis || !pThis->Type)
+		return;
+
+	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+
+	if (pTypeExt->NewEvaVoice_Tag < 0)
+		return;
+
+	if (!pHouse)
+		pHouse = pThis->Owner;
+
+	if (!pHouse || !pHouse->IsControlledByCurrentPlayer())
+		return;
+
+	const auto pHouseExt = HouseExt::Fetch(pHouse);
+
+	int newPriority = -1;
+	int newEvaIndex = VoxClass::EVAIndex;
+	BuildingTypeClass* pWinningBuildingType = nullptr;
+	BuildingTypeExt* pWinningTypeExt = nullptr;
+
+	// If pThis belongs to pHouse and is active (alive, not in limbo, not selling), consider it as candidate
+	const bool pThisIsActive = pThis->Owner == pHouse && pThis->IsAlive && pThis->Health > 0 && !pThis->InLimbo && pThis->CurrentMission != Mission::Selling;
+	if (pThisIsActive && pTypeExt->NewEvaVoice_Tag >= 0)
+	{
+		newPriority = pTypeExt->NewEvaVoice_Priority;
+		newEvaIndex = pTypeExt->NewEvaVoice_Tag;
+		pWinningBuildingType = pThis->Type;
+		pWinningTypeExt = pTypeExt;
+	}
+
+	for (const auto pBuilding : pHouse->Buildings)
+	{
+		if (!pBuilding || !pBuilding->Type || pBuilding == pThis)
+			continue;
+
+		if (!pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo || pBuilding->CurrentMission == Mission::Selling)
+			continue;
+
+		const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
+
+		if (pBuildingTypeExt->NewEvaVoice_Tag < 0)
+			continue;
+
+		// The highest priority takes precedence over lower ones
+		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
+		{
+			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
+			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Tag;
+			pWinningBuildingType = pBuilding->Type;
+			pWinningTypeExt = pBuildingTypeExt;
+		}
+	}
+
+	if (newPriority < 0)
+	{
+		newEvaIndex = SideExt::GetOwnerEVAIndex(pHouse);
+		pWinningBuildingType = nullptr;
+		pWinningTypeExt = nullptr;
+	}
+
+	if (VoxClass::EVAIndex != newEvaIndex)
+	{
+		// 1. If outgoing custom voice building defined an EndingMessage, play it with the outgoing voice
+		if (pHouseExt && pHouseExt->ActiveEvaVoiceBuildingType)
+		{
+			if (const auto pOldTypeExt = BuildingTypeExt::Fetch(pHouseExt->ActiveEvaVoiceBuildingType))
+			{
+				int idxEnding = pOldTypeExt->NewEvaVoice_EndingMessage.Get(-1);
+				if (idxEnding != -1)
+					VoxClass::PlayIndex(idxEnding);
+			}
+		}
+
+		// 2. Switch EVA index and update active building type
+		VoxClass::EVAIndex = newEvaIndex;
+
+		if (pHouseExt)
+			pHouseExt->ActiveEvaVoiceBuildingType = pWinningBuildingType;
+
+		// 3. If incoming custom voice building defines an InitialMessage, play greeting with the new voice
+		if (pWinningTypeExt)
+		{
+			int idxPlay = pWinningTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+
+			if (idxPlay != -1)
+				VoxClass::PlayIndex(idxPlay);
+		}
+	}
+	else if (pHouseExt)
+	{
+		pHouseExt->ActiveEvaVoiceBuildingType = pWinningBuildingType;
+	}
+}
+
+int SideExt::GetOwnerEVAIndex(HouseClass* pHouse)
+{
+	if (!pHouse || !pHouse->Type)
+		return 0;
+
+	// 1. HouseType (Country) EVA.Tag
+	if (const auto pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type))
+	{
+		if (pHouseTypeExt->EVATag >= 0)
+			return pHouseTypeExt->EVATag;
+	}
+
+	// 2. Side EVA.Tag
+	if (const auto pSide = SideClass::Array.GetItemOrDefault(pHouse->SideIndex))
+	{
+		if (const auto pSideExt = SideExt::Fetch(pSide))
+		{
+			if (pSideExt->EVATag >= 0)
+				return pSideExt->EVATag;
+		}
+	}
+
+	// 3. Vanilla SideIndex (0: Allied, 1: Russian, 2: Yuri)
+	if (pHouse->SideIndex == 1)
+		return 1; // Russian
+	if (pHouse->SideIndex == 2)
+		return 2; // Yuri
+
+	return 0; // Allied / Default
 }
 
 // =============================
@@ -93,6 +230,7 @@ void SideExt::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_TopPCX)
 		.Process(this->SuperWeaponSidebar_CenterPCX)
 		.Process(this->SuperWeaponSidebar_BottomPCX)
+		.Process(this->EVATag)
 		;
 }
 

@@ -570,6 +570,7 @@ HideShakeEffects=false           ; boolean
 - [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
+- New EVA voice after deploying a building (by FS-21)
 - [`IsSimpleDeployer` facing and deploy check, customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
 - [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhanced-Logics.md#automatic-deploy-and-blocking-deploying-based-on-ammo) (by Starkku)
 - Randomized anims for several behaviors (by Ollerus)

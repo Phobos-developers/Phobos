@@ -5,6 +5,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/EVATypeClass.h>
+
 class SideExt final : public AbstractTypeExt
 {
 public:
@@ -51,6 +53,7 @@ public:
 	PhobosPCXFile SuperWeaponSidebar_TopPCX;
 	PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 	PhobosPCXFile SuperWeaponSidebar_BottomPCX;
+	EVAType EVATag;
 
 	SideExt(SideClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, ArrayIndex { -1 }
@@ -82,6 +85,7 @@ public:
 		, SuperWeaponSidebar_TopPCX {}
 		, SuperWeaponSidebar_CenterPCX {}
 		, SuperWeaponSidebar_BottomPCX {}
+		, EVATag { -2 }
 	{ }
 
 	virtual ~SideExt() = default;
@@ -114,7 +118,11 @@ public:
 	{
 		return AbstractExt::TryFetch<SideExt>(pThis);
 	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void UpdateMainEvaVoice(BuildingClass* pThis, HouseClass* pHouse = nullptr);
+	static int GetOwnerEVAIndex(HouseClass* pHouse);
 };
 
