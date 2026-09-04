@@ -32,6 +32,36 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x3)
 	return 0;
 }
 
+DEFINE_HOOK(0x6CB560, SuperClass_Grant_ResetRechargeTime, 0x5)
+{
+	GET(SuperClass*, pThis, ECX);
+
+	if (pThis)
+		pThis->ResetRechargeTime();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6CBDCC, SuperClass_HasChargeProgressed_Charged, 0x5)
+{
+	GET(SuperClass*, pThis, ESI);
+
+	if (pThis)
+		pThis->ResetRechargeTime();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6CBDB7, SuperClass_HasChargeProgressed_ChargedDrain, 0x6)
+{
+	GET(SuperClass*, pThis, ESI);
+
+	if (pThis)
+		pThis->ResetRechargeTime();
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 {
 	GET(SuperClass*, pThis, ESI);

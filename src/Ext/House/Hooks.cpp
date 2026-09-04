@@ -2,6 +2,7 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
 #include "Ext/Techno/Body.h"
 #include "Ext/Building/Body.h"
 #include <Ext/Event/Body.h>
@@ -453,6 +454,208 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x3)
 	return 0;
 }
 
+// Wrapper around Ares' HouseClass::AI_TryFireSW (0x5098F0).
+// When multiple superweapons in the same SW.CooldownGroup are ready at once,
+// the AI picks one candidate at random via the synchronized PRNG and temporarily masks
+// the others so Ares doesn't always default to the first one in the vector.
+void HouseExt::AI_TryFireSW_CooldownGroupAware(HouseClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	if (pThis->IsControlledByHuman())
+	{
+		pThis->AI_TryFireSW();
+		return;
+	}
+
+	std::vector<SuperClass*> allReadySupers;
+
+	for (int i = 0; i < pThis->Supers.Count; ++i)
+	{
+		SuperClass* pSuper = pThis->Supers.GetItemOrDefault(i);
+
+		if (!pSuper || !pSuper->IsPresent || !pSuper->IsReady || !pSuper->Type)
+			continue;
+
+		if (pSuper->ChargeDrainState == ChargeDrainState::Draining)
+			continue;
+
+		auto const pExt = SWTypeExt::Fetch(pSuper->Type);
+
+		if (pExt && pExt->SW_Shots > 0)
+		{
+			auto const pHouseExt = HouseExt::Fetch(pThis);
+
+			if (pHouseExt && pHouseExt->SuperExts[pSuper->Type->ArrayIndex].ShotCount >= pExt->SW_Shots)
+				continue;
+		}
+
+		allReadySupers.push_back(pSuper);
+	}
+
+	if (allReadySupers.empty())
+		return;
+
+	std::vector<bool> inGroupCluster(allReadySupers.size(), false);
+	std::vector<SuperClass*> candidates;
+
+	for (size_t i = 0; i < allReadySupers.size(); ++i)
+	{
+		if (inGroupCluster[i])
+			continue;
+
+		SWTypeExt* pExtI = SWTypeExt::Fetch(allReadySupers[i]->Type);
+
+		if (!pExtI || pExtI->SW_CooldownGroup.empty())
+		{
+			candidates.push_back(allReadySupers[i]);
+			continue;
+		}
+
+		std::vector<SuperClass*> cluster;
+		cluster.push_back(allReadySupers[i]);
+		inGroupCluster[i] = true;
+
+		for (size_t j = i + 1; j < allReadySupers.size(); ++j)
+		{
+			if (inGroupCluster[j])
+				continue;
+
+			SWTypeExt* pExtJ = SWTypeExt::Fetch(allReadySupers[j]->Type);
+
+			if (!pExtJ || pExtJ->SW_CooldownGroup.empty())
+				continue;
+
+			bool sharesGroup = false;
+
+			for (SuperClass* pMember : cluster)
+			{
+				SWTypeExt* pMemberExt = SWTypeExt::Fetch(pMember->Type);
+
+				for (const std::string& group1 : pMemberExt->SW_CooldownGroup)
+				{
+					for (const std::string& group2 : pExtJ->SW_CooldownGroup)
+					{
+						if (_stricmp(group1.c_str(), group2.c_str()) == 0)
+						{
+							sharesGroup = true;
+							break;
+						}
+					}
+
+					if (sharesGroup)
+						break;
+				}
+
+				if (sharesGroup)
+					break;
+			}
+
+			if (sharesGroup)
+			{
+				cluster.push_back(allReadySupers[j]);
+				inGroupCluster[j] = true;
+			}
+		}
+
+		if (cluster.size() > 1)
+		{
+			int chosenIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(cluster.size()) - 1);
+
+			std::string groupNames;
+
+			for (const std::string& groupName : pExtI->SW_CooldownGroup)
+			{
+				if (!groupNames.empty())
+					groupNames += ", ";
+
+				groupNames += groupName;
+			}
+
+			Debug::Log("[SW.CooldownGroup] House '%s' has %d ready superweapons in group '%s'; randomly selected [%s].\n",
+				pThis->get_ID(), static_cast<int>(cluster.size()), groupNames.c_str(), cluster[chosenIndex]->Type->get_ID());
+
+			for (size_t k = 0; k < cluster.size(); ++k)
+			{
+				if (static_cast<int>(k) != chosenIndex)
+					cluster[k]->IsReady = false;
+			}
+
+			candidates.push_back(cluster[chosenIndex]);
+		}
+		else
+		{
+			candidates.push_back(allReadySupers[i]);
+		}
+	}
+
+	SuperClass* pFired = nullptr;
+	const bool randomizePriority = RulesExt::Global()->RandomizeSuperWeaponPriority.Get();
+
+	if (!randomizePriority || candidates.size() <= 1)
+	{
+		pThis->AI_TryFireSW();
+
+		for (SuperClass* pCand : candidates)
+		{
+			if (!pCand->IsReady || pCand->RechargeTimer.TimeLeft > 0)
+			{
+				pFired = pCand;
+				break;
+			}
+		}
+	}
+	else
+	{
+		// Fisher-Yates shuffle of candidates using synchronized engine PRNG
+		for (int i = static_cast<int>(candidates.size()) - 1; i > 0; --i)
+		{
+			int j = ScenarioClass::Instance->Random.RandomRanged(0, i);
+			std::swap(candidates[i], candidates[j]);
+		}
+
+		for (size_t i = 0; i < candidates.size(); ++i)
+		{
+			SuperClass* pCandidate = candidates[i];
+
+			for (size_t j = 0; j < candidates.size(); ++j)
+			{
+				if (j != i)
+					candidates[j]->IsReady = false;
+			}
+
+			pCandidate->IsReady = true;
+
+			pThis->AI_TryFireSW();
+
+			if (!pCandidate->IsReady || pCandidate->RechargeTimer.TimeLeft > 0)
+			{
+				pFired = pCandidate;
+				break;
+			}
+		}
+	}
+
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+
+	for (SuperClass* pSuper : allReadySupers)
+	{
+		if (pSuper != pFired && pSuper->IsPresent && pSuper->RechargeTimer.TimeLeft == 0)
+		{
+			auto const pExt = SWTypeExt::Fetch(pSuper->Type);
+
+			if (pExt && pExt->SW_Shots > 0 && pHouseExt)
+			{
+				if (pHouseExt->SuperExts[pSuper->Type->ArrayIndex].ShotCount >= pExt->SW_Shots)
+					continue;
+			}
+
+			pSuper->IsReady = true;
+		}
+	}
+}
+
 DEFINE_HOOK(0x4FD77C, HouseClass_ExpertAI_Superweapons, 0x5)
 {
 	enum { SkipSWProcess = 0x4FD7A0 };
@@ -461,6 +664,15 @@ DEFINE_HOOK(0x4FD77C, HouseClass_ExpertAI_Superweapons, 0x5)
 		return SkipSWProcess;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4FD799, HouseClass_ExpertAI_TryFireSW, 0x7)
+{
+	GET(HouseClass*, pThis, EBX);
+
+	HouseExt::AI_TryFireSW_CooldownGroupAware(pThis);
+
+	return 0x4FD7A0;
 }
 
 DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
@@ -483,7 +695,7 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 	}
 
 	if (!SessionClass::IsCampaign() || pThis->IQLevel2 >= RulesClass::Instance->SuperWeapons)
-		pThis->AI_TryFireSW();
+		HouseExt::AI_TryFireSW_CooldownGroupAware(pThis);
 
 	return 0;
 }

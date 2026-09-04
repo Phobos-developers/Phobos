@@ -1451,6 +1451,21 @@ Message.LinkedSWAcquired=    ; CSF entry key
 EVA.LinkedSWAcquired=        ; EVA entry
 ```
 
+### Cooldown groups
+
+- Superweapons can be grouped together using `SW.CooldownGroup`. When any superweapon belonging to a group is launched, all other currently active (`IsPresent`) superweapons belonging to that group for the firer house will have their countdown timers reset (`RechargeTimer`), implementing a shared cooldown mechanism.
+- `SW.CooldownGroup` accepts a comma-separated list of group names, allowing a superweapon to belong to multiple groups simultaneously.
+  - The reset is non-transitive: launching a superweapon only resets superweapons that share at least one group with the *launched* superweapon. Superweapons reset collaterally do not propagate resets to other groups.
+- `SW.CooldownGroup.SyncLongest` controls whether all present superweapons in the affected group(s) synchronize their cooldown to the longest `RechargeTime` among the superweapons currently active (built) in the group for that player. If any active superweapon in the group has this set to `true`, the synchronized longest cooldown applies to the entire group. If all active superweapons in the group have this set to `false`, each superweapon resets to its own individual recharge time.
+- If the AI has multiple superweapons in the same group ready to fire simultaneously, it automatically and fairly selects one candidate at random each frame rather than always defaulting to the first superweapons defined in `[SuperWeaponTypes]`.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                                ; SuperWeaponType
+SW.CooldownGroup=                       ; List of group names (strings separated by commas)
+SW.CooldownGroup.SyncLongest=false      ; boolean
+```
+
 ### Next
 
 ![image](_static/images/swnext.gif)
@@ -1473,6 +1488,17 @@ SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
 SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
+```
+
+### Randomize AI superweapon priority
+
+- AI houses now can evaluate their ready superweapons in a randomized order each firing cycle rather than always checking them in fixed array order.
+  - `RandomizeSuperWeaponPriority` controls whether AI houses randomize the evaluation order of all currently ready superweapons each firing cycle. When set to `true`, the AI shuffles all ready superweapons (including individual superweapons and group representatives) using the synchronized engine PRNG, eliminating the bias where superweapons defined earlier in `[SuperWeaponTypes]` are always prioritized. If the first randomly chosen candidate has no valid tactical target, the AI gracefully falls back to evaluate the remaining ready candidates in shuffled order. Defaults to `false`.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+RandomizeSuperWeaponPriority=false ; boolean
 ```
 
 ### Recipient-specific message and EVA on superweapon activation
