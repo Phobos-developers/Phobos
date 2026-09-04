@@ -202,6 +202,9 @@ public:
 	Nullable<bool> Passengers_SyncOwner;
 	Nullable<bool> Passengers_SyncOwner_RevertOnExit;
 
+	Valueable<bool> PassengerTurret;
+	Valueable<bool> PassengerTurretWeapon;
+
 	Nullable<bool> IronCurtain_KeptOnDeploy;
 	Nullable<IronCurtainEffect> IronCurtain_Effect;
 	Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
@@ -622,6 +625,9 @@ public:
 		, SelfHealGainType {}
 		, Passengers_SyncOwner {}
 		, Passengers_SyncOwner_RevertOnExit {}
+
+		, PassengerTurret { false }
+		, PassengerTurretWeapon { false }
 
 		, IronCurtain_KeptOnDeploy {}
 		, IronCurtain_Effect {}

@@ -958,6 +958,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
+	this->PassengerTurret.Read(exINI, pSection, "PassengerTurret");
+	this->PassengerTurretWeapon.Read(exINI, pSection, "PassengerTurretWeapon");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCurtain_KillWarhead.Read<true>(exINI, pSection, "IronCurtain.KillWarhead");
@@ -1606,6 +1609,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
+		.Process(this->PassengerTurret)
+		.Process(this->PassengerTurretWeapon)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
