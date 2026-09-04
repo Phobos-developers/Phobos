@@ -84,7 +84,7 @@ public:
 		this->AreAnimsHidden = !visible;
 	}
 
-	void ConvertCheck(TechnoTypeClass* pTechnoType, int renew = -1);
+	void ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldShield = nullptr);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);

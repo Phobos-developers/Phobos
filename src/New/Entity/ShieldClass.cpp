@@ -136,10 +136,9 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		pToExt->Shield->HP = pFromShield->HP;
 
 		// handle shield conversion and tint
-		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), pFromShield->HP <= 0 ? pFromShield->Timers.Respawn.GetTimeLeft() : pFromShield->Timers.SelfHealing.GetTimeLeft());
+		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), pFromShield);
 
 		if (pToExt->Shield)
 			pToExt->Shield->UpdateTint();
@@ -620,7 +619,7 @@ void ShieldClass::TemporalCheck()
 }
 
 // Is used for DeploysInto/UndeploysInto and Type conversion
-void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, int renew)
+void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldShield)
 {
 	const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 	const auto pOldType = this->Type;
@@ -651,10 +650,66 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, int renew)
 	this->TechnoID = pTechnoType;
 	this->BracketDelta = pTechnoType->PixelSelectionBracketDelta + pNewType->BracketDelta - 3;
 
+	// Sync properties of old shield. Just clone everything so Convert and DeploysInto have the same behavior
+	if (pOldShield)
+	{
+		this->HP = pOldShield->HP;
+		this->IdleAnim = pOldShield->IdleAnim;
+		this->Online = pOldShield->Online;
+		this->Cloak = pOldShield->Cloak;
+		this->Temporal = pOldShield->Temporal;
+		this->Attached = pOldShield->Attached;
+		this->AreAnimsHidden = pOldShield->AreAnimsHidden;
+		this->IsSelfHealingEnabled = pOldShield->IsSelfHealingEnabled;
+		this->LastBreakFrame = pOldShield->LastBreakFrame;
+		this->LastTechnoHealthRatio = pOldShield->LastTechnoHealthRatio;
+
+		// Start timer here and further tweak it based on old shield type later
+		// In case it's paused, set TimerLeft manually
+		if (pOldShield->Timers.Respawn.InProgress())
+			this->Timers.Respawn.Start(pOldShield->Timers.Respawn.GetTimeLeft());
+		else if (pOldShield->Timers.Respawn.HasTimeLeft())
+			this->Timers.Respawn.TimeLeft = pOldShield->Timers.Respawn.GetTimeLeft();
+
+		if (pOldShield->Timers.Respawn_WHModifier.InProgress())
+		{
+			this->Respawn_Warhead = pOldShield->Respawn_Warhead;
+			this->Respawn_Rate_Warhead = pOldShield->Respawn_Rate_Warhead;
+			this->Respawn_RestartInCombat_Warhead = pOldShield->Respawn_RestartInCombat_Warhead;
+			this->Respawn_RestartInCombatDelay_Warhead = pOldShield->Respawn_RestartInCombatDelay_Warhead;
+			this->Respawn_Anim_Warhead = pOldShield->Respawn_Anim_Warhead;
+			this->Respawn_Weapon_Warhead = pOldShield->Respawn_Weapon_Warhead;
+			this->Timers.Respawn_WHModifier.Start(pOldShield->Timers.Respawn_WHModifier.GetTimeLeft());
+		}
+
+		if (pOldShield->Timers.Respawn_CombatRestart.InProgress())
+			this->Timers.Respawn_CombatRestart.Start(pOldShield->Timers.Respawn_CombatRestart.GetTimeLeft());
+
+		// Start timer here and further tweak it based on old shield type later
+		// In case it's paused, set TimerLeft manually
+		if (pOldShield->Timers.SelfHealing.InProgress())
+			this->Timers.SelfHealing.Start(pOldShield->Timers.SelfHealing.GetTimeLeft());
+		else if (pOldShield->Timers.SelfHealing.HasTimeLeft())
+			this->Timers.SelfHealing.TimeLeft = pOldShield->Timers.SelfHealing.GetTimeLeft();
+
+		if (pOldShield->Timers.SelfHealing_WHModifier.InProgress())
+		{
+			this->SelfHealing_Warhead = pOldShield->SelfHealing_Warhead;
+			this->SelfHealing_Rate_Warhead = pOldShield->SelfHealing_Rate_Warhead;
+			this->SelfHealing_RestartInCombat_Warhead = pOldShield->SelfHealing_RestartInCombat_Warhead;
+			this->SelfHealing_RestartInCombatDelay_Warhead = pOldShield->SelfHealing_RestartInCombatDelay_Warhead;
+			this->Timers.SelfHealing_WHModifier.Start(pOldShield->Timers.SelfHealing_WHModifier.GetTimeLeft());
+		}
+
+		// Start timer here and further tweak it based on old shield type later
+		if (pOldShield->Timers.SelfHealing_CombatRestart.InProgress())
+			this->Timers.SelfHealing_CombatRestart.Start(pOldShield->Timers.SelfHealing_CombatRestart.GetTimeLeft());
+	}
+
+	// Calculation that's related to old shield type
 	if (pNewType == pOldType)
 		return;
 
-	// Calculation that's related to old shield type
 	const bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 	const double healthRatio = this->GetHealthRatio();
 
@@ -672,10 +727,9 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, int renew)
 		);
 	}
 
-	// Update respawn and self heal
 	const auto timerWHModifier = respawn ? &this->Timers.Respawn_WHModifier : &this->Timers.SelfHealing_WHModifier;
 
-	// Reuse warhead modifier if active
+	// Reuse warhead modifier if active, otherwise reset it base on old shield type
 	if (!timerWHModifier->InProgress())
 	{
 		const auto timer = respawn ? &this->Timers.Respawn : &this->Timers.SelfHealing;
@@ -696,21 +750,7 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, int renew)
 
 			// Recalculate timer based on both old and new shield types
 			if (oldRate > 0)
-			{
-				// conversion between unit and building, which is a new shield entity
-				// copy the value from the old shield for calculation
-				if (renew > 0)
-				{
-					if (!timerCombatRestart->InProgress())
-						timer->Start(static_cast<int>((double)renew * newRate / oldRate));
-					else
-						timer->TimeLeft = static_cast<int>((double)renew * newRate / oldRate);
-				}
-				else
-				{
-					timer->TimeLeft = static_cast<int>((double)timer->GetTimeLeft() * newRate / oldRate);
-				}
-			}
+				timer->TimeLeft = static_cast<int>((double)timer->GetTimeLeft() * newRate / oldRate);
 		}
 		// Handle the case where old shield type doesn't have respawn or self heal
 		else
