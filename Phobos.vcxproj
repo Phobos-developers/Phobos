@@ -28,6 +28,8 @@
     <ClCompile Include="src\Phobos.Ext.cpp" />
     <ClCompile Include="src\Phobos.INI.cpp" />
     <ClCompile Include="src\Phobos.Save.cpp" />
+    <ClCompile Include="src\TextRenderer\TextRenderer.cpp" />
+    <ClCompile Include="src\TextRenderer\Hooks.cpp" />
     <!-- src\Blowfish -->
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
@@ -305,6 +307,7 @@
     <ClInclude Include="src\Phobos.CRT.h" />
     <ClInclude Include="src\Phobos.h" />
     <ClInclude Include="src\Phobos.version.h" />
+    <ClInclude Include="src\TextRenderer\TextRenderer.h" />
     <!-- src\Blowfish\ -->
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <!-- src\Commands\ -->
