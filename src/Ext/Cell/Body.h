@@ -44,8 +44,10 @@ public:
 	}
 
 	std::vector<RadSiteClass*> RadSites {};
-	std::vector<RadLevel> RadLevels { };
-	int InfantryCount{ 0 };
+	std::vector<RadLevel> RadLevels {};
+	std::vector<LightSourceClass*> CoveringLights {};
+	std::vector<TerrainClass*> CoveringTerrains {};
+	int InfantryCount { 0 };
 
 	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
 	{ }
