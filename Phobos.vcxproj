@@ -243,6 +243,7 @@
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.Crates.cpp" />
+    <ClCompile Include="src\Misc\Hooks.DropshipLoadout.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
@@ -396,6 +397,7 @@
     <ClInclude Include="src\Misc\ExceptionHandler.h" />
     <ClInclude Include="src\Misc\ExceptionHandler.Resource.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
+	<ClInclude Include="src\Misc\Hooks.DropshipLoadout.h" />
     <ClInclude Include="src\Misc\MessageColumn.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />

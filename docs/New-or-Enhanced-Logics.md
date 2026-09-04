@@ -1361,6 +1361,111 @@ In `rulesmd.ini`:
 TabIndex=1  ; integer
 ```
 
+### Dropship Loadout
+
+Superweapons can be configured to manage customizable cargo deployments. This logic is divided into two distinct configurations:
+1. **Launch Dropship**: Spawns the transport carrier and deploys loaded cargo onto the battlefield.
+2. **Open Window**: Opens the interactive user interface to purchase and configure cargo.
+
+---
+
+#### Launch Dropship
+
+These parameters configure the superweapon that spawns a transport carrier to deliver your cargo to the battlefield:
+
+* `DropshipLoadout.Launch`: If set to `true`, firing this superweapon launches the dropship transport with its current cargo (utilizing dropship slot `0`).
+* `DropshipLoadout.Carrier`: Overrides the transport unit type spawned (e.g. `TSDSHP`).
+* `DropshipLoadout.PersistentCargo`: If set to `true`, the selected cargo is preserved across launches. If set to `false`, the cargo configuration is cleared after launch.
+* `DropshipLoadout.VeteranLevel`: The veterancy level (`1` for Rookie, `2` for Veteran, `3` for Elite) to promote the cargo units to upon spawning.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                              ; SuperWeaponType
+DropshipLoadout.Launch=false          ; boolean
+DropshipLoadout.Carrier=              ; TechnoType
+DropshipLoadout.PersistentCargo=false  ; boolean
+DropshipLoadout.VeteranLevel=1        ; integer
+```
+
+---
+
+#### Open Window
+
+These parameters configure the interactive Dropship Loadout purchase window that opens when the superweapon is fired:
+
+* `DropshipLoadout.OpenWindow`: If set to `true`, firing this superweapon opens the interactive Dropship Loadout configuration window.
+* `DropshipLoadout.Money`: Overrides the starting budget allocated for purchasing units. Defaults to `-1` (uses player's current treasury money).
+* `DropshipLoadout.PreloadCargo`: If set to `true`, the window preloads the cargo configuration selected in the previous invocation.
+* `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased" (free, does not deduct cost from the new starting money pool, and selling it refunds the cost). If set to `false`, the cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
+* `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money in the loadout screen will be added back to the player's main funds.
+* `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`: A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
+* `DropshipLoadout.AllowableUnitMaximums` / `DropshipLoadout.AllowableUnitMaximumsN`: The maximum allowed quantity that can be purchased for each unit in `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`. Use `-1` for unlimited.
+* `DropshipLoadout.FixedUnits`: Locked units pre-placed in the dropship cargo slots that cannot be sold or moved.
+* `DropshipLoadout.InitialUnits`: Pre-placed units that the player can customize, sell, or refund. They are one-time use and get cleared from the initial pool after launch.
+* `DropshipLoadout.SizeLimit`: Passenger capacity/size limit (uses unit `Size=` tags) allowed per cargo slot. If not set, no size limits are enforced by default.
+* `DropshipLoadout.Theme`: Soundtrack theme to play while the purchasing window is open.
+* `DropshipLoadout.StartEVA`: EVA announcer voice played at window startup.
+* `DropshipLoadout.Palette`: Custom `.pal` file to override the default palette (`DROPSHIP.PAL`) used to render the dialog and cameos.
+* `DropshipLoadout.BackgroundPCX` / `DropshipLoadout.Background`: Custom PCX / SHP background graphics.
+* `DropshipLoadout.UpArrowPCX` / `DropshipLoadout.UpArrow` / `DropshipLoadout.UpArrowLocation`: Navigation scroll arrow graphics and position.
+* `DropshipLoadout.DownArrowPCX` / `DropshipLoadout.DownArrow` / `DropshipLoadout.DownArrowLocation`: Navigation scroll arrow graphics and position.
+* `DropshipLoadout.LoadoutPCX` / `DropshipLoadout.Loadout` / `DropshipLoadout.LoadoutLocation`: Current loadout selection box graphics and position.
+* `DropshipLoadout.PilotLitPCX` / `DropshipLoadout.PilotLit` / `DropshipLoadout.PilotLitLocation`: Status lights graphics and position.
+* `DropshipLoadout.SidebarCameosCount` / `DropshipLoadout.SidebarCameoLocationN`: Layout and coordinates for each sidebar cameo slot.
+* `DropshipLoadout.DropshipCameosCount` / `DropshipLoadout.Dropship0.CameosCount` / `DropshipLoadout.CameoLocationN`: Layout and coordinates for each cargo slot cameo.
+* `DropshipLoadout.DGreenListPCX` / `DropshipLoadout.DGreenList` / `DropshipLoadout.DGreenAnimationsCount` / `DropshipLoadout.DGreenLocationN`: Custom green status indicators and animations.
+* `DropshipLoadout.BuyClickSound` / `DropshipLoadout.SellClickSound` / `DropshipLoadout.ArrowsClickSound` / `DropshipLoadout.StartingDragDropSound` / `DropshipLoadout.EndingDragDropSound`: Audio click/drag sound effects.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                                             ; SuperWeaponType
+DropshipLoadout.OpenWindow=false                     ; boolean
+DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.PreloadCargo=false                   ; boolean
+DropshipLoadout.RememberPurchasedCargo=true          ; boolean
+DropshipLoadout.AddUnusedMoneyToPlayer=false         ; boolean
+DropshipLoadout.AllowableUnits=                      ; List of TechnoTypes
+; or
+DropshipLoadout.AllowableUnitsN=                     ; List of TechnoTypes
+DropshipLoadout.AllowableUnitMaximums=               ; List of integers
+; or
+DropshipLoadout.AllowableUnitMaximumsN=              ; List of integers
+DropshipLoadout.FixedUnits=                          ; List of TechnoTypes
+DropshipLoadout.InitialUnits=                        ; List of TechnoTypes
+DropshipLoadout.SizeLimit=                           ; integer
+DropshipLoadout.Theme=                               ; Theme
+DropshipLoadout.StartEVA=                            ; Vox
+DropshipLoadout.Palette=                             ; filename (.pal)
+DropshipLoadout.BackgroundPCX=                       ; filename (.pcx)
+DropshipLoadout.Background=                          ; filename (.shp)
+DropshipLoadout.UpArrowPCX=                          ; filename (.pcx)
+DropshipLoadout.UpArrow=                             ; filename (.shp)
+DropshipLoadout.UpArrowLocation=                     ; coordinate pair (X,Y)
+DropshipLoadout.DownArrowPCX=                        ; filename (.pcx)
+DropshipLoadout.DownArrow=                           ; filename (.shp)
+DropshipLoadout.DownArrowLocation=                   ; coordinate pair (X,Y)
+DropshipLoadout.LoadoutPCX=                          ; filename (.pcx)
+DropshipLoadout.Loadout=                             ; filename (.shp)
+DropshipLoadout.LoadoutLocation=                     ; coordinate pair (X,Y)
+DropshipLoadout.PilotLitPCX=                         ; filename (.pcx)
+DropshipLoadout.PilotLit=                            ; filename (.shp)
+DropshipLoadout.PilotLitLocation=                    ; coordinate pair (X,Y)
+DropshipLoadout.SidebarCameosCount=                  ; integer
+DropshipLoadout.SidebarCameoLocationN=               ; coordinate pair (X,Y)
+DropshipLoadout.DropshipCameosCount=                 ; integer
+DropshipLoadout.Dropship0.CameosCount=               ; integer
+DropshipLoadout.CameoLocationN=                      ; coordinate pair (X,Y)
+DropshipLoadout.DGreenListPCX=                       ; List of filenames (.pcx)
+DropshipLoadout.DGreenList=                          ; List of filenames (.shp)
+DropshipLoadout.DGreenAnimationsCount=               ; integer
+DropshipLoadout.DGreenLocationN=                     ; coordinate pair (X,Y)
+DropshipLoadout.BuyClickSound=                       ; Sound
+DropshipLoadout.SellClickSound=                      ; Sound
+DropshipLoadout.ArrowsClickSound=                    ; Sound
+DropshipLoadout.StartingDragDropSound=               ; Sound
+DropshipLoadout.EndingDragDropSound=                 ; Sound
+```
+
 ### EMPulse settings
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.

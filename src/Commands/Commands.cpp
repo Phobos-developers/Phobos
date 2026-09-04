@@ -68,15 +68,23 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	return 0;
 }
 
+extern bool IsDropshipLoadoutActive();
+extern void DropshipLoadout_OnMouseWheelUp();
+extern void DropshipLoadout_OnMouseWheelDown();
+
 static void MouseWheelDownCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (IsDropshipLoadoutActive())
+		DropshipLoadout_OnMouseWheelDown();
+	else if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollDown();
 }
 
 static void MouseWheelUpCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (IsDropshipLoadoutActive())
+		DropshipLoadout_OnMouseWheelUp();
+	else if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollUp();
 }
 

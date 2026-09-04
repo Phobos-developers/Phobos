@@ -52,6 +52,48 @@ public:
 
 		int EVAIndex;
 
+		int DropshipLoadout_Theme;
+		long DropshipLoadout_Money;
+		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
+		int DropshipLoadout_StartingDropships;
+		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
+		std::vector<int> DropshipLoadout_Carriers_SizeLimit;
+		bool DropshipLoadout_AddUnusedMoneyToPlayer;
+		bool DropshipLoadout_RememberPurchasedCargo;
+		ConvertClass* DropshipLoadout_Palette;
+		SHPStruct* DropshipLoadout_Background;
+		SHPStruct* DropshipLoadout_UpArrow;
+		SHPStruct* DropshipLoadout_DownArrow;
+		SHPStruct* DropshipLoadout_Loadout;
+		SHPStruct* DropshipLoadout_PilotLit;
+		std::vector<SHPStruct*> DropshipLoadout_DGreenList;
+		PhobosPCXFile DropshipLoadout_BackgroundPCX;
+		PhobosPCXFile DropshipLoadout_UpArrowPCX;
+		PhobosPCXFile DropshipLoadout_DownArrowPCX;
+		std::vector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
+		Point2D DropshipLoadout_LoadoutLocation;
+		std::vector<PhobosPCXFile> DropshipLoadout_PilotLitPCX;
+		Point2D DropshipLoadout_PilotLitLocation;
+		std::vector<std::unique_ptr<std::vector<PhobosPCXFile>>> DropshipLoadout_DGreenListPCX;
+		int DropshipLoadout_DGreenAnimationsCount;
+		std::vector<Point2D> DropshipLoadout_DGreenLocations;
+		Point2D DropshipLoadout_UpArrowLocation;
+		Point2D DropshipLoadout_DownArrowLocation;
+		int DropshipLoadout_SidebarCameosCount;
+		std::vector<Point2D> DropshipLoadout_SidebarCameoLocations;
+		int DropshipLoadout_DropshipCameosCount;
+		std::vector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_FixedUnits;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_InitialUnits;
+		std::map<int, std::vector<TechnoTypeClass*>> DropshipLoadout_AllowableUnitsLists;
+		std::map<int, std::vector<int>> DropshipLoadout_AllowableUnitMaximumsLists;
+		//VocClass DropshipLoadout_SellClickSound;
+		NullableIdx<VocClass> DropshipLoadout_BuyClickSound;
+		NullableIdx<VocClass> DropshipLoadout_SellClickSound;
+		NullableIdx<VocClass> DropshipLoadout_ArrowsClickSound;
+		NullableIdx<VocClass> DropshipLoadout_StartingDragDropSound;
+		NullableIdx<VocClass> DropshipLoadout_EndingDragDropSound;
+		std::vector<int> DropshipLoadout_ActiveTeamSuffixes;
 		int FiringAnimUpdateCount;
 
 		int MissionTimer_Type;
@@ -77,6 +119,47 @@ public:
 			, SpecialTracker {}
 			, FallingDownTracker {}
 			, EVAIndex { -2 }
+			, DropshipLoadout_Theme { -1 }
+			, DropshipLoadout_Money { -1 }
+			, DropshipLoadout_StartEVA {}
+			, DropshipLoadout_StartingDropships { 0 }
+			, DropshipLoadout_Carriers {}
+			, DropshipLoadout_Carriers_SizeLimit {}
+			, DropshipLoadout_AddUnusedMoneyToPlayer { false }
+			, DropshipLoadout_RememberPurchasedCargo { true }
+			, DropshipLoadout_Palette { nullptr }
+			, DropshipLoadout_Background { nullptr }
+			, DropshipLoadout_UpArrow { nullptr }
+			, DropshipLoadout_DownArrow { nullptr }
+			, DropshipLoadout_Loadout { nullptr }
+			, DropshipLoadout_PilotLit { nullptr }
+			, DropshipLoadout_DGreenList {}
+			, DropshipLoadout_BackgroundPCX {}
+			, DropshipLoadout_UpArrowPCX {}
+			, DropshipLoadout_DownArrowPCX {}
+			, DropshipLoadout_LoadoutPCX {}
+			, DropshipLoadout_LoadoutLocation {}
+			, DropshipLoadout_PilotLitPCX {}
+			, DropshipLoadout_PilotLitLocation {}
+			, DropshipLoadout_DGreenListPCX {}
+			, DropshipLoadout_DGreenAnimationsCount { 0 }
+			, DropshipLoadout_DGreenLocations {}
+			, DropshipLoadout_UpArrowLocation { Point2D::Empty }
+			, DropshipLoadout_DownArrowLocation { Point2D::Empty }
+			, DropshipLoadout_SidebarCameosCount { 0 }
+			, DropshipLoadout_SidebarCameoLocations {}
+			, DropshipLoadout_DropshipCameosCount { 0 }
+			, DropshipLoadout_DropshipCameoLocations {}
+			, DropshipLoadout_FixedUnits {}
+			, DropshipLoadout_InitialUnits {}
+			, DropshipLoadout_AllowableUnitsLists {}
+			, DropshipLoadout_AllowableUnitMaximumsLists {}
+			, DropshipLoadout_BuyClickSound {}
+			, DropshipLoadout_SellClickSound {}
+			, DropshipLoadout_ArrowsClickSound {}
+			, DropshipLoadout_StartingDragDropSound {}
+			, DropshipLoadout_EndingDragDropSound {}
+			, DropshipLoadout_ActiveTeamSuffixes {}
 			, FiringAnimUpdateCount { 0 }
 			, MissionTimer_Type { 0 }
 			, MissionTimer_Variable { 0 }

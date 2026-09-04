@@ -917,6 +917,45 @@ ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 ...
 ```
 
+### `900` Open Dropship Loadout Window
+
+- Opens the customizable Dropship Loadout user interface window for the current player.
+- **Note**: The action is only executed in singleplayer Campaign or Skirmish game modes.
+- `AllowableUnitsIndex` - The index of the allowable units list (0-based) to use for unit selection. If set to `0`, the default allowable units are used. The lists must be declared under `DropshipLoadout.AllowableUnitsN` (where `N` is the index).
+- `IgnoreFixedUnits` - A boolean (`0` or `1`). If set to `1`, any fixed units defined for the dropship loadout are ignored and will not be preloaded/enforced in the loadout window.
+- `PreloadCargo` - A boolean (`0` or `1`). If set to `1`, the window will load the previous cargo configuration if available. If set to `0`, the window starts empty.
+- `AddUnusedMoneyToPlayer` - A boolean (`0` or `1`). If set to `1`, any leftover money from the loadout screen is added back to the player's main funds. If set to `0`, the unused money is lost.
+- `StartingMoney` - The amount of money allocated for selecting units in this loadout window.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],900,0,[AllowableUnitsIndex],[IgnoreFixedUnits],[PreloadCargo],[AddUnusedMoneyToPlayer],[StartingMoney],A,[ActionX]
+...
+```
+
+### `901` Create Dropship Loadout Transport
+
+- Spawns the transport carrier corresponding to a specific dropship index with the player's customized dropship loadout cargo.
+- The transport carrier is created at the waypoint defined in the Action's `TeamType` (i.e. the `Waypoint` tag of the `TeamType`).
+- The team created uses the script defined in the `TeamType`.
+- If the `TeamType` has a `VeteranLevel` specified (`2` for Veteran, `3` for Elite), trainable cargo units will be promoted to that level. Already higher veterancy units are not demoted.
+- **Note**: The action is only executed in singleplayer Campaign or Skirmish game modes.
+- `TeamType` - The TeamType to use for spawning the transport. The transport carrier will be added to this team and will follow its script. The spawn location is determined by the `Waypoint=` setting of this TeamType.
+- `DropshipIndex` - The index of the dropship loadout (0-based) to spawn.
+- `OverwriteOwner` - A boolean (`0` or `1`). If set to `1`, the owner of the spawned transport carrier is overwritten using the `OwnerIndex` parameter. If set to `0`, the owner will be the house that triggered the action.
+- `OwnerIndex` - The house/country index (if `OverwriteOwner` is `1`) to set as the owner of the spawned transport.
+- `PersistentCargo` - A boolean (`0` or `1`). If set to `0`, the cargo configuration for this dropship index is cleared after spawning (making it a one-time use transport). If set to `1`, the cargo configuration is preserved and can be spawned again.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],901,1,[TeamType],[DropshipIndex],[OverwriteOwner],[OwnerIndex],[PersistentCargo],A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation

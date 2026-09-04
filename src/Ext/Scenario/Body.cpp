@@ -4,6 +4,8 @@
 
 #include <Ext/House/Body.h>
 
+extern void ConfigureTemporarySWClass(int index, TechnoTypeClass* pTransporterType, const CellStruct& cell, const CellStruct& spawnCell);
+
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 bool ScenarioExt::CellParsed = false;
@@ -167,6 +169,480 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->ShowBriefing = pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing);
 		this->BriefingTheme = pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme);
 	}
+
+	// Dropship loadout stuff
+	const int keyCount = pINI->GetKeyCount(GameStrings::Basic);
+	this->DropshipLoadout_Theme = pINI->ReadTheme(GameStrings::Basic, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
+	this->DropshipLoadout_Money = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.Money", this->DropshipLoadout_Money);
+	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
+	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
+	this->DropshipLoadout_RememberPurchasedCargo = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.RememberPurchasedCargo", this->DropshipLoadout_RememberPurchasedCargo);
+	this->DropshipLoadout_StartingDropships = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.StartingDropships", ScenarioClass::Instance->StartingDropships);
+
+	// Custom Dropship loadout images, in SHP format
+	char* context = nullptr;
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Background", "", Phobos::readBuffer) != 0)
+	{
+		char filename[260];
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, this->DropshipLoadout_StartingDropships);
+		this->DropshipLoadout_Background = FileSystem::LoadSHPFile(_strdup(filename));
+	}
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.UpArrow", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_UpArrow = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DownArrow", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_DownArrow = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Loadout", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Loadout = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.PilotLit", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_PilotLit = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DGreenList", "", Phobos::readBuffer);
+
+	this->DropshipLoadout_DGreenList.clear();
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		this->DropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile(cur));
+	}
+
+	// Custom Dropship loadout images, in PCX format
+	context = nullptr;
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
+	{
+		char filename[260];
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, this->DropshipLoadout_StartingDropships);
+		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
+	}
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.UpArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_UpArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DownArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_DownArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.LoadoutPCX", "", Phobos::readBuffer);
+	auto pAnimationLoadoutVector = GeneralUtils::GetAnimationPCX(Phobos::readBuffer);
+
+	if (pAnimationLoadoutVector)
+		this->DropshipLoadout_LoadoutPCX = std::move(*pAnimationLoadoutVector);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.PilotLitPCX", "", Phobos::readBuffer);
+	auto pAnimationPilotLitVector = GeneralUtils::GetAnimationPCX(Phobos::readBuffer);
+
+	if (pAnimationPilotLitVector)
+		this->DropshipLoadout_PilotLitPCX = std::move(*pAnimationPilotLitVector);
+
+	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DGreenListPCX", "", Phobos::readBuffer);
+
+	this->DropshipLoadout_DGreenListPCX.clear();
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+	}
+
+	this->DropshipLoadout_DGreenAnimationsCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.DGreenAnimationsCount", 0);
+
+	this->DropshipLoadout_DGreenLocations.clear();
+
+	for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount; i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
+		pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+		this->DropshipLoadout_DGreenLocations.push_back(location);
+	}
+
+	// List of Dropship transports used in the map action
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
+
+	this->DropshipLoadout_Carriers.clear();
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		TechnoTypeClass* buffer;
+
+		if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+			this->DropshipLoadout_Carriers.emplace_back(buffer);
+		else
+			Debug::Log("[Developer warning] DropshipLoadout.Carriers (Elements: %d): Error parsing [%s] -> Skipped\n", this->DropshipLoadout_Carriers.size(), cur);
+	}
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers.SizeLimit", "", Phobos::readBuffer);
+
+	this->DropshipLoadout_Carriers_SizeLimit.clear();
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		int limit;
+
+		if (Parser<int>::TryParse(cur, &limit))
+			this->DropshipLoadout_Carriers_SizeLimit.emplace_back(limit);
+		else
+			Debug::Log("[Developer warning] DropshipLoadout.Carriers.SizeLimit (Elements: %d): Error parsing [%s] -> Skipped\n", this->DropshipLoadout_Carriers_SizeLimit.size(), cur);
+	}
+
+	// Custom Dropship Loadout coordinates
+	Point2D defaultEmptyLocation = { Point2D::Empty };
+	pINI->ReadPoint2D(DropshipLoadout_LoadoutLocation, GameStrings::Basic, "DropshipLoadout.LoadoutLocation", defaultEmptyLocation);
+	pINI->ReadPoint2D(DropshipLoadout_PilotLitLocation, GameStrings::Basic, "DropshipLoadout.PilotLitLocation", defaultEmptyLocation);
+	pINI->ReadPoint2D(DropshipLoadout_UpArrowLocation, GameStrings::Basic, "DropshipLoadout.UpArrowLocation", defaultEmptyLocation);
+	pINI->ReadPoint2D(DropshipLoadout_DownArrowLocation, GameStrings::Basic, "DropshipLoadout.DownArrowLocation", defaultEmptyLocation);
+
+	this->DropshipLoadout_SidebarCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.SidebarCameosCount", 0);
+
+	this->DropshipLoadout_SidebarCameoLocations.clear();
+
+	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
+		pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+		this->DropshipLoadout_SidebarCameoLocations.push_back(location);
+	}
+
+	this->DropshipLoadout_DropshipCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.DropshipCameosCount", 0);
+
+	this->DropshipLoadout_DropshipCameoLocations.clear();
+	{
+		int maxDropshipIdx = -1;
+
+		for (int k = 0; k < keyCount; ++k)
+		{
+			const char* pKeyName = pINI->GetKeyName(GameStrings::Basic, k);
+			int dropshipIdx = -1;
+			int cameoIdx = -1;
+
+			if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameoLocation%d", &dropshipIdx, &cameoIdx) == 2)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameoLocation%d", dropshipIdx, cameoIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (dropshipIdx > maxDropshipIdx)
+						maxDropshipIdx = dropshipIdx;
+				}
+			}
+			else if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.CameosCount", &dropshipIdx) == 1)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.CameosCount", dropshipIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (dropshipIdx > maxDropshipIdx)
+						maxDropshipIdx = dropshipIdx;
+				}
+			}
+		}
+
+		int limit = this->DropshipLoadout_StartingDropships;
+
+		if (maxDropshipIdx + 1 > limit)
+			limit = maxDropshipIdx + 1;
+
+		if (limit > 0)
+		{
+			for (int i = 0; i < limit; i++)
+			{
+				char countKey[256];
+				_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship%d.CameosCount", i);
+				int defaultCount = this->DropshipLoadout_DropshipCameosCount > 0 ? this->DropshipLoadout_DropshipCameosCount : 5;
+				int cameosCount = pINI->ReadInteger(GameStrings::Basic, countKey, defaultCount);
+
+				if (cameosCount < 0)
+					cameosCount = 0;
+
+				auto& locations = this->DropshipLoadout_DropshipCameoLocations.emplace_back();
+
+				for (int j = 0; j < cameosCount; j++)
+				{
+					char tempBuffer[256];
+					Point2D location = Point2D::Empty;
+
+					_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship%d.CameoLocation%d", i, j);
+					pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+					locations.push_back(location);
+				}
+			}
+		}
+	}
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BuyClickSound", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_BuyClickSound = VocClass::FindIndex(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.SellClickSound", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_SellClickSound = VocClass::FindIndex(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.ArrowsClickSound", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_ArrowsClickSound = VocClass::FindIndex(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.StartingDragDropSound", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_StartingDragDropSound = VocClass::FindIndex(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.EndingDragDropSound", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_EndingDragDropSound = VocClass::FindIndex(Phobos::readBuffer);
+
+	// Parse multiple AllowableUnits lists
+	this->DropshipLoadout_AllowableUnitsLists.clear();
+	this->DropshipLoadout_AllowableUnitMaximumsLists.clear();
+
+	std::vector<int> parsedIndices;
+	parsedIndices.push_back(0);
+
+	for (int k = 0; k < keyCount; ++k)
+	{
+		const char* pKeyName = pINI->GetKeyName(GameStrings::Basic, k);
+		int idx = -1;
+
+		if (sscanf_s(pKeyName, "DropshipLoadout.AllowableUnits%d", &idx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.AllowableUnits%d", idx);
+
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (std::find(parsedIndices.begin(), parsedIndices.end(), idx) == parsedIndices.end())
+					parsedIndices.push_back(idx);
+			}
+		}
+		else if (sscanf_s(pKeyName, "DropshipLoadout.AllowableUnitMaximums%d", &idx) == 1)
+		{
+			char expectedKey[256];
+			_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.AllowableUnitMaximums%d", idx);
+
+			if (strcmp(pKeyName, expectedKey) == 0)
+			{
+				if (std::find(parsedIndices.begin(), parsedIndices.end(), idx) == parsedIndices.end())
+					parsedIndices.push_back(idx);
+			}
+		}
+	}
+
+	for (int i : parsedIndices)
+	{
+		std::vector<TechnoTypeClass*> unitsList;
+		std::vector<int> maxList;
+		bool unitsSet = false;
+		bool maxSet = false;
+
+		if (i == 0)
+		{
+			if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.AllowableUnits", "", Phobos::readBuffer) > 0)
+			{
+				unitsList.clear();
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					if (auto pType = TechnoTypeClass::Find(cur))
+						unitsList.push_back(pType);
+				}
+
+				unitsSet = true;
+			}
+			else if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.AllowableUnits0", "", Phobos::readBuffer) > 0)
+			{
+				unitsList.clear();
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					if (auto pType = TechnoTypeClass::Find(cur))
+						unitsList.push_back(pType);
+				}
+
+				unitsSet = true;
+			}
+
+			if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.AllowableUnitMaximums", "", Phobos::readBuffer) > 0)
+			{
+				maxList.clear();
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					int maxCount;
+
+					if (Parser<int>::TryParse(cur, &maxCount))
+						maxList.push_back(maxCount);
+				}
+
+				maxSet = true;
+			}
+			else if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.AllowableUnitMaximums0", "", Phobos::readBuffer) > 0)
+			{
+				maxList.clear();
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					int maxCount;
+
+					if (Parser<int>::TryParse(cur, &maxCount))
+						maxList.push_back(maxCount);
+				}
+
+				maxSet = true;
+			}
+		}
+		else
+		{
+			char keyUnitsOverride[256];
+			_snprintf_s(keyUnitsOverride, sizeof(keyUnitsOverride), "DropshipLoadout.AllowableUnits%d", i);
+
+			if (pINI->ReadString(GameStrings::Basic, keyUnitsOverride, "", Phobos::readBuffer) > 0)
+			{
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					if (auto pType = TechnoTypeClass::Find(cur))
+						unitsList.push_back(pType);
+				}
+
+				unitsSet = true;
+			}
+
+			char keyMaximumsOverride[256];
+			_snprintf_s(keyMaximumsOverride, sizeof(keyMaximumsOverride), "DropshipLoadout.AllowableUnitMaximums%d", i);
+
+			if (pINI->ReadString(GameStrings::Basic, keyMaximumsOverride, "", Phobos::readBuffer) > 0)
+			{
+				char* ctx = nullptr;
+
+				for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+				{
+					int maxCount;
+
+					if (Parser<int>::TryParse(cur, &maxCount))
+						maxList.push_back(maxCount);
+				}
+
+				maxSet = true;
+			}
+		}
+
+		if (unitsSet)
+			this->DropshipLoadout_AllowableUnitsLists[i] = std::move(unitsList);
+
+		if (maxSet)
+			this->DropshipLoadout_AllowableUnitMaximumsLists[i] = std::move(maxList);
+	}
+
+	// Parse FixedUnits per dropship (supports non-contiguous indices e.g. Dropship0 and Dropship2 without Dropship1)
+	this->DropshipLoadout_FixedUnits.clear();
+	{
+		std::map<int, std::vector<TechnoTypeClass*>> parsedFixedUnits;
+		int maxIdx = -1;
+
+		for (int k = 0; k < keyCount; ++k)
+		{
+			const char* pKeyName = pINI->GetKeyName(GameStrings::Basic, k);
+			int dropshipIdx = -1;
+
+			if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.FixedUnits", &dropshipIdx) == 1)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.FixedUnits", dropshipIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (pINI->ReadString(GameStrings::Basic, pKeyName, "", Phobos::readBuffer) > 0)
+					{
+						char* ctx = nullptr;
+						std::vector<TechnoTypeClass*> list;
+
+						for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+						{
+							if (auto pType = TechnoTypeClass::Find(cur))
+								list.push_back(pType);
+						}
+
+						parsedFixedUnits[dropshipIdx] = std::move(list);
+
+						if (dropshipIdx > maxIdx)
+							maxIdx = dropshipIdx;
+					}
+				}
+			}
+		}
+
+		if (maxIdx != -1)
+		{
+			this->DropshipLoadout_FixedUnits.resize(maxIdx + 1);
+
+			for (auto& [idx, list] : parsedFixedUnits)
+			{
+				this->DropshipLoadout_FixedUnits[idx] = std::move(list);
+			}
+		}
+	}
+
+	// Parse InitialUnits per dropship (supports non-contiguous indices e.g. Dropship0 and Dropship2 without Dropship1)
+	this->DropshipLoadout_InitialUnits.clear();
+	{
+		std::map<int, std::vector<TechnoTypeClass*>> parsedInitialUnits;
+		int maxIdx = -1;
+
+		for (int k = 0; k < keyCount; ++k)
+		{
+			const char* pKeyName = pINI->GetKeyName(GameStrings::Basic, k);
+			int dropshipIdx = -1;
+
+			if (sscanf_s(pKeyName, "DropshipLoadout.Dropship%d.InitialUnits", &dropshipIdx) == 1)
+			{
+				char expectedKey[256];
+				_snprintf_s(expectedKey, sizeof(expectedKey), "DropshipLoadout.Dropship%d.InitialUnits", dropshipIdx);
+
+				if (strcmp(pKeyName, expectedKey) == 0)
+				{
+					if (pINI->ReadString(GameStrings::Basic, pKeyName, "", Phobos::readBuffer) > 0)
+					{
+						char* ctx = nullptr;
+						std::vector<TechnoTypeClass*> list;
+
+						for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+						{
+							if (auto pType = TechnoTypeClass::Find(cur))
+								list.push_back(pType);
+						}
+
+						parsedInitialUnits[dropshipIdx] = std::move(list);
+
+						if (dropshipIdx > maxIdx)
+							maxIdx = dropshipIdx;
+					}
+				}
+			}
+		}
+
+		if (maxIdx != -1)
+		{
+			this->DropshipLoadout_InitialUnits.resize(maxIdx + 1);
+
+			for (auto& [idx, list] : parsedInitialUnits)
+			{
+				this->DropshipLoadout_InitialUnits[idx] = std::move(list);
+			}
+		}
+	}
 }
 
 template <typename T>
@@ -192,17 +668,83 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpecialTracker)
 		.Process(this->FallingDownTracker)
 		.Process(this->EVAIndex)
+		.Process(this->DropshipLoadout_Theme)
+		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_StartEVA)
+		.Process(this->DropshipLoadout_StartingDropships)
+		.Process(this->DropshipLoadout_Carriers)
+		.Process(this->DropshipLoadout_Carriers_SizeLimit)
+		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
+		.Process(this->DropshipLoadout_RememberPurchasedCargo)
+		.Process(this->DropshipLoadout_Palette)
+		.Process(this->DropshipLoadout_Background)
+		.Process(this->DropshipLoadout_UpArrow)
+		.Process(this->DropshipLoadout_DownArrow)
+		.Process(this->DropshipLoadout_Loadout)
+		.Process(this->DropshipLoadout_LoadoutLocation)
+		.Process(this->DropshipLoadout_PilotLit)
+		.Process(this->DropshipLoadout_PilotLitLocation)
+		.Process(this->DropshipLoadout_DGreenList)
+		.Process(this->DropshipLoadout_BackgroundPCX)
+		.Process(this->DropshipLoadout_UpArrowPCX)
+		.Process(this->DropshipLoadout_DownArrowPCX)
+		.Process(this->DropshipLoadout_LoadoutPCX)
+		.Process(this->DropshipLoadout_PilotLitPCX)
+		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_DGreenAnimationsCount)
+		.Process(this->DropshipLoadout_DGreenLocations)
+		.Process(this->DropshipLoadout_UpArrowLocation)
+		.Process(this->DropshipLoadout_DownArrowLocation)
+		.Process(this->DropshipLoadout_SidebarCameosCount)
+		.Process(this->DropshipLoadout_SidebarCameoLocations)
+		.Process(this->DropshipLoadout_DropshipCameosCount)
+		.Process(this->DropshipLoadout_DropshipCameoLocations)
+		.Process(this->DropshipLoadout_BuyClickSound)
+		.Process(this->DropshipLoadout_SellClickSound)
+		.Process(this->DropshipLoadout_ArrowsClickSound)
+		.Process(this->DropshipLoadout_StartingDragDropSound)
+		.Process(this->DropshipLoadout_EndingDragDropSound)
+		.Process(this->DropshipLoadout_AllowableUnitsLists)
+		.Process(this->DropshipLoadout_AllowableUnitMaximumsLists)
+		.Process(this->DropshipLoadout_ActiveTeamSuffixes)
 		.Process(this->FiringAnimUpdateCount)
 		.Process(this->MissionTimer_Type)
 		.Process(this->MissionTimer_Variable)
 		.Process(this->MissionTimer_Reverse)
 		;
+
+	int numDropships = (int)this->DropshipLoadout_FixedUnits.size();
+	Stm.Process(numDropships);
+
+	if constexpr (std::is_same_v<T, PhobosStreamReader>)
+		this->DropshipLoadout_FixedUnits.resize(numDropships);
+
+	for (int i = 0; i < numDropships; ++i)
+	{
+		Stm.Process(this->DropshipLoadout_FixedUnits[i]);
+	}
+
+	int numInitialDropships = (int)this->DropshipLoadout_InitialUnits.size();
+	Stm.Process(numInitialDropships);
+
+	if constexpr (std::is_same_v<T, PhobosStreamReader>)
+		this->DropshipLoadout_InitialUnits.resize(numInitialDropships);
+
+	for (int i = 0; i < numInitialDropships; ++i)
+	{
+		Stm.Process(this->DropshipLoadout_InitialUnits[i]);
+	}
 }
 
 void ScenarioExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<ScenarioClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	for (int suffix : this->DropshipLoadout_ActiveTeamSuffixes)
+	{
+		ConfigureTemporarySWClass(suffix, nullptr, CellStruct::Empty, CellStruct::Empty);
+	}
 }
 
 void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
