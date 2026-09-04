@@ -3130,6 +3130,11 @@ msgid ""
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题（by NetsuNegi）"
 
 msgid ""
+"Fixed the bug that `Temporal=yes` warhead will cause target building "
+"animation poweroff (by NetsuNegi)"
+msgstr "修复了 `Temporal=yes` 弹头会触发目标建筑动画停电的 Bug（by NetsuNegi）"
+
+msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it (by NetsuNegi)"
 msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug（by NetsuNegi）"
