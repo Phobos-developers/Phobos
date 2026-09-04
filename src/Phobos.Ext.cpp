@@ -8,6 +8,7 @@
 #include <Ext/Unit/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/EBolt/Body.h>
+#include <Ext/LaserDraw/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
@@ -316,6 +317,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	WarheadTypeExt,
 	WeaponTypeExt,
 	ParticleTypeExt,
+	LaserDrawExt,
 	// New classes
 	ShieldTypeClass,
 	LaserTrailTypeClass,
