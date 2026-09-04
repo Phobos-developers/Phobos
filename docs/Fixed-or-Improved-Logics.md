@@ -52,7 +52,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
-- Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
@@ -1078,6 +1077,28 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]                      ; AnimationType
 Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
+```
+
+### Draw offset customization
+
+- `XDrawOffset` can be used to adjust horizontal/X axis position of the animation.
+- `X/YDrawOffset.ApplyBracketHeight` makes X/Y axis position follow it's owner object's selection bracket width/height (for buildings, this is based on `Height` and `Foundation`, for others it is influenced by `PixelSelectionBracketDelta` for Y axis and hardcoded bracket width for X axis) if it is attached to one.
+  - By default Y axis shift will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
+  - For X axis the shift direction can also be switched by setting `XDrawOffset.InvertBracketShift=true`. The default is positive shift, towards right-hand side of the screen.
+  - The bracket-based shift can be further adjusted with offset from `X/YDrawOffset.BracketAdjust`, overridden by `X/YDrawOffset.BracketAdjust.Buildings` for buildings only.
+ 
+In `artmd.ini`:
+```ini
+[SOMEANIM]                            ; AnimationType
+XDrawOffset=0                         ; integer, pixels relative to default
+XDrawOffset.ApplyBracketHeight=false  ; boolean
+XDrawOffset.InvertBracketShift=false  ; boolean
+XDrawOffset.BracketAdjust=0           ; integer, pixels relative to default
+XDrawOffset.BracketAdjust.Buildings=  ; integer, pixels relative to default
+YDrawOffset.ApplyBracketHeight=false  ; boolean
+YDrawOffset.InvertBracketShift=false  ; boolean
+YDrawOffset.BracketAdjust=0           ; integer, pixels relative to default
+YDrawOffset.BracketAdjust.Buildings=  ; integer, pixels relative to default
 ```
 
 ### Fire animations spawned by Scorch & Flamer
