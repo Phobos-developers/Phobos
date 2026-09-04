@@ -332,6 +332,7 @@ HideShakeEffects=false           ; boolean
   10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+  10105=Repair Destroyed Bridge,20,0,1,[LONG DESC]
   14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
@@ -591,7 +592,7 @@ HideShakeEffects=false           ; boolean
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
 - AutoDeath upon ownership change (by Ollerus)
 - [Script Action 14004 for forcing all new actions to target only the main owner's enemy](AI-Scripting-and-Mapping.md#force-global-onlytargethouseenemy-value-in-teams-for-new-attack-move-actions-introduced-by-phobos) (by FS-21)
-- [Allow merging AOE damage to buildings into one](New-or-Enhanced-Logics.md#allow-merging-aoe-damage-to-buildings-into-one) (by CrimRecya)
+- [Script action for repairing destroyed bridges](AI-Scripting-and-Mapping.md#repair-destroyed-bridge) (by FS-21)
 - [Allow customizing whether to synchronously change the owner of the RadioLink-linked units when the owner of a building changes](Fixed-or-Improved-Logics.md#custom-whether-to-synchronously-change-the-owner-of-the-radiolink-linked-units-when-the-owner-of-a-building-changes) (by TaranDahl)
 - [Toggle per-target warhead effects apply timing](New-or-Enhanced-Logics.md#toggle-per-target-warhead-effects-apply-timing) (by TaranDahl)
 - [Extra range for chasing and pre-firing](New-or-Enhanced-Logics.md#extra-range) (by TaranDahl)

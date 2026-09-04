@@ -159,6 +159,7 @@ This page lists all the individual contributions to the project by their author.
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
+  - Script action for repairing destroyed bridges
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
 - **Starkku**:
