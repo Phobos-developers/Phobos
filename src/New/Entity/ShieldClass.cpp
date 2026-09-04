@@ -134,8 +134,13 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 	if (pFromShield)
 	{
+		// it might already have its own shield, but still change its type for later check
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
-		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
+
+		if (!pToExt->Shield)
+			pToExt->Shield = std::make_unique<ShieldClass>(pTo);
+		else
+			pToExt->Shield->Type = pToExt->CurrentShieldType;
 
 		// handle shield conversion and tint
 		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), pFromShield);
