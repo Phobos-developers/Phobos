@@ -130,15 +130,16 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	const auto pFromExt = TechnoExt::Fetch(pFrom);
 	const auto pToExt = TechnoExt::Fetch(pTo);
+	const auto pFromShield = pFromExt->Shield.get();
 
-	if (pFromExt->Shield)
+	if (pFromShield)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		pToExt->Shield->HP = pFromExt->Shield->HP;
+		pToExt->Shield->HP = pFromShield->HP;
 
 		// handle shield conversion and tint
-		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), true);
+		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), pFromShield->HP <= 0 ? pFromShield->Timers.Respawn.GetTimeLeft() : pFromShield->Timers.SelfHealing.GetTimeLeft());
 
 		if (pToExt->Shield)
 			pToExt->Shield->UpdateTint();
@@ -619,7 +620,7 @@ void ShieldClass::TemporalCheck()
 }
 
 // Is used for DeploysInto/UndeploysInto and Type conversion
-void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, bool renew)
+void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, int renew)
 {
 	const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 	const auto pOldType = this->Type;
@@ -687,21 +688,34 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, bool renew)
 		}
 
 		const int newRate = respawn ? pNewType->Respawn_Rate : pNewType->SelfHealing_Rate;
+		const auto timerCombatRestart = respawn ? &this->Timers.Respawn_CombatRestart : &this->Timers.SelfHealing_CombatRestart;
 
-		if (!renew && respawn ? pOldType->Respawn : pOldType->SelfHealing)
+		if (respawn ? pOldType->Respawn : pOldType->SelfHealing)
 		{
 			const int oldRate = respawn ? pOldType->Respawn_Rate : pOldType->SelfHealing_Rate;
 
 			// Recalculate timer based on both old and new shield types
 			if (oldRate > 0)
-				timer->TimeLeft = static_cast<int>((double)timer->GetTimeLeft() * newRate / oldRate);
+			{
+				// conversion between unit and building, which is a new shield entity
+				// copy the value from the old shield for calculation
+				if (renew > 0)
+				{
+					if (!timerCombatRestart->InProgress())
+						timer->Start(static_cast<int>((double)renew * newRate / oldRate));
+					else
+						timer->TimeLeft = static_cast<int>((double)renew * newRate / oldRate);
+				}
+				else
+				{
+					timer->TimeLeft = static_cast<int>((double)timer->GetTimeLeft() * newRate / oldRate);
+				}
+			}
 		}
 		// Handle the case where old shield type doesn't have respawn or self heal
 		else
 		{
 			// Restart the timer if it's not in combat status
-			const auto timerCombatRestart = respawn ? &this->Timers.Respawn_CombatRestart : &this->Timers.SelfHealing_CombatRestart;
-
 			if (!timerCombatRestart->InProgress())
 				timer->Start(newRate);
 		}
