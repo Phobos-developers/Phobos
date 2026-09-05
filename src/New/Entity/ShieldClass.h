@@ -25,6 +25,7 @@ public:
 	void SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
 	void SetRespawnRestartInCombat();
+	void SetSelfHealingRestartInCombat();
 
 	void KillAnim()
 	{

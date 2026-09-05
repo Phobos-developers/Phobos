@@ -144,6 +144,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
+			const int nDamage = damage;
+
 			if (pShieldData->IsActive())
 			{
 				nDamageLeft = pShieldData->ReceiveDamage(args);
@@ -159,9 +161,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-			else if (pShieldData->GetHP() <= 0)
+
+			// update RestartInCombat timers regardless of the shield is active or not
+			if (nDamage > 0)
 			{
 				pShieldData->SetRespawnRestartInCombat();
+				pShieldData->SetSelfHealingRestartInCombat();
 			}
 		}
 
