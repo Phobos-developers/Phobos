@@ -301,7 +301,6 @@ public:
 	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
-	void LoadFromINIByHouse(CCINIClass* pINI, const char* pSection, const char* pType);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 

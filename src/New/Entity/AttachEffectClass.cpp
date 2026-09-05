@@ -258,7 +258,7 @@ void AttachEffectClass::AI()
 	{
 		const int delay = this->Delay;
 
-		if (!this->IsSelfOwned() || delay < 0)
+		if (delay < 0)
 			return;
 
 		this->CurrentDelay = delay;
@@ -505,19 +505,6 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		if (this->CanShowAnim())
 			this->CreateAnim();
 	}
-}
-
-bool AttachEffectClass::ResetIfRecreatable()
-{
-	if (!this->IsSelfOwned() || this->RecreationDelay < 0)
-		return false;
-
-	this->KillAnim();
-	this->Duration = 0;
-	this->CurrentDelay = this->RecreationDelay;
-	this->ShouldRefreshDuration = true;
-
-	return true;
 }
 
 bool AttachEffectClass::ShouldBeDiscardedNow()
@@ -1194,6 +1181,11 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		{
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
+
+			// Only house-based AE has delays now
+			info.Delay = attachEffect->Delay;
+			info.InitialDelay = attachEffect->InitialDelay;
+			info.RecreationDelay = attachEffect->RecreationDelay;
 
 			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, attachEffect->IsSelfOwned(), false))
 				pAE->Duration = attachEffect->Duration;

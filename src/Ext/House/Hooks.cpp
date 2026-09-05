@@ -340,26 +340,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	const auto pNewOwnerTypeExt = HouseTypeExt::Fetch(pNewOwner->Type);
 
 	if (pNewOwnerTypeExt->AttachEffects_AttachOnOwnerChange.Get(RulesExt::Global()->AttachEffects_AttachOnOwnerChange))
-	{
-		switch (pType->WhatAmI())
-		{
-		case AbstractType::BuildingType:
-			if (static_cast<BuildingTypeClass*>(pType)->BuildCat == BuildCat::Combat)
-				AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects_Buildings, false, true);
-			else
-				AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects_Defenses, false, true);
-			break;
-		case AbstractType::InfantryType:
-			AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects_Buildings, false, true);
-			break;
-		case AbstractType::UnitType:
-			AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects_Units, false, true);
-			break;
-		case AbstractType::AircraftType:
-			AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects_Aircraft, false, true);
-			break;
-		}
-	}
+		AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects, false, true);
 
 	return 0;
 }

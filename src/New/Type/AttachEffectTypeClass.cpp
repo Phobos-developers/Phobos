@@ -506,27 +506,6 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 }
 
-void AEAttachInfoTypeClass::LoadFromINIByHouse(CCINIClass* pINI, const char* pSection, const char* pType)
-{
-	INI_EX exINI(pINI);
-	char tempBuffer[40];
-
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.AttachTypes", pType);
-	this->AttachTypes.Read(exINI, pSection, tempBuffer);
-
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.DurationOverrides", pType);
-	this->DurationOverrides.Read(exINI, pSection, tempBuffer);
-
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.Delays", pType);
-	this->Delays.Read(exINI, pSection, tempBuffer);
-
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.InitialDelays", pType);
-	this->InitialDelays.Read(exINI, pSection, tempBuffer);
-
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.RecreationDelays", pType);
-	this->RecreationDelays.Read(exINI, pSection, tempBuffer);
-}
-
 AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool hasDelay) const
 {
 	AEAttachParams info { };
@@ -551,6 +530,9 @@ AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool h
 		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
 		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
 		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
+
+		// set Delay to -1 so it can't be renew
+		info.Delay = -1;
 	}
 
 	return info;

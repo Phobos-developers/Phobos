@@ -87,12 +87,9 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
     - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
 
-- AttachEffectTypes can be attached to corresponding TechnoTypes of a specific Country when they're created using `AttachEffect.Buildings/Defenses/Infantry/Units/Aircraft.AttachTypes`.
-  - `AttachEffect.Buildings/Defenses/Infantry/Units/Aircraft.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
-  - `AttachEffect.Buildings/Defenses/Infantry/Units/Aircraft.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
-  - `AttachEffect.Buildings/Defenses/Infantry/Units/Aircraft.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
-  - `AttachEffect.Buildings/Defenses/Infantry/Units/Aircraft.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
-    - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
+- AttachEffectTypes can be attached to TechnoTypes of a specific Country when they're created using `AttachEffect.AttachTypes`.
+  - `AffectTypes`, `IgnoreTypes` and `AffectsTarget` of the attached effect can be used to define which TechnoType can these effects attached to.
+  - `AttachEffect.DurationOverrides`, `AttachEffect.Delays`, `AttachEffect.InitialDelays` and `AttachEffect.RecreationDelays` have the same functionalities like those tags on TechnoTypes.
   - `AttachEffect.AttachOnOwnerChange` can be used to make the Country's AttachEffectTypes also attach to a TechnoType once it's changed to this house.
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
@@ -120,6 +117,7 @@ DiscardOn.MoveBasedOnDestination=false             ; boolean
 DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
 OpenTopped.UseTransportRangeModifiers=false        ; boolean
 OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+AttachEffect.AttachOnOwnerChange=false             ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -216,31 +214,12 @@ OpenTopped.UseTransportRangeModifiers=             ; boolean, default to [Genera
 OpenTopped.CheckTransportDisableWeapons=           ; boolean, default to [General] -> OpenTopped.CheckTransportDisableWeapons
 
 [SOMECOUNTRY]                                      ; Country
-AttachEffect.Buildings.AttachTypes=                ; List of AttachEffectTypes
-AttachEffect.Buildings.DurationOverrides=          ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Buildings.Delays=                     ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Buildings.InitialDelays=              ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Buildings.RecreationDelays=           ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Defenses.AttachTypes=                 ; List of AttachEffectTypes
-AttachEffect.Defenses.DurationOverrides=           ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Defenses.Delays=                      ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Defenses.InitialDelays=               ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Defenses.RecreationDelays=            ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Infantry.AttachTypes=                 ; List of AttachEffectTypes
-AttachEffect.Infantry.DurationOverrides=           ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Infantry.Delays=                      ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Infantry.InitialDelays=               ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Infantry.RecreationDelays=            ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Units.AttachTypes=                    ; List of AttachEffectTypes
-AttachEffect.Units.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Units.Delays=                         ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Units.InitialDelays=                  ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Units.RecreationDelays=               ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Aircraft.AttachTypes=                 ; List of AttachEffectTypes
-AttachEffect.Aircraft.DurationOverrides=           ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Aircraft.Delays=                      ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Aircraft.InitialDelays=               ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Aircraft.RecreationDelays=            ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.AttachOnOwnerChange=                  ; boolean, default to [General] -> AttachEffect.AttachOnOwnerChange
 
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes

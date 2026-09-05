@@ -27,20 +27,12 @@ public:
 	}
 
 	EVAType EVATag;
-	AEAttachInfoTypeClass AttachEffects_Buildings;
-	AEAttachInfoTypeClass AttachEffects_Defenses;
-	AEAttachInfoTypeClass AttachEffects_Infantry;
-	AEAttachInfoTypeClass AttachEffects_Units;
-	AEAttachInfoTypeClass AttachEffects_Aircraft;
+	AEAttachInfoTypeClass AttachEffects;
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
-		, AttachEffects_Buildings {}
-		, AttachEffects_Defenses {}
-		, AttachEffects_Infantry {}
-		, AttachEffects_Units {}
-		, AttachEffects_Aircraft {}
+		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 	{ }
 
