@@ -140,7 +140,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		if (!pToExt->Shield)
 			pToExt->Shield = std::make_unique<ShieldClass>(pTo);
 		else
-			pToExt->Shield->Type = pToExt->CurrentShieldType;
+			pToExt->Shield->Type = pFromExt->CurrentShieldType;
 
 		// handle shield conversion and tint
 		pToExt->Shield->ConvertCheck(pToExt->TypeExtData->OwnerObject(), pFromShield);
@@ -706,10 +706,13 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldSh
 			this->Timers.SelfHealing_WHModifier.Start(pOldShield->Timers.SelfHealing_WHModifier.GetTimeLeft());
 		}
 
-		// Start timer here and further tweak it based on old shield type later
 		if (pOldShield->Timers.SelfHealing_CombatRestart.InProgress())
 			this->Timers.SelfHealing_CombatRestart.Start(pOldShield->Timers.SelfHealing_CombatRestart.GetTimeLeft());
 	}
+
+	// Handle Powered
+	if (!pNewType->Powered)
+		this->Online = true;
 
 	// Calculation that's related to old shield type
 	if (pNewType == pOldType)
@@ -721,15 +724,17 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldSh
 	if (pOldType->GetIdleAnimType(isDamaged, healthRatio) != pNewType->GetIdleAnimType(isDamaged, healthRatio))
 		this->KillAnim();
 
-	const bool respawn = this->HP <= 0;
+	bool respawn = this->HP <= 0;
 
 	if (!respawn)
 	{
 		this->HP = (int)round(
-			(double)this->HP /
-			pOldType->Strength *
-			pNewType->Strength
+			(double)this->HP *
+			pNewType->Strength /
+			pOldType->Strength 
 		);
+
+		respawn = this->HP <= 0;
 	}
 
 	const auto timerWHModifier = respawn ? &this->Timers.Respawn_WHModifier : &this->Timers.SelfHealing_WHModifier;
