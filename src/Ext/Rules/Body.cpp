@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <Utilities/SequenceRates.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -363,6 +365,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
@@ -666,6 +670,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Global default per-sequence animation rates for infantry.
+	for (size_t i = 0; i < SequenceRates::Entries.size(); ++i)
+	{
+		char key[64];
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultRate", SequenceRates::Entries[i].Name);
+		exINI.ReadInteger(GameStrings::AudioVisual, key, &this->CustomSequenceRates[i]);
+
+		bool normalized;
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultNormalized", SequenceRates::Entries[i].Name);
+		if (exINI.ReadBool(GameStrings::AudioVisual, key, &normalized))
+			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
+	}
+
 }
 
 // this should load everything that TypeData is not dependant on
@@ -930,6 +948,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoReload_Temporal)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -1118,6 +1138,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+		.Process(this->CustomSequenceRates)
+		.Process(this->CustomSequenceNormalized)
     ;
 }
 

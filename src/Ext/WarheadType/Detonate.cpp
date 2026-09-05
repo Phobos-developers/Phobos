@@ -548,7 +548,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 
-	if (pTargetExt->TypeExtData->ImmuneToCrit)
+	if (pTargetExt->TypeExtData->ImmuneToCrit || TechnoExt::HasAdditionalAbility(pTarget, AdditionalAbility::CritImmune))
 		return;
 
 	auto const pSld = pTargetExt->Shield.get();
@@ -746,6 +746,9 @@ double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 		return critChance;
 
 	auto const pExt = TechnoExt::Fetch(pFirer);
+
+	if (TechnoExt::HasAdditionalAbility(pFirer, AdditionalAbility::CritChance))
+		critChance = critChance * Math::max(pExt->TypeExtData->VeteranCritChance.Get(RulesExt::Global()->VeteranCritChance), 0);
 
 	if (!pExt->AE.HasCritModifiers)
 		return critChance;

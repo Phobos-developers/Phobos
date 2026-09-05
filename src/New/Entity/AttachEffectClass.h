@@ -18,18 +18,15 @@ public:
 
 	void AI();
 	void AI_Temporal();
-
-	void KillAnim()
-	{
-		if (this->Animation)
-		{
-			this->Animation->UnInit();
-			this->Animation = nullptr;
-		}
-	}
-
+	void UpdateConditionalAnimDrawingLogic();
+	void KillAnim();
 	void CreateAnim();
 	void UpdateCumulativeAnim(int count);
+
+	bool HasAnim() const
+	{
+		return this->Animation != nullptr;
+	}
 
 	bool CanShowAnim() const
 	{
@@ -71,6 +68,7 @@ public:
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
 	HouseClass* GetInvokerHouse() const { return this->InvokerHouse; }
+	void AddExpireWeaponParams(ExpireWeaponCondition condition, std::vector<AEWeaponParams>& expireWeapons, bool ignoreCumulativeCountCheck = false) const;
 	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
 
 	bool IsActiveIgnorePowered() const
