@@ -2647,6 +2647,11 @@ msgstr ""
 "类的标签（by Noble_Fish）"
 
 msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff (by NetsuNegi)"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电（by NetsuNegi）"
+
+msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold (by CrimRecya)"
 msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"

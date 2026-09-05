@@ -573,6 +573,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
   - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

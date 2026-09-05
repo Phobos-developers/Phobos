@@ -2650,6 +2650,11 @@ msgid ""
 "that using the following flag."
 msgstr "在原版中，建筑被禁止使用路径点。现在你可以使用以下标签来允许使用。"
 
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
 msgid "Aircraft"
 msgstr "战机类型"
 

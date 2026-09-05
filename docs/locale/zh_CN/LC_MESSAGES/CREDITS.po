@@ -1899,6 +1899,11 @@ msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录
 msgid "Cloak Enhancement"
 msgstr "隐形增强"
 
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause "
+"target building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
