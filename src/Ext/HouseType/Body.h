@@ -7,6 +7,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/EVATypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class HouseTypeExt final : public AbstractTypeExt
 {
@@ -26,9 +27,13 @@ public:
 	}
 
 	EVAType EVATag;
+	AEAttachInfoTypeClass AttachEffects;
+	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
+		, AttachEffects {}
+		, AttachEffects_AttachOnOwnerChange {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;

@@ -440,6 +440,7 @@ HideShakeEffects=false           ; boolean
 - More veteran and elite abilities (by Ollerus)
 - [Attached animation draw offset customizations](Fixed-or-Improved-Logics.md#draw-offset-customization) (by Starkku)
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) by (Starkku)
+- Country-based attached effects (by Ollerus)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

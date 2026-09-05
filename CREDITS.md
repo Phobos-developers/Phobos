@@ -794,6 +794,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a game crash when parsing string list with null entry
   - `513` Set mission timer properties
   - More veteran and elite abilities
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

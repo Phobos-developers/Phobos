@@ -214,34 +214,48 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	auto const pExt = TechnoExt::Fetch(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
+	auto const pFoot = generic_cast<FootClass*, true>(pThis);
+	bool IgnoreRevertOnExit = false;
+	bool I_am_human = false;
+	bool humanAndComputer = false;
+	bool hasTransporter = false;
+
+	if (pTypeExt->AutoDeath_Behavior.isset() || pExt->AE.HasOwnerChangeDiscardables || pTypeExt->Convert_HumanToComputer.Get() || pTypeExt->Convert_ComputerToHuman.Get())
+	{
+		IgnoreRevertOnExit = pFoot ? FootExt::Fetch(pFoot)->IsOwnerChangeFromRevertOnExit : false;
+		I_am_human = pThis->Owner->IsControlledByHuman();
+		humanAndComputer = I_am_human != pNewOwner->IsControlledByHuman();
+		hasTransporter = pThis->Transporter;
+	}
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		const auto pFoot = generic_cast<FootClass*>(pThis);
-		const bool IgnoreRevertOnExit = pFoot ? FootExt::Fetch(pFoot)->IsOwnerChangeFromRevertOnExit : false;
 		const bool humanToComputer = pTypeExt->AutoDeath_OnOwnerChange_HumanToComputer.Get(pTypeExt->AutoDeath_OnOwnerChange);
 		const bool computerToHuman = pTypeExt->AutoDeath_OnOwnerChange_ComputerToHuman.Get(pTypeExt->AutoDeath_OnOwnerChange);
 
 		if (pTypeExt->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Get(RulesExt::Global()->AutoDeath_OnOwnerChange_IgnoreRevertOnExit) && IgnoreRevertOnExit)
+		{
 			pExt->ShouldBeDead = false;
+		}
 		else if (humanToComputer && computerToHuman)
 		{
 			pExt->ShouldBeDead = true;
 		}
 		else if (humanToComputer || computerToHuman)
 		{
-			const bool I_am_human = pThis->Owner->IsControlledByHuman();
-
-			if (I_am_human != pNewOwner->IsControlledByHuman())
+			if (humanAndComputer)
 			{
 				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
 					pExt->ShouldBeDead = true;
 			}
 		}
-		if (pExt->ShouldBeDead && pThis->Transporter
-		&& !IgnoreRevertOnExit
-		&& !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+
+		if (pExt->ShouldBeDead && hasTransporter
+			&& !IgnoreRevertOnExit
+			&& !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
+		{
 			pExt->ShouldBeDead = false;
+		}
 	}
 
 	auto const pType = pTypeExt->OwnerObject();
@@ -262,22 +276,19 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (const auto pMe = generic_cast<FootClass*, true>(pThis))
+	if (pFoot)
 	{
-		const bool I_am_human = pThis->Owner->IsControlledByHuman();
-
-		if (I_am_human != pNewOwner->IsControlledByHuman())
+		if (humanAndComputer)
 		{
 			if (const auto pConvertTo = I_am_human
 				? pTypeExt->Convert_HumanToComputer.Get()
 				: pTypeExt->Convert_ComputerToHuman.Get())
 			{
-				if (pConvertTo->WhatAmI() == pType->WhatAmI())
-					TechnoExt::ConvertToType(pMe, pConvertTo);
+				TechnoExt::ConvertToType(pFoot, pConvertTo);
 			}
 
 			if (!I_am_human)
-				TechnoExt::ChangeOwnerMissionFix(pMe, pType);
+				TechnoExt::ChangeOwnerMissionFix(pFoot, pType);
 		}
 
 		pThis->Owner->RecheckTechTree = true;
@@ -289,6 +300,47 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		if (pTrail->Type->IsHouseColor)
 			pTrail->CurrentColor = pNewOwner->LaserColor;
 	}
+
+	if (pExt->AE.HasOwnerChangeDiscardables)
+	{
+		for (const auto& attachEffect : pExt->AttachedEffects)
+		{
+			const auto type = attachEffect->GetType();
+
+			if ((type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
+			{
+				const bool humanToComputer = type->DiscardOn_OwnerChange_HumanToComputer;
+				const bool computerToHuman = type->DiscardOn_OwnerChange_ComputerToHuman;
+
+				if (type->DiscardOn_OwnerChange_IgnoreRevertOnExit && IgnoreRevertOnExit)
+				{
+					attachEffect->ShouldBeDiscarded = false;
+				}
+				else if (humanToComputer && computerToHuman)
+				{
+					attachEffect->ShouldBeDiscarded = true;
+				}
+				else if (humanToComputer || computerToHuman)
+				{
+					if (humanAndComputer)
+					{
+						if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
+							attachEffect->ShouldBeDiscarded = true;
+					}
+				}
+
+				if (attachEffect->ShouldBeDiscarded && hasTransporter && !IgnoreRevertOnExit)
+				{
+					attachEffect->ShouldBeDiscarded = false;
+				}
+			}
+		}
+	}
+
+	const auto pNewOwnerTypeExt = HouseTypeExt::Fetch(pNewOwner->Type);
+
+	if (pNewOwnerTypeExt->AttachEffects_AttachOnOwnerChange.Get(RulesExt::Global()->AttachEffects_AttachOnOwnerChange))
+		AttachEffectClass::Attach(pThis, pNewOwner, pThis, pThis, pNewOwnerTypeExt->AttachEffects, false, true);
 
 	return 0;
 }
