@@ -154,24 +154,24 @@ void TechnoExt::InitializeAttachEffects()
 	auto const pThis = this->OwnerObject();
 	auto const pOwner = pThis->Owner;
 
-	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects, true);
+	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects, true, true);
 
 	switch (pType->WhatAmI())
 	{
 	case AbstractType::BuildingType:
 		if (static_cast<BuildingTypeClass*>(pType)->BuildCat == BuildCat::Combat)
-			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings);
+			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings, false, true);
 		else
-			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Defenses);
+			AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Defenses, false, true);
 		break;
 	case AbstractType::InfantryType:
-		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings);
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Buildings, false, true);
 		break;
 	case AbstractType::UnitType:
-		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Units);
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Units, false, true);
 		break;
 	case AbstractType::AircraftType:
-		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Aircraft);
+		AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects_Aircraft, false, true);
 		break;
 	}
 }

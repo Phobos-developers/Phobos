@@ -123,6 +123,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->DiscardOn_OwnerChange_HumanToComputer.Read(exINI, pSection, "DiscardOn.OwnerChange.HumanToComputer");
+	this->DiscardOn_OwnerChange_ComputerToHuman.Read(exINI, pSection, "DiscardOn.OwnerChange.ComputerToHuman");
+	this->DiscardOn_OwnerChange_IgnoreRevertOnExit.Read(exINI, pSection, "DiscardOn.OwnerChange.IgnoreRevertOnExit");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
@@ -210,9 +213,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
-		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
-		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
-		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None)
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->HasTint()
+		|| (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
+		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
+		|| (this->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
 	{
 		this->RequiresRecalculation = true;
 	}
@@ -254,6 +258,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->DiscardOn_OwnerChange_HumanToComputer)
+		.Process(this->DiscardOn_OwnerChange_ComputerToHuman)
+		.Process(this->DiscardOn_OwnerChange_IgnoreRevertOnExit)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
@@ -410,6 +417,10 @@ namespace detail
 				{
 					parsed |= DiscardCondition::ReceivedDamage;
 				}
+				else if (!_strcmpi(cur, "ownerchange"))
+				{
+					parsed |= DiscardCondition::OwnerChange;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
@@ -503,6 +514,9 @@ void AEAttachInfoTypeClass::LoadFromINIByHouse(CCINIClass* pINI, const char* pSe
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.AttachTypes", pType);
 	this->AttachTypes.Read(exINI, pSection, tempBuffer);
 
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.DurationOverrides", pType);
+	this->DurationOverrides.Read(exINI, pSection, tempBuffer);
+
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttachEffect.%s.Delays", pType);
 	this->Delays.Read(exINI, pSection, tempBuffer);
 
@@ -513,14 +527,14 @@ void AEAttachInfoTypeClass::LoadFromINIByHouse(CCINIClass* pINI, const char* pSe
 	this->RecreationDelays.Read(exINI, pSection, tempBuffer);
 }
 
-AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool selfOwned) const
+AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool hasDelay) const
 {
 	AEAttachParams info { };
 
 	if (this->DurationOverrides.size() > 0)
 		info.DurationOverride = this->DurationOverrides[this->DurationOverrides.size() > index ? index : this->DurationOverrides.size() - 1];
 
-	if (selfOwned)
+	if (hasDelay)
 	{
 		if (this->Delays.size() > 0)
 			info.Delay = this->Delays[this->Delays.size() > index ? index : this->Delays.size() - 1];

@@ -72,7 +72,7 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false);
+	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false, bool hasDelay = false);
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
@@ -141,6 +141,7 @@ struct AttachEffectTechnoProperties
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
 	bool HasOnDamageDiscardables;
+	bool HasOwnerChangeDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -157,7 +158,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
-		, HasOnDamageDiscardables { false }
+		, HasOwnerChangeDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }

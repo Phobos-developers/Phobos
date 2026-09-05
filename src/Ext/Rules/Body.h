@@ -550,6 +550,8 @@ public:
 		ValueableVector<AnimTypeClass*> DecloakAnims;
 		Valueable<bool> Cloak_KickOutParasite;
 
+		Valueable<bool> AttachEffects_AttachOnOwnerChange;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1036,6 +1038,8 @@ public:
 			, CloakAnims {}
 			, DecloakAnims {}
 			, Cloak_KickOutParasite { false }
+
+			, AttachEffects_AttachOnOwnerChange { false }
 		{ }
 
 		virtual ~ExtData() = default;

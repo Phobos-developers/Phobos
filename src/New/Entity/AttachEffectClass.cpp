@@ -756,7 +756,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 /// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
 /// <param name="attachEffectInfo">AttachEffect attach info.</param>
 /// <returns>Number of AttachEffect instances created and attached.</returns>
-int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned)
+int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned, bool hasDelay)
 {
 	auto const& types = attachEffectInfo.AttachTypes;
 
@@ -774,7 +774,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	for (size_t i = 0; i < types.size(); i++)
 	{
 		auto const pType = types[i];
-		auto const params = attachEffectInfo.GetAttachParams(i, selfOwned);
+		auto const params = attachEffectInfo.GetAttachParams(i, hasDelay);
 
 		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params, selfOwned))
 		{

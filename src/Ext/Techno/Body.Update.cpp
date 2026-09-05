@@ -1061,7 +1061,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		this->RecalculateStatMultipliers();
 
 	// Add new ones.
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true);
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true, true);
 }
 
 // Updates CumulativeAnimations AE's on techno.
@@ -1130,6 +1130,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
+		pAE.HasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 
 		if (type->RestrictedArmorMultiplier)
@@ -1153,6 +1154,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
 	bool hasOnDamageDiscardables = false;
+	bool hasOwnerChangeDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
 
@@ -1180,6 +1182,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
+		hasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
@@ -1196,6 +1199,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasOnDamageDiscardables = hasOnDamageDiscardables;
+	pAE.HasOwnerChangeDiscardables = hasOwnerChangeDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
 
