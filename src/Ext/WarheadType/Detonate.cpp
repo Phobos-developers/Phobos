@@ -420,15 +420,10 @@ void WarheadTypeExt::ApplyShieldModifiers(TechnoClass* pTarget)
 				{
 					pShield->SetHP((int)(shieldType->Strength * ratio));
 
-					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
+					if (pShield->GetHP() <= 0)
 					{
-						pShield->SetHP((int)(shieldType->Strength * ratio));
-
-						if (pShield->GetHP() == 0)
-						{
-							pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate,
-								shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
-						}
+						pShield->SetRespawn(0, shieldType->Respawn, shieldType->Respawn_Rate,
+							shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
 					}
 				}
 			}

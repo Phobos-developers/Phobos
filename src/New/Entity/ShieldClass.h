@@ -25,6 +25,7 @@ public:
 	void SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
 	void SetRespawnRestartInCombat();
+	void SetSelfHealingRestartInCombat();
 
 	void KillAnim()
 	{
@@ -58,19 +59,13 @@ public:
 
 	bool IsActive() const
 	{
-		return this->Available
-			&& this->HP > 0
+		return this->HP > 0
 			&& this->Online;
-	}
-
-	bool IsAvailable() const
-	{
-		return this->Available;
 	}
 
 	bool IsBrokenAndNonRespawning() const
 	{
-		return this->HP <= 0 && !this->Type->Respawn;
+		return this->HP <= 0 && !(this->Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Warhead : this->Type->Respawn);
 	}
 
 	ShieldTypeClass* GetType() const
@@ -90,7 +85,7 @@ public:
 		this->AreAnimsHidden = !visible;
 	}
 
-	void ConvertCheck(TechnoTypeClass* pTechnoType);
+	void ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldShield = nullptr);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
@@ -161,7 +156,6 @@ private:
 	bool Cloak;
 	bool Online;
 	bool Temporal;
-	bool Available;
 	bool Attached;
 	bool AreAnimsHidden;
 	bool IsSelfHealingEnabled;

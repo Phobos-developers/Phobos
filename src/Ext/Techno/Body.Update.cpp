@@ -855,10 +855,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 void TechnoExt::UpdateTemporal()
 {
 	if (const auto pShieldData = this->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-			pShieldData->AI_Temporal();
-	}
+		pShieldData->AI_Temporal();
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();
@@ -1031,16 +1028,14 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		WeaponTypeExt::DetonateAt(info.Weapon, coords, info.Invoker, info.InvokerHouse, pThis);
 	}
 
+	if (requiresRecalc)
+		this->RecalculateStatMultipliers();
+
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
 	if (!count && removeCount > 0)
-	{
-		if (requiresRecalc)
-			this->RecalculateStatMultipliers();
-
 		this->UpdateAEAnimDrawingLogic();
-	}
 }
 
 // Updates CumulativeAnimations AE's on techno.
