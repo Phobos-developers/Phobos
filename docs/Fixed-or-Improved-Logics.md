@@ -240,7 +240,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
-- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 - Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 - `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering.
@@ -2439,6 +2438,14 @@ ApproachTarget.StopWhenInRange=false  ; boolean
 ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
 ```
 
+### Stationary units
+
+- Infantry & vehicles with `Speed=0` or those that are prevented from moving on their cell by `MovementRestrictedTo` are now truly stationary will not attempt to move if issued movement commands. Should not be used on trainable/buildable units as they become stuck in factory. Following behaviours apply:
+  - Cannot retaliate if target is beyond their weapon range.
+  - Cannot acquire units outside their weapon range on `Area Guard` mission.
+  - `Hunt` mission is reassigned to `Guard`.
+  - Units rendered stationary by speed multipliers instead of intrinsic properties of TechnoType will respond to cursor actions e.g assigning destination but will not move while the multiplier is in effect.
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
@@ -2890,10 +2897,6 @@ Sinkable=                  ; boolean, default to [General] -> Sinkable
 SinkSpeed=5                ; integer, leptons per frame, default to [General] -> SinkSpeed
 Sinkable.SquidGrab=true    ; boolean, default to [General] -> Sinkable.SquidGrab
 ```
-
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
 ### Turret recoil
 

@@ -23,6 +23,7 @@ public:
 	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 	int AttackMoveFollowerTempCount;
 	bool IsOwnerChangeFromRevertOnExit;
+	bool IsZeroSpeed; // Temporary speed multipliers have made this techno stationary.
 
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 		, LastKillWasTeamTarget { false }
@@ -39,6 +40,7 @@ public:
 		, JumpjetStraightAscend { false }
 		, AttackMoveFollowerTempCount { 0 }
 		, IsOwnerChangeFromRevertOnExit { false }
+		, IsZeroSpeed { false }
 	{ }
 
 	FootClass* OwnerObject() const
@@ -65,6 +67,7 @@ public:
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void HealthAutoConvertActions();
 	void AmmoAutoConvertActions();
+	void HandleTemporaryZeroSpeed();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -72,4 +75,8 @@ public:
 private:
 	template <typename T>
 	void Serialize(T& Stm);
+
+public:
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static bool CannotMove(FootClass* pThis, bool checkSpeedMultiplier);
 };
