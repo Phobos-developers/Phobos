@@ -133,6 +133,7 @@ This page lists all the individual contributions to the project by their author.
   - Disable `DamageSound` for buildings
   - Power plant damage factor
 - **FS-21**:
+  - Interactive mission selection screen
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
