@@ -2704,6 +2704,7 @@ msgstr ""
 
 msgid "Fix several shield respawn/self heal issues"
 msgstr ""
+"修复了护盾重生／自愈的一系列问题"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
