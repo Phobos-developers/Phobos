@@ -2697,8 +2697,9 @@ msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃
 msgid "`513` Set mission timer properties"
 msgstr "设置任务计时器属性"
 
-msgid "More veteran and elite abilities"
+msgid "`RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities"
 msgstr ""
+"`RANGE`、`CRITIMMUNE` 和 `CRITCHANCE` 升级能力"
 
 msgid "Fix several shield respawn/self heal issues"
 msgstr ""

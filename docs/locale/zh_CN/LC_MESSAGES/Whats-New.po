@@ -924,8 +924,9 @@ msgid ""
 "multiplayer maps (by Starkku)"
 msgstr "`<Player @ X>` 现在可以作为遭遇战／多人游戏地图触发器的所有者（by Starkku）"
 
-msgid "More veteran and elite abilities (by Ollerus)"
+msgid "`RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities (by Ollerus)"
 msgstr ""
+"`RANGE`、`CRITIMMUNE` 和 `CRITCHANCE` 升级能力（by Ollerus）"
 
 msgid ""
 "[Attached animation draw offset customizations](Fixed-or-Improved-"

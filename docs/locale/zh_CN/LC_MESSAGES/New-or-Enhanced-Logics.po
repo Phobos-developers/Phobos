@@ -5245,20 +5245,19 @@ msgstr ""
 "`VoiceFeedback`、`VoiceAttack` 和 `CombatAlert.EVA` 的单位将播放 "
 "`VoiceFeedback`。拥有 `VoiceAttack` 的单位将播放 `EVA_UnitsInCombat`。"
 
-#, fuzzy
 msgid "Weapon range adjustment on promotion"
-msgstr "升级时调整装填速率"
+msgstr "升级时调整武器射程"
 
-#, fuzzy
 msgid ""
 "Now you can add `RANGE` to `VeteranAbilities` and `EliteAbilities` to "
 "adjust the weapon range of this TechnoType."
-msgstr "现在你可以在 `VeteranAbilities` 和 `EliteAbilities` 中添加以下能力，以加快或减慢其弹药装填速度。"
+msgstr "现在你可以在 `VeteranAbilities` 和 `EliteAbilities` 中添加 `RANGE` 能力，以调整该单位的武器射程。"
 
 msgid ""
 "`ProjectileRange` of the weapon's projectile will also be affected if "
 "`Projectile.ApplyModifiers` set to true."
 msgstr ""
+"若 `Projectile.ApplyModifiers` 设为 true 则武器抛射体所用的 `ProjectileRange` 将同样受影响。"
 
 msgid ""
 "Abilities from `VeteranAbilities` keep working at elite level, and "
@@ -5268,12 +5267,11 @@ msgstr ""
 "`VeteranAbilities` 中的能力在精英等级仍然生效，`EliteAbilities` "
 "则在此基础上额外生效，这与原版能力的叠加方式一致。"
 
-#, fuzzy
 msgid ""
 "`VeteranRange` will be applied to the range calculation. Values greater "
 "than `1.0` lengthen the range, values smaller than `1.0` shorten it, and "
 "`1.0` (the default) leaves it unchanged."
-msgstr "大于 `1.0` 的数值会延长装填时间，小于 `1.0` 的数值会缩短装填时间，`1.0`（默认值）则保持不变。"
+msgstr "`VeteranRange` 将会应用于射程计算。大于 `1.0` 的数值会延长装填时间，小于 `1.0` 的数值会缩短装填时间，`1.0`（默认值）则保持不变。"
 
 msgid "Recount burst index"
 msgstr "重置连发索引"
@@ -6086,19 +6084,18 @@ msgid ""
 "TechnoTypes' `VeteranAbilities` and `EliteAbilities` to grant them "
 "immunity when promoting."
 msgstr ""
+"`ImmuneToCrit` 可以设置在科技类型和护盾类型上以使它们免疫暴击。你也可以将 `CRITIMMUNE` 加入单位的 `VeteranAbilities` 和 `EliteAbilities` 以在升级时给予它们免疫。"
 
-#, fuzzy
 msgid ""
 "You can add `CRITCHANCE` to `VeteranAbilities` and `EliteAbilities` to "
 "adjust the critical hit chance of this TechnoType."
-msgstr "现在你可以在 `VeteranAbilities` 和 `EliteAbilities` 中添加以下能力，以加快或减慢其弹药装填速度。"
+msgstr "现在你可以在 `VeteranAbilities` 和 `EliteAbilities` 中添加 `CRITCHANCE` 能力，以调整该单位的暴击概率。"
 
-#, fuzzy
 msgid ""
-"`VeteranCritChance` will be applied to the range calculation. Values "
+"`VeteranCritChance` will be applied to the chance calculation. Values "
 "greater than `1.0` increase the chance, values smaller than `1.0` "
 "decrease it, and `1.0` (the default) leaves it unchanged."
-msgstr "大于 `1.0` 的数值会延长装填时间，小于 `1.0` 的数值会缩短装填时间，`1.0`（默认值）则保持不变。"
+msgstr "`VeteranCritChance` 将会应用于概率计算。大于 `1.0` 的数值会延长装填时间，小于 `1.0` 的数值会缩短装填时间，`1.0`（默认值）则保持不变。"
 
 msgid ""
 "If you set `Crit.Warhead` to the same Warhead it is defined on, or create"

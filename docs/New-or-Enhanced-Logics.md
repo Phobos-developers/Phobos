@@ -2492,25 +2492,6 @@ CombatAlert.EVA=EVA_UnitsInCombat      ; EVA entry
 CombatAlert.Suppress=                  ; boolean
 ```
 
-### Weapon range adjustment on promotion
-
-- Now you can add `RANGE` to `VeteranAbilities` and `EliteAbilities` to adjust the weapon range of this TechnoType.
-  - `ProjectileRange` of the weapon's projectile will also be affected if `Projectile.ApplyModifiers` set to true.
-
-```{hint}
-- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
-- `VeteranRange` will be applied to the range calculation. Values greater than `1.0` lengthen the range, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
-```
-
-In `rulesmd.ini`:
-```ini
-[General]
-VeteranRange=1.0        ; floating point value, multiplier
-
-[SOMETECHNO]            ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RANGE.
-VeteranRange=           ; floating point value, multiplier, default to [General] -> VeteranRange
-```
-
 ### Recount burst index
 
 - You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames).
@@ -2660,6 +2641,25 @@ TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
 TiberiumEater.UnderEMP=false      ; boolean
+```
+
+### Weapon range adjustment on promotion
+
+- Now you can add `RANGE` to `VeteranAbilities` and `EliteAbilities` to adjust the weapon range of this TechnoType.
+  - `ProjectileRange` of the weapon's projectile will also be affected if `Projectile.ApplyModifiers` set to true.
+
+```{hint}
+- Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
+- `VeteranRange` will be applied to the range calculation. Values greater than `1.0` lengthen the range, values smaller than `1.0` shorten it, and `1.0` (the default) leaves it unchanged.
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeteranRange=1.0        ; floating point value, multiplier
+
+[SOMETECHNO]            ; TechnoType, with VeteranAbilities and/or EliteAbilities containing RANGE.
+VeteranRange=           ; floating point value, multiplier, default to [General] -> VeteranRange
 ```
 
 ### Weapons fired on warping in / out
@@ -2965,7 +2965,7 @@ AffectsGround=true         ; boolean
 
 ```{hint}
 - Abilities from `VeteranAbilities` keep working at elite level, and `EliteAbilities` are added on top, matching how vanilla abilities accumulate.
-- `VeteranCritChance` will be applied to the range calculation. Values greater than `1.0` increase the chance, values smaller than `1.0` decrease it, and `1.0` (the default) leaves it unchanged.
+- `VeteranCritChance` will be applied to the chance calculation. Values greater than `1.0` increase the chance, values smaller than `1.0` decrease it, and `1.0` (the default) leaves it unchanged.
 ```
 
 In `rulesmd.ini`:
