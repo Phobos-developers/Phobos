@@ -45,6 +45,7 @@
 #include <Powerups.h>
 #include <CRT.h>
 #include <Locomotion/TestLocomotionClass.h>
+#include <Locomotion/AdvancedDriveLocomotionClass.h>
 
 #include <unordered_set>
 
@@ -1329,6 +1330,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
 			PARSE_IF_IS_PHOBOS_LOCO(Test);
 #endif
+			PARSE_IF_IS_PHOBOS_LOCO(AdvancedDrive);
 
 #undef PARSE_IF_IS_PHOBOS_LOCO
 
