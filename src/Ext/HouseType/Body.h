@@ -26,11 +26,11 @@ public:
 	}
 
 	EVAType EVATag;
-	Valueable<AffectedHouse> RevealHouses;
+	Nullable<AffectedHouse> RevealHouses;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
-		, RevealHouses { AffectedHouse::Team }
+		, RevealHouses {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;

@@ -45,7 +45,9 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 	auto const pPlayer = HouseClass::CurrentPlayer;
 	auto const pHouse = pTechno->Owner;
-	const bool canShow = pPlayer ? EnumFunctions::CanTargetHouse(HouseTypeExt::ExtMap.Find(pHouse->Type)->RevealHouses, pHouse, pPlayer) : false;
+	const bool canShow = pPlayer ? EnumFunctions::CanTargetHouse(
+		HouseTypeExt::ExtMap.Find(pHouse->Type)->RevealHouses.Get(RulesExt::Global()->RevealHouses), pHouse, pPlayer)
+		: false;
 
 	switch (address)
 	{

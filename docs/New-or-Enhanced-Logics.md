@@ -673,8 +673,11 @@ DetachedReport=  ; Sound entry
 
 In `rulesmd.ini`:
 ```ini
-[COUNTRY]                   ; Country
-RevealHouses=team           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses.
 ```
 
 ## Buildings
