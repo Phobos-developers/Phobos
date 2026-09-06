@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 12:38+0800\n"
+"POT-Creation-Date: 2026-09-07 00:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -906,11 +906,37 @@ msgstr ""
 "properties)（by Ollerus）"
 
 msgid ""
+"[Extended `CanTargetHouses` to allow targeting neutral houses](New-or-"
+"Enhanced-Logics.md#weapon-targeting-filter) (by weiyongxuan)"
+msgstr ""
+"[扩展 `CanTargetHouses` 以允许瞄准中立所属方](New-or-Enhanced-Logics.md#weapon-"
+"targeting-filter)（by weiyongxuan）"
+
+msgid ""
 "[Customizable infantry sequence rates](New-or-Enhanced-Logics.md"
 "#customizable-infantry-sequence-rates) (by Noble_Fish)"
 msgstr ""
 "[自定义步兵序列播放速率](New-or-Enhanced-Logics.md#customizable-infantry-sequence-"
 "rates)（by Noble_Fish）"
+
+#, fuzzy
+msgid ""
+"`<Player @ X>` can now be used as owner for triggers on skirmish and "
+"multiplayer maps (by Starkku)"
+msgstr "`<Player @ X>` 现在可以作为遭遇战／多人游戏地图预置对象的所有者（by Starkku）"
+
+msgid "More veteran and elite abilities (by Ollerus)"
+msgstr ""
+
+msgid ""
+"[Attached animation draw offset customizations](Fixed-or-Improved-"
+"Logics.md#draw-offset-customization) (by Starkku)"
+msgstr ""
+
+msgid ""
+"[Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md"
+"#attached-effects) by (Starkku)"
+msgstr ""
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
@@ -960,7 +986,11 @@ msgid ""
 "Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with "
 "on-discard trigger on entry (by Starkku)"
 msgstr ""
-"修复了 `DiscardOn=entry` 的 AE 不会在进入时触发以丢弃为触发条件的 `ExpireWeapon` 的 Bug（by Starkku）"
+"修复了 `DiscardOn=entry` 的 AE 不会在进入时触发以丢弃为触发条件的 `ExpireWeapon` 的 Bug（by "
+"Starkku）"
+
+msgid "Fix several shield respawn/self heal issues (by Ollerus)"
+msgstr ""
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
@@ -2641,6 +2671,11 @@ msgid ""
 msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
+
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause target "
+"building animation poweroff (by NetsuNegi)"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电（by NetsuNegi）"
 
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
@@ -6656,13 +6691,4 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
-
-#~ msgid "Migrating"
-#~ msgstr "迁移"
-
-#~ msgid "From vanilla"
-#~ msgstr "由原版"
-
-#~ msgid "Version TBD (develop branch nightly builds)"
-#~ msgstr "待定版本（开发分支自动构建版本）"
 

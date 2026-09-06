@@ -18,18 +18,15 @@ public:
 
 	void AI();
 	void AI_Temporal();
-
-	void KillAnim()
-	{
-		if (this->Animation)
-		{
-			this->Animation->UnInit();
-			this->Animation = nullptr;
-		}
-	}
-
+	void UpdateConditionalAnimDrawingLogic();
+	void KillAnim();
 	void CreateAnim();
 	void UpdateCumulativeAnim(int count);
+
+	bool HasAnim() const
+	{
+		return this->Animation != nullptr;
+	}
 
 	bool CanShowAnim() const
 	{

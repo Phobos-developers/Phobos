@@ -365,6 +365,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
@@ -558,6 +560,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
+	this->Temporal_KillPoweredAnim.Read(exINI, GameStrings::General, "Temporal.KillPoweredAnim");
 
 	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
@@ -945,6 +948,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoReload_Temporal)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -1090,6 +1095,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->Temporal_KillPoweredAnim)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)

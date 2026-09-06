@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 16:27+0800\n"
+"POT-Creation-Date: 2026-09-07 00:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -827,7 +827,8 @@ msgstr "自定义 `Scorch`／`Flamer` 火焰动画"
 msgid "EM Pulse cannon logic improvements"
 msgstr "EMP 炮逻辑改进"
 
-msgid "`<Player @ X>` as owner for pre-placed objects"
+#, fuzzy
+msgid "`<Player @ X>` as owner for pre-placed objects and triggers"
 msgstr "允许 `<Player @ X>` 作为地图预置对象所有者"
 
 msgid "Custom exit cell for infantry factory"
@@ -911,6 +912,9 @@ msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
 
 msgid "Berzerk duration stacking behaviour customization"
 msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
+
+msgid "Attached animation draw offset customizations"
+msgstr ""
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1899,6 +1903,11 @@ msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录
 msgid "Cloak Enhancement"
 msgstr "隐形增强"
 
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause target "
+"building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2592,14 +2601,12 @@ msgstr "自定义单位能否被心灵感应"
 msgid ""
 "Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game "
 "(integer divide-by-zero) the moment an object of that type started moving"
-msgstr ""
-"修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
+msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
 
 msgid ""
 "Fix the bug where `Ranged=true` causes projectiles using the new "
 "Trajectory to ignore settings such as `BounceTimes`"
-msgstr ""
-"修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
+msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
 
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
@@ -2690,6 +2697,12 @@ msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃
 
 msgid "`513` Set mission timer properties"
 msgstr "设置任务计时器属性"
+
+msgid "More veteran and elite abilities"
+msgstr ""
+
+msgid "Fix several shield respawn/self heal issues"
+msgstr ""
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3287,4 +3300,9 @@ msgid ""
 msgstr ""
 "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
 "不被遵守的问题"
+
+msgid ""
+"**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "
+"houses"
+msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"
 

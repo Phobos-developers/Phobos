@@ -291,6 +291,8 @@ public:
 		Valueable<bool> NoReload_Temporal;
 		Valueable<double> VeteranReload;
 		Nullable<double> VeteranEmptyReload;
+		Valueable<double> VeteranRange;
+		Valueable<double> VeteranCritChance;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
@@ -491,6 +493,7 @@ public:
 
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
+		Valueable<bool> Temporal_KillPoweredAnim;
 
 		Valueable<bool> DiscardOn_Sequences_Immediate;
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
@@ -799,6 +802,8 @@ public:
 			, NoReload_Temporal { false }
 			, VeteranReload { 1.0 }
 			, VeteranEmptyReload {}
+			, VeteranRange { 1.0 }
+			, VeteranCritChance { 1.0 }
 			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
@@ -980,6 +985,7 @@ public:
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
+			, Temporal_KillPoweredAnim { true }
 			, DiscardOn_Sequences_Immediate { true }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, DiscardOn_ConsiderHarvestingAsStationary { true }
