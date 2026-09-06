@@ -10,6 +10,7 @@
 #include <TubeClass.h>
 
 #include <Ext/Techno/Body.h>
+#include <Ext/UnitType/Body.h>
 
 // Virtual
 
@@ -29,7 +30,7 @@ Matrix3D AdvancedDriveLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
 
 	const auto pLinked = this->LinkedTo;
 	const auto pType = pLinked->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	const bool shouldTilt = !pTypeExt->AdvancedDrive_Hover || pTypeExt->AdvancedDrive_Hover_Tilt;
 	const double rate = this->SlopeTimer.GetRatePassed();
 	const float ars = pLinked->AngleRotatedSideways;
@@ -100,7 +101,7 @@ Matrix3D AdvancedDriveLocomotionClass::Shadow_Matrix(VoxelIndexKey* key)
 	// Completely rewrite
 
 	const auto pLinked = this->LinkedTo;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 	const bool shouldTilt = !pTypeExt->AdvancedDrive_Hover || pTypeExt->AdvancedDrive_Hover_Tilt;
 
 	if ((shouldTilt && this->SlopeTimer.GetRatePassed() != 1.0)
@@ -119,7 +120,7 @@ bool AdvancedDriveLocomotionClass::Process()
 	const auto pLinked = this->LinkedTo;
 	const auto slopeIndex = pLinked->GetCell()->SlopeIndex;
 	const auto pType = pLinked->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	if (slopeIndex != this->CurrentRamp)
 	{
@@ -222,7 +223,7 @@ void AdvancedDriveLocomotionClass::Stop_Moving()
 bool AdvancedDriveLocomotionClass::Power_Off()
 {
 	const auto pLinked = this->LinkedTo;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 
 	if (pTypeExt->AdvancedDrive_Hover)
 	{
@@ -251,7 +252,7 @@ bool AdvancedDriveLocomotionClass::Is_Powered()
 		return true;
 
 	const auto pLinked = this->LinkedTo;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 	return pTypeExt->AdvancedDrive_Hover && pLinked->GetHeight() > 0;
 }
 
@@ -374,7 +375,8 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 {
 	const auto pLinked = this->LinkedTo;
 	const auto pType = pLinked->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExtUnit = UnitTypeExt::TryFetch(abstract_cast<UnitTypeClass*>(pType));
 
 	if (((!this->IsDriving || this->TrackNumber == -1)
 			&& pLinked->PathDirections[0] != 8)
@@ -415,8 +417,8 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 				if (pLinked->IsCrushingSomething)
 				{
 					// Customized crush slow down speed
-					if (!pTypeExt->SkipCrushSlowdown && this->MovementSpeed > pTypeExt->CrushSlowdownMultiplier)
-						this->MovementSpeed = pTypeExt->CrushSlowdownMultiplier;
+					if (pTypeExtUnit && !pTypeExtUnit->SkipCrushSlowdown && this->MovementSpeed > pTypeExtUnit->CrushSlowdownMultiplier)
+						this->MovementSpeed = pTypeExtUnit->CrushSlowdownMultiplier;
 
 					speed = this->MovementSpeed;
 				}
@@ -431,8 +433,8 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 			else if (pLinked->IsCrushingSomething)
 			{
 				// Customized crush slow down speed
-				if (!pTypeExt->SkipCrushSlowdown && this->MovementSpeed > pTypeExt->CrushSlowdownMultiplier)
-					this->MovementSpeed = pTypeExt->CrushSlowdownMultiplier;
+				if (pTypeExtUnit && !pTypeExtUnit->SkipCrushSlowdown && this->MovementSpeed > pTypeExtUnit->CrushSlowdownMultiplier)
+					this->MovementSpeed = pTypeExtUnit->CrushSlowdownMultiplier;
 
 				speed = this->MovementSpeed;
 			}
@@ -616,7 +618,8 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 		return true;
 
 	const auto pType = pLinked->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExtUnit = UnitTypeExt::TryFetch(abstract_cast<UnitTypeClass*>(pType));
 
 	do
 	{
@@ -1050,8 +1053,8 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 		speedFactor *= pTypeExt->AdvancedDrive_Reverse_Speed;
 
 	// Customized damaged speed
-	if (pLinked->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow)
-		speedFactor *= pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
+	if (pTypeExtUnit && pLinked->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow)
+		speedFactor *= pTypeExtUnit->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 
 	if (this->TrackNumber >= 64)
 		pLinked->SetSpeedPercentage(speedFactor);
@@ -1345,7 +1348,7 @@ CoordStruct AdvancedDriveLocomotionClass::GetTrackOffset(const Point2D& base, in
 void AdvancedDriveLocomotionClass::UpdateHoverState()
 {
 	const auto pLinked = this->LinkedTo;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 	const int hoverHeight = pTypeExt->AdvancedDrive_Hover_Height.Get(RulesClass::Instance->HoverHeight);
 	const int oldHeight = pLinked->GetHeight();
 	int adjustHeight = oldHeight;
@@ -1483,7 +1486,7 @@ inline void AdvancedDriveLocomotionClass::UpdateSituation()
 
 	if (const auto pTarget = pLinked->MegaMissionIsAttackMove() ? nullptr : pLinked->Target)
 	{
-		pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+		pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 
 		if (pLinked->DistanceFrom(pTarget) <= pTypeExt.value()->AdvancedDrive_Reverse_FaceTargetRange.Get())
 		{
@@ -1497,7 +1500,7 @@ inline void AdvancedDriveLocomotionClass::UpdateSituation()
 	if (this->ForwardTo != CoordStruct::Empty)
 	{
 		if (!pTypeExt.has_value())
-			pTypeExt = TechnoExt::ExtMap.Find(pLinked)->TypeExtData;
+			pTypeExt = TechnoExt::Fetch(pLinked)->TypeExtData;
 
 		const auto currentDistance = static_cast<int>(pLinked->Location.DistanceFrom(this->ForwardTo));
 
@@ -1520,7 +1523,7 @@ inline void AdvancedDriveLocomotionClass::UpdateForwardState(int desiredRaw)
 
 	const auto pLinked = static_cast<UnitClass*>(this->LinkedTo);
 	const auto pType = pLinked->Type;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
 	if (!pTypeExt->AdvancedDrive_Reverse)
 		return;
@@ -1561,7 +1564,7 @@ inline void AdvancedDriveLocomotionClass::UpdateForwardState(int desiredRaw)
 		const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768) - static_cast<short>(tgtDir.Raw)));
 		this->IsForward = deltaTgtDir <= deltaOppDir;
 	}
-	else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame) <= pTypeExt->AdvancedDrive_Reverse_RetreatDuration
+	else if ((Unsorted::CurrentFrame - TechnoExt::Fetch(pLinked)->LastHurtFrame) <= pTypeExt->AdvancedDrive_Reverse_RetreatDuration
 		|| (pLinked->Destination && pLinked->DistanceFrom(pLinked->Destination) <= pTypeExt->AdvancedDrive_Reverse_MinimumDistance.Get()))
 	{
 		const auto curDir = pLinked->PrimaryFacing.Current();
@@ -1625,7 +1628,7 @@ inline bool AdvancedDriveLocomotionClass::InMotion()
 			|| this->TargetCoord != pLinked->Location))
 	{
 		const auto pType = pLinked->GetTechnoType();
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
 		if (pLinked->PrimaryFacing.IsRotating())
 		{
@@ -1713,7 +1716,8 @@ inline int AdvancedDriveLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 		&& static_cast<int>(DirStruct(pTrackData->Face << 8).GetValue<3>()) != pathDir;
 
 	const auto pType = pLinked->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExtUnit = UnitTypeExt::TryFetch(abstract_cast<UnitTypeClass*>(pType));
 
 	while (true)
 	{
@@ -1797,12 +1801,12 @@ inline int AdvancedDriveLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 				{
 					pLinked->IsCrushingSomething = true;
 
-					if (pType->TiltsWhenCrushes)
+					if (pTypeExtUnit && pType->TiltsWhenCrushes)
 					{
 						// Customized crush tilt speed
 						pLinked->RockingForwardsPerFrame = this->IsForward
-							? static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05))
-							: static_cast<float>(-pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
+							? static_cast<float>(pTypeExtUnit->CrushForwardTiltPerFrame.Get(-0.05))
+							: static_cast<float>(-pTypeExtUnit->CrushForwardTiltPerFrame.Get(-0.05));
 					}
 				}
 			}
