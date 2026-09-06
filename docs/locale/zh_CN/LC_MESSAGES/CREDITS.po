@@ -914,6 +914,7 @@ msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "Attached animation draw offset customizations"
 msgstr ""
+"附着动画绘制偏移"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："

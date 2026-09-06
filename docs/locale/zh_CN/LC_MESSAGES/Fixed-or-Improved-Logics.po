@@ -3082,11 +3082,13 @@ msgstr "在原版中带有 `Crater=yes` 的动画硬编码会摧毁其所在单�
 
 msgid "Draw offset customization"
 msgstr ""
+"自定义绘制偏移"
 
 msgid ""
 "`XDrawOffset` can be used to adjust horizontal/X axis position of the "
 "animation."
 msgstr ""
+"`XDrawOffset` 可用于调整动画在水平／X 轴方向的位置"
 
 msgid ""
 "`X/YDrawOffset.ApplyBracketHeight` makes X/Y axis position follow it's "
@@ -3095,6 +3097,7 @@ msgid ""
 "`PixelSelectionBracketDelta` for Y axis and hardcoded bracket width for X"
 " axis) if it is attached to one."
 msgstr ""
+"`X/YDrawOffset.ApplyBracketHeight` 可在动画附着于某个对象时使 X／Y 轴位置跟随其附着对象选择框的宽度／高度（对于建筑，这取决于 `Height` 和 `Foundation`，对于其他单位，Y 轴受 `PixelSelectionBracketDelta` 影响，X 轴使用硬编码的选择框宽度）"
 
 msgid ""
 "By default Y axis shift will only apply if the bracket position is "
@@ -3102,18 +3105,21 @@ msgid ""
 "`YDrawOffset.InvertBracketShift` is set to true, the opposite is true and"
 " negative shift is ignored."
 msgstr ""
+"默认情况下 Y 轴偏移仅在选择框位置为负即向上移动过时生效。如果 `YDrawOffset.InvertBracketShift` 设为 true 则反之，此时负偏移的会被忽略。"
 
 msgid ""
 "For X axis the shift direction can also be switched by setting "
 "`XDrawOffset.InvertBracketShift=true`. The default is positive shift, "
 "towards right-hand side of the screen."
 msgstr ""
+"X 轴也可以使用 `XDrawOffset.InvertBracketShift=true` 来切换偏移方向。默认正向偏移即屏幕向右。"
 
 msgid ""
 "The bracket-based shift can be further adjusted with offset from "
 "`X/YDrawOffset.BracketAdjust`, overridden by "
 "`X/YDrawOffset.BracketAdjust.Buildings` for buildings only."
 msgstr ""
+"基于选择框的偏移可通过 `X/YDrawOffset.BracketAdjust` 进一步调整，建筑用 `X/YDrawOffset.BracketAdjust.Buildings` 覆盖这两条。"
 
 msgid "Fire animations spawned by Scorch & Flamer"
 msgstr "由 Scorch 和 Flamer 生成的火焰动画"
