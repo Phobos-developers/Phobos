@@ -4166,6 +4166,9 @@ msgstr ""
 "`OpenTopped.AllowFiringIfDeactivated` 可用于自定义当运输工具被瘫痪（EMP、`PoweredUnit` "
 "等）时载员是否可以开火。"
 
+msgid "`OpenTopped.AllowFiringIfAttackedByLocomotor` can be used to customize whether or not passengers can fire out when the transport is being attacked by a weapon whose warhead has `IsLocomotor=true`."
+msgstr "`OpenTopped.AllowFiringIfAttackedByLocomotor` 可用于自定义当运输工具被一个弹头拥有 `IsLocomotor=true` 的武器攻击时载员是否可以开火。"
+
 msgid ""
 "`OpenTopped.ShareTransportTarget` controls whether or not the current "
 "target of the transport itself is passed to the passengers as well."
