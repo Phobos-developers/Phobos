@@ -781,17 +781,22 @@ void ShieldClass::SelfHealing()
 		timerCombatRestart->Stop();
 	}
 
-	if (timerWHModifier->Completed() && timer->HasStarted())
+	if (timerWHModifier->Completed())
 	{
-		if (pType->SelfHealing)
+		timerWHModifier->Stop();
+
+		if (timer->HasStarted())
 		{
-			const double mult = this->SelfHealing_Rate_Warhead > 0 ? (double)pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 0.0;
-			timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
-		}
-		else
-		{
-			timer->Stop();
-			return;
+			if (pType->SelfHealing)
+			{
+				const double mult = this->SelfHealing_Rate_Warhead > 0 ? (double)pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 0.0;
+				timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
+			}
+			else
+			{
+				timer->Stop();
+				return;
+			}
 		}
 	}
 
@@ -799,7 +804,8 @@ void ShieldClass::SelfHealing()
 
 	if (percentageAmount != 0)
 	{
-		if ((health < pType->Strength || percentageAmount < 0) && timer->StartTime == -1)
+		// failsafe, in case of timer ends in some edged cases
+		if (timer->StartTime == -1 && (health < pType->Strength || percentageAmount < 0))
 			timer->Start(rate);
 
 		if (timer->Completed())
@@ -875,17 +881,22 @@ void ShieldClass::RespawnShield()
 		timerCombatRestart->Stop();
 	}
 
-	if (timerWHModifier->Completed() && timer->HasStarted())
+	if (timerWHModifier->Completed())
 	{
-		if (pType->Respawn)
+		timerWHModifier->Stop();
+
+		if (timer->HasStarted())
 		{
-			const double mult = this->Respawn_Rate_Warhead > 0 ? (double)pType->Respawn_Rate / this->Respawn_Rate_Warhead : 0.0;
-			timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
-		}
-		else
-		{
-			timer->Stop();
-			return;
+			if (pType->Respawn)
+			{
+				const double mult = this->Respawn_Rate_Warhead > 0 ? (double)pType->Respawn_Rate / this->Respawn_Rate_Warhead : 0.0;
+				timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
+			}
+			else
+			{
+				timer->Stop();
+				return;
+			}
 		}
 	}
 
@@ -893,6 +904,7 @@ void ShieldClass::RespawnShield()
 
 	if (percentageAmount > 0)
 	{
+		// failsafe, in case of timer ends in some edged cases
 		if (timer->StartTime == -1)
 			timer->Start(rate);
 
