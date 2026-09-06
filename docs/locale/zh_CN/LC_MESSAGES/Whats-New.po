@@ -2677,9 +2677,9 @@ msgstr ""
 "类的标签（by Noble_Fish）"
 
 msgid ""
-"Allow customize that whether `Temporal=yes` warhead will cause target "
-"building animation poweroff (by NetsuNegi)"
-msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电（by NetsuNegi）"
+"[Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.html#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)"
+msgstr ""
+"[允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电](Fixed-or-Improved-Logics.html#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff)（by NetsuNegi）"
 
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "

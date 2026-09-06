@@ -2043,6 +2043,15 @@ msgstr ""
 "在原版中，信标放置快捷键仅限于多人游戏使用。现在你可以通过将 `AllowBeaconHotKeyInSinglePlayer` 设置为 true"
 " 来允许在单人模式和遭遇战中使用信标放置快捷键。"
 
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause target "
+"building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
+msgid ""
+"In vanilla, `Temporal=yes` warhead will cause target building animation poweroff. Now you can customize it."
+msgstr "在原版中，`Temporal=yes` 弹头会触发目标建筑动画停电。现在你可以自定义了。"
+
 msgid "Allow deploy controlled MCV"
 msgstr "允许部署被心控的 MCV"
 
@@ -2642,11 +2651,6 @@ msgid ""
 "In vanilla, buildings are forbidden to use waypoints. Now you can allow "
 "that using the following flag."
 msgstr "在原版中，建筑被禁止使用路径点。现在你可以使用以下标签来允许使用。"
-
-msgid ""
-"Allow customize that whether `Temporal=yes` warhead will cause target "
-"building animation poweroff"
-msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
 
 msgid "Aircraft"
 msgstr "战机类型"
