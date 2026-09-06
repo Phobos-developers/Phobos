@@ -63,6 +63,7 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 |Jumpjet  | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
 |Rocket   | `{B7B49766-E576-11d3-9BD9-00104B972FE8}` |
+|AdvancedDrive  | `{4A582751-9839-11d1-B709-00A024DDAFD1}` |
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.

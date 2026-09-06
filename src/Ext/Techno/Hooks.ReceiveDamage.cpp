@@ -137,6 +137,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		raiseCombatAlert();
 	}
 
+	if (pWHExt->CanTargetHouse(pSourceHouse, pThis))
+		pExt->LastHurtFrame = Unsorted::CurrentFrame;
+
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
