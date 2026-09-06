@@ -573,6 +573,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
   - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -793,7 +794,8 @@ This page lists all the individual contributions to the project by their author.
   - Show game time
   - Fix a game crash when parsing string list with null entry
   - `513` Set mission timer properties
-  - More veteran and elite abilities
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
   - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
