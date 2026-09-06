@@ -333,7 +333,7 @@ DEFINE_HOOK(0x423122, AnimClass_DrawIt_DrawOffset, 0x6)
 			{
 				auto const pShieldType = pShield->GetType();
 
-				if (pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning() && (pShield->GetHealthRatio() > 0.0 || !pShieldType->Pips_HideIfNoStrength))
+				if (!pShield->IsBrokenAndNonRespawning() && (pShield->GetHealthRatio() > 0.0 || !pShieldType->Pips_HideIfNoStrength))
 				{
 					if ((pShieldType->BracketDelta <= 0 && !invertY) || (pShieldType->BracketDelta > 0 && invertY))
 						pLocation->Y += pShieldType->BracketDelta + SHIELD_HEALTHBAR_OFFSET;
