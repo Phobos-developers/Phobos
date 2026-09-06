@@ -665,6 +665,18 @@ In `artmd.ini`:
 DetachedReport=  ; Sound entry
 ```
 
+## Country
+
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[COUNTRY]                   ; Country
+RevealHouses=team           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+```
+
 ## Buildings
 
 ### Build area customizations

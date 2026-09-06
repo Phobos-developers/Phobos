@@ -446,6 +446,7 @@ This page lists all the individual contributions to the project by their author.
   - SkipMapSelect Enhancement
   - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
+  - Customize the country displayed in `Sight`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
