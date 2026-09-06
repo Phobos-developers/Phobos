@@ -919,11 +919,10 @@ msgstr ""
 "[自定义步兵序列播放速率](New-or-Enhanced-Logics.md#customizable-infantry-sequence-"
 "rates)（by Noble_Fish）"
 
-#, fuzzy
 msgid ""
 "`<Player @ X>` can now be used as owner for triggers on skirmish and "
 "multiplayer maps (by Starkku)"
-msgstr "`<Player @ X>` 现在可以作为遭遇战／多人游戏地图预置对象的所有者（by Starkku）"
+msgstr "`<Player @ X>` 现在可以作为遭遇战／多人游戏地图触发器的所有者（by Starkku）"
 
 msgid "More veteran and elite abilities (by Ollerus)"
 msgstr ""

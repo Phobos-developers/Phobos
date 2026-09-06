@@ -827,9 +827,8 @@ msgstr "自定义 `Scorch`／`Flamer` 火焰动画"
 msgid "EM Pulse cannon logic improvements"
 msgstr "EMP 炮逻辑改进"
 
-#, fuzzy
 msgid "`<Player @ X>` as owner for pre-placed objects and triggers"
-msgstr "允许 `<Player @ X>` 作为地图预置对象所有者"
+msgstr "允许 `<Player @ X>` 作为地图预置对象和触发器的所有者"
 
 msgid "Custom exit cell for infantry factory"
 msgstr "自定义兵营退出单元格"

@@ -33,6 +33,7 @@ msgid ""
 " owner for triggers on skirmish and multiplayer maps. Triggers with "
 "owners that are not present in the game are destroyed and never sprung."
 msgstr ""
+"`<Player @ X>` 现在可以作为遭遇战／多人游戏地图预置对象和触发器的所有者。如果触发器的所有者不存在于游戏中，则该触发器会被销毁且永不被触发。"
 
 msgid ""
 "Script action `Move to cell` now obeys YR cell calculation now. Using "
