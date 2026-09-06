@@ -677,7 +677,7 @@ In `rulesmd.ini`:
 RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 
 [SOMECOUNTRY]           ; Country
-RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses.
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
 ```
 
 ## Buildings
