@@ -331,6 +331,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
+- Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 
 ## Fixes / interactions with other extensions
 
