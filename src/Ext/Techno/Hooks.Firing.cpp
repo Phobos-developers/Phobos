@@ -412,7 +412,16 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		// Handle IsAttackedByLocomotor
+		if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		{
+			if (pFoot->IsAttackedByLocomotor)
+				return Continue;
+		}
+
 		return FireErrorRearm;
+	}
 
 	return Continue;
 }
