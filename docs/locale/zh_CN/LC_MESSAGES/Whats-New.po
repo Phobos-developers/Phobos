@@ -996,6 +996,11 @@ msgstr ""
 msgid "Fixed several shield respawn/self heal issues (by Ollerus)"
 msgstr "修复了护盾重生／自愈的一系列问题（by Ollerus）"
 
+msgid ""
+"Fixed the bug where Tiberium veins overlay used the wrong palette instead of "
+"matching the Veinhole Monster (by FS-21)"
+msgstr "修复了泰伯利亚静脉蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug（by FS-21）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
