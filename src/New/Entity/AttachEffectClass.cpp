@@ -1220,7 +1220,29 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			info.DurationOverride = attachEffect->DurationOverride;
 
 			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, attachEffect->IsSelfOwned(), false))
+			{
+				// Sync necessary properties. Delays properties are not needed since it's not self owned
+
+				// duration
 				pAE->Duration = attachEffect->Duration;
+
+				// status
+				pAE->IsAnimHidden = attachEffect->IsAnimHidden;
+				pAE->IsInTunnel = attachEffect->IsInTunnel;
+				pAE->IsUnderTemporal = attachEffect->IsUnderTemporal;
+				pAE->IsOnline = attachEffect->IsOnline;
+				pAE->IsCloaked = attachEffect->IsCloaked;
+
+				// check results
+				pAE->LastDiscardCheckValue = attachEffect->LastDiscardCheckValue;
+				pAE->LastActiveStat = attachEffect->LastActiveStat;
+				pAE->LastSequenceCheck = attachEffect->LastSequenceCheck;
+				pAE->ShouldBeDiscarded = attachEffect->ShouldBeDiscarded;
+
+				// discard count
+				pAE->FiringCount = attachEffect->FiringCount;
+				pAE->ReceivedDamageCount = attachEffect->ReceivedDamageCount;
+			}
 		}
 
 		if (type->RequiresRecalculation)

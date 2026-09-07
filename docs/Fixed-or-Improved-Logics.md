@@ -426,6 +426,16 @@ In `rulesmd.ini`:
 AllowBeaconHotKeyInSinglePlayer=false  ; boolean
 ```
 
+### Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+
+- In vanilla, `Temporal=yes` warhead will cause target building animation poweroff. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Temporal.KillPoweredAnim=true   ; boolean
+```
+
 ### Allow deploy controlled MCV
 
 - In vanilla, you cannot deploy a controlled vehicle to `ConstructionYard=true` building. Now you can customize it.
@@ -828,14 +838,6 @@ In `rulesmd.ini`:
 ```ini
 [General]
 BuildingWaypoints=false  ; boolean
-```
-
-### Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
-
-In `rulesmd.ini`:
-```ini
-[General]
-Temporal.KillPoweredAnim=true   ; boolean
 ```
 
 ## Aircraft
