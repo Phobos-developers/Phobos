@@ -44,14 +44,14 @@ DEFINE_HOOK(0x707DCF, TechnoClass_GetCrew_NationalOverride, 0x5)
 		return 0;
 
 	HouseClass* pHouse = pThis->Owner;
+
 	if (!pHouse)
 		return 0;
 
-	auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
-	if (pHouseTypeExt && pHouseTypeExt->Crew.isset())
-	{
+	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+
+	if (pHouseTypeExt->Crew.isset())
 		R->EAX(pHouseTypeExt->Crew.Get());
-	}
 
 	return 0;
 }
