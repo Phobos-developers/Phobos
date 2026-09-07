@@ -12,15 +12,21 @@ public:
 	AttachEffectClass();
 
 	AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay);
+		AbstractClass* pSource, bool selfOwned, int durationOverride, int delay, int initialDelay, int recreationDelay);
 
 	~AttachEffectClass();
 
 	void AI();
 	void AI_Temporal();
+	void UpdateConditionalAnimDrawingLogic();
 	void KillAnim();
 	void CreateAnim();
 	void UpdateCumulativeAnim(int count);
+
+	bool HasAnim() const
+	{
+		return this->Animation != nullptr;
+	}
 
 	bool CanShowAnim() const
 	{
@@ -31,17 +37,25 @@ public:
 			&& !this->IsAnimHidden && !this->IsInTunnel;
 	}
 
-	void SetAnimationTunnelState(bool visible);
+	void SetAnimationTunnelState(bool visible)
+	{
+		if (!this->IsInTunnel && !visible)
+			this->KillAnim();
+
+		this->IsInTunnel = !visible;
+	}
+
 	AttachEffectTypeClass* GetType() const { return this->Type; }
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
-	bool IsSelfOwned() const { return this->Source == this->Techno; }
+	bool IsSelfOwned() const { return this->SelfOwned; }
 	bool HasExpired() const { return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration; }
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
 	HouseClass* GetInvokerHouse() const { return this->InvokerHouse; }
+	void AddExpireWeaponParams(ExpireWeaponCondition condition, std::vector<AEWeaponParams>& expireWeapons, bool ignoreCumulativeCountCheck = false) const;
 	bool IsActive() const { return this->IsOnline && this->IsActiveIgnorePowered(); }
 
 	bool IsActiveIgnorePowered() const
@@ -56,18 +70,18 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo);
+	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false);
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
+	inline void CloakCheck();
 	void OnlineCheck();
-	void CloakCheck();
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo, bool checkCumulative = true);
+		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool checkCumulative = true);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
 	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
@@ -97,6 +111,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
+	bool SelfOwned;
 	LaserTrailClass* LaserTrail;
 	Sequence LastSequenceCheck;
 
@@ -104,6 +119,8 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool ShouldRecalculateStats;
+	int FiringCount;
+	int ReceivedDamageCount;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -121,6 +138,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasOnDamageDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -137,6 +155,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasOnDamageDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }

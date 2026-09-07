@@ -65,12 +65,15 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
-	case PhobosTriggerAction::SetDropCrate:
-		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::UndeployToWaypoint:
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetFollowsIndexForVehicle:
 		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetMissionTimer:
+		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::SetDropCrate:
+		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -496,9 +499,6 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 
 	for (auto const pTechno : TechnoClass::Array)
 	{
-		if (pTechno->WhatAmI() == AbstractType::BuildingType)
-			continue;
-
 		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
 		if (!pFoot)
 			continue;
@@ -506,7 +506,25 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 		if (pFoot->WhatAmI() != AbstractType::Unit)
 			continue;
 
-		if (!pFoot->AttachedTag || !pFoot->AttachedTag->ContainsTrigger(pTrigger))
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
 			continue;
 
 		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
@@ -671,7 +689,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	for (auto pTechno : TechnoClass::Array)
+	for (const auto pTechno : TechnoClass::Array)
 	{
 		const auto pAttachedTag = pTechno->AttachedTag;
 
@@ -773,6 +791,21 @@ bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pH
 			_snprintf_s(pScenario->NextScenario, sizeof(pScenario->NextScenario), pText);
 		}
 	}
+
+	return true;
+}
+
+bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const int type = pThis->Param3;
+	const int reverse = pThis->Param5;
+	ScenarioExt::Global()->MissionTimer_Variable = pThis->Param4;
+
+	if (0 <= type && 4 >= type)
+		ScenarioExt::Global()->MissionTimer_Type = type;
+
+	if (0 <= reverse && 1 >= reverse)
+		ScenarioExt::Global()->MissionTimer_Reverse = (bool)reverse;
 
 	return true;
 }

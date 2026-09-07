@@ -54,6 +54,14 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());
 }
 
+bool AttachEffectTypeClass::HasAnim() const
+{
+	if (this->Cumulative)
+		return this->CumulativeAnimations.size() > 0 || this->Animation != nullptr;
+	else
+		return this->Animation != nullptr;
+}
+
 void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
 {
 	if (const auto pTag = pTarget->AttachedTag)
@@ -112,6 +120,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	if (this->DiscardOn_Health_AbovePercent > this->DiscardOn_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] DiscardOn.Health.AbovePercent is greater than DiscardOn.Health.BelowPercent, the health discard condition cannot be established.\n", pSection);
 
+	this->DiscardOn_Firing_Count.Read(exINI, pSection, "DiscardOn.Firing.Count");
+	this->DiscardOn_ReceivedDamage_Count.Read(exINI, pSection, "DiscardOn.ReceivedDamage.Count");
+	this->DiscardOn_ReceivedDamage_AffectsHouse.Read(exINI, pSection, "DiscardOn.ReceivedDamage.AffectsHouse");
 	this->DiscardOn_Missions.Read(exINI, pSection, "DiscardOn.Missions");
 	this->DiscardOn_AIMissions.Read(exINI, pSection, "DiscardOn.AIMissions");
 	this->DiscardOn_LandTypes.Read(exINI, pSection, "DiscardOn.LandTypes");
@@ -204,11 +215,23 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
 
+	// Animation draw offsets.
+	for (int i = 0; i < INT32_MAX; i++)
+	{
+		AnimationDrawOffsetClass offset;
+
+		if (offset.LoadFromINI(pINI, pSection, i))
+			this->Animation_DrawOffsets.emplace_back(offset);
+		else
+			break;
+	}
+
 	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
 		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
-		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
+		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None)
 	{
 		this->RequiresRecalculation = true;
 	}
@@ -239,6 +262,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_Ammo_MaximumAmount)
 		.Process(this->DiscardOn_Health_BelowPercent)
 		.Process(this->DiscardOn_Health_AbovePercent)
+		.Process(this->DiscardOn_Firing_Count)
+		.Process(this->DiscardOn_ReceivedDamage_Count)
+		.Process(this->DiscardOn_ReceivedDamage_AffectsHouse)
 		.Process(this->DiscardOn_Missions)
 		.Process(this->DiscardOn_AIMissions)
 		.Process(this->DiscardOn_LandTypes)
@@ -302,6 +328,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
+		.Process(this->Animation_DrawOffsets)
 		.Process(this->RequiresRecalculation)
 		;
 }
@@ -398,6 +425,10 @@ namespace detail
 				else if (!_strcmpi(cur, "sequence"))
 				{
 					parsed |= DiscardCondition::Sequence;
+				}
+				else if (!_strcmpi(cur, "receiveddamage"))
+				{
+					parsed |= DiscardCondition::ReceivedDamage;
 				}
 				else
 				{
@@ -543,6 +574,48 @@ bool AEAttachInfoTypeClass::Load(PhobosStreamReader& stm, bool registerForChange
 bool AEAttachInfoTypeClass::Save(PhobosStreamWriter& stm) const
 {
 	return const_cast<AEAttachInfoTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)
+
+// AnimationDrawOffsetClass
+
+bool AnimationDrawOffsetClass::LoadFromINI(CCINIClass* pINI, const char* pSection, int index)
+{
+	INI_EX exINI(pINI);
+	char tempBuffer[48];
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d", index);
+	this->Offset.Read(exINI, pSection, tempBuffer);
+
+	if (this->Offset.Get() == Point2D::Empty)
+		return false;
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d.RequiredTypes", index);
+	this->RequiredTypes.Read(exINI, pSection, tempBuffer);
+
+	return true;
+}
+
+#pragma region(save/load)
+
+template <class T>
+bool AnimationDrawOffsetClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Offset)
+		.Process(this->RequiredTypes)
+		.Success();
+}
+
+bool AnimationDrawOffsetClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool AnimationDrawOffsetClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AnimationDrawOffsetClass*>(this)->Serialize(stm);
 }
 
 #pragma endregion(save/load)

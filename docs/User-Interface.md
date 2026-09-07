@@ -163,7 +163,7 @@ Anchor.Vertical=top                            ; Vertical position enumeration (
 Anchor.Building=top                            ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 Percentage=false                               ; boolean
 HideMaxValue=false                             ; boolean
-VisibleToHouses=owner                          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses=owner                          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 VisibleToHouses.Observer=true                  ; boolean
 VisibleInSpecialState=true                     ; boolean
 ValueScaleDivisor=                             ; integer
@@ -348,7 +348,7 @@ Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
-VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
 GroundShape=                            ; filename with .shp extension
@@ -403,9 +403,16 @@ ShowDesignatorRange=false             ; boolean
 ### Show game time
 
 - A timer can be displayed to show how many time has passed since game starts.
+  - Both `[Phobos] -> ShowGameTime` and `[General] -> ShowGameTime` need to be set to true to enable the timer.
   - The timer will be shown in the format of `TXT_GAMETIME hh:mm:ss`. For localization add `TXT_GAMETIME` into your `.csf` file.
   - `ShowGameTime.BoardOpacity` can be used to set the opacitiy of background for game time display.
   - Observer can't see this timer since they've already gotten one on the top of sidebar.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ShowGameTime=true              ; boolean
+```
 
 In `RA2MD.INI`:
 ```ini
@@ -515,7 +522,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 DisplayIncome=false        ; boolean
 DisplayIncome.Delay=15     ; integer
-DisplayIncome.Houses=all   ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.Houses=all   ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 DisplayIncome.AllowAI=yes  ; boolean
 
 [SOMEBUILDING]             ; BuildingType
@@ -651,7 +658,7 @@ DisableEmptySpawnPositions=false  ; boolean
 
 ### Skip saving game on starting a new campaign
 
-When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+- When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
 
 In `RA2MD.INI`:
 ```ini
@@ -660,7 +667,6 @@ SaveGameOnScenarioStart=true  ; boolean
 ```
 
 ## Sidebar / Battle UI
-
 
 ### Allow replacing vanilla repairing with togglable auto repairing
 

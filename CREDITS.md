@@ -160,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Modify ammo on impact
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -279,7 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -307,6 +308,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -381,14 +383,14 @@ This page lists all the individual contributions to the project by their author.
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
   - Teleport, Tunnel and Fly loco visual tilt fix
-  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip units' turret rotation and jumpjets' wobbling under EMP
   - Droppod properties dehardcode
   - `Deployer = yes->no` infantry conversion sequence fix
   - Waypoint entering building together with engineer/agent bug fix
   - Skippable game save on scenario start
-  - `InfDeath=9` versus jumpjet infantry 0 damage fix
+  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip rally point line drawing when undeploying a building
+  - `InfDeath=9` versus jumpjet infantry 0 damage fix
   - Ares' `SW.Shots` hint on extended tooltips
   - Ares' Abductor weapon fix
   - Suppress Ares' swizzle warning when parsing tags and taskforces
@@ -442,6 +444,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
+  - Add a global default value for `KeepAlive`
+  - Customized transport plane for teams
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -565,6 +569,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that technos do not reset their link with the linked building when deactivated
   - Customize whether warhead can prevent crew escape from techno
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fix a bug that computer player record cannot be log normally in non English mode
+  - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -740,6 +749,18 @@ This page lists all the individual contributions to the project by their author.
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
   - Disable AlphaImage during Buildup
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
+  - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
+  - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
+  - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
+  - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
+  - Customize whether mind-controlled `Insignificant` technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
+  - Customize whether the unit can be detected by psychic detector
+  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
+  - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
+  - Customizable infantry sequence rates
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -771,6 +792,10 @@ This page lists all the individual contributions to the project by their author.
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
+  - Fix a game crash when parsing string list with null entry
+  - `513` Set mission timer properties
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -882,6 +907,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
+  - Add new AutoDeath conditions based on the owner's power status and the player's credits
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -933,3 +959,5 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses

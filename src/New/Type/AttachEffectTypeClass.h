@@ -8,7 +8,7 @@
 #include "LaserTrailTypeClass.h"
 
 // AE discard condition
-enum class DiscardCondition : unsigned short
+enum class DiscardCondition : unsigned int
 {
 	None = 0x0,
 	Entry = 0x1,
@@ -26,7 +26,8 @@ enum class DiscardCondition : unsigned short
 	Health = 0x1000,
 	Mission = 0x2000,
 	LandType = 0x4000,
-	Sequence = 0x8000
+	Sequence = 0x8000,
+	ReceivedDamage = 0x10000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -45,6 +46,8 @@ enum class ExpireWeaponCondition : unsigned char
 
 MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
+class AnimationDrawOffsetClass;
+
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
 	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
@@ -61,6 +64,9 @@ public:
 	Valueable<int> DiscardOn_Ammo_MaximumAmount;
 	Nullable<double> DiscardOn_Health_BelowPercent;
 	Nullable<double> DiscardOn_Health_AbovePercent;
+	Valueable<int> DiscardOn_Firing_Count;
+	Valueable<int> DiscardOn_ReceivedDamage_Count;
+	Valueable<AffectedHouse> DiscardOn_ReceivedDamage_AffectsHouse;
 	ValueableVector<Mission> DiscardOn_Missions;
 	NullableVector<Mission> DiscardOn_AIMissions;
 	Valueable<LandTypeFlags> DiscardOn_LandTypes;
@@ -125,6 +131,7 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 	bool RequiresRecalculation;
 	bool RestrictedArmorMultiplier;
 
@@ -140,6 +147,9 @@ public:
 		, DiscardOn_Ammo_MaximumAmount { -1 }
 		, DiscardOn_Health_BelowPercent { -1 }
 		, DiscardOn_Health_AbovePercent { -1 }
+		, DiscardOn_Firing_Count { 1 }
+		, DiscardOn_ReceivedDamage_Count { 1 }
+		, DiscardOn_ReceivedDamage_AffectsHouse { AffectedHouse::All }
 		, DiscardOn_Missions {}
 		, DiscardOn_AIMissions {}
 		, DiscardOn_LandTypes { LandTypeFlags::None }
@@ -203,6 +213,7 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, Animation_DrawOffsets {}
 		, RequiresRecalculation { false }
 		, RestrictedArmorMultiplier { false }
 	{};
@@ -214,6 +225,7 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	bool HasAnim() const;
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
@@ -335,3 +347,25 @@ struct AEWeaponParams
 	{
 	}
 };
+
+// Container for AttachEffect animation draw offset info.
+class AnimationDrawOffsetClass
+{
+public:
+	Valueable<Point2D> Offset;
+	ValueableVector<AttachEffectTypeClass*> RequiredTypes;
+
+	bool LoadFromINI(CCINIClass* pINI, const char* pSection, int index);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	AnimationDrawOffsetClass() :
+		Offset { Point2D::Empty}
+		, RequiredTypes {}
+	{ }
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+

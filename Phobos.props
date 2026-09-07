@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DevBuild|Win32">
-      <Configuration>DevBuild</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -25,10 +21,10 @@
   <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(ExpandedIncludePath);$(MSBuildThisFileDirectory)src\;$(YRppDir);$(VC_IncludePath)</IncludePath>
+    <IntDir>$(Configuration)\IntDir\</IntDir>
+    <IncludePath>$(ExpandedIncludePath);$(MSBuildThisFileDirectory)src\;$(YRppDir);$(IntDir)Generated;$(VC_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\IntDir\</IntDir>
     <CoreLibraryDependencies></CoreLibraryDependencies>
     <PhobosExtraLibs>dbghelp.lib;onecore.lib</PhobosExtraLibs>
   </PropertyGroup>
@@ -71,21 +67,6 @@
   <!-- Release -->
   <ItemDefinitionGroup Condition="$(Configuration.Contains('Release'))">
     <ClCompile>
-      <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MaxSpeed</Optimization>
-      <OmitFramePointers>true</OmitFramePointers>
-      <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
-    </ClCompile>
-    <Link>
-      <!-- <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration> -->
-    </Link>
-    <ResourceCompile>
-      <PreprocessorDefinitions>IS_RELEASE_VER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-  </ItemDefinitionGroup>
-  <!-- DevBuild -->
-  <ItemDefinitionGroup Condition="$(Configuration.Contains('DevBuild'))">
-    <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
       <!-- <WholeProgramOptimization>true</WholeProgramOptimization> -->
@@ -106,22 +87,73 @@
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <!-- GitCommit -->
-  <ItemDefinitionGroup Condition="'$(GitCommit)' != ''">
+  <!--
+    Git stamping. GitCommit / GitRef / GitDirty are derived from the local repository at
+    build time (the ref, e.g. refs/heads/develop), so local and CI builds
+    are stamped alike with no external input. The properties can still be overridden from the
+    command line. The values are written into a generated header in a target rather than baked
+    into an ItemDefinitionGroup because they are only known after the props are evaluated.
+    stderr is redirected to nul so a missing or failing git cannot fail the build nor leak error
+    text into the version - it only results in an unstamped build with an informational message.
+  -->
+  <Target Name="ComputeGitInfo" BeforeTargets="ClCompile;ResourceCompile">
+    <Exec Command="git rev-parse --short HEAD 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitCommit)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+    </Exec>
+    <Exec Command="git symbolic-ref HEAD 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitRef)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitRef" />
+    </Exec>
+    <!-- On a detached HEAD (e.g. CI checkouts of a pull request merge or a tag), symbolic-ref
+         yields nothing, so fall back to the ref(s) pointing at HEAD. The %(refname) format string
+         lives in scripts\get_git_ref.cmd because the Exec task would re-expand a %(refname)
+         written inline - even %25-escaped - as item metadata, mangling it into `(refname)`. -->
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)scripts\get_git_ref.cmd&quot;" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitRef)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitRef" />
+    </Exec>
+    <Exec Command="git status --porcelain 2&gt;nul" WorkingDirectory="$(MSBuildProjectDirectory)"
+      ConsoleToMsBuild="true" IgnoreExitCode="true" StandardOutputImportance="Low"
+      Condition="'$(GitDirty)' == '' and '$(GitCommit)' != ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitStatusPorcelain" />
+    </Exec>
+    <PropertyGroup>
+      <GitDirty Condition="'$(GitDirty)' == '' and '$(GitStatusPorcelain)' != ''">true</GitDirty>
+    </PropertyGroup>
+    <Message Condition="'$(GitCommit)' == '' and '$(GitRef)' == ''" Importance="High"
+      Text="Could not determine the Git commit/ref - this build will not be stamped with Git info." />
+    <!-- Write the git info into a generated header included by Phobos.version.h instead of
+         passing it as defines on every translation unit's command line. This keeps the git info
+         off the command lines, so a changed commit only rebuilds the few units that include the
+         header; WriteOnlyWhenDifferent keeps the header timestamp stable when nothing changed. -->
+    <ItemGroup>
+      <GitHeader Include="// Generated by ComputeGitInfo - do not edit." />
+      <GitHeader Include="#define STR_GIT_COMMIT &quot;$(GitCommit)&quot;" Condition="'$(GitCommit)' != ''" />
+      <GitHeader Include="#define STR_GIT_REF &quot;$(GitRef)&quot;" Condition="'$(GitRef)' != ''" />
+      <GitHeader Include="#define STR_GIT_DIRTY &quot;-dirty&quot;" Condition="'$(GitDirty)' == 'true'" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntDir)Generated" />
+    <WriteLinesToFile File="$(IntDir)Generated\Phobos.Git.h" Lines="@(GitHeader)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
+  <!-- BuildType -->
+  <ItemDefinitionGroup Condition="'$(BuildType)' == 'NIGHTLY'">
     <ClCompile>
-      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>NIGHTLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalOptions>/DGIT_COMMIT="$(GitCommit)" %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>NIGHTLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <!-- GitBranch -->
-  <ItemDefinitionGroup Condition="'$(GitBranch)' != ''">
+  <ItemDefinitionGroup Condition="'$(BuildType)' == 'RELEASE'">
     <ClCompile>
-      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalOptions>/DGIT_BRANCH="$(GitBranch)" %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

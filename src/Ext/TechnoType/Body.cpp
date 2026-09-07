@@ -17,6 +17,9 @@ namespace
 	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
 		{ "RELOAD",       AdditionalAbility::Reload },
 		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+		{ "RANGE",		  AdditionalAbility::Range },
+		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune },
+		{ "CRITCHANCE",	  AdditionalAbility::CritChance }
 	};
 
 	void ReadAdditionalAbilities(
@@ -828,6 +831,14 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
+	this->AutoDeath_PlayerPowerState.Read(exINI, pSection, "AutoDeath.PlayerPowerState");
+	this->AutoDeath_PlayerMoney_Max.Read(exINI, pSection, "AutoDeath.PlayerMoney.Max");
+	this->AutoDeath_PlayerMoney_Min.Read(exINI, pSection, "AutoDeath.PlayerMoney.Min");
+
+	if ((this->AutoDeath_PlayerMoney_Max != -1)
+		&& (this->AutoDeath_PlayerMoney_Min != -1)
+		&& (this->AutoDeath_PlayerMoney_Max < this->AutoDeath_PlayerMoney_Min))
+		Debug::Log("[Developer warning][%s] AutoDeath.PlayerMoney.Min is bigger than AutoDeath.PlayerMoney.Max, AutoDeath will never activate!\n", pSection);
 
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
@@ -1000,7 +1011,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
-	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
@@ -1051,6 +1061,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, pSection, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, pSection, "VeteranCritChance");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -1185,10 +1197,15 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
+	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
+	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
+
+	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
+	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
-
-	// Ares 0.3
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1203,9 +1220,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
+	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
 
 	if (pThis->Gunner)
 	{
@@ -1443,15 +1462,11 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->InterceptorType)
 
-		.Process(this->GroupAs)
 		.Process(this->WeaponGroupAs)
-		.Process(this->RadarJamRadius)
 		.Process(this->RadarJamHouses)
 		.Process(this->RadarJamDelay)
 		.Process(this->RadarJamAffect)
 		.Process(this->RadarJamIgnore)
-		.Process(this->InhibitorRange)
-		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
 		.Process(this->TurretShadow)
 		.Process(this->ShadowIndices)
@@ -1497,6 +1512,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
+		.Process(this->AutoDeath_PlayerPowerState)
+		.Process(this->AutoDeath_PlayerMoney_Max)
+		.Process(this->AutoDeath_PlayerMoney_Min)
 
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
@@ -1556,8 +1574,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->AllowWeaponSelectAgainstWalls)
-		.Process(this->NoAmmoWeapon)
-		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
@@ -1640,7 +1656,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->TiberiumEaterType)
 
-		.Process(this->Convert_Deploy)
 		.Process(this->Convert_Undeploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
@@ -1672,7 +1687,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoQueueUpToEnter)
 		.Process(this->NoQueueUpToEnter_BoardDistance)
 		.Process(this->NoQueueUpToUnload)
-		.Process(this->Passengers_BySize)
 
 		.Process(this->RateDown_Delay)
 		.Process(this->RateDown_Reset)
@@ -1687,6 +1701,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AdditionalEliteAbilities)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
@@ -1803,8 +1819,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
 
-		.Process(this->Unsellable)
-
 		.Process(this->ExtraThreat_Enabled)
 		.Process(this->ExtraThreat_IsThreat)
 		.Process(this->AlwaysConsideredThreat)
@@ -1816,6 +1830,35 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
+
+		.Process(this->ExitThroughRoof)
+		.Process(this->PsychicDetectable)
+
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
+
+		// Ares 0.2
+		.Process(this->RadarJamRadius)
+
+		// Ares 0.9
+		.Process(this->InhibitorRange)
+		.Process(this->DesignatorRange)
+
+		// Ares 0.A
+		.Process(this->GroupAs)
+			
+		// Ares 0.C
+		.Process(this->NoAmmoWeapon)
+		.Process(this->NoAmmoAmount)
+
+		// Ares 2.0
+		.Process(this->Passengers_BySize)
+		.Process(this->Convert_Deploy)
+
+		// Ares 3.0
+		.Process(this->Unsellable)
+		.Process(this->KeepAlive)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)

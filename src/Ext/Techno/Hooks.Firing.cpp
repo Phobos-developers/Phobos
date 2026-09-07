@@ -1,5 +1,3 @@
-#include <JumpjetLocomotionClass.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -412,7 +410,16 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		// Handle IsAttackedByLocomotor
+		if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		{
+			if (pFoot->IsAttackedByLocomotor)
+				return Continue;
+		}
+
 		return FireErrorRearm;
+	}
 
 	return Continue;
 }
@@ -689,8 +696,15 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	{
 		for (const auto& attachEffect : pExt->AttachedEffects)
 		{
-			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
-				attachEffect->ShouldBeDiscarded = true;
+			const auto pType = attachEffect->GetType();
+
+			if ((pType->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+			{
+				attachEffect->FiringCount++;
+
+				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
+					attachEffect->ShouldBeDiscarded = true;
+			}
 		}
 	}
 
@@ -1022,7 +1036,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(const int, weaponIndex, ESI);
 	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
-	REF_STACK(CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
+	REF_STACK(const CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
 
 	bool allowOnTurret = true;
 	CoordStruct flh = CoordStruct::Empty;
@@ -1167,11 +1181,10 @@ static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int durati
 		return duration;
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-	const auto pRulesExt = RulesExt::Global();
 
 	const double multiplier = ability == AdditionalAbility::EmptyReload
-		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
-		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+		? pTypeExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(RulesExt::Global()->VeteranReload);
 
 	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
 }
@@ -1302,7 +1315,7 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 	{
 		GET(FootClass*, pThis, EBX);
 
-		if (pThis->InLimbo)
+		if (pThis->InLimbo || !pThis->Locomotor->Is_Really_Moving_Now())
 			return 0;
 
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
@@ -1310,7 +1323,10 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 		// Per-type setting takes priority, falls back to the global one.
 		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
 		{
-			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			// these codes are for preventing jumpjets from moving around when executing ApproachTarget.StopWhenInRange
+			// however, it'll make them can't scatter and find empty cells after attacking, so disable it for now
+			// TODO: a better solution to handle both cases properly
+			/*if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
 				auto const crd = pThis->GetCoords();
 				pJumpjetLoco->DestinationCoords.X = crd.X;
@@ -1318,13 +1334,10 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 				pJumpjetLoco->CurrentSpeed = 0;
 				pJumpjetLoco->MaxSpeed = 0;
 				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
-				pThis->AbortMotion();
-			}
-			else
-			{
-				pThis->StopMoving();
-				pThis->AbortMotion();
-			}
+			}*/
+			
+			pThis->StopMoving();
+			pThis->AbortMotion();
 		}
 	}
 

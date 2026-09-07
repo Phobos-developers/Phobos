@@ -407,7 +407,14 @@ DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));
 
+	// Bleeding-edge builds (local and nightly) skip the version offset entirely: each one is a
+	// unique snapshot, so version-based filtering would both falsely claim compatibility between
+	// same-version nightlies and hide saves from other bleeding-edge snapshots. Only release and
+	// pre-release builds get the offset, which makes saves from different Phobos versions filter
+	// out of each other's load lists.
+#if defined(RELEASE)
 	Info.InternalVersion = Info.InternalVersion + SAVEGAME_ID;
+#endif
 	strncat(Info.ExecutableName.data(),
 		" + Phobos " FILE_VERSION_STR,
 		Info.ExecutableName.Size - sizeof(" + Phobos " FILE_VERSION_STR)
@@ -419,8 +426,10 @@ DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 DEFINE_HOOK_AGAIN(0x67FD9D, LoadOptionsClass_GetFileInfo, 0x7)
 DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 {
+#if defined(RELEASE)
 	GET(SavegameInformation*, Info, ESI);
 	Info->InternalVersion = Info->InternalVersion - SAVEGAME_ID;
+#endif
 	return 0;
 }
 

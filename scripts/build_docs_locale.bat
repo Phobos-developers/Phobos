@@ -6,5 +6,5 @@ rem Ensure we're in correct directory.
 cd /D "%~dp0"
 cd ..\docs
 
-sphinx-build -b gettext ./ ./locale
-sphinx-intl update -p ./locale -l zh_CN
+sphinx-build -b gettext . _build/gettext
+sphinx-intl update -p _build/gettext -l zh_CN

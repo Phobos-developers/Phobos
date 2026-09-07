@@ -230,41 +230,4 @@ DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
 	return 0;
 }
 
-// Don't allow upgrade anims to be created if building is not upgraded or they require power to be shown and the building isn't powered.
-static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
-{
-	auto const pType = pBuilding->Type;
-
-	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
-	{
-		const int animIndex = BuildingExt::Fetch(pBuilding)->PoweredUpToLevel - 1;
-
-		if (animIndex < 0 || (int)anim != animIndex)
-			return false;
-
-		auto const animData = pType->BuildingAnim[int(anim)];
-
-		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect)) || (pType->PoweredSpecial && animData.PoweredSpecial))
-			&& !(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-DEFINE_HOOK(0x45189D, BuildingClass_AnimUpdate_Upgrades, 0x6)
-{
-	enum { SkipAnim = 0x451B2C };
-
-	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(BuildingAnimSlot, anim, STACK_OFFSET(0x34, 0x8));
-
-	if (!AllowUpgradeAnim(pThis, anim))
-		return SkipAnim;
-
-	return 0;
-}
-
 #pragma endregion
