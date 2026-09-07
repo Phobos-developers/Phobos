@@ -230,6 +230,15 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x48A5F8, SelectDamageAnimation_AnimList_CustomCoefficient, 0x5)
+{
+	GET(WarheadTypeClass* const, pThis, ESI);
+	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
+
+	R->EAX(pWHExt->AnimList_DamageDivider ? pWHExt->AnimList_DamageDivider : 25);
+	return 0x48A5FD;
+}
+
 DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 {
 	enum { SkipCheck = 0x489702 };

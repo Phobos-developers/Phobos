@@ -607,6 +607,7 @@ This page lists all the individual contributions to the project by their author.
   - Damaged aircraft image changes
   - Change target Owner on warhead impact
   - Set sidebar tab by selecting factory
+  - Customizable damage divider for default `AnimList` picker
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile

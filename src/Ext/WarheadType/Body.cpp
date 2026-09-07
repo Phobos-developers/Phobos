@@ -167,6 +167,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
 	this->SplashList_ScatterMin.Read(exINI, pSection, "SplashList.ScatterMin");
 	this->SplashList_ScatterMax.Read(exINI, pSection, "SplashList.ScatterMax");
+	this->AnimList_DamageDivider.Read(exINI, pSection, "AnimList.DamageDivider");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
 	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
@@ -575,6 +576,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->SplashList_CreationInterval)
 		.Process(this->SplashList_ScatterMin)
 		.Process(this->SplashList_ScatterMax)
+		.Process(this->AnimList_DamageDivider)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
 		.Process(this->AnimList_CreationInterval)
