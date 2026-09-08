@@ -1,6 +1,7 @@
 #pragma once
 
 #include <HouseTypeClass.h>
+#include <InfantryTypeClass.h>
 
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
@@ -29,11 +30,13 @@ public:
 	EVAType EVATag;
 	AEAttachInfoTypeClass AttachEffects;
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
+	Nullable<InfantryTypeClass*> Crew;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
+		, Crew {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;
