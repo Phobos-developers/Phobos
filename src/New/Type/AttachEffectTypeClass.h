@@ -273,6 +273,7 @@ struct AEAttachParams
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
+	bool ReplaceLongerDuration;
 
 	AEAttachParams() :
 		DurationOverride { 0 }
@@ -283,6 +284,7 @@ struct AEAttachParams
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
+		, ReplaceLongerDuration { false }
 	{
 	}
 };
@@ -296,6 +298,7 @@ public:
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
+	Nullable<bool> ReplaceLongerDuration;
 	ValueableVector<AttachEffectTypeClass*> RemoveTypes;
 	std::vector<std::string> RemoveGroups;
 	ValueableVector<int> CumulativeRemoveMinCounts;
@@ -317,6 +320,7 @@ public:
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
+		, ReplaceLongerDuration {}
 		, RemoveTypes {}
 		, RemoveGroups {}
 		, CumulativeRemoveMinCounts {}

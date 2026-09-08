@@ -906,6 +906,7 @@ void TechnoExt::UpdateAttachEffects()
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
+	bool requiresUpdateAnim = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<AEWeaponParams> expireWeapons;
 	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
@@ -918,11 +919,21 @@ void TechnoExt::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
+		auto const pType = attachEffect->GetType();
 
 		if (attachEffect->ShouldRecalculateStats)
 		{
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
+
+			if (pType->HasTint())
+				markForRedraw = true;
+		}
+
+		if (attachEffect->ShouldUpdateAnim)
+		{
+			requiresUpdateAnim = true;
+			attachEffect->ShouldUpdateAnim = false;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -930,8 +941,8 @@ void TechnoExt::UpdateAttachEffects()
 
 		if (hasExpired || shouldDiscard)
 		{
-			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
+			requiresUpdateAnim = true;
 
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
@@ -962,10 +973,7 @@ void TechnoExt::UpdateAttachEffects()
 	}
 
 	if (requiresRecalc)
-	{
 		this->RecalculateStatMultipliers();
-		this->UpdateAEAnimDrawingLogic();
-	}
 
 	if (markForRedraw)
 	{
@@ -975,8 +983,12 @@ void TechnoExt::UpdateAttachEffects()
 
 	for (auto const pType : cumulativeAnimTypes)
 	{
-		this->UpdateCumulativeAttachEffects(pType, true);
+		if (this->UpdateCumulativeAttachEffects(pType, true))
+			requiresUpdateAnim = true;
 	}
+
+	if (requiresUpdateAnim)
+		this->UpdateAEAnimDrawingLogic();
 
 	auto const coords = pThis->GetCoords();
 
@@ -1039,7 +1051,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
+bool TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
@@ -1072,15 +1084,26 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim(count);
+		if (pAEWithAnim->UpdateCumulativeAnim(count))
+			return true;
 	}
 	else if (pAELargestDuration)
 	{
 		pAELargestDuration->HasCumulativeAnim = true;
 
 		if (createAnim)
+		{
 			pAELargestDuration->CreateAnim();
+
+			if (pAELargestDuration->ShouldUpdateAnim)
+			{
+				pAELargestDuration->ShouldUpdateAnim = false;
+				return true;
+			}
+		}
 	}
+
+	return false;
 }
 
 // Update AttachEffect animation drawing logic.
