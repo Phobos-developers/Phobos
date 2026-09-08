@@ -230,13 +230,18 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x48A5F8, SelectDamageAnimation_AnimList_CustomCoefficient, 0x5)
+DEFINE_HOOK(0x48A5EB, SelectDamageAnimation_AnimList_CustomCoefficient, 0x7)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
+	GET(const int, nDamage, EDI);
+
 	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
 
-	R->EAX(pWHExt->AnimList_DamageDivider ? pWHExt->AnimList_DamageDivider : 25);
-	return 0x48A5FD;
+	const int divider = pWHExt->AnimList_DamageDivider ? pWHExt->AnimList_DamageDivider : 25;
+	const int idx = std::min((size_t)(pThis->AnimList.Count * divider - 1), (size_t)nDamage) / divider;
+
+	R->EAX(pThis->AnimList.GetItemOrDefault(idx));
+	return 0x48A5AD;
 }
 
 DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
