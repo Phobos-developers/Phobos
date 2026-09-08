@@ -265,7 +265,7 @@ void AttachEffectClass::AI()
 	{
 		const int delay = this->Delay;
 
-		if (!this->IsSelfOwned() || delay < 0)
+		if (delay < 0)
 			return;
 
 		this->CurrentDelay = delay;
@@ -542,21 +542,6 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	}
 }
 
-bool AttachEffectClass::ResetIfRecreatable()
-{
-	if (!this->IsSelfOwned() || this->RecreationDelay < 0)
-		return false;
-
-	this->KillAnim();
-	this->Duration = 0;
-	this->CurrentDelay = this->RecreationDelay;
-
-	if (this->CurrentDelay == 0)
-		this->ShouldRefreshDuration = true;
-
-	return true;
-}
-
 bool AttachEffectClass::ShouldBeDiscardedNow()
 {
 	if (this->LastDiscardCheckFrame == Unsorted::CurrentFrame)
@@ -792,7 +777,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 /// <param name="attachEffectInfo">AttachEffect attach info.</param>
 /// <param name="selfOwned">Whether the effect is owned by the Techno itself.</param>
 /// <returns>Number of AttachEffect instances created and attached.</returns>
-int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned)
+int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned, bool hasDelay)
 {
 	auto const& types = attachEffectInfo.AttachTypes;
 
@@ -811,7 +796,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	for (size_t i = 0; i < types.size(); i++)
 	{
 		auto const pType = types[i];
-		auto const params = attachEffectInfo.GetAttachParams(i, selfOwned);
+		auto const params = attachEffectInfo.GetAttachParams(i, hasDelay);
 
 		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetType, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, params, selfOwned, requiresUpdateAnim))
 		{
@@ -1282,6 +1267,11 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		{
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
+
+			// Only house-based AE has delays now
+			info.Delay = attachEffect->Delay;
+			info.InitialDelay = attachEffect->InitialDelay;
+			info.RecreationDelay = attachEffect->RecreationDelay;
 
 			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetType, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info, attachEffect->IsSelfOwned(), requiresUpdateAnim, false))
 			{

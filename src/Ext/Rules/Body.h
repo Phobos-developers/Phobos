@@ -560,6 +560,8 @@ public:
 		// Global default per-sequence game-speed normalization flags for infantry
 		std::vector<int> CustomSequenceNormalized;
 
+		Valueable<bool> AttachEffects_AttachOnOwnerChange;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1053,6 +1055,8 @@ public:
 
 			, CustomSequenceRates(42, -1)
 			, CustomSequenceNormalized(42, -1)
+
+			, AttachEffects_AttachOnOwnerChange { false }
 		{ }
 
 		virtual ~ExtData() = default;

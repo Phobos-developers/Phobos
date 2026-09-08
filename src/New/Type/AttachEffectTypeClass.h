@@ -27,7 +27,8 @@ enum class DiscardCondition : unsigned int
 	Mission = 0x2000,
 	LandType = 0x4000,
 	Sequence = 0x8000,
-	ReceivedDamage = 0x10000
+	ReceivedDamage = 0x10000,
+	OwnerChange = 0x20000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -75,6 +76,9 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
+	Valueable<bool> DiscardOn_OwnerChange_HumanToComputer;
+	Valueable<bool> DiscardOn_OwnerChange_ComputerToHuman;
+	Valueable<bool> DiscardOn_OwnerChange_IgnoreRevertOnExit;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -158,6 +162,9 @@ public:
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
 		, DiscardOn_ConsiderHarvestingAsStationary {}
+		, DiscardOn_OwnerChange_HumanToComputer { true }
+		, DiscardOn_OwnerChange_ComputerToHuman { true }
+		, DiscardOn_OwnerChange_IgnoreRevertOnExit { false }
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
