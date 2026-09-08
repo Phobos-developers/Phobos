@@ -164,7 +164,7 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
+	bool UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
 	void UpdateAEAnimDrawingLogic();
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();

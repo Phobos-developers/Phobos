@@ -569,6 +569,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->AttachEffect_ReplaceLongerDuration.Read(exINI, GameStrings::General, "AttachEffect.ReplaceLongerDuration");
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, GameStrings::General, "AttachEffects.AttachOnOwnerChange");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
@@ -1099,6 +1101,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->AttachEffect_ReplaceLongerDuration)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->FlyNoWobbles)

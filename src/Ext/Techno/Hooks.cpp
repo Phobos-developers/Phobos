@@ -402,6 +402,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	auto const pExt = TechnoExt::Fetch(pThis);
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
+	bool requiresUpdateAnim = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<AEWeaponParams> expireWeapons;
 
@@ -420,11 +421,18 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 			if (attachEffect->ResetIfRecreatable())
 			{
+				if (attachEffect->ShouldUpdateAnim)
+				{
+					requiresUpdateAnim = true;
+					attachEffect->ShouldUpdateAnim = false;
+				}
+
 				++it;
 				continue;
 			}
 
 			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
+			requiresUpdateAnim = true;
 			it = pExt->AttachedEffects.erase(it);
 		}
 		else
@@ -435,6 +443,9 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 
 	if (requiresRecalc)
 		pExt->RecalculateStatMultipliers();
+
+	if (requiresUpdateAnim)
+		pExt->UpdateAEAnimDrawingLogic();
 
 	if (markForRedraw)
 	{

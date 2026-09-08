@@ -441,6 +441,7 @@ HideShakeEffects=false           ; boolean
 - [Attached animation draw offset customizations](Fixed-or-Improved-Logics.md#draw-offset-customization) (by Starkku)
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
+- Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi)
 
 #### Vanilla fixes:
@@ -449,6 +450,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)

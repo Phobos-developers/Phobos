@@ -574,6 +574,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+  - Observer can see IvanBomb that's attached by any house
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -796,6 +797,7 @@ This page lists all the individual contributions to the project by their author.
   - `513` Set mission timer properties
   - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
   - Fix several shield respawn/self heal issues
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

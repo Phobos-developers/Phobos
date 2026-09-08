@@ -30,6 +30,7 @@ This page describes all the engine features that are either new and introduced b
     - `mission`: Discard when the current mission of the object the effect is attached to matches any one in the `DiscardOn.Missions` list (or `DiscardOn.AIMissions` for AI-controlled objects, if set).
     - `landtype`: Discard when the land type of the cell where the object the effect is attached to is currently located matches any land type in the `DiscardOn.LandTypes` list.
     - `sequence`: Discard when the infantry to which the effect is attached is playing a sequence that matches any one in the `DiscardOn.Sequences` list.
+    - `ownerchange`: Discard when an owner change of the object the effect is attached to happens. `DiscardOn.OwnerChange.IgnoreRevertOnExit` defines whether to ignore the case where `Passengers.SyncOwner.RevertOnExit=true` causes ownership change. `DiscardOn.OwnerChange.HumanToComputer/ComputerToHuman` defines whether the discard will happen if the object's ownership has been changed from human to computer or from computer to human.
   - `DiscardOn.Sequences.Immediate` defines whether the `sequence` discard condition triggers immediately while the infantry is playing a matching sequence, or only when the infantry starts playing its next sequence after finishing that sequence.
   - `DiscardOn.MoveBasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. It treats Jumpjet units hovering in the air as movement, and units that have no destination but are turning as stationary.
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
@@ -88,11 +89,17 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
     - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
 
+- AttachEffectTypes can be attached to TechnoTypes of a specific Country when they're created using `AttachEffect.AttachTypes`.
+  - `AffectTypes`, `IgnoreTypes` and `AffectsTarget` of the attached effect can be used to define which TechnoType can these effects attached to.
+  - `AttachEffect.DurationOverrides`, `AttachEffect.Delays`, `AttachEffect.InitialDelays` and `AttachEffect.RecreationDelays` have the same functionalities like those tags on TechnoTypes.
+  - `AttachEffect.AttachOnOwnerChange` can be used to make the Country's AttachEffectTypes also attach to a TechnoType once it's changed to this house.
+
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeSourceMaxCount` can be used to determine the maximum count of `Cumulative=true` effect from this source, or with no limit if `AttachEffect.CumulativeSourceMaxCount` is a negative number. Work independently from `Cumulative.MaxCount` of the effect. If the target already has `AttachEffect.CumulativeSourceMaxCount` number of the same effect from the same source applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
   - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh.
+  - `AttachEffect.ReplaceLongerDuration` controls whether or not to refresh duration if there's already an attached instance (or the attached instance with shortest remaining duration if `Cumulative=true` and already reaches `Cumulative.MaxCount`) with longer remaining duration. Doesn't work when `AttachEffect.CumulativeRefreshAll=true`.
   - Attached Effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
     - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
@@ -113,6 +120,8 @@ DiscardOn.MoveBasedOnDestination=false             ; boolean
 DiscardOn.ConsiderHarvestingAsStationary=true      ; boolean
 OpenTopped.UseTransportRangeModifiers=false        ; boolean
 OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+AttachEffect.ReplaceLongerDuration=false           ; boolean
+AttachEffect.AttachOnOwnerChange=false             ; boolean
 
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
@@ -124,7 +133,7 @@ Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|firing|receiveddamage|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange|firing|receiveddamage|selling|undeploying|harvesting|invokerdie|ammo|health|mission|landtype|sequence|ownerchange)
 DiscardOn.Ammo.MinimumAmount=-1                    ; integer
 DiscardOn.Ammo.MaximumAmount=-1                    ; integer
 DiscardOn.Health.BelowPercent=-1                   ; floating point value
@@ -140,6 +149,9 @@ DiscardOn.Sequences.Immediate=                     ; boolean, default to [Genera
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 DiscardOn.MoveBasedOnDestination=                  ; boolean, default to [General] -> DiscardOn.MoveBasedOnDestination
 DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [General] -> DiscardOn.ConsiderHarvestingAsStationary
+DiscardOn.OwnerChange.HumanToComputer=true         ; boolean
+DiscardOn.OwnerChange.ComputerToHuman=true         ; boolean
+DiscardOn.OwnerChange.IgnoreRevertOnExit=false     ; boolean
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
@@ -207,6 +219,14 @@ AttachEffect.RecreationDelays=                     ; integer - recreation delays
 OpenTopped.UseTransportRangeModifiers=             ; boolean, default to [General] -> OpenTopped.UseTransportRangeModifiers
 OpenTopped.CheckTransportDisableWeapons=           ; boolean, default to [General] -> OpenTopped.CheckTransportDisableWeapons
 
+[SOMECOUNTRY]                                      ; Country
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.AttachOnOwnerChange=                  ; boolean, default to [General] -> AttachEffect.AttachOnOwnerChange
+
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                      ; List of AttachEffectTypes
@@ -230,6 +250,7 @@ AttachEffect.RemoveGroups=                         ; comma-separated list of str
 AttachEffect.CumulativeRemoveMinCounts=            ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.ReplaceLongerDuration=                ; boolean, default to [General] -> AttachEffect.ReplaceLongerDuration
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
