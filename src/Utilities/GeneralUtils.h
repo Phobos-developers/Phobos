@@ -18,6 +18,8 @@
 #define MIN(x) std::numeric_limits<x>::min()
 #define MAX(x) std::numeric_limits<x>::max()
 
+class PhobosPCXFile;
+
 class GeneralUtils
 {
 public:
@@ -43,6 +45,8 @@ public:
 	static int SafeMultiply(int value, int mult);
 	static int SafeMultiply(int value, double mult);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
+	static bool DrawImage(DSurface* pSurface, RectangleStruct destinationRect, BSurface* pPCXSurface, SHPStruct* fileSHP, ConvertClass* pPalette, int frameIndex = 0, int zAdjust = 0, BlitterFlags blitterFlags = BlitterFlags::None);
+	static std::unique_ptr<std::vector<PhobosPCXFile>> GetAnimationPCX(const std::string& baseFilename);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)

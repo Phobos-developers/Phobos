@@ -69,6 +69,7 @@ public:
 	Valueable<bool> ImmuneToCrit;
 	Nullable<bool> MultiMindControl_ReleaseVictim;
 	Valueable<int> CameoPriority;
+	PhobosPCXFile CameoPCX;
 	PhobosPCXFile AltCameoPCX;
 	Valueable<bool> NoManualMove;
 	Nullable<int> InitialStrength;
@@ -500,6 +501,7 @@ public:
 		, ImmuneToCrit { false }
 		, MultiMindControl_ReleaseVictim {}
 		, CameoPriority { 0 }
+		, CameoPCX {}
 		, AltCameoPCX {}
 		, NoManualMove { false }
 		, InitialStrength {}

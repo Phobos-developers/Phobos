@@ -712,6 +712,14 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->DropshipLoadout_Carriers)
+		.Process(this->DropshipLoadout_Cargo)
+		.Process(this->DropshipLoadout_InitialUnits)
+		.Process(this->DropshipLoadout_SWInitialUnits)
+		.Process(this->DropshipLoadout_SWCargo)
+		.Process(this->DropshipLoadout_SWCarrier)
+		.Process(this->DropshipLoadout_InitialUnitsSet)
+		.Process(this->DropshipLoadout_SWInitialUnitsSet)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }

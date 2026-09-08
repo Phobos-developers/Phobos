@@ -79,6 +79,16 @@ public:
 
 	bool PlayerAutoRepair;
 
+	std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
+	std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_Cargo;
+	std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_InitialUnits;
+	// SW-exclusive state (separated to avoid conflicts with map actions at slot 0)
+	std::vector<TechnoTypeClass*> DropshipLoadout_SWInitialUnits;
+	std::vector<TechnoTypeClass*> DropshipLoadout_SWCargo;
+	TechnoTypeClass* DropshipLoadout_SWCarrier;
+	bool DropshipLoadout_InitialUnitsSet;
+	bool DropshipLoadout_SWInitialUnitsSet;
+
 	std::array<int, 3> BeaconsPlacedOrder;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
@@ -115,6 +125,14 @@ public:
 		, FreeRadar(false)
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
+		, DropshipLoadout_Carriers {}
+		, DropshipLoadout_Cargo {}
+		, DropshipLoadout_InitialUnits {}
+		, DropshipLoadout_SWInitialUnits {}
+		, DropshipLoadout_SWCargo {}
+		, DropshipLoadout_SWCarrier { nullptr }
+		, DropshipLoadout_InitialUnitsSet { false }
+		, DropshipLoadout_SWInitialUnitsSet { false }
 		, BeaconsPlacedOrder { 0, 0, 0 }
 	{ }
 
