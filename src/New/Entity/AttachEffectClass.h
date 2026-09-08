@@ -50,7 +50,10 @@ public:
 	void SetAnimationTunnelState(bool visible)
 	{
 		if (!this->IsInTunnel && !visible)
+		{
 			this->KillAnim();
+			this->ShouldUpdateAnim = false; // no need to update anim here since they're all killed
+		}
 
 		this->IsInTunnel = !visible;
 	}
@@ -91,10 +94,10 @@ private:
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool checkCumulative = true);
+		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool& updateAnim, bool checkCumulative = true);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
-	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
+	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount, bool& updateAnim);
 
 	template <typename T>
 	bool Serialize(T& Stm);
@@ -129,6 +132,7 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool ShouldRecalculateStats;
+	bool ShouldUpdateAnim;
 	int FiringCount;
 	int ReceivedDamageCount;
 };
