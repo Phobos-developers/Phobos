@@ -19,9 +19,19 @@ public:
 	void AI();
 	void AI_Temporal();
 	void UpdateConditionalAnimDrawingLogic();
-	void KillAnim();
+
+	void KillAnim()
+	{
+		if (this->Animation)
+		{
+			this->Animation->UnInit();
+			this->Animation = nullptr;
+			this->ShouldUpdateAnim = true;
+		}
+	}
+
 	void CreateAnim();
-	void UpdateCumulativeAnim(int count);
+	bool UpdateCumulativeAnim(int count);
 
 	bool HasAnim() const
 	{

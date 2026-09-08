@@ -918,11 +918,15 @@ void TechnoExt::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
+		auto const pType = attachEffect->GetType();
 
 		if (attachEffect->ShouldRecalculateStats)
 		{
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
+
+			if (pType->HasTint())
+				markForRedraw = true;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -930,7 +934,6 @@ void TechnoExt::UpdateAttachEffects()
 
 		if (hasExpired || shouldDiscard)
 		{
-			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
 			if (pType->RequiresRecalculation)

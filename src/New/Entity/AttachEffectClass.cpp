@@ -242,13 +242,14 @@ void AttachEffectClass::AI()
 			if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 				pTechno->Uncloak(true);
 
+			this->ShouldRefreshDuration = false;
+
 			if (pType->HasTint())
 			{
 				pTechno->MarkForRedraw();
 				pExt->UpdateTintValues();
 			}
 
-			this->ShouldRefreshDuration = false;
 			AttachEffectTypeClass::HandleEvent(pTechno);
 		}
 
@@ -267,20 +268,19 @@ void AttachEffectClass::AI()
 
 		this->CurrentDelay = delay;
 
-		if (delay > 0)
+		if (delay > 0 || this->ShouldBeDiscardedNow())
 		{
 			this->KillAnim();
 
 			if (pType->RequiresRecalculation)
 				this->ShouldRecalculateStats = true;
-		}
-		else if (!this->ShouldBeDiscardedNow())
-		{
-			this->RefreshDuration();
+
+			if (delay == 0)
+				this->ShouldRefreshDuration = true;
 		}
 		else
 		{
-			this->ShouldRefreshDuration = true;
+			this->RefreshDuration();
 		}
 
 		return;
@@ -489,16 +489,6 @@ void AttachEffectClass::CreateAnim()
 	}
 }
 
-void AttachEffectClass::KillAnim()
-{
-	if (this->Animation)
-	{
-		this->Animation->UnInit();
-		this->Animation = nullptr;
-		TechnoExt::Fetch(this->Techno)->UpdateAEAnimDrawingLogic();
-	}
-}
-
 void AttachEffectClass::UpdateCumulativeAnim(int count)
 {
 	const auto pAnim = this->Animation;
@@ -556,7 +546,9 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
-	this->ShouldRefreshDuration = true;
+
+	if (this->CurrentDelay == 0)
+		this->ShouldRefreshDuration = true;
 
 	return true;
 }
@@ -1181,6 +1173,13 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		if (!isValid)
 		{
 			it = pSourceExt->AttachedEffects.erase(it);
+
+			if (type->RequiresRecalculation)
+				requiresRecalc = true;
+
+			if (type->HasTint())
+				markForRedraw = true;
+
 			continue;
 		}
 
