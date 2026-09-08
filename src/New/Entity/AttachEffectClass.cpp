@@ -917,7 +917,20 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 			if (!cumulative)
 			{
-				attachEffect->RefreshDuration(attachParams.DurationOverride);
+				const int duration = attachParams.DurationOverride ? attachParams.DurationOverride : pType->Duration;
+
+				if (attachParams.ReplaceLongerDuration || duration >= attachEffect->GetRemainingDuration())
+				{
+					attachEffect->RefreshDuration(attachParams.DurationOverride);
+				}
+				else if (pType->Animation_ResetOnReapply) // manually refresh anim
+				{
+					attachEffect->KillAnim();
+
+					if (attachEffect->CanShowAnim())
+						attachEffect->CreateAnim();
+				}
+
 				AttachEffectTypeClass::HandleEvent(pTarget);
 
 				if (attachEffect->ShouldUpdateAnim)
@@ -964,7 +977,25 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			}
 			else if (match)
 			{
-				match->RefreshDuration(attachParams.DurationOverride);
+				const int duration = attachParams.DurationOverride ? attachParams.DurationOverride : pType->Duration;
+
+				if (attachParams.ReplaceLongerDuration || duration >= match->GetRemainingDuration())
+				{
+					match->RefreshDuration(attachParams.DurationOverride);
+				}
+				else if (pType->Animation_ResetOnReapply) // manually refresh anim
+				{
+					match->KillAnim();
+
+					if (match->CanShowAnim())
+						match->CreateAnim();
+				}
+
+				if (match->ShouldUpdateAnim)
+				{
+					updateAnim = true;
+					match->ShouldUpdateAnim = false;
+				}
 			}
 
 			AttachEffectTypeClass::HandleEvent(pTarget);

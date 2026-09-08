@@ -1,5 +1,6 @@
 #include "AttachEffectTypeClass.h"
 
+#include <Ext/Rules/Body.h>
 #include <Ext/TEvent/Body.h>
 
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
@@ -505,6 +506,7 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
 	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
 	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
+	this->ReplaceLongerDuration.Read(exINI, pSection, "AttachEffect.ReplaceLongerDuration");
 	this->RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
 	exINI.ParseStringList(this->RemoveGroups, pSection, "AttachEffect.RemoveGroups");
 	this->CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
@@ -539,6 +541,7 @@ AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool s
 		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
 		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
 		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
+		info.ReplaceLongerDuration = this->ReplaceLongerDuration.Get(RulesExt::Global()->AttachEffect_ReplaceLongerDuration);
 	}
 
 	return info;
@@ -555,6 +558,7 @@ bool AEAttachInfoTypeClass::Serialize(T& stm)
 		.Process(this->CumulativeRefreshAll)
 		.Process(this->CumulativeRefreshAll_OnAttach)
 		.Process(this->CumulativeRefreshSameSourceOnly)
+		.Process(this->ReplaceLongerDuration)
 		.Process(this->RemoveTypes)
 		.Process(this->RemoveGroups)
 		.Process(this->CumulativeRemoveMinCounts)
