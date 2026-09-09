@@ -36,7 +36,7 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 	return 0;
 }
 
-// It takes effect when `Ares.dll` does not exist.
+// Ares has taken over TechnoClass_GetCrew, so usually it won't work.
 DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 {
 	enum { SkipGameCode = 0x707D81 };
