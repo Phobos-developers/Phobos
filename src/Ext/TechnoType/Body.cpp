@@ -1833,9 +1833,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
-			
-		.Process(this->DefaultToGuardArea_Modes)
-		.Process(this->DefaultToGuardArea_AIModes)
 
 		.Process(this->ExitThroughRoof)
 		.Process(this->PsychicDetectable)
@@ -1843,6 +1840,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+
+		.Process(this->DefaultToGuardArea_Modes)
+		.Process(this->DefaultToGuardArea_AIModes)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
