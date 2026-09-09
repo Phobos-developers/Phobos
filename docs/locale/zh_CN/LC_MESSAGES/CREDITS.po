@@ -2726,7 +2726,7 @@ msgid "Fix several shield respawn/self heal issues"
 msgstr "修复了护盾重生／自愈的一系列问题"
 
 msgid "Country-based attached effects"
-msgstr ""
+msgstr "基于国家的 AE"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"

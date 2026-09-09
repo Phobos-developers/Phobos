@@ -951,6 +951,7 @@ msgstr ""
 
 msgid "Country-based attached effects (by Ollerus)"
 msgstr ""
+"基于国家的 AE（by Ollerus）"
 
 msgid ""
 "[Customizable crew type per country](Fixed-or-Improved-Logics.md"
