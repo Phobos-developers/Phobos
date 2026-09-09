@@ -3653,3 +3653,12 @@ DEFINE_HOOK(0x4DA90E, FootClass_AI_WalkRateZeroProtect, 0x6)
 	R->EDX(1);
 	return 0x4DA914;
 }
+
+DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
+{
+	enum { ReturnFromFunction = 0x454CD3 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	return pThis->TemporalTargetingMe && !RulesExt::Global()->Temporal_KillPoweredAnim ? ReturnFromFunction : 0;
+}

@@ -292,6 +292,8 @@ public:
 	std::bitset<AdditionalAbilityCount> AdditionalEliteAbilities;
 	Nullable<double> VeteranReload;
 	Nullable<double> VeteranEmptyReload;
+	Nullable<double> VeteranRange;
+	Nullable<double> VeteranCritChance;
 
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
@@ -719,6 +721,8 @@ public:
 		, AdditionalEliteAbilities {}
 		, VeteranReload {}
 		, VeteranEmptyReload {}
+		, VeteranRange {}
+		, VeteranCritChance {}
 
 		, Wake { }
 		, Wake_Grapple { }
