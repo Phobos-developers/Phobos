@@ -1441,6 +1441,27 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
+
+	this->FlyingProduction.Read(exINI, pSection, "FlyingProduction");
+	this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
+	this->FlyingProduction_PlayFactoryAnim.Read(exINI, pSection, "FlyingProduction.PlayFactoryAnim");
+	this->FlyingProduction_SpawnAnim.Read(exINI, pSection, "FlyingProduction.SpawnAnim");
+	this->FlyingProduction_SpawnAnim_AttachedToObject.Read(exINI, pSection, "FlyingProduction.SpawnAnim.AttachedToObject");
+	this->FlyingProduction_SpawnAnim_AttachedToObject.Read(exINI, pSection, "FlyingProduction.SpawnAnim_AttachedToObject");
+	this->FlyingProduction_SpawnAt.Read(exINI, pSection, "FlyingProduction.SpawnAt");
+	this->FlyingProduction_RallyPointFromSpawnBuilding.Read(exINI, pSection, "FlyingProduction.RallyPointFromSpawnBuilding");
+
+	if (this->FlyingProduction.Get())
+	{
+		if (!this->FlyingProduction_SpawnHeight.isset())
+		{
+			const int defaultFlightLevel = RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
+			this->FlyingProduction_SpawnHeight = defaultFlightLevel > 0 ? defaultFlightLevel : pThis->GetFlightLevel();
+		}
+
+		if (this->FlyingProduction_SpawnHeight.Get() <= 0)
+			this->FlyingProduction = false;
+	}
 }
 
 template <typename T>
@@ -1859,6 +1880,14 @@ void TechnoTypeExt::Serialize(T& Stm)
 		// Ares 3.0
 		.Process(this->Unsellable)
 		.Process(this->KeepAlive)
+
+		.Process(this->FlyingProduction)
+		.Process(this->FlyingProduction_SpawnHeight)
+		.Process(this->FlyingProduction_PlayFactoryAnim)
+		.Process(this->FlyingProduction_SpawnAnim)
+		.Process(this->FlyingProduction_SpawnAnim_AttachedToObject)
+		.Process(this->FlyingProduction_SpawnAt)
+		.Process(this->FlyingProduction_RallyPointFromSpawnBuilding)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)

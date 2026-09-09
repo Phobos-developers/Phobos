@@ -386,6 +386,11 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
+
+	this->FlyingProduction_SpawnOffset.Read(exINI, pSection, "FlyingProduction.SpawnOffset");
+	this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
+	this->FlyingProduction_SpawnFacing.Read(exINI, pSection, "FlyingProduction.SpawnFacing");
+	this->FlyingProduction_RallyPoint.Read(exINI, pSection, "FlyingProduction.RallyPoint");
 }
 
 void BuildingTypeExt::CompleteInitialization()
@@ -509,6 +514,11 @@ void BuildingTypeExt::Serialize(T& Stm)
 
 		// Ares 3.0
 		.Process(this->UnitSell)
+
+		.Process(this->FlyingProduction_SpawnOffset)
+		.Process(this->FlyingProduction_SpawnHeight)
+		.Process(this->FlyingProduction_SpawnFacing)
+		.Process(this->FlyingProduction_RallyPoint)
 		;
 }
 

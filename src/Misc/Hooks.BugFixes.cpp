@@ -286,6 +286,16 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 		}
 	}
 
+	if (auto const pBldTypeExt = BuildingTypeExt::Fetch(pBuildingType))
+	{
+		if (pBldTypeExt->FlyingProduction_RallyPoint.Get())
+		{
+			R->ESI(static_cast<int>(MovementZone::Fly));
+			spdtp = SpeedType::Winged;
+			return NotNaval;
+		}
+	}
+
 	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
 		return IsNaval;
 

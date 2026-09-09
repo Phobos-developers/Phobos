@@ -343,6 +343,14 @@ public:
 
 	Nullable<AffectedHouse> RadarInvisibleToHouse;
 
+	Valueable<bool> FlyingProduction;
+	Nullable<int> FlyingProduction_SpawnHeight;
+	Valueable<bool> FlyingProduction_PlayFactoryAnim;
+	Nullable<AnimTypeClass*> FlyingProduction_SpawnAnim;
+	Valueable<bool> FlyingProduction_SpawnAnim_AttachedToObject;
+	ValueableVector<BuildingTypeClass*> FlyingProduction_SpawnAt;
+	Valueable<bool> FlyingProduction_RallyPointFromSpawnBuilding;
+
 	struct LaserTrailDataEntry
 	{
 		ValueableIdx<LaserTrailTypeClass> idxType;
@@ -876,6 +884,14 @@ public:
 		// Ares 3.0
 		, Unsellable {}
 		, KeepAlive {}
+
+		, FlyingProduction { false }
+		, FlyingProduction_SpawnHeight {}
+		, FlyingProduction_PlayFactoryAnim { false }
+		, FlyingProduction_SpawnAnim {}
+		, FlyingProduction_SpawnAnim_AttachedToObject { false }
+		, FlyingProduction_SpawnAt {}
+		, FlyingProduction_RallyPointFromSpawnBuilding { false }
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
