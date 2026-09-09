@@ -331,83 +331,97 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	if (pCurrentType->Spawns && pCurrentType->SpawnsNumber > 0)
 	{
-		// No SpawnManager exists, or their SpawnType is inconsistent.
-		if (!pSpawnManager || pCurrentType->Spawns != pSpawnManager->SpawnType)
+		if (!pSpawnManager)
 		{
-			if (pSpawnManager)
-			{
-				// It may be odd that AircraftType is different, I chose to reset it.
-				pSpawnManager->KillNodes();
-				GameDelete(pSpawnManager);
-			}
-
 			pSpawnManager = GameCreate<SpawnManagerClass>(pThis, pCurrentType->Spawns, pCurrentType->SpawnsNumber, pCurrentType->SpawnRegenRate, pCurrentType->SpawnReloadRate);
 		}
-		else if (pSpawnManager->SpawnCount != pCurrentType->SpawnsNumber)
+		else
 		{
-			// Additions/deletions made when quantities are inconsistent.
-			if (pSpawnManager->SpawnCount < pCurrentType->SpawnsNumber)
-			{
-				const int count = pCurrentType->SpawnsNumber - pSpawnManager->SpawnCount;
+			pSpawnManager->RegenRate = pCurrentType->SpawnRegenRate;
+			pSpawnManager->ReloadRate = pCurrentType->SpawnReloadRate;
 
-				// Add the missing Spawns, but don't intend for them to be born right away.
-				for (int i = 0; i < count; i++)
+			if (pSpawnManager->SpawnType != pCurrentType->Spawns)
+			{
+				pSpawnManager->SpawnType = pCurrentType->Spawns;
+
+				for (const auto pSpawnNode : pSpawnManager->SpawnedNodes)
 				{
-					const auto pSpawnNode = GameCreate<SpawnControl>();
-					pSpawnNode->Unit = nullptr;
-					pSpawnNode->Status = SpawnNodeStatus::Dead;
-					pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
-					pSpawnNode->IsSpawnMissile = false;
-					pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
+					pSpawnNode->IsSpawnMissile = pCurrentType->MissileSpawn;
+
+					if (const auto pAircraft = pSpawnNode->Unit)
+						TechnoExt::ConvertToType(pAircraft, pCurrentType->Spawns);
 				}
 			}
-			else
+
+			if (pSpawnManager->SpawnCount != pCurrentType->SpawnsNumber)
 			{
-				// Remove excess spawns
-				for (int i = pSpawnManager->SpawnCount - 1; i >= pCurrentType->SpawnsNumber; --i)
+				// Additions/deletions made when quantities are inconsistent.
+				if (pSpawnManager->SpawnCount < pCurrentType->SpawnsNumber)
 				{
-					if (const auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
+					const int count = pCurrentType->SpawnsNumber - pSpawnManager->SpawnCount;
+
+					// Add the missing Spawns, but don't intend for them to be born right away.
+					for (int i = 0; i < count; i++)
 					{
-						auto& pStatus = pSpawnNode->Status;
-
-						// Spawns that don't die get killed.
-						if (const auto pAircraft = pSpawnNode->Unit)
+						const auto pSpawnNode = GameCreate<SpawnControl>();
+						pSpawnNode->Unit = nullptr;
+						pSpawnNode->Status = SpawnNodeStatus::Dead;
+						pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
+						pSpawnNode->IsSpawnMissile = pCurrentType->MissileSpawn;
+						pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
+					}
+				}
+				else
+				{
+					// Remove excess spawns
+					for (int i = pSpawnManager->SpawnCount - 1; i >= pCurrentType->SpawnsNumber; --i)
+					{
+						if (const auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
 						{
-							pAircraft->SpawnOwner = nullptr;
+							auto& pStatus = pSpawnNode->Status;
 
-							if (pAircraft->InLimbo
-								|| pStatus == SpawnNodeStatus::Idle
-								|| pStatus == SpawnNodeStatus::Reloading
-								|| pStatus == SpawnNodeStatus::TakeOff)
+							// Spawns that don't die get killed.
+							if (const auto pAircraft = pSpawnNode->Unit)
 							{
-								if (pStatus == SpawnNodeStatus::TakeOff)
-									Kamikaze::Instance.Remove(pAircraft);
+								pAircraft->SpawnOwner = nullptr;
 
-								pAircraft->UnInit();
+								if (pAircraft->InLimbo
+									|| pStatus == SpawnNodeStatus::Idle
+									|| pStatus == SpawnNodeStatus::Reloading
+									|| pStatus == SpawnNodeStatus::TakeOff)
+								{
+									if (pStatus == SpawnNodeStatus::TakeOff)
+										Kamikaze::Instance.Remove(pAircraft);
+
+									pAircraft->UnInit();
+								}
+								else if (pSpawnNode->IsSpawnMissile)
+								{
+									pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+								}
+								else
+								{
+									pAircraft->Crash(nullptr);
+								}
 							}
-							else if (pSpawnNode->IsSpawnMissile)
-							{
-								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-							}
-							else
-							{
-								pAircraft->Crash(nullptr);
-							}
+
+							// Unlink
+							pSpawnNode->Unit = nullptr;
+							pStatus = SpawnNodeStatus::Dead;
+							GameDelete(pSpawnNode);
 						}
 
-						// Unlink
-						pSpawnNode->Unit = nullptr;
-						pStatus = SpawnNodeStatus::Dead;
-						GameDelete(pSpawnNode);
+						// Remove it
+						pSpawnManager->SpawnedNodes.RemoveItem(i);
 					}
-
-					// Remove it
-					pSpawnManager->SpawnedNodes.RemoveItem(i);
 				}
-			}
 
-			pSpawnManager->SpawnCount = pCurrentType->SpawnsNumber;
+				pSpawnManager->SpawnCount = pCurrentType->SpawnsNumber;
+			}
 		}
+
+		if (pSpawnManager->Target && pSpawnManager->Status == SpawnManagerStatus::CoolDown && pSpawnManager->CountDockedSpawns() > 0)
+			pSpawnManager->SetTarget(pSpawnManager->Target);
 	}
 	else if (pSpawnManager)
 	{

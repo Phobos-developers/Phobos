@@ -1017,6 +1017,12 @@ msgid ""
 msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug（by Noble_Fish）"
 
 msgid ""
+"All forms of type conversion now recursively convert active spawned units "
+"when a spawner unit converts to a different `Spawns` type instead of "
+"destroying them (by FS-21)"
+msgstr "所有形式的单位变形在母机变形为不同 `Spawns` 类型时，现存子机会递归转换而不再被销毁（by FS-21）"
+
+msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
 "or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)"
 msgstr ""

@@ -463,6 +463,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- All forms of type conversion now recursively convert active spawned units when a spawner unit converts to a different `Spawns` type instead of destroying them (by FS-21)
 ```
 
 ### 0.5
