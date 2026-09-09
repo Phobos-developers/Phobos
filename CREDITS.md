@@ -764,6 +764,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable infantry sequence rates
   - Country-specific veteran buildings
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
