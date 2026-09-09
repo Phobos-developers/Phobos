@@ -1,7 +1,11 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/InfantryType/Body.h>
+#include <Ext/Rules/Body.h>
 
 #include <InputManagerClass.h>
+#include <GameOptionsClass.h>
+#include <Utilities/SequenceRates.h>
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
@@ -209,3 +213,65 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 
 	return 0;
 }
+
+#pragma region CustomInfantrySequenceRates
+
+// The vanilla hardcoded per-sequence rates used as the final fallback live in SequenceRates::Entries (see Utilities/SequenceRates.h).
+
+namespace SequenceRateHooks
+{
+	int GetCustomRate(InfantryClass* pThis, int sequence)
+	{
+		if (sequence < 0 || sequence >= static_cast<int>(SequenceRates::Entries.size()))
+			return -1;
+
+		const int typeRate = InfantryTypeExt::Fetch(pThis->Type)->CustomSequenceRates[sequence];
+		const int customRate = typeRate >= 0 ? typeRate : RulesExt::Global()->CustomSequenceRates[sequence];
+
+		return customRate;
+	}
+
+	bool IsNormalized(InfantryClass* pThis, int sequence)
+	{
+		if (sequence < 0 || sequence >= static_cast<int>(SequenceRates::Entries.size()))
+			return false;
+
+		const int typeFlag = InfantryTypeExt::Fetch(pThis->Type)->CustomSequenceNormalized[sequence];
+		if (typeFlag >= 0)
+			return typeFlag != 0;
+
+		const int globalFlag = RulesExt::Global()->CustomSequenceNormalized[sequence];
+		if (globalFlag >= 0)
+			return globalFlag != 0;
+
+		return SequenceRates::Entries[sequence].Normalized;
+	}
+
+	int GetFinalRate(InfantryClass* pThis, int sequence)
+	{
+		const int customRate = GetCustomRate(pThis, sequence);
+		const int rate = customRate >= 0 ? customRate : SequenceRates::Entries[sequence].DefaultRate;
+
+		return IsNormalized(pThis, sequence)
+			? GameOptionsClass::Instance.GetAnimSpeed(rate)
+			: rate;
+	}
+}
+
+DEFINE_HOOK(0x51DA44, InfantryClass_DoAction_SequenceRate_Store, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(int, sequence, EDI);
+
+	if (sequence >= 0 && sequence < static_cast<int>(SequenceRates::Entries.size()))
+	{
+		const int finalRate = SequenceRateHooks::GetFinalRate(pThis, sequence);
+
+		pThis->Animation.Timer.TimeLeft = finalRate;
+		pThis->Animation.Rate = finalRate;
+	}
+
+	return 0x51DA4A;
+}
+
+#pragma endregion

@@ -410,7 +410,16 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		// Handle IsAttackedByLocomotor
+		if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		{
+			if (pFoot->IsAttackedByLocomotor)
+				return Continue;
+		}
+
 		return FireErrorRearm;
+	}
 
 	return Continue;
 }
@@ -1027,7 +1036,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(const int, weaponIndex, ESI);
 	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
-	REF_STACK(CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
+	REF_STACK(const CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
 
 	bool allowOnTurret = true;
 	CoordStruct flh = CoordStruct::Empty;
@@ -1172,11 +1181,10 @@ static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int durati
 		return duration;
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-	const auto pRulesExt = RulesExt::Global();
 
 	const double multiplier = ability == AdditionalAbility::EmptyReload
-		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
-		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+		? pTypeExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(RulesExt::Global()->VeteranReload);
 
 	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
 }

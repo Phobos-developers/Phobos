@@ -18,6 +18,14 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
+
+	this->AttachEffects.LoadFromINI(pINI, pSection);
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, pSection, "AttachEffect.AttachOnOwnerChange");
+
+	this->Crew.Read(exINI, pSection, "Crew");
+
+	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
+	this->VeteranDefenses.Read(exINI, pSection, "VeteranDefenses");
 }
 
 template <typename T>
@@ -25,6 +33,11 @@ void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
+		.Process(this->Crew)
+		.Process(this->VeteranBuildings)
+		.Process(this->VeteranDefenses)
 		;
 }
 
