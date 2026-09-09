@@ -258,10 +258,7 @@ DEFINE_HOOK(0x4449FB, BuildingClass_KickOutUnit_CloningVats, 0x8)
 
 bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass* pProduction)
 {
-	if (!pFactory || !pProduction)
-		return false;
-
-	if (pFactory->GetCurrentMission() == Mission::Construction)
+	if (!pFactory || !pProduction || pFactory->GetCurrentMission() == Mission::Construction)
 		return false;
 
 	auto const pType = pProduction->GetTechnoType();
@@ -272,6 +269,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 	if (!pTypeExt || !pTypeExt->FlyingProduction)
 		return false;
 
+	// Resolve which building should physically spawn the unit
 	BuildingClass* pSpawnBuilding = nullptr;
 
 	if (!pTypeExt->FlyingProduction_SpawnAt.empty())
@@ -281,6 +279,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 			if (!pTargetType)
 				continue;
 
+			// If the factory itself matches this target type, it takes immediate precedence
 			if (pFactory->Type == pTargetType)
 			{
 				pSpawnBuilding = pFactory;
@@ -298,8 +297,12 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 
 				if (pBld->Type == pTargetType)
 				{
-					if (pBld->IsPrimaryFactory && !pPrimaryCandidate)
+					if (pBld->IsPrimaryFactory)
+					{
+						// Primary factory has absolute priority; no need to evaluate remaining buildings
 						pPrimaryCandidate = pBld;
+						break;
+					}
 
 					const int dist = pFactory->DistanceFrom(pBld);
 					if (dist < minDistance)
@@ -323,6 +326,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 
 	auto const pSpawnBldTypeExt = BuildingTypeExt::Fetch(pSpawnBuilding->Type);
 
+	// Determine spawn height, offset, and facing
 	int height = pTypeExt->FlyingProduction_SpawnHeight.Get();
 	if (pSpawnBldTypeExt && pSpawnBldTypeExt->FlyingProduction_SpawnHeight.isset())
 		height = pSpawnBldTypeExt->FlyingProduction_SpawnHeight.Get();
@@ -343,6 +347,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 	if (pSpawnBldTypeExt && pSpawnBldTypeExt->FlyingProduction_SpawnFacing.isset())
 		facing = DirStruct(pSpawnBldTypeExt->FlyingProduction_SpawnFacing.Get());
 
+	// Unlimbo unit in the air safely using ScenarioInitGuard
 	pProduction->SetOwningHouse(pFactory->Owner, true);
 
 	bool unlimboSuccess = false;
@@ -359,6 +364,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 	if (!unlimboSuccess)
 		return false;
 
+	// Establish aerial state and position
 	pProduction->SetLocation(spawnCoords);
 	pProduction->Location = spawnCoords;
 	pProduction->InAir = true;
@@ -367,6 +373,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 	pProduction->PrimaryFacing.SetCurrent(facing);
 	pProduction->PrimaryFacing.SetDesired(facing);
 
+	// Configure locomotor (Jumpjet / Aircraft)
 	if (auto const pFoot = abstract_cast<FootClass*>(pProduction))
 	{
 		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
@@ -402,6 +409,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 	if (auto const pAircraft = abstract_cast<AircraftClass*>(pProduction))
 		pAircraft->SetHeight(height);
 
+	// Spawn visual effects
 	if (auto const pAnimType = pTypeExt->FlyingProduction_SpawnAnim.Get())
 	{
 		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, spawnCoords))
@@ -411,6 +419,7 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 		}
 	}
 
+	// Direct unit towards rally point or nudge away from factory
 	AbstractClass* pRallyTarget = nullptr;
 	if (pTypeExt->FlyingProduction_RallyPointFromSpawnBuilding.Get() && pSpawnBuilding->ArchiveTarget)
 		pRallyTarget = pSpawnBuilding->ArchiveTarget;
@@ -449,9 +458,11 @@ bool BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass*
 		}
 	}
 
+	// Trigger factory door/unload animation if requested
 	if (pTypeExt->FlyingProduction_PlayFactoryAnim.Get())
 		pFactory->QueueMission(Mission::Unload, false);
 
+	// Reset house production indices, factory pointers, and replicate via cloning vats
 	if (auto const pOwner = pFactory->Owner)
 	{
 		auto const pHouseExt = HouseExt::Fetch(pOwner);
