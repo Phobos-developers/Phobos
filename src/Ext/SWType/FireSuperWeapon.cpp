@@ -34,6 +34,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->SW_Link.size() > 0)
 		pTypeExt->ApplyLinkedSW(pSW);
 
+	if (pTypeExt->SW_CooldownGroup.size() > 0)
+		pTypeExt->ApplyCooldownGroupReset(pSW);
+
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
@@ -395,12 +398,7 @@ void SWTypeExt::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) con
 			if (suspend)
 			{
 				pSuper->IsSuspended = true;
-				const int arrayIndex = pSW->Type->ArrayIndex;
-
-				if (pHouseExt->SuspendedEMPulseSWs.count(arrayIndex))
-					pHouseExt->SuspendedEMPulseSWs[arrayIndex].push_back(arrayIndex);
-				else
-					pHouseExt->SuspendedEMPulseSWs.insert({ arrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
+				pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
 			}
 		}
 	}
@@ -486,6 +484,78 @@ void SWTypeExt::ApplyLinkedSW(SuperClass* pSW)
 
 		MessageListClass::Instance.PrintMessage(this->Message_LinkedSWAcquired.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
+}
+
+void SWTypeExt::ApplyCooldownGroupReset(SuperClass* pSW)
+{
+	if (!pSW || !pSW->Owner)
+		return;
+
+	HouseClass* pHouse = pSW->Owner;
+	const std::vector<std::string>& firedGroups = this->SW_CooldownGroup;
+
+	if (firedGroups.empty())
+		return;
+
+	auto sharesFiredGroup = [&firedGroups](SWTypeExt* pOtherExt) -> bool
+	{
+		if (!pOtherExt || pOtherExt->SW_CooldownGroup.empty())
+			return false;
+
+		for (const std::string& group : firedGroups)
+		{
+			for (const std::string& otherGroup : pOtherExt->SW_CooldownGroup)
+			{
+				if (_stricmp(group.c_str(), otherGroup.c_str()) == 0)
+					return true;
+			}
+		}
+
+		return false;
+	};
+
+	std::vector<SuperClass*> affectedSupers;
+	int maxRechargeTime = 0;
+	bool syncLongest = this->SW_CooldownGroup_SyncLongest;
+
+	for (int i = 0; i < pHouse->Supers.Count; ++i)
+	{
+		SuperClass* pOtherSuper = pHouse->Supers.GetItemOrDefault(i);
+
+		if (!pOtherSuper || !pOtherSuper->IsPresent || !pOtherSuper->Type)
+			continue;
+
+		SWTypeExt* pOtherExt = SWTypeExt::Fetch(pOtherSuper->Type);
+
+		if (sharesFiredGroup(pOtherExt))
+		{
+			affectedSupers.push_back(pOtherSuper);
+
+			int rechargeTime = pOtherSuper->Type->RechargeTime;
+
+			if (rechargeTime > maxRechargeTime)
+				maxRechargeTime = rechargeTime;
+
+			if (pOtherExt->SW_CooldownGroup_SyncLongest)
+				syncLongest = true;
+		}
+	}
+
+	Debug::Log("[SW.CooldownGroup] Fired [%s]. Resetting %d superweapons (syncLongest=%d, maxRechargeTime=%d frames / %.1f min).\n",
+		pSW->Type->get_ID(), static_cast<int>(affectedSupers.size()), syncLongest ? 1 : 0, maxRechargeTime, maxRechargeTime / 900.0);
+
+	for (SuperClass* pSuperToReset : affectedSupers)
+	{
+		if (syncLongest && maxRechargeTime > 0)
+			pSuperToReset->SetRechargeTime(maxRechargeTime);
+		else
+			pSuperToReset->ResetRechargeTime();
+
+		pSuperToReset->Reset();
+	}
+
+	if (pHouse->IsCurrentPlayer())
+		MouseClass::Instance.RepaintSidebar(1);
 }
 
 void SWTypeExt::ApplyActivatedMessage(SuperClass* pSW) const
