@@ -2621,6 +2621,7 @@ msgstr "自定义步兵序列播放速率"
 
 msgid "Country-specific veteran buildings"
 msgstr ""
+"国家专属老兵建筑"
 
 msgid ""
 "Fix the Spotlight-transport interaction bug caused by the incorrect "

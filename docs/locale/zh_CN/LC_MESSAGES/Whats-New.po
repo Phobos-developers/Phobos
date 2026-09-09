@@ -964,6 +964,7 @@ msgid ""
 "[Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-"
 "specific-veteran-buildings) (by Noble_Fish)"
 msgstr ""
+"[国家专属老兵建筑](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings)（by Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

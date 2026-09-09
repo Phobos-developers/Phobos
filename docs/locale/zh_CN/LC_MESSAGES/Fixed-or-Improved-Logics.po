@@ -3818,9 +3818,11 @@ msgstr "在原版中，克隆缸即便没电也可以工作。从 Ares 2.0 开�
 
 msgid "Countries"
 msgstr ""
+"国家"
 
 msgid "Country-specific veteran buildings"
 msgstr ""
+"国家专属老兵建筑"
 
 msgid ""
 "In the vanilla country attributes, all items except `Speed*` and "
@@ -3830,11 +3832,13 @@ msgid ""
 "`Trainable=true` for promotion, so the following 2 flags are added to "
 "complete the meaningful combination results."
 msgstr ""
+"在原版的国家属性中，除了 `Speed*` 和 `Veteran*` 外的其他项目都支持 `Aircraft`、`Units`、`Infantry`、`Buildings` 和 `Defenses` 五种应用对象。建筑没有 `Speed` 所以可以理解，但建筑同样支持设为 `Trainable=true` 时升级，所以下面 2 个语句被添加以使有意义的组合结果完整。"
 
 msgid ""
 "`Defenses` refers to buildings with `BuildCat=Combat`, consistent with "
 "vanilla rules."
 msgstr ""
+"`Defenses` 指的是 `BuildCat=Combat` 的建筑，与原版规则一致。"
 
 msgid ""
 "Due to the game's parsing order issue, these two new flags will register "
@@ -3842,6 +3846,7 @@ msgid ""
 "just as vanilla's `VeteranAircraft`, `VeteranUnits`, and "
 "`VeteranInfantry` handle their respective types."
 msgstr ""
+"由于游戏解析顺序问题，这两个新语句会在它们各自列表中的建筑不存在时将其注册，就像原版中 `VeteranAircraft`、`VeteranUnits`、 和 `VeteranInfantry` 对各自类型的处理那样。"
 
 msgid "Customizable crew type per country"
 msgstr ""
