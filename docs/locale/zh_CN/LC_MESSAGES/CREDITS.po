@@ -1914,6 +1914,7 @@ msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画�
 
 msgid "Observer can see IvanBomb that's attached by any house"
 msgstr ""
+"允许了观察者看到任何所属方赋予的伊文炸弹"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
