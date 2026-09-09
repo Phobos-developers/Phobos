@@ -937,76 +937,75 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	if (!pOwner)
         return; 
 
-	if(auto pBomb = pTarget->AttachedBomb)
+	if (const auto pBomb = pTarget->AttachedBomb)
 	{
-		bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
-						  || this->IvanBomb_Detonate_AffectsType.Contains(pTarget->GetTechnoType()); 
+		const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
+			|| this->IvanBomb_Detonate_AffectTypes.Contains(pTarget->GetTechnoType()); 
 		
-		if(this->IvanBomb_Detonate_InvokerOnly)
+		if (this->IvanBomb_Detonate_InvokerOnly)
 		{
-			if(pBomb->Owner == pOwner && CanAffects)
+			if (pBomb->Owner == pOwner && CanAffects)
 				pBomb->DetonationFrame = Unsorted::CurrentFrame;
 		}
 		else
 		{
-			if(CanAffects)
+			if (CanAffects)
 				pBomb->DetonationFrame = Unsorted::CurrentFrame;
 		}
 	}
 
-	if(this->IvanBomb_Detonate_PenetrateTransport)
+	if (this->IvanBomb_Detonate_PenetratesTransport)
 	{
-		PassengersClass& Passengers = pTarget->Passengers;
-
-		if(auto pCurPassenger = Passengers.FirstPassenger)
+		if (auto pCurPassenger = pTarget->Passengers.FirstPassenger)
 		{
 			while (pCurPassenger)
 			{
 				auto pNextPassenger = abstract_cast<FootClass*>(pCurPassenger->NextObject);
-				bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
-						  		  || this->IvanBomb_Detonate_AffectsType.Contains(pCurPassenger->GetTechnoType());
+				const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
+					|| this->IvanBomb_Detonate_AffectTypes.Contains(pCurPassenger->GetTechnoType());
 
-				if(auto pPassengerBomb = pCurPassenger->AttachedBomb)
+				if (const auto pPassengerBomb = pCurPassenger->AttachedBomb)
 				{
-					if(this->IvanBomb_Detonate_InvokerOnly)
+					if (this->IvanBomb_Detonate_InvokerOnly)
 					{
-						if(pPassengerBomb->Owner == pOwner && CanAffects)
+						if (pPassengerBomb->Owner == pOwner && CanAffects)
 							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
 					}
 					else
 					{
-						if(CanAffects)
+						if (CanAffects)
 							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
 					}
 				}
+
 				pCurPassenger = pNextPassenger;
 			}
 		}
 	}
 
-	if(this->IvanBomb_Detonate_PenetrateGarrison)
+	if (this->IvanBomb_Detonate_PenetratesGarrison)
 	{
-		if(pTarget->WhatAmI() != AbstractType::Building)
+		if (pTarget->WhatAmI() != AbstractType::Building)
 			return;
 
-		auto& Occupants = abstract_cast<BuildingClass*>(pTarget)->Occupants;
+		const auto& Occupants = abstract_cast<BuildingClass*, true>(pTarget)->Occupants;
 
-		for(int i = 0;i < Occupants.Count;i++)
+		for (int i = 0; i < Occupants.Count; i++)
 		{
 			auto pOccupant = Occupants.Items[i];
-			bool CanAffects = this->IvanBomb_Detonate_AffectsType.empty()
-						  	  || this->IvanBomb_Detonate_AffectsType.Contains(pOccupant->GetTechnoType());
+			const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
+				|| this->IvanBomb_Detonate_AffectTypes.Contains(pOccupant->GetTechnoType());
 
-			if(auto pOccupantBomb = pOccupant->AttachedBomb)
+			if (const auto pOccupantBomb = pOccupant->AttachedBomb)
 			{
-				if(this->IvanBomb_Detonate_InvokerOnly)
+				if (this->IvanBomb_Detonate_InvokerOnly)
 				{
-					if(pOccupantBomb->Owner == pOwner && CanAffects)
+					if (pOccupantBomb->Owner == pOwner && CanAffects)
 						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
 				}
 				else
 				{
-					if(CanAffects)
+					if (CanAffects)
 						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
 				}
 			}

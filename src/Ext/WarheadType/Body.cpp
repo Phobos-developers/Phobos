@@ -453,9 +453,9 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
 	this->IvanBomb_Detonate_InvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.InvokerOnly");
-	this->IvanBomb_Detonate_AffectsType.Read(exINI, pSection, "IvanBomb.Detonate.AffectsType");
-	this->IvanBomb_Detonate_PenetrateTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetrateTransport");
-	this->IvanBomb_Detonate_PenetrateGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetrateGarrison");
+	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
+	this->IvanBomb_Detonate_PenetratesTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesTransport");
+	this->IvanBomb_Detonate_PenetratesGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesGarrison");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -832,9 +832,9 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->IvanBomb_Detonate)
 		.Process(this->IvanBomb_Detonate_InvokerOnly)
-		.Process(this->IvanBomb_Detonate_AffectsType)
-		.Process(this->IvanBomb_Detonate_PenetrateTransport)
-		.Process(this->IvanBomb_Detonate_PenetrateGarrison)
+		.Process(this->IvanBomb_Detonate_AffectTypes)
+		.Process(this->IvanBomb_Detonate_PenetratesTransport)
+		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
 		;
 }
 
