@@ -280,7 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -308,6 +308,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -570,8 +571,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
   - Customize ivan bomb visibility
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
-  - Fixed a bug that computer player record cannot be log normally in non English mode
+  - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+  - Observer can see IvanBomb that's attached by any house
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -752,11 +755,13 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
   - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
-  - Customize whether mind-controlled Insignificant technos can be auto-targeted
+  - Customize whether mind-controlled `Insignificant` technos can be auto-targeted
   - Roof production anim
   - Customize whether the unit exits from the roof
   - Customize whether the unit can be detected by psychic detector
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
+  - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
+  - Customizable infantry sequence rates
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -789,7 +794,10 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
   - Fix a game crash when parsing string list with null entry
-  - `513` Set mission timer type
+  - `513` Set mission timer properties
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -901,7 +909,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
-  - Add a new AutoDeath condition based on the owner's power status
+  - Add new AutoDeath conditions based on the owner's power status and the player's credits
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -956,3 +964,6 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)**:
   - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **dh381-1** - Custom weapons to detonate your own Ivan bombs.
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **Sovietianqi** - Customizable crew type per country

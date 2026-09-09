@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <Utilities/SequenceRates.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -363,6 +365,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
@@ -556,6 +560,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
+	this->Temporal_KillPoweredAnim.Read(exINI, GameStrings::General, "Temporal.KillPoweredAnim");
 
 	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
@@ -564,6 +569,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->AttachEffect_ReplaceLongerDuration.Read(exINI, GameStrings::General, "AttachEffect.ReplaceLongerDuration");
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, GameStrings::General, "AttachEffects.AttachOnOwnerChange");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
@@ -665,6 +672,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Global default per-sequence animation rates for infantry.
+	for (size_t i = 0; i < SequenceRates::Entries.size(); ++i)
+	{
+		char key[64];
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultRate", SequenceRates::Entries[i].Name);
+		exINI.ReadInteger(GameStrings::AudioVisual, key, &this->CustomSequenceRates[i]);
+
+		bool normalized;
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultNormalized", SequenceRates::Entries[i].Name);
+		if (exINI.ReadBool(GameStrings::AudioVisual, key, &normalized))
+			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
+	}
+
 }
 
 // this should load everything that TypeData is not dependant on
@@ -929,6 +950,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoReload_Temporal)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -1074,9 +1097,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->Temporal_KillPoweredAnim)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->AttachEffect_ReplaceLongerDuration)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->FlyNoWobbles)
@@ -1116,6 +1142,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+		.Process(this->CustomSequenceRates)
+		.Process(this->CustomSequenceNormalized)
     ;
 }
 

@@ -422,17 +422,11 @@ void WarheadTypeExt::ApplyShieldModifiers(TechnoClass* pTarget)
 				if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 				{
 					pShield->SetHP((int)(shieldType->Strength * ratio));
-
-					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
-					{
-						pShield->SetHP((int)(shieldType->Strength * ratio));
-
-						if (pShield->GetHP() == 0)
-						{
-							pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate,
-								shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
-						}
-					}
+					// Value doesn't matter here, it's just for restarting timer
+					pShield->SetRespawn(0, shieldType->Respawn, shieldType->Respawn_Rate,
+						shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
+					pShield->SetSelfHealing(0, shieldType->SelfHealing, shieldType->SelfHealing_Rate,
+						shieldType->SelfHealing_RestartInCombat, -1, true);
 				}
 			}
 		}
@@ -551,7 +545,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 
-	if (pTargetExt->TypeExtData->ImmuneToCrit)
+	if (pTargetExt->TypeExtData->ImmuneToCrit || TechnoExt::HasAdditionalAbility(pTarget, AdditionalAbility::CritImmune))
 		return;
 
 	auto const pSld = pTargetExt->Shield.get();
@@ -749,6 +743,9 @@ double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 		return critChance;
 
 	auto const pExt = TechnoExt::Fetch(pFirer);
+
+	if (TechnoExt::HasAdditionalAbility(pFirer, AdditionalAbility::CritChance))
+		critChance = critChance * Math::max(pExt->TypeExtData->VeteranCritChance.Get(RulesExt::Global()->VeteranCritChance), 0);
 
 	if (!pExt->AE.HasCritModifiers)
 		return critChance;
