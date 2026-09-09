@@ -762,6 +762,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
+  - Country-specific veteran buildings
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
