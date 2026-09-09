@@ -141,6 +141,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (!args->IgnoreDefenses)
 	{
 		int nDamageLeft = damage;
+		const int damageRecord = damage;
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -150,6 +151,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 				if (nDamageLeft >= 0)
 				{
+					if (damage > nDamageLeft) // deal actual damage
+					{
+						pShieldData->SetRespawnRestartInCombat();
+						pShieldData->SetSelfHealingRestartInCombat();
+					}
+
 					damage = nDamageLeft;
 
 					if (const auto pTag = pThis->AttachedTag)
@@ -159,9 +166,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-			else if (!pShieldData->IsAvailable() || pShieldData->GetHP() <= 0)
+
+			// update RestartInCombat timers regardless of the shield is active or not
+			if (damageRecord > 0 && !args->WH->Psychedelic && (damageRecord - damage > 0 || GeneralUtils::GetWarheadVersusArmor(args->WH, pThis, pExt->TypeExtData->OwnerObject()) * damageRecord >= 1.0))
 			{
 				pShieldData->SetRespawnRestartInCombat();
+				pShieldData->SetSelfHealingRestartInCombat();
 			}
 		}
 

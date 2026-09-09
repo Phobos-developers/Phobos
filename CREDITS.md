@@ -280,7 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -308,6 +308,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -572,6 +573,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
   - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+  - Observer can see IvanBomb that's attached by any house
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -792,6 +795,9 @@ This page lists all the individual contributions to the project by their author.
   - Show game time
   - Fix a game crash when parsing string list with null entry
   - `513` Set mission timer properties
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -958,5 +964,7 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)**:
   - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **dh381-1**: 
-  - Custom weapons to detonate your own Ivan bombs.
   - Money switch building active animation.
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **Sovietianqi** - Customizable crew type per country
