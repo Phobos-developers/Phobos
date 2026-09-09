@@ -728,6 +728,7 @@ msgid ""
 "already reaches `Cumulative.MaxCount`) with longer remaining duration. "
 "Doesn't work when `AttachEffect.CumulativeRefreshAll=true`."
 msgstr ""
+"`AttachEffect.ReplaceLongerDuration` 控制已存在一个附着的（或当 `Cumulative=true` 且已经达到 `Cumulative.MaxCount` 时剩余持续时间最短的那个）AE 时是否刷新持续时间。`AttachEffect.CumulativeRefreshAll=true` 时无效。"
 
 msgid ""
 "Attached Effects can be removed from objects by Warheads using "
