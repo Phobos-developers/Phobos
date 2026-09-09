@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 00:36+0800\n"
+"POT-Creation-Date: 2026-09-10 01:35+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -913,8 +913,7 @@ msgid "Berzerk duration stacking behaviour customization"
 msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "Attached animation draw offset customizations"
-msgstr ""
-"附着动画绘制偏移"
+msgstr "附着动画绘制偏移"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1376,6 +1375,11 @@ msgstr "为 `KeepAlive` 添加全局默认值"
 
 msgid "Customized transport plane for teams"
 msgstr "为作战小队自定义运输机"
+
+msgid ""
+"Fix the bug where *Customizable crew type per country* overrides the pre-"
+"techno settings"
+msgstr ""
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1907,6 +1911,9 @@ msgid ""
 "Allow customize that whether `Temporal=yes` warhead will cause target "
 "building animation poweroff"
 msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
+msgid "Observer can see IvanBomb that's attached by any house"
+msgstr ""
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2611,6 +2618,19 @@ msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTime
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
 
+msgid "Country-specific veteran buildings"
+msgstr ""
+
+msgid ""
+"Fix the Spotlight-transport interaction bug caused by the incorrect "
+"reference removal fix"
+msgstr ""
+
+msgid ""
+"Fix the issue that *Customizable crew type per country* not considering "
+"parsing order caused game parsing failure and a warning in the log"
+msgstr ""
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2699,12 +2719,13 @@ msgid "`513` Set mission timer properties"
 msgstr "设置任务计时器属性"
 
 msgid "`RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities"
-msgstr ""
-"`RANGE`、`CRITIMMUNE` 和 `CRITCHANCE` 升级能力"
+msgstr "`RANGE`、`CRITIMMUNE` 和 `CRITCHANCE` 升级能力"
 
 msgid "Fix several shield respawn/self heal issues"
+msgstr "修复了护盾重生／自愈的一系列问题"
+
+msgid "Country-based attached effects"
 msgstr ""
-"修复了护盾重生／自愈的一系列问题"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3258,6 +3279,17 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
+
+msgid "**Sovietianqi**:"
+msgstr ""
+
+msgid ""
+"Fix the issue where Ares' `Flash.Duration` cannot override the weapon's "
+"repair flash effect"
+msgstr ""
+
+msgid "Customizable crew type per country"
+msgstr ""
 
 msgid "**11EJDE11**:"
 msgstr "**11EJDE11**："
