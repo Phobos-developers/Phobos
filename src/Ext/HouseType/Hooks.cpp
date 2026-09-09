@@ -36,22 +36,20 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x707DCF, TechnoClass_GetCrew_NationalOverride, 0x5)
+// It takes effect when `Ares.dll` does not exist.
+DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 {
-	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x707D81 };
 
-	if (!pThis)
-		return 0;
+	GET(HouseClass* const, pHouse, ECX);
 
-	HouseClass* pHouse = pThis->Owner;
-
-	if (!pHouse)
-		return 0;
-
-	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+	auto const pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
 
 	if (pHouseTypeExt->Crew.isset())
-		R->EAX(pHouseTypeExt->Crew.Get());
+	{
+		R->ESI(pHouseTypeExt->Crew.Get());
+		return SkipGameCode;
+	}
 
 	return 0;
 }

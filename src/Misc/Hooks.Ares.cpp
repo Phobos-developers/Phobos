@@ -4,6 +4,7 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
@@ -245,6 +246,20 @@ static bool __fastcall AresHouseExt_UpdateKeepAlive(AresHouseExt* pExt_Ares, voi
 
 #pragma endregion
 
+#pragma region AresGetCrew
+
+static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares, void*)
+{
+	auto const pTypeExt = HouseTypeExt::Fetch((*pExt_Ares)->Type);
+
+	if (pTypeExt->Crew.isset())
+		return pTypeExt->Crew.Get();
+
+	return AresFunctions::GetSideCrew(pExt_Ares);
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -383,6 +398,9 @@ void Apply_Ares3_0_Patches()
 
 	// Ares' `KeepAlive` adds global tags.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x21F70, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
+
+	// Add a new custom crew for a country.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4C836, GET_OFFSET(AresHouseExt_GetCrew));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -504,4 +522,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Ares' `KeepAlive` adds global tags.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x229F0, GET_OFFSET(AresHouseExt_UpdateKeepAlive));
+
+	// Add a new custom crew for a country.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4D496, GET_OFFSET(AresHouseExt_GetCrew));
 }
