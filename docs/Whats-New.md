@@ -443,6 +443,7 @@ HideShakeEffects=false           ; boolean
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi)
+- [Set country initial elite](New-or-Enhanced-Logics.md#set-country-initial-elite) (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -730,7 +731,6 @@ HideShakeEffects=false           ; boolean
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
-- [Set country initial elite](New-or-Enhanced-Logics.md#set-country-initial-elite) (by dh381)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

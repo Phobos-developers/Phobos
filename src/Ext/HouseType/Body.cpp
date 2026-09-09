@@ -19,13 +19,14 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 
-	this->EliteInfantry.Read(exINI, pSection, "EliteInfantry");
-	this->EliteUnits.Read(exINI, pSection, "EliteUnits");
-	this->EliteAircraft.Read(exINI, pSection, "EliteAircraft");
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 	this->AttachEffects_AttachOnOwnerChange.Read(exINI, pSection, "AttachEffect.AttachOnOwnerChange");
 
 	this->Crew.Read(exINI, pSection, "Crew");
+
+	this->EliteInfantry.Read(exINI, pSection, "EliteInfantry");
+	this->EliteUnits.Read(exINI, pSection, "EliteUnits");
+	this->EliteAircraft.Read(exINI, pSection, "EliteAircraft");
 }
 
 template <typename T>
@@ -34,12 +35,13 @@ void HouseTypeExt::Serialize(T& Stm)
 	Stm
 		.Process(this->EVATag)
 		
-		.Process(this->EliteInfantry)
-		.Process(this->EliteUnits)
-		.Process(this->EliteAircraft)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->Crew)
+
+		.Process(this->EliteInfantry)
+		.Process(this->EliteUnits)
+		.Process(this->EliteAircraft)
 		;
 }
 

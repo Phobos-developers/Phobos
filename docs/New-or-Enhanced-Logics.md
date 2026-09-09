@@ -823,6 +823,8 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+## Countries
+
 ## Infantry
 
 ### Allow infantry to perform type conversion when deploying and undeploying
@@ -2705,7 +2707,7 @@ WarpOutWeapon=                          ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMECOUNTRYIES]        ; Countries
+[SOMECOUNTRY]           ; Country
 EliteInfantry=          ; List of InfantryTypes
 EliteUnits=             ; List of UnitTypes
 EliteAircraft=          ; List of AircraftTypes
@@ -2715,8 +2717,8 @@ EliteAircraft=          ; List of AircraftTypes
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]        ; TechnoTypes
-SpareCameo=         ; filename
+[SOMETECHNO]            ; TechnoType
+SpareCameo=             ; filename - including the .shp/.pcx extension
 ```
 
 ## Terrain

@@ -38,12 +38,12 @@ public:
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
-		, EliteInfantry {}
-		, EliteUnits {}
-		, EliteAircraft {}
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
+		, EliteInfantry {}
+		, EliteUnits {}
+		, EliteAircraft {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;
