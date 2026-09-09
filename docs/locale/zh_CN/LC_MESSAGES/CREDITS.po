@@ -2627,6 +2627,7 @@ msgid ""
 "Fix the Spotlight-transport interaction bug caused by the incorrect "
 "reference removal fix"
 msgstr ""
+"修复了错误脱引用修复导致的探照灯运输工具交互 Bug"
 
 msgid ""
 "Fix the issue that *Customizable crew type per country* not considering "
