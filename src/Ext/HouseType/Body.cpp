@@ -18,6 +18,10 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
+
+	this->EliteInfantry.Read(exINI, pSection, "EliteInfantry");
+	this->EliteUnits.Read(exINI, pSection, "EliteUnits");
+	this->EliteAircraft.Read(exINI, pSection, "EliteAircraft");
 }
 
 template <typename T>
@@ -25,6 +29,10 @@ void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
+		
+		.Process(this->EliteInfantry)
+		.Process(this->EliteUnits)
+		.Process(this->EliteAircraft)
 		;
 }
 

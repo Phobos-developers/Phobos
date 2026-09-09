@@ -108,6 +108,7 @@
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\HouseType\Hooks.InitialElite.cpp" />
     <!-- src\Ext\Infantry -->
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />

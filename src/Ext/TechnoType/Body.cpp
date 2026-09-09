@@ -1436,6 +1436,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
+
+	this->SpareCameoFile.Read(pArtINI, pArtSection, "SpareCameo");
 }
 
 template <typename T>
@@ -1830,6 +1832,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+
+		.Process(this->SpareCameoFile)
+		.Process(this->SpareCameo)
+		.Process(this->SpareCameo_IsLoad)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

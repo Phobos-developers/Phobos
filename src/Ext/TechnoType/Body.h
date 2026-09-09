@@ -461,6 +461,10 @@ public:
 	Nullable<bool> Unsellable;
 	Nullable<bool> KeepAlive;
 
+	PhobosFixedString<0x20> SpareCameoFile;
+	SHPStruct* SpareCameo;
+	bool SpareCameo_IsLoad;
+
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
@@ -850,6 +854,10 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+
+		, SpareCameoFile { NONE_STR }
+		, SpareCameo { nullptr }
+		, SpareCameo_IsLoad { false }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
