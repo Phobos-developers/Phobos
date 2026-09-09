@@ -53,3 +53,28 @@ DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x442D1B, BuildingClass_Init_CountryBuildingVeteran, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	const auto pOwner = pThis->Owner;
+	if (!pOwner)
+		return 0;
+
+	const auto pType = pThis->Type;
+	if (!pType)
+		return 0;
+
+	const auto pCountryExt = HouseTypeExt::Fetch(pOwner->Type);
+
+	const bool isDefense = pType->BuildCat == BuildCat::Combat;
+	const auto& pVeteranList = isDefense
+		? pCountryExt->VeteranDefenses
+		: pCountryExt->VeteranBuildings;
+
+	if (pVeteranList.Contains(pType))
+		pThis->Veterancy.SetVeteran();
+
+	return 0;
+}
