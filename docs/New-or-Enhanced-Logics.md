@@ -825,6 +825,26 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ## Countries
 
+### Set country initial elite
+
+- Now you can add `TechnoTypes` in the three lists. They will appear at an elite initial level when produced, and cloned infantry will also be affected by this effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]           ; Country
+EliteInfantry=          ; List of InfantryTypes
+EliteUnits=             ; List of UnitTypes
+EliteAircraft=          ; List of AircraftTypes
+```
+
+- For each `TechnoType`, you can define `SpareCameo` to specify the elite‑level icon. When a `TechnoType` is added to the initial elite list, it will preferentially use the SpareCameo as its icon. Supports `SHP`/`PCX` formats.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+SpareCameo=             ; filename - including the .shp/.pcx extension
+```
+
 ## Infantry
 
 ### Allow infantry to perform type conversion when deploying and undeploying
@@ -2699,26 +2719,6 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
-```
-
-### Set country initial elite
-
-- Now you can add `TechnoTypes` in the three lists. They will appear at an elite initial level when produced, and cloned infantry will also be affected by this effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]           ; Country
-EliteInfantry=          ; List of InfantryTypes
-EliteUnits=             ; List of UnitTypes
-EliteAircraft=          ; List of AircraftTypes
-```
-
-- For each `TechnoType`, you can define `SpareCameo` to specify the elite‑level icon. When a `TechnoType` is added to the initial elite list, it will preferentially use the SpareCameo as its icon. Supports `SHP`/`PCX` formats.
-
-In `artmd.ini`:
-```ini
-[SOMETECHNO]            ; TechnoType
-SpareCameo=             ; filename - including the .shp/.pcx extension
 ```
 
 ## Terrain
