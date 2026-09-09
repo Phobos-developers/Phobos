@@ -26,7 +26,9 @@ public:
 		{
 			this->Animation->UnInit();
 			this->Animation = nullptr;
-			this->ShouldUpdateAnim = true;
+
+			if (this->Type->RequiresAnimUpdate)
+				this->ShouldUpdateAnim = true;
 		}
 	}
 

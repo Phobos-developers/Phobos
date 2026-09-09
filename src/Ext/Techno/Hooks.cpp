@@ -435,8 +435,10 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 				continue;
 			}
 
+			if (pType->RequiresAnimUpdate)
+				requiresUpdateAnim = true;
+
 			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
-			requiresUpdateAnim = true;
 			it = pExt->AttachedEffects.erase(it);
 		}
 		else
