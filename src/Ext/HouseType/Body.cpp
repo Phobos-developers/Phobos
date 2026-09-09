@@ -22,7 +22,7 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 	this->AttachEffects_AttachOnOwnerChange.Read(exINI, pSection, "AttachEffect.AttachOnOwnerChange");
 
-	this->Crew.Read(exINI, pSection, "Crew");
+	this->Crew.Read<true>(exINI, pSection, "Crew");
 }
 
 template <typename T>

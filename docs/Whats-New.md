@@ -442,7 +442,7 @@ HideShakeEffects=false           ; boolean
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
-- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi & FlyStar)
+- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
