@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include <MapClass.h>
-
 CellExt::ExtContainer CellExt::ExtMap;
 
 // =============================

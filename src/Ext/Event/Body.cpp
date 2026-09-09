@@ -5,9 +5,6 @@
 #include <Ext/Rules/Body.h>
 
 #include <Helpers/Macro.h>
-#include <EventClass.h>
-#include <HouseClass.h>
-#include <FootClass.h>
 #include <ShapeButtonClass.h>
 
 bool EventExt::AddEvent()

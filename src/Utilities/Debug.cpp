@@ -1,7 +1,6 @@
 #include "Debug.h"
 #include "Macro.h"
 
-#include <YRPPCore.h>
 #include <MessageListClass.h>
 #include <CRT.h>
 #include <CCFileClass.h>

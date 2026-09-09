@@ -443,6 +443,14 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
 
+	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
+
+	this->PreventCrewEscape.Read(exINI, pSection, "PreventCrewEscape");
+	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
+	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
+
+	this->Ammo.Read(exINI, pSection, "Ammo");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -480,6 +488,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Malicious.Read(exINI, pSection, "Malicious");
 	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
 	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
+	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::Detonate
@@ -507,6 +516,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
+		|| this->Ammo
 	);
 
 	char tempBuffer[32];
@@ -727,7 +737,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
-			
+
 		.Process(this->JumpjetTurnRate)
 		.Process(this->JumpjetSpeed)
 		.Process(this->JumpjetClimb)
@@ -789,6 +799,12 @@ void WarheadTypeExt::Serialize(T& Stm)
 
 		.Process(this->Taunt)
 
+		.Process(this->Psychedelic_StackingMode)
+
+		.Process(this->PreventCrewEscape)
+		.Process(this->PreventPassengerEscape)
+		.Process(this->PreventOccupantEscape)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
@@ -796,12 +812,16 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Malicious)
 		.Process(this->Flash_Duration)
 		.Process(this->Damage_Deployed)
+		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->InApplyCrit)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->Ammo)
 		;
 }
 

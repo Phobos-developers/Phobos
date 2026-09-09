@@ -35,7 +35,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 
 	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
-	if (pExt->ShakeIsLocal && !visible)
+	if (pExt->ShakeIsLocal.Get(RulesExt::Global()->ShakeIsLocal) && !visible)
 		return SkipShaking;
 
 	return 0;

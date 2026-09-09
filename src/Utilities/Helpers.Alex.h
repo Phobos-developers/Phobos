@@ -36,7 +36,6 @@
 
 #include <AircraftTrackerClass.h>
 #include <BuildingClass.h>
-#include <BuildingTypeClass.h>
 #include <CellSpread.h>
 #include <Unsorted.h>
 #include <Helpers/Iterators.h>

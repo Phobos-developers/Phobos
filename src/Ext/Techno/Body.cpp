@@ -1,9 +1,6 @@
-﻿#include "Body.h"
-
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
@@ -65,7 +62,7 @@ TechnoExt::~TechnoExt()
 		ScenarioExt::Global()->FallingDownTracker.Remove(pThis);
 }
 
-bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
+bool TechnoExt::IsActive(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -73,12 +70,6 @@ bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
 		&& !pThis->BeingWarpedOut
-		;
-}
-
-bool TechnoExt::IsActive(TechnoClass* pThis)
-{
-	return TechnoExt::IsActiveIgnoreEMP(pThis)
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
@@ -181,6 +172,23 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+bool TechnoExt::HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability)
+{
+	if (!pThis || (!pThis->Veterancy.IsVeteran() && !pThis->Veterancy.IsElite()))
+		return false;
+
+	const auto index = static_cast<size_t>(ability);
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+
+	if (pThis->Veterancy.IsElite())
+	{
+		return pTypeExt->AdditionalVeteranAbilities.test(index)
+			|| pTypeExt->AdditionalEliteAbilities.test(index);
+	}
+
+	return pTypeExt->AdditionalVeteranAbilities.test(index);
+}
+
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
@@ -227,9 +235,9 @@ double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 	return mult;
 }
 
-double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, WarheadTypeClass* pWarhead)
+double TechnoExt::GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse, WarheadTypeClass* pWarhead)
 {
-	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead) *
+	return pThis->ArmorMultiplier * pThis->Owner->GetArmorMultiplier(pType) * TechnoExt::CalculateArmorMultipliers(pThis, pWarhead, pSourceHouse) *
 		(pThis->HasAbility(Ability::Stronger) ? RulesClass::Instance->VeteranArmor : 1.0);
 }
 
@@ -461,43 +469,30 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	return true;
 }
 
-bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource)
 {
-	if (!pThis || !pSource)
+	if (!pSource || !pType->TypeImmune)
 		return false;
 
-	auto const pType = pThis->GetTechnoType();
-
-	if (!pType->TypeImmune)
-		return false;
-
-	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+	if (pThis->Owner == pSource->Owner && pType == pSource->GetTechnoType())
 		return true;
 
 	return false;
 }
 
-/// <summary>
-/// Gets whether or not techno has listed AttachEffect types active on it
-/// </summary>
-/// <param name="attachEffectTypes">Attacheffect types.</param>
-/// <param name="requireAll">Whether or not to require all listed types to be present or if only one will satisfy the check.</param>
-/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
-/// <param name="pInvoker">Invoker Techno used for same source check.</param>
-/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
-/// <returns>True if techno has active AttachEffects that satisfy the source, false if not.</returns>
-bool TechnoExt::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
-	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const
+// Gets whether or not techno has listed AttachEffect types active on it
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource,
+	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims) const
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
 	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
-	for (auto const& type : attachEffectTypes)
+	for (auto const& pType : attachEffectTypes)
 	{
-		if (type->Cumulative)
+		if (pType->Cumulative)
 		{
-			const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+			const int cumulativeCount = this->GetAttachedEffectCumulativeCount(pType, ignoreSameSource, pInvoker, pSource, requireAnims);
 			bool matched = cumulativeCount > 0;
 			const unsigned int minSize = minCounts ? minCounts->size() : 0;
 			const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
@@ -527,7 +522,9 @@ bool TechnoExt::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEff
 		{
 			for (auto const& attachEffect : this->AttachedEffects)
 			{
-				if (attachEffect->GetType() == type && attachEffect->IsActive())
+				const auto type = attachEffect->GetType();
+
+				if (type == pType && attachEffect->IsActive() && (!requireAnims || !type->HasAnim() || attachEffect->HasAnim()))
 				{
 					if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 						continue;
@@ -555,22 +552,17 @@ bool TechnoExt::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEff
 	return false;
 }
 
-/// <summary>
-/// Gets how many counts of same cumulative AttachEffect type instance techno has active on it.
-/// </summary>
-/// <param name="pAttachEffectType">AttachEffect type.</param>
-/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
-/// <param name="pInvoker">Invoker Techno used for same source check.</param>
-/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
-/// <returns>Number of active cumulative AttachEffect type instances on the techno. 0 if the AttachEffect type is not cumulative.</returns>
-int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource) const
+// Gets how many counts of same cumulative AttachEffect type instance techno has active on it.
+int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, bool requireAnims) const
 {
 	unsigned int foundCount = 0;
 	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
-		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
+		const auto type = attachEffect->GetType();
+
+		if (type == pAttachEffectType && attachEffect->IsActive() && (!requireAnims || !type->HasAnim() || attachEffect->HasAnim()))
 		{
 			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
@@ -580,6 +572,87 @@ int TechnoExt::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEf
 	}
 
 	return foundCount;
+}
+
+// Check adjacent cells from the center
+// The current MapClass::Instance.PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
+{
+	CellStruct centerCell = CellClass::Coord2Cell(location);
+	short currentRange = 0;
+	bool placed = false;
+
+	do
+	{
+		short x = -currentRange;
+		short y = -currentRange;
+
+		CellStruct checkedCell;
+		checkedCell.Y = centerCell.Y + y;
+
+		// Check upper line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.Y = centerCell.Y + (short)std::abs(y);
+
+		// Check lower line
+		for (short i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + x;
+
+		// Check left line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + (short)std::abs(x);
+
+		// Check right line
+		for (short j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+			placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup);
+
+			if (placed)
+				break;
+		}
+
+		currentRange++;
+	}
+	while (!placed && currentRange < (short)maxCellRange);
+
+	if (!placed)
+		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
+
+	return placed;
 }
 
 void TechnoExt::ResetDelayedFireTimer()
@@ -848,7 +921,7 @@ struct DummyExtHere
 	char _pad0[0x50];
 	CDTimerClass DisableWeaponsTimer;
 	char _pad1[0x40];
-	bool DriverKilled; 
+	bool DriverKilled;
 };
 
 struct DummyTypeExtHere
@@ -1110,6 +1183,8 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->DropCrate)
+		.Process(this->DropCrateType)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->IsSelected)
 		.Process(this->TintColorOwner)
@@ -1125,6 +1200,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
+		.Process(this->PreventCrewEscape)
 		;
 }
 

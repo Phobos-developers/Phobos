@@ -1,6 +1,7 @@
 #pragma once
 #include <Ext/Techno/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <BuildingClass.h>
 
 class BuildingExt final : public TechnoExt, public Detach::Listener<BuildingClass>
 {
@@ -14,6 +15,7 @@ public:
 
 	bool DeployedTechno;
 	bool IsCreatedFromMapFile;
+	bool HasPowerFromMapFile;
 	int LimboID;
 	int GrindingWeapon_LastFiredFrame;
 	int GrindingWeapon_AccumulatedCredits;
@@ -27,10 +29,12 @@ public:
 	int TurretAnimFiringFrame;
 	int TurretAnimRateTick;
 	int ConstructionStartFacing;
+	bool IsPlayingRoofProductionAnim;
 
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
 		, DeployedTechno { false }
 		, IsCreatedFromMapFile { false }
+		, HasPowerFromMapFile { false }
 		, LimboID { -1 }
 		, GrindingWeapon_LastFiredFrame { 0 }
 		, GrindingWeapon_AccumulatedCredits { 0 }
@@ -43,6 +47,8 @@ public:
 		, TurretAnimIdleFrame { 0 }
 		, TurretAnimFiringFrame { -1 }
 		, TurretAnimRateTick { 0 }
+		, ConstructionStartFacing { -1 }
+		, IsPlayingRoofProductionAnim { false }
 	{ }
 
 	// typed owner accessor (shadows the TechnoClass one from the base)
@@ -62,6 +68,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
+
 	virtual ~BuildingExt() = default;
 
 	// virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -112,7 +119,9 @@ public:
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static WeaponStruct* GetLaserWeapon(BuildingClass* pThis);
+	static void __stdcall UpdateFactoryQueues(BuildingClass* pThis);
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
+	static bool BuildingOnline(BuildingClass* pThis);
 };
 

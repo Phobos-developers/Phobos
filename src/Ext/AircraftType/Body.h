@@ -28,6 +28,7 @@ public:
 	Nullable<int> ParadropDelay;
 	Nullable<int> ParadropEndDelay;
 	Nullable<bool> FlyNoWobbles;
+	Nullable<bool> IsALoaner;
 	Nullable<AnimTypeClass*> LandingAnim;
 	Valueable<bool> Missile_Cruise;
 	Valueable<AnimTypeClass*> Missile_TakeOffAnim;
@@ -51,6 +52,7 @@ public:
 		, ParadropDelay {}
 		, ParadropEndDelay {}
 		, FlyNoWobbles {}
+		, IsALoaner {}
 		, LandingAnim {}
 		, Missile_Cruise { false }
 		, Missile_TakeOffAnim { nullptr }

@@ -8,22 +8,22 @@ public:
 
 	PassengerDeletionTypeClass() = default;
 
-	Valueable<int> Rate;
-	Valueable<bool> Rate_SizeMultiply;
-	Valueable<bool> UseCostAsRate;
-	Valueable<double> CostMultiplier;
-	Nullable<int> CostRateCap;
-	Valueable<AffectedHouse> AllowedHouses;
-	Valueable<bool> DontScore;
-	Valueable<bool> Soylent;
-	Valueable<double> SoylentMultiplier;
-	Valueable<AffectedHouse> SoylentAllowedHouses;
-	Valueable<bool> DisplaySoylent;
-	Valueable<AffectedHouse> DisplaySoylentToHouses;
-	Valueable<Point2D> DisplaySoylentOffset;
-	ValueableIdx<VocClass> ReportSound;
-	ValueableVector<AnimTypeClass*> Anim;
-	Valueable<bool> UnderEMP;
+	Valueable<int> Rate { 0 };
+	Valueable<bool> Rate_SizeMultiply { true };
+	Valueable<bool> UseCostAsRate { false };
+	Valueable<double> CostMultiplier { 1.0 };
+	Nullable<int> CostRateCap {};
+	Valueable<AffectedHouse> AllowedHouses { AffectedHouse::All };
+	Valueable<bool> DontScore { false };
+	Valueable<bool> Soylent { false };
+	Valueable<double> SoylentMultiplier { 1.0 };
+	Valueable<AffectedHouse> SoylentAllowedHouses { AffectedHouse::Enemies };
+	Valueable<bool> DisplaySoylent { false };
+	Valueable<AffectedHouse> DisplaySoylentToHouses { AffectedHouse::All };
+	Valueable<Point2D> DisplaySoylentOffset { { 0,0} };
+	ValueableIdx<VocClass> ReportSound {};
+	ValueableVector<AnimTypeClass*> Anim {};
+	Valueable<bool> UnderEMP { false };
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

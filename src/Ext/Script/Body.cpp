@@ -32,6 +32,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 
 	switch (static_cast<PhobosScripts>(action))
 	{
+	case PhobosScripts::PlaySpeech:
+		ScriptExt::PlaySpeech(pTeam);
+		break;
 	case PhobosScripts::TimedAreaGuard:
 		ScriptExt::ExecuteTimedAreaGuardAction(pTeam);
 		break;
@@ -1250,6 +1253,13 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
 
 	return isAvailable;
+}
+
+void ScriptExt::PlaySpeech(TeamClass* pTeam)
+{
+	const int index = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+	VoxClass::PlayIndex(index);
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::Log(const char* pFormat, ...)

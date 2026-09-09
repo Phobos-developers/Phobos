@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/Foot/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/AresHelper.h>

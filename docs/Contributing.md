@@ -41,10 +41,25 @@ If you contribute something, please make sure:
 - you mention the change in the changelog and migration sections in the [what's new page](Whats-New.md);
 - you mention your contribution in the [credits page](CREDITS.md).
 
-If your change does not fit in standard criteria or too small that it doesn't need the above - add `[Minor]` to your pull request's title, so the CI won't yell at you for no reason.
+Not every change needs all of the above. The table below shows what each kind of change is expected to cover (a checkmark means that kind of entry is required):
+
+|                          Change type                           | Changelog | Docs | Credits |
+|----------------------------------------------------------------|-----------|------|---------|
+| New feature, vanilla bugfix, enhancement of a released feature |     ✓    |  ✓  |    ✓   |
+| Improvement to a new (unreleased) feature                      |     ✗    |  ✓  |    ✓   |
+| Bugfix to a new (unreleased) feature                           |     ✗    |  ✗  |    ✓   |
+| Bugfix to an old (released) feature                            |     ✓    |  ✗  |    ✓   |
+| Completely minor change (e.g. a typo fix)                      |     ✗    |  ✗  |    ✗   |
+
+```{warning}
+If editing this table - also edit the PR template.
+```
+
+The checks for changelog, docs and credits are skipped individually when a maintainer applies the matching label - `Skip Changelog`, `Skip Docs` or `Skip Credits`. If one of the requirements does not apply to your change, say so in the pull request and ask for the corresponding label.
+
 
 ```{hint}
-Every pull request push trigger a nightly build for the latest pushed commit, so you can check the build status at the bottom of PR page, press `Show all checks`, go to details of a build run and get the zip containing built DLL and PDB (for your testers, f. ex.), or download a build from an automatically posted comment.
+Pull requests that change source code or project files trigger a nightly build for the latest pushed commit, so you can check the build status at the bottom of PR page, press `Show all checks`, go to details of a build run and get the zip containing built DLL and PDB (for your testers, f. ex.), or download a build from an automatically posted comment.
 ```
 
 ```{note}

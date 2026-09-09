@@ -1,5 +1,3 @@
-#include "Body.h"
-
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Building/Body.h>
 

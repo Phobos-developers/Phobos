@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-16 14:12+0800\n"
+"POT-Creation-Date: 2026-09-07 00:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "AI Scripting and Mapping"
 msgstr "AI 脚本与触发"
@@ -27,6 +27,13 @@ msgstr "此页面列出了所有 Phobos 引入的 AI 脚本与地图触发相关
 
 msgid "Bugfixes and Miscellanous"
 msgstr "Bug 修复与杂项"
+
+msgid ""
+"`<Player @ X>` can now be used as owner for pre-placed objects as well as"
+" owner for triggers on skirmish and multiplayer maps. Triggers with "
+"owners that are not present in the game are destroyed and never sprung."
+msgstr ""
+"`<Player @ X>` 现在可以作为遭遇战／多人游戏地图预置对象和触发器的所有者。如果触发器的所有者不存在于游戏中，则该触发器会被销毁且永不被触发。"
 
 msgid ""
 "Script action `Move to cell` now obeys YR cell calculation now. Using "
@@ -98,6 +105,9 @@ msgstr ""
 msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
 msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
 
+msgid "Restored the ScriptType action#24 `Play speech` from Tiberian Sun."
+msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
+
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"
 
@@ -145,8 +155,7 @@ msgstr "`aliveenemies`：基于当前仍存活的敌对玩家数量"
 msgid ""
 "`none`: dynamic team delay will be disabled regardless of the settings of"
 " `TeamDelays.CountN`."
-msgstr ""
-"`none`：始终禁用动态 `TeamDelays` 而无论 `TeamDelays.CountN` 设置如何。"
+msgstr "`none`：始终禁用动态 `TeamDelays` 而无论 `TeamDelays.CountN` 设置如何。"
 
 msgid ""
 "`TeamDelays.CountN` control the team delay when the amount of players "
@@ -293,6 +302,28 @@ msgstr "在 `uimd.ini`："
 
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
+
+msgid "SkipMapSelect Enhancement"
+msgstr "`SkipMapSelect` 增强"
+
+msgid ""
+"Using `SkipMapSelect=yes` in the map file allows you to bypass the "
+"restriction in mapselmd.ini—which requires that the player's faction in "
+"the current campaign must match the faction in the next new campaign."
+msgstr ""
+"在地图文件中使用 `SkipMapSelect=yes` 可以绕过 `mapselmd.ini` "
+"中的限制——该限制要求当前战役中玩家所属的阵营必须与下一个新战役中的阵营一致。"
+
+msgid ""
+"You can use `NextScenario` and `AltNextScenario` to specify the map names"
+" required to enter a new campaign, thereby forcing the game to proceed to"
+" the next campaign."
+msgstr "你可以使用 `NextScenario` 和 `AltNextScenario` 来指定进入新战役所需的地图名称强制游戏进入下一个战役。"
+
+msgid ""
+"Now, setting a local variable named `<Alternate Next Scenario>` will also"
+" trigger `AltNextScenario`."
+msgstr "现在启用一个名为 `<Alternate Next Scenario>` 的局部变量也可以触发 `AltNextScenario`。"
 
 msgid "Script Actions"
 msgstr "动作脚本"
@@ -1409,6 +1440,67 @@ msgstr "设置关联对象的跟随者，参数为要跟随者单位的索引。
 msgid "Invalid for non-vehicle objects."
 msgstr "非载具类对象无效。"
 
+msgid "`513` Set mission timer properties"
+msgstr "设置任务计时器属性"
+
+msgid ""
+"Set the method to display mission timer and whether the timer should be "
+"displayed reversedly based on given value."
+msgstr "设置任务计时器的显示方式，以及是否根据给定值倒序显示计时器。"
+
+msgid ""
+"For behaviours `0`, `1`, and `2`, the second parameter decides the base "
+"value for percentage timer type or reversed timer that'll be used for "
+"calculation."
+msgstr "对于行为 `0`、`1` 和 `2`，第二个参数决定百分比计时器类型或倒序计时器用于计算的基础值。"
+
+msgid ""
+"For behaviours `3` and `4`, the second parameter decides the index of "
+"variable that'll be displayed. If the local/global variable does not "
+"exist, 0 will be displayed."
+msgstr "对于行为 `3` 和 `4`，第二个参数决定要显示变量的索引。如果该局部／全局变量不存则显示 0。"
+
+msgid "*Behaviour*"
+msgstr "*行为*"
+
+msgid "Show normal timer"
+msgstr "显示常规计时器"
+
+msgid "show percentage based on the given value"
+msgstr "基于给定值显示百分比"
+
+msgid "Show timer in digit form"
+msgstr "以数字格式显示计时器"
+
+msgid "Show value of the selected local variable"
+msgstr "显示所选局部变量的值"
+
+msgid "Show value of the selected global variable"
+msgstr "显示所选全局变量的值"
+
+msgid ""
+"This won't affect how the global mission timer really ticks, so it'll "
+"still end after the mission tiemr expired."
+msgstr "这不会影响全局任务计时器的实际计时方式，因此它仍会在任务计时器到期后结束。"
+
+msgid "`600` Configure Drop Crate"
+msgstr "`600` 配置掉落箱子行为"
+
+msgid "Set or overwrite the `DropCrate` of the affected objects."
+msgstr "设置或覆盖受影响对象的 `DropCrate`。"
+
+msgid "Only functions when used as attached triggers within objects."
+msgstr "仅通过关联标签附加到对象上时生效。"
+
+msgid "Use default Techno settings"
+msgstr "使用单位的默认设置"
+
+msgid "Clear `DropCrate` type"
+msgstr "清除 `DropCrate` 类型"
+
+msgid "Overwrite `DropCrate` type"
+msgstr "覆盖 `DropCrate` 类型"
+
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"
 
@@ -1467,6 +1559,17 @@ msgid ""
 msgstr ""
 "若该值小于 0 则使用 `[General] -> TeamDelays` 的值，或遭遇战中通过 [动态 `TeamDelays`](AI-"
 "Scripting-and-Mapping.md#dynamic-team-delays) 设置的值"
+
+msgid "`611` Set Next Scenario"
+msgstr "`611` 设置下一战役关卡"
+
+msgid "Set the next campaign to load after winning the current one."
+msgstr "设置当前战役胜利后加载的下一关战役关卡。"
+
+msgid ""
+"Works only in `Campaign Mode` and requires setting `[Basic] -> "
+"SkipMapSelect=yes`."
+msgstr "仅战役模式且存在 `[Basic] -> SkipMapSelect=yes` 时生生效。"
 
 msgid "`800-802` Display Banner"
 msgstr "`800-802` 显示横幅"
@@ -1558,9 +1661,7 @@ msgid ""
 "`ClampToScreen` controls whether the banner is clamped to stay within the"
 " visible area. When disabled, a PCX banner exceeding the top screen edge "
 "may crash the game."
-msgstr ""
-"`ClampToScreen` 控制横幅是否被限制在可视区域内。禁用后，PCX "
-"横幅超出屏幕上边缘时可能导致游戏崩溃。"
+msgstr "`ClampToScreen` 控制横幅是否被限制在可视区域内。禁用后，PCX 横幅超出屏幕上边缘时可能导致游戏崩溃。"
 
 msgid "Trigger events"
 msgstr "触发条件"
@@ -1751,6 +1852,9 @@ msgstr "535"
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
+msgid "Springs when the shield of the attached object is broken."
+msgstr "当所附着对象的护盾被击碎时触发。"
+
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
 
@@ -1836,8 +1940,8 @@ msgstr "小队成员释放时调整可招募性"
 msgid ""
 "In vanilla, when a unit is added to a team, its `RecruitableB` flag is "
 "overwritten by the team's `AreTeamMembersRecruitable` setting. When the "
-"unit is liberated from the team, the flag is not restored. The following"
-" settings allow a team to reset this flag when liberating its members."
+"unit is liberated from the team, the flag is not restored. The following "
+"settings allow a team to reset this flag when liberating its members."
 msgstr ""
 "在原版游戏中，当单位被加入到小队中时，其 `RecruitableB` 字段会被小队的设置 `AreTeamMembersRecruitable`"
 " 覆写。单位被小队释放时，该字段也不会被恢复。以下设置允许小队在释放时重新设置该字段。"
@@ -1847,13 +1951,22 @@ msgid ""
 "marked as recruitable."
 msgstr "如果值 **大于 0**，释放的单位会被强制标记为可招募。"
 
-msgid ""
-"If set to **0**, the liberated unit is forcibly marked as not "
-"recruitable."
+msgid "If set to **0**, the liberated unit is forcibly marked as not recruitable."
 msgstr "如果值为 **0**，释放的单位会被强制标记为不可招募。"
 
 msgid ""
 "If set to a value **less than 0** (default: `-1`), the original game "
 "behavior is preserved."
 msgstr "如果值 **小于 0**（默认值：`-1`），则保留原版游戏行为。"
+
+msgid "Customized transport plane for teams"
+msgstr "为作战小队自定义运输机"
+
+msgid ""
+"You can now use `ParaDropAircraft` to specify a new transport aircraft "
+"type for teams with `Droppod=yes`, which will override the global "
+"settings for `Ares` and `Vanilla`."
+msgstr ""
+"现在你可以用 `ParaDropAircraft` 为 `Droppod=yes` 的作战小队指定新的运输机类型，这会覆盖 Ares "
+"和原版的全局设置。"
 

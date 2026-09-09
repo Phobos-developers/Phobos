@@ -96,7 +96,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	auto const pAttacker = pThis->Owner;
 	auto const pExt = TechnoExt::Fetch(pAttacker)->TypeExtData;
 
-	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
+	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse.Get(RulesExt::Global()->MindControlLink_VisibleToHouse), pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;

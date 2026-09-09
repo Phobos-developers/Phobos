@@ -1,13 +1,14 @@
-#include "Body.h"
-
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
 
@@ -19,11 +20,19 @@ void FootExt::UpdateTiberiumEater()
 		return;
 
 	const int transDelay = pEaterType->TransDelay;
+	auto const pThis = this->OwnerObject();
+
+	if (pThis->InLimbo || (!pEaterType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP())))
+	{
+		if (transDelay && this->TiberiumEater_Timer.InProgress())
+			this->TiberiumEater_Timer.StartTime++;
+
+		return;
+	}
 
 	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
-	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
@@ -598,8 +607,6 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pParasiteImUsing = nullptr;
 	}
 
-	auto const abs = pThis->WhatAmI();
-
 	// Update movement sound if still moving while type changed.
 	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
 	{
@@ -623,6 +630,8 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pThis->MoveSoundDelay = 0;
 		}
 	}
+
+	auto const abs = pThis->WhatAmI();
 
 	if (abs == AbstractType::Infantry)
 	{
@@ -713,6 +722,8 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			{
 				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
+				this->JumpjetSpeed = pCurrentType->JumpjetSpeed; // keep the cached speed in sync (0x54D138 hook reads it every frame)
+				pJJLoco->MaxSpeed = pCurrentType->JumpjetSpeed;
 				pJJLoco->Climb = pCurrentType->JumpjetClimb;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
@@ -802,6 +813,65 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			}
 		}
 	}
+	else
+	{
+		const auto pAircraft = static_cast<AircraftClass*>(pThis);
+		const auto pAircraftExt = AircraftExt::Fetch(pAircraft);
+
+		if (!pAircraft->Type->AirportBound)
+			pAircraft->DockNowHeadingTo = nullptr;
+
+		const auto pNewWeapon = pAircraft->GetWeapon(pAircraft->SelectWeapon(pAircraft->Target))->WeaponType;
+		bool isStrafing = false;
+		bool resetMission = false;
+
+		if (pNewWeapon)
+		{
+			const auto pNewWeaponExt = WeaponTypeExt::Fetch(pNewWeapon);
+
+			if (pNewWeaponExt->Strafing.isset())
+			{
+				isStrafing = pNewWeaponExt->Strafing.Get();
+			}
+			else
+			{
+				const auto pBulletType = pNewWeapon->Projectile;
+
+				if (pBulletType->ROT < 2 && !pBulletType->Inviso && !BulletTypeExt::Fetch(pBulletType)->TrajectoryType)
+					isStrafing = true;
+			}
+
+			if (isStrafing)
+			{
+				if (!pNewWeaponExt->Strafing_TargetCell)
+					pAircraftExt->Strafe_TargetCell = nullptr;
+
+				if (pAircraftExt->Strafe_BombsDroppedThisRound >= pNewWeaponExt->Strafing_Shots.Get(5))
+					resetMission = true;
+			}
+		}
+
+		if (!isStrafing)
+		{
+			pAircraftExt->Strafe_BombsDroppedThisRound = 0;
+			pAircraftExt->Strafe_TargetCell = nullptr;
+		}
+
+		if (!isStrafing || resetMission)
+		{
+			pAircraft->IsLocked = false;
+
+			// mission status might still be incorrect here
+			if (pAircraft->MissionStatus >= (int)AirAttackStatus::FireAtTarget2_Strafe
+				&& pAircraft->MissionStatus <= (int)AirAttackStatus::FireAtTarget5_Strafe)
+			{
+				if (pAircraft->Target && pAircraft->Ammo > 0)
+					pAircraft->MissionStatus = (int)AirAttackStatus::ValidateAZ;
+				else
+					pAircraft->MissionStatus = (int)AirAttackStatus::FlyToPosition;
+			}
+		}
+	}
 
 	// handle AutoTargetOwnPosition
 	if (pOldTypeExt->AutoTargetOwnPosition && !pNewTypeExt->AutoTargetOwnPosition)
@@ -813,6 +883,48 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		if (const auto pAlpha = pAlphaMap->get_or_default(pThis))
 			GameDelete(pAlpha);
 	}
+}
+
+void FootExt::AmmoAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Ammo_AutoConvertType.isset())
+		return;
+
+	const int min = pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const int max = pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (pTypeExt->OwnerObject()->Ammo <= 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Ammo_AutoConvertType);
+}
+
+void FootExt::HealthAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Convert_Health.isset())
+		return;
+
+	const double min = pTypeExt->Convert_Health_AbovePercent;
+	const double max = pTypeExt->Convert_Health_BelowPercent;
+
+	if (min < 0 && max < 0)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	if (TechnoExt::IsHealthInThreshold(pThis, min, max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
 }
 
 // =============================

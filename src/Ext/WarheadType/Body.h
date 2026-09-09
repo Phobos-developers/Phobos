@@ -1,4 +1,5 @@
 #pragma once
+#include <WarheadTypeClass.h>
 #include <Ext/Bullet/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -263,6 +264,14 @@ public:
 
 	Valueable<bool> Taunt;
 
+	Nullable<StackingMode> Psychedelic_StackingMode;
+
+	Valueable<bool> PreventCrewEscape;
+	Valueable<bool> PreventPassengerEscape;
+	Valueable<bool> PreventOccupantEscape;
+
+	Valueable<int> Ammo;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -270,11 +279,13 @@ public:
 	Valueable<bool> EffectsRequireVerses;
 	Valueable<bool> Malicious;
 	Nullable<int> Flash_Duration;
-	Valueable<double> Damage_Deployed { 1.0 };
+	Valueable<double> Damage_Deployed;
+	Nullable<bool> PreventScatter;
 
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
 	bool Crit_Active;
+	bool InApplyCrit;
 	double ReturnWarhead_RandomBuffer;
 	bool InDamageArea;
 	bool WasDetonatedOnAllMapObjects;
@@ -506,10 +517,13 @@ public:
 		, EffectsRequireVerses { true }
 		, Malicious { true }
 		, Flash_Duration {}
+		, Damage_Deployed { 1.0 }
+		, PreventScatter {}
 
 		, Crit_RandomBuffer { 0.0 }
 		, Crit_CurrentChance { 0.0 }
 		, Crit_Active { false }
+		, InApplyCrit { false }
 		, ReturnWarhead_RandomBuffer { 0.0 }
 		, InDamageArea { true }
 		, WasDetonatedOnAllMapObjects { false }
@@ -551,6 +565,14 @@ public:
 		, ApplyPerTargetEffectsOnDetonate {}
 
 		, Taunt { false }
+
+		, Psychedelic_StackingMode {}
+
+		, PreventCrewEscape { false }
+		, PreventPassengerEscape { false }
+		, PreventOccupantEscape { false }
+
+		, Ammo { 0 }
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -592,6 +614,7 @@ private:
 	void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
+	void ApplyAmmoModifier(TechnoClass* pTarget);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>

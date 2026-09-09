@@ -31,12 +31,14 @@ public:
 	RadTypeClass* Type;
 	HouseClass* RadHouse;
 	TechnoClass* RadInvoker;
+	bool LightDirty;
 
 	RadSiteExt(RadSiteClass* OwnerObject) : AbstractExt(OwnerObject)
 		, RadHouse { nullptr }
 		, RadInvoker { nullptr }
 		, Type {}
 		, Weapon { nullptr }
+		, LightDirty { false }
 	{ }
 
 	virtual ~RadSiteExt() = default;

@@ -34,8 +34,8 @@
 
 #include "Iterator.h"
 
-#include <MouseClass.h>
-#include <FootClass.h>
+#include <RulesClass.h>
+#include <TechnoClass.h>
 
 #include "Savegame.h"
 #include "Enum.h"

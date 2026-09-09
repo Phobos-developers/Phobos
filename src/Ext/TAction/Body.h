@@ -19,12 +19,16 @@ enum class PhobosTriggerAction : unsigned int
 	ToggleMCVRedeploy = 510,
 	UndeployToWaypoint = 511,
 	SetFollowsIndexForVehicle = 512,
+	SetMissionTimer = 513,
+
+	SetDropCrate = 600,
 
 	EditAngerNode = 606,
 	ClearAngerNode = 607,
 	SetForceEnemy = 608,
 	SetFreeRadar = 609,
 	SetTeamDelay = 610,
+	SetNextScanario = 611,
 
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
@@ -81,12 +85,16 @@ public:
 	ACTION_FUNC(ToggleMCVRedeploy);
 	ACTION_FUNC(UndeployToWaypoint);
 	ACTION_FUNC(SetFollowsIndexForVehicle);
+	ACTION_FUNC(SetMissionTimer);
+
+	ACTION_FUNC(SetDropCrate);
 
 	ACTION_FUNC(EditAngerNode);
 	ACTION_FUNC(ClearAngerNode);
 	ACTION_FUNC(SetForceEnemy);
 	ACTION_FUNC(SetFreeRadar);
 	ACTION_FUNC(SetTeamDelay);
+	ACTION_FUNC(SetNextScanario);
 
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);

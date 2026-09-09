@@ -1,10 +1,5 @@
 #include "Phobos.h"
 
-#include <Drawing.h>
-#include <HouseClass.h>
-#include <SessionClass.h>
-#include <Unsorted.h>
-
 #include <commctrl.h>
 
 #include <Misc/ExceptionHandler.h>
@@ -16,7 +11,9 @@
 #include "Utilities/GeneralUtils.h"
 #include "Utilities/Parser.h"
 
-#ifndef IS_RELEASE_VER
+#include <Ext/Rules/Body.h>
+
+#ifdef TESTING_BUILD
 bool HideWarning = false;
 #endif
 
@@ -34,13 +31,14 @@ bool Phobos::Optimizations::Applied = false;
 bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
+bool Phobos::Optimizations::DisableLaserTracking = true;
 
-#ifdef STR_GIT_COMMIT
-const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
-#elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
-#else
-//const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
+// The leading L"" widens the narrow metadata literals it is concatenated with, so that the
+// name and the version are taken from Phobos.version.h rather than spelled out again.
+#ifdef NIGHTLY
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". DO NOT SHIP IN MODS!";
+#elif defined(TESTING_BUILD)
+const wchar_t* Phobos::VersionDescription = L"" PRODUCT_NAME " " PRODUCT_VERSION L". Please test the build before shipping.";
 #endif
 
 
@@ -63,8 +61,13 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			Phobos::AppIconPath = ppArgs[++i];
 		}
-#ifndef IS_RELEASE_VER
-		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
+#ifdef TESTING_BUILD
+		// Suppresses the "please test this build" warning drawn over the game screen.
+		// The exact version of this very build has to be spelled out (it is printed in
+		// the warning itself and in the release title), so that the switch can't be set
+		// once and then silently carried over into a mod release with a newer build.
+		if (_stricmp(pArg, "-HideVersionWarning=" FILE_VERSION_STR) == 0
+			|| _stricmp(pArg, "-HideVersionWarning=v" FILE_VERSION_STR) == 0) // as shown in the warning
 		{
 			HideWarning = true;
 		}
@@ -135,6 +138,13 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		ExceptionHandler::Init();
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
+#ifdef STR_GIT_COMMIT
+	Debug::Log("Git commit: " STR_GIT_COMMIT "\n");
+	Debug::Log("Git dirty: " GIT_DIRTY_FLAG "\n");
+#endif
+#ifdef STR_GIT_REF
+	Debug::Log("Git ref: " STR_GIT_REF "\n");
+#endif
 	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
@@ -216,8 +226,7 @@ void Phobos::ExeRun()
 
 		L"To attach a debugger find the YR process in Process Hacker "
 		L"/ Visual Studio processes window and detach debuggers from it, "
-		L"then you can attach your own debugger. After this you should "
-		L"terminate Syringe.exe because it won't automatically exit when YR is closed.\n\n"
+		L"then you can attach your own debugger.\n\n"
 
 		L"Press OK to continue YR execution.",
 		L"Debugger Notice", MB_OK);
@@ -308,10 +317,10 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
 	int coordY = 0;
 
-#ifndef IS_RELEASE_VER
-#ifndef STR_GIT_COMMIT
+#ifdef TESTING_BUILD
+#ifndef NIGHTLY
 	if (!HideWarning)
-#endif // !STR_GIT_COMMIT
+#endif // !NIGHTLY
 	{
 		auto wanted = Drawing::GetTextDimensions(Phobos::VersionDescription, { 0, 0 }, 0, 2, 0);
 
@@ -329,9 +338,9 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		// add margin for next text
 		coordY = rect.Height;
 	}
-#endif // !IS_RELEASE_VER
+#endif // !RELEASE
 
-	if (!Phobos::Config::ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
+	if (!Phobos::Config::ShowGameTime || !RulesExt::Global()->ShowGameTime || HouseClass::CurrentPlayer->IsObserver()) // already has a timer
 		return 0;
 
 	wchar_t buffer[0x20] {};
