@@ -382,6 +382,10 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Limbo, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	// Ares ResetSpotlights - clear the leftover spotlight once the techno is limboed (e.g. after it entered a transport)
+	if (AresFunctions::SetSpotlight)
+		AresFunctions::SetSpotlight(reinterpret_cast<void*>(pThis->align_154), nullptr);
+
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->Shield)

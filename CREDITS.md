@@ -764,6 +764,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
   - Country-specific veteran buildings
+  - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
 - **Ollerus**:
   - Build limit group enhancement
