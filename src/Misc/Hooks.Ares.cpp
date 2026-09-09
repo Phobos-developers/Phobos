@@ -255,7 +255,7 @@ static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares
 	if (pTypeExt->Crew.isset())
 		return pTypeExt->Crew.Get();
 
-	return AresFunctions::GetSideCrew(pExt_Ares);
+	return AresFunctions::GetCrew(pExt_Ares);
 }
 
 #pragma endregion

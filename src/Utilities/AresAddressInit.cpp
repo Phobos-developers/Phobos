@@ -21,7 +21,7 @@ decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
 decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
 
 decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
-decltype(AresFunctions::GetSideCrew) AresFunctions::GetSideCrew = nullptr;
+decltype(AresFunctions::GetCrew) AresFunctions::GetCrew = nullptr;
 
 decltype(AresFunctions::FindEVAIndex) AresFunctions::FindEVAIndex = nullptr;
 
@@ -73,7 +73,7 @@ void AresFunctions::InitAres3_0()
 
 	// HouseExt
 	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
-	NOTE_ARES_FUN(GetSideCrew, 0x021230);
+	NOTE_ARES_FUN(GetCrew, 0x021230);
 
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x063560);
@@ -125,7 +125,7 @@ void AresFunctions::InitAres3_0p1()
 
 	// HouseExt
 	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
-	NOTE_ARES_FUN(GetSideCrew, 0x021CB0);
+	NOTE_ARES_FUN(GetCrew, 0x021CB0);
 
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x0642B0);

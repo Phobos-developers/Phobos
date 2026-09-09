@@ -57,7 +57,7 @@ public:
 
 	// HouseExt
 	static bool(__thiscall* ReverseEngineer)(void*, TechnoTypeClass* pType);
-	static InfantryTypeClass* (__thiscall* GetSideCrew)(void*);
+	static InfantryTypeClass* (__thiscall* GetCrew)(void*);
 
 	// VoxClass
 	static int(__stdcall* FindEVAIndex)(const char* buffer);
