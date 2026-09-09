@@ -447,6 +447,7 @@ This page lists all the individual contributions to the project by their author.
   - SkipMapSelect Enhancement
   - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
+  - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -763,6 +764,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
+  - Country-specific veteran buildings
+  - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
