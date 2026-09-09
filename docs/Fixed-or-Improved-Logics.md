@@ -1563,6 +1563,16 @@ VeteranDefenses=        ; List of BuildingTypes
 Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
 ```
 
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=                    ; InfantryType, defaults to [Side] -> Crew
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry
@@ -2055,15 +2065,6 @@ Insignia.ShowEnemy=                                         ; boolean, defaults 
 
 ```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
-```
-### Customizable crew type per country
-
-- You can now define `Crew` on a per-country basis.
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]            ; Country
-Crew=E1              ; InfantryType
 ```
 
 ### Customizable wake anim

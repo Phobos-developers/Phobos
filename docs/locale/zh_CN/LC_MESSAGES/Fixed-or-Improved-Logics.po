@@ -3845,9 +3845,11 @@ msgstr ""
 
 msgid "Customizable crew type per country"
 msgstr ""
+"国家层级生还者自定义"
 
 msgid "You can now define `Crew` on a per-country basis."
 msgstr ""
+"你可以基于各个国家定义 `Crew`。"
 
 msgid "Infantry"
 msgstr "步兵"

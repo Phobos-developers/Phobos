@@ -3291,6 +3291,7 @@ msgstr ""
 
 msgid "Customizable crew type per country"
 msgstr ""
+"国家层级生还者自定义"
 
 msgid "**11EJDE11**:"
 msgstr "**11EJDE11**："

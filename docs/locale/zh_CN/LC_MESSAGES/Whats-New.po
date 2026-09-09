@@ -958,6 +958,7 @@ msgid ""
 "#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, "
 "Noble_Fish)"
 msgstr ""
+"[国家层级生还者自定义](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country)（by Sovietianqi、FlyStar、Noble_Fish）"
 
 msgid ""
 "[Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-"
