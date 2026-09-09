@@ -43,7 +43,7 @@ DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 
 	GET(HouseClass* const, pHouse, ECX);
 
-	auto const pHouseTypeExt = HouseTypeExt::ExtMap.Find(pHouse->Type);
+	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
 
 	if (pHouseTypeExt->Crew.isset())
 	{
