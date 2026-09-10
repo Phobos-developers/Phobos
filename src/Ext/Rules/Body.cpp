@@ -715,6 +715,13 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
+
+	// default toggle sounds to the planning mode ones
+	if (this->StartDistributionModeSound == -1)
+		this->StartDistributionModeSound = pRules->StartPlanningModeSound;
+
+	if (this->EndDistributionModeSound == -1)
+		this->EndDistributionModeSound = pRules->EndPlanningModeSound;
 }
 
 // =============================

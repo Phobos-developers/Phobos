@@ -628,22 +628,22 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 
 - Now you can change the click action by using `AllowSwitchNoMoveCommand` hotkey. If the behavior to be executed by the current techno is different from the behavior displayed by the mouse, and the behavior to be executed will make the techno move near the target, the behavior will be replaced with area guard. Regardless of whether or not switch hotkey is used, default behavior can be changed through `DefaultApplyNoMoveCommand`.
 - You can now distribute commands across similar targets in a specified range when holding down a hotkey if `AllowDistributionCommand` is enabled. This behavior is like using the selected objects one by one to click on each target within the spread range.
-  - The targets within the spread range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated. Otherwise, it will return to the original default behavior of the game (it will not be effective for technos in the air). This will display a range ring.
+  - The targets within the spread range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated (e.g. a healer will only be allocated friendly targets it can heal, while combat units will only be allocated the targets they would attack). Neutral targets are only eligible if the clicked target itself is neutral. Otherwise, the techno will fall back to the vanilla behavior of clicking the original target (the move fallback, or area guard if the no-move command described above is active). If the clicked target is in the air, the distribution will not take effect and the vanilla behavior applies. This will display a range ring.
+  - `AllowDistributionFilterHotkey` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
+    - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
+      - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
+      - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
+      - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
   - `DefaultDistributionSpreadRange` controls the initial spread range, which is a number that's corresponding to the amount of cell radius * 512.
-- `AllowDistributionCommand.SpreadModeHotKey` allows you to cycle through preset spread ranges by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
+- `AllowDistributionSpreadHotkey` allows you to cycle through preset spread ranges by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
   - When the range is 0, it is the original default behavior of the game.
-- `AllowDistributionCommand.UseClick` controls whether distribution mode is activated by clicking on a target. When set to false, distribution mode only works via press-and-drag, and the range ring will only be shown while dragging.
-- You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionCommand.SpreadModeScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
-- `AllowDistributionCommand.SpreadModeDrag` allows you to adjust the spread range by pressing and dragging the mouse while holding down the specific hotkey. The drag distance from the starting point determines the spread range. This can naturally co-exist with `SpreadModeScroll`.
-- `AllowDistributionCommand.FilterMode` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
-  - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
-    - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
-    - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
-    - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
-- `AllowDistributionCommand.AffectsAllies`, `AllowDistributionCommand.AffectsEnemies` & `AllowDistributionCommand.AffectsNeutral` allow the distribution command to work on allies (including owner), enemies or neutral target. If picking a target that's not eligible, it'll fallback to vanilla command.
+- `AllowDistributionUseClick` controls whether distribution mode is activated by clicking on a target. When set to false, distribution mode only works via press-and-drag, and the range ring will only be shown while dragging.
+- You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionSpreadScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
+- `AllowDistributionSpreadDrag` allows you to adjust the spread range by pressing and dragging the mouse while holding down the specific hotkey. The drag distance from the starting point determines the spread range. This can naturally co-exist with `AllowDistributionSpreadScroll`.
 - It's possible to add a button for distribution mode in the bottom bar by adding `DistributionMode` in the `ButtonList` of `AdvancedCommandBar` and `MultiplayerAdvancedCommandBar`.
   - The positions of each button are hardcoded, so it'll only decide whether enable this button or not. Distribute Mode button is now always listed after all the vanilla ones.
   - The asset of these buttons should be added in `sidec0x.mix` files which correspond to different sides, with the name `button12.shp`.
+- The distribution mode hotkey works like the vanilla waypoint mode hotkey: holding it down activates the mode while releasing it deactivates it, a sound is played and a message is shown when the mode is turned on/off, and the bottom bar button (if added) toggles the mode as well.
 - For localization add `TXT_SWITCH_NOMOVE`, `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_SWITCH_NOMOVE_DESC`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff`, `TIP:DistributionMode` into your `.csf` file.
 
 In `rulesmd.ini`:
@@ -651,25 +651,22 @@ In `rulesmd.ini`:
 [GlobalControls]
 AllowSwitchNoMoveCommand=false                      ; boolean
 AllowDistributionCommand=false                      ; boolean
-AllowDistributionCommand.SpreadModeHotKey=true       ; boolean
-AllowDistributionCommand.SpreadModeScroll=true      ; boolean
-AllowDistributionCommand.SpreadModeDrag=true        ; boolean
-AllowDistributionCommand.UseClick=true              ; boolean
-AllowDistributionCommand.FilterMode=true            ; boolean
-AllowDistributionCommand.AffectsAllies=true         ; boolean
-AllowDistributionCommand.AffectsEnemies=true        ; boolean
-AllowDistributionCommand.AffectsNeutral=true        ; boolean
 
 [AudioVisual]
-StartDistributionModeSound=                         ; sound entry
-EndDistributionModeSound=                           ; sound entry
-AddDistributionModeCommandSound=                    ; sound entry
+StartDistributionModeSound=                         ; sound entry, defaults to `StartPlanningModeSound`
+EndDistributionModeSound=                           ; sound entry, defaults to `EndPlanningModeSound`
+AddDistributionModeCommandSound=                    ; sound entry, played each time a distribution command is issued (by clicking a target or on drag release)
 ```
 
 In `ra2md.ini`:
 ```ini
 [Phobos]
 DefaultApplyNoMoveCommand=true                      ; boolean
+AllowDistributionSpreadHotkey=true                 ; boolean
+AllowDistributionSpreadScroll=true                 ; boolean
+AllowDistributionSpreadDrag=true                    ; boolean
+AllowDistributionUseClick=true                      ; boolean
+AllowDistributionFilterHotkey=true                 ; boolean
 DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120
 DistributionSpreadScrollStep=256                    ; integer, minimum 16
 DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name

@@ -1,4 +1,4 @@
-#include "DistributionMode.h"
+﻿#include "DistributionMode.h"
 
 #include "AdvancedCommandBarButtons.h"
 #include <Ext/Techno/Body.h>
@@ -473,7 +473,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 	const int count = ObjectClass::CurrentObjects.Count;
 
-	if (!Phobos::Config::AllowDistributionCommand_UseClick)
+	if (!Phobos::Config::AllowDistributionUseClick)
 		return 0;
 
 	if (count > 0)
@@ -513,7 +513,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
 	if (!DistributionModeHoldDownCommandClass::IsDragDistributing
-		&& (!Phobos::Config::AllowDistributionCommand_UseClick
+		&& (!Phobos::Config::AllowDistributionUseClick
 			|| (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)))
 	{
 		return 0;
@@ -563,7 +563,7 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 {
 	enum { SkipGameCode = 0x4AC4DF };
 
-	if (!DistributionModeHoldDownCommandClass::Enabled || !Phobos::Config::AllowDistributionCommand_SpreadModeDrag)
+	if (!DistributionModeHoldDownCommandClass::Enabled || !Phobos::Config::AllowDistributionSpreadDrag)
 		return 0;
 
 	const int count = ObjectClass::CurrentObjects.Count;

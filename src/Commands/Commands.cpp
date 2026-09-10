@@ -60,10 +60,10 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 	if (Phobos::Config::AllowDistributionCommand)
 	{
-		if (Phobos::Config::AllowDistributionCommand_SpreadModeHotKey)
+		if (Phobos::Config::AllowDistributionSpreadHotkey)
 			MakeCommand<DistributionModeSpreadCommandClass>();
 
-		if (Phobos::Config::AllowDistributionCommand_FilterMode)
+		if (Phobos::Config::AllowDistributionFilterHotkey)
 			MakeCommand<DistributionModeFilterCommandClass>();
 
 		MakeCommand<DistributionModeHoldDownCommandClass>();
@@ -95,7 +95,7 @@ static void MouseWheelDownCommand()
 	if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollDown();
 
-	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionSpreadScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce();
 }
 
@@ -104,7 +104,7 @@ static void MouseWheelUpCommand()
 	if (MessageColumnClass::Instance.IsHovering())
 		MessageColumnClass::Instance.ScrollUp();
 
-	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionSpreadScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand();
 }
 
