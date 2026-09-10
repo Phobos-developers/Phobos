@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
+  - Tiberium ramp expansion support, spread and growth crash fixes due to data corruption.
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
