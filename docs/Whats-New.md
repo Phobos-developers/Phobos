@@ -455,8 +455,12 @@ HideShakeEffects=false           ; boolean
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (by FS-21)
 - Fixed Tiberium growth and spread queues stalling when cells fail to expand (by FS-21)
+- Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed Tiberium cells failing to register into the spread queue upon reaching maximum growth stage (by FS-21)
+- Fixed Tiberium on ramps being blocked by non-buildable tile land types in CanTiberiumGerminate (by FS-21)
 
 #### Phobos fixes:
+- Fixed Tiberium trees/drills with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells and optimized `SpawnsTiberium.CellsPerAnim` loop (by FS-21)
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)

@@ -3,6 +3,7 @@
 #include <CellClass.h>
 #include <MapClass.h>
 #include <OverlayClass.h>
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 
 namespace
@@ -24,6 +25,24 @@ namespace
 		reinterpret_cast<void(__thiscall*)(TiberiumClass*)>(0x7228B0)(pThis);
 	}
 
+	int GetMaxValidCells(int maxSurfaceCount)
+	{
+		return maxSurfaceCount - 20;
+	}
+
+	bool HasRampArt(TiberiumClass* pTib)
+	{
+		if (!pTib || !pTib->Image)
+			return false;
+
+		const int rampOverlayIdx = pTib->Image->ArrayIndex + pTib->NumFrames;
+		if (rampOverlayIdx >= OverlayTypeClass::Array.Count)
+			return false;
+
+		const auto pRampOverlay = OverlayTypeClass::Array.GetItem(rampOverlayIdx);
+		return pRampOverlay && pRampOverlay->Tiberium;
+	}
+
 	bool CanResourceGerminateOnRamp(TiberiumClass* pTib, BYTE slopeIndex)
 	{
 		if (slopeIndex == 0)
@@ -35,7 +54,7 @@ namespace
 		if (pTib)
 		{
 			const auto pExt = TiberiumExt::TryFetch(pTib);
-			if (pExt && pExt->AllowRamps)
+			if (pExt && pExt->AllowRamps && HasRampArt(pTib))
 			{
 				if (pTib->NumSlopes < RequiredRampOverlays)
 					pTib->NumSlopes = RequiredRampOverlays;
@@ -50,7 +69,7 @@ namespace
 		{
 			if (const auto pExt = TiberiumExt::TryFetch(pItem))
 			{
-				if (pExt->AllowRamps)
+				if (pExt->AllowRamps && HasRampArt(pItem))
 				{
 					if (pItem->NumSlopes < RequiredRampOverlays)
 						pItem->NumSlopes = RequiredRampOverlays;
@@ -116,14 +135,19 @@ DEFINE_HOOK(0x7235CE, TiberiumClass_Queue_Growth_At_Cell_CapacityGuard, 0x5)
 	enum { ReturnEarly = 0x7236C2 };
 
 	GET(TiberiumClass*, pThis, ESI);
-	const int surfaceIdx = R->Stack<int>(0x0C);
+	GET(CellStruct*, pCellCoords, EDI);
 	const auto& logic = pThis->GrowthLogic;
 	const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+	const int maxCells = GetMaxValidCells(maxCount);
+
+	if (pThis->GrowthLogic.Count >= maxCells)
+		ReindexGrowth(pThis);
 
 	// Prevent duplicate queue entries for cells already awaiting growth
-	if (logic.CellIndexesWithTiberium && surfaceIdx >= 0 && surfaceIdx < maxCount)
+	if (logic.CellIndexesWithTiberium && pCellCoords)
 	{
-		if (logic.CellIndexesWithTiberium[surfaceIdx])
+		const int surfaceIdx = PriorityQueueClassNode::ToSurfaceIndex(*pCellCoords);
+		if (surfaceIdx >= 0 && surfaceIdx < maxCount && logic.CellIndexesWithTiberium[surfaceIdx])
 			return ReturnEarly;
 	}
 
@@ -137,9 +161,10 @@ DEFINE_HOOK(0x72302E, TiberiumClass_Grow_RequeueGuard, 0x6)
 {
 	GET(TiberiumClass*, pThis, ESI);
 	const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+	const int maxCells = GetMaxValidCells(maxCount);
 
 	// Compact and re-index active cells before buffer overflows
-	if (pThis->GrowthLogic.Count >= maxCount - 20)
+	if (pThis->GrowthLogic.Count >= maxCells)
 		ReindexGrowth(pThis);
 
 	// Replicate stolen instruction: mov eax, dword ptr [esi + 0x10C]
@@ -165,11 +190,24 @@ DEFINE_HOOK(0x722FF2, TiberiumClass_Grow_NodeSanityCheck, 0x8)
 
 DEFINE_HOOK(0x722B48, TiberiumClass_Queue_Spread_At_Cell_CapacityGuard, 0x6)
 {
-	GET(TiberiumClass*, pThis, ESI);
-	const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+	enum { ReturnEarly = 0x722C2A };
 
-	if (pThis->SpreadLogic.Count >= maxCount - 20)
+	GET(TiberiumClass*, pThis, ESI);
+	GET(CellStruct*, pCellCoords, EBP);
+	const auto& logic = pThis->SpreadLogic;
+	const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+	const int maxCells = GetMaxValidCells(maxCount);
+
+	if (pThis->SpreadLogic.Count >= maxCells)
 		ReindexSpread(pThis);
+
+	// Prevent duplicate queue entries for cells already awaiting spread
+	if (logic.CellIndexesWithTiberium && pCellCoords)
+	{
+		const int surfaceIdx = PriorityQueueClassNode::ToSurfaceIndex(*pCellCoords);
+		if (surfaceIdx >= 0 && surfaceIdx < maxCount && logic.CellIndexesWithTiberium[surfaceIdx])
+			return ReturnEarly;
+	}
 
 	// Replicate stolen instruction: mov ecx, dword ptr [esi + 0xF0]
 	R->ECX(pThis->SpreadLogic.Count);
@@ -196,9 +234,10 @@ DEFINE_HOOK(0x722586, TiberiumClass_Spread_RequeueGuard, 0x6)
 {
 	GET(TiberiumClass*, pThis, EBX);
 	const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+	const int maxCells = GetMaxValidCells(maxCount);
 
 	// Compact and re-index active cells before buffer overflows
-	if (pThis->SpreadLogic.Count >= maxCount - 20)
+	if (pThis->SpreadLogic.Count >= maxCells)
 		ReindexSpread(pThis);
 
 	// Replicate stolen instruction: mov eax, dword ptr [ebx + 0xF0]
@@ -209,7 +248,7 @@ DEFINE_HOOK(0x722586, TiberiumClass_Spread_RequeueGuard, 0x6)
 
 DEFINE_HOOK(0x722574, TiberiumClass_Spread_StallFix, 0x5)
 {
-	enum { Requeue = 0x722586, ClearFlagAndFinish = 0x722645, Finish = 0x722657 };
+	enum { Requeue = 0x722586, Finish = 0x722657 };
 
 	const bool spreadSuccess = (R->AL() != 0);
 	GET(int, eligibleNeighbors, EBP);
@@ -219,40 +258,82 @@ DEFINE_HOOK(0x722574, TiberiumClass_Spread_StallFix, 0x5)
 	R->Stack<int>(0x10, loopCount);
 	R->ECX(loopCount);
 
-	// When spread fails due to temporary obstacles, re-queue the cell so expansion does not stall
-	if (!spreadSuccess)
+	// When spread succeeds, 1 neighbor was seeded. If more candidates remain, re-queue with delay
+	if (spreadSuccess && eligibleNeighbors > 1)
 		return Requeue;
 
-	// When all available neighbors have been successfully seeded, clear tracking flag and complete
-	if (eligibleNeighbors <= 1)
-		return ClearFlagAndFinish;
+	// Completed or spread failed (e.g. cell occupied by unit/structure) - do not spin
+	return Finish;
+}
 
-	// Additional unseeded neighbors remain
-	return Requeue;
+DEFINE_HOOK(0x7225AB, TiberiumClass_Spread_RequeueScore, 0x8)
+{
+	GET(DWORD, nodesBase, ECX);
+	GET(DWORD, nodeIndex, EAX);
+
+	const int delay = ScenarioClass::Instance
+		? ScenarioClass::Instance->Random.RandomRanged(1, 50)
+		: 25;
+	const float score = static_cast<float>(Unsorted::CurrentFrame + delay);
+
+	auto pScore = reinterpret_cast<float*>(nodesBase + nodeIndex * 8 + 4);
+	*pScore = score;
+
+	return 0x7225B3;
+}
+
+DEFINE_HOOK(0x72311E, TiberiumClass_GrowthAI_MaxStageSpread, 0x7)
+{
+	GET(TiberiumClass*, pThis, ESI);
+	GET(CellStruct*, pCellCoords, EBX);
+
+	if (pThis && pCellCoords)
+	{
+		const int surfaceIdx = PriorityQueueClassNode::ToSurfaceIndex(*pCellCoords);
+		const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+		const auto& logic = pThis->SpreadLogic;
+
+		if (surfaceIdx >= 0 && surfaceIdx < maxCount)
+		{
+			if (!logic.CellIndexesWithTiberium || !logic.CellIndexesWithTiberium[surfaceIdx])
+				pThis->RegisterForSpread(pCellCoords);
+		}
+
+		R->EAX(surfaceIdx);
+	}
+
+	return 0;
 }
 
 // =============================================================================
 // Ramp Tiberium Support & Division by Zero Safety
 // =============================================================================
 
-DEFINE_HOOK(0x4839B6, CellClass_CanTiberiumGerminate_RampSupport, 0xA)
+DEFINE_HOOK(0x48399C, CellClass_CanTiberiumGerminate_RampSupport, 0x6)
 {
-	enum { Disallow = 0x4839E9, ContinueChecks = 0x4839C0, AllowRamp = 0x4839E2 };
+	enum { Disallow = 0x4839E9, AllowRamp = 0x4839E2, ContinueFlat = 0x4839A2 };
 
 	GET(CellClass*, pThis, EDI);
 
 	if (pThis->SlopeIndex != 0)
 	{
+		if (pThis->OverlayTypeIndex != -1)
+			return Disallow;
+
 		TiberiumClass* pTib = nullptr;
 
 		const auto pEbx = reinterpret_cast<TiberiumClass*>(R->EBX());
 		if (TiberiumClass::Array.FindItemIndex(pEbx) != -1)
+		{
 			pTib = pEbx;
+		}
 		else
 		{
 			const auto pArg = R->Stack<TiberiumClass*>(0x0C);
 			if (TiberiumClass::Array.FindItemIndex(pArg) != -1)
+			{
 				pTib = pArg;
+			}
 			else
 			{
 				const auto pCallerTib = R->Stack<TiberiumClass*>(0x30);
@@ -267,7 +348,9 @@ DEFINE_HOOK(0x4839B6, CellClass_CanTiberiumGerminate_RampSupport, 0xA)
 		return Disallow;
 	}
 
-	return ContinueChecks;
+	R->EAX(static_cast<DWORD>(pThis->LandType));
+
+	return ContinueFlat;
 }
 
 DEFINE_HOOK(0x47D36E, CellClass_RecalcAttributes_PreserveRampTiberium, 0x18)
@@ -333,11 +416,8 @@ DEFINE_HOOK(0x483738, CellClass_CanTiberiumGrow_RampCheck, 0xA)
 	GET(CellClass*, pThis, ESI);
 	GET(TiberiumClass*, pTib, EAX);
 
-	if (pThis->SlopeIndex != 0)
-	{
-		if (!CanResourceGerminateOnRamp(pTib, pThis->SlopeIndex))
-			return Disallow;
-	}
+	if (pThis->SlopeIndex != 0 && !CanResourceGerminateOnRamp(pTib, pThis->SlopeIndex))
+		return Disallow;
 
 	return ContinueChecks;
 }
@@ -360,6 +440,31 @@ DEFINE_HOOK(0x4837BB, CellClass_SpreadTiberium_RampSupport, 0xA)
 	return ContinueSpread;
 }
 
+DEFINE_HOOK(0x4872A0, CellClass_IncreaseTiberium_Germinate_RegisterSpread, 0x6)
+{
+	GET(CellClass*, pThis, ESI);
+	GET(TiberiumClass*, pTib, EDI);
+	const auto stage = static_cast<BYTE>(R->BL());
+
+	pThis->OverlayData = stage;
+
+	if (pThis && pTib && stage >= pTib->NumFrames - 1)
+	{
+		CellStruct mapCoords = pThis->MapCoords;
+		const int surfaceIdx = PriorityQueueClassNode::ToSurfaceIndex(mapCoords);
+		const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+		const auto& logic = pTib->SpreadLogic;
+
+		if (surfaceIdx >= 0 && surfaceIdx < maxCount)
+		{
+			if (!logic.CellIndexesWithTiberium || !logic.CellIndexesWithTiberium[surfaceIdx])
+				pTib->RegisterForSpread(&mapCoords);
+		}
+	}
+
+	return 0x4872A6;
+}
+
 DEFINE_HOOK(0x4873A7, CellClass_IncreaseTiberium_RampStageSupport, 0x11)
 {
 	enum { Disallow = 0x48761E, ContinueGrowth = 0x4873B8 };
@@ -370,11 +475,8 @@ DEFINE_HOOK(0x4873A7, CellClass_IncreaseTiberium_RampStageSupport, 0x11)
 	const auto pTib = TiberiumClass::Array.GetItemOrDefault(tibIndex);
 	R->EAX(pTib);
 
-	if (pThis->SlopeIndex != 0)
-	{
-		if (!CanResourceGerminateOnRamp(pTib, pThis->SlopeIndex))
-			return Disallow;
-	}
+	if (pThis->SlopeIndex != 0 && !CanResourceGerminateOnRamp(pTib, pThis->SlopeIndex))
+		return Disallow;
 
 	return ContinueGrowth;
 }
