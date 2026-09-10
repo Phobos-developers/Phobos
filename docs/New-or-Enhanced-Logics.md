@@ -837,12 +837,13 @@ EliteUnits=             ; List of UnitTypes
 EliteAircraft=          ; List of AircraftTypes
 ```
 
-- For each `TechnoType`, you can define `SpareCameo` to specify the elite‑level icon. When a `TechnoType` is added to the initial elite list, it will preferentially use the SpareCameo as its icon. Supports `SHP`/`PCX` formats.
+- For each `TechnoType`, you can define `SpareCameo` and `SpareCameoPCX` to specify the elite‑level icon. When a `TechnoType` is added to the initial elite list, it will preferentially use the SpareCameo as its icon.
 
 In `artmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-SpareCameo=             ; filename - including the .shp/.pcx extension
+SpareCameo=             ; filename
+SpareCameoPCX=          ; filename - include ".pcx" extension
 ```
 
 ## Infantry
