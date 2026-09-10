@@ -463,7 +463,9 @@ public:
 
 	PhobosFixedString<0x20> SpareCameoFile;
 	SHPStruct* SpareCameo;
-	bool SpareCameo_IsLoad;
+	bool SHPCameo_IsLoad;
+	PhobosPCXFile SpareCameoPCX;
+	
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, HealthBar_Hide { false }
@@ -857,7 +859,8 @@ public:
 
 		, SpareCameoFile { NONE_STR }
 		, SpareCameo { nullptr }
-		, SpareCameo_IsLoad { false }
+		, SHPCameo_IsLoad { false }
+		, SpareCameoPCX {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

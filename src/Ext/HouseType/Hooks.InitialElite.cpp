@@ -7,7 +7,7 @@ static SHPStruct* LoadSHPCameo(TechnoTypeClass* pType)
 {
 	auto pTypeExt = TechnoTypeExt::Fetch(pType);
 
-	if(pTypeExt->SpareCameo_IsLoad)
+	if(pTypeExt->SHPCameo_IsLoad)
 		return pTypeExt->SpareCameo;
 	
 	char pFileName[0x20];
@@ -16,10 +16,12 @@ static SHPStruct* LoadSHPCameo(TechnoTypeClass* pType)
 	_strlwr_s(pFileName);
 
 	if(!_stricmp(pFileName, pTypeExt->SpareCameoFile.data()) 
-	   && strstr(pFileName, ".shp"))
+	   && !strstr(pFileName, ".pcx"))
 	{
-		SHPStruct* pSHP = FileSystem::LoadSHPFile(pFileName);
-		pTypeExt->SpareCameo_IsLoad = true;
+		std::string Filename(pFileName);
+		Filename += ".shp";
+		SHPStruct* pSHP = FileSystem::LoadSHPFile(Filename.c_str());
+		pTypeExt->SHPCameo_IsLoad = true;
 		pTypeExt->SpareCameo = pSHP;
 		return pSHP;
 	}
@@ -31,10 +33,10 @@ static bool DrawPCXCameo(TechnoTypeClass* pType, const int destX, const int dest
 	auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	char pFileName[0x20];
 
-	strcpy_s(pFileName, pTypeExt->SpareCameoFile.data());
+	strcpy_s(pFileName, pTypeExt->SpareCameoPCX.GetFilename());
 	_strlwr_s(pFileName);
 
-	if(!_stricmp(pFileName, pTypeExt->SpareCameoFile.data())
+	if(!_stricmp(pFileName, pTypeExt->SpareCameoPCX.GetFilename())
        && strstr(pFileName, ".pcx"))
 	{
 		PCX::Instance.LoadFile(pFileName);

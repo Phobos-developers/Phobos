@@ -1438,6 +1438,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 
 	this->SpareCameoFile.Read(pArtINI, pArtSection, "SpareCameo");
+	this->SpareCameoPCX.Read(pArtINI, pArtSection, "SpareCameoPCX");
 }
 
 template <typename T>
@@ -1835,7 +1836,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->SpareCameoFile)
 		.Process(this->SpareCameo)
-		.Process(this->SpareCameo_IsLoad)
+		.Process(this->SHPCameo_IsLoad)
+		.Process(this->SpareCameoPCX)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
