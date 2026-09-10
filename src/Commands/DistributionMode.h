@@ -79,7 +79,6 @@ public:
 	static void __fastcall AreaGuardAction(TechnoClass* pTechno);
 
 	static void ProcessWaypointCommand(int idxPath, unsigned char idxWP);
-	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
 	static bool IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
 	static std::vector<std::pair<TechnoClass*, int>> CollectAndSortTargets(CoordStruct center, double range);

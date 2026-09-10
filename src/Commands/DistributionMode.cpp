@@ -273,14 +273,6 @@ bool grinderCheck(Action action, TechnoClass* pTechno)
 	return true;
 }
 
-bool DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action)
-{
-	return (pOwner->IsNeutral() ? Phobos::Config::AllowDistributionCommand_AffectsNeutral :
-		(HouseClass::CurrentPlayer->IsAlliedWith(pOwner)
-			? (Phobos::Config::AllowDistributionCommand_AffectsAllies && action != Action::Attack)
-			: Phobos::Config::AllowDistributionCommand_AffectsEnemies));
-}
-
 bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno)
 {
 	return Enabled
@@ -290,8 +282,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& !PlanningNodeClass::PlanningModeActive
 		&& pTechno
 		&& !pTechno->IsInAir()
-		&& grinderCheck(action, pTechno)
-		&& DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pTechno->Owner, action);
+		&& grinderCheck(action, pTechno);
 }
 
 std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
@@ -374,9 +365,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				continue;
 
 			if (!grinderCheck(info.Action, pItem))
-				continue;
-
-			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pItem->Owner, info.Action))
 				continue;
 
 			if (filterMode)
