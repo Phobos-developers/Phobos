@@ -3330,7 +3330,7 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 	GET(FootClass*, pThis, ESI);
 	bool result = false;
 
-	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload)
+	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || !pThis->Owner->IsControlledByHuman())
 		result = pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now();
 
 	R->AL(result);
@@ -3641,4 +3641,24 @@ DEFINE_HOOK(0x554AAD, LightSourceClass_ChangeLevels_CheckBefore, 0x6)
 
 	R->EDI(tint.Blue);
 	return ContinueIn;
+}
+
+DEFINE_HOOK(0x4DA90E, FootClass_AI_WalkRateZeroProtect, 0x6)
+{
+	GET(TechnoTypeClass*, pType, ECX);
+
+	if (pType->WalkRate != 0)
+		return 0;
+
+	R->EDX(1);
+	return 0x4DA914;
+}
+
+DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
+{
+	enum { ReturnFromFunction = 0x454CD3 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	return pThis->TemporalTargetingMe && !RulesExt::Global()->Temporal_KillPoweredAnim ? ReturnFromFunction : 0;
 }

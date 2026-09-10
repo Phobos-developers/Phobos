@@ -855,10 +855,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 void TechnoExt::UpdateTemporal()
 {
 	if (const auto pShieldData = this->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-			pShieldData->AI_Temporal();
-	}
+		pShieldData->AI_Temporal();
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();
@@ -909,6 +906,7 @@ void TechnoExt::UpdateAttachEffects()
 	const bool inTunnel = this->IsInTunnelState() || this->IsBurrowedState();
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
+	bool requiresUpdateAnim = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<AEWeaponParams> expireWeapons;
 	std::set<AttachEffectTypeClass*> cumulativeAnimTypes;
@@ -921,11 +919,21 @@ void TechnoExt::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
+		auto const pType = attachEffect->GetType();
 
 		if (attachEffect->ShouldRecalculateStats)
 		{
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
+
+			if (pType->HasTint())
+				markForRedraw = true;
+		}
+
+		if (attachEffect->ShouldUpdateAnim)
+		{
+			requiresUpdateAnim = true;
+			attachEffect->ShouldUpdateAnim = false;
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
@@ -933,11 +941,13 @@ void TechnoExt::UpdateAttachEffects()
 
 		if (hasExpired || shouldDiscard)
 		{
-			auto const pType = attachEffect->GetType();
 			attachEffect->ShouldBeDiscarded = false;
 
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
+
+			if (pType->RequiresAnimUpdate)
+				requiresUpdateAnim = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -945,24 +955,10 @@ void TechnoExt::UpdateAttachEffects()
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 				cumulativeAnimTypes.insert(pType);
 
-			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
-			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
-					}
-				}
-			}
+			if (hasExpired)
+				attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Expire, expireWeapons);
+			else if (shouldDiscard)
+				attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
 
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
@@ -989,8 +985,12 @@ void TechnoExt::UpdateAttachEffects()
 
 	for (auto const pType : cumulativeAnimTypes)
 	{
-		this->UpdateCumulativeAttachEffects(pType, true);
+		if (this->UpdateCumulativeAttachEffects(pType, true))
+			requiresUpdateAnim = true;
 	}
+
+	if (requiresUpdateAnim)
+		this->UpdateAEAnimDrawingLogic();
 
 	auto const coords = pThis->GetCoords();
 
@@ -1009,6 +1009,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<AEWeaponParams> expireWeapons;
 	bool requiresRecalc = false;
+	bool requiresAnimUpdate = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1024,24 +1025,10 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner)
-					{
-						if (auto const pInvoker = attachEffect->GetInvoker())
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pInvoker, pInvoker->Owner });
-						else
-							expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, nullptr, attachEffect->GetInvokerHouse() });
-					}
-					else
-					{
-						expireWeapons.push_back(AEWeaponParams { pType->ExpireWeapon, pThis, pThis->Owner });
-					}
-				}
-			}
+			if (pType->RequiresAnimUpdate)
+				requiresAnimUpdate = true;
 
+			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Expire, expireWeapons);
 			it = this->AttachedEffects.erase(it);
 		}
 		else
@@ -1060,12 +1047,15 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
 
+	if (requiresAnimUpdate)
+		this->UpdateAEAnimDrawingLogic();
+
 	// Add new ones.
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true, true);
 }
 
 // Updates CumulativeAnimations AE's on techno.
-void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
+bool TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim)
 {
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
@@ -1098,14 +1088,34 @@ void TechnoExt::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffe
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim(count);
+		if (pAEWithAnim->UpdateCumulativeAnim(count))
+			return true;
 	}
 	else if (pAELargestDuration)
 	{
 		pAELargestDuration->HasCumulativeAnim = true;
 
 		if (createAnim)
+		{
 			pAELargestDuration->CreateAnim();
+
+			if (pAELargestDuration->ShouldUpdateAnim)
+			{
+				pAELargestDuration->ShouldUpdateAnim = false;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// Update AttachEffect animation drawing logic.
+void TechnoExt::ExtData::UpdateAEAnimDrawingLogic()
+{
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		attachEffect->UpdateConditionalAnimDrawingLogic();
 	}
 }
 
@@ -1130,6 +1140,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
+		pAE.HasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 
 		if (type->RestrictedArmorMultiplier)
@@ -1153,6 +1164,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
 	bool hasOnDamageDiscardables = false;
+	bool hasOwnerChangeDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
 
@@ -1180,6 +1192,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
+		hasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 	}
 
@@ -1196,6 +1209,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.ReflectDamage = reflectsDamage;
 	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
 	pAE.HasOnDamageDiscardables = hasOnDamageDiscardables;
+	pAE.HasOwnerChangeDiscardables = hasOwnerChangeDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
 
