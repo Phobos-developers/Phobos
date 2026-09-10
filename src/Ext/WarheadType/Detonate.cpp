@@ -235,10 +235,10 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
-		
+
 	if(this->IvanBomb_Detonate)
 		this->IvanBombDetonate(pOwner,pTarget);
-		
+
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
@@ -937,77 +937,47 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	if (!pOwner)
         return; 
 
-	if (const auto pBomb = pTarget->AttachedBomb)
+	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
+	const auto pBomb = pTarget->AttachedBomb;
+
+	if (pBomb && (affectTypes.empty() || affectTypes.Contains(pTarget->GetTechnoType())))
 	{
-		const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
-			|| this->IvanBomb_Detonate_AffectTypes.Contains(pTarget->GetTechnoType()); 
-		
-		if (this->IvanBomb_Detonate_InvokerOnly)
-		{
-			if (pBomb->Owner == pOwner && CanAffects)
-				pBomb->DetonationFrame = Unsorted::CurrentFrame;
-		}
-		else
-		{
-			if (CanAffects)
-				pBomb->DetonationFrame = Unsorted::CurrentFrame;
-		}
+		if (!this->IvanBomb_Detonate_InvokerOnly)
+			pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		else if (pBomb->Owner == pOwner)
+			pBomb->DetonationFrame = Unsorted::CurrentFrame;
 	}
 
 	if (this->IvanBomb_Detonate_PenetratesTransport)
 	{
-		if (auto pCurPassenger = pTarget->Passengers.FirstPassenger)
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 		{
-			while (pCurPassenger)
+			const auto pPassengerBomb = pPassenger->AttachedBomb;
+
+			if (pPassengerBomb && (affectTypes.empty() || affectTypes.Contains(pPassenger->GetTechnoType())))
 			{
-				auto pNextPassenger = abstract_cast<FootClass*>(pCurPassenger->NextObject);
-				const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
-					|| this->IvanBomb_Detonate_AffectTypes.Contains(pCurPassenger->GetTechnoType());
-
-				if (const auto pPassengerBomb = pCurPassenger->AttachedBomb)
-				{
-					if (this->IvanBomb_Detonate_InvokerOnly)
-					{
-						if (pPassengerBomb->Owner == pOwner && CanAffects)
-							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
-					}
-					else
-					{
-						if (CanAffects)
-							pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
-					}
-				}
-
-				pCurPassenger = pNextPassenger;
+				if (!this->IvanBomb_Detonate_InvokerOnly)
+					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
+				else if (pPassengerBomb->Owner == pOwner)
+					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
 			}
 		}
 	}
 
-	if (this->IvanBomb_Detonate_PenetratesGarrison)
+	if (this->IvanBomb_Detonate_PenetratesGarrison && pTarget->WhatAmI() == AbstractType::Building)
 	{
-		if (pTarget->WhatAmI() != AbstractType::Building)
-			return;
+		const auto pTargetBuilding = static_cast<BuildingClass*>(pTarget);
 
-		const auto& Occupants = abstract_cast<BuildingClass*, true>(pTarget)->Occupants;
-
-		for (int i = 0; i < Occupants.Count; i++)
+		for (const auto pOccupant : pTargetBuilding->Occupants)
 		{
-			auto pOccupant = Occupants.Items[i];
-			const bool CanAffects = this->IvanBomb_Detonate_AffectTypes.empty()
-				|| this->IvanBomb_Detonate_AffectTypes.Contains(pOccupant->GetTechnoType());
+			const auto pOccupantBomb = pOccupant->AttachedBomb;
 
-			if (const auto pOccupantBomb = pOccupant->AttachedBomb)
+			if (pOccupantBomb && (affectTypes.empty() || affectTypes.Contains(pOccupant->GetTechnoType())))
 			{
-				if (this->IvanBomb_Detonate_InvokerOnly)
-				{
-					if (pOccupantBomb->Owner == pOwner && CanAffects)
-						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
-				}
-				else
-				{
-					if (CanAffects)
-						pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
-				}
+				if (!this->IvanBomb_Detonate_InvokerOnly)
+					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
+				else if (pOccupantBomb->Owner == pOwner)
+					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
 			}
 		}
 	}
