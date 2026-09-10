@@ -30,6 +30,7 @@ public:
 	}
 
 	TechnoTypeExt* TypeExtData;
+	int RandomFactor;
 	std::unique_ptr<ShieldClass> Shield;
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
@@ -90,6 +91,7 @@ public:
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
+		, RandomFactor { 0 }
 		, Shield {}
 		, LaserTrails {}
 		, AttachedEffects {}
