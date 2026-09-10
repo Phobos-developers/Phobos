@@ -35,6 +35,8 @@ public:
 	ValueableVector<TechnoTypeClass*> EliteInfantry;
 	ValueableVector<TechnoTypeClass*> EliteUnits;
 	ValueableVector<TechnoTypeClass*> EliteAircraft;
+	ValueableVector<BuildingTypeClass*> VeteranBuildings;
+	ValueableVector<BuildingTypeClass*> VeteranDefenses;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
@@ -44,6 +46,8 @@ public:
 		, EliteInfantry {}
 		, EliteUnits {}
 		, EliteAircraft {}
+		, VeteranBuildings {}
+		, VeteranDefenses {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;
