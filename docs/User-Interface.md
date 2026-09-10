@@ -643,7 +643,8 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 - It's possible to add a button for distribution mode in the bottom bar by adding `DistributionMode` in the `ButtonList` of `AdvancedCommandBar` and `MultiplayerAdvancedCommandBar`.
   - The positions of each button are hardcoded, so it'll only decide whether enable this button or not. Distribute Mode button is now always listed after all the vanilla ones.
   - The asset of these buttons should be added in `sidec0x.mix` files which correspond to different sides, with the name `button12.shp`.
-- The distribution mode hotkey works like the vanilla waypoint mode hotkey: holding it down activates the mode while releasing it deactivates it, a sound is played and a message is shown when the mode is turned on/off, and the bottom bar button (if added) toggles the mode as well.
+- The distribution mode hotkey works like the vanilla waypoint mode hotkey: holding it down activates the mode while releasing it deactivates it, a sound is played and a message is shown when the mode is turned on/off, and the bottom bar button (if added) toggles the mode as well. The sounds played when the mode is turned on/off can be customized with `StartDistributionModeSound` and `EndDistributionModeSound`, which default to the planning mode sounds.
+- A sound is also played each time a distribution command is issued, either by clicking a target or on drag release. It can be customized with `AddDistributionModeCommandSound`.
 - For localization add `TXT_SWITCH_NOMOVE`, `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_SWITCH_NOMOVE_DESC`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff`, `TIP:DistributionMode` into your `.csf` file.
 
 In `rulesmd.ini`:
@@ -655,7 +656,7 @@ AllowDistributionCommand=false                      ; boolean
 [AudioVisual]
 StartDistributionModeSound=                         ; sound entry, defaults to `StartPlanningModeSound`
 EndDistributionModeSound=                           ; sound entry, defaults to `EndPlanningModeSound`
-AddDistributionModeCommandSound=                    ; sound entry, played each time a distribution command is issued (by clicking a target or on drag release)
+AddDistributionModeCommandSound=                    ; sound entry
 ```
 
 In `ra2md.ini`:
