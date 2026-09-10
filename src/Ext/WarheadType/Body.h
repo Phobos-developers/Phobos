@@ -38,6 +38,7 @@ public:
 	Valueable<int> SplashList_CreationInterval;
 	Valueable<Leptons> SplashList_ScatterMin;
 	Valueable<Leptons> SplashList_ScatterMax;
+	Nullable<int> AnimList_DamageDivider;
 	Valueable<bool> AnimList_PickRandom;
 	Valueable<bool> AnimList_CreateAll;
 	Valueable<int> AnimList_CreationInterval;
@@ -317,6 +318,7 @@ public:
 		, SplashList_CreationInterval { 0 }
 		, SplashList_ScatterMin { Leptons(-1) }
 		, SplashList_ScatterMax { Leptons(-1) }
+		, AnimList_DamageDivider {}
 		, AnimList_PickRandom { false }
 		, AnimList_CreateAll { false }
 		, AnimList_CreationInterval { 0 }
