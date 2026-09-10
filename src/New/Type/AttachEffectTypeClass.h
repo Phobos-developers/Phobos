@@ -27,7 +27,8 @@ enum class DiscardCondition : unsigned int
 	Mission = 0x2000,
 	LandType = 0x4000,
 	Sequence = 0x8000,
-	ReceivedDamage = 0x10000
+	ReceivedDamage = 0x10000,
+	OwnerChange = 0x20000
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
@@ -45,6 +46,8 @@ enum class ExpireWeaponCondition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ExpireWeaponCondition);
+
+class AnimationDrawOffsetClass;
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
@@ -73,6 +76,9 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Nullable<bool> DiscardOn_MoveBasedOnDestination;
 	Nullable<bool> DiscardOn_ConsiderHarvestingAsStationary;
+	Valueable<bool> DiscardOn_OwnerChange_HumanToComputer;
+	Valueable<bool> DiscardOn_OwnerChange_ComputerToHuman;
+	Valueable<bool> DiscardOn_OwnerChange_IgnoreRevertOnExit;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -129,6 +135,7 @@ public:
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
+	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 	bool RequiresRecalculation;
 	bool RestrictedArmorMultiplier;
 
@@ -155,6 +162,9 @@ public:
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_MoveBasedOnDestination {}
 		, DiscardOn_ConsiderHarvestingAsStationary {}
+		, DiscardOn_OwnerChange_HumanToComputer { true }
+		, DiscardOn_OwnerChange_ComputerToHuman { true }
+		, DiscardOn_OwnerChange_IgnoreRevertOnExit { false }
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
@@ -210,6 +220,7 @@ public:
 		, Unkillable { false }
 		, LaserTrail_Type { -1 }
 		, Groups {}
+		, Animation_DrawOffsets {}
 		, RequiresRecalculation { false }
 		, RestrictedArmorMultiplier { false }
 	{};
@@ -221,6 +232,7 @@ public:
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	bool HasAnim() const;
 
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const
 	{
@@ -261,6 +273,7 @@ struct AEAttachParams
 	bool CumulativeRefreshAll;
 	bool CumulativeRefreshAll_OnAttach;
 	bool CumulativeRefreshSameSourceOnly;
+	bool ReplaceLongerDuration;
 
 	AEAttachParams() :
 		DurationOverride { 0 }
@@ -271,6 +284,7 @@ struct AEAttachParams
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
+		, ReplaceLongerDuration { false }
 	{
 	}
 };
@@ -284,6 +298,7 @@ public:
 	Valueable<bool> CumulativeRefreshAll;
 	Valueable<bool> CumulativeRefreshAll_OnAttach;
 	Valueable<bool> CumulativeRefreshSameSourceOnly;
+	Nullable<bool> ReplaceLongerDuration;
 	ValueableVector<AttachEffectTypeClass*> RemoveTypes;
 	std::vector<std::string> RemoveGroups;
 	ValueableVector<int> CumulativeRemoveMinCounts;
@@ -305,6 +320,7 @@ public:
 		, CumulativeRefreshAll { false }
 		, CumulativeRefreshAll_OnAttach { false }
 		, CumulativeRefreshSameSourceOnly { true }
+		, ReplaceLongerDuration {}
 		, RemoveTypes {}
 		, RemoveGroups {}
 		, CumulativeRemoveMinCounts {}
@@ -342,3 +358,25 @@ struct AEWeaponParams
 	{
 	}
 };
+
+// Container for AttachEffect animation draw offset info.
+class AnimationDrawOffsetClass
+{
+public:
+	Valueable<Point2D> Offset;
+	ValueableVector<AttachEffectTypeClass*> RequiredTypes;
+
+	bool LoadFromINI(CCINIClass* pINI, const char* pSection, int index);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	AnimationDrawOffsetClass() :
+		Offset { Point2D::Empty}
+		, RequiredTypes {}
+	{ }
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};
+

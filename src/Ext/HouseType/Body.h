@@ -1,12 +1,14 @@
 #pragma once
 
 #include <HouseTypeClass.h>
+#include <InfantryTypeClass.h>
 
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/EVATypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class HouseTypeExt final : public AbstractTypeExt
 {
@@ -26,6 +28,9 @@ public:
 	}
 
 	EVAType EVATag;
+	AEAttachInfoTypeClass AttachEffects;
+	Nullable<bool> AttachEffects_AttachOnOwnerChange;
+	Nullable<InfantryTypeClass*> Crew;
 
 	ValueableVector<TechnoTypeClass*> EliteInfantry;
 	ValueableVector<TechnoTypeClass*> EliteUnits;
@@ -33,6 +38,9 @@ public:
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
+		, AttachEffects {}
+		, AttachEffects_AttachOnOwnerChange {}
+		, Crew {}
 		, EliteInfantry {}
 		, EliteUnits {}
 		, EliteAircraft {}
