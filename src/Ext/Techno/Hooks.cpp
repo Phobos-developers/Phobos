@@ -982,7 +982,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	if (pTypeExt->OwnerObject()->RadarInvisible
 		&& EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
 	{
-			return Invisible;
+		return Invisible;
 	}
 
 	return GoOtherChecks;
@@ -1357,7 +1357,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove, 0x5)
 {
 	enum { SkipResponse = 0x709015 };
 
@@ -1384,11 +1384,11 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			}
 		}
 	}
-	else if (rtti == AbstractType::Unit)
+	else
 	{
-		auto const pUnit = static_cast<UnitClass*>(pThis);
+		auto const pFoot = static_cast<FootClass*>(pThis);
 
-		if (UnitExt::CannotMove(pUnit))
+		if (FootExt::CannotMove(pFoot, true))
 			return SkipResponse;
 	}
 
@@ -1485,7 +1485,7 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
 		return 0x71A90E;
 	}
-	
+
 	return 0;
 }
 

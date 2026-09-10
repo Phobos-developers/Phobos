@@ -189,22 +189,6 @@ bool TechnoExt::HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility abili
 	return pTypeExt->AdditionalVeteranAbilities.test(index);
 }
 
-double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
-{
-	double houseMultiplier = 1.0;
-	auto const whatAmI = pThis->WhatAmI();
-
-	if (whatAmI == AbstractType::Aircraft)
-		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (whatAmI == AbstractType::Infantry)
-		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
-	else
-		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
-
-	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::Fetch(pThis)->AE.SpeedMultiplier *
-		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
-}
-
 double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 {
 	double mult = pThis->FirepowerMultiplier * pThis->Owner->FirepowerMultiplier * TechnoExt::Fetch(pThis)->AE.FirepowerMultiplier *

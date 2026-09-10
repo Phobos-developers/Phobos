@@ -192,35 +192,6 @@ void UnitExt::DepletedAmmoActions()
 	}
 }
 
-bool UnitExt::CannotMove(UnitClass* pThis)
-{
-	if (pThis->LocomotorSource)
-		return false;
-
-	const auto pType = pThis->Type;
-
-	if (pType->Speed == 0)
-		return true;
-
-	const auto movementRestrictedTo = pType->MovementRestrictedTo;
-
-	if (movementRestrictedTo == LandType::None)
-		return false;
-
-	auto landType = pThis->GetCell()->LandType;
-
-	if (landType == LandType::Tunnel)
-		return false;
-
-	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
-		landType = LandType::Road;
-
-	if (movementRestrictedTo != landType)
-		return true;
-
-	return false;
-}
-
 bool UnitExt::HasAmmoToDeploy(UnitClass* pThis)
 {
 	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
