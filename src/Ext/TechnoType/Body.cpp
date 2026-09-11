@@ -1206,6 +1206,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	
 	this->RevealHouses.Read(exINI, pSection, "RevealHouses");
 
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1841,6 +1844,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Cloak_KickOutParasite)
 			
 		.Process(this->RevealHouses)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
