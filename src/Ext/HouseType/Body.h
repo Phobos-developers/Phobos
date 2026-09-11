@@ -28,7 +28,6 @@ public:
 	}
 
 	EVAType EVATag;
-
 	AEAttachInfoTypeClass AttachEffects;
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;

@@ -49,7 +49,7 @@ DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 	{
 		R->ESI(pHouseTypeExt->Crew.Get());
 		return SkipGameCode;
-  }
+	}
 
 	return 0;
 }
