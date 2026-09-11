@@ -160,6 +160,7 @@ public:
 
 	void ApplyInterceptor();
 	bool CheckDeathConditions(bool isInLimbo = false);
+	void UpdatePassengerTurretWeapon() const;
 	void EatPassengers();
 	void UpdateShield();
 	void ApplySpawnLimitRange();
