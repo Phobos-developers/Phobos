@@ -30,6 +30,7 @@ public:
 	}
 
 	TechnoTypeExt* TypeExtData;
+	int RandomFactor;
 	std::unique_ptr<ShieldClass> Shield;
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
@@ -90,6 +91,7 @@ public:
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
+		, RandomFactor { 0 }
 		, Shield {}
 		, LaserTrails {}
 		, AttachedEffects {}
@@ -149,7 +151,7 @@ public:
 	virtual void OnDeferredAllocation() override { this->InitializeState(); }
 
 	// True while the object is hidden underground (subterranean units); false for
-	// everything else. Overridden by UnitExt, which owns the burrow state.
+	// everything else. Overridden by FootExt, which owns the burrow state.
 	virtual bool IsBurrowedState() const { return false; }
 
 	// True while the object is inside a tunnel (foot units); false for everything

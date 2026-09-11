@@ -441,6 +441,9 @@ public:
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -852,7 +855,7 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
-		
+
 		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
@@ -865,6 +868,8 @@ public:
 		, SpareCameo { nullptr }
 		, SHPCameo_IsLoad { false }
 		, SpareCameoPCX {}
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

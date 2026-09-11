@@ -289,6 +289,8 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 		if (!pType) return;
 	}
 
+	this->RandomFactor = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	this->TypeExtData = pTypeExt;
 
@@ -321,7 +323,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
+		pThis->TargetingTimer.Start(45 + this->RandomFactor);
 	}
 }
 
@@ -1517,7 +1519,7 @@ DEFINE_HOOK(0x728F9A, TunnelLocomotionClass_Process_Track, 0x7)
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
 	const auto pTechno = pLoco->LinkedTo;
 	ScenarioExt::Global()->UndergroundTracker.AddUnique(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = true;
+	FootExt::Fetch(pTechno)->UndergroundTracked = true;
 
 	return 0;
 }
@@ -1527,7 +1529,7 @@ DEFINE_HOOK(0x7297F6, TunnelLocomotionClass_ProcessDigging_Track, 0x7)
 	GET(FootClass*, pTechno, ECX);
 
 	ScenarioExt::Global()->UndergroundTracker.Remove(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = false;
+	FootExt::Fetch(pTechno)->UndergroundTracked = false;
 
 	return 0;
 }

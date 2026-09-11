@@ -332,6 +332,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 - Observer can see IvanBomb that's attached by any house.
+- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (`PriorityQueueClassNode`), where extensive Tiberium expansion on large maps corrupted memory and crashed the game.
+- Fixed Tiberium growth and spread queues stalling/freezing when queued cells fail to expand or are temporarily blocked.
 
 ## Fixes / interactions with other extensions
 
@@ -2689,6 +2691,17 @@ In `rulesmd.ini`:
 MinimapColor=  ; integer - Red,Green,Blue
 ```
 
+### Ramp expansion support
+
+- In vanilla, Tiberium is hardcoded not to germinate, grow, or spread onto ramp/slope cells (slopes 1-4), and any ore on ramps is cleared during cell recalculation. Setting `AllowRamps=yes` allows the resource to naturally expand, grow, and spread across cardinal slope ramps.
+	- `AllowRamps` determines whether this Tiberium type is allowed to germinate from spawners, increase growth stages, and spread onto cardinal ramp cells (slopes 1..4).
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]        ; Tiberium
+AllowRamps=false ; boolean
+```
+
 ## Vehicles
 
 ### Allow miners do area guard
@@ -2746,6 +2759,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                         ; VehicleType
 HarvesterLoadRate=                    ; integer, default to [General] -> HarvesterLoadRate
+```
+
+### Customize `IdleActionFrequency`
+
+- Now `IdleActionFrequency` can be customized on each infantry.
+  - With a single value, the interval is a random value between `IdleActionFrequency * 450` and `IdleActionFrequency * 1800` frames, which customizes the frequency the same way the global value does.
+  - With two values, the first one directly sets the lower bound and the second one the upper bound of the random interval in frames.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                        ; InfantryType
+IdleActionFrequency=                  ; a single floating point value, or a pair of integers defining the random delay range in frames (min, max), defaults to [AudioVisual] -> IdleActionFrequency
 ```
 
 ### Customize type selection for IFV
