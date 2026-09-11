@@ -2502,14 +2502,14 @@ DEFINE_HOOK_AGAIN(0x70B15A, TechnoClass_RevealHouses, 0x6)	// TechnoClass::Updat
 DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 {
 	const DWORD address = R->Origin();
-	auto const pTechno = address == 0x70B1F2 ? R->ECX<TechnoClass*>() : R->ESI<TechnoClass*>();
-
 	auto const pPlayer = HouseClass::CurrentPlayer;
 	bool canShow = false;
 
-	if (!canShow && pPlayer)
+	if (pPlayer)
 	{
+		auto const pTechno = address == 0x70B1F2 ? R->ECX<TechnoClass*>() : R->ESI<TechnoClass*>();
 		auto const pHouse = pTechno->Owner;
+
 		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
 		auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
 
