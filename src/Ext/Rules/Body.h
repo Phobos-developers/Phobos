@@ -562,7 +562,7 @@ public:
 
 		Valueable<bool> AttachEffects_AttachOnOwnerChange;
 
-    Valueable<AffectedHouse> RevealHouses;
+		Valueable<AffectedHouse> RevealHouses;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
