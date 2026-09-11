@@ -289,6 +289,8 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 		if (!pType) return;
 	}
 
+	this->RandomFactor = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	this->TypeExtData = pTypeExt;
 
@@ -321,7 +323,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
+		pThis->TargetingTimer.Start(45 + this->RandomFactor);
 	}
 }
 

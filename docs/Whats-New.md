@@ -444,6 +444,7 @@ HideShakeEffects=false           ; boolean
 - Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
 - [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
+- [Tiberium ramp expansion support](Fixed-or-Improved-Logics.md#ramp-expansion-support) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 
 #### Vanilla fixes:
@@ -453,8 +454,14 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
+- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (by FS-21)
+- Fixed Tiberium growth and spread queues stalling when cells fail to expand (by FS-21)
+- Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed Tiberium cells failing to register into the spread queue upon reaching maximum growth stage (by FS-21)
+- Fixed Tiberium on ramps being blocked by non-buildable tile land types in CanTiberiumGerminate (by FS-21)
 
 #### Phobos fixes:
+- Fixed Tiberium trees/drills with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells and optimized `SpawnsTiberium.CellsPerAnim` loop (by FS-21)
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
