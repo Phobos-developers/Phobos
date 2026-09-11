@@ -1,5 +1,5 @@
 #include "Body.h"
-
+#include <TechnoClass.h>
 #include <Ext/Scenario/Body.h>
 
 DEFINE_HOOK(0x535005, ScenarioClass_LoadSide_SetEVAIndex, 0x6)
@@ -36,6 +36,49 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 	return 0;
 }
 
+// Ares has taken over TechnoClass_GetCrew, so usually it won't work.
+DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
+{
+	enum { SkipGameCode = 0x707D81 };
+
+	GET(HouseClass* const, pHouse, ECX);
+
+	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+
+	if (pHouseTypeExt->Crew.isset())
+	{
+		R->ESI(pHouseTypeExt->Crew.Get());
+		return SkipGameCode;
+  }
+
+	return 0;
+}
+
+DEFINE_HOOK(0x442D1B, BuildingClass_Init_CountryBuildingVeteran, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	const auto pOwner = pThis->Owner;
+	if (!pOwner)
+		return 0;
+
+	const auto pType = pThis->Type;
+	if (!pType)
+		return 0;
+
+	const auto pCountryExt = HouseTypeExt::Fetch(pOwner->Type);
+
+	const bool isDefense = pType->BuildCat == BuildCat::Combat;
+	const auto& pVeteranList = isDefense
+		? pCountryExt->VeteranDefenses
+		: pCountryExt->VeteranBuildings;
+
+	if (pVeteranList.Contains(pType))
+		pThis->Veterancy.SetVeteran();
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x70B1F2, TechnoClass_RevealHouses, 0x6)	// TechnoClass::vt_entry_48C
 DEFINE_HOOK_AGAIN(0x70B15A, TechnoClass_RevealHouses, 0x6)	// TechnoClass::UpdateSight
 DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
@@ -60,7 +103,5 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 	default:
 		R->EDX(canShow ? pPlayer : nullptr);
 		return 0x70AF28;
-	}
-
-	return 0;
+  }
 }

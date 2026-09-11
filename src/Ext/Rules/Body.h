@@ -498,6 +498,7 @@ public:
 		Valueable<bool> DiscardOn_Sequences_Immediate;
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> DiscardOn_ConsiderHarvestingAsStationary;
+		Valueable<bool> AttachEffect_ReplaceLongerDuration;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 		Nullable<bool> FlyNoWobbles;
@@ -559,7 +560,9 @@ public:
 		// Global default per-sequence game-speed normalization flags for infantry
 		std::vector<int> CustomSequenceNormalized;
 
-		Valueable<AffectedHouse> RevealHouses;
+		Valueable<bool> AttachEffects_AttachOnOwnerChange;
+
+    Valueable<AffectedHouse> RevealHouses;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -991,6 +994,7 @@ public:
 			, DiscardOn_Sequences_Immediate { true }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, DiscardOn_ConsiderHarvestingAsStationary { true }
+			, AttachEffect_ReplaceLongerDuration { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
 
@@ -1053,6 +1057,8 @@ public:
 
 			, CustomSequenceRates(42, -1)
 			, CustomSequenceNormalized(42, -1)
+
+			, AttachEffects_AttachOnOwnerChange { false }
 
 			, RevealHouses { AffectedHouse::Team }
 		{ }

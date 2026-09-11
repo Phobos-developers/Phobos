@@ -1,6 +1,9 @@
 #include "Body.h"
 
 #include <cmath>
+#include <algorithm>
+
+#include <ScenarioClass.h>
 
 #include <Utilities/SequenceRates.h>
 
@@ -13,6 +16,8 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <TiberiumClass.h>
+#include <Ext/Tiberium/Body.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -29,6 +34,23 @@ void RulesExt::Remove(RulesClass* pThis)
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		const char* pSection = pTib->ID;
+		if (!pINI->GetSection(pSection))
+			continue;
+
+		pINI->GetInteger(pSection, "Spread", pTib->Spread);
+		pINI->GetDouble(pSection, "SpreadPercentage", pTib->SpreadPercentage);
+		pINI->GetInteger(pSection, "Growth", pTib->Growth);
+		pINI->GetDouble(pSection, "GrowthPercentage", pTib->GrowthPercentage);
+		pINI->GetInteger(pSection, "Value", pTib->Value);
+		pINI->GetInteger(pSection, "Power", pTib->Power);
+
+		if (const auto pTibExt = TiberiumExt::TryFetch(pTib))
+			pTibExt->LoadFromINIFile(pINI);
+	}
 }
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -569,6 +591,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->AttachEffect_ReplaceLongerDuration.Read(exINI, GameStrings::General, "AttachEffect.ReplaceLongerDuration");
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, GameStrings::General, "AttachEffects.AttachOnOwnerChange");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
@@ -1100,6 +1124,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->AttachEffect_ReplaceLongerDuration)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->FlyNoWobbles)

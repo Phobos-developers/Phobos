@@ -441,6 +441,10 @@ HideShakeEffects=false           ; boolean
 - [Attached animation draw offset customizations](Fixed-or-Improved-Logics.md#draw-offset-customization) (by Starkku)
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
+- Country-based attached effects (by Ollerus)
+- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
+- [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
+- [Tiberium ramp expansion support](Fixed-or-Improved-Logics.md#ramp-expansion-support) (by FS-21)
 - Customize the country displayed in `Sight` (by FlyStar)
 
 #### Vanilla fixes:
@@ -449,8 +453,15 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- Observer can see IvanBomb that's attached by any house (by NetsuNegi)
+- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (by FS-21)
+- Fixed Tiberium growth and spread queues stalling when cells fail to expand (by FS-21)
+- Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed Tiberium cells failing to register into the spread queue upon reaching maximum growth stage (by FS-21)
+- Fixed Tiberium on ramps being blocked by non-buildable tile land types in CanTiberiumGerminate (by FS-21)
 
 #### Phobos fixes:
+- Fixed Tiberium trees/drills with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells and optimized `SpawnsTiberium.CellsPerAnim` loop (by FS-21)
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
@@ -1230,7 +1241,7 @@ HideShakeEffects=false           ; boolean
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein, ZivDero)
-- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles) (by TaranDahl & Noble_Fish)
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)

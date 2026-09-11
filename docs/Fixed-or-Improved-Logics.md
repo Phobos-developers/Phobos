@@ -293,7 +293,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the move mission of the jumpjet does not end correctly.
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
-- Fixed the issue that techno must end its movement before starting the next mission, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
+- Fixed the issue that techno controlled by human player must end its movement before starting the next mission, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
@@ -331,6 +331,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
+- Observer can see IvanBomb that's attached by any house.
+- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (`PriorityQueueClassNode`), where extensive Tiberium expansion on large maps corrupted memory and crashed the game.
+- Fixed Tiberium growth and spread queues stalling/freezing when queued cells fail to expand or are temporarily blocked.
 
 ## Fixes / interactions with other extensions
 
@@ -1541,6 +1544,27 @@ In `rulesmd.ini`:
 Cloning.Powered=true  ; boolean
 ```
 
+## Countries
+
+### Country-specific veteran buildings
+
+- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following 2 flags are added to complete the meaningful combination results.
+
+```{hint}
+`Defenses` refers to buildings with `BuildCat=Combat`, consistent with vanilla rules.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]           ; Country
+VeteranBuildings=       ; List of BuildingTypes
+VeteranDefenses=        ; List of BuildingTypes
+```
+
+```{note}
+Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry
@@ -2033,6 +2057,15 @@ Insignia.ShowEnemy=                                         ; boolean, defaults 
 
 ```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
+```
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=E1              ; InfantryType
 ```
 
 ### Customizable wake anim
@@ -2656,6 +2689,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEORE]      ; Tiberium
 MinimapColor=  ; integer - Red,Green,Blue
+```
+
+### Ramp expansion support
+
+- In vanilla, Tiberium is hardcoded not to germinate, grow, or spread onto ramp/slope cells (slopes 1-4), and any ore on ramps is cleared during cell recalculation. Setting `AllowRamps=yes` allows the resource to naturally expand, grow, and spread across cardinal slope ramps.
+	- `AllowRamps` determines whether this Tiberium type is allowed to germinate from spawners, increase growth stages, and spread onto cardinal ramp cells (slopes 1..4).
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]        ; Tiberium
+AllowRamps=false ; boolean
 ```
 
 ## Vehicles
