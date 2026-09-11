@@ -1203,6 +1203,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+	
+	this->RevealHouses.Read(exINI, pSection, "RevealHouses");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1837,6 +1839,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+			
+		.Process(this->RevealHouses)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

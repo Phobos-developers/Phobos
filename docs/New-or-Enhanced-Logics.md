@@ -701,21 +701,6 @@ In `artmd.ini`:
 DetachedReport=  ; Sound entry
 ```
 
-## Country
-
-### Customize the country displayed in `Sight`
-
-- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
-
-[SOMECOUNTRY]           ; Country
-RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
-```
-
 ## Buildings
 
 ### Build area customizations
@@ -1840,6 +1825,22 @@ In `rulesmd.ini`:
 [SOMETECHNO]                ; TechnoType
 Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
+```
+
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses or [SOMECOUNTRY] -> RevealHouses
 ```
 
 ### Custom tint on TechnoTypes

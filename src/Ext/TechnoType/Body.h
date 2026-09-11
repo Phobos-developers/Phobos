@@ -441,6 +441,8 @@ public:
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
+	Nullable<AffectedHouse> RevealHouses;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -854,6 +856,8 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+			
+		, RevealHouses {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

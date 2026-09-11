@@ -2496,3 +2496,37 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCoun
 // UnitClass::UpdateRotation
 // Allow turret turn to target immediately
 DEFINE_JUMP(LJMP, 0x7369A5, 0x7369B3)
+
+DEFINE_HOOK_AGAIN(0x70B1F2, TechnoClass_RevealHouses, 0x6)	// TechnoClass::vt_entry_48C
+DEFINE_HOOK_AGAIN(0x70B15A, TechnoClass_RevealHouses, 0x6)	// TechnoClass::UpdateSight
+DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
+{
+	const DWORD address = R->Origin();
+	auto const pTechno = address == 0x70B1F2 ? R->ECX<TechnoClass*>() : R->ESI<TechnoClass*>();
+
+	auto const pPlayer = HouseClass::CurrentPlayer;
+	bool canShow = false;
+
+	if (!canShow && pPlayer)
+	{
+		auto const pHouse = pTechno->Owner;
+		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+		auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+
+		const AffectedHouse affectHouses = pTypeExt->RevealHouses.Get(pHouseTypeExt->RevealHouses.Get(RulesExt::Global()->RevealHouses));
+		canShow = EnumFunctions::CanTargetHouse(affectHouses, pHouse, pPlayer);
+	}
+
+	switch (address)
+	{
+	case 0x70B1F2:
+		R->ESI(canShow ? pPlayer : nullptr);
+		break;
+	case 0x70B15A:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70B160;
+	default:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70AF28;
+	}
+}
