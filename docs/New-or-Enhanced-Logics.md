@@ -3797,7 +3797,7 @@ OmniFire.TurnToTarget=       ; boolean, default to [General] -> OmniFire.TurnToT
 - Use `IvanBomb.Detonate.InvokerOnly` to configure whether the warhead can detonate Ivan bombs from other sources.
 - Use `IvanBomb.Detonate.PenetratesTransport` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
 - Use `IvanBomb.Detonate.PenetratesGarrison` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
-- Use `IvanBomb.Detonate.AffectTypes` to configure which targets' Ivan bombs can be detonated by warhead, use empty for all types.
+- Use `IvanBomb.Detonate.AffectTypes` to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
 
 In `rulesmd.ini`:
 ```ini
@@ -3807,6 +3807,10 @@ IvanBomb.Detonate.InvokerOnly=false        ; boolean
 IvanBomb.Detonate.PenetratesTransport=true ; boolean
 IvanBomb.Detonate.PenetratesGarrison=true  ; boolean
 IvanBomb.Detonate.AffectTypes=             ; List of TechnoTypes
+```
+
+```{note}
+`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. Might be adjusted later on.
 ```
 
 ### Radiation enhancements
