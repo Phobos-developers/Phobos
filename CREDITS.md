@@ -768,6 +768,7 @@ This page lists all the individual contributions to the project by their author.
   - Country-specific veteran buildings
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
+  - Customize `IdleActionFrequency`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
