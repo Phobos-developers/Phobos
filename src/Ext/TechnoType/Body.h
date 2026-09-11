@@ -444,6 +444,8 @@ public:
 	int SubterraneanSpeed;
 	Nullable<int> SubterraneanHeight;
 
+	NullableIdx<VocClass> VoiceEnterGrinder;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -860,6 +862,8 @@ public:
 
 		, SubterraneanSpeed { -1 }
 		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
