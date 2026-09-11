@@ -940,7 +940,8 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
 	const auto pBomb = pTarget->AttachedBomb;
 
-	if (pBomb && (affectTypes.empty() || affectTypes.Contains(pTarget->GetTechnoType())))
+	// TODO: handle the case when the owner of IvanBomb is dead
+	if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
 	{
 		if (!this->IvanBomb_Detonate_InvokerOnly)
 			pBomb->DetonationFrame = Unsorted::CurrentFrame;
