@@ -2529,4 +2529,6 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 		R->EDX(canShow ? pPlayer : nullptr);
 		return 0x70AF28;
 	}
+
+	return 0;
 }
