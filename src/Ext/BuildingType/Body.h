@@ -157,7 +157,7 @@ public:
 	Nullable<Point2D> FlyingProduction_SpawnOffset;
 	Nullable<int> FlyingProduction_SpawnHeight;
 	Nullable<DirType> FlyingProduction_SpawnFacing;
-	Valueable<bool> FlyingProduction_RallyPoint;
+	Nullable<bool> HasRallyPoint;
 
 	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
 		, PowersUp_Owner { AffectedHouse::Owner }
@@ -274,7 +274,7 @@ public:
 		, FlyingProduction_SpawnOffset {}
 		, FlyingProduction_SpawnHeight {}
 		, FlyingProduction_SpawnFacing {}
-		, FlyingProduction_RallyPoint { false }
+		, HasRallyPoint {}
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)

@@ -390,7 +390,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FlyingProduction_SpawnOffset.Read(exINI, pSection, "FlyingProduction.SpawnOffset");
 	this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
 	this->FlyingProduction_SpawnFacing.Read(exINI, pSection, "FlyingProduction.SpawnFacing");
-	this->FlyingProduction_RallyPoint.Read(exINI, pSection, "FlyingProduction.RallyPoint");
+	this->HasRallyPoint.Read(exINI, pSection, "HasRallyPoint");
 }
 
 void BuildingTypeExt::CompleteInitialization()
@@ -518,7 +518,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->FlyingProduction_SpawnOffset)
 		.Process(this->FlyingProduction_SpawnHeight)
 		.Process(this->FlyingProduction_SpawnFacing)
-		.Process(this->FlyingProduction_RallyPoint)
+		.Process(this->HasRallyPoint)
 		;
 }
 

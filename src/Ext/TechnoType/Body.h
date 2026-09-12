@@ -343,7 +343,7 @@ public:
 
 	Nullable<AffectedHouse> RadarInvisibleToHouse;
 
-	Valueable<bool> FlyingProduction;
+	Nullable<bool> FlyingProduction;
 	Nullable<int> FlyingProduction_SpawnHeight;
 	Valueable<bool> FlyingProduction_PlayFactoryAnim;
 	Nullable<AnimTypeClass*> FlyingProduction_SpawnAnim;
@@ -885,7 +885,7 @@ public:
 		, Unsellable {}
 		, KeepAlive {}
 
-		, FlyingProduction { false }
+		, FlyingProduction {}
 		, FlyingProduction_SpawnHeight {}
 		, FlyingProduction_PlayFactoryAnim { false }
 		, FlyingProduction_SpawnAnim {}
@@ -909,6 +909,9 @@ public:
 	int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 	void UpdateAdditionalAttributes();
+
+	bool IsFlyingProductionEnabled() const;
+	int GetFlyingProductionSpawnHeight() const;
 
 	// Ares 0.2
 	bool CameoIsVeteran(HouseClass* pHouse) const;

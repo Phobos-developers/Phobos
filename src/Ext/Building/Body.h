@@ -123,6 +123,6 @@ public:
 	static void __fastcall KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory);
 	static int GetTurretFrame(BuildingClass* pThis);
 	static bool BuildingOnline(BuildingClass* pThis);
-	static bool TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass* pProduction);
+	static KickOutResult TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass* pProduction);
 };
 

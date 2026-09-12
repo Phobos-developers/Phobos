@@ -1,6 +1,8 @@
 #include <JumpjetLocomotionClass.h>
+#include <FlyLocomotionClass.h>
 
 #include <Ext/AircraftType/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -1451,17 +1453,67 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FlyingProduction_SpawnAt.Read(exINI, pSection, "FlyingProduction.SpawnAt");
 	this->FlyingProduction_RallyPointFromSpawnBuilding.Read(exINI, pSection, "FlyingProduction.RallyPointFromSpawnBuilding");
 
-	if (this->FlyingProduction.Get())
+	if (this->IsFlyingProductionEnabled())
 	{
 		if (!this->FlyingProduction_SpawnHeight.isset())
 		{
-			const int defaultFlightLevel = RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
-			this->FlyingProduction_SpawnHeight = defaultFlightLevel > 0 ? defaultFlightLevel : pThis->GetFlightLevel();
+			if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+			{
+				const int defaultJJHeight = RulesClass::Instance ? RulesClass::Instance->CruiseHeight : 0;
+				this->FlyingProduction_SpawnHeight = pThis->JumpjetHeight > 0 ? pThis->JumpjetHeight : defaultJJHeight;
+			}
+			else
+			{
+				const int defaultFlightLevel = RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
+				this->FlyingProduction_SpawnHeight = defaultFlightLevel > 0 ? defaultFlightLevel : pThis->GetFlightLevel();
+			}
 		}
 
 		if (this->FlyingProduction_SpawnHeight.Get() <= 0)
 			this->FlyingProduction = false;
 	}
+}
+
+bool TechnoTypeExt::IsFlyingProductionEnabled() const
+{
+	if (this->FlyingProduction.isset())
+		return this->FlyingProduction.Get();
+
+	if (this->FlyingProduction_SpawnHeight.isset() && this->FlyingProduction_SpawnHeight.Get() > 0)
+		return true;
+
+	if (const auto pRulesExt = RulesExt::Global())
+	{
+		const auto pThis = this->OwnerObject();
+		if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+			return pRulesExt->FlyingProduction_Jumpjet.Get();
+
+		if (pThis->WhatAmI() == AbstractType::AircraftType || pThis->Locomotor == LocomotionClass::CLSIDs::Fly)
+			return pRulesExt->FlyingProduction_Aircraft.Get();
+	}
+
+	return false;
+}
+
+int TechnoTypeExt::GetFlyingProductionSpawnHeight() const
+{
+	if (this->FlyingProduction_SpawnHeight.isset())
+		return this->FlyingProduction_SpawnHeight.Get();
+
+	const auto pThis = this->OwnerObject();
+	if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+	{
+		if (pThis->JumpjetHeight > 0)
+			return pThis->JumpjetHeight;
+
+		return RulesClass::Instance ? RulesClass::Instance->CruiseHeight : 0;
+	}
+
+	const int flightLevel = pThis->GetFlightLevel();
+	if (flightLevel > 0)
+		return flightLevel;
+
+	return RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
 }
 
 template <typename T>
