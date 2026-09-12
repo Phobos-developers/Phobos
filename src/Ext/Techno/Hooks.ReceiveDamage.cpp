@@ -261,8 +261,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 
-	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead, pSourceHouse);
 
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);

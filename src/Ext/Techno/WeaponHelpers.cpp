@@ -227,18 +227,19 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	return weaponIndex;
 }
 
-void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH)
+void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH, HouseClass* pSourceHouse)
 {
 	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
 	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
+	pSourceHouse = pSource ? pSource->Owner : pSourceHouse;
 
 	// KillWeapon can be triggered without the source
-	if (pWHExt->KillWeapon && (!pSource || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouse, pSource->Owner, pThis->Owner))
+	if (pWHExt->KillWeapon && (!pSourceHouse || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouse, pSourceHouse, pThis->Owner))
 		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_AffectsTarget))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
-			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
+			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource, pSourceHouse);
 	}
 
 	// KillWeapon.OnFirer must have a source

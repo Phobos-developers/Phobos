@@ -519,7 +519,7 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 {
 	GET(HouseClass*, pThis, ESI);
 
-	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
+	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->IsNeutral())
 		return 0;
 
 	const int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
@@ -635,7 +635,7 @@ DEFINE_HOOK(0x4F8ACC, HouseClass_Update_ResetTeamDelay, 0x6)
 			{
 				if ((!checkAlive || !pHouse->Defeated)
 					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive
+					&& !pHouse->IsNeutral()
 					&& (!checkAllies || (pThis != pHouse && pThis->IsAlliedWith(pHouse)))
 					&& (!checkEnemies || !pThis->IsAlliedWith(pHouse)))
 				{

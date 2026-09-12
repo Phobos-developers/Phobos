@@ -2069,6 +2069,16 @@ In `rulesmd.ini`:
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
 ```
 
+### Enter the grinder voice
+
+- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+VoiceEnterGrinder=         ; Sound entry
+```
+
 ### Exclusion from base center calculations
 
 - It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.

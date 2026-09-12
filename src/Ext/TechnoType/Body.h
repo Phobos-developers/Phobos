@@ -444,6 +444,8 @@ public:
 	int SubterraneanSpeed;
 	Nullable<int> SubterraneanHeight;
 
+	NullableIdx<VocClass> VoiceEnterGrinder;
+
 	Nullable<AffectedHouse> RevealHouses;
 
 	// Ares 0.2
@@ -862,6 +864,8 @@ public:
 	
 		, SubterraneanSpeed { -1 }
 		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
 
 		, RevealHouses {}
 

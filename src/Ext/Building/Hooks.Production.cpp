@@ -18,9 +18,7 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 	if (RulesExt::Global()->AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues))
 		return 0;
 
-	if (pOwner->Type->MultiplayPassive
-		|| pOwner->IsCurrentPlayer()
-		|| pOwner->IsNeutral())
+	if (pOwner->IsCurrentPlayer() || pOwner->IsNeutral())
 		return 0;
 
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)

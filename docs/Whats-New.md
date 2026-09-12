@@ -446,6 +446,7 @@ HideShakeEffects=false           ; boolean
 - [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
 - [Tiberium ramp expansion support](Fixed-or-Improved-Logics.md#ramp-expansion-support) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
+- Enter the grinder voice (by FlyStar)
 - Customize the country displayed in `Sight` (by FlyStar)
 
 #### Vanilla fixes:
@@ -467,6 +468,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
 - Fixed several shield respawn/self heal issues (by Ollerus)
+- Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
