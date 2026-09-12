@@ -8,7 +8,7 @@ DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 
 	auto const pScenario = ScenarioClass::Instance;
 	auto const pScenarioExt = ScenarioExt::Global();
-	auto const scenarioName = pScenario->FileName;
+	auto scenarioName = pScenario->FileName;
 	auto const defaultsSection = "Defaults";
 
 	CCINIClass ini_missionmd {};
@@ -17,6 +17,18 @@ DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 	pScenarioExt->DefaultLS640BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS640BkgdName");
 	pScenarioExt->DefaultLS800BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdName");
 	pScenarioExt->DefaultLS800BkgdPal.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdPal");
+
+	if (ini_missionmd.GetSection(scenarioName) == nullptr)
+	{
+		for (auto pNode = ini_missionmd.Sections.First(); pNode && pNode->IsValid(); pNode = pNode->Next())
+		{
+			if (pNode->Name && _stricmp(pNode->Name, scenarioName) == 0)
+			{
+				scenarioName = pNode->Name;
+				break;
+			}
+		}
+	}
 
 	pScenarioExt->ShowBriefing = pINI->ReadBool(scenarioName, "ShowBriefing", pScenarioExt->ShowBriefing);
 	pScenarioExt->BriefingTheme = pINI->ReadTheme(scenarioName, "BriefingTheme", pScenarioExt->BriefingTheme);
