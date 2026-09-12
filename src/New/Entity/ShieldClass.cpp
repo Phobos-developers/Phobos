@@ -190,6 +190,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	auto const pWH = args->WH;
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
+	auto const pAttacker = args->Attacker;
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
 	if (!IC || this->CanBePenetrated(pWH))

@@ -447,6 +447,7 @@ HideShakeEffects=false           ; boolean
 - [Tiberium ramp expansion support](Fixed-or-Improved-Logics.md#ramp-expansion-support) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - Enter the grinder voice (by FlyStar)
+- [Money switch building active animation](New-or-Enhanced-Logics.md#Money-switch-building-active-animation) (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
