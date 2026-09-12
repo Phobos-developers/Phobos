@@ -3167,6 +3167,31 @@ PlayAnimUnderground=true              ; boolean
 PlayAnimAboveSurface=false            ; boolean
 ```
 
+### Detonate ivan bomb on impact
+
+![image](_static/images/IvanBombDetonate.gif)
+*Ivan detonated the bomb via deploy*
+
+- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+  - `IvanBomb.Detonate.SameInvokerOnly` can be used to configure whether the warhead can detonate ivan bombs only if they come from the same invoker.
+  - `IvanBomb.Detonate.PenetratesTransport` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
+  - `IvanBomb.Detonate.PenetratesGarrison` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
+  - `IvanBomb.Detonate.AffectTypes` can be used to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                ; WarheadType
+IvanBomb.Detonate=false                      ; boolean
+IvanBomb.Detonate.SameInvokerOnly=true       ; boolean
+IvanBomb.Detonate.PenetratesTransport=false  ; boolean
+IvanBomb.Detonate.PenetratesGarrison=false   ; boolean
+IvanBomb.Detonate.AffectTypes=               ; List of TechnoTypes
+```
+
+```{note}
+`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. This may change in future.
+```
+
 ### Detonate Warhead on all objects on map
 
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
@@ -3551,30 +3576,6 @@ PreventPassengerEscape=false           ; boolean
 PreventOccupantEscape=false            ; boolean
 ```
 
-
-### Detonate ivan bomb on impact
-
-![image](_static/images/IvanBombDetonate.gif)
-
-- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
-- Use `IvanBomb.Detonate.AffectsInvokerOnly` to configure whether the warhead can detonate Ivan bombs from other sources.
-- Use `IvanBomb.Detonate.PenetratesTransport` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
-- Use `IvanBomb.Detonate.PenetratesGarrison` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
-- Use `IvanBomb.Detonate.AffectTypes` to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                               ; WarheadType
-IvanBomb.Detonate=false                     ; boolean
-IvanBomb.Detonate.AffectsInvokerOnly=true       ; boolean
-IvanBomb.Detonate.PenetratesTransport=false ; boolean
-IvanBomb.Detonate.PenetratesGarrison=false  ; boolean
-IvanBomb.Detonate.AffectTypes=              ; List of TechnoTypes
-```
-
-```{note}
-`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. Might be adjusted later on.
-```
 
 ## Weapons
 
