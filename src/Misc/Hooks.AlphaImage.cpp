@@ -58,6 +58,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	}
 
 	bool inactive = pSource->InLimbo;
+	int frame = Unsorted::CurrentFrame;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pSource))
 	{
@@ -68,6 +69,8 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 			const auto pDisguise = pTechno->GetDisguise(true);
 			inactive |= pDisguise && pDisguise->WhatAmI() == AbstractType::TerrainType;
 		}
+
+		frame += TechnoExt::Fetch(pTechno)->RandomFactor;
 	}
 
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
@@ -94,7 +97,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		return;
 	}
 
-	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
+	if (frame % 2) // lag reduction - don't draw a new alpha every frame
 	{
 		if (alphaExt.get_or_default(pSource) && pBuilding && pImage->Frames <= 1)
 			return;

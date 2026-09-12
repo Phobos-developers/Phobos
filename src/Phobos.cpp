@@ -12,6 +12,8 @@
 #include "Utilities/Parser.h"
 
 #include <Ext/Rules/Body.h>
+#include <TiberiumClass.h>
+#include <algorithm>
 
 #ifdef TESTING_BUILD
 bool HideWarning = false;
@@ -309,6 +311,17 @@ DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
 DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 {
 	Phobos::ApplyOptimizations();
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		pTib->SpreadLogic.Timer.Start(pTib->Spread);
+		const double growthMult = (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.TiberiumGrows) ? 0.3 : 1.0;
+		pTib->GrowthLogic.Timer.Start(std::max(1, static_cast<int>(pTib->Growth * growthMult)));
+
+		reinterpret_cast<void(__thiscall*)(TiberiumClass*)>(0x7228B0)(pTib);
+		reinterpret_cast<void(__thiscall*)(TiberiumClass*)>(0x7233A0)(pTib);
+	}
+
 	return 0;
 }
 

@@ -289,6 +289,8 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 		if (!pType) return;
 	}
 
+	this->RandomFactor = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	this->TypeExtData = pTypeExt;
 
@@ -321,7 +323,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
+		pThis->TargetingTimer.Start(45 + this->RandomFactor);
 	}
 }
 
@@ -382,6 +384,10 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Limbo, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	// Ares ResetSpotlights - clear the leftover spotlight once the techno is limboed (e.g. after it entered a transport)
+	if (AresFunctions::SetSpotlight)
+		AresFunctions::SetSpotlight(reinterpret_cast<void*>(pThis->align_154), nullptr);
+
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->Shield)
@@ -431,8 +437,10 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 				continue;
 			}
 
+			if (pType->RequiresAnimUpdate)
+				requiresUpdateAnim = true;
+
 			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Discard, expireWeapons);
-			requiresUpdateAnim = true;
 			it = pExt->AttachedEffects.erase(it);
 		}
 		else
@@ -1511,7 +1519,7 @@ DEFINE_HOOK(0x728F9A, TunnelLocomotionClass_Process_Track, 0x7)
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
 	const auto pTechno = pLoco->LinkedTo;
 	ScenarioExt::Global()->UndergroundTracker.AddUnique(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = true;
+	FootExt::Fetch(pTechno)->UndergroundTracked = true;
 
 	return 0;
 }
@@ -1521,7 +1529,7 @@ DEFINE_HOOK(0x7297F6, TunnelLocomotionClass_ProcessDigging_Track, 0x7)
 	GET(FootClass*, pTechno, ECX);
 
 	ScenarioExt::Global()->UndergroundTracker.Remove(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = false;
+	FootExt::Fetch(pTechno)->UndergroundTracked = false;
 
 	return 0;
 }
@@ -2488,3 +2496,65 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCoun
 // UnitClass::UpdateRotation
 // Allow turret turn to target immediately
 DEFINE_JUMP(LJMP, 0x7369A5, 0x7369B3)
+
+DEFINE_HOOK(0x6FFD4C, TechnoClass_ClickedMission_VoiceSpecialAttack, 0x6)
+{
+	enum { SkipVoice = 0x6FFDA5, VoiceEnter = 0x6FFD11 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const Mission, mission, EDI);
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x98, 0xC));
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (pBuilding && mission == Mission::Eaten)
+	{
+		auto const pBuildingType = pBuilding->Type;
+
+		if (pBuildingType->Grinding)
+		{
+			GET(TechnoTypeClass* const, pType, EAX);
+
+			auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+			if (pTypeExt->VoiceEnterGrinder.isset())
+			{
+				const int vocIndex = pTypeExt->VoiceEnterGrinder.Get();
+
+				if (vocIndex != -1)
+					pThis->QueueVoice(vocIndex);
+
+				return SkipVoice;
+			}
+		}
+		else if (pBuildingType->Passengers > 0 ||
+			(AresHelper::CanUseAres && BuildingTypeExt::Fetch(pBuildingType)->Tunnel))
+		{
+			const auto RulesExt = RulesExt::Global();
+			const bool noQueueUpToEnter = TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter));
+
+			if (noQueueUpToEnter)
+			{
+				bool canEnter = false;
+
+				switch (pThis->WhatAmI())
+				{
+				case AbstractType::Infantry:
+					canEnter = pBuildingType->InfantryAbsorb;
+					break;
+				case AbstractType::Unit:
+					canEnter = pBuildingType->UnitAbsorb;
+					break;
+				default:
+					break;
+				}
+
+				if (canEnter)
+					return VoiceEnter;
+			}
+		}
+	}
+
+	return 0;
+}
