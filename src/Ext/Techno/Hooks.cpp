@@ -46,6 +46,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
 	pExt->HealthAutoConvertActions();
+	pExt->UpdateFlyingProductionDescent();
 
 	if (pExt->AttackMoveFollowerTempCount)
 		pExt->AttackMoveFollowerTempCount--;

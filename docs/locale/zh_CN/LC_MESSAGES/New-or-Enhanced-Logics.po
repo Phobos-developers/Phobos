@@ -7572,3 +7572,51 @@ msgid ""
 "the weapon to be able to fire at cells containing no TechnoTypes."
 msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
+msgid "Flying production"
+msgstr "飞行生产"
+
+msgid ""
+"Now you can allow produced units to spawn directly in the air at customizable altitudes and locations without being constrained by traditional factory ground exit paths."
+msgstr ""
+"现在你可以允许生产出的单位直接在空中指定高度和位置生成，而不再受传统工厂地面出厂路径的限制。"
+
+msgid "`FlyingProduction.Jumpjet` on `[General]` sets the global default for whether units with locomotor `Jumpjet` use flying production. Defaults to `false`."
+msgstr "`[General]` 上的 `FlyingProduction.Jumpjet` 设置具有 `Jumpjet` 移动类型的单位是否默认启用飞行生产逻辑。默认为 `false`。"
+
+msgid "`FlyingProduction.Aircraft` on `[General]` sets the global default for whether units with locomotor `Fly` (or AircraftTypes) use flying production. Defaults to `false`."
+msgstr "`[General]` 上的 `FlyingProduction.Aircraft` 设置具有 `Fly` 移动类型的单位（或飞机类型）是否默认启用飞行生产逻辑。默认为 `false`。"
+
+msgid "`FlyingProduction` controls whether this unit type uses flying production. Defaults to `[General] -> FlyingProduction.Jumpjet` for jumpjets, `[General] -> FlyingProduction.Aircraft` for aircraft/fly units, or `false` for others."
+msgstr "`FlyingProduction` 控制此单位类型是否启用飞行生产逻辑。火箭飞行兵单位默认遵循 `[General] -> FlyingProduction.Jumpjet`，飞机/飞行单位默认遵循 `[General] -> FlyingProduction.Aircraft`，其余单位默认为 `false`。"
+
+msgid "`FlyingProduction.SpawnHeight` determines the initial spawn altitude in leptons along the Z-axis. Defaults to `JumpjetHeight` (or `[JumpjetControls] -> CruiseHeight`) for Jumpjets, and `FlightLevel` (or `[General] -> FlightLevel`) for aircraft. If the spawn altitude is greater than the unit's normal cruising altitude, the unit will descend vertically in place to its cruising altitude before executing its move order to the rally point. If resolved to 0 or negative, flying production will not be used and the unit exits normally."
+msgstr "`FlyingProduction.SpawnHeight` 决定沿 Z 轴的初始生成高度（以 lepton 为单位）。火箭飞行兵默认遵循 `JumpjetHeight`（或 `[JumpjetControls] -> CruiseHeight`），飞机默认遵循 `FlightLevel`（或 `[General] -> FlightLevel`）。若生成高度高于单位的正常巡航高度，单位将先在原地垂直下降至巡航高度，再执行前往集结点的移动指令。如果最终解析为 0 或负数，则不会使用飞行生产逻辑（单位将正常从地面出厂）。"
+
+msgid "`FlyingProduction.PlayFactoryAnim` controls whether the producing factory plays its unloading door/exit animation."
+msgstr "`FlyingProduction.PlayFactoryAnim` 控制生产该单位的工厂是否播放卸载/开门动画。"
+
+msgid "`FlyingProduction.SpawnAnim` specifies an animation to play at the aerial spawn coordinates when the unit is created."
+msgstr "`FlyingProduction.SpawnAnim` 指定单位生成时在空中生成坐标处播放的动画。"
+
+msgid "`FlyingProduction.SpawnAnim.AttachedToObject` determines whether `FlyingProduction.SpawnAnim` is attached to the spawned unit and follows its movement."
+msgstr "`FlyingProduction.SpawnAnim.AttachedToObject` 决定 `FlyingProduction.SpawnAnim` 是否附加到生成的单位上并随其移动。"
+
+msgid "`FlyingProduction.SpawnAt` accepts a list of BuildingTypes indicating where the unit should spawn, evaluated in priority order from left to right. When multiple buildings of that type exist, it prioritizes the producing factory itself if it matches, then any building marked as primary, and otherwise the closest one to the producing factory. If none of the candidate buildings exist or are alive, it falls back to the producing factory."
+msgstr "`FlyingProduction.SpawnAt` 接受一个 BuildingType 列表，按从左至右的优先级顺序判断单位应在哪些建筑处生成。当存在多个该类型的建筑时，若生产该单位的工厂自身匹配则直接优先使用，其次优先选择被设为主要建筑（Primary）的建筑，否则选择距生产工厂最近的建筑。如果列表中候选建筑均不存在或已损毁，则回退至生产该单位的工厂。"
+
+msgid "`FlyingProduction.RallyPointFromSpawnBuilding` determines whether the unit targets the spawn building's rally point instead of the producing factory's rally point."
+msgstr "`FlyingProduction.RallyPointFromSpawnBuilding` 决定单位是否以实际生成建筑的集结点（Rally Point）为目标，而不是生产工厂的集结点。"
+
+msgid "`FlyingProduction.SpawnOffset` on `[BuildingType]` sets a 2D coordinate offset in leptons (X, Y) relative to the center of the structure for positioning the spawn point."
+msgstr "`[BuildingType]` 上的 `FlyingProduction.SpawnOffset` 设置相对于建筑中心的 2D 坐标偏移（X, Y，以 lepton 为单位），用于精确定位生成点。"
+
+msgid "`FlyingProduction.SpawnHeight` on `[BuildingType]` overrides the spawn altitude for units appearing at this structure."
+msgstr "`[BuildingType]` 上的 `FlyingProduction.SpawnHeight` 覆盖在此建筑处生成的单位的生成高度。"
+
+msgid "`FlyingProduction.SpawnFacing` on `[BuildingType]` specifies the facing (0-255) the unit takes upon spawning, as well as the exit direction if no rally point exists."
+msgstr "`[BuildingType]` 上的 `FlyingProduction.SpawnFacing` 指定单位生成时的朝向（0-255），若无集结点则同时作为离开建筑的移动方向。"
+
+msgid "`HasRallyPoint` on `[BuildingType]` controls whether the building can establish a rally point. If set to `true`, enables rally point placement on structures that are not standard vehicle or infantry factories (e.g. helipads or towers), allowing them to establish a rally point with EVA confirmation and tactical line. If set to `false`, disables rally point capability even on factories. If omitted, standard vanilla factory behavior is preserved."
+msgstr "`[BuildingType]` 上的 `HasRallyPoint` 控制该建筑是否可以设置集结点。设为 `true` 时，允许在非标准车辆或步兵工厂的建筑（如停机坪或防御塔）上设置集结点，支持 EVA 语音确认及战术虚线；设为 `false` 时，即使是工厂也会禁用集结点功能；若省略，则保留原版工厂的默认行为。"
+
+

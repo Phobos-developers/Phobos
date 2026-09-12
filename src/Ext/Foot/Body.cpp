@@ -1,6 +1,10 @@
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
+#include <FlyLocomotionClass.h>
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <MapClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
@@ -927,6 +931,152 @@ void FootExt::HealthAutoConvertActions()
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
 }
 
+void FootExt::FlyingProduction_DispatchMove(AbstractClass* pRallyTarget, BuildingClass* pSpawnBuilding, DirStruct facing)
+{
+	auto const pThis = this->OwnerObject();
+	if (!pThis || !pThis->IsAlive || pThis->InLimbo || pThis->Health <= 0)
+		return;
+
+	if (pRallyTarget && pRallyTarget != pSpawnBuilding)
+	{
+		pThis->SetDestination(pRallyTarget, true);
+		pThis->QueueMission(Mission::Move, true);
+	}
+	else if (auto const pAir = abstract_cast<AircraftClass*>(pThis))
+	{
+		if (pAir->DockNowHeadingTo && pAir->Type->AirportBound)
+		{
+			pAir->SetDestination(pAir->DockNowHeadingTo, true);
+			pAir->QueueMission(Mission::Enter, true);
+			return;
+		}
+	}
+	else if (pSpawnBuilding && pSpawnBuilding->IsAlive)
+	{
+		// No rally point set: give an exit nudge away from the spawn building in the facing direction
+		// to prevent units from remaining frozen directly over the building or blocking subsequent spawns.
+		const auto pBldType = pSpawnBuilding->Type;
+		const int nudgeDistance = std::max({ static_cast<int>(pBldType->GetFoundationWidth()), static_cast<int>(pBldType->GetFoundationHeight(true)), 2 }) / 2 + 1;
+		auto pDestCell = MapClass::Instance.GetCellAt(pThis->GetCoords());
+		const auto facingType = static_cast<FacingType>(facing.GetValue<3>());
+
+		for (int i = 0; i < nudgeDistance; ++i)
+		{
+			if (auto const pNext = pDestCell->GetNeighbourCell(facingType))
+				pDestCell = pNext;
+		}
+
+		if (pDestCell)
+		{
+			pThis->SetDestination(pDestCell, true);
+			pThis->QueueMission(Mission::Move, true);
+		}
+		else
+		{
+			pThis->Scatter(CoordStruct::Empty, true, false);
+			pThis->QueueMission(Mission::Guard, true);
+		}
+	}
+	else
+	{
+		pThis->QueueMission(Mission::Guard, true);
+	}
+}
+
+void FootExt::UpdateFlyingProductionDescent()
+{
+	if (!this->FlyingProduction_Descending)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	if (!pThis || !pThis->IsAlive || pThis->InLimbo || pThis->Health <= 0)
+	{
+		this->FlyingProduction_Descending = false;
+		this->FlyingProduction_RallyTarget = nullptr;
+		this->FlyingProduction_SpawnBuilding = nullptr;
+		return;
+	}
+
+	// If the unit has received an active order from player or AI, cancel automated descent
+	if (pThis->GetCurrentMission() != Mission::Guard)
+	{
+		this->FlyingProduction_Descending = false;
+		this->FlyingProduction_RallyTarget = nullptr;
+		this->FlyingProduction_SpawnBuilding = nullptr;
+		return;
+	}
+
+	CoordStruct curLoc = pThis->GetCoords();
+	const int groundZ = MapClass::Instance.GetCellFloorHeight(curLoc);
+	const int targetZ = groundZ + this->FlyingProduction_TargetHeight;
+
+	int descentSpeed = 16;
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		if (pJJLoco->Crash > 0.0f)
+			descentSpeed = static_cast<int>(pJJLoco->Crash);
+		else if (pJJLoco->Climb > 0.0f)
+			descentSpeed = static_cast<int>(pJJLoco->Climb);
+		else
+			descentSpeed = 16;
+	}
+	else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+	{
+		descentSpeed = std::max(16, pAircraft->Type->Speed * 2);
+	}
+
+	if (curLoc.Z - descentSpeed > targetZ)
+	{
+		curLoc.Z -= descentSpeed;
+		pThis->SetLocation(curLoc);
+		pThis->Location = curLoc;
+
+		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			pJJLoco->CurrentHeight = curLoc.Z - groundZ;
+			pThis->Jumpjet_OccupyCell(CellClass::Coord2Cell(curLoc));
+		}
+		else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+		{
+			pAircraft->SetHeight(curLoc.Z - groundZ);
+		}
+	}
+	else
+	{
+		// Arrived at target cruise altitude!
+		curLoc.Z = targetZ;
+		pThis->SetLocation(curLoc);
+		pThis->Location = curLoc;
+
+		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			pJJLoco->CurrentHeight = this->FlyingProduction_TargetHeight;
+			pThis->Jumpjet_OccupyCell(CellClass::Coord2Cell(curLoc));
+		}
+		else if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
+		{
+			pFlyLoco->FlightLevel = this->FlyingProduction_TargetHeight;
+			if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+				pAircraft->SetHeight(this->FlyingProduction_TargetHeight);
+		}
+		else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+		{
+			pAircraft->SetHeight(this->FlyingProduction_TargetHeight);
+		}
+
+		this->FlyingProduction_Descending = false;
+
+		AbstractClass* pRallyTarget = this->FlyingProduction_RallyTarget;
+		BuildingClass* pSpawnBuilding = this->FlyingProduction_SpawnBuilding;
+		DirStruct facing = this->FlyingProduction_ExitFacing;
+
+		this->FlyingProduction_RallyTarget = nullptr;
+		this->FlyingProduction_SpawnBuilding = nullptr;
+
+		this->FlyingProduction_DispatchMove(pRallyTarget, pSpawnBuilding, facing);
+	}
+}
+
 // =============================
 // load / save
 
@@ -950,6 +1100,11 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
+		.Process(this->FlyingProduction_Descending)
+		.Process(this->FlyingProduction_TargetHeight)
+		.Process(this->FlyingProduction_RallyTarget)
+		.Process(this->FlyingProduction_SpawnBuilding)
+		.Process(this->FlyingProduction_ExitFacing)
 		;
 }
 

@@ -243,6 +243,9 @@ public:
 		Valueable<bool> JumpjetClimbWithoutCutOut;
 		Valueable<bool> JumpjetClimbIgnoreBuilding;
 
+		Valueable<bool> FlyingProduction_Jumpjet;
+		Valueable<bool> FlyingProduction_Aircraft;
+
 		Valueable<bool> MergeBuildingDamage;
 
 		Valueable<double> DamageOwnerMultiplier;
@@ -764,6 +767,8 @@ public:
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
 			, JumpjetClimbIgnoreBuilding { false }
+			, FlyingProduction_Jumpjet { false }
+			, FlyingProduction_Aircraft { false }
 
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }

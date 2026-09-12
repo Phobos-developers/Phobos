@@ -1,6 +1,8 @@
 #include <JumpjetLocomotionClass.h>
+#include <FlyLocomotionClass.h>
 
 #include <Ext/AircraftType/Body.h>
+#include <Ext/Rules/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -1446,6 +1448,77 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
+
+	this->FlyingProduction.Read(exINI, pSection, "FlyingProduction");
+	this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
+	this->FlyingProduction_PlayFactoryAnim.Read(exINI, pSection, "FlyingProduction.PlayFactoryAnim");
+	this->FlyingProduction_SpawnAnim.Read(exINI, pSection, "FlyingProduction.SpawnAnim");
+	this->FlyingProduction_SpawnAnim_AttachedToObject.Read(exINI, pSection, "FlyingProduction.SpawnAnim.AttachedToObject");
+	this->FlyingProduction_SpawnAnim_AttachedToObject.Read(exINI, pSection, "FlyingProduction.SpawnAnim_AttachedToObject");
+	this->FlyingProduction_SpawnAt.Read(exINI, pSection, "FlyingProduction.SpawnAt");
+	this->FlyingProduction_RallyPointFromSpawnBuilding.Read(exINI, pSection, "FlyingProduction.RallyPointFromSpawnBuilding");
+
+	if (this->IsFlyingProductionEnabled())
+	{
+		if (!this->FlyingProduction_SpawnHeight.isset())
+		{
+			if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+			{
+				const int defaultJJHeight = RulesClass::Instance ? RulesClass::Instance->CruiseHeight : 0;
+				this->FlyingProduction_SpawnHeight = pThis->JumpjetHeight > 0 ? pThis->JumpjetHeight : defaultJJHeight;
+			}
+			else
+			{
+				const int defaultFlightLevel = RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
+				this->FlyingProduction_SpawnHeight = defaultFlightLevel > 0 ? defaultFlightLevel : pThis->GetFlightLevel();
+			}
+		}
+
+		if (this->FlyingProduction_SpawnHeight.Get() <= 0)
+			this->FlyingProduction = false;
+	}
+}
+
+bool TechnoTypeExt::IsFlyingProductionEnabled() const
+{
+	if (this->FlyingProduction.isset())
+		return this->FlyingProduction.Get();
+
+	if (this->FlyingProduction_SpawnHeight.isset() && this->FlyingProduction_SpawnHeight.Get() > 0)
+		return true;
+
+	if (const auto pRulesExt = RulesExt::Global())
+	{
+		const auto pThis = this->OwnerObject();
+		if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+			return pRulesExt->FlyingProduction_Jumpjet.Get();
+
+		if (pThis->WhatAmI() == AbstractType::AircraftType || pThis->Locomotor == LocomotionClass::CLSIDs::Fly)
+			return pRulesExt->FlyingProduction_Aircraft.Get();
+	}
+
+	return false;
+}
+
+int TechnoTypeExt::GetFlyingProductionSpawnHeight() const
+{
+	if (this->FlyingProduction_SpawnHeight.isset())
+		return this->FlyingProduction_SpawnHeight.Get();
+
+	const auto pThis = this->OwnerObject();
+	if (pThis->JumpJet || pThis->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+	{
+		if (pThis->JumpjetHeight > 0)
+			return pThis->JumpjetHeight;
+
+		return RulesClass::Instance ? RulesClass::Instance->CruiseHeight : 0;
+	}
+
+	const int flightLevel = pThis->GetFlightLevel();
+	if (flightLevel > 0)
+		return flightLevel;
+
+	return RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0;
 }
 
 template <typename T>
@@ -1869,6 +1942,14 @@ void TechnoTypeExt::Serialize(T& Stm)
 		// Ares 3.0
 		.Process(this->Unsellable)
 		.Process(this->KeepAlive)
+
+		.Process(this->FlyingProduction)
+		.Process(this->FlyingProduction_SpawnHeight)
+		.Process(this->FlyingProduction_PlayFactoryAnim)
+		.Process(this->FlyingProduction_SpawnAnim)
+		.Process(this->FlyingProduction_SpawnAnim_AttachedToObject)
+		.Process(this->FlyingProduction_SpawnAt)
+		.Process(this->FlyingProduction_RallyPointFromSpawnBuilding)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)

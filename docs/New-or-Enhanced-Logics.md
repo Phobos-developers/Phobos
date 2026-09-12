@@ -2134,6 +2134,45 @@ In `artmd.ini`:
 FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-specific FLH key name and N is zero-based burst shot index.
 ```
 
+### Flying production
+
+- Now you can allow produced units to spawn directly in the air at customizable altitudes and locations without being constrained by traditional factory ground exit paths.
+  - `FlyingProduction.Jumpjet` on `[General]` sets the global default for whether units with locomotor `Jumpjet` use flying production. Defaults to `false`.
+  - `FlyingProduction.Aircraft` on `[General]` sets the global default for whether units with locomotor `Fly` (or AircraftTypes) use flying production. Defaults to `false`.
+  - `FlyingProduction` controls whether this unit type uses flying production. Defaults to `[General] -> FlyingProduction.Jumpjet` for jumpjets, `[General] -> FlyingProduction.Aircraft` for aircraft/fly units, or `false` for others.
+  - `FlyingProduction.SpawnHeight` determines the initial spawn altitude in leptons along the Z-axis. Defaults to `JumpjetHeight` (or `[JumpjetControls] -> CruiseHeight`) for Jumpjets, and `FlightLevel` (or `[General] -> FlightLevel`) for aircraft. If the spawn altitude is greater than the unit's normal cruising altitude, the unit will descend vertically in place to its cruising altitude before executing its move order to the rally point. If resolved to 0 or negative, flying production will not be used and the unit exits normally.
+  - `FlyingProduction.PlayFactoryAnim` controls whether the producing factory plays its unloading door/exit animation.
+  - `FlyingProduction.SpawnAnim` specifies an animation to play at the aerial spawn coordinates when the unit is created.
+  - `FlyingProduction.SpawnAnim.AttachedToObject` determines whether `FlyingProduction.SpawnAnim` is attached to the spawned unit and follows its movement.
+  - `FlyingProduction.SpawnAt` accepts a list of BuildingTypes indicating where the unit should spawn, evaluated in priority order from left to right. When multiple buildings of that type exist, it prioritizes the producing factory itself if it matches, then any building marked as primary, and otherwise the closest one to the producing factory. If none of the candidate buildings exist or are alive, it falls back to the producing factory.
+  - `FlyingProduction.RallyPointFromSpawnBuilding` determines whether the unit targets the spawn building's rally point instead of the producing factory's rally point.
+  - `FlyingProduction.SpawnOffset` on `[BuildingType]` sets a 2D coordinate offset in leptons (X, Y) relative to the center of the structure for positioning the spawn point.
+  - `FlyingProduction.SpawnHeight` on `[BuildingType]` overrides the spawn altitude for units appearing at this structure.
+  - `FlyingProduction.SpawnFacing` on `[BuildingType]` specifies the facing (0-255) the unit takes upon spawning, as well as the exit direction if no rally point exists.
+  - `HasRallyPoint` on `[BuildingType]` controls whether the building can establish a rally point. If set to `true`, enables rally point placement on structures that are not standard vehicle or infantry factories (e.g. helipads or towers), allowing them to establish a rally point with EVA confirmation and tactical line. If set to `false`, disables rally point capability even on factories. If omitted, standard vanilla factory behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[General]
+FlyingProduction.Jumpjet=false             ; boolean
+FlyingProduction.Aircraft=false            ; boolean
+
+[SOMETECHNO]                               ; TechnoType
+FlyingProduction=                          ; boolean, defaults to [General] -> FlyingProduction.Jumpjet / FlyingProduction.Aircraft
+FlyingProduction.SpawnHeight=              ; integer, defaults to JumpjetHeight or FlightLevel
+FlyingProduction.PlayFactoryAnim=false     ; boolean
+FlyingProduction.SpawnAnim=                ; AnimType
+FlyingProduction.SpawnAnim.AttachedToObject=false ; boolean
+FlyingProduction.SpawnAt=                  ; List of BuildingTypes
+FlyingProduction.RallyPointFromSpawnBuilding=false ; boolean
+
+[SOMEBUILDING]                             ; BuildingType
+FlyingProduction.SpawnOffset=0,0           ; Point2D, leptons
+FlyingProduction.SpawnHeight=              ; integer, defaults to the spawned unit's FlyingProduction.SpawnHeight
+FlyingProduction.SpawnFacing=              ; DirType (0-255), defaults to the building's facing (128 / South)
+HasRallyPoint=                             ; boolean, defaults to vanilla behavior
+```
+
 ### Forcing specific weapon against certain targets
 
 ![image](_static/images/underwater-new-attack-tag.gif)

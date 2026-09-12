@@ -343,6 +343,14 @@ public:
 
 	Nullable<AffectedHouse> RadarInvisibleToHouse;
 
+	Nullable<bool> FlyingProduction;
+	Nullable<int> FlyingProduction_SpawnHeight;
+	Valueable<bool> FlyingProduction_PlayFactoryAnim;
+	Nullable<AnimTypeClass*> FlyingProduction_SpawnAnim;
+	Valueable<bool> FlyingProduction_SpawnAnim_AttachedToObject;
+	ValueableVector<BuildingTypeClass*> FlyingProduction_SpawnAt;
+	Valueable<bool> FlyingProduction_RallyPointFromSpawnBuilding;
+
 	struct LaserTrailDataEntry
 	{
 		ValueableIdx<LaserTrailTypeClass> idxType;
@@ -886,6 +894,14 @@ public:
 		// Ares 3.0
 		, Unsellable {}
 		, KeepAlive {}
+
+		, FlyingProduction {}
+		, FlyingProduction_SpawnHeight {}
+		, FlyingProduction_PlayFactoryAnim { false }
+		, FlyingProduction_SpawnAnim {}
+		, FlyingProduction_SpawnAnim_AttachedToObject { false }
+		, FlyingProduction_SpawnAt {}
+		, FlyingProduction_RallyPointFromSpawnBuilding { false }
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
@@ -903,6 +919,9 @@ public:
 	int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget) const;
 
 	void UpdateAdditionalAttributes();
+
+	bool IsFlyingProductionEnabled() const;
+	int GetFlyingProductionSpawnHeight() const;
 
 	// Ares 0.2
 	bool CameoIsVeteran(HouseClass* pHouse) const;

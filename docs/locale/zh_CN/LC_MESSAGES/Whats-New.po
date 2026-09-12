@@ -6696,3 +6696,7 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
 
+msgid "[Flying production](New-or-Enhanced-Logics.md#flying-production) (by FS-21)"
+msgstr "[飞行生产](New-or-Enhanced-Logics.md#flying-production)（by FS-21）"
+
+
