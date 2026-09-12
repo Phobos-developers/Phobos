@@ -984,7 +984,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	if (pTypeExt->OwnerObject()->RadarInvisible
 		&& EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
 	{
-			return Invisible;
+		return Invisible;
 	}
 
 	return GoOtherChecks;
@@ -1222,21 +1222,21 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	const int strength = pTargetType->Strength;
 
 	auto repair = [strength, pTarget](int repair)
+	{
+		int repairAmount = strength;
+
+		if (repair > 0)
 		{
-			int repairAmount = strength;
+			repairAmount = std::clamp(pTarget->Health + repair, 0, strength);
+		}
+		else if (repair < 0)
+		{
+			const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
+			repairAmount = static_cast<int>(std::round(strength * percentage));
+		}
 
-			if (repair > 0)
-			{
-				repairAmount = std::clamp(pTarget->Health + repair, 0, strength);
-			}
-			else if (repair < 0)
-			{
-				const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
-				repairAmount = static_cast<int>(std::round(strength * percentage));
-			}
-
-			return repairAmount;
-		};
+		return repairAmount;
+	};
 
 	pTarget->Health = Math::min(repair(repairBuilding), repair(repairEngineer));
 	pTarget->EstimatedHealth = pTarget->Health;
@@ -1487,7 +1487,7 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
 		return 0x71A90E;
 	}
-	
+
 	return 0;
 }
 
@@ -2229,11 +2229,11 @@ DEFINE_HOOK(0x4CEC31, FlyLocomotionClass_ProcessLanding_CarryallAnim, 0x5)
 
 DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 {
-    enum { Continue = 0x4CF8B7 };
-    GET(TechnoTypeClass*, pType, EAX);
+	enum { Continue = 0x4CF8B7 };
+	GET(TechnoTypeClass*, pType, EAX);
 
 	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
-    R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
+	R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
 
 	return Continue;
 }
@@ -2349,7 +2349,7 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 			weaponIdx = reinterpret_cast<WarpPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
 		else
 			weaponIdx = pOwner->SelectWeapon(nullptr);
-		
+
 		const auto pWeapon = pOwner->GetWeapon(weaponIdx)->WeaponType;
 		int warpPerStep = pWeapon->Damage;
 
@@ -2554,6 +2554,42 @@ DEFINE_HOOK(0x6FFD4C, TechnoClass_ClickedMission_VoiceSpecialAttack, 0x6)
 					return VoiceEnter;
 			}
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x70B1F2, TechnoClass_RevealHouses, 0x6)	// TechnoClass::vt_entry_48C
+DEFINE_HOOK_AGAIN(0x70B15A, TechnoClass_RevealHouses, 0x6)	// TechnoClass::UpdateSight
+DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
+{
+	const DWORD address = R->Origin();
+	auto const pPlayer = HouseClass::CurrentPlayer;
+	bool canShow = false;
+
+	if (pPlayer)
+	{
+		auto const pTechno = address == 0x70B1F2 ? R->ECX<TechnoClass*>() : R->ESI<TechnoClass*>();
+		auto const pHouse = pTechno->Owner;
+
+		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+		auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+
+		const AffectedHouse affectHouses = pTypeExt->RevealHouses.Get(pHouseTypeExt->RevealHouses.Get(RulesExt::Global()->RevealHouses));
+		canShow = EnumFunctions::CanTargetHouse(affectHouses, pHouse, pPlayer);
+	}
+
+	switch (address)
+	{
+	case 0x70B1F2:
+		R->ESI(canShow ? pPlayer : nullptr);
+		break;
+	case 0x70B15A:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70B160;
+	default:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70AF28;
 	}
 
 	return 0;

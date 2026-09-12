@@ -449,6 +449,7 @@ This page lists all the individual contributions to the project by their author.
   - Customized transport plane for teams
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
+  - Customize the country displayed in `Sight`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

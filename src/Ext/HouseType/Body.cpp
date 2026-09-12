@@ -26,6 +26,8 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
 	this->VeteranDefenses.Read(exINI, pSection, "VeteranDefenses");
+
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
 }
 
 template <typename T>
@@ -38,6 +40,7 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->Crew)
 		.Process(this->VeteranBuildings)
 		.Process(this->VeteranDefenses)
+		.Process(this->RevealHouses)
 		;
 }
 
