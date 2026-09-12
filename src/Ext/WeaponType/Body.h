@@ -118,7 +118,6 @@ public:
 	bool SkipWeaponPicking;
 
 	Nullable<bool> CylinderRangefinding;
-	
 
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }

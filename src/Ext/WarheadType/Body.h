@@ -272,6 +272,12 @@ public:
 
 	Valueable<int> Ammo;
 
+	Valueable<bool> IvanBomb_Detonate;
+	Valueable<bool> IvanBomb_Detonate_InvokerOnly;
+	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
+	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
+	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -281,12 +287,6 @@ public:
 	Nullable<int> Flash_Duration;
 	Valueable<double> Damage_Deployed;
 	Nullable<bool> PreventScatter;
-
-	Valueable<bool> IvanBomb_Detonate;
-	Valueable<bool> IvanBomb_Detonate_InvokerOnly;
-	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
-	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
-	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
 
 	double Crit_RandomBuffer;
 	double Crit_CurrentChance;
