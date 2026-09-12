@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
+  - Tiberium ramp expansion support, spread and growth crash fixes due to data corruption.
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -280,7 +281,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -308,6 +309,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -445,6 +447,8 @@ This page lists all the individual contributions to the project by their author.
   - SkipMapSelect Enhancement
   - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
+  - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
+  - Enter the grinder voice
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -572,6 +576,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
   - Fix a bug that computer player record cannot be log normally in non English mode
   - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+  - Observer can see IvanBomb that's attached by any house
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -759,6 +765,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
+  - Country-specific veteran buildings
+  - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
+  - Customize `IdleActionFrequency`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -792,6 +802,9 @@ This page lists all the individual contributions to the project by their author.
   - Show game time
   - Fix a game crash when parsing string list with null entry
   - `513` Set mission timer properties
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -958,3 +971,5 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **dh381-1 (dh381)**:
   - Fixed the issue where Phobos crashed when Antares drew Ebolt colors.
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **Sovietianqi** - Customizable crew type per country

@@ -17,6 +17,9 @@ namespace
 	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
 		{ "RELOAD",       AdditionalAbility::Reload },
 		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+		{ "RANGE",		  AdditionalAbility::Range },
+		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune },
+		{ "CRITCHANCE",	  AdditionalAbility::CritChance }
 	};
 
 	void ReadAdditionalAbilities(
@@ -1058,6 +1061,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, pSection, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, pSection, "VeteranCritChance");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -1198,6 +1203,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+	
+	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1696,6 +1706,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AdditionalEliteAbilities)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
@@ -1830,6 +1842,11 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
+
+		.Process(this->VoiceEnterGrinder)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

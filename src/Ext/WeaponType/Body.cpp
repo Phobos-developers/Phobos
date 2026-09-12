@@ -409,6 +409,9 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 	auto const pTechnoExt = TechnoExt::Fetch(pTechno);
 
+	if (TechnoExt::HasAdditionalAbility(pTechno, AdditionalAbility::Range))
+		range = GeneralUtils::SafeMultiply(range, Math::max(pTechnoExt->TypeExtData->VeteranRange.Get(RulesExt::Global()->VeteranRange), 0.0));
+
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;
 

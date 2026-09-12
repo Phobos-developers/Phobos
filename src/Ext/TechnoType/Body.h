@@ -292,6 +292,8 @@ public:
 	std::bitset<AdditionalAbilityCount> AdditionalEliteAbilities;
 	Nullable<double> VeteranReload;
 	Nullable<double> VeteranEmptyReload;
+	Nullable<double> VeteranRange;
+	Nullable<double> VeteranCritChance;
 
 	Nullable<AnimTypeClass*> Wake;
 	Nullable<AnimTypeClass*> Wake_Grapple;
@@ -438,6 +440,11 @@ public:
 	ValueableVector<AnimTypeClass*> CloakAnims;
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
+
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
+	NullableIdx<VocClass> VoiceEnterGrinder;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -715,6 +722,8 @@ public:
 		, AdditionalEliteAbilities {}
 		, VeteranReload {}
 		, VeteranEmptyReload {}
+		, VeteranRange {}
+		, VeteranCritChance {}
 
 		, Wake { }
 		, Wake_Grapple { }
@@ -842,7 +851,7 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
-		
+
 		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
@@ -850,6 +859,11 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
