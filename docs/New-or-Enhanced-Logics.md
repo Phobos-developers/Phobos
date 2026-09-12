@@ -3576,7 +3576,6 @@ PreventPassengerEscape=false           ; boolean
 PreventOccupantEscape=false            ; boolean
 ```
 
-
 ## Weapons
 
 ### Allow Laser drawing position update
