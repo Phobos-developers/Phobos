@@ -391,6 +391,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
+- Fixed the issue that Phobos crashed when Antares drew Ebolt colors.
 
 ## Newly added global settings
 

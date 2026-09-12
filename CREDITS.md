@@ -956,3 +956,5 @@ This page lists all the individual contributions to the project by their author.
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **dh381-1 (dh381)**:
+  - Fixed the issue where Phobos crashed when Antares drew Ebolt colors.

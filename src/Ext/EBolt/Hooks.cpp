@@ -41,6 +41,10 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 
 	GET(EBolt*, pThis, ECX);
 	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
+
+	if(!pExt)
+		return SkipGameCode;
+	
 	const auto& color = pExt->Color;
 
 	for (int idx = 0; idx < 3; ++idx)
