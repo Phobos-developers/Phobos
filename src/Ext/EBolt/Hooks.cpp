@@ -41,6 +41,10 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 
 	GET(EBolt*, pThis, ECX);
 	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
+
+	if(!pExt)
+		return SkipGameCode;
+	
 	const auto& color = pExt->Color;
 
 	for (int idx = 0; idx < 3; ++idx)
@@ -59,7 +63,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
 	GET_STACK(const int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
-	const int arcCount = BoltTemp::ExtData->Arcs;
+	const int arcCount = BoltTemp::ExtData ? BoltTemp::ExtData->Arcs : 8;
 
 	return plotIndex < arcCount ? DoLoop : Break;
 }
@@ -67,6 +71,11 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
 DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
+	R->EAX(*reinterpret_cast<DWORD*>(0x87F6C4));
+
+	if(!BoltTemp::ExtData)
+		return 0;
+	
 	if (BoltTemp::ExtData->Disable[0])
 		return 0x4C2515;
 
@@ -77,6 +86,11 @@ DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color2
 DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 {
+	R->EAX(*reinterpret_cast<DWORD*>(0x87F6C4));
+
+	if(!BoltTemp::ExtData)
+		return 0;
+
 	if (BoltTemp::ExtData->Disable[1])
 		return 0x4C262A;
 
@@ -87,6 +101,11 @@ DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D5)// Disable Ares's hook EBolt_Draw_Color3
 DEFINE_HOOK(0x4C26D5, EBolt_DrawThird_Color, 0x6)
 {
+	R->EAX(*reinterpret_cast<DWORD*>(0x87F6C4));
+
+	if(!BoltTemp::ExtData)
+		return 0;
+
 	if (BoltTemp::ExtData->Disable[2])
 		return 0x4C2710;
 

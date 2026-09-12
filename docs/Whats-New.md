@@ -904,6 +904,7 @@ HideShakeEffects=false           ; boolean
 - Removed the restriction that prohibits InfantryTypes from using the InitialPayload logic (by Noble_Fish)
 - `ProjectileRange` now has weapon range modifiers applied to it if greater than 0 (by Starkku)
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter` (by Noble_Fish)
+- Fixed the issue that Phobos crashed when Antares drew Ebolt colors (by dh381)
 ```
 
 ```{dropdown} Pre-release changes
