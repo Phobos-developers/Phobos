@@ -32,11 +32,16 @@ public:
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;
 
+	ValueableVector<BuildingTypeClass*> VeteranBuildings;
+	ValueableVector<BuildingTypeClass*> VeteranDefenses;
+
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
+		, VeteranBuildings {}
+		, VeteranDefenses {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;

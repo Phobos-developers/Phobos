@@ -137,6 +137,7 @@ public:
 	std::vector<std::string> Groups;
 	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 	bool RequiresRecalculation;
+	bool RequiresAnimUpdate;
 	bool RestrictedArmorMultiplier;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
@@ -222,6 +223,7 @@ public:
 		, Groups {}
 		, Animation_DrawOffsets {}
 		, RequiresRecalculation { false }
+		, RequiresAnimUpdate { false }
 		, RestrictedArmorMultiplier { false }
 	{};
 

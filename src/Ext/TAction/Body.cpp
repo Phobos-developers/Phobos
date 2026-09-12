@@ -316,7 +316,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive)
+					&& !pHouse->IsNeutral())
 				{
 					housesList.push_back(pHouse);
 				}

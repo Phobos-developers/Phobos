@@ -1006,7 +1006,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 
@@ -3340,7 +3340,7 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 	GET(FootClass*, pThis, ESI);
 	bool result = false;
 
-	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload)
+	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || !pThis->Owner->IsControlledByHuman())
 		result = pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now();
 
 	R->AL(result);
