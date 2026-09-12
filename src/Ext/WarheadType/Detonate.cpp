@@ -236,6 +236,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
+	if(this->IvanBomb_Detonate)
+		this->IvanBombDetonate(pOwner,pTarget);
+
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
@@ -927,4 +930,56 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
+{
+	if (!pOwner)
+        return; 
+
+	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
+	const auto pBomb = pTarget->AttachedBomb;
+
+	// TODO: handle the case when the owner of IvanBomb is dead
+	if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+	{
+		if (!this->IvanBomb_Detonate_SameInvokerOnly)
+			pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		else if (pBomb->Owner == pOwner)
+			pBomb->DetonationFrame = Unsorted::CurrentFrame;
+	}
+
+	if (this->IvanBomb_Detonate_PenetratesTransport)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			const auto pPassengerBomb = pPassenger->AttachedBomb;
+
+			if (pPassengerBomb && (affectTypes.empty() || affectTypes.Contains(pPassenger->GetTechnoType())))
+			{
+				if (!this->IvanBomb_Detonate_SameInvokerOnly)
+					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
+				else if (pPassengerBomb->Owner == pOwner)
+					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
+			}
+		}
+	}
+
+	if (this->IvanBomb_Detonate_PenetratesGarrison && pTarget->WhatAmI() == AbstractType::Building)
+	{
+		const auto pTargetBuilding = static_cast<BuildingClass*>(pTarget);
+
+		for (const auto pOccupant : pTargetBuilding->Occupants)
+		{
+			const auto pOccupantBomb = pOccupant->AttachedBomb;
+
+			if (pOccupantBomb && (affectTypes.empty() || affectTypes.Contains(pOccupant->GetTechnoType())))
+			{
+				if (!this->IvanBomb_Detonate_SameInvokerOnly)
+					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
+				else if (pOccupantBomb->Owner == pOwner)
+					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
+			}
+		}
+	}
 }
