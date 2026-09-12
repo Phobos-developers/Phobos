@@ -1155,6 +1155,7 @@ void TechnoExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
+		.Process(this->RandomFactor)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)

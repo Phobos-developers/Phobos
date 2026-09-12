@@ -2,6 +2,8 @@
 
 #include <Ext/Rules/Body.h>
 
+#include <algorithm>
+
 namespace TerrainTypeTemp
 {
 	TerrainTypeClass* pCurrentType = nullptr;
@@ -37,7 +39,10 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 				TerrainTypeTemp::pCurrentExt = pTypeExt;
 
 				for (int i = 0; i < cellCount; i++)
-					pCell->SpreadTiberium(true);
+				{
+					if (!pCell->SpreadTiberium(true))
+						break;
+				}
 
 				const int particleIdx = pTypeExt->SpawnsTiberium_Particle;
 
@@ -196,14 +201,31 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 		for (unsigned int i = 0; i < size; i++)
 		{
 			const unsigned int cellIndex = (i + rand) % size;
-			const CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
+			CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
 			CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
 			{
-				R->EAX<bool>(tgtCell->IncreaseTiberium(tibIndex,
-					TerrainTypeTemp::pCurrentExt->GetTiberiumGrowthStage()));
+				const int maxStage = pTib->NumFrames - 1;
+				const int rawStage = TerrainTypeTemp::pCurrentExt->GetTiberiumGrowthStage();
+				const int growthStage = std::clamp(rawStage, 0, maxStage);
 
+				const bool res = tgtCell->IncreaseTiberium(tibIndex, growthStage);
+
+				if (res && growthStage >= maxStage)
+				{
+					const int surfaceIdx = PriorityQueueClassNode::ToSurfaceIndex(tgtPos);
+					const int maxCount = PriorityQueueClassNode::SurfaceDataCount();
+					const auto& logic = pTib->SpreadLogic;
+
+					if (surfaceIdx >= 0 && surfaceIdx < maxCount)
+					{
+						if (!logic.CellIndexesWithTiberium || !logic.CellIndexesWithTiberium[surfaceIdx])
+							pTib->RegisterForSpread(&tgtPos);
+					}
+				}
+
+				R->EAX<bool>(res);
 				return SpreadReturn;
 			}
 		}
