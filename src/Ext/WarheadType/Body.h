@@ -273,7 +273,7 @@ public:
 	Valueable<int> Ammo;
 
 	Valueable<bool> IvanBomb_Detonate;
-	Valueable<bool> IvanBomb_Detonate_AffectsInvokerOnly;
+	Valueable<bool> IvanBomb_Detonate_SameInvokerOnly;
 	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
 	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
@@ -581,7 +581,7 @@ public:
 		, Ammo { 0 }
 
 		, IvanBomb_Detonate { false }
-		, IvanBomb_Detonate_AffectsInvokerOnly { true }
+		, IvanBomb_Detonate_SameInvokerOnly { true }
 		, IvanBomb_Detonate_PenetratesTransport { false }
 		, IvanBomb_Detonate_PenetratesGarrison { false }
 		, IvanBomb_Detonate_AffectTypes {}

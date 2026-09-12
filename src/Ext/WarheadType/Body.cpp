@@ -452,7 +452,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo.Read(exINI, pSection, "Ammo");
 
 	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
-	this->IvanBomb_Detonate_AffectsInvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.AffectsInvokerOnly");
+	this->IvanBomb_Detonate_SameInvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.SameInvokerOnly");
 	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
 	this->IvanBomb_Detonate_PenetratesTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesTransport");
 	this->IvanBomb_Detonate_PenetratesGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesGarrison");
@@ -831,7 +831,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Ammo)
 
 		.Process(this->IvanBomb_Detonate)
-		.Process(this->IvanBomb_Detonate_AffectsInvokerOnly)
+		.Process(this->IvanBomb_Detonate_SameInvokerOnly)
 		.Process(this->IvanBomb_Detonate_PenetratesTransport)
 		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
 		.Process(this->IvanBomb_Detonate_AffectTypes)

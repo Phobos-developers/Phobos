@@ -943,7 +943,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	// TODO: handle the case when the owner of IvanBomb is dead
 	if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
 	{
-		if (!this->IvanBomb_Detonate_AffectsInvokerOnly)
+		if (!this->IvanBomb_Detonate_SameInvokerOnly)
 			pBomb->DetonationFrame = Unsorted::CurrentFrame;
 		else if (pBomb->Owner == pOwner)
 			pBomb->DetonationFrame = Unsorted::CurrentFrame;
@@ -957,7 +957,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 
 			if (pPassengerBomb && (affectTypes.empty() || affectTypes.Contains(pPassenger->GetTechnoType())))
 			{
-				if (!this->IvanBomb_Detonate_AffectsInvokerOnly)
+				if (!this->IvanBomb_Detonate_SameInvokerOnly)
 					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
 				else if (pPassengerBomb->Owner == pOwner)
 					pPassengerBomb->DetonationFrame = Unsorted::CurrentFrame;
@@ -975,7 +975,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 
 			if (pOccupantBomb && (affectTypes.empty() || affectTypes.Contains(pOccupant->GetTechnoType())))
 			{
-				if (!this->IvanBomb_Detonate_AffectsInvokerOnly)
+				if (!this->IvanBomb_Detonate_SameInvokerOnly)
 					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
 				else if (pOccupantBomb->Owner == pOwner)
 					pOccupantBomb->DetonationFrame = Unsorted::CurrentFrame;
