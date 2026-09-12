@@ -33,8 +33,6 @@ public:
 	Valueable<int> Ammo_DeployUnlockMinimumAmount;
 	Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
-	int SubterraneanSpeed;
-	Nullable<int> SubterraneanHeight;
 	Nullable<bool> Parasite_AllowWaterExit;
 
 	NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
@@ -102,8 +100,6 @@ public:
 		, Ammo_AutoDeployMaximumAmount { -1 }
 		, Ammo_DeployUnlockMinimumAmount { -1 }
 		, Ammo_DeployUnlockMaximumAmount { -1 }
-		, SubterraneanSpeed { -1 }
-		, SubterraneanHeight {}
 		, Parasite_AllowWaterExit {}
 		, DefaultMirageDisguises {}
 		, IsSimpleDeployer_ConsiderPathfinding { false }

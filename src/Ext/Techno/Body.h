@@ -30,6 +30,7 @@ public:
 	}
 
 	TechnoTypeExt* TypeExtData;
+	int RandomFactor;
 	std::unique_ptr<ShieldClass> Shield;
 	std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 	std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
@@ -90,6 +91,7 @@ public:
 
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
+		, RandomFactor { 0 }
 		, Shield {}
 		, LaserTrails {}
 		, AttachedEffects {}
@@ -149,7 +151,7 @@ public:
 	virtual void OnDeferredAllocation() override { this->InitializeState(); }
 
 	// True while the object is hidden underground (subterranean units); false for
-	// everything else. Overridden by UnitExt, which owns the burrow state.
+	// everything else. Overridden by FootExt, which owns the burrow state.
 	virtual bool IsBurrowedState() const { return false; }
 
 	// True while the object is inside a tunnel (foot units); false for everything
@@ -164,7 +166,8 @@ public:
 	void UpdateLaserTrails();
 	void UpdateAttachEffects();
 	void UpdateGattlingRateDownReset();
-	void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
+	bool UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, bool createAnim = false);
+	void UpdateAEAnimDrawingLogic();
 	bool RecalculateStatMultipliers(AttachEffectClass* pAttachEffect = nullptr);
 	void UpdateTemporal();
 	void UpdateMindControlAnim();
@@ -174,9 +177,9 @@ public:
 	void InitializeLaserTrails();
 	void InitializeAttachEffects();
 	void UpdateSelfOwnedAttachEffects();
-	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
-	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
-	void InitializeDisplayInfo();
+	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims = false) const;
+	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr, bool requireAnims = false) const;
+	void InitializeDisplayInfo(TechnoTypeClass* pType);
 	void ApplyMindControlRangeLimit();
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
 	void ResetDelayedFireTimer();
@@ -229,7 +232,7 @@ public:
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 
-	static void ChangeOwnerMissionFix(FootClass* pThis);
+	static void ChangeOwnerMissionFix(FootClass* pThis, TechnoTypeClass* pType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
@@ -246,7 +249,7 @@ public:
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
-	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
+	static bool IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource);
 	static int GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk);
 	static int GetCustomTintColor(TechnoClass* pThis);
 	static int GetCustomTintIntensity(TechnoClass* pThis);

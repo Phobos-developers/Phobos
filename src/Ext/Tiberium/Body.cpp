@@ -10,6 +10,7 @@ void TiberiumExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
+		.Process(this->AllowRamps)
 		;
 }
 
@@ -20,6 +21,10 @@ void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+	this->AllowRamps.Read(exINI, pSection, "AllowRamps");
+
+	if (this->AllowRamps && pThis->NumSlopes < 8)
+		pThis->NumSlopes = 8;
 }
 
 void TiberiumExt::LoadFromStream(PhobosStreamReader& Stm)
