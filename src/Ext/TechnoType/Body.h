@@ -861,7 +861,7 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
-	
+
 		, SubterraneanSpeed { -1 }
 		, SubterraneanHeight {}
 
