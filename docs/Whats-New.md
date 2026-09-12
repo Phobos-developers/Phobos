@@ -434,7 +434,6 @@ HideShakeEffects=false           ; boolean
 - [Customize whether the unit can be detected by psychic detector](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector) (by Noble_Fish)
 - [Cloak Enhancement](New-or-Enhanced-Logics.md#cloak-enhancement) (by NetsuNegi)
 - [`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
-- [Customizable infantry sequence rates](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates) (by Noble_Fish)
 - [Extended `CanTargetHouses` to allow targeting neutral houses](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by weiyongxuan)
 - [Customizable infantry sequence rates](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates) (by Noble_Fish)
 - `<Player @ X>` can now be used as owner for triggers on skirmish and multiplayer maps (by Starkku)
@@ -444,6 +443,7 @@ HideShakeEffects=false           ; boolean
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi)
+- [Money switch building active animation](New-or-Enhanced-Logics.md#Money-switch-building-active-animation) (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -731,8 +731,6 @@ HideShakeEffects=false           ; boolean
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
-- [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)
-- [Money switch building active animation](New-or-Enhanced-Logics.md#Money-switch-building-active-animation) (by dh381)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
