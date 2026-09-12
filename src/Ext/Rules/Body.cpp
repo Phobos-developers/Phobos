@@ -363,6 +363,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CombatAlert_UseAttackVoice.Read(exINI, GameStrings::AudioVisual, "CombatAlert.UseAttackVoice");
 	this->CombatAlert_UseEVA.Read(exINI, GameStrings::AudioVisual, "CombatAlert.UseEVA");
 
+	this->StartDistributionModeSound.Read(exINI, GameStrings::AudioVisual, "StartDistributionModeSound");
+	this->EndDistributionModeSound.Read(exINI, GameStrings::AudioVisual, "EndDistributionModeSound");
+	this->AddDistributionModeCommandSound.Read(exINI, GameStrings::AudioVisual, "AddDistributionModeCommandSound");
+
 	this->ReplaceVoxelLightSources();
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
@@ -733,6 +737,13 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
+
+	// default toggle sounds to the planning mode ones
+	if (this->StartDistributionModeSound == -1)
+		this->StartDistributionModeSound = pRules->StartPlanningModeSound;
+
+	if (this->EndDistributionModeSound == -1)
+		this->EndDistributionModeSound = pRules->EndPlanningModeSound;
 }
 
 // =============================
@@ -955,6 +966,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatAlert_UseFeedbackVoice)
 		.Process(this->CombatAlert_UseAttackVoice)
 		.Process(this->CombatAlert_UseEVA)
+		.Process(this->StartDistributionModeSound)
+		.Process(this->EndDistributionModeSound)
+		.Process(this->AddDistributionModeCommandSound)
 		.Process(this->UseFixedVoxelLighting)
 		.Process(this->AIAutoDeployMCV)
 		.Process(this->AISetBaseCenter)

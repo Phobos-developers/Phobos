@@ -119,6 +119,17 @@ public:
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
 		static bool SelectCapturedCommand;
+		static bool AllowSwitchNoMoveCommand;
+		static bool AllowDistributionCommand;
+		static bool AllowDistributionSpreadHotkey;
+		static bool AllowDistributionSpreadScroll;
+		static bool AllowDistributionSpreadDrag;
+		static bool AllowDistributionUseClick;
+		static bool AllowDistributionFilterHotkey;
+		static bool ApplyNoMoveCommand;
+		static unsigned int DistributionSpreadRange;
+		static unsigned int DistributionSpreadScrollStep;
+		static int DistributionFilterMode;
 	};
 
 	class Misc

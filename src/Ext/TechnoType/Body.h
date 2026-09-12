@@ -172,6 +172,7 @@ public:
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
 	Valueable<CSFText> EnemyUIName;
+	Valueable<TechnoTypeClass*> FakeOf;
 
 	bool ForceWeapon_Check;
 	Valueable<int> ForceWeapon_Naval_Decloaked;
@@ -596,6 +597,7 @@ public:
 		, CombatAlert_EVA {}
 
 		, EnemyUIName {}
+		, FakeOf {}
 
 		, VoiceCreated {}
 
