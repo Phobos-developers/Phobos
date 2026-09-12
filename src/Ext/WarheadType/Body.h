@@ -273,10 +273,10 @@ public:
 	Valueable<int> Ammo;
 
 	Valueable<bool> IvanBomb_Detonate;
-	Valueable<bool> IvanBomb_Detonate_InvokerOnly;
-	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
+	Valueable<bool> IvanBomb_Detonate_AffectsInvokerOnly;
 	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
 	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
+	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -581,10 +581,10 @@ public:
 		, Ammo { 0 }
 
 		, IvanBomb_Detonate { false }
-		, IvanBomb_Detonate_InvokerOnly { true }
-		, IvanBomb_Detonate_AffectTypes {}
+		, IvanBomb_Detonate_AffectsInvokerOnly { true }
 		, IvanBomb_Detonate_PenetratesTransport { false }
 		, IvanBomb_Detonate_PenetratesGarrison { false }
+		, IvanBomb_Detonate_AffectTypes {}
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
