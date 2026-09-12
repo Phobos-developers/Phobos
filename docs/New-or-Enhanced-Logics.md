@@ -3172,7 +3172,7 @@ PlayAnimAboveSurface=false            ; boolean
 ![image](_static/images/IvanBombDetonate.gif)
 *Ivan detonated the bomb via deploy*
 
-- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+- Now you can detonate planted Ivan bombs using custom werhead.
   - `IvanBomb.Detonate.SameInvokerOnly` can be used to configure whether the warhead can detonate ivan bombs only if they come from the same invoker.
   - `IvanBomb.Detonate.PenetratesTransport` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
   - `IvanBomb.Detonate.PenetratesGarrison` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
