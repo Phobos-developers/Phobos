@@ -1398,6 +1398,7 @@ msgstr "修复了 *国家层级生还者自定义* 覆盖单位微观设置的 B
 
 msgid "Enter the grinder voice"
 msgstr ""
+"赴部队回收站语音"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

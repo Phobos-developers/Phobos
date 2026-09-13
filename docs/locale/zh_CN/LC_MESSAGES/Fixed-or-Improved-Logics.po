@@ -4917,11 +4917,13 @@ msgstr ""
 
 msgid "Enter the grinder voice"
 msgstr ""
+"赴部队回收站语音"
 
 msgid ""
 "Now, you can customize the new voice that plays when entering the grinder"
 " to override the original `VoiceSpecialAttack`."
 msgstr ""
+"现在，你可以自定义一个新语音用于在进入部队回收站时覆盖原有的 `VoiceSpecialAttack`。"
 
 msgid "Exploding object customizations"
 msgstr "爆炸对象的自定义"

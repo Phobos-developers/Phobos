@@ -2263,6 +2263,16 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
 
+### Enter the grinder voice
+
+- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+VoiceEnterGrinder=         ; Sound entry
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.

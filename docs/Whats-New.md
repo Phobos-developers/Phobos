@@ -446,7 +446,7 @@ HideShakeEffects=false           ; boolean
 - [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
-- Enter the grinder voice (by FlyStar)
+- [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
