@@ -3309,6 +3309,7 @@ msgid ""
 "Fix the issue where Ares' `Flash.Duration` cannot override the weapon's "
 "repair flash effect"
 msgstr ""
+"修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题"
 
 msgid "Customizable crew type per country"
 msgstr "国家层级生还者自定义"
