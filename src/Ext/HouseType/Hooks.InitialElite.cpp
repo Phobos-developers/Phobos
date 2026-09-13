@@ -49,6 +49,35 @@ static bool DrawPCXCameo(TechnoTypeClass* pType, const int destX, const int dest
 	return false;
 }
 
+static void SetElite(TechnoClass* pTechno)
+{
+	const auto pHouseTypeExt = HouseTypeExt::Fetch(pTechno->Owner->Type);
+
+	switch(pTechno->WhatAmI())
+	{
+		case AbstractType::Infantry:
+		{
+			if(pHouseTypeExt->EliteInfantry.Contains(pTechno->GetTechnoType()))
+				pTechno->Veterancy.SetElite();
+			break;
+		}
+		case AbstractType::Unit:
+		{
+			if(pHouseTypeExt->EliteUnits.Contains(pTechno->GetTechnoType()))
+				pTechno->Veterancy.SetElite();
+			break;
+		}
+		case AbstractType::Aircraft:
+		{
+			if(pHouseTypeExt->EliteAircraft.Contains(pTechno->GetTechnoType()))
+				pTechno->Veterancy.SetElite();
+			break;
+		}
+		default:
+			break;
+	}
+}
+
 DEFINE_HOOK(0x6A980A, StripClass_Draw_DrawSHPCameo, 0x8)
 {
 	GET(TechnoTypeClass*, pType, EBX);
@@ -122,31 +151,40 @@ DEFINE_HOOK(0x443C71, BuildingClass_ExitObject_CountryInitialElite, 0x6)
 {
 	GET(TechnoClass*, pTechno, EDI);
 
-	const auto pHouseTypeExt = HouseTypeExt::Fetch(pTechno->Owner->Type);
+	SetElite(pTechno);
 
-	switch(pTechno->WhatAmI())
-	{
-		case AbstractType::Infantry:
-		{
-			if(pHouseTypeExt->EliteInfantry.Contains(pTechno->GetTechnoType()))
-				pTechno->Veterancy.SetElite();
-			break;
-		}
-		case AbstractType::Unit:
-		{
-			if(pHouseTypeExt->EliteUnits.Contains(pTechno->GetTechnoType()))
-				pTechno->Veterancy.SetElite();
-			break;
-		}
-		case AbstractType::Aircraft:
-		{
-			if(pHouseTypeExt->EliteAircraft.Contains(pTechno->GetTechnoType()))
-				pTechno->Veterancy.SetElite();
-			break;
-		}
-		default:
-			break;
-	}
+	return 0;
+}
 
+DEFINE_HOOK(0x65E8D5, HouseClass_SendAirStrikePlanes_InitialElite, 0x6)
+{
+	GET(AircraftClass*, pPlane, EAX);
+	GET(AircraftTypeClass*, pPlaneType, EBP);
+
+	auto pHouseTypeExt = HouseTypeExt::Fetch(HouseClass::CurrentPlayer->Type);
+
+	if(pHouseTypeExt->EliteAircraft.Contains(pPlaneType))
+		SetElite(pPlane);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x446EE8, BuildingClass_Place_OccupantsInitialElite, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	for(auto pOccupant : pThis->Occupants)
+		SetElite(pOccupant);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D71A0, FootClass_Put_PassengersInitialElite, 0x6)
+{
+	GET(FootClass*, pFoot, ESI);
+
+	for(auto pPassenger = pFoot->Passengers.FirstPassenger; pPassenger ; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		SetElite(pPassenger);
+	
 	return 0;
 }
