@@ -1507,14 +1507,13 @@ msgid ""
 "techno lose 1 health."
 msgstr "修复了 `DeploysInto` 和 `UndeploysInto` 会让受损单位失去 1 点生命的 Bug。"
 
-#, fuzzy
 msgid ""
 "Fixed the issue that techno controlled by human player must end its "
 "movement before starting the next mission, which is mostly problematic "
 "for jumpjet and hover techno. Set `[General] -> "
 "ReadyToNextMission.MovingCheck` to true to disable the fix."
 msgstr ""
-"修复了单位在开始下一个任务前必须先停止移动的问题。它在 Jumpjet 和 Hover 单位上尤其突出。可通过将 `[General] -> "
+"修复了人类玩家操作的单位在开始下一个任务前必须先停止移动的问题。它在 Jumpjet 和 Hover 单位上尤其突出。可通过将 `[General] -> "
 "ReadyToNextMission.MovingCheck` 设为 true 以禁用修复。"
 
 msgid ""
