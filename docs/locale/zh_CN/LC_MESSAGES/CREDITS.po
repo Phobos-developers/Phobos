@@ -3303,7 +3303,7 @@ msgid "**Rise of the East community** - extensive playtesting of in-dev features
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
 msgid "**Sovietianqi**:"
-msgstr ""
+msgstr "**Sovietianqi**："
 
 msgid ""
 "Fix the issue where Ares' `Flash.Duration` cannot override the weapon's "
