@@ -976,6 +976,7 @@ msgid ""
 "[Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-"
 "idleactionfrequency) (by Noble_Fish)"
 msgstr ""
+"[自定义 `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency)（by Noble_Fish）"
 
 msgid ""
 "[Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-"

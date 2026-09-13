@@ -5630,20 +5630,24 @@ msgstr "现在 `HarvesterLoadRate` 可以在每个单位上自定义了。"
 
 msgid "Customize `IdleActionFrequency`"
 msgstr ""
+"自定义 `IdleActionFrequency`"
 
 msgid "Now `IdleActionFrequency` can be customized on each infantry."
 msgstr ""
+"现在 `IdleActionFrequency` 可以在每个步兵上自定义。"
 
 msgid ""
 "With a single value, the interval is a random value between "
 "`IdleActionFrequency * 450` and `IdleActionFrequency * 1800` frames, "
 "which customizes the frequency the same way the global value does."
 msgstr ""
+"如果只设置一个值，则间隔为 `IdleActionFrequency * 450` 到 `IdleActionFrequency * 1800` 帧之间的随机值，也就是原版全局语句的规则。"
 
 msgid ""
 "With two values, the first one directly sets the lower bound and the "
 "second one the upper bound of the random interval in frames."
 msgstr ""
+"如果设置两个值，则第一个值直接 **以帧为单位** 设置随机间隔的下限而第二个值设置上限。"
 
 msgid "Customize type selection for IFV"
 msgstr "自定义 IFV 的类型选择"

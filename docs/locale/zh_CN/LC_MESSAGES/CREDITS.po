@@ -2649,9 +2649,8 @@ msgid ""
 "parsing order caused game parsing failure and a warning in the log"
 msgstr "修复了 *国家层级生还者自定义* 未考虑解析顺序而使游戏解析失败并在 log 中警告的问题"
 
-#, fuzzy
 msgid "Customize `IdleActionFrequency`"
-msgstr "自定义 IFV 的类型选择"
+msgstr "自定义 `IdleActionFrequency`"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
