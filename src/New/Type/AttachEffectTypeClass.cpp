@@ -245,6 +245,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		this->RequiresRecalculation = false;
 	}
 
+	// RequiresAnimUpdate
+	if (this->Animation_HideIfAttachedWith.size() > 0 || this->Animation_DrawOffsets.size() > 0)
+		this->RequiresAnimUpdate = true;
+	else
+		this->RequiresAnimUpdate = false;
+
 	// RestrictedArmorMultiplier
 	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
 		this->RestrictedArmorMultiplier = true;
@@ -338,6 +344,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Groups)
 		.Process(this->Animation_DrawOffsets)
 		.Process(this->RequiresRecalculation)
+		.Process(this->RequiresAnimUpdate)
 		;
 }
 

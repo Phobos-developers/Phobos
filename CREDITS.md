@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
+  - Tiberium ramp expansion support, spread and growth crash fixes due to data corruption.
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -447,6 +448,7 @@ This page lists all the individual contributions to the project by their author.
   - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
+  - Enter the grinder voice
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -766,6 +768,7 @@ This page lists all the individual contributions to the project by their author.
   - Country-specific veteran buildings
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
+  - Customize `IdleActionFrequency`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

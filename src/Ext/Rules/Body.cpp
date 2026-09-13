@@ -1,6 +1,9 @@
 #include "Body.h"
 
 #include <cmath>
+#include <algorithm>
+
+#include <ScenarioClass.h>
 
 #include <Utilities/SequenceRates.h>
 
@@ -13,6 +16,8 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <TiberiumClass.h>
+#include <Ext/Tiberium/Body.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -29,6 +34,23 @@ void RulesExt::Remove(RulesClass* pThis)
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		const char* pSection = pTib->ID;
+		if (!pINI->GetSection(pSection))
+			continue;
+
+		pINI->GetInteger(pSection, "Spread", pTib->Spread);
+		pINI->GetDouble(pSection, "SpreadPercentage", pTib->SpreadPercentage);
+		pINI->GetInteger(pSection, "Growth", pTib->Growth);
+		pINI->GetDouble(pSection, "GrowthPercentage", pTib->GrowthPercentage);
+		pINI->GetInteger(pSection, "Value", pTib->Value);
+		pINI->GetInteger(pSection, "Power", pTib->Power);
+
+		if (const auto pTibExt = TiberiumExt::TryFetch(pTib))
+			pTibExt->LoadFromINIFile(pINI);
+	}
 }
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
