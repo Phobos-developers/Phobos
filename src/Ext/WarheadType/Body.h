@@ -33,6 +33,7 @@ public:
 	Valueable<bool> TransactMoney_Display_AtFirer;
 	Valueable<Point2D> TransactMoney_Display_Offset;
 	NullableVector<AnimTypeClass*> SplashList;
+	Nullable<int> SplashList_DamageDivider;
 	Valueable<bool> SplashList_PickRandom;
 	Valueable<bool> SplashList_CreateAll;
 	Valueable<int> SplashList_CreationInterval;
@@ -71,6 +72,7 @@ public:
 	Valueable<AffectedTarget> Crit_AffectsTarget;
 	Valueable<AffectedHouse> Crit_AffectsHouse;
 	ValueableVector<AnimTypeClass*> Crit_AnimList;
+	Nullable<int> Crit_AnimList_DamageDivider;
 	Nullable<bool> Crit_AnimList_PickRandom;
 	Nullable<bool> Crit_AnimList_CreateAll;
 	ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
@@ -78,7 +80,6 @@ public:
 	Valueable<double> Crit_AffectsBelowPercent;
 	Valueable<double> Crit_AffectsAbovePercent;
 	Nullable<bool> Crit_SuppressWhenIntercepted;
-	Nullable<int> Crit_AnimList_DamageDivider;
 
 	Valueable<WarheadTypeClass*> ReturnWarhead;
 	Valueable<int> ReturnWarhead_Damage;
@@ -314,6 +315,7 @@ public:
 		, TransactMoney_Display_AtFirer { false }
 		, TransactMoney_Display_Offset { { 0, 0 } }
 		, SplashList {}
+		, SplashList_DamageDivider {}
 		, SplashList_PickRandom { false }
 		, SplashList_CreateAll { false }
 		, SplashList_CreationInterval { 0 }
