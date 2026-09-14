@@ -216,6 +216,8 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
 
+	const int divider = pWHExt->Crit_AnimList_DamageDivider ? pWHExt->Crit_AnimList_DamageDivider : 25;
+
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size()
 		&& !pWHExt->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets))
 	{

@@ -3118,6 +3118,7 @@ Rocker.AmplitudeOverride=       ; integer
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water.
+  - By default animation from `SplashList` is acquired by dividing the weapon's delivered damage by `35` and truncating the result. Now this value can be customized per warhead by setting `SplashList.DamageDivider`.
   - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to these animations in same manner as the `AnimList` equivalents.
 - - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
@@ -3136,6 +3137,7 @@ AnimList.CreationInterval=0     ; integer
 AnimList.ScatterMin=0.0         ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
 AnimList.ScatterMax=            ; floating point value, distance in cells, default to 0.125 if [Projectile] -> Inviso=true, and 0 if false
 SplashList=                     ; List of AnimationTypes, default to [CombatDamage] -> SplashList
+SplashList.DamageDivider=         ; integer
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer

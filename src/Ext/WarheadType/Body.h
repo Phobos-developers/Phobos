@@ -78,6 +78,7 @@ public:
 	Valueable<double> Crit_AffectsBelowPercent;
 	Valueable<double> Crit_AffectsAbovePercent;
 	Nullable<bool> Crit_SuppressWhenIntercepted;
+	Nullable<int> Crit_AnimList_DamageDivider;
 
 	Valueable<WarheadTypeClass*> ReturnWarhead;
 	Valueable<int> ReturnWarhead_Damage;
@@ -358,6 +359,7 @@ public:
 		, Crit_AffectsBelowPercent { 1.0 }
 		, Crit_AffectsAbovePercent { 0.0 }
 		, Crit_SuppressWhenIntercepted {}
+		, Crit_AnimList_DamageDivider {}
 
 		, ReturnWarhead {}
 		, ReturnWarhead_Damage { 0 }
