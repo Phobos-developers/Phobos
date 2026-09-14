@@ -1206,6 +1206,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+	
+	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1850,6 +1852,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SpareCameoPCX)
 		.Process(this->SubterraneanSpeed)
 		.Process(this->SubterraneanHeight)
+
+		.Process(this->VoiceEnterGrinder)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
