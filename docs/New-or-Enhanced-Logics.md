@@ -1827,6 +1827,22 @@ Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
 ```
 
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses or [SOMECOUNTRY] -> RevealHouses
+```
+
 ### Custom tint on TechnoTypes
 
 - A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint.Intensity`.
@@ -2051,16 +2067,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]  ; TechnoType
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
-```
-
-### Enter the grinder voice
-
-- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-VoiceEnterGrinder=         ; Sound entry
 ```
 
 ### Exclusion from base center calculations
