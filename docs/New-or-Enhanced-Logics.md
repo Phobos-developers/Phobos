@@ -829,12 +829,15 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 - Now you can add `TechnoTypes` in the three lists. They will appear at an elite initial level when produced, and cloned infantry will also be affected by this effect.
 
+- Use `Elite.AffectsAll` to configure this. If it is `true`, any unit in the list that appears by any means will Initial elite; if it is `false`, it will only affect produced units, cloned units, initial garrisons of buildings, and initial passengers of vehicles.
+
 In `rulesmd.ini`:
 ```ini
 [SOMECOUNTRY]           ; Country
 EliteInfantry=          ; List of InfantryTypes
 EliteUnits=             ; List of UnitTypes
 EliteAircraft=          ; List of AircraftTypes
+Elite.AffectsAll=true   ; boolean
 ```
 
 - For each `TechnoType`, you can define `SpareCameo` and `SpareCameoPCX` to specify the elite‑level icon. When a `TechnoType` is added to the initial elite list, it will preferentially use the SpareCameo as its icon.

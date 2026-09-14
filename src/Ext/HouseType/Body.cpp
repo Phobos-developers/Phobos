@@ -27,6 +27,8 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->EliteInfantry.Read(exINI, pSection, "EliteInfantry");
 	this->EliteUnits.Read(exINI, pSection, "EliteUnits");
 	this->EliteAircraft.Read(exINI, pSection, "EliteAircraft");
+	this->Elite_AffectsAll.Read(exINI, pSection, "Elite.AffectsAll");
+
 	this->Crew.Read<true>(exINI, pSection, "Crew");
 
 	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
@@ -46,6 +48,8 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->EliteInfantry)
 		.Process(this->EliteUnits)
 		.Process(this->EliteAircraft)
+		.Process(this->Elite_AffectsAll)
+
 		.Process(this->VeteranBuildings)
 		.Process(this->VeteranDefenses)
 		;
