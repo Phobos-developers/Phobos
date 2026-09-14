@@ -441,6 +441,13 @@ public:
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
+	NullableIdx<VocClass> VoiceEnterGrinder;
+
+	Nullable<AffectedHouse> RevealHouses;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -846,7 +853,7 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
-		
+
 		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
@@ -854,6 +861,13 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
+
+		, RevealHouses {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

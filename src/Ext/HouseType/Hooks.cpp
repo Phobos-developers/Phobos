@@ -36,22 +36,45 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x707DCF, TechnoClass_GetCrew_NationalOverride, 0x5)
+// Ares has taken over TechnoClass_GetCrew, so usually it won't work.
+DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 {
-	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x707D81 };
 
-	if (!pThis)
-		return 0;
-
-	HouseClass* pHouse = pThis->Owner;
-
-	if (!pHouse)
-		return 0;
+	GET(HouseClass* const, pHouse, ECX);
 
 	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
 
 	if (pHouseTypeExt->Crew.isset())
-		R->EAX(pHouseTypeExt->Crew.Get());
+	{
+		R->ESI(pHouseTypeExt->Crew.Get());
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x442D1B, BuildingClass_Init_CountryBuildingVeteran, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	const auto pOwner = pThis->Owner;
+	if (!pOwner)
+		return 0;
+
+	const auto pType = pThis->Type;
+	if (!pType)
+		return 0;
+
+	const auto pCountryExt = HouseTypeExt::Fetch(pOwner->Type);
+
+	const bool isDefense = pType->BuildCat == BuildCat::Combat;
+	const auto& pVeteranList = isDefense
+		? pCountryExt->VeteranDefenses
+		: pCountryExt->VeteranBuildings;
+
+	if (pVeteranList.Contains(pType))
+		pThis->Veterancy.SetVeteran();
 
 	return 0;
 }

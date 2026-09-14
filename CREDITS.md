@@ -161,6 +161,9 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
+  - Tiberium ramp expansion support
+  - Fix crashes and freezes caused by Tiberium growth and spread
+  - Fix Tiberium types not supporting overrides in map and game mode INIs
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -446,6 +449,9 @@ This page lists all the individual contributions to the project by their author.
   - SkipMapSelect Enhancement
   - Add a global default value for `KeepAlive`
   - Customized transport plane for teams
+  - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
+  - Enter the grinder voice
+  - Customize the country displayed in `Sight`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -763,6 +769,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
+  - Country-specific veteran buildings
+  - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
+  - Customize `IdleActionFrequency`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -949,6 +959,9 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **Sovietianqi**:
+  - Fix the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect
+  - Customizable crew type per country
 - **11EJDE11**:
   - Prevent mpdebug number from being drawn when visibility toggled off
   - Keep Syringe open until the game exits (ported from Vinifera)
@@ -964,4 +977,3 @@ This page lists all the individual contributions to the project by their author.
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
-- **Sovietianqi** - Customizable crew type per country

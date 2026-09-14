@@ -487,7 +487,9 @@ void AttachEffectClass::CreateAnim()
 
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
-		this->ShouldUpdateAnim = true;
+
+		if (pType->RequiresAnimUpdate)
+			this->ShouldUpdateAnim = true;
 	}
 }
 
@@ -501,7 +503,14 @@ bool AttachEffectClass::UpdateCumulativeAnim(int count)
 	if (count < 1)
 	{
 		this->KillAnim();
-		return true;
+
+		if (this->ShouldUpdateAnim)
+		{
+			this->ShouldUpdateAnim = false;
+			return true;
+		}
+
+		return false;
 	}
 
 	const auto pType = this->Type;
@@ -1061,6 +1070,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	int detachedCount = 0;
 	bool markForRedraw = false;
 	bool requiresRecalc = false;
+	bool requiresAnimUpdate = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
 	auto const& maxCounts = attachEffectInfo.CumulativeRemoveMaxCounts;
 	size_t index = 0;
@@ -1079,6 +1089,9 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
+			if (pType->RequiresAnimUpdate)
+				requiresAnimUpdate = true;
+
 			if (pType->HasTint())
 				markForRedraw = true;
 		}
@@ -1090,10 +1103,12 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	if (detachedCount > 0)
 	{
 		const auto pExt = TechnoExt::Fetch(pTarget);
-		pExt->UpdateAEAnimDrawingLogic();
 
 		if (requiresRecalc)
 			pExt->RecalculateStatMultipliers();
+
+		if (requiresAnimUpdate)
+			pExt->UpdateAEAnimDrawingLogic();
 
 		if (markForRedraw)
 		{
@@ -1222,10 +1237,12 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		if (!isValid)
 		{
 			it = pSourceExt->AttachedEffects.erase(it);
-			requiresUpdateAnim = true;
 
 			if (type->RequiresRecalculation)
 				requiresRecalc = true;
+
+			if (type->RequiresAnimUpdate)
+				requiresUpdateAnim = true;
 
 			if (type->HasTint())
 				markForRedraw = true;
