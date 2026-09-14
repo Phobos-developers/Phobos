@@ -562,6 +562,8 @@ public:
 
 		Valueable<bool> AttachEffects_AttachOnOwnerChange;
 
+		Valueable<AffectedHouse> RevealHouses;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1057,6 +1059,8 @@ public:
 			, CustomSequenceNormalized(42, -1)
 
 			, AttachEffects_AttachOnOwnerChange { false }
+
+			, RevealHouses { AffectedHouse::Team }
 		{ }
 
 		virtual ~ExtData() = default;

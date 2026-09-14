@@ -1827,6 +1827,22 @@ Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
 ```
 
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses or [SOMECOUNTRY] -> RevealHouses
+```
+
 ### Custom tint on TechnoTypes
 
 - A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint.Intensity`.
