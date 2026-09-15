@@ -156,7 +156,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 
 	// Death by conditions out of this function
-	if (this->ShouldBeDead)
+	if (this->AutoDeathFlag == 1)
 	{
 		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 		return true;
@@ -184,9 +184,9 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	}
 
 	// Already checked and no need to be killed by owner conditions
-	if (this->ShouldNotBeDead)
+	if (this->AutoDeathFlag == -1)
 	{
-		this->ShouldNotBeDead = false;
+		this->AutoDeathFlag = 0;
 		return false;
 	}
 
@@ -205,7 +205,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -215,7 +215,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 			}
 		}
 	}
@@ -233,7 +233,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -243,7 +243,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 			}
 		}
 	}
@@ -280,7 +280,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -290,7 +290,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 			}
 		}
 	}
@@ -305,7 +305,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -315,7 +315,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			for (const auto pTarget : pTypeExt->Array)
 			{
 				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 			}
 		}
 	}

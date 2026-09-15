@@ -1202,8 +1202,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->ShouldBeDead)
-		.Process(this->ShouldNotBeDead)
+		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
 		;
 }
