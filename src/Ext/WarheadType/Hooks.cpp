@@ -193,7 +193,7 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
 
-	const int divider = pWHExt->SplashList_DamageDivider ? pWHExt->SplashList_DamageDivider : 35;
+	const int divider = pWHExt->SplashList_DamageDivider;
 	const int idx = pWHExt->SplashList_PickRandom
 		? ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1)
 		: std::min(animTypes.size() * divider - 1, (size_t)nDamage) / divider;
