@@ -33,6 +33,8 @@ public:
 		return static_cast<TechnoTypeClass*>(this->GetAttachedObject());
 	}
 
+	DynamicVectorClass<TechnoClass*> Array;
+
 	Valueable<bool> HealthBar_Hide;
 	Valueable<bool> HealthBar_HidePips;
 	Valueable<bool> HealthBar_Permanent;
@@ -471,6 +473,8 @@ public:
 	Nullable<bool> KeepAlive;
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, Array {}
+
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
 		, HealthBar_Permanent { false }

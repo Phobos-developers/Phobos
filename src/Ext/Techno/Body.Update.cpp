@@ -183,7 +183,70 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
+	// Already checked and no need to be killed by owner conditions
+	if (this->ShouldNotBeDead)
+	{
+		this->ShouldNotBeDead = false;
+		return false;
+	}
+
 	auto const pOwner = pThis->Owner;
+
+	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
+	{
+		const bool isLowPower = pOwner->HasLowPower();
+		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
+		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
+
+		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+			}
+
+			return true;
+		}
+		else
+		{
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+			}
+		}
+	}
+
+	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
+	{
+		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
+		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
+		const int currentMoney = pOwner->Available_Money();
+
+		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+			}
+
+			return true;
+		}
+		else
+		{
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+			}
+		}
+	}
 
 	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 		{
@@ -207,32 +270,6 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
-	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
-	{
-		const bool isLowPower = pOwner->HasLowPower();
-		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
-		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
-
-		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
-		{
-			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-			return true;
-		}
-	}
-
-	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
-	{
-		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
-		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
-		const int currentMoney = pOwner->Available_Money();
-
-		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
-		{
-			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-			return true;
-		}
-	}
-
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
@@ -240,7 +277,21 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+			}
+
 			return true;
+		}
+		else
+		{
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+			}
 		}
 	}
 
@@ -251,7 +302,21 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldBeDead = true;
+			}
+
 			return true;
+		}
+		else
+		{
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->ShouldNotBeDead = true;
+			}
 		}
 	}
 
