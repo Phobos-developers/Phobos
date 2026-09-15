@@ -448,6 +448,7 @@ HideShakeEffects=false           ; boolean
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
 - Customize the country displayed in `Sight` (by FlyStar)
+- Customizable damage divider for `AnimList`, `SplashList`, `Crit_AnimList` picker(by Fryone)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

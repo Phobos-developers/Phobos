@@ -162,11 +162,13 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->TransactMoney_Display_AtFirer.Read(exINI, pSection, "TransactMoney.Display.AtFirer");
 	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
 	this->SplashList.Read(exINI, pSection, "SplashList");
+	this->SplashList_DamageDivider.Read(exINI, pSection, "SplashList.DamageDivider");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
 	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
 	this->SplashList_ScatterMin.Read(exINI, pSection, "SplashList.ScatterMin");
 	this->SplashList_ScatterMax.Read(exINI, pSection, "SplashList.ScatterMax");
+	this->AnimList_DamageDivider.Read(exINI, pSection, "AnimList.DamageDivider");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
 	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
@@ -210,6 +212,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->Crit_AffectsHouse.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
+	this->Crit_AnimList_DamageDivider.Read(exINI, pSection, "Crit.AnimList.DamageDivider");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
@@ -570,11 +573,13 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->TransactMoney_Display_AtFirer)
 		.Process(this->TransactMoney_Display_Offset)
 		.Process(this->SplashList)
+		.Process(this->SplashList_DamageDivider)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->SplashList_CreateAll)
 		.Process(this->SplashList_CreationInterval)
 		.Process(this->SplashList_ScatterMin)
 		.Process(this->SplashList_ScatterMax)
+		.Process(this->AnimList_DamageDivider)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
 		.Process(this->AnimList_CreationInterval)
@@ -607,6 +612,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Crit_AffectsTarget)
 		.Process(this->Crit_AffectsHouse)
 		.Process(this->Crit_AnimList)
+		.Process(this->Crit_AnimList_DamageDivider)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimList_CreateAll)
 		.Process(this->Crit_ActiveChanceAnims)
