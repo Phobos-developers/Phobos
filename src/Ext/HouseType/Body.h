@@ -32,6 +32,11 @@ public:
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;
 
+	ValueableVector<InfantryTypeClass*> EliteInfantry;
+	ValueableVector<UnitTypeClass*> EliteUnits;
+	ValueableVector<AircraftTypeClass*> EliteAircraft;
+	Valueable<bool> Elite_AffectsAll;
+
 	ValueableVector<BuildingTypeClass*> VeteranBuildings;
 	ValueableVector<BuildingTypeClass*> VeteranDefenses;
 
@@ -42,6 +47,10 @@ public:
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
+		, EliteInfantry {}
+		, EliteUnits {}
+		, EliteAircraft {}
+		, Elite_AffectsAll { true }
 		, VeteranBuildings {}
 		, VeteranDefenses {}
 		, RevealHouses {}
