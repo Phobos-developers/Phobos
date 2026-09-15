@@ -16,6 +16,7 @@ void TechnoExt::OnEarlyUpdate()
 {
 	this->UpdateShield();
 	this->UpdateAttachEffects();
+	this->UpdatePassengerTurretWeapon();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
@@ -256,6 +257,28 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	}
 
 	return false;
+}
+
+void TechnoExt::UpdatePassengerTurretWeapon() const
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->PassengerTurret)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const int numPassengers = pThis->Passengers.NumPassengers;
+
+	if (pTypeExt->PassengerTurretWeapon)
+	{
+		const auto TechnoClass_SetTurret = reinterpret_cast<void(__thiscall*)(TechnoClass*, int)>(0x70DC70);
+		TechnoClass_SetTurret(pThis, numPassengers);
+	}
+	else
+	{
+		const auto pType = pTypeExt->OwnerObject();
+		pThis->CurrentTurretNumber = std::min(pType->TurretCount - 1, std::min(numPassengers, TechnoTypeClass::MaxWeapons - 1));
+	}
 }
 
 void TechnoExt::EatPassengers()
