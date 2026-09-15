@@ -55,7 +55,7 @@ bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno, TechnoType
 					return false;
 			}
 
-			return this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pType);
+			return true;
 		}
 	}
 
@@ -116,7 +116,7 @@ bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 bool SWTypeExt::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const
 {
 	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
-		return this->SW_AnyDesignator || this->SW_Designators.Contains(pType);
+		return true;
 
 	return false;
 }
