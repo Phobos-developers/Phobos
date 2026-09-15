@@ -130,19 +130,19 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				switch (pTargetType->WhatAmI())
 				{
 				case AbstractType::Building:
-					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) != AffectedTarget::None)
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) == AffectedTarget::None)
 						validTarget = false;
 					break;
 				case AbstractType::Infantry:
-					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) != AffectedTarget::None)
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) == AffectedTarget::None)
 						validTarget = false;
 					break;
 				case AbstractType::Unit:
-					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) != AffectedTarget::None)
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) == AffectedTarget::None)
 						validTarget = false;
 					break;
 				case AbstractType::Aircraft:
-					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) != AffectedTarget::None)
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) == AffectedTarget::None)
 						validTarget = false;
 					break;
 				}
