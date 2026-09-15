@@ -191,6 +191,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	}
 
 	auto const pOwner = pThis->Owner;
+	bool needUpdate = false;
 
 	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
 	{
@@ -210,14 +211,8 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			return true;
 		}
-		else
-		{
-			for (const auto pTarget : pTypeExt->Array)
-			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
-			}
-		}
+
+		needUpdate = true;
 	}
 
 	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
@@ -238,14 +233,8 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			return true;
 		}
-		else
-		{
-			for (const auto pTarget : pTypeExt->Array)
-			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
-			}
-		}
+
+		needUpdate = true;
 	}
 
 	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
@@ -285,14 +274,8 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			return true;
 		}
-		else
-		{
-			for (const auto pTarget : pTypeExt->Array)
-			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
-			}
-		}
+
+		needUpdate = true;
 	}
 
 	// death if listed technos exist
@@ -310,13 +293,16 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			return true;
 		}
-		else
+
+		needUpdate = true;
+	}
+
+	if (needUpdate)
+	{
+		for (const auto pTarget : pTypeExt->Array)
 		{
-			for (const auto pTarget : pTypeExt->Array)
-			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
-			}
+			if (pTarget->Owner == pOwner)
+				TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 		}
 	}
 
