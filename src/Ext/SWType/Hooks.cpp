@@ -62,30 +62,40 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 	if (!pExt->ShowDesignatorRange)
 		return 0;
 
-	for (const auto pCurrentTechno : TechnoClass::Array)
+	for (const auto pCurrentTechnoType : TechnoTypeClass::Array)
 	{
-		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
-		const auto pOwner = pCurrentTechno->Owner;
-
-		if (!pCurrentTechno->IsAlive
-			|| pCurrentTechno->InLimbo
-			|| (pOwner != HouseClass::CurrentPlayer && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))                  // Ally objects are never designators or inhibitors
-			|| (pOwner == HouseClass::CurrentPlayer && !pExt->SW_Designators.Contains(pCurrentTechnoType))               // Only owned objects can be designators
-			|| (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !pExt->SW_Inhibitors.Contains(pCurrentTechnoType)))  // Only enemy objects can be inhibitors
-		{
-			continue;
-		}
-
 		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pCurrentTechnoType);
+		const bool hasDesignator = pExt->SW_Designators.Contains(pCurrentTechnoType);
+		const bool hasInhibitor = pExt->SW_Inhibitors.Contains(pCurrentTechnoType);
 
-		const float radius = pOwner == HouseClass::CurrentPlayer
-			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
-			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+		if (hasDesignator || hasInhibitor)
+		{
+			for (const auto pCurrentTechno : pTechnoTypeExt->Array)
+			{
+				if (!pCurrentTechno->IsAlive || pCurrentTechno->InLimbo)
+					continue;
 
-		CoordStruct coords = pCurrentTechno->GetCenterCoords();
-		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
-		const auto color = pOwner->Color;
-		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+				const auto pOwner = pCurrentTechno->Owner;
+				const bool currentPlayer = pOwner == HouseClass::CurrentPlayer;
+				const bool isAllied = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
+
+				if ((!currentPlayer && isAllied)         // Ally objects are never designators or inhibitors
+					|| (currentPlayer && !hasDesignator) // Only owned objects can be designators
+					|| (!isAllied && !hasInhibitor))     // Only enemy objects can be inhibitors
+				{
+					continue;
+				}
+
+				const float radius = currentPlayer
+					? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
+					: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+
+				CoordStruct coords = pCurrentTechno->GetCenterCoords();
+				coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+				const auto color = pOwner->Color;
+				Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+			}
+		}
 	}
 
 	return 0;
