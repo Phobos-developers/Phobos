@@ -111,6 +111,9 @@
     <!-- src\Ext\Infantry -->
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
+    <!-- src\Ext\LaserDraw -->
+    <ClCompile Include="src\Ext\LaserDraw\Body.cpp" />
+    <ClCompile Include="src\Ext\LaserDraw\Hooks.cpp" />
     <!-- src\Ext\OverlayType -->
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
@@ -354,6 +357,7 @@
     <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\Ext\House\Body.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
+    <ClInclude Include="src\Ext\LaserDraw\Body.h" />
     <ClInclude Include="src\Ext\OverlayType\Body.h" />
     <ClInclude Include="src\Ext\ParticleSystemType\Body.h" />
     <ClInclude Include="src\Ext\ParticleType\Body.h" />
