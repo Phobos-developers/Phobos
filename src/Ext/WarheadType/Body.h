@@ -39,7 +39,7 @@ public:
 	Valueable<int> SplashList_CreationInterval;
 	Valueable<Leptons> SplashList_ScatterMin;
 	Valueable<Leptons> SplashList_ScatterMax;
-	Nullable<int> AnimList_DamageDivider;
+	Valueable<int> AnimList_DamageDivider;
 	Valueable<bool> AnimList_PickRandom;
 	Valueable<bool> AnimList_CreateAll;
 	Valueable<int> AnimList_CreationInterval;
