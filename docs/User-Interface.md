@@ -654,6 +654,125 @@ In `uimd.ini`:
 DisableEmptySpawnPositions=false  ; boolean
 ```
 
+## Mission selection screen
+
+- In vanilla Yuri's Revenge, branching campaign progression was disabled and skipped. Now you can use the Tiberian Sun interactive mission selection screen between campaign missions with full support for territory hover zones, mission briefings, voiceovers, video cutscenes, overlay animations, target cursors, and soundtrack themes.
+  - Configuration is read from `mapselmd.ini`.
+  - `[Sides]` and faction sections map the player's side/house to campaign stages.
+  - Each stage section defines the map background, videos, animations, target coordinates, sounds, and selectable mission choices.
+  - `MapVQ` specifies the introductory cutscene movie or video background.
+  - `Map` specifies an optional static background SHP image.
+  - `MapPCX` specifies an optional static background PCX image (taking precedence over `Map`).
+  - `Palette` specifies the palette used for UI rendering and animations (defaults to `mapsel.pal`).
+  - `OverlayPalette` specifies the palette used for territory overlay rendering (defaults to `msovrly.pal`).
+  - `Overlays` specifies a comma-separated list of territory overlay SHP files that sweep into the map after the intro video.
+  - `OverlaysPCX` specifies a comma-separated list of PCX overlay files (taking precedence over `Overlays`).
+  - `Targets` defines the count and (X,Y) coordinates of animated mission target crosshairs on the map.
+  - `TargetFlyInAnim` specifies the target zoom-in SHP animation (defaults to `TARGET1.SHP`).
+  - `TargetFlyInAnimPCX` specifies a base PCX filename for the target zoom-in animation (declaring `TARGET1.PCX` or `TARGET1 0000.PCX` automatically loads the sequence of frame files `TARGET1 0000.PCX`, `TARGET1 0001.PCX`, etc., taking precedence over `TargetFlyInAnim`).
+  - `TargetMarkerAnim` specifies the target crosshair marker SHP animation (defaults to `TARGET2.SHP`). The first half of the file's total frames are looped while the target is in idle state, and the second half of the frames are looped while the cursor hovers over the corresponding region.
+  - `TargetMarkerAnimPCX` specifies a base PCX filename for the target crosshair marker animation (declaring `TARGET2.PCX` or `TARGET2 0000.PCX` automatically loads the sequence of frame files `TARGET2 0000.PCX`, `TARGET2 0001.PCX`, etc., taking precedence over `TargetMarkerAnim`). Just like the SHP version, the first half of frames are looped in idle and the second half in hover.
+  - `Anim<N>` defines stage-specific decorative SHP animations (`<file.shp>,<x>,<y>,<delay>[,<palette.pal>]`) on the map interface (logos, radar sweeps, spinning globes, beacons). An optional custom palette filename can be provided (defaulting to `Palette`).
+  - `[Anims]` defines global SHP animations shared across all stages (`<index>=<file.shp>,<x>,<y>,<delay>[,<palette.pal>]`). An optional custom palette filename can be provided (defaulting to `Palette`).
+  - `[Anims<SideIndex>]` / `[Anims<SideName>]` defines side-specific global SHP animations (which can also be referenced via `Anims=` under `[SOMESIDE]`, or declared directly as `Anim<N>` inside `[SOMESIDE]`).
+  - `[AnimsPCX]` defines global multi-frame PCX animations shared across all stages (`<index>=<base.pcx>,<x>,<y>,<delay>`).
+  - `[Anims<SideIndex>PCX]` / `[Anims<SideName>PCX]` defines side-specific global multi-frame PCX animations (which can also be referenced via `AnimsPCX=` under `[SOMESIDE]`, or declared directly as `Anim<N>PCX` inside `[SOMESIDE]`).
+  - `ClickMap` specifies an 8-bit indexed 256-color PCX mask image. Color indices `0` and `255` represent non-clickable background areas (oceans, borders, or transparent zones), while palette color indices `1` through `254` represent clickable territory zones (referenced by `<mask's color index>=`).
+  - `<mask's color index>=<StageName>` binds a palette color index from the `ClickMap` PCX to a mission choice section (e.g. `3=NODB03` and `4=NODA03`). When the player hovers over pixels painted with palette color index `3`, the game highlights and displays the briefing for `[NODB03]`, and launches its scenario upon clicking. Up to 254 unique clickable territory zones per screen are supported.
+  - `Sounds` specifies an external sound configuration section (e.g. `Sounds=GDISFX` or `Sounds=NODSFX`). This allows centralizing and sharing a common sound palette across multiple stages or sides instead of repeating audio tags in every stage section. Individual stages can still override any sound locally.
+  - `[Sounds]` defines optional global sound effects shared across all sides.
+  - `[Sounds<SideIndex>]` / `[Sounds<SideName>]` defines optional side-specific global sound effects (e.g. `[Sounds0]` or `[SoundsGDI]`).
+  - All sound tags support an optional volume percentage suffix: `<sound_name_or_file>[,<volume_percent>]` (e.g. `BESTBOX.WAV,75` or `EFFICIEN.WAV,40`). Volume defaults to 100% if omitted.
+  - Sound tags accept either a sound entry ID from `soundmd.ini` or a direct WAV filename (from disk or `.MIX` archives). Specifying an explicit `.wav` extension prioritizes searching for the standalone audio file, whereas omitting the extension prioritizes looking up the sound ID in `soundmd.ini` (falling back to `<name>.wav` if not found).
+  - `VoiceOver` defines the spoken audio brief played when hovering over a mission choice (supports WAV filename or sound ID, with optional volume).
+  - `EnterRegion` defines the sound played when entering/hovering over a territory.
+  - `ClickRegion` defines the sound played when confirming a mission selection.
+  - `Overlay` defines the sound played during the territory overlay sweep.
+  - `TargetFlyIn` defines the sound played during target crosshair zoom-in animation.
+  - `ExitRegion` defines the sound played when cursor exits a territory.
+  - `MouseOnMapSound` / `MouseOffMapSound` defines sounds played when cursor enters or leaves the map window.
+  - `Theme` specifies an optional soundtrack theme played during map selection (silent by default unless specified).
+  - `TypeSound` specifies the typing sound effect from `soundmd.ini` (e.g. `TypeSound=TextBleep` or `TypeSound=none` to disable; defaults to `TextBleep`).
+  - `TextColor` specifies the text color (`R,G,B`) for the mission briefing (defaults to the active side's `MessageTextColor` in `rulesmd.ini`, or the country's `Color` scheme, falling back to white).
+  - `TextRect` specifies an optional custom bounding rectangle (`<x>,<y>,<width>,<height>`) for the mission briefing text, relative to the map window (defaults to `92,322,332,78` matching Tiberian Sun's HUD plate).
+  - `Description` specifies the CSF string key or text for the mission briefing, displayed in the metallic briefing panel with automatic multi-line word wrapping and typewriter animation.
+
+In `mapselmd.ini`:
+```ini
+[Sides]
+<index>=                                 ; Side
+
+[SOMESIDE]                               ; Side
+<index>=                                 ; Stage
+Sounds=                                  ; Section name
+Anims=                                   ; Section name
+AnimsPCX=                                ; Section name
+Anim<N>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+Anim<N>PCX=                              ; Animation PCX (base.pcx,x,y,delay)
+
+[Sounds]                                 ; Optional global sound effects for all sides
+TargetFlyIn=                             ; Sound ID or WAV filename[,volume]
+Overlay=                                 ; Sound ID or WAV filename[,volume]
+EnterRegion=                             ; Sound ID or WAV filename[,volume]
+ExitRegion=                              ; Sound ID or WAV filename[,volume]
+ClickRegion=                             ; Sound ID or WAV filename[,volume]
+MouseOnMapSound=                         ; Sound ID or WAV filename[,volume]
+MouseOffMapSound=                        ; Sound ID or WAV filename[,volume]
+TypeSound=                               ; Sound ID or WAV filename[,volume]
+
+[Sounds<SideIndex>]                      ; Optional global sound effects for a specific side
+TargetFlyIn=                             ; Sound ID or WAV filename[,volume]
+Overlay=                                 ; Sound ID or WAV filename[,volume]
+EnterRegion=                             ; Sound ID or WAV filename[,volume]
+ExitRegion=                              ; Sound ID or WAV filename[,volume]
+ClickRegion=                             ; Sound ID or WAV filename[,volume]
+
+[SOMESTAGE]                              ; Stage
+Scenario=                                ; Scenario filename
+Description=                             ; CSF label or text
+Map=                                     ; SHP filename
+MapPCX=                                  ; PCX filename
+Palette=mapsel.pal                       ; Palette filename
+OverlayPalette=msovrly.pal               ; Palette filename
+MapVQ=                                   ; video filename
+Overlays=                                ; list of SHP filenames
+OverlaysPCX=                             ; list of PCX filenames
+Targets=                                 ; integer, point list
+TargetFlyInAnim=TARGET1.SHP              ; SHP filename
+TargetFlyInAnimPCX=                      ; PCX filename
+TargetMarkerAnim=TARGET2.SHP             ; SHP filename
+TargetMarkerAnimPCX=                     ; PCX filename
+ClickMap=                                ; PCX filename
+Theme=                                   ; Soundtrack theme ID
+Sounds=                                  ; Section name
+VoiceOver=                               ; Sound ID or WAV filename[,volume]
+Overlay=                                 ; Sound ID or WAV filename[,volume]
+TargetFlyIn=                             ; Sound ID or WAV filename[,volume]
+EnterRegion=                             ; Sound ID or WAV filename[,volume]
+ClickRegion=                             ; Sound ID or WAV filename[,volume]
+ExitRegion=                              ; Sound ID or WAV filename[,volume]
+MouseOnMapSound=                         ; Sound ID or WAV filename[,volume]
+MouseOffMapSound=                        ; Sound ID or WAV filename[,volume]
+TypeSound=                               ; Sound ID or WAV filename[,volume]
+TextColor=<side MessageTextColor/Color>  ; ColorStruct (R,G,B)
+TextRect=92,322,332,78                   ; Rectangle (x,y,width,height)
+Anim<N>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+Anim<N>PCX=                              ; Animation PCX (base.pcx,x,y,delay)
+<mask's color index>=                    ; Choice Stage
+
+[Anims]                                  ; Optional global SHP animations for all sides
+<index>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+
+[Anims<SideIndex>]                       ; Optional global SHP animations for a specific side
+<index>=                                 ; Animation SHP (file.shp,x,y,delay[,palette.pal])
+
+[AnimsPCX]                               ; Optional global PCX animations for all sides
+<index>=                                 ; Animation PCX (base.pcx,x,y,delay)
+
+[Anims<SideIndex>PCX]                    ; Optional global PCX animations for a specific side
+<index>=                                 ; Animation PCX (base.pcx,x,y,delay)
+```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
