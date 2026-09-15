@@ -361,7 +361,7 @@ public:
 		, Crit_AffectsBelowPercent { 1.0 }
 		, Crit_AffectsAbovePercent { 0.0 }
 		, Crit_SuppressWhenIntercepted {}
-		, Crit_AnimList_DamageDivider {}
+		, Crit_AnimList_DamageDivider { 25 }
 
 		, ReturnWarhead {}
 		, ReturnWarhead_Damage { 0 }
