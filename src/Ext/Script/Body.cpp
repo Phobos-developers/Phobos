@@ -216,6 +216,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
+	case PhobosScripts::RepairDestroyedBridge:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::RepairDestroyedBridge(pTeam, -1);
+		break;
 	case PhobosScripts::ForceGlobalOnlyTargetHouseEnemy:
 		ScriptExt::ForceGlobalOnlyTargetHouseEnemy(pTeam, -1);
 		break;
