@@ -1454,6 +1454,8 @@ template <typename T>
 void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Array)
+
 		.Process(this->HealthBar_Hide)
 		.Process(this->HealthBar_HidePips)
 		.Process(this->HealthBar_Permanent)

@@ -120,36 +120,77 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				}
 			};
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) != AffectedTarget::None)
+		// quick calculation if DetonateOnAllMapObjects.AffectTypes is set
+		if (pWHExt->DetonateOnAllMapObjects_AffectTypes.size() > 0)
 		{
-			auto const aircraft = copy_dvc(AircraftClass::Array);
+			for (auto const pTargetType : pWHExt->DetonateOnAllMapObjects_AffectTypes)
+			{
+				bool validTarget = true;
 
-			for (auto const pAircraft : aircraft)
-				tryDetonate(pAircraft, pAircraft->Type);
+				switch (pTargetType->WhatAmI())
+				{
+				case AbstractType::Building:
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) == AffectedTarget::None)
+						validTarget = false;
+					break;
+				case AbstractType::Infantry:
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) == AffectedTarget::None)
+						validTarget = false;
+					break;
+				case AbstractType::Unit:
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) == AffectedTarget::None)
+						validTarget = false;
+					break;
+				case AbstractType::Aircraft:
+					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) == AffectedTarget::None)
+						validTarget = false;
+					break;
+				}
+
+				if (!validTarget)
+					continue;
+
+				auto const items = copy_dvc(TechnoTypeExt::Fetch(pTargetType)->Array);
+
+				for (auto const pTarget : items)
+				{
+					tryDetonate(pTarget, pTargetType);
+				}
+			}
 		}
-
-		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) != AffectedTarget::None)
+		else
 		{
-			auto const buildings = copy_dvc(BuildingClass::Array);
+			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				auto const aircraft = copy_dvc(AircraftClass::Array);
 
-			for (auto const pBuilding : buildings)
-				tryDetonate(pBuilding, pBuilding->Type);
-		}
+				for (auto const pAircraft : aircraft)
+					tryDetonate(pAircraft, pAircraft->Type);
+			}
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) != AffectedTarget::None)
-		{
-			auto const infantry = copy_dvc(InfantryClass::Array);
+			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				auto const buildings = copy_dvc(BuildingClass::Array);
 
-			for (auto const pInf : infantry)
-				tryDetonate(pInf, pInf->Type);
-		}
+				for (auto const pBuilding : buildings)
+					tryDetonate(pBuilding, pBuilding->Type);
+			}
 
-		if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) != AffectedTarget::None)
-		{
-			auto const units = copy_dvc(UnitClass::Array);
+			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				auto const infantry = copy_dvc(InfantryClass::Array);
 
-			for (auto const pUnit : units)
-				tryDetonate(pUnit, pUnit->Type);
+				for (auto const pInf : infantry)
+					tryDetonate(pInf, pInf->Type);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				auto const units = copy_dvc(UnitClass::Array);
+
+				for (auto const pUnit : units)
+					tryDetonate(pUnit, pUnit->Type);
+			}
 		}
 
 		pThis->Target = pOriginalTarget;
