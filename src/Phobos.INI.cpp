@@ -78,6 +78,17 @@ int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
 bool Phobos::Config::SelectCapturedCommand = false;
+bool Phobos::Config::AllowSwitchNoMoveCommand = false;
+bool Phobos::Config::AllowDistributionCommand = false;
+bool Phobos::Config::AllowDistributionSpreadHotkey = true;
+bool Phobos::Config::AllowDistributionSpreadScroll = true;
+bool Phobos::Config::AllowDistributionSpreadDrag = true;
+bool Phobos::Config::AllowDistributionUseClick = true;
+bool Phobos::Config::AllowDistributionFilterHotkey = true;
+bool Phobos::Config::ApplyNoMoveCommand = true;
+unsigned int Phobos::Config::DistributionSpreadRange = 2048;
+unsigned int Phobos::Config::DistributionSpreadScrollStep = 256;
+int Phobos::Config::DistributionFilterMode = 2;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -115,6 +126,20 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 	Phobos::Config::ShowGameTime = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowGameTime", false);
 	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
+
+	Phobos::Config::ApplyNoMoveCommand = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DefaultApplyNoMoveCommand", true);
+	Phobos::Config::DistributionSpreadRange = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionSpreadRange", 2048));
+	Phobos::Config::DistributionSpreadRange = std::clamp(Phobos::Config::DistributionSpreadRange, 0u, 5120u);
+	Phobos::Config::DistributionSpreadScrollStep = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DistributionSpreadScrollStep", 256));
+	Phobos::Config::DistributionSpreadScrollStep = std::max(Phobos::Config::DistributionSpreadScrollStep, 16u);
+	Phobos::Config::DistributionFilterMode = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionFilterMode", 2);
+	Phobos::Config::DistributionFilterMode = std::clamp(Phobos::Config::DistributionFilterMode, 0, 3);
+
+	Phobos::Config::AllowDistributionSpreadHotkey = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadHotkey", true);
+	Phobos::Config::AllowDistributionSpreadScroll = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadScroll", true);
+	Phobos::Config::AllowDistributionSpreadDrag = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadDrag", true);
+	Phobos::Config::AllowDistributionUseClick = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionUseClick", true);
+	Phobos::Config::AllowDistributionFilterHotkey = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionFilterHotkey", true);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);
@@ -299,6 +324,9 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
+
+	Phobos::Config::AllowSwitchNoMoveCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowSwitchNoMoveCommand", Phobos::Config::AllowSwitchNoMoveCommand);
+	Phobos::Config::AllowDistributionCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommand", Phobos::Config::AllowDistributionCommand);
 
 	return 0;
 }
