@@ -240,7 +240,7 @@ DEFINE_HOOK(0x48A5EB, SelectDamageAnimation_AnimList_CustomCoefficient, 0x7)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
 
-	const int divider = pWHExt->AnimList_DamageDivider ? pWHExt->AnimList_DamageDivider : 25;
+	const int divider = pWHExt->AnimList_DamageDivider;
 	const int idx = std::min((size_t)(pThis->AnimList.Count * divider - 1), (size_t)nDamage) / divider;
 
 	R->EAX(pThis->AnimList.GetItemOrDefault(idx));
