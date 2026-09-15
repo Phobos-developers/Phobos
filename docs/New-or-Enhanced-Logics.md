@@ -1827,6 +1827,22 @@ Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
 ```
 
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses or [SOMECOUNTRY] -> RevealHouses
+```
+
 ### Custom tint on TechnoTypes
 
 - A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint.Intensity`.
@@ -2051,16 +2067,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]  ; TechnoType
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
-```
-
-### Enter the grinder voice
-
-- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-VoiceEnterGrinder=         ; Sound entry
 ```
 
 ### Exclusion from base center calculations
@@ -3167,6 +3173,31 @@ PlayAnimUnderground=true              ; boolean
 PlayAnimAboveSurface=false            ; boolean
 ```
 
+### Detonate ivan bomb on impact
+
+![image](_static/images/IvanBombDetonate.gif)
+*Ivan detonated the bomb via deploy*
+
+- Now you can detonate planted Ivan bombs using custom werhead.
+  - `IvanBomb.Detonate.SameInvokerOnly` can be used to configure whether the warhead can detonate ivan bombs only if they come from the same invoker.
+  - `IvanBomb.Detonate.PenetratesTransport` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
+  - `IvanBomb.Detonate.PenetratesGarrison` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
+  - `IvanBomb.Detonate.AffectTypes` can be used to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                ; WarheadType
+IvanBomb.Detonate=false                      ; boolean
+IvanBomb.Detonate.SameInvokerOnly=true       ; boolean
+IvanBomb.Detonate.PenetratesTransport=false  ; boolean
+IvanBomb.Detonate.PenetratesGarrison=false   ; boolean
+IvanBomb.Detonate.AffectTypes=               ; List of TechnoTypes
+```
+
+```{note}
+`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. This may change in future.
+```
+
 ### Detonate Warhead on all objects on map
 
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
@@ -3567,7 +3598,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                               ; WarheadType
 IvanBomb.Detonate=false                     ; boolean
-IvanBomb.Detonate.AffectsInvokerOnly=true   ; boolean
+IvanBomb.Detonate.SameInvokerOnly=true      ; boolean
 IvanBomb.Detonate.PenetratesTransport=false ; boolean
 IvanBomb.Detonate.PenetratesGarrison=false  ; boolean
 IvanBomb.Detonate.AffectParasite=false      ; boolean

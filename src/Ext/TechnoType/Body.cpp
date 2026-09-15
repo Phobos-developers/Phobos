@@ -1204,6 +1204,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
 
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
+
 	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 	
@@ -1842,6 +1844,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+			
+		.Process(this->RevealHouses)
 
 		.Process(this->SubterraneanSpeed)
 		.Process(this->SubterraneanHeight)

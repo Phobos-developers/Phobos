@@ -332,8 +332,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 - Observer can see IvanBomb that's attached by any house.
-- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (`PriorityQueueClassNode`), where extensive Tiberium expansion on large maps corrupted memory and crashed the game.
-- Fixed Tiberium growth and spread queues stalling/freezing when queued cells fail to expand or are temporarily blocked.
+- Fixed crashes and freezes caused by Tiberium growth and spread.
 
 ## Fixes / interactions with other extensions
 
@@ -1565,6 +1564,16 @@ VeteranDefenses=        ; List of BuildingTypes
 Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
 ```
 
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=                    ; InfantryType, defaults to [Side] -> Crew
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry
@@ -2058,15 +2067,6 @@ Insignia.ShowEnemy=                                         ; boolean, defaults 
 ```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
 ```
-### Customizable crew type per country
-
-- You can now define `Crew` on a per-country basis.
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]            ; Country
-Crew=E1              ; InfantryType
-```
 
 ### Customizable wake anim
 
@@ -2261,6 +2261,16 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 
 ```{note}
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+```
+
+### Enter the grinder voice
+
+- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+VoiceEnterGrinder=         ; Sound entry
 ```
 
 ### Exploding object customizations
@@ -2691,15 +2701,14 @@ In `rulesmd.ini`:
 MinimapColor=  ; integer - Red,Green,Blue
 ```
 
-### Ramp expansion support
+### Grow and spread on slopes
 
-- In vanilla, Tiberium is hardcoded not to germinate, grow, or spread onto ramp/slope cells (slopes 1-4), and any ore on ramps is cleared during cell recalculation. Setting `AllowRamps=yes` allows the resource to naturally expand, grow, and spread across cardinal slope ramps.
-	- `AllowRamps` determines whether this Tiberium type is allowed to germinate from spawners, increase growth stages, and spread onto cardinal ramp cells (slopes 1..4).
+- In vanilla, Tiberium is hardcoded to be unable to grow and spread on slopes; even if forcibly placed, it will be cleared. Now you can customize it.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEORE]        ; Tiberium
-AllowRamps=false ; boolean
+[SOMEORE]         ; Tiberium
+AllowRamps=false  ; boolean
 ```
 
 ## Vehicles

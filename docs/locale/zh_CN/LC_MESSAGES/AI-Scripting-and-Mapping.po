@@ -108,6 +108,9 @@ msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以�
 msgid "Restored the ScriptType action#24 `Play speech` from Tiberian Sun."
 msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
 
+msgid "Fixed Tiberium types not supporting overrides in map and game mode INIs."
+msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题。"
+
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"
 
