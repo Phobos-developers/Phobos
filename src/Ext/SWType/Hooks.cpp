@@ -62,11 +62,21 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 	if (!pExt->ShowDesignatorRange)
 		return 0;
 
+	const auto& designators = pExt->SW_Designators;
+	const auto& inhibitors = pExt->SW_Inhibitors;
+	const bool anyDesignator = pExt->SW_AnyDesignator;
+	const bool anyInhibitor = pExt->SW_AnyInhibitor;
+
+	if (designators.empty() && !anyDesignator && inhibitors.empty() && !anyInhibitor)
+		return 0;
+
 	for (const auto pCurrentTechnoType : TechnoTypeClass::Array)
 	{
 		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pCurrentTechnoType);
-		const bool hasDesignator = pExt->SW_Designators.Contains(pCurrentTechnoType);
-		const bool hasInhibitor = pExt->SW_Inhibitors.Contains(pCurrentTechnoType);
+		const float designatorRange = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
+		const float inhibitorRange = (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+		const bool hasDesignator = (anyDesignator || designators.Contains(pCurrentTechnoType)) && designatorRange;
+		const bool hasInhibitor = (anyInhibitor || inhibitors.Contains(pCurrentTechnoType)) && inhibitorRange;
 
 		if (hasDesignator || hasInhibitor)
 		{
@@ -76,20 +86,17 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 					continue;
 
 				const auto pOwner = pCurrentTechno->Owner;
-				const bool currentPlayer = pOwner == HouseClass::CurrentPlayer;
+				const bool isCurrentPlayer = pOwner == HouseClass::CurrentPlayer;
 				const bool isAllied = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
 
-				if ((!currentPlayer && isAllied)         // Ally objects are never designators or inhibitors
-					|| (currentPlayer && !hasDesignator) // Only owned objects can be designators
+				if ((!isCurrentPlayer && isAllied)         // Ally objects are never designators or inhibitors
+					|| (isCurrentPlayer && !hasDesignator) // Only owned objects can be designators
 					|| (!isAllied && !hasInhibitor))     // Only enemy objects can be inhibitors
 				{
 					continue;
 				}
 
-				const float radius = currentPlayer
-					? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
-					: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
-
+				const float radius = isCurrentPlayer ? designatorRange : inhibitorRange;
 				CoordStruct coords = pCurrentTechno->GetCenterCoords();
 				coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 				const auto color = pOwner->Color;
