@@ -4,6 +4,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Side/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <unordered_set>
@@ -167,6 +168,9 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 		}
 
+		if (pBuildingExt->GetTypeExtData()->NewEvaVoice_Tag >= 0)
+			SideExt::UpdateMainEvaVoice(pBuilding);
+
 	}
 }
 
@@ -258,6 +262,11 @@ void SWTypeExt::ApplyLimboKill(HouseClass* pHouse)
 		pBuilding->Stun();
 		pBuilding->Limbo();
 		pBuilding->RegisterDestruction(nullptr);
+
+		auto const pBldTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+		if (pBldTypeExt->NewEvaVoice_Tag >= 0 && pBldTypeExt->NewEvaVoice_RecheckOnDeath)
+			SideExt::UpdateMainEvaVoice(pBuilding);
+
 		pBuilding->UnInit();
 	}
 }

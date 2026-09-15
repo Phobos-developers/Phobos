@@ -6,6 +6,9 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Side/Body.h>
+#include <TacticalClass.h>
+#include <PlanningTokenClass.h>
 
 #pragma region Update
 
@@ -317,10 +320,13 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
 
+	GET(BuildingClass* const, pThis, ESI);
+
+	if (BuildingTypeExt::Fetch(pThis->Type)->NewEvaVoice_Tag >= 0)
+		SideExt::UpdateMainEvaVoice(pThis);
+
 	if (SessionClass::IsCampaign())
 	{
-		GET(BuildingClass* const, pThis, ESI);
-
 		// Preplaced structures are already managed before
 		if (BuildingExt::Fetch(pThis)->IsCreatedFromMapFile)
 			return SkipSetShouldRebuild;
@@ -408,6 +414,9 @@ DEFINE_HOOK(0x448A78, BuildingClass_SetOwningHouse_RemoveOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pOwner);
 
+	if (pTypeExt->NewEvaVoice_Tag >= 0 && pTypeExt->NewEvaVoice_RecheckOnDeath)
+		SideExt::UpdateMainEvaVoice(pThis, pOwner);
+
 	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		auto& vec = pOwnerExt->PowerPlantEnhancers;
@@ -423,6 +432,9 @@ DEFINE_HOOK(0x449197, BuildingClass_SetOwningHouse_AddOwned, 0x6)
 	GET(HouseClass*, pNewOwner, EBP);
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pNewOwnerExt = HouseExt::Fetch(pNewOwner);
+
+	if (pTypeExt->NewEvaVoice_Tag >= 0)
+		SideExt::UpdateMainEvaVoice(pThis, pNewOwner);
 
 	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pNewOwnerExt->PowerPlantEnhancers.push_back(pThis);
@@ -540,7 +552,12 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	if (BuildingTypeExt::Fetch(pThis->Type)->IsDestroyableObstacle)
+	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+
+	if (pTypeExt->NewEvaVoice_Tag >= 0 && pTypeExt->NewEvaVoice_RecheckOnDeath)
+		SideExt::UpdateMainEvaVoice(pThis);
+
+	if (pTypeExt->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
 
 	// only remove animation when the building is destroyed or sold
