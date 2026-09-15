@@ -33,7 +33,7 @@ public:
 	Valueable<bool> TransactMoney_Display_AtFirer;
 	Valueable<Point2D> TransactMoney_Display_Offset;
 	NullableVector<AnimTypeClass*> SplashList;
-	Nullable<int> SplashList_DamageDivider;
+	Valueable<int> SplashList_DamageDivider;
 	Valueable<bool> SplashList_PickRandom;
 	Valueable<bool> SplashList_CreateAll;
 	Valueable<int> SplashList_CreationInterval;
