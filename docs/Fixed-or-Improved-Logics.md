@@ -2704,6 +2704,7 @@ MinimapColor=  ; integer - Red,Green,Blue
 ### Grow and spread on slopes
 
 - In vanilla, Tiberium is hardcoded to be unable to grow and spread on slopes; even if forcibly placed, it will be cleared. Now you can customize it.
+  - When enabled, Phobos automatically detects ramp overlays suffixed with 13 to 20 based on the resource's image prefix (e.g. `GEM13` to `GEM20` for `GEM01`), even if registered at non-contiguous indices in `[OverlayTypes]`.
 
 In `rulesmd.ini`:
 ```ini
