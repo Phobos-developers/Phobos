@@ -321,7 +321,7 @@ public:
 		, SplashList_CreationInterval { 0 }
 		, SplashList_ScatterMin { Leptons(-1) }
 		, SplashList_ScatterMax { Leptons(-1) }
-		, AnimList_DamageDivider {}
+		, AnimList_DamageDivider { 25 }
 		, AnimList_PickRandom { false }
 		, AnimList_CreateAll { false }
 		, AnimList_CreationInterval { 0 }
