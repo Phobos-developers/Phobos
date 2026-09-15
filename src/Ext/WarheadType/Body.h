@@ -276,6 +276,7 @@ public:
 	Valueable<bool> IvanBomb_Detonate_SameInvokerOnly;
 	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
 	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
+	Valueable<bool> IvanBomb_Detonate_AffectParasite;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
 
 	// Ares tags
@@ -584,6 +585,7 @@ public:
 		, IvanBomb_Detonate_SameInvokerOnly { true }
 		, IvanBomb_Detonate_PenetratesTransport { false }
 		, IvanBomb_Detonate_PenetratesGarrison { false }
+		, IvanBomb_Detonate_AffectParasite { false }
 		, IvanBomb_Detonate_AffectTypes {}
 	{ }
 

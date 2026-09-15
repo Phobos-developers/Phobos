@@ -982,4 +982,20 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 			}
 		}
 	}
+
+	if(this->IvanBomb_Detonate_AffectParasite && (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft))
+	{	
+		if(const auto pParasite = abstract_cast<FootClass*>(pTarget)->ParasiteEatingMe)
+		{
+			const auto pParasiteBomb = pParasite->AttachedBomb;
+
+			if(pParasiteBomb && (affectTypes.empty() || affectTypes.Contains(pParasite->GetTechnoType())))
+			{
+				if (!this->IvanBomb_Detonate_SameInvokerOnly)
+					pParasiteBomb->DetonationFrame = Unsorted::CurrentFrame;
+				else if (pParasiteBomb->Owner == pOwner)
+					pParasiteBomb->DetonationFrame = Unsorted::CurrentFrame;
+			}
+		}
+	}
 }
