@@ -72,7 +72,7 @@ public:
 	Valueable<AffectedTarget> Crit_AffectsTarget;
 	Valueable<AffectedHouse> Crit_AffectsHouse;
 	ValueableVector<AnimTypeClass*> Crit_AnimList;
-	Nullable<int> Crit_AnimList_DamageDivider;
+	Valueable<int> Crit_AnimList_DamageDivider;
 	Nullable<bool> Crit_AnimList_PickRandom;
 	Nullable<bool> Crit_AnimList_CreateAll;
 	ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
