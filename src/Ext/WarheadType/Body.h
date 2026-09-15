@@ -315,7 +315,7 @@ public:
 		, TransactMoney_Display_AtFirer { false }
 		, TransactMoney_Display_Offset { { 0, 0 } }
 		, SplashList {}
-		, SplashList_DamageDivider {}
+		, SplashList_DamageDivider { 35 }
 		, SplashList_PickRandom { false }
 		, SplashList_CreateAll { false }
 		, SplashList_CreationInterval { 0 }
