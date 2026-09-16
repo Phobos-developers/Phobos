@@ -1821,7 +1821,7 @@ Unlike those using Shape, projectiles that use Voxel resource files as images wi
 In `rulesmd.ini`:
 ```ini
 [General]
-MissileLostTargetFlyToPoint=true  ; boolean
+MissileKeepTargetCoord=false  ; boolean
 ```
 
 ## Technos

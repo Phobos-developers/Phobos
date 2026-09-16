@@ -564,7 +564,7 @@ public:
 
 		Valueable<AffectedHouse> RevealHouses;
 
-		Valueable<bool> MissileLostTargetFlyToPoint;
+		Valueable<bool> MissileKeepTargetCoord;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -1064,7 +1064,7 @@ public:
 
 			, RevealHouses { AffectedHouse::Team }
 
-			, MissileLostTargetFlyToPoint { false }
+			, MissileKeepTargetCoord { false }
 		{ }
 
 		virtual ~ExtData() = default;
