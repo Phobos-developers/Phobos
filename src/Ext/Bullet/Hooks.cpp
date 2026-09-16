@@ -210,6 +210,18 @@ DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x466EA5, BulletClass_AI_MissileSafetyAltitude, 0x6)
+{
+	enum { SkipDestroy = 0x466EB6, SetDestroy = 0x466EAD };
+
+	GET(int, height, EAX);
+	GET(BulletClass*, pThis, EBP);
+
+	const auto altitude = BulletTypeExt::Fetch(pThis->Type)->MissileSafetyAltitude.Get(RulesClass::Instance->MissileSafetyAltitude);
+
+	return height < altitude ? SkipDestroy : SetDestroy;
+}
+
 #pragma region Gravity
 
 #define APPLYGRAVITY(pType)\

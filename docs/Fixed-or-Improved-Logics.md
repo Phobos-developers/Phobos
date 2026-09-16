@@ -1751,9 +1751,10 @@ In `rulesmd.ini`:
 Gravity=6.0             ; floating point value
 ```
 
-### Customize whether missiles fly to the target or climb when losing target
+### Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 
-- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With this set to yes, the missile will instead fly to the target's position and explode there.
+- Now `MissileSafetyAltitude` can be customized on each projectile.
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there.
 
 In `rulesmd.ini`:
 ```ini
@@ -1761,7 +1762,8 @@ In `rulesmd.ini`:
 MissileKeepTargetCoord=false  ; boolean
 
 [SOMEPROJECTILE]              ; Projectile, with ROT>=1
-MissileKeepTargetCoord=       ; boolean, default to [General] -> MissileKeepTargetCoord
+MissileSafetyAltitude=        ; integer, defaults to [General] -> MissileSafetyAltitude
+MissileKeepTargetCoord=       ; boolean, defaults to [General] -> MissileKeepTargetCoord
 ```
 
 ### Customizing initial facing behavior
