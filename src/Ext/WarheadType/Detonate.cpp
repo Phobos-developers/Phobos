@@ -237,7 +237,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
 	if(this->IvanBomb_Detonate)
-		this->IvanBombDetonate(pOwner,pTarget);
+		this->IvanBombDetonate(pOwner, pTarget);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -932,7 +932,7 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
 }
 
-void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget)
 {
 	if (!pOwner)
 		return;
@@ -940,7 +940,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
 	const bool sameSourceOnly = this->IvanBomb_Detonate_SameInvokerOnly;
 
-	auto NeedsDetonate = [&](BombClass* pBomb)
+	auto needsDetonate = [&](BombClass* pBomb)
 	{
 		// TODO: handle the case when the owner of IvanBomb is dead
 		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
@@ -950,13 +950,13 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 		}
 	};
 
-	NeedsDetonate(pTarget->AttachedBomb);
+	needsDetonate(pTarget->AttachedBomb);
 
 	if (this->IvanBomb_Detonate_PenetratesTransport)
 	{
 		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 		{
-			NeedsDetonate(pPassenger->AttachedBomb);
+			needsDetonate(pPassenger->AttachedBomb);
 		}
 	}
 
@@ -966,13 +966,13 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 
 		for (const auto pOccupant : pTargetBuilding->Occupants)
 		{
-			NeedsDetonate(pOccupant->AttachedBomb);
+			needsDetonate(pOccupant->AttachedBomb);
 		}
 	}
 
 	if (this->IvanBomb_Detonate_AffectsParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 	{
 		if (const auto pParasite = static_cast<FootClass*>(pTarget)->ParasiteEatingMe)
-			NeedsDetonate(pParasite->AttachedBomb);
+			needsDetonate(pParasite->AttachedBomb);
 	}
 }
