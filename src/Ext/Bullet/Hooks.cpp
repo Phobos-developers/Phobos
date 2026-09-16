@@ -179,10 +179,11 @@ DEFINE_HOOK(0x466B51, BulletClass_AI_GetTargetCoords, 0xB)
 {
 	enum { SkipGameCode = 0x466B67 };
 
-	if (!RulesExt::Global()->MissileKeepTargetCoord)
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
 		return 0;
 
-	GET(BulletClass*, pThis, EBP);
 	GET(AbstractClass*, pTarget, ECX);
 	LEA_STACK(CoordStruct*, outBuffer, STACK_OFFSET(0x1A8, -0x100));
 
@@ -201,7 +202,12 @@ DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
 {
 	enum { SkipGameCode = 0x466BAF };
 
-	return RulesExt::Global()->MissileKeepTargetCoord ? SkipGameCode : 0;
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
+		return 0;
+
+	return SkipGameCode;
 }
 
 #pragma region Gravity

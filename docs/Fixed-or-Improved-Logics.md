@@ -1759,6 +1759,9 @@ In `rulesmd.ini`:
 ```ini
 [General]
 MissileKeepTargetCoord=false  ; boolean
+
+[SOMEPROJECTILE]              ; Projectile, with ROT>=1
+MissileKeepTargetCoord=       ; boolean, default to [General] -> MissileKeepTargetCoord
 ```
 
 ### Customizing initial facing behavior
