@@ -272,6 +272,13 @@ public:
 
 	Valueable<int> Ammo;
 
+	Valueable<bool> IvanBomb_Detonate;
+	Valueable<bool> IvanBomb_Detonate_SameInvokerOnly;
+	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
+	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
+	Valueable<bool> IvanBomb_Detonate_AffectsParasite;
+	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -573,6 +580,13 @@ public:
 		, PreventOccupantEscape { false }
 
 		, Ammo { 0 }
+
+		, IvanBomb_Detonate { false }
+		, IvanBomb_Detonate_SameInvokerOnly { true }
+		, IvanBomb_Detonate_PenetratesTransport { false }
+		, IvanBomb_Detonate_PenetratesGarrison { false }
+		, IvanBomb_Detonate_AffectsParasite { false }
+		, IvanBomb_Detonate_AffectTypes {}
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -615,6 +629,7 @@ private:
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
+	void IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>

@@ -236,6 +236,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
+	if(this->IvanBomb_Detonate)
+		this->IvanBombDetonate(pOwner,pTarget);
+
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
 
@@ -927,4 +930,49 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
+{
+	if (!pOwner)
+		return;
+
+	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
+	const bool sameSourceOnly = this->IvanBomb_Detonate_SameInvokerOnly;
+
+	auto NeedsDetonate = [&](BombClass* pBomb)
+	{
+		// TODO: handle the case when the owner of IvanBomb is dead
+		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+		{
+			if (!sameSourceOnly || pBomb->Owner == pOwner)
+				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		}
+	};
+
+	NeedsDetonate(pTarget->AttachedBomb);
+
+	if (this->IvanBomb_Detonate_PenetratesTransport)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			NeedsDetonate(pPassenger->AttachedBomb);
+		}
+	}
+
+	if (this->IvanBomb_Detonate_PenetratesGarrison && pTarget->WhatAmI() == AbstractType::Building)
+	{
+		const auto pTargetBuilding = static_cast<BuildingClass*>(pTarget);
+
+		for (const auto pOccupant : pTargetBuilding->Occupants)
+		{
+			NeedsDetonate(pOccupant->AttachedBomb);
+		}
+	}
+
+	if (this->IvanBomb_Detonate_AffectsParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		if (const auto pParasite = static_cast<FootClass*>(pTarget)->ParasiteEatingMe)
+			NeedsDetonate(pParasite->AttachedBomb);
+	}
 }
