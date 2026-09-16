@@ -1098,7 +1098,7 @@ Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDes
   - By default Y axis shift will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
   - For X axis the shift direction can also be switched by setting `XDrawOffset.InvertBracketShift=true`. The default is positive shift, towards right-hand side of the screen.
   - The bracket-based shift can be further adjusted with offset from `X/YDrawOffset.BracketAdjust`, overridden by `X/YDrawOffset.BracketAdjust.Buildings` for buildings only.
- 
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                            ; AnimationType
@@ -1812,6 +1812,16 @@ ZAdjust=0         ; integer
 
 ```{note}
 Unlike those using Shape, projectiles that use Voxel resource files as images will use another complex per-pixel dynamic mapping calculation. Likewise, they cannot be simply adjusted via this INI flag—this feature only works on projectiles that use Shape assets as images.
+```
+
+### Customize whether missiles fly to the target or climb when losing target
+
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With this set to yes, the missile will instead fly to the target's position and explode there.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MissileLostTargetFlyToPoint=true  ; boolean
 ```
 
 ## Technos

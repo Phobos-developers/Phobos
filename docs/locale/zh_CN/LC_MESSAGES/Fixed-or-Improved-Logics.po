@@ -4261,6 +4261,14 @@ msgstr ""
 "不同于使用 Shape 的那些，使用 Voxel 资源文件作为图像的抛射体会使用另一套复杂的逐像素动态映射计算。同样地，它们也无法简单地通过这一 "
 "INI 标志调节——本功能仅在使用 Shape 资源文件作为图像的抛射体上工作。"
 
+msgid "Customize whether missiles fly to the target or climb when losing target"
+msgstr "自定义导弹在丢失目标后应飞向目标处还是爬升"
+
+msgid ""
+"In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With this set to yes, the missile will instead fly to the target's position and explode there."
+msgstr ""
+"在原版中导弹攻击空中目标时如果丢失了目标（例如目标被摧毁），它会立刻爬升到 `MissileSafetyAltitude` 高度然后爆炸。当这个选项设为 yes ，则导弹将会飞到目标处爆炸。"
+
 msgid "Technos"
 msgstr "科技类型"
 

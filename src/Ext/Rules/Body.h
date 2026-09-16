@@ -564,6 +564,8 @@ public:
 
 		Valueable<AffectedHouse> RevealHouses;
 
+		Valueable<bool> MissileLostTargetFlyToPoint;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1061,6 +1063,8 @@ public:
 			, AttachEffects_AttachOnOwnerChange { false }
 
 			, RevealHouses { AffectedHouse::Team }
+
+			, MissileLostTargetFlyToPoint { false }
 		{ }
 
 		virtual ~ExtData() = default;

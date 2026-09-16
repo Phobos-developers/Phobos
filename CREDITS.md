@@ -581,6 +581,7 @@ This page lists all the individual contributions to the project by their author.
   - Cloak Enhancement
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
+  - Customize whether missiles fly to the target or climb when losing target
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

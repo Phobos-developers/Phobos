@@ -175,6 +175,35 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x466B51, BulletClass_AI_GetTargetCoords, 0xB)
+{
+	enum { SkipGameCode = 0x466B67 };
+
+	if (!RulesExt::Global()->MissileLostTargetFlyToPoint)
+		return 0;
+
+	GET(BulletClass*, pThis, EBP);
+	GET(AbstractClass*, pTarget, ECX);
+	LEA_STACK(CoordStruct*, outBuffer, STACK_OFFSET(0x1A8, -0x100));
+
+	if (!pTarget)
+		*outBuffer = pThis->TargetCoords;
+	else if (const auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+		*outBuffer = pThis->TargetCoords = pTargetObject->GetTargetCoords();
+	else
+		*outBuffer = pThis->TargetCoords = pTarget->GetCenterCoords();
+
+	R->EAX(outBuffer);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
+{
+	enum { SkipGameCode = 0x466BAF }
+
+	return RulesExt::Global()->MissileLostTargetFlyToPoint ? SkipGameCode : 0;
+}
+
 #pragma region Gravity
 
 #define APPLYGRAVITY(pType)\
