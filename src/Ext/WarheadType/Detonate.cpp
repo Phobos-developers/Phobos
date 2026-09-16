@@ -937,31 +937,26 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 	if (!pOwner)
         return;
 
-	auto NeedsDetonate = [](BombClass* pBomb) {
-		pBomb->DetonationFrame = Unsorted::CurrentFrame;
+	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
+	const bool sameSourceOnly = this->IvanBomb_Detonate_SameInvokerOnly;
+
+	auto NeedsDetonate = [&](BombClass* pBomb)
+	{
+		// TODO: handle the case when the owner of IvanBomb is dead
+		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+		{
+			if (!sameSourceOnly || pBomb->Owner == pOwner)
+				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		}
 	};
 
-	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
-	const auto pBomb = pTarget->AttachedBomb;
-
-	// TODO: handle the case when the owner of IvanBomb is dead
-	if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
-	{
-		if (!this->IvanBomb_Detonate_SameInvokerOnly || pBomb->Owner == pOwner)
-			NeedsDetonate(pBomb);
-	}
+	NeedsDetonate(pTarget->AttachedBomb);
 
 	if (this->IvanBomb_Detonate_PenetratesTransport)
 	{
 		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 		{
-			const auto pPassengerBomb = pPassenger->AttachedBomb;
-
-			if (pPassengerBomb && (affectTypes.empty() || affectTypes.Contains(pPassenger->GetTechnoType())))
-			{
-				if (!this->IvanBomb_Detonate_SameInvokerOnly || pPassengerBomb->Owner == pOwner)
-					NeedsDetonate(pPassengerBomb);
-			}
+			NeedsDetonate(pPassenger->AttachedBomb);
 		}
 	}
 
@@ -971,27 +966,13 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 
 		for (const auto pOccupant : pTargetBuilding->Occupants)
 		{
-			const auto pOccupantBomb = pOccupant->AttachedBomb;
-
-			if (pOccupantBomb && (affectTypes.empty() || affectTypes.Contains(pOccupant->GetTechnoType())))
-			{
-				if (!this->IvanBomb_Detonate_SameInvokerOnly || pOccupantBomb->Owner == pOwner)
-					NeedsDetonate(pOccupantBomb);
-			}
+			NeedsDetonate(pOccupant->AttachedBomb);
 		}
 	}
 
-	if (this->IvanBomb_Detonate_AffectParasite && Helpers::Alex::is_any_of(pTarget->WhatAmI(), AbstractType::Unit, AbstractType::Aircraft))
+	if (this->IvanBomb_Detonate_AffectParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 	{
 		if (const auto pParasite = static_cast<FootClass*>(pTarget)->ParasiteEatingMe)
-		{
-			const auto pParasiteBomb = pParasite->AttachedBomb;
-
-			if (pParasiteBomb && (affectTypes.empty() || affectTypes.Contains(pParasite->GetTechnoType())))
-			{
-				if (!this->IvanBomb_Detonate_SameInvokerOnly || pParasiteBomb->Owner == pOwner)
-					NeedsDetonate(pParasiteBomb);
-			}
-		}
+			NeedsDetonate(pParasite->AttachedBomb);
 	}
 }
