@@ -151,10 +151,6 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
-		auto const pBldType = pBuilding->Type;
-
-		if (!pBldType->Insignificant && !pBldType->DontScore)
-			pOwnerExt->AddToLimboTracking(pBldType);
 
 		auto const pTechnoExt = TechnoExt::Fetch(pBuilding);
 		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
@@ -249,12 +245,6 @@ void SWTypeExt::ApplyLimboKill(HouseClass* pHouse)
 
 	for (const auto pBuilding : limboKills)
 	{
-		const auto pBuildingType = pBuilding->Type;
-
-		// Remove limbo buildings' tracking here because their are not truely InLimbo
-		if (!pBuildingType->Insignificant && !pBuildingType->DontScore)
-			HouseExt::Fetch(pBuilding->Owner)->RemoveFromLimboTracking(pBuildingType);
-
 		pBuilding->Stun();
 		pBuilding->Limbo();
 		pBuilding->RegisterDestruction(nullptr);

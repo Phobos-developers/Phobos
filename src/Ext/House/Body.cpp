@@ -400,82 +400,17 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
-void HouseExt::AddToLimboTracking(TechnoTypeClass* pTechnoType)
+bool HouseExt::HasOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
 {
-	if (pTechnoType)
+	const auto pOwner = this->OwnerObject();
+
+	for (const auto pTechno : TechnoTypeExt::Fetch(pTechnoType)->Array)
 	{
-		const int arrayIndex = pTechnoType->GetArrayIndex();
-
-		switch (pTechnoType->WhatAmI())
-		{
-		case AbstractType::AircraftType:
-			this->LimboAircraft.Increment(arrayIndex);
-			break;
-		case AbstractType::BuildingType:
-			this->LimboBuildings.Increment(arrayIndex);
-			break;
-		case AbstractType::InfantryType:
-			this->LimboInfantry.Increment(arrayIndex);
-			break;
-		case AbstractType::UnitType:
-			this->LimboVehicles.Increment(arrayIndex);
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-void HouseExt::RemoveFromLimboTracking(TechnoTypeClass* pTechnoType)
-{
-	if (pTechnoType)
-	{
-		const int arrayIndex = pTechnoType->GetArrayIndex();
-
-		switch (pTechnoType->WhatAmI())
-		{
-		case AbstractType::AircraftType:
-			this->LimboAircraft.Decrement(arrayIndex);
-			break;
-		case AbstractType::BuildingType:
-			this->LimboBuildings.Decrement(arrayIndex);
-			break;
-		case AbstractType::InfantryType:
-			this->LimboInfantry.Decrement(arrayIndex);
-			break;
-		case AbstractType::UnitType:
-			this->LimboVehicles.Decrement(arrayIndex);
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-int HouseExt::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
-{
-	int count = this->OwnerObject()->CountOwnedAndPresent(pTechnoType);
-	const int arrayIndex = pTechnoType->GetArrayIndex();
-
-	switch (pTechnoType->WhatAmI())
-	{
-	case AbstractType::AircraftType:
-		count += this->LimboAircraft.GetItemCount(arrayIndex);
-		break;
-	case AbstractType::BuildingType:
-		count += this->LimboBuildings.GetItemCount(arrayIndex);
-		break;
-	case AbstractType::InfantryType:
-		count += this->LimboInfantry.GetItemCount(arrayIndex);
-		break;
-	case AbstractType::UnitType:
-		count += this->LimboVehicles.GetItemCount(arrayIndex);
-		break;
-	default:
-		break;
+		if (pTechno->Owner == pOwner)
+			return true;
 	}
 
-	return count;
+	return false;
 }
 
 void HouseExt::UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval)
@@ -688,10 +623,6 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->OwnedCountedHarvesters)
-		.Process(this->LimboAircraft)
-		.Process(this->LimboBuildings)
-		.Process(this->LimboInfantry)
-		.Process(this->LimboVehicles)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)

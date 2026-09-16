@@ -238,7 +238,7 @@ bool SWTypeExt::IsAvailable(HouseClass* pHouse) const
 			if (pBuildingType && !BuildingTypeExt::Fetch(pBuildingType)->PowersUp_Buildings.empty())
 				return BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse) > 0;
 
-			return HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0;
+			return HouseExt::Fetch(pHouse)->HasOwnedPresentAndLimboed(pType);
 		};
 
 	// check whether the optional aux building exists

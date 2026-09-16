@@ -242,12 +242,12 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			auto existSingleType = [pOwner, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 				{
 					if (affectedHouse == AffectedHouse::Owner)
-						return allowLimbo ? HouseExt::Fetch(pOwner)->CountOwnedPresentAndLimboed(pType) > 0 : pOwner->CountOwnedAndPresent(pType) > 0;
+						return allowLimbo ? HouseExt::Fetch(pOwner)->HasOwnedPresentAndLimboed(pType) : pOwner->CountOwnedAndPresent(pType) > 0;
 
 					for (auto const pHouse : HouseClass::Array)
 					{
 						if (EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pHouse)
-							&& (allowLimbo ? HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+							&& (allowLimbo ? HouseExt::Fetch(pHouse)->HasOwnedPresentAndLimboed(pType) : pHouse->CountOwnedAndPresent(pType) > 0))
 							return true;
 					}
 
@@ -776,15 +776,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 		{
 			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
 				pFoot->ParasiteImUsing->ExitUnit();
-		}
-
-		// Remove limbo buildings' tracking here because their are not truely InLimbo
-		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
-		{
-			auto const pBldType = pBuilding->Type;
-
-			if (!pBuilding->InLimbo && !pBldType->Insignificant && !pBldType->DontScore)
-				HouseExt::Fetch(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
 		}
 
 		auto const pTransport = pThis->Transporter;

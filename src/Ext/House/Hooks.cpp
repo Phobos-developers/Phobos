@@ -126,77 +126,13 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 // The objects are manually updated once after pre-placed objects have been parsed, buildings are ignored as the limboed pre-placed buildings
 // are not relevant (walls that will be converted into overlays etc), after which automatic update on limbo/unlimbo and uninit is enabled.
 
-namespace LimboTrackingTemp
-{
-	bool Enabled = false;
-	int IsBeingDeleted = 0;
-}
-
-DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
-{
-	for (auto const pTechno : TechnoClass::Array)
-	{
-		auto const pType = pTechno->GetTechnoType();
-
-		if (!pType->Insignificant && !pType->DontScore && pTechno->WhatAmI() != AbstractType::Building && pTechno->InLimbo)
-		{
-			auto const pOwnerExt = HouseExt::Fetch(pTechno->Owner);
-			pOwnerExt->AddToLimboTracking(pType);
-		}
-	}
-
-	LimboTrackingTemp::Enabled = true;
-
-	return 0;
-}
-
-static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
-{
-
-	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
-	{
-		auto const pType = pThis->GetTechnoType();
-
-		if (!pType->Insignificant && !pType->DontScore)
-			HouseExt::Fetch(pThis->Owner)->RemoveFromLimboTracking(pType);
-	}
-
-	++LimboTrackingTemp::IsBeingDeleted;
-	pThis->ObjectClass::UnInit();
-	--LimboTrackingTemp::IsBeingDeleted;
-}
-
-DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
-DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, TechnoClass_UnInit_Wrapper); // BuildingClass
-
-DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
-{
-	GET(TechnoClass* const, pThis, ESI);
-
-	auto const pType = pThis->GetTechnoType();
-
-	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && !LimboTrackingTemp::IsBeingDeleted)
-	{
-		auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
-		pOwnerExt->AddToLimboTracking(pType);
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::Fetch(pThis);
 
-	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pExt->HasBeenPlacedOnMap)
-	{
-		auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
-		pOwnerExt->RemoveFromLimboTracking(pType);
-	}
-	else if (!pExt->HasBeenPlacedOnMap)
+	if (!pExt->HasBeenPlacedOnMap)
 	{
 		pExt->HasBeenPlacedOnMap = true;
 
@@ -261,12 +197,6 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	auto const pType = pTypeExt->OwnerObject();
 	auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::Fetch(pNewOwner);
-
-	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pThis->InLimbo)
-	{
-		pOwnerExt->RemoveFromLimboTracking(pType);
-		pNewOwnerExt->AddToLimboTracking(pType);
-	}
 
 	if (pTypeExt->Harvester_Counted)
 	{
