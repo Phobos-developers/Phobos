@@ -1751,6 +1751,16 @@ In `rulesmd.ini`:
 Gravity=6.0             ; floating point value
 ```
 
+### Customize whether missiles fly to the target or climb when losing target
+
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With this set to yes, the missile will instead fly to the target's position and explode there.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MissileKeepTargetCoord=false  ; boolean
+```
+
 ### Customizing initial facing behavior
 
 - Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
@@ -1812,16 +1822,6 @@ ZAdjust=0         ; integer
 
 ```{note}
 Unlike those using Shape, projectiles that use Voxel resource files as images will use another complex per-pixel dynamic mapping calculation. Likewise, they cannot be simply adjusted via this INI flag—this feature only works on projectiles that use Shape assets as images.
-```
-
-### Customize whether missiles fly to the target or climb when losing target
-
-- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With this set to yes, the missile will instead fly to the target's position and explode there.
-
-In `rulesmd.ini`:
-```ini
-[General]
-MissileKeepTargetCoord=false  ; boolean
 ```
 
 ## Technos
