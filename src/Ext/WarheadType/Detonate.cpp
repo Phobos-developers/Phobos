@@ -970,7 +970,7 @@ void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 		}
 	}
 
-	if (this->IvanBomb_Detonate_AffectParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	if (this->IvanBomb_Detonate_AffectsParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 	{
 		if (const auto pParasite = static_cast<FootClass*>(pTarget)->ParasiteEatingMe)
 			NeedsDetonate(pParasite->AttachedBomb);
