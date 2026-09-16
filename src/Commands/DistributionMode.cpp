@@ -90,32 +90,6 @@ void DistributionModeSpreadCommandClass::Execute(WWKey eInput) const
 	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
 
-const char* DistributionModeFilterCommandClass::GetName() const
-{
-	return "Distribution Mode Filter";
-}
-
-const wchar_t* DistributionModeFilterCommandClass::GetUIName() const
-{
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER", L"Change distribution filter");
-}
-
-const wchar_t* DistributionModeFilterCommandClass::GetUICategory() const
-{
-	return CATEGORY_CONTROL;
-}
-
-const wchar_t* DistributionModeFilterCommandClass::GetUIDescription() const
-{
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER_DESC", L"Automatically and averagely select similar targets around the original target. This is for changing the filter criteria");
-}
-
-void DistributionModeFilterCommandClass::Execute(WWKey eInput) const
-{
-	Phobos::Config::DistributionFilterMode = ((Phobos::Config::DistributionFilterMode + 1) & 3);
-	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
-}
-
 const char* DistributionModeHoldDownCommandClass::GetName() const
 {
 	return "Distribution Mode Hold Down";
@@ -281,13 +255,19 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& action != Action::NoMove
 		&& !PlanningNodeClass::PlanningModeActive
 		&& pTechno
-		&& !pTechno->IsInAir()
 		&& grinderCheck(action, pTechno);
 }
 
 std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
 {
-	const auto pItems = Helpers::Alex::getCellSpreadItems(center, range);
+	// Flatten the center to the ground so the spread range is measured horizontally
+	// and in-air targets are within the same distance check.
+	center.Z = MapClass::Instance.GetCellFloorHeight(center);
+
+	if (MapClass::Instance.GetCellAt(center)->ContainsBridge())
+		center.Z += CellClass::BridgeHeight;
+
+	const auto pItems = Helpers::Alex::getCellSpreadItemsExt(center, range, true, true);
 
 	std::vector<std::pair<TechnoClass*, int>> record;
 	record.reserve(pItems.size());
