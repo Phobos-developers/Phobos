@@ -984,6 +984,9 @@ msgid ""
 msgstr ""
 "[赴部队回收站语音](Fixed-or-Improved-Logics.md#enter-the-grinder-voice)（by FlyStar）"
 
+msgid "[Customize whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi)"
+msgstr "[自定义导弹在丢失目标后应飞向目标处还是爬升](Fixed-or-Improved-Logics.md#customize-whether-missiles-fly-to-the-target-or-climb-when-losing-target)（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -2742,9 +2745,6 @@ msgid ""
 msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签（by Noble_Fish）"
-
-msgid "Customize whether missiles fly to the target or climb when losing target (by NetsuNegi)"
-msgstr "自定义导弹在丢失目标后应飞向目标处还是爬升（by NetsuNegi）"
 
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "

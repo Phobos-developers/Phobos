@@ -448,6 +448,7 @@ HideShakeEffects=false           ; boolean
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
 - Customize the country displayed in `Sight` (by FlyStar)
+- [Customize whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -739,7 +740,6 @@ HideShakeEffects=false           ; boolean
 - [Disable AlphaImage during Buildup](Fixed-or-Improved-Logics.md#disable-alphaimage-during-buildup) (by Noble_Fish)
 - [Reload speed adjustment on promotion](New-or-Enhanced-Logics.md#reload-speed-adjustment-on-promotion) (by Nuke)
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
-- Customize whether missiles fly to the target or climb when losing target (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
