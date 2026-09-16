@@ -935,7 +935,7 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 void WarheadTypeExt::IvanBombDetonate(TechnoClass* pOwner,TechnoClass* pTarget)
 {
 	if (!pOwner)
-        return;
+		return;
 
 	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
 	const bool sameSourceOnly = this->IvanBomb_Detonate_SameInvokerOnly;
