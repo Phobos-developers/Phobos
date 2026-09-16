@@ -199,7 +199,7 @@ DEFINE_HOOK(0x466B51, BulletClass_AI_GetTargetCoords, 0xB)
 
 DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
 {
-	enum { SkipGameCode = 0x466BAF }
+	enum { SkipGameCode = 0x466BAF };
 
 	return RulesExt::Global()->MissileLostTargetFlyToPoint ? SkipGameCode : 0;
 }
