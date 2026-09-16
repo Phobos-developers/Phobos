@@ -456,31 +456,41 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		return true;
 	};
 
-	for (const auto pType : BuildingTypeClass::Array)
+	auto executeUndeploy = [&](BuildingTypeClass* pType)
 	{
-		if (pType->UndeploysInto && (allBuilding || pType == pBuildingType))
-		{
-			const bool isConYard = pType->ConstructionYard;
+		const bool isConYard = pType->ConstructionYard;
 
-			// Conyards can't undeploy if MCVRedeploy=no
-			if (isConYard && !GameModeOptionsClass::Instance.MCVRedeploy)
+		// Conyards can't undeploy if MCVRedeploy=no
+		if (isConYard && !GameModeOptionsClass::Instance.MCVRedeploy)
+			return;
+
+		for (const auto pTechno : TechnoTypeExt::Fetch(pType)->Array)
+		{
+			const auto pBuilding = static_cast<BuildingClass*>(pTechno);
+
+			if (!canUndeploy(pBuilding, isConYard))
 				continue;
 
-			for (const auto pTechno : TechnoTypeExt::Fetch(pType)->Array)
-			{
-				const auto pBuilding = static_cast<BuildingClass*>(pTechno);
+			// Why does having this allow it to undeploy?
+			// Why don't vehicles move when waypoints are placed off the map?
 
-				if (!canUndeploy(pBuilding, isConYard))
-					continue;
+			const bool old = std::exchange(VocClass::VoicesEnabled, false);
+			pBuilding->SetArchiveTarget(pCell);
+			pBuilding->Sell(true);
+			VocClass::VoicesEnabled = old;
+		}
+	};
 
-				// Why does having this allow it to undeploy?
-				// Why don't vehicles move when waypoints are placed off the map?
-
-				const bool old = std::exchange(VocClass::VoicesEnabled, false);
-				pBuilding->SetArchiveTarget(pCell);
-				pBuilding->Sell(true);
-				VocClass::VoicesEnabled = old;
-			}
+	if (pBuildingType)
+	{
+		executeUndeploy(pBuildingType);
+	}
+	else
+	{
+		for (const auto pType : BuildingTypeClass::Array)
+		{
+			if (pType->UndeploysInto)
+				executeUndeploy(pType);
 		}
 	}
 
