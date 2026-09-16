@@ -236,7 +236,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
-	if(this->IvanBomb_Detonate)
+	if (this->IvanBomb_Detonate)
 		this->IvanBombDetonate(pOwner, pTarget);
 
 	// This might change the target's armor type
@@ -934,18 +934,15 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget)
 {
-	if (!pOwner)
-		return;
-
 	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
-	const bool sameSourceOnly = this->IvanBomb_Detonate_SameInvokerOnly;
+	const bool sameInvokerOnly = this->IvanBomb_Detonate_SameInvokerOnly;
 
 	auto needsDetonate = [&](BombClass* pBomb)
 	{
 		// TODO: handle the case when the owner of IvanBomb is dead
 		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
 		{
-			if (!sameSourceOnly || pBomb->Owner == pOwner)
+			if (!sameInvokerOnly || (pOwner && pBomb->Owner == pOwner))
 				pBomb->DetonationFrame = Unsorted::CurrentFrame;
 		}
 	};
