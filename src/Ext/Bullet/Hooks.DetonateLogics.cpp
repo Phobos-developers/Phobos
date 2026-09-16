@@ -129,21 +129,23 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 				switch (pTargetType->WhatAmI())
 				{
-				case AbstractType::Building:
+				case AbstractType::BuildingType:
 					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) == AffectedTarget::None)
 						validTarget = false;
 					break;
-				case AbstractType::Infantry:
+				case AbstractType::InfantryType:
 					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) == AffectedTarget::None)
 						validTarget = false;
 					break;
-				case AbstractType::Unit:
+				case AbstractType::UnitType:
 					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) == AffectedTarget::None)
 						validTarget = false;
 					break;
-				case AbstractType::Aircraft:
+				case AbstractType::AircraftType:
 					if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Aircraft) == AffectedTarget::None)
 						validTarget = false;
+					break;
+				default:
 					break;
 				}
 
@@ -165,7 +167,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				auto const aircraft = copy_dvc(AircraftClass::Array);
 
 				for (auto const pAircraft : aircraft)
+				{
 					tryDetonate(pAircraft, pAircraft->Type);
+				}
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Building) != AffectedTarget::None)
@@ -173,7 +177,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				auto const buildings = copy_dvc(BuildingClass::Array);
 
 				for (auto const pBuilding : buildings)
+				{
 					tryDetonate(pBuilding, pBuilding->Type);
+				}
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Infantry) != AffectedTarget::None)
@@ -181,7 +187,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				auto const infantry = copy_dvc(InfantryClass::Array);
 
 				for (auto const pInf : infantry)
+				{
 					tryDetonate(pInf, pInf->Type);
+				}
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectsTarget & AffectedTarget::Unit) != AffectedTarget::None)
@@ -189,7 +197,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				auto const units = copy_dvc(UnitClass::Array);
 
 				for (auto const pUnit : units)
+				{
 					tryDetonate(pUnit, pUnit->Type);
+				}
 			}
 		}
 

@@ -64,10 +64,8 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 	const auto& designators = pExt->SW_Designators;
 	const auto& inhibitors = pExt->SW_Inhibitors;
-	const bool anyDesignator = pExt->SW_AnyDesignator;
-	const bool anyInhibitor = pExt->SW_AnyInhibitor;
 
-	if (designators.empty() && !anyDesignator && inhibitors.empty() && !anyInhibitor)
+	if (designators.empty() && inhibitors.empty())
 		return 0;
 
 	for (const auto pCurrentTechnoType : TechnoTypeClass::Array)
@@ -75,8 +73,8 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pCurrentTechnoType);
 		const float designatorRange = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
 		const float inhibitorRange = (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
-		const bool hasDesignator = (anyDesignator || designators.Contains(pCurrentTechnoType)) && designatorRange;
-		const bool hasInhibitor = (anyInhibitor || inhibitors.Contains(pCurrentTechnoType)) && inhibitorRange;
+		const bool hasDesignator = designators.Contains(pCurrentTechnoType) && designatorRange;
+		const bool hasInhibitor = inhibitors.Contains(pCurrentTechnoType) && inhibitorRange;
 
 		if (hasDesignator || hasInhibitor)
 		{
