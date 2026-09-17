@@ -88,6 +88,28 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 		const auto pParasiteType = pParasite ? pParasite->GetTechnoType() : nullptr;
 		const auto pBomb = this->ForceWeapon_BombAttached >= 0 ? pTargetTechno->AttachedBomb : nullptr;
 
+		auto mindControlCheck = [&](TechnoClass* pTarget)
+			{
+				if (const auto pController = pTarget->MindControlledBy)
+				{
+					const auto pManager = pController->CaptureManager;
+					HouseClass* pOldOwner = nullptr;
+
+					for (const auto pNode : pManager->ControlNodes)
+					{
+						if (pNode->Unit == pTarget)
+						{
+							pOldOwner = pNode->OriginalOwner;
+							break;
+						}
+					}
+
+					return EnumFunctions::CanTargetHouse(this->ForceWeapon_MindControlled_AffectsOriginalHouse, pThis->Owner, pOldOwner);
+				}
+
+				return false;
+			};
+
 		if (ironCurtainIndex >= 0 && pTargetTechno->IsIronCurtained())
 		{
 			forceWeaponIndex = ironCurtainIndex;
@@ -132,8 +154,7 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 			forceWeaponIndex = this->ForceWeapon_BombAttached;
 		}
 		else if (this->ForceWeapon_MindControlled >= 0
-			&& pTargetTechno->MindControlledBy
-			&& EnumFunctions::CanTargetHouse(this->ForceWeapon_MindControlled_AffectsControllerHouse, pThis->Owner, pTargetTechno->MindControlledBy->Owner))
+			&& mindControlCheck(pTargetTechno))
 		{
 			forceWeaponIndex = this->ForceWeapon_MindControlled;
 		}
@@ -965,7 +986,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_BombAttached_SameSourceOnly.Read(exINI, pSection, "ForceWeapon.BombAttached.SameSourceOnly");
 	this->ForceWeapon_BombAttached_AffectTypes.Read(exINI, pSection, "ForceWeapon.BombAttached.AffectTypes");
 	this->ForceWeapon_MindControlled.Read(exINI, pSection, "ForceWeapon.MindControlled");
-	this->ForceWeapon_MindControlled_AffectsControllerHouse.Read(exINI, pSection, "ForceWeapon.MindControlled.AffectsControllerHouse");
+	this->ForceWeapon_MindControlled_AffectsOriginalHouse.Read(exINI, pSection, "ForceWeapon.MindControlled.AffectsOriginalHouse");
 	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, pSection, "ForceWeapon.InRange.TechnoOnly");
 	this->ForceWeapon_InRange.Read(exINI, pSection, "ForceWeapon.InRange");
 	this->ForceWeapon_InRange_Overrides.Read(exINI, pSection, "ForceWeapon.InRange.Overrides");
@@ -1656,7 +1677,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ForceWeapon_BombAttached_SameSourceOnly)
 		.Process(this->ForceWeapon_BombAttached_AffectTypes)
 		.Process(this->ForceWeapon_MindControlled)
-		.Process(this->ForceWeapon_MindControlled_AffectsControllerHouse)
+		.Process(this->ForceWeapon_MindControlled_AffectsOriginalHouse)
 		.Process(this->ForceWeapon_InRange_TechnoOnly)
 		.Process(this->ForceWeapon_InRange)
 		.Process(this->ForceWeapon_InRange_Overrides)

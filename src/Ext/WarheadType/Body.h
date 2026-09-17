@@ -47,7 +47,7 @@ public:
 	Nullable<bool> Conventional_IgnoreUnits;
 	Valueable<bool> RemoveDisguise;
 	Valueable<bool> RemoveMindControl;
-	Valueable<AffectedHouse> RemoveMindControl_AffectsControllerHouse;
+	Valueable<AffectedHouse> RemoveMindControl_AffectsOriginalHouse;
 	Nullable<bool> RemoveMindControl_Silent;
 	Nullable<bool> RemoveParasite;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
@@ -196,8 +196,12 @@ public:
 	Nullable<double> DamageOwnerMultiplier_Berzerk;
 	Nullable<double> DamageAlliesMultiplier_Berzerk;
 	Nullable<double> DamageEnemiesMultiplier_Berzerk;
+	Nullable<double> DamageOriginalOwnerMultiplier_Owner;
+	Nullable<double> DamageOriginalOwnerMultiplier_Allies;
+	Nullable<double> DamageOriginalOwnerMultiplier_Enemies;
 	Valueable<double> DamageSourceHealthMultiplier;
 	Valueable<double> DamageTargetHealthMultiplier;
+	Nullable<PartialVector2D<double>> DamageRandomMultiplier;
 
 	Valueable<bool> SuppressRevengeWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
@@ -334,7 +338,7 @@ public:
 		, Conventional_IgnoreUnits {}
 		, RemoveDisguise { false }
 		, RemoveMindControl { false }
-		, RemoveMindControl_AffectsControllerHouse { AffectedHouse::All }
+		, RemoveMindControl_AffectsOriginalHouse { AffectedHouse::All }
 		, RemoveMindControl_Silent {}
 		, RemoveParasite {}
 		, RemoveParasite_Allow {}
@@ -483,8 +487,12 @@ public:
 		, DamageOwnerMultiplier_Berzerk {}
 		, DamageAlliesMultiplier_Berzerk {}
 		, DamageEnemiesMultiplier_Berzerk {}
+		, DamageOriginalOwnerMultiplier_Owner {}
+		, DamageOriginalOwnerMultiplier_Allies {}
+		, DamageOriginalOwnerMultiplier_Enemies {}
 		, DamageSourceHealthMultiplier { 0.0 }
 		, DamageTargetHealthMultiplier { 0.0 }
+		, DamageRandomMultiplier {}
 
 		, SuppressRevengeWeapons { false }
 		, SuppressRevengeWeapons_Types {}

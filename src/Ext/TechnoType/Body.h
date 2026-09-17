@@ -188,7 +188,7 @@ public:
 	Valueable<bool> ForceWeapon_BombAttached_SameSourceOnly;
 	ValueableVector<TechnoTypeClass*> ForceWeapon_BombAttached_AffectTypes;
 	Valueable<int> ForceWeapon_MindControlled;
-	Valueable<AffectedHouse> ForceWeapon_MindControlled_AffectsControllerHouse;
+	Valueable<AffectedHouse> ForceWeapon_MindControlled_AffectsOriginalHouse;
 	Nullable<bool> ForceWeapon_InRange_TechnoOnly;
 	ValueableVector<int> ForceWeapon_InRange;
 	ValueableVector<double> ForceWeapon_InRange_Overrides;
@@ -627,7 +627,7 @@ public:
 		, ForceWeapon_BombAttached_SameSourceOnly { true }
 		, ForceWeapon_BombAttached_AffectTypes {}
 		, ForceWeapon_MindControlled { -1 }
-		, ForceWeapon_MindControlled_AffectsControllerHouse { AffectedHouse::All }
+		, ForceWeapon_MindControlled_AffectsOriginalHouse { AffectedHouse::All }
 		, ForceWeapon_InRange_TechnoOnly {}
 		, ForceWeapon_InRange {}
 		, ForceWeapon_InRange_Overrides {}

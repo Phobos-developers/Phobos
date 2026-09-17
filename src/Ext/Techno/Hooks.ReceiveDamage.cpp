@@ -49,6 +49,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		double multiplier = 1.0;
 
+		// Calculate plus multiplier first since it'll need to be multiplied by later multipliers
+		if (pWHExt->DamageSourceHealthMultiplier && pAttacker)
+			multiplier += pWHExt->DamageSourceHealthMultiplier * pAttacker->GetHealthPercentage();
+
+		if (pWHExt->DamageTargetHealthMultiplier)
+			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+
+		const auto randomMultiplier = pWHExt->DamageRandomMultiplier.Get(RulesExt::Global()->DamageRandomMultiplier);
+
+		if (randomMultiplier.X < randomMultiplier.Y)
+		{
+			const double factor = ScenarioClass::Instance->Random.RandomDouble();
+			multiplier += randomMultiplier.X + factor * (randomMultiplier.Y - randomMultiplier.X);
+		}
+
 		if (pAttacker && pAttacker->Berzerk)
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
@@ -68,11 +83,34 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
 		}
 
-		if (pWHExt->DamageSourceHealthMultiplier && pAttacker)
-			multiplier += pWHExt->DamageSourceHealthMultiplier * pAttacker->GetHealthPercentage();
+		if (pAttacker && pThis->MindControlledBy)
+		{
+			const double ownerMultiplier = pWHExt->DamageOriginalOwnerMultiplier_Owner.Get(RulesExt::Global()->DamageOriginalOwnerMultiplier_Owner);
+			const double alliesMultiplier = pWHExt->DamageOriginalOwnerMultiplier_Allies.Get(RulesExt::Global()->DamageOriginalOwnerMultiplier_Allies);
+			const double enemiesMultiplier = pWHExt->DamageOriginalOwnerMultiplier_Enemies.Get(RulesExt::Global()->DamageOriginalOwnerMultiplier_Enemies);
 
-		if (pWHExt->DamageTargetHealthMultiplier)
-			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+			if (ownerMultiplier != 1.0 || alliesMultiplier != 1.0 || enemiesMultiplier != 1.0)
+			{
+				const auto pManager = pThis->MindControlledBy->CaptureManager;
+				HouseClass* pOldOwner = nullptr;
+
+				for (const auto pNode : pManager->ControlNodes)
+				{
+					if (pNode->Unit == pThis)
+					{
+						pOldOwner = pNode->OriginalOwner;
+						break;
+					}
+				}
+
+				if (pOldOwner == pSourceHouse)
+					multiplier *= ownerMultiplier;
+				else if (pOldOwner->IsAlliedWith(pSourceHouse))
+					multiplier *= alliesMultiplier;
+				else
+					multiplier *= enemiesMultiplier;
+			}
+		}
 
 		if (multiplier != 1.0)
 		{

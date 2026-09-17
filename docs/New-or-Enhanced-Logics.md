@@ -2169,7 +2169,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
     - `ForceWeapon.BombAttached.SameInvokerOnly` can be used to configure whether the weapon will be forced to a target with ivan bombs only if they come from the same invoker.
     - `ForceWeapon.BombAttached.AffectTypes` can be used to configure Ivan bombs from which TechnoType can force the weapon, use empty for all types.
   - `ForceWeapon.MindControlled` forces specified weapon to be used if the target is mind controlled. Doesn't work for perma control.
-    - `ForceWeapon.MindControlled.AffectsControllerHouse` can be used to configure whether the weapon will be forced to a mind controlled target based on the controller's house.
+    - `ForceWeapon.MindControlled.AffectsOriginalHouse` can be used to configure whether the weapon will be forced to a mind controlled target based on the target's original owner.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` set to true, it'll only be forced on TechnoTypes like other forced weapons, otherwise it'll also be forced when attacking empty grounds. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
@@ -2183,42 +2183,42 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 In `rulesmd.ini`:
 ```ini
 [General]
-ForceWeapon.InRange.TechnoOnly=true                     ; boolean
-ForceWeapon.InRange.ApplyRangeModifiers=false           ; boolean
-ForceAAWeapon.InRange.ApplyRangeModifiers=false         ; boolean
+ForceWeapon.InRange.TechnoOnly=true                   ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false         ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false       ; boolean
 
-[SOMETECHNO]                                            ; TechnoType
-ForceWeapon.IronCurtained=-1                            ; integer, -1 to disable
-ForceWeapon.ForceShielded=                              ; integer, -1 to disable
-ForceWeapon.Naval.Decloaked=-1                          ; integer, -1 to disable
-ForceWeapon.Cloaked=-1                                  ; integer, -1 to disable
-ForceWeapon.Disguised=-1                                ; integer, -1 to disable
-ForceWeapon.UnderEMP=-1                                 ; integer, -1 to disable
-ForceWeapon.UnderBerzerk=-1                             ; integer, -1 to disable
-ForceWeapon.Parasited=-1                                ; integer, -1 to disable
-ForceWeapon.Parasited.Allow=                            ; List of TechnoTypes
-ForceWeapon.Parasited.Disallow=                         ; List of TechnoTypes
-ForceWeapon.BombAttached=-1                             ; integer, -1 to disable
-ForceWeapon.BombAttached.SameInvokerOnly=true           ; boolean
-ForceWeapon.BombAttached.AffectTypes                    ; List of TechnoTypes
-ForceWeapon.MindControlled=-1                           ; integer, -1 to disable
-ForceWeapon.MindControlled.AffectsControllerHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
-ForceWeapon.InRange=                                    ; List of integers
-ForceWeapon.InRange.TechnoOnly=                         ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
-ForceWeapon.InRange.Overrides=                          ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=                ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
-ForceAAWeapon.InRange=                                  ; List of integers
-ForceAAWeapon.InRange.Overrides=                        ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=              ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
-ForceWeapon.Buildings=-1                                ; integer, -1 to disable
-ForceWeapon.Defenses=-1                                 ; integer, -1 to disable
-ForceWeapon.Infantry=-1                                 ; integer, -1 to disable
-ForceWeapon.Naval.Units=-1                              ; integer, -1 to disable
-ForceWeapon.Units=-1                                    ; integer, -1 to disable
-ForceWeapon.Aircraft=-1                                 ; integer, -1 to disable
-ForceAAWeapon.Infantry=-1                               ; integer, -1 to disable
-ForceAAWeapon.Units=-1                                  ; integer, -1 to disable
-ForceAAWeapon.Aircraft=-1                               ; integer, -1 to disable
+[SOMETECHNO]                                          ; TechnoType
+ForceWeapon.IronCurtained=-1                          ; integer, -1 to disable
+ForceWeapon.ForceShielded=                            ; integer, -1 to disable
+ForceWeapon.Naval.Decloaked=-1                        ; integer, -1 to disable
+ForceWeapon.Cloaked=-1                                ; integer, -1 to disable
+ForceWeapon.Disguised=-1                              ; integer, -1 to disable
+ForceWeapon.UnderEMP=-1                               ; integer, -1 to disable
+ForceWeapon.UnderBerzerk=-1                           ; integer, -1 to disable
+ForceWeapon.Parasited=-1                              ; integer, -1 to disable
+ForceWeapon.Parasited.Allow=                          ; List of TechnoTypes
+ForceWeapon.Parasited.Disallow=                       ; List of TechnoTypes
+ForceWeapon.BombAttached=-1                           ; integer, -1 to disable
+ForceWeapon.BombAttached.SameInvokerOnly=true         ; boolean
+ForceWeapon.BombAttached.AffectTypes                  ; List of TechnoTypes
+ForceWeapon.MindControlled=-1                         ; integer, -1 to disable
+ForceWeapon.MindControlled.AffectsOriginalHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+ForceWeapon.InRange=                                  ; List of integers
+ForceWeapon.InRange.TechnoOnly=                       ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
+ForceWeapon.InRange.Overrides=                        ; List of floating-point values
+ForceWeapon.InRange.ApplyRangeModifiers=              ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
+ForceAAWeapon.InRange=                                ; List of integers
+ForceAAWeapon.InRange.Overrides=                      ; List of floating-point values
+ForceAAWeapon.InRange.ApplyRangeModifiers=            ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
+ForceWeapon.Buildings=-1                              ; integer, -1 to disable
+ForceWeapon.Defenses=-1                               ; integer, -1 to disable
+ForceWeapon.Infantry=-1                               ; integer, -1 to disable
+ForceWeapon.Naval.Units=-1                            ; integer, -1 to disable
+ForceWeapon.Units=-1                                  ; integer, -1 to disable
+ForceWeapon.Aircraft=-1                               ; integer, -1 to disable
+ForceAAWeapon.Infantry=-1                             ; integer, -1 to disable
+ForceAAWeapon.Units=-1                                ; integer, -1 to disable
+ForceAAWeapon.Aircraft=-1                             ; integer, -1 to disable
 ```
 
 ```{note}
@@ -2979,7 +2979,7 @@ When pure damage effects use `AffectsInvokerOnly`, it still checks settings such
 *Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
-- `RemoveMindControl.AffectsControllerHouse` can be used to configure whether the mind control will be broken based on the controller's house.
+- `RemoveMindControl.AffectsOriginalHouse` can be used to configure whether the mind control will be broken based on the target's original owner.
 - Both `RemoveMindControl` and `MindControl.Permanent` will remove the target's original conventional mind control effect and play the `MindClearedSound` sound effect. This can now be configured via `RemoveMindControl.Silent`, which defaults to `[AudioVisual] -> RemoveMindControl.Silent` for removing conventional mind control, and defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for cases where permanent mind control replaces conventional mind control.
 
 ```{hint}
@@ -2989,13 +2989,13 @@ You can simply use this flag to reduce some noise, or play another sound effect 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-RemoveMindControl.Silent=false                  ; boolean
-MindControl.Permanent.ReplaceSilent=false       ; boolean
+RemoveMindControl.Silent=false                ; boolean
+MindControl.Permanent.ReplaceSilent=false     ; boolean
 
-[SOMEWARHEAD]                                   ; WarheadType
-RemoveMindControl=false                         ; boolean
-RemoveMindControl.AffectsControllerHouse=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
-RemoveMindControl.Silent=                       ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
+[SOMEWARHEAD]                                 ; WarheadType
+RemoveMindControl=false                       ; boolean
+RemoveMindControl.AffectsOriginalHouse=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+RemoveMindControl.Silent=                     ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
 ```
 
 ### CellSpread enhancement
@@ -3158,15 +3158,18 @@ SplashList.PickRandom=false  ; boolean
 
 ### Damage multipliers
 
+- An extra damage multiplier based on the firer or target's health percentage will be added before calculating the following multipliers. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
+- An random value will be added before calculating the following multipliers. `DamageRandomMultiplier` determines the lower and upper bounds of the random value. Won't take effect if the upper bound is greater than or equal to the lower bound.
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
   - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
   - `DamageOwnerMultiplier.Berzerk` , `DamageAlliesMultiplier.Berzerk` and `DamageEnemiesMultiplier.Berzerk` is used when the techno is in berzerk.
-- An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
+- If the target is being mind controllered, it'll multiply `DamageOriginalOwnerMultiplier.Owner` , `DamageOriginalOwnerMultiplier.Allies` or `DamageOriginalOwnerMultiplier.Enemies` based on the target's original owner.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
+DamageRandomMultiplier=0.0                                 ; floating point value - single or comma-sep. range
 DamageOwnerMultiplier=1.0                                  ; floating point value
 DamageAlliesMultiplier=1.0                                 ; floating point value
 DamageEnemiesMultiplier=1.0                                ; floating point value
@@ -3175,16 +3178,23 @@ DamageAlliesMultiplier.NotAffectsEnemies=                  ; floating point valu
 DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
 DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageOriginalOwnerMultiplier.Owner=1.0                    ; floating point value
+DamageOriginalOwnerMultiplier.Allies=1.0                   ; floating point value
+DamageOriginalOwnerMultiplier.Enemies=1.0                  ; floating point value
 
 [SOMEWARHEAD]                                              ; WarheadType
+DamageSourceHealthMultiplier=0.0                           ; floating point value
+DamageTargetHealthMultiplier=0.0                           ; floating point value
+DamageRandomMultiplier=                                    ; floating point value - single or comma-sep. range, default to [CombatDamage] -> DamageRandomMultiplier
 DamageOwnerMultiplier=                                     ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
 DamageAlliesMultiplier=                                    ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
 DamageEnemiesMultiplier=                                   ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 DamageOwnerMultiplier.Berzerk=                             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier.Berzerk
 DamageAlliesMultiplier.Berzerk=                            ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier.Berzerk
 DamageEnemiesMultiplier.Berzerk=                           ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier.Berzerk
-DamageSourceHealthMultiplier=0.0                           ; floating point value
-DamageTargetHealthMultiplier=0.0                           ; floating point value
+DamageOriginalOwnerMultiplier.Owner=                       ; floating point value, default to [CombatDamage] -> DamageOriginalOwnerMultiplier.Owner
+DamageOriginalOwnerMultiplier.Allies=                      ; floating point value, default to [CombatDamage] -> DamageOriginalOwnerMultiplier.Allies
+DamageOriginalOwnerMultiplier.Enemies=                     ; floating point value, default to [CombatDamage] -> DamageOriginalOwnerMultiplier.Enemies
 ```
 
 ```{note}
