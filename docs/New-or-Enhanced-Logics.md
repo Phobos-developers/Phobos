@@ -2735,6 +2735,32 @@ DestroyAnim=       ; List of AnimationTypes
 DestroySound=      ; Sound entry
 ```
 
+## Tiberiums (ores)
+
+### New Tiberium types
+
+- Tiberium types are no longer hardcoded to a maximum of 4 (`Riparius`, `Cruentus`, `Vinifera`, `Abnoreus`). You can now register arbitrary new Tiberium types beyond index 3 in the `[Tiberiums]` list.
+  - `OverlayPrefix` specifies the prefix used to look up overlay types registered in `[OverlayTypes]`. Defaults to the Tiberium's section ID in uppercase.
+  - `Variety` defines the number of flat ground overlay variations (`01` up to `Variety`). Defaults to `12`. Values less than `1` are safely clamped to `1`.
+    - Overlays are searched automatically in `[OverlayTypes]` matching `{OverlayPrefix}%02d` or `{OverlayPrefix}%d`.
+    - All valid overlays found are automatically assigned `Tiberium=yes`.
+  - `AllowRamps` enables the Tiberium to grow and spread across slope ramps.
+    - When enabled, Phobos automatically looks for 8 ramp overlay pieces numbered from `Variety + 1` to `Variety + 8`.
+    - If any of the 8 ramp overlay pieces is missing from `[OverlayTypes]`, ramp support is safely disabled automatically (`AllowRamps=no`) to prevent crashes or visual glitches.
+  - `PipFrame` defines which frame index in `pips2.shp` (for vehicles) or `pips.shp` (for buildings) is drawn when this Tiberium type is stored. If not set, falls back to `Pips.Tiberiums.Frames` under `[AudioVisual]`.
+
+In `rulesmd.ini`:
+```ini
+[Tiberiums]
++=SOMETIBERIUM                   ; List of TiberiumClasses
+
+[SOMETIBERIUM]                   ; TiberiumClass
+OverlayPrefix=                   ; string, defaults to section name in uppercase
+Variety=12                       ; integer, number of flat variations (minimum 1)
+AllowRamps=false                 ; boolean
+PipFrame=                        ; integer, frame index in pips2.shp / pips.shp (zero-based)
+```
+
 ## Vehicles
 
 ### Amphibious access vehicle

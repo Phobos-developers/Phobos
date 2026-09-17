@@ -448,6 +448,7 @@ HideShakeEffects=false           ; boolean
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
 - Customize the country displayed in `Sight` (by FlyStar)
+- [New Tiberium types](New-or-Enhanced-Logics.md#new-tiberium-types) (by ZivDero, FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

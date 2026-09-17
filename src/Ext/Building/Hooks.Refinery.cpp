@@ -1,6 +1,10 @@
 #include "Body.h"
 
 #include <Misc/FlyingStrings.h>
+#include <ScenarioClass.h>
+#include <MapClass.h>
+#include <CellClass.h>
+#include <Ext/House/Body.h>
 
 // The method of calculating the income is subject to each specific situation,
 // which may probably subject to further changes if anyone wants to extend the harvesting logic in the future.
@@ -72,4 +76,45 @@ DEFINE_HOOK(0x450DAA, BuildingClass_UpdateAnimations_RefineryActiveAnim, 0x6)
 	GET(BuildingTypeClass*, pType, EDX);
 
 	return BuildingTypeExt::Fetch(pType)->Refinery_UseNormalActiveAnim ? 0x450F9E : 0;
+}
+
+DEFINE_HOOK(0x441C0C, BuildingClass_Destroy_CustomTiberiumSpill, 0x6)
+{
+	GET(BuildingClass* const, pThis, ESI);
+
+	if (!pThis || !pThis->Type || !pThis->Owner)
+		return 0;
+
+	auto const pExt = TechnoExt::Fetch(pThis);
+	if (!pExt)
+		return 0;
+
+	auto const pHouse = pThis->Owner;
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
+
+	for (size_t i = 4; i < pExt->TiberiumStorage.size(); ++i)
+	{
+		float const stored = pExt->TiberiumStorage[i];
+		if (stored >= 1.0f)
+		{
+			auto const amount = std::ceil(stored);
+			pExt->RemoveTiberium(amount, static_cast<int>(i));
+			if (pHouseExt)
+				pHouseExt->RemoveTiberiumStorage(amount, static_cast<int>(i));
+
+			auto const pTib = TiberiumClass::Array.GetItemOrDefault(static_cast<int>(i));
+			if (!pTib || !pTib->Image)
+				continue;
+
+			for (int j = static_cast<int>(amount); j > 0; --j)
+			{
+				auto const dist = ScenarioClass::Instance->Random.RandomRanged(256, 768);
+				auto const crd = MapClass::GetRandomCoordsNear(pThis->Location, dist, true);
+				if (auto const pCell = MapClass::Instance.GetCellAt(crd))
+					pCell->IncreaseTiberium(static_cast<int>(i), 1);
+			}
+		}
+	}
+
+	return 0;
 }

@@ -8,6 +8,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <TiberiumClass.h>
 
 class AirstrikeClass;
 class BulletClass;
@@ -89,6 +90,14 @@ public:
 
 	bool PreventCrewEscape;
 
+	std::vector<float> TiberiumStorage;
+
+	float GetTiberium(int index) const;
+	float GetTotalTiberium() const;
+	float AddTiberium(float amount, int index);
+	float RemoveTiberium(float amount, int index);
+	int FirstUsedTiberiumSlot() const;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -139,6 +148,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, TiberiumStorage {}
 	{ }
 
 	void OnEarlyUpdate();

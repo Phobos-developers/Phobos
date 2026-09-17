@@ -1202,6 +1202,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->ShouldBeDead)
 		.Process(this->PreventCrewEscape)
+		.Process(this->TiberiumStorage)
 		;
 }
 
@@ -1265,3 +1266,87 @@ DEFINE_HOOK(0x710415, TechnoClass_DetachAnim, 0x6)
 
 	return 0;
 }
+
+float TechnoExt::GetTiberium(int index) const
+{
+	if (index >= 0 && index < static_cast<int>(this->TiberiumStorage.size()) && this->TiberiumStorage[index] > 0.0f)
+		return this->TiberiumStorage[index];
+
+	if (index >= 0 && index < 4 && this->OwnerObject())
+		return this->OwnerObject()->Tiberium.GetAmount(index);
+
+	return 0.0f;
+}
+
+float TechnoExt::GetTotalTiberium() const
+{
+	float total = 0.0f;
+	auto const pOwner = this->OwnerObject();
+	size_t const count = std::max(this->TiberiumStorage.size(), static_cast<size_t>(4));
+	for (size_t i = 0; i < count; ++i)
+	{
+		float amount = 0.0f;
+		if (i < this->TiberiumStorage.size() && this->TiberiumStorage[i] > 0.0f)
+			amount = this->TiberiumStorage[i];
+		else if (i < 4 && pOwner)
+			amount = pOwner->Tiberium.GetAmount(static_cast<int>(i));
+
+		total += amount;
+	}
+
+	return total;
+}
+
+float TechnoExt::AddTiberium(float amount, int index)
+{
+	if (index >= 0 && amount > 0.0f)
+	{
+		if (index >= static_cast<int>(this->TiberiumStorage.size()))
+			this->TiberiumStorage.resize(std::max(index + 1, static_cast<int>(TiberiumClass::Array.Count)), 0.0f);
+
+		this->TiberiumStorage[index] += amount;
+		return this->TiberiumStorage[index];
+	}
+
+	return 0.0f;
+}
+
+float TechnoExt::RemoveTiberium(float amount, int index)
+{
+	if (index >= 0 && index < static_cast<int>(this->TiberiumStorage.size()) && amount > 0.0f)
+	{
+		float const removed = std::min(this->TiberiumStorage[index], amount);
+		this->TiberiumStorage[index] -= removed;
+		if (removed > 0.0f)
+			return removed;
+	}
+
+	if (index >= 0 && index < 4 && this->OwnerObject())
+	{
+		float const cur = this->OwnerObject()->Tiberium.GetAmount(index);
+		return std::min(cur, amount);
+	}
+
+	return 0.0f;
+}
+
+int TechnoExt::FirstUsedTiberiumSlot() const
+{
+	for (size_t i = 0; i < this->TiberiumStorage.size(); ++i)
+	{
+		if (this->TiberiumStorage[i] > 0.0f)
+			return static_cast<int>(i);
+	}
+
+	if (auto const pOwner = this->OwnerObject())
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (pOwner->Tiberium.GetAmount(i) > 0.0f)
+				return i;
+		}
+	}
+
+	return -1;
+}
+

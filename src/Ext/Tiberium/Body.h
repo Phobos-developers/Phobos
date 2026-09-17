@@ -24,10 +24,12 @@ public:
 
 	Nullable<ColorStruct> MinimapColor;
 	Valueable<bool> AllowRamps;
+	Nullable<int> PipFrame;
 
 	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, MinimapColor {}
 		, AllowRamps { false }
+		, PipFrame {}
 	{ }
 
 	virtual ~TiberiumExt() = default;

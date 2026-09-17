@@ -7,6 +7,7 @@
 #include <Ext/Event/Body.h>
 
 #include <BeaconManagerClass.h>
+#include <Utilities/AresHelper.h>
 
 #include <unordered_map>
 #include <algorithm>
@@ -64,14 +65,37 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	GET(int const, idxTiberium, EBP);
 	REF_STACK(float, amount, 0x1C);
 
-	auto const pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
+	if (!pBuilding || !pBuilding->Type || !pBuilding->Owner)
+		return 0;
 
+	auto const pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
 	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
-	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
+	Debug::Log("[Phobos] UnitClass_Unload_Storage: bld=%s, Refinery_UseStorage=%d, idxTib=%d, amount=%.2f, storageTibIdx=%d\n",
+		pBuilding->Type->get_ID(), (int)pTypeExt->Refinery_UseStorage, idxTiberium, amount, storageTiberiumIndex);
+
+	if (pTypeExt->Refinery_UseStorage)
 	{
-		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
-		amount = 0.0f;
+		if (storageTiberiumIndex >= 0)
+		{
+			BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
+			amount = 0.0f;
+		}
+		else if (idxTiberium >= 4)
+		{
+			BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium);
+
+			// For custom types (>= 4), Available_Money doesn't track them natively, so add to AccumulatedIncome
+			if (auto const pTib = TiberiumClass::Array.GetItemOrDefault(idxTiberium))
+			{
+				if (auto const pBldExt = BuildingExt::TryFetch(pBuilding))
+				{
+					pBldExt->AccumulatedIncome += static_cast<int>(amount * static_cast<float>(pTib->Value) * pBuilding->Owner->Type->IncomeMult);
+				}
+			}
+
+			amount = 0.0f;
+		}
 	}
 
 	return 0;
@@ -908,3 +932,5 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 }
 
 #pragma endregion
+
+
