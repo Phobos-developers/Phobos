@@ -1018,7 +1018,8 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		auto const pType = attachEffect->GetType();
 		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectsTarget, true)
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
-		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
+		const bool allowTransfer = pType->AllowTransfer_Convert.Get(pType->AllowTransfer.Get(!attachEffect->IsSelfOwned()));
+		const bool remove = !isValid || (!allowTransfer && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{

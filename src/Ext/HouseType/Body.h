@@ -40,6 +40,8 @@ public:
 	ValueableVector<BuildingTypeClass*> VeteranBuildings;
 	ValueableVector<BuildingTypeClass*> VeteranDefenses;
 
+	Nullable<AffectedHouse> RevealHouses;
+
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
 		, AttachEffects {}
@@ -51,6 +53,7 @@ public:
 		, Elite_AffectsAll { true }
 		, VeteranBuildings {}
 		, VeteranDefenses {}
+		, RevealHouses {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;

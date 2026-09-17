@@ -446,6 +446,8 @@ public:
 
 	NullableIdx<VocClass> VoiceEnterGrinder;
 
+	Nullable<AffectedHouse> RevealHouses;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -874,6 +876,8 @@ public:
 		, SubterraneanHeight {}
 
 		, VoiceEnterGrinder {}
+
+		, RevealHouses {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
