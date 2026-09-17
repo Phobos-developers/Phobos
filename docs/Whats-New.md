@@ -468,6 +468,7 @@ HideShakeEffects=false           ; boolean
 - Fixed several shield respawn/self heal issues (by Ollerus)
 - Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
 - Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
+- Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

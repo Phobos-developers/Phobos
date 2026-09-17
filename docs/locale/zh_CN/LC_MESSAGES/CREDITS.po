@@ -492,6 +492,9 @@ msgid ""
 msgstr ""
 "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
 
+msgid "Tiberium veins overlay palette fix"
+msgstr "泰伯利亚静脉蔓延地表色板修复"
+
 msgid "**Starkku**:"
 msgstr "**Starkku**："
 
