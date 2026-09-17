@@ -92,6 +92,9 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 			{
 				if (const auto pController = pTarget->MindControlledBy)
 				{
+					if (this->ForceWeapon_MindControlled_AffectsOriginalHouse == AffectedHouse::All)
+						return true;
+
 					const auto pManager = pController->CaptureManager;
 					HouseClass* pOldOwner = nullptr;
 
