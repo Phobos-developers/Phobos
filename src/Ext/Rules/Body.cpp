@@ -345,6 +345,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DamageOwnerMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier.Berzerk");
 	this->DamageAlliesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier.Berzerk");
 	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier.Berzerk");
+	this->DamageOriginalOwnerMultiplier_Owner.Read(exINI, GameStrings::CombatDamage, "DamageOriginalOwnerMultiplier.Owner");
+	this->DamageOriginalOwnerMultiplier_Allies.Read(exINI, GameStrings::CombatDamage, "DamageOriginalOwnerMultiplier.Allies");
+	this->DamageOriginalOwnerMultiplier_Enemies.Read(exINI, GameStrings::CombatDamage, "DamageOriginalOwnerMultiplier.Enemies");
+	this->DamageRandomMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageRandomMultiplier");
 
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
@@ -941,6 +945,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageOwnerMultiplier_Berzerk)
 		.Process(this->DamageAlliesMultiplier_Berzerk)
 		.Process(this->DamageEnemiesMultiplier_Berzerk)
+		.Process(this->DamageOriginalOwnerMultiplier_Owner)
+		.Process(this->DamageOriginalOwnerMultiplier_Allies)
+		.Process(this->DamageOriginalOwnerMultiplier_Enemies)
+		.Process(this->DamageRandomMultiplier)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
 		.Process(this->VoxelLightSource)
