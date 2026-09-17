@@ -481,8 +481,11 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 {
 	if (const auto pController = pTarget->MindControlledBy)
 	{
-		CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
-		return pTarget->Owner;
+		if (EnumFunctions::CanTargetHouse(this->RemoveMindControl_AffectsControllerHouse, pHouse, pController->Owner))
+		{
+			CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
+			return pTarget->Owner;
+		}
 	}
 
 	return pHouse;

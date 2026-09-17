@@ -77,7 +77,22 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 	{
 		pTargetType = pTargetTechno->GetTechnoType();
 
-		if (this->ForceWeapon_Naval_Decloaked >= 0
+		const int ironCurtainIndex = pTargetTechno->ForceShielded
+			? this->ForceWeapon_ForceShielded.Get(this->ForceWeapon_IronCurtained)
+			: this->ForceWeapon_IronCurtained;
+
+		const auto pParasite = (this->ForceWeapon_Parasited >= 0
+			&& (pTargetTechno->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+			? static_cast<FootClass*>(pTargetTechno)->ParasiteEatingMe : nullptr;
+
+		const auto pParasiteType = pParasite ? pParasite->GetTechnoType() : nullptr;
+		const auto pBomb = this->ForceWeapon_BombAttached >= 0 ? pTargetTechno->AttachedBomb : nullptr;
+
+		if (ironCurtainIndex >= 0 && pTargetTechno->IsIronCurtained())
+		{
+			forceWeaponIndex = ironCurtainIndex;
+		}
+		else if (this->ForceWeapon_Naval_Decloaked >= 0
 			&& pTargetType->Cloakable
 			&& pTargetType->Naval
 			&& pTargetTechno->CloakState == CloakState::Uncloaked)
@@ -98,6 +113,29 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 			&& pTargetTechno->IsUnderEMP())
 		{
 			forceWeaponIndex = this->ForceWeapon_UnderEMP;
+		}
+		else if (this->ForceWeapon_UnderBerzerk >= 0
+			&& pTargetTechno->Berzerk)
+		{
+			forceWeaponIndex = this->ForceWeapon_UnderBerzerk;
+		}
+		else if (pParasiteType
+			&& (this->ForceWeapon_Parasited_Allow.empty() || this->ForceWeapon_Parasited_Allow.Contains(pParasiteType))
+			&& !this->ForceWeapon_Parasited_Disallow.Contains(pParasiteType))
+		{
+			forceWeaponIndex = this->ForceWeapon_Parasited;
+		}
+		else if (pBomb && (!this->ForceWeapon_BombAttached_SameSourceOnly || pBomb->Owner == pThis)
+			&& (this->ForceWeapon_BombAttached_AffectTypes.empty()
+				|| (pBomb->Owner && this->ForceWeapon_BombAttached_AffectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+		{
+			forceWeaponIndex = this->ForceWeapon_BombAttached;
+		}
+		else if (this->ForceWeapon_MindControlled >= 0
+			&& pTargetTechno->MindControlledBy
+			&& EnumFunctions::CanTargetHouse(this->ForceWeapon_MindControlled_AffectsControllerHouse, pThis->Owner, pTargetTechno->MindControlledBy->Owner))
+		{
+			forceWeaponIndex = this->ForceWeapon_MindControlled;
 		}
 	}
 
@@ -913,10 +951,21 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
 
+	this->ForceWeapon_IronCurtained.Read(exINI, pSection, "ForceWeapon.IronCurtained");
+	this->ForceWeapon_ForceShielded.Read(exINI, pSection, "ForceWeapon.ForceShielded");
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
 	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
 	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
+	this->ForceWeapon_UnderBerzerk.Read(exINI, pSection, "ForceWeapon.UnderBerzerk");
+	this->ForceWeapon_Parasited.Read(exINI, pSection, "ForceWeapon.Parasited");
+	this->ForceWeapon_Parasited_Allow.Read(exINI, pSection, "ForceWeapon.Parasited.Allow");
+	this->ForceWeapon_Parasited_Disallow.Read(exINI, pSection, "ForceWeapon.Parasited.Disallow");
+	this->ForceWeapon_BombAttached.Read(exINI, pSection, "ForceWeapon.BombAttached");
+	this->ForceWeapon_BombAttached_SameSourceOnly.Read(exINI, pSection, "ForceWeapon.BombAttached.SameSourceOnly");
+	this->ForceWeapon_BombAttached_AffectTypes.Read(exINI, pSection, "ForceWeapon.BombAttached.AffectTypes");
+	this->ForceWeapon_MindControlled.Read(exINI, pSection, "ForceWeapon.MindControlled");
+	this->ForceWeapon_MindControlled_AffectsControllerHouse.Read(exINI, pSection, "ForceWeapon.MindControlled.AffectsControllerHouse");
 	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, pSection, "ForceWeapon.InRange.TechnoOnly");
 	this->ForceWeapon_InRange.Read(exINI, pSection, "ForceWeapon.InRange");
 	this->ForceWeapon_InRange_Overrides.Read(exINI, pSection, "ForceWeapon.InRange.Overrides");
@@ -935,10 +984,16 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_Aircraft.Read(exINI, pSection, "ForceAAWeapon.Aircraft");
 
 	this->ForceWeapon_Check = (
-		this->ForceWeapon_Naval_Decloaked >= 0
+		this->ForceWeapon_IronCurtained >= 0
+		|| this->ForceWeapon_ForceShielded >= 0
+		|| this->ForceWeapon_Naval_Decloaked >= 0
 		|| this->ForceWeapon_Cloaked >= 0
 		|| this->ForceWeapon_Disguised >= 0
 		|| this->ForceWeapon_UnderEMP >= 0
+		|| this->ForceWeapon_UnderBerzerk >= 0
+		|| this->ForceWeapon_Parasited >= 0
+		|| this->ForceWeapon_BombAttached >= 0
+		|| this->ForceWeapon_MindControlled >= 0
 		|| !this->ForceWeapon_InRange.empty()
 		|| !this->ForceAAWeapon_InRange.empty()
 		|| this->ForceWeapon_Buildings >= 0
@@ -1587,10 +1642,21 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->EnemyUIName)
 
 		.Process(this->ForceWeapon_Check)
+		.Process(this->ForceWeapon_IronCurtained)
+		.Process(this->ForceWeapon_ForceShielded)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->ForceWeapon_Cloaked)
 		.Process(this->ForceWeapon_Disguised)
 		.Process(this->ForceWeapon_UnderEMP)
+		.Process(this->ForceWeapon_UnderBerzerk)
+		.Process(this->ForceWeapon_Parasited)
+		.Process(this->ForceWeapon_Parasited_Allow)
+		.Process(this->ForceWeapon_Parasited_Disallow)
+		.Process(this->ForceWeapon_BombAttached)
+		.Process(this->ForceWeapon_BombAttached_SameSourceOnly)
+		.Process(this->ForceWeapon_BombAttached_AffectTypes)
+		.Process(this->ForceWeapon_MindControlled)
+		.Process(this->ForceWeapon_MindControlled_AffectsControllerHouse)
 		.Process(this->ForceWeapon_InRange_TechnoOnly)
 		.Process(this->ForceWeapon_InRange)
 		.Process(this->ForceWeapon_InRange_Overrides)

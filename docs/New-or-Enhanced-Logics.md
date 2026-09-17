@@ -2155,10 +2155,21 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 *Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
+  - `ForceWeapon.IronCurtained` forces specified weapon to be used if the target is iron curtained.
+    - `ForceWeapon.ForceShielded` can be used to set this separately for Force Shielded objects, defaults to value of `ForceWeapon.IronCurtained`.
   - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked `Naval=yes` targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
+  - `ForceWeapon.UnderBerzerk` forces specified weapon to be used if the target is under Berzerk effect.
+  - `ForceWeapon.Parasited` forces specified weapon to be used if the target is being parasited.
+    - `ForceWeapon.Parasited.Allow` can be used to define which parasites can force the weapon.
+    - `ForceWeapon.Parasited.Disallow` can be used to define which parasites cannot force the weapon.
+  - `ForceWeapon.BombAttached` forces specified weapon to be used if the target is attached by an `IvanBomb`.
+    - `ForceWeapon.BombAttached.SameInvokerOnly` can be used to configure whether the weapon will be forced to a target with ivan bombs only if they come from the same invoker.
+    - `ForceWeapon.BombAttached.AffectTypes` can be used to configure Ivan bombs from which TechnoType can force the weapon, use empty for all types.
+  - `ForceWeapon.MindControlled` forces specified weapon to be used if the target is mind controlled. Doesn't work for perma control.
+    - `ForceWeapon.MindControlled.AffectsControllerHouse` can be used to configure whether the weapon will be forced to a mind controlled target based on the controller's house.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` set to true, it'll only be forced on TechnoTypes like other forced weapons, otherwise it'll also be forced when attacking empty grounds. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
@@ -2172,31 +2183,46 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 In `rulesmd.ini`:
 ```ini
 [General]
-ForceWeapon.InRange.TechnoOnly=true              ; boolean
-ForceWeapon.InRange.ApplyRangeModifiers=false    ; boolean
-ForceAAWeapon.InRange.ApplyRangeModifiers=false  ; boolean
+ForceWeapon.InRange.TechnoOnly=true                     ; boolean
+ForceWeapon.InRange.ApplyRangeModifiers=false           ; boolean
+ForceAAWeapon.InRange.ApplyRangeModifiers=false         ; boolean
 
-[SOMETECHNO]                                     ; TechnoType
-ForceWeapon.Naval.Decloaked=-1                   ; integer, -1 to disable
-ForceWeapon.Cloaked=-1                           ; integer, -1 to disable
-ForceWeapon.Disguised=-1                         ; integer, -1 to disable
-ForceWeapon.UnderEMP=-1                          ; integer, -1 to disable
-ForceWeapon.InRange=                             ; List of integers
-ForceWeapon.InRange.TechnoOnly=                  ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
-ForceWeapon.InRange.Overrides=                   ; List of floating-point values
-ForceWeapon.InRange.ApplyRangeModifiers=         ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
-ForceAAWeapon.InRange=                           ; List of integers
-ForceAAWeapon.InRange.Overrides=                 ; List of floating-point values
-ForceAAWeapon.InRange.ApplyRangeModifiers=       ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
-ForceWeapon.Buildings=-1                         ; integer, -1 to disable
-ForceWeapon.Defenses=-1                          ; integer, -1 to disable
-ForceWeapon.Infantry=-1                          ; integer, -1 to disable
-ForceWeapon.Naval.Units=-1                       ; integer, -1 to disable
-ForceWeapon.Units=-1                             ; integer, -1 to disable
-ForceWeapon.Aircraft=-1                          ; integer, -1 to disable
-ForceAAWeapon.Infantry=-1                        ; integer, -1 to disable
-ForceAAWeapon.Units=-1                           ; integer, -1 to disable
-ForceAAWeapon.Aircraft=-1                        ; integer, -1 to disable
+[SOMETECHNO]                                            ; TechnoType
+ForceWeapon.IronCurtained=-1                            ; integer, -1 to disable
+ForceWeapon.ForceShielded=                              ; integer, -1 to disable
+ForceWeapon.Naval.Decloaked=-1                          ; integer, -1 to disable
+ForceWeapon.Cloaked=-1                                  ; integer, -1 to disable
+ForceWeapon.Disguised=-1                                ; integer, -1 to disable
+ForceWeapon.UnderEMP=-1                                 ; integer, -1 to disable
+ForceWeapon.UnderBerzerk=-1                             ; integer, -1 to disable
+ForceWeapon.Parasited=-1                                ; integer, -1 to disable
+ForceWeapon.Parasited.Allow=                            ; List of TechnoTypes
+ForceWeapon.Parasited.Disallow=                         ; List of TechnoTypes
+ForceWeapon.BombAttached=-1                             ; integer, -1 to disable
+ForceWeapon.BombAttached.SameInvokerOnly=true           ; boolean
+ForceWeapon.BombAttached.AffectTypes                    ; List of TechnoTypes
+ForceWeapon.MindControlled=-1                           ; integer, -1 to disable
+ForceWeapon.MindControlled.AffectsControllerHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+ForceWeapon.InRange=                                    ; List of integers
+ForceWeapon.InRange.TechnoOnly=                         ; boolean, default to [General] -> ForceWeapon.InRange.TechnoOnly
+ForceWeapon.InRange.Overrides=                          ; List of floating-point values
+ForceWeapon.InRange.ApplyRangeModifiers=                ; boolean, default to [General] -> ForceWeapon.InRange.ApplyRangeModifiers
+ForceAAWeapon.InRange=                                  ; List of integers
+ForceAAWeapon.InRange.Overrides=                        ; List of floating-point values
+ForceAAWeapon.InRange.ApplyRangeModifiers=              ; boolean, default to [General] -> ForceAAWeapon.InRange.ApplyRangeModifiers
+ForceWeapon.Buildings=-1                                ; integer, -1 to disable
+ForceWeapon.Defenses=-1                                 ; integer, -1 to disable
+ForceWeapon.Infantry=-1                                 ; integer, -1 to disable
+ForceWeapon.Naval.Units=-1                              ; integer, -1 to disable
+ForceWeapon.Units=-1                                    ; integer, -1 to disable
+ForceWeapon.Aircraft=-1                                 ; integer, -1 to disable
+ForceAAWeapon.Infantry=-1                               ; integer, -1 to disable
+ForceAAWeapon.Units=-1                                  ; integer, -1 to disable
+ForceAAWeapon.Aircraft=-1                               ; integer, -1 to disable
+```
+
+```{note}
+`ForceWeapon.BombAttached.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. This may change in future.
 ```
 
 ```{note}
@@ -2953,6 +2979,7 @@ When pure damage effects use `AffectsInvokerOnly`, it still checks settings such
 *Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
+- `RemoveMindControl.AffectsControllerHouse` can be used to configure whether the mind control will be broken based on the controller's house.
 - Both `RemoveMindControl` and `MindControl.Permanent` will remove the target's original conventional mind control effect and play the `MindClearedSound` sound effect. This can now be configured via `RemoveMindControl.Silent`, which defaults to `[AudioVisual] -> RemoveMindControl.Silent` for removing conventional mind control, and defaults to `[AudioVisual] -> MindControl.Permanent.ReplaceSilent` for cases where permanent mind control replaces conventional mind control.
 
 ```{hint}
@@ -2962,12 +2989,13 @@ You can simply use this flag to reduce some noise, or play another sound effect 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-RemoveMindControl.Silent=false             ; boolean
-MindControl.Permanent.ReplaceSilent=false  ; boolean
+RemoveMindControl.Silent=false                  ; boolean
+MindControl.Permanent.ReplaceSilent=false       ; boolean
 
-[SOMEWARHEAD]                              ; WarheadType
-RemoveMindControl=false                    ; boolean
-RemoveMindControl.Silent=                  ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
+[SOMEWARHEAD]                                   ; WarheadType
+RemoveMindControl=false                         ; boolean
+RemoveMindControl.AffectsControllerHouse=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+RemoveMindControl.Silent=                       ; boolean, normal removal defaults to [AudioVisual] -> RemoveMindControl.Silent, permanent replacement defaults to [AudioVisual] -> MindControl.Permanent.ReplaceSilent
 ```
 
 ### CellSpread enhancement

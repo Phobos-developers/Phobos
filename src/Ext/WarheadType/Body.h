@@ -47,6 +47,7 @@ public:
 	Nullable<bool> Conventional_IgnoreUnits;
 	Valueable<bool> RemoveDisguise;
 	Valueable<bool> RemoveMindControl;
+	Valueable<AffectedHouse> RemoveMindControl_AffectsControllerHouse;
 	Nullable<bool> RemoveMindControl_Silent;
 	Nullable<bool> RemoveParasite;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
@@ -333,6 +334,7 @@ public:
 		, Conventional_IgnoreUnits {}
 		, RemoveDisguise { false }
 		, RemoveMindControl { false }
+		, RemoveMindControl_AffectsControllerHouse { AffectedHouse::All }
 		, RemoveMindControl_Silent {}
 		, RemoveParasite {}
 		, RemoveParasite_Allow {}
