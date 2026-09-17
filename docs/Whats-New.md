@@ -441,6 +441,14 @@ HideShakeEffects=false           ; boolean
 - [Attached animation draw offset customizations](Fixed-or-Improved-Logics.md#draw-offset-customization) (by Starkku)
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
+- Country-based attached effects (by Ollerus)
+- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
+- [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
+- [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
+- [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
+- [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
+- Customize the country displayed in `Sight` (by FlyStar)
+- [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -448,12 +456,17 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- Observer can see IvanBomb that's attached by any house (by NetsuNegi)
+- Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
+- Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
 - Fixed several shield respawn/self heal issues (by Ollerus)
+- Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
+- Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 
 #### Fixes / interactions with other extensions:
@@ -1230,7 +1243,7 @@ HideShakeEffects=false           ; boolean
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein, ZivDero)
-- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles) (by TaranDahl & Noble_Fish)
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)

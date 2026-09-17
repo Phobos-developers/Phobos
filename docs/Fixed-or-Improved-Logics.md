@@ -293,7 +293,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the move mission of the jumpjet does not end correctly.
 - AI team garrison scripts now re-evaluate destination immediately instead of trying to garrison ungarrisonable building before changing target.
 - Fixed the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health.
-- Fixed the issue that techno must end its movement before starting the next mission, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
+- Fixed the issue that techno controlled by human player must end its movement before starting the next mission, which is mostly problematic for jumpjet and hover techno. Set `[General] -> ReadyToNextMission.MovingCheck` to true to disable the fix.
 - Fixed an issue where parachute units would die upon landing if bridges were destroyed during their descent.
 - Voxel drawing code now skips sections that are invisible (have all zeros in the transform matrix main diagonal, meaning that the scale is 0% on all axes), thus increasing drawing performance for some voxels.
 - Fixed the bug that unit will play crashing voice & sound when dropped by warhead with `IsLocomotor=yes`.
@@ -331,6 +331,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately.
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
+- Observer can see IvanBomb that's attached by any house.
+- Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 
 ## Fixes / interactions with other extensions
@@ -1542,6 +1544,37 @@ In `rulesmd.ini`:
 Cloning.Powered=true  ; boolean
 ```
 
+## Countries
+
+### Country-specific veteran buildings
+
+- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following 2 flags are added to complete the meaningful combination results.
+
+```{hint}
+`Defenses` refers to buildings with `BuildCat=Combat`, consistent with vanilla rules.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]           ; Country
+VeteranBuildings=       ; List of BuildingTypes
+VeteranDefenses=        ; List of BuildingTypes
+```
+
+```{note}
+Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
+```
+
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=                    ; InfantryType, defaults to [Side] -> Crew
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry
@@ -2231,6 +2264,16 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
 
+### Enter the grinder voice
+
+- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+VoiceEnterGrinder=         ; Sound entry
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -2659,6 +2702,16 @@ In `rulesmd.ini`:
 MinimapColor=  ; integer - Red,Green,Blue
 ```
 
+### Grow and spread on slopes
+
+- In vanilla, Tiberium is hardcoded to be unable to grow and spread on slopes; even if forcibly placed, it will be cleared. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEORE]         ; Tiberium
+AllowRamps=false  ; boolean
+```
+
 ## Vehicles
 
 ### Allow miners do area guard
@@ -2716,6 +2769,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                         ; VehicleType
 HarvesterLoadRate=                    ; integer, default to [General] -> HarvesterLoadRate
+```
+
+### Customize `IdleActionFrequency`
+
+- Now `IdleActionFrequency` can be customized on each infantry.
+  - With a single value, the interval is a random value between `IdleActionFrequency * 450` and `IdleActionFrequency * 1800` frames, which customizes the frequency the same way the global value does.
+  - With two values, the first one directly sets the lower bound and the second one the upper bound of the random interval in frames.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]                        ; InfantryType
+IdleActionFrequency=                  ; a single floating point value, or a pair of integers defining the random delay range in frames (min, max), defaults to [AudioVisual] -> IdleActionFrequency
 ```
 
 ### Customize type selection for IFV

@@ -19,9 +19,21 @@ public:
 	void AI();
 	void AI_Temporal();
 	void UpdateConditionalAnimDrawingLogic();
-	void KillAnim();
+
+	void KillAnim()
+	{
+		if (this->Animation)
+		{
+			this->Animation->UnInit();
+			this->Animation = nullptr;
+
+			if (this->Type->RequiresAnimUpdate)
+				this->ShouldUpdateAnim = true;
+		}
+	}
+
 	void CreateAnim();
-	void UpdateCumulativeAnim(int count);
+	bool UpdateCumulativeAnim(int count);
 
 	bool HasAnim() const
 	{
@@ -40,7 +52,10 @@ public:
 	void SetAnimationTunnelState(bool visible)
 	{
 		if (!this->IsInTunnel && !visible)
+		{
 			this->KillAnim();
+			this->ShouldUpdateAnim = false; // no need to update anim here since they're all killed
+		}
 
 		this->IsInTunnel = !visible;
 	}
@@ -48,9 +63,22 @@ public:
 	AttachEffectTypeClass* GetType() const { return this->Type; }
 	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
-	bool ResetIfRecreatable();
+
+	bool ResetIfRecreatable()
+	{
+		if (this->RecreationDelay < 0)
+			return false;
+
+		this->KillAnim();
+		this->Duration = 0;
+		this->CurrentDelay = this->RecreationDelay;
+		this->ShouldRefreshDuration = true;
+
+		return true;
+	}
+
 	bool IsSelfOwned() const { return this->SelfOwned; }
-	bool HasExpired() const { return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration; }
+	bool HasExpired() const { return this->Delay >= 0 ? false : !this->Duration; }
 	bool ShouldBeDiscardedNow();
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const { return pInvoker == this->Invoker && pSource == this->Source; }
 	TechnoClass* GetInvoker() const { return this->Invoker; }
@@ -60,7 +88,7 @@ public:
 
 	bool IsActiveIgnorePowered() const
 	{
-		if (this->IsSelfOwned())
+		if (this->IsSelfOwned() || this->Delay >= 0)
 			return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->ShouldRefreshDuration;
 		else
 			return this->Duration;
@@ -70,7 +98,7 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false);
+	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo, bool selfOwned = false, bool hasDelay = false);
 	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
@@ -81,10 +109,10 @@ private:
 	void AnimCheck();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool checkCumulative = true);
+		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool& updateAnim, bool checkCumulative = true);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
-	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
+	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount, bool& updateAnim);
 
 	template <typename T>
 	bool Serialize(T& Stm);
@@ -119,6 +147,7 @@ public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
 	bool ShouldRecalculateStats;
+	bool ShouldUpdateAnim;
 	int FiringCount;
 	int ReceivedDamageCount;
 };
@@ -139,6 +168,7 @@ struct AttachEffectTechnoProperties
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
 	bool HasOnDamageDiscardables;
+	bool HasOwnerChangeDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
 
@@ -155,7 +185,7 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
-		, HasOnDamageDiscardables { false }
+		, HasOwnerChangeDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
 	{ }
