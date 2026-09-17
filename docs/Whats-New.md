@@ -442,8 +442,13 @@ HideShakeEffects=false           ; boolean
 - [Draw offset rules for AttachEffect animations](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
-- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi)
+- [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
 - [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
+- [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
+- [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
+- [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
+- Customize the country displayed in `Sight` (by FlyStar)
+- [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
 
 #### Vanilla fixes:
@@ -453,12 +458,16 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
+- Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
+- Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
 - Fixed several shield respawn/self heal issues (by Ollerus)
+- Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
+- Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

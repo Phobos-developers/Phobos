@@ -36,22 +36,20 @@ DEFINE_HOOK(0x68AD0C, ScenarioClass_ReadMap_SetEVAIndex, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x707DCF, TechnoClass_GetCrew_NationalOverride, 0x5)
+// Ares has taken over TechnoClass_GetCrew, so usually it won't work.
+DEFINE_HOOK(0x707D40, TechnoClass_GetCrew_NationalOverride, 0x6)
 {
-	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x707D81 };
 
-	if (!pThis)
-		return 0;
-
-	HouseClass* pHouse = pThis->Owner;
-
-	if (!pHouse)
-		return 0;
+	GET(HouseClass* const, pHouse, ECX);
 
 	auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
 
 	if (pHouseTypeExt->Crew.isset())
-		R->EAX(pHouseTypeExt->Crew.Get());
+	{
+		R->ESI(pHouseTypeExt->Crew.Get());
+		return SkipGameCode;
+	}
 
 	return 0;
 }

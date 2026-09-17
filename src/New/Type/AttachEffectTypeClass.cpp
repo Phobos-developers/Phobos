@@ -135,6 +135,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_OwnerChange_HumanToComputer.Read(exINI, pSection, "DiscardOn.OwnerChange.HumanToComputer");
 	this->DiscardOn_OwnerChange_ComputerToHuman.Read(exINI, pSection, "DiscardOn.OwnerChange.ComputerToHuman");
 	this->DiscardOn_OwnerChange_IgnoreRevertOnExit.Read(exINI, pSection, "DiscardOn.OwnerChange.IgnoreRevertOnExit");
+	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+	this->AllowTransfer_Convert.Read(exINI, pSection, "AllowTransfer.Convert");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
@@ -245,6 +247,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		this->RequiresRecalculation = false;
 	}
 
+	// RequiresAnimUpdate
+	if (this->Animation_HideIfAttachedWith.size() > 0 || this->Animation_DrawOffsets.size() > 0)
+		this->RequiresAnimUpdate = true;
+	else
+		this->RequiresAnimUpdate = false;
+
 	// RestrictedArmorMultiplier
 	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
 		this->RestrictedArmorMultiplier = true;
@@ -281,6 +289,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_OwnerChange_HumanToComputer)
 		.Process(this->DiscardOn_OwnerChange_ComputerToHuman)
 		.Process(this->DiscardOn_OwnerChange_IgnoreRevertOnExit)
+		.Process(this->AllowTransfer)
+		.Process(this->AllowTransfer_Convert)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
@@ -338,6 +348,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Groups)
 		.Process(this->Animation_DrawOffsets)
 		.Process(this->RequiresRecalculation)
+		.Process(this->RequiresAnimUpdate)
 		;
 }
 

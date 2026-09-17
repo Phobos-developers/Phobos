@@ -1204,6 +1204,13 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
 
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
+
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+	
+	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
+
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
 	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
 
@@ -1840,6 +1847,13 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+			
+		.Process(this->RevealHouses)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
+
+		.Process(this->VoiceEnterGrinder)
 
 		.Process(this->DefaultToGuardArea_Modes)
 		.Process(this->DefaultToGuardArea_AIModes)

@@ -34,7 +34,7 @@ void TechnoExt::ApplyInterceptor()
 	const auto pTypeExt = this->TypeExtData;
 	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (!pInterceptorType || Unsorted::CurrentFrame % pInterceptorType->TargetingDelay != 0)
+	if (!pInterceptorType || (Unsorted::CurrentFrame + this->RandomFactor) % pInterceptorType->TargetingDelay != 0)
 		return;
 
 	const auto pThis = this->OwnerObject();
@@ -942,10 +942,12 @@ void TechnoExt::UpdateAttachEffects()
 		if (hasExpired || shouldDiscard)
 		{
 			attachEffect->ShouldBeDiscarded = false;
-			requiresUpdateAnim = true;
 
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
+
+			if (pType->RequiresAnimUpdate)
+				requiresUpdateAnim = true;
 
 			if (pType->HasTint())
 				markForRedraw = true;
@@ -1007,7 +1009,7 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<AEWeaponParams> expireWeapons;
 	bool requiresRecalc = false;
-	int removeCount = 0;
+	bool requiresAnimUpdate = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1016,15 +1018,18 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 		auto const pType = attachEffect->GetType();
 		const bool isValid = EnumFunctions::IsTechnoEligible(pThis, pType->AffectsTarget, true)
 			&& (pType->AffectTypes.empty() || pType->AffectTypes.Contains(pTechnoType)) && !pType->IgnoreTypes.Contains(pTechnoType);
-		const bool remove = !isValid || (attachEffect->IsSelfOwned() && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
+		const bool allowTransfer = pType->AllowTransfer_Convert.Get(pType->AllowTransfer.Get(!attachEffect->IsSelfOwned()));
+		const bool remove = !isValid || (!allowTransfer && !pTypeExt->AttachEffects.AttachTypes.Contains(pType));
 
 		if (remove)
 		{
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
+			if (pType->RequiresAnimUpdate)
+				requiresAnimUpdate = true;
+
 			attachEffect->AddExpireWeaponParams(ExpireWeaponCondition::Expire, expireWeapons);
-			removeCount++;
 			it = this->AttachedEffects.erase(it);
 		}
 		else
@@ -1043,11 +1048,11 @@ void TechnoExt::UpdateSelfOwnedAttachEffects()
 	if (requiresRecalc)
 		this->RecalculateStatMultipliers();
 
-	// Add new ones.
-	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true, true);
-
-	if (!count && removeCount > 0)
+	if (requiresAnimUpdate)
 		this->UpdateAEAnimDrawingLogic();
+
+	// Add new ones.
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true, true);
 }
 
 // Updates CumulativeAnimations AE's on techno.

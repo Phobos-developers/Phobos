@@ -441,6 +441,13 @@ public:
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
+	NullableIdx<VocClass> VoiceEnterGrinder;
+
+	Nullable<AffectedHouse> RevealHouses;
+
 	ValueableVector<int> DefaultToGuardArea_Modes;
 	ValueableVector<int> DefaultToGuardArea_AIModes;
 
@@ -857,6 +864,13 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
+
+		, RevealHouses {}
 
 		, DefaultToGuardArea_Modes {}
 		, DefaultToGuardArea_AIModes {}

@@ -79,6 +79,8 @@ public:
 	Valueable<bool> DiscardOn_OwnerChange_HumanToComputer;
 	Valueable<bool> DiscardOn_OwnerChange_ComputerToHuman;
 	Valueable<bool> DiscardOn_OwnerChange_IgnoreRevertOnExit;
+	Nullable<bool> AllowTransfer;
+	Nullable<bool> AllowTransfer_Convert;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -137,6 +139,7 @@ public:
 	std::vector<std::string> Groups;
 	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 	bool RequiresRecalculation;
+	bool RequiresAnimUpdate;
 	bool RestrictedArmorMultiplier;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
@@ -165,6 +168,8 @@ public:
 		, DiscardOn_OwnerChange_HumanToComputer { true }
 		, DiscardOn_OwnerChange_ComputerToHuman { true }
 		, DiscardOn_OwnerChange_IgnoreRevertOnExit { false }
+		, AllowTransfer {}
+		, AllowTransfer_Convert {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}
@@ -222,6 +227,7 @@ public:
 		, Groups {}
 		, Animation_DrawOffsets {}
 		, RequiresRecalculation { false }
+		, RequiresAnimUpdate { false }
 		, RestrictedArmorMultiplier { false }
 	{};
 
