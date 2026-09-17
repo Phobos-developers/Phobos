@@ -448,6 +448,8 @@ HideShakeEffects=false           ; boolean
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
 - Customize the country displayed in `Sight` (by FlyStar)
+- [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
+- [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - Customizable damage divider for `AnimList`, `SplashList`, `Crit_AnimList` picker(by Fryone)
 
 #### Vanilla fixes:
@@ -467,6 +469,7 @@ HideShakeEffects=false           ; boolean
 - Fixed several shield respawn/self heal issues (by Ollerus)
 - Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
 - Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
+- Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

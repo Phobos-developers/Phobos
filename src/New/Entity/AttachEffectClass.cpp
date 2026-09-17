@@ -1223,14 +1223,14 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 	for (it = pSourceExt->AttachedEffects.begin(); it != pSourceExt->AttachedEffects.end(); )
 	{
 		auto const attachEffect = it->get();
+		auto const type = attachEffect->GetType();
 
-		if (attachEffect->IsSelfOwned())
+		if (!type->AllowTransfer.Get(!attachEffect->IsSelfOwned()))
 		{
 			++it;
 			continue;
 		}
 
-		auto const type = attachEffect->GetType();
 		const bool isValid = EnumFunctions::IsTechnoEligible(pTarget, type->AffectsTarget, true)
 			&& (type->AffectTypes.empty() || type->AffectTypes.Contains(pTargetType)) && !type->IgnoreTypes.Contains(pTargetType);
 

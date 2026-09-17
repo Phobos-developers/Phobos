@@ -454,6 +454,13 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Ammo.Read(exINI, pSection, "Ammo");
 
+	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
+	this->IvanBomb_Detonate_SameInvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.SameInvokerOnly");
+	this->IvanBomb_Detonate_PenetratesTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesTransport");
+	this->IvanBomb_Detonate_PenetratesGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesGarrison");
+	this->IvanBomb_Detonate_AffectsParasite.Read(exINI, pSection, "IvanBomb.Detonate.AffectsParasite");
+	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -520,6 +527,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
 		|| this->Ammo
+		|| this->IvanBomb_Detonate
 	);
 
 	char tempBuffer[32];
@@ -828,6 +836,13 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->DamageAreaTarget)
 
 		.Process(this->Ammo)
+
+		.Process(this->IvanBomb_Detonate)
+		.Process(this->IvanBomb_Detonate_SameInvokerOnly)
+		.Process(this->IvanBomb_Detonate_PenetratesTransport)
+		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
+		.Process(this->IvanBomb_Detonate_AffectsParasite)
+		.Process(this->IvanBomb_Detonate_AffectTypes)
 		;
 }
 
