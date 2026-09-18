@@ -56,13 +56,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (pWHExt->DamageTargetHealthMultiplier)
 			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
 
-		const auto randomMultiplier = pWHExt->DamageRandomMultiplier.Get(RulesExt::Global()->DamageRandomMultiplier);
-
-		if (randomMultiplier.X < randomMultiplier.Y)
-		{
-			const double factor = ScenarioClass::Instance->Random.RandomDouble();
-			multiplier += randomMultiplier.X + factor * (randomMultiplier.Y - randomMultiplier.X);
-		}
+		multiplier += GeneralUtils::GetRangedRandomOrSingleValue(pWHExt->DamageRandomMultiplier.Get(RulesExt::Global()->DamageRandomMultiplier));
 
 		if (pAttacker && pAttacker->Berzerk)
 		{
