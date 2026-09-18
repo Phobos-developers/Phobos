@@ -450,6 +450,9 @@ public:
 
 	Nullable<AffectedHouse> RevealHouses;
 
+	ValueableVector<TechnoTypeClass*> PreventFire_Types;
+	Valueable<AffectedHouse> PreventFire_AffectsHouse;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -872,6 +875,9 @@ public:
 		, VoiceEnterGrinder {}
 
 		, RevealHouses {}
+
+		, PreventFire_Types {}
+		, PreventFire_AffectsHouse { AffectedHouse::All }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

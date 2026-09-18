@@ -1211,6 +1211,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	
 	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
 
+	this->PreventFire_Types.Read(exINI, pSection, "PreventFire.Types");
+	this->PreventFire_AffectsHouse.Read(exINI, pSection, "PreventFire.AffectsHouse");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1853,6 +1856,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->SubterraneanHeight)
 
 		.Process(this->VoiceEnterGrinder)
+
+		.Process(this->PreventFire_Types)
+		.Process(this->PreventFire_AffectsHouse)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

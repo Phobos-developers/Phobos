@@ -1110,7 +1110,9 @@ bool TechnoExt::CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse)
 
 bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 {
-	if (TechnoExt::Fetch(pThis)->AE.DisableWeapons)
+	const auto pExt = TechnoExt::Fetch(pThis);
+
+	if (pExt->AE.DisableWeapons)
 		return true;
 
 	if (AresHelper::CanUseAres)
@@ -1119,6 +1121,36 @@ bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 
 		if (pExt_Ares->DisableWeaponsTimer.InProgress())
 			return true;
+	}
+
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->PreventFire_Types.size() > 0 && pExt->CheckPreventFireType)
+	{
+		auto const pTarget = pThis->Target;
+
+		if (!pTarget)
+			return false;
+
+		auto const pOwner = pThis->Owner;
+		auto const affectHouse = pTypeExt->PreventFire_AffectsHouse;
+
+		for (auto const pType : pTypeExt->PreventFire_Types)
+		{
+			for (auto const pTechno : TechnoTypeExt::Fetch(pType)->Array)
+			{
+				if (pTechno == pThis)
+					continue;
+
+				auto const pTechnoTarget = TechnoExt::Fetch(pTechno)->PreventFireTarget;
+
+				if (pTechnoTarget && pTechnoTarget == pTarget
+					&& EnumFunctions::CanTargetHouse(affectHouse, pOwner, pTechno->Owner))
+				{
+					return true;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -1133,6 +1165,7 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 	int timeLeft = 0;
 
 	pExt->AE.DisableWeapons = false;
+	pExt->CheckPreventFireType = false;
 
 	if (canUseAres)
 	{
@@ -1142,6 +1175,7 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 
 	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
 	pExt->AE.DisableWeapons = disableWeapons;
+	pExt->CheckPreventFireType = true;
 
 	if (canUseAres && timeLeft > 0)
 		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
@@ -1204,6 +1238,8 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
+		.Process(this->CheckPreventFireType)
+		.Process(this->PreventFireTarget)
 		;
 }
 

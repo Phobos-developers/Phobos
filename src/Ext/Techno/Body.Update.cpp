@@ -27,6 +27,9 @@ void TechnoExt::OnEarlyUpdate()
 		return;
 
 	this->ApplyInterceptor();
+
+	if (this->PreventFireTarget && this->OwnerObject()->Target != this->PreventFireTarget)
+		this->PreventFireTarget = nullptr;
 }
 
 void TechnoExt::ApplyInterceptor()
