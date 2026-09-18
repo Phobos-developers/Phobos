@@ -1274,18 +1274,29 @@ float HouseExt::AddTiberiumStorage(float amount, int index)
 
 float HouseExt::RemoveTiberiumStorage(float amount, int index)
 {
+	auto const pOwner = this->OwnerObject();
+
 	if (index >= 0 && index < static_cast<int>(this->TiberiumStorage.size()) && amount > 0.0f)
 	{
 		float const removed = std::min(this->TiberiumStorage[index], amount);
 		this->TiberiumStorage[index] -= removed;
+
+		if (index < 4 && pOwner)
+			pOwner->OwnedTiberium.RemoveAmount(removed, index);
+
 		if (removed > 0.0f)
 			return removed;
 	}
 
-	if (index >= 0 && index < 4 && this->OwnerObject())
+	if (index >= 0 && index < 4 && pOwner)
 	{
-		float const cur = this->OwnerObject()->OwnedTiberium.GetAmount(index);
-		return std::min(cur, amount);
+		float const cur = pOwner->OwnedTiberium.GetAmount(index);
+		float const removed = std::min(cur, amount);
+		if (removed > 0.0f)
+		{
+			pOwner->OwnedTiberium.RemoveAmount(removed, index);
+			return removed;
+		}
 	}
 
 	return 0.0f;

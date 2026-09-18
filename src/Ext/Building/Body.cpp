@@ -82,9 +82,6 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
 	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
-	Debug::Log("[Phobos] BuildingExt::StoreTiberium (4-arg): bld=%s, amount=%.2f, idxTib=%d, idxStorageTib=%d\n",
-		pThis && pThis->Type ? pThis->Type->get_ID() : "null", amount, idxTiberiumType, idxStorageTiberiumType);
-
 	if (amount > 0.0f)
 	{
 		auto const pExt = BuildingTypeExt::Fetch(pThis->Type);
@@ -93,24 +90,27 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 		{
 			// Store Tiberium in structures
 			depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-			Debug::Log("[Phobos] Calling GiveTiberium(%.2f, %d)\n", depositableTiberiumAmount, idxStorageTiberiumType);
-			pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+			if (idxStorageTiberiumType < 4)
+			{
+				pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+			}
+			else
+			{
+				BuildingExt::StoreTiberium(pThis, depositableTiberiumAmount, idxStorageTiberiumType);
+			}
 		}
 	}
 }
 
-void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType)
+float BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType)
 {
-	Debug::Log("[Phobos] BuildingExt::StoreTiberium (3-arg): bld=%s, amount=%.2f, idxTib=%d\n",
-		pThis && pThis->Type ? pThis->Type->get_ID() : "null", amount, idxTiberiumType);
-
 	if (amount <= 0.0f || !pThis || !pThis->Owner)
-		return;
+		return 0.0f;
 
 	auto const pHouse = pThis->Owner;
 	auto const pHouseExt = HouseExt::Fetch(pHouse);
 
-	const auto lastStorage = static_cast<int>(pHouse->OwnedTiberium.GetTotalAmount());
+	const auto lastStorage = static_cast<int>(pHouseExt ? pHouseExt->GetTotalTiberiumStorage() : pHouse->OwnedTiberium.GetTotalAmount());
 	const auto lastTotalStorage = pHouse->TotalStorage;
 
 	// First, try to store in the unloading building (dock / refinery)
@@ -135,9 +135,6 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 		float const curStored = pBldExt ? pBldExt->GetTotalTiberium() : (pBld->Type->Storage > 0 ? pBld->Tiberium.GetTotalAmount() : 0.0f);
 		float const freeSpace = static_cast<float>(pBld->Type->Storage) - curStored;
 
-		Debug::Log("[Phobos] Target bld=%s, curStored=%.2f, freeSpace=%.2f, remaining=%.2f\n",
-			pBld->Type->get_ID(), curStored, freeSpace, remaining);
-
 		if (freeSpace > 0.0f)
 		{
 			float const toStore = std::min(remaining, freeSpace);
@@ -153,13 +150,14 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 			if (pHouseExt)
 				pHouseExt->AddTiberiumStorage(toStore, idxTiberiumType);
 
+			pBld->Mark(MarkType::Change);
+
 			remaining -= toStore;
-			Debug::Log("[Phobos] Stored %.2f into bld=%s, remaining=%.2f\n",
-				toStore, pBld->Type->get_ID(), remaining);
 		}
 	}
 
 	pHouse->UpdateAllSilos(lastStorage, lastTotalStorage);
+	return amount - remaining;
 }
 
 void BuildingExt::UpdatePrimaryFactoryAI()

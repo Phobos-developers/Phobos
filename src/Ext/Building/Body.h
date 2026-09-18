@@ -110,7 +110,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
-	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType);
+	static float StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType);
 
 	static int CountOccupiedDocks(BuildingClass* pBuilding);
 	static bool HasFreeDocks(BuildingClass* pBuilding);
