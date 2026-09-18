@@ -1228,24 +1228,12 @@ void TechnoExt::Serialize(T& Stm)
 		;
 }
 
-void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
+void TechnoExt::OnDetach(AbstractClass* pTarget, bool removed)
 {
 	if (removed)
-		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
-
-	if (ptr && bRemoved)
 	{
-		auto& AttackerDatas = this->OnlyAttackData;
-		if (!AttackerDatas.empty())
-		{
-			for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
-			{
-				if (AttackerDatas[index].Attacker != ptr)
-					continue;
-
-				AttackerDatas.erase(AttackerDatas.begin() + index);
-			}
-		}
+		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
+		std::erase_if(this->OnlyAttackData, [pTarget](const auto& data) { return data.Attacker == pTarget; });
 	}
 }
 

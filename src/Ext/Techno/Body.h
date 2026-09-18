@@ -9,10 +9,9 @@
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
 
-class AirstrikeClass;
 class BulletClass;
 
-class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
+class TechnoExt : public RadioExt, public Detach::Listener<AbstractClass>
 {
 public:
 	using base_type = TechnoClass;
@@ -202,14 +201,14 @@ public:
 	void UpdateLastTargetCrd();
 	int GetSight();
 
-	void AddFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker);
-	bool ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const;
-	int FindFirer(WeaponTypeClass* const Weapon) const;
+	void AddFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker);
+	bool ContainFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker) const;
+	int FindFirer(WeaponTypeClass* pWeapon) const;
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
-	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
+	virtual void OnDetach(AbstractClass* pTarget, bool removed) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

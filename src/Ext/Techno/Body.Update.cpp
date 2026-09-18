@@ -28,18 +28,8 @@ void TechnoExt::OnEarlyUpdate()
 
 	this->ApplyInterceptor();
 
-	auto& AttackerDatas = this->OnlyAttackData;
-
-	if (!AttackerDatas.empty())
-	{
-		for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
-		{
-			if (AttackerDatas[index].Attacker->Target != pThis)
-			{
-				AttackerDatas.erase(AttackerDatas.begin() + index);
-			}
-		}
-	}
+	const auto pThis = this->OwnerObject();
+	std::erase_if(this->OnlyAttackData, [pThis](const auto& data) { return data.Attacker->Target != pThis; });
 }
 
 void TechnoExt::ApplyInterceptor()
@@ -1322,47 +1312,33 @@ void TechnoExt::UpdateLastTargetCrd()
 	}
 }
 
-void TechnoExt::ExtData::AddFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker)
+void TechnoExt::ExtData::AddFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker)
 {
-	if (Attacker->InLimbo)
+	if (pAttacker->InLimbo)
 		return;
 
-	const int index = this->FindFirer(Weapon);
-	const OnlyAttackStruct Data { Weapon ,Attacker };
+	const int index = this->FindFirer(pWeapon);
+	const OnlyAttackStruct Data { pWeapon ,pAttacker };
 
 	if (index < 0)
-	{
 		this->OnlyAttackData.push_back(Data);
-	}
 	else
-	{
 		this->OnlyAttackData[index] = Data;
-	}
 }
 
-bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const
+bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker) const
 {
-	const int index = this->FindFirer(Weapon);
+	const int index = this->FindFirer(pWeapon);
 
 	if (index >= 0)
-		return this->OnlyAttackData[index].Attacker == Attacker;
+		return this->OnlyAttackData[index].Attacker == pAttacker;
 
 	return true;
 }
 
-int TechnoExt::ExtData::FindFirer(WeaponTypeClass* const Weapon) const
+int TechnoExt::ExtData::FindFirer(WeaponTypeClass* pWeapon) const
 {
-	const auto& AttackerDatas = this->OnlyAttackData;
-	if (!AttackerDatas.empty())
-	{
-		for (int index = 0; index < int(AttackerDatas.size()); index++)
-		{
-			const auto pWeapon = AttackerDatas[index].Weapon;
-
-			if (pWeapon == Weapon && AttackerDatas[index].Attacker)
-				return index;
-		}
-	}
-
-	return -1;
+	const auto& attackerData = this->OnlyAttackData;
+	const auto it = std::ranges::find_if(attackerData, [=](const auto& data) { return data.Weapon == pWeapon && data.Attacker; });
+	return it != attackerData.cend() ? std::distance(attackerData.cbegin(), it) : - 1;
 }
