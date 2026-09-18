@@ -1,153 +1,89 @@
-#include <AnimClass.h>
-#include <UnitClass.h>
-#include <TechnoClass.h>
+#include <Helpers/Macro.h>
 #include <TunnelLocomotionClass.h>
 
-#include <Ext/Anim/Body.h>
-#include <Ext/Building/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/Macro.h>
+#include <Ext/UnitType/Body.h>
 
-namespace UnitDeployConvertHelpers
+namespace UnitUnloadTemp
 {
-	void RemoveDeploying(REGISTERS* R);
-	void ChangeAmmo(REGISTERS* R);
-	void ChangeAmmoOnUnloading(REGISTERS* R);
-}
-
-void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
-{
-	GET(TechnoClass*, pThis, ESI);
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-
-	const bool canDeploy = pThis->CanDeploySlashUnload();
-	R->AL(canDeploy);
-
-	if (!canDeploy || pThis->BunkerLinkedItem)
-		return;
-
-	const int skipMinimum = pTypeExt->Ammo_DeployUnlockMinimumAmount;
-	const int skipMaximum = pTypeExt->Ammo_DeployUnlockMaximumAmount;
-
-	if (skipMinimum < 0 && skipMaximum < 0)
-		return;
-
-	const int ammo = pThis->Ammo;
-	const bool moreThanMinimum = ammo >= skipMinimum;
-	const bool lessThanMaximum = ammo <= skipMaximum;
-
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
-		return;
-
-	R->AL(false);
-}
-
-void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
-{
-	GET(UnitClass*, pThis, ECX);
-	auto const pType = pThis->Type;
-
-	if (pThis->Deployed && !pThis->BunkerLinkedItem && !pThis->Deploying)
-	{
-		if (const bool addOnDeploy = TechnoTypeExt::ExtMap.Find(pType)->Ammo_AddOnDeploy)
-		{
-			const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
-			pThis->Ammo = std::min(pType->Ammo, ammoCalc);
-		}
-	}
-
-	R->EAX(pType);
-}
-
-void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
-{
-	GET(UnitClass*, pThis, ESI);
-	auto const pType = pThis->Type;
-
-	if (pType->IsSimpleDeployer && !pThis->BunkerLinkedItem && pType->UnloadingClass == nullptr)
-	{
-		if (const bool addOnDeploy = TechnoTypeExt::ExtMap.Find(pType)->Ammo_AddOnDeploy)
-		{
-			const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
-			pThis->Ammo = std::min(pType->Ammo, ammoCalc);
-		}
-	}
-
-	R->AL(pThis->Deployed);
-}
-
-DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
-{
-	GET(UnitClass*, pUnit, EBP);
-	GET(BuildingClass*, pStructure, EBX);
-
-	if (pUnit->Type->DeployToFire && pUnit->Target)
-		pStructure->LastTarget = pUnit->Target;
-
-	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
-	pStructureExt->DeployedTechno = true;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
-{
-	enum { Continue = 0x73FFF0 };
-	UnitDeployConvertHelpers::RemoveDeploying(R);
-	return Continue;
-}
-
-DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
-{
-	enum { Continue = 0x730C7A };
-	GET(TechnoClass*, pThis, ESI);
-
-	if (abstract_cast<UnitClass*>(pThis))
-		UnitDeployConvertHelpers::RemoveDeploying(R);
-	else
-		R->AL(pThis->CanDeploySlashUnload());
-
-	return Continue;
-}
-
-DEFINE_HOOK(0x739C74, UnitClass_ToggleDeployState_ChangeAmmo, 0x6) // deploying
-{
-	enum { Continue = 0x739C7A };
-	UnitDeployConvertHelpers::ChangeAmmo(R);
-	return Continue;
-}
-
-DEFINE_HOOK(0x739E5A, UnitClass_ToggleSimpleDeploy_ChangeAmmo, 0x6) // undeploying
-{
-	enum { Continue = 0x739E60 };
-	UnitDeployConvertHelpers::ChangeAmmo(R);
-	return Continue;
-}
-
-DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6) // converters
-{
-	enum { Continue = 0x73DE7E };
-	UnitDeployConvertHelpers::ChangeAmmoOnUnloading(R);
-	return Continue;
+	UnitTypeExt* TypeExtData = nullptr;
 }
 
 // Prevent subterranean units from deploying while underground.
-DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
+DEFINE_HOOK(0x73D63B, UnitClass_Mi_Unload_Subterranean, 0x6)
 {
-	enum { ReturnFromFunction = 0x73DFB0 };
+	enum { ReturnFromFunction = 0x73DFB0, SkipHarvester = 0x73D694, SkipPassengers = 0x73DCD3, Harvester = 0x73DEE7, Continue = 0x73D6EC };
 
-	GET(UnitClass*, pThis, ESI);
+	GET(UnitClass* const, pThis, ESI);
 
-	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel)
+	if (auto const pLoco = locomotion_cast<TunnelLocomotionClass*>(pThis->Locomotor))
 	{
-		auto const pLoco = static_cast<TunnelLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
-
 		if (pLoco->State != TunnelLocomotionClass::State::Idle)
 			return ReturnFromFunction;
 	}
 
+	auto const pType = pThis->Type;
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
+	UnitUnloadTemp::TypeExtData = pTypeExt;
+
+	// It should be the highest priority.
+	if (pThis->BunkerLinkedItem)
+	{
+		if (auto const pBuilding = pThis->GetCell()->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		// It can fix the issue where mining carts cannot move.
+		R->EAX(pType);
+		return SkipHarvester;
+	}
+
+	// Miners should not be hindered by other deployment actions while unloading minerals.
+	if (pType->Harvester || pType->Weeder)
+	{
+		const bool hasAnyLink = pThis->HasAnyLink();
+
+		if (hasAnyLink || pThis->Unloading)
+		{
+			R->AL(hasAnyLink);
+			return Harvester;
+		}
+	}
+
+	R->EAX(pType);
+
+	if (pTypeExt->Deploy_SkipPassengerUnload)
+		return SkipPassengers;
+	else if (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0 && pThis->MissionStatus == 0)
+		return SkipPassengers;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x73DEEB, UnitClass_Mi_Unload_SkipHarvester, 0x5)
+{
+	GET(UnitClass* const, pThis, ESI);
+	enum { SkipHarvester = 0x73D694 };
+
+	auto const pTypeExt = UnitUnloadTemp::TypeExtData;
+
+	if (!pThis->Unloading && (!pTypeExt->Deploy_NoTiberium || pThis->Tiberium.GetTotalValue() == 0))
+	{
+		R->EAX(pThis->Type);
+		return SkipHarvester;
+	}
+
 	return 0;
 }
 
+DEFINE_HOOK(0x740015, UnitClass_MouseOverObject_SkipPassengers, 0x6)
+{
+	enum { SkipPassengers = 0x7400F0 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(UnitTypeClass* const, pType, EAX);
+
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
+
+	return pTypeExt->Deploy_SkipPassengerUnload
+		|| (pTypeExt->Deploy_NoPassenger && pThis->Passengers.NumPassengers <= 0)
+		? SkipPassengers : 0;
+}

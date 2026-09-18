@@ -1,6 +1,5 @@
 #include "DamageDisplay.h"
 
-#include <MessageListClass.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* DamageDisplayCommandClass::GetName() const

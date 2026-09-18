@@ -30,15 +30,18 @@ public:
 	static const int GetRangedRandomOrSingleValue(PartialVector2D<int> range);
 	static const double GetRangedRandomOrSingleValue(PartialVector2D<double> range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType);
-	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType = nullptr);
+	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
 	static int CountDigitsInNumber(int number);
-	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
+	static DirStruct GetDirectionBetweenCoords(const CoordStruct& currentCoords, const CoordStruct& targetCoords);
+	static CoordStruct CalculateCoordsFromDistance(const CoordStruct& currentCoords, const CoordStruct& targetCoords, int distance);
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
+	static int SafeMultiply(int value, int mult);
+	static int SafeMultiply(int value, double mult);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
 
 	template<typename T>
@@ -60,7 +63,7 @@ public:
 	// Vector is expected to have 2^n items where n >= 3 and n <= 16 for the logic to work correctly, other cases return first item.
 	// Do not pass an empty vector, size/indices are not sanity checked here.
 	template<typename T>
-	static T GetItemForDirection(std::vector<T> const& items, DirStruct const& direction)
+	static T GetItemForDirection(Iterator<T> const& items, DirStruct const& direction)
 	{
 		// Log base 2
 		unsigned int bitsTo = Conversions::Int2Highest(static_cast<int>(items.size()));

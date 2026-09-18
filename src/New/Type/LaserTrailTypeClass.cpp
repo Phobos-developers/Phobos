@@ -1,8 +1,5 @@
 #include "LaserTrailTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
-#include <HouseClass.h>
-
 template<>
 const char* Enumerable<LaserTrailTypeClass>::GetMainSection()
 {
@@ -37,6 +34,7 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 	}
 
 	this->Bolt_Arcs.Read(exINI, section, "Bolt.Arcs");
+	this->Bolt_ZAdjust.Read(exINI, section, "Bolt.ZAdjust");
 
 	this->Beam_Color.Read(exINI, section, "Beam.Color");
 	this->Beam_Amplitude.Read(exINI, section, "Beam.Amplitude");
@@ -48,6 +46,7 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->CloakVisible.Read(exINI, section, "CloakVisible");
 	this->CloakVisible_DetectedOnly.Read(exINI, section, "CloakVisible.DetectedOnly");
 	this->DroppodOnly.Read(exINI, section, "DropPodOnly");
+	this->IsHideable.Read(exINI, section, "IsHideable");
 }
 
 template <typename T>
@@ -62,6 +61,7 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 		.Process(this->Bolt_Color)
 		.Process(this->Bolt_Disable)
 		.Process(this->Bolt_Arcs)
+		.Process(this->Bolt_ZAdjust)
 		.Process(this->Beam_Color)
 		.Process(this->Beam_Amplitude)
 		.Process(this->FadeDuration)
@@ -71,6 +71,7 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 		.Process(this->CloakVisible)
 		.Process(this->CloakVisible_DetectedOnly)
 		.Process(this->DroppodOnly)
+		.Process(this->IsHideable)
 		;
 }
 

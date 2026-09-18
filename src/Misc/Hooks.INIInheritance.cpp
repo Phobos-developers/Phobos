@@ -1,15 +1,9 @@
-#include <Utilities/Debug.h>
-#include <Utilities/Macro.h>
-#include <Helpers/Macro.h>
-#include <CCINIClass.h>
 #include <Utilities/TemplateDef.h>
 
 #include <CRC.h>
-#include <CRT.h>
 
 #include <vector>
 #include <set>
-#include <string>
 #include <unordered_map>
 
 namespace INIInheritance
@@ -276,21 +270,21 @@ DEFINE_HOOK(0x5283D0, INIClass_ReadDouble_Overwrite, 0x5)
 	return 0x52859F;
 }
 
-DEFINE_HOOK(0x529880, INIClass_ReadPoint2D_Overwrite, 0x5)
+DEFINE_HOOK(0x529880, INIClass_ReadPoint2D_Overwrite, 0x0)
 {
 	const auto value = INIInheritance::ReadTemplatePtr<Point2D>(R);
 	R->EAX(value);
 	return 0x52859F;
 }
 
-DEFINE_HOOK(0x529CA0, INIClass_ReadPoint3D_Overwrite, 0x5)
+DEFINE_HOOK(0x529CA0, INIClass_ReadPoint3D_Overwrite, 0x0)
 {
 	const auto value = INIInheritance::ReadTemplatePtr<CoordStruct>(R);
 	R->EAX(value);
 	return 0x529E63;
 }
 
-DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x5) // locomotor
+DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x0) // locomotor
 {
 	const auto value = INIInheritance::ReadTemplatePtr<CLSID>(R);
 	R->EAX(value);

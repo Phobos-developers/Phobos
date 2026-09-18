@@ -1,9 +1,7 @@
 #pragma once
 
 #include <Utilities/Container.h>
-#include <Utilities/Template.h>
-
-#include <Helpers/Template.h>
+#include <Utilities/TemplateDef.h>
 
 #include <TActionClass.h>
 
@@ -19,40 +17,54 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
 	ToggleMCVRedeploy = 510,
+	UndeployToWaypoint = 511,
+	SetFollowsIndexForVehicle = 512,
+	SetMissionTimer = 513,
+
+	SetDropCrate = 600,
 
 	EditAngerNode = 606,
 	ClearAngerNode = 607,
 	SetForceEnemy = 608,
+	SetFreeRadar = 609,
+	SetTeamDelay = 610,
+	SetNextScanario = 611,
 
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
 	DeleteBanner = 802,
 };
 
-class TActionExt
+class TActionExt final : public AbstractExt
 {
 public:
 	using base_type = TActionClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = TActionExt;
+
 	static constexpr DWORD Canary = 0x91919191;
 
-	class ExtData final : public Extension<TActionClass>
+public:
+	// typed owner accessor
+	TActionClass* OwnerObject() const
 	{
-	public:
-		ExtData(TActionClass* const OwnerObject) : Extension<TActionClass>(OwnerObject)
-		{ }
+		return static_cast<TActionClass*>(this->GetAttachedObject());
+	}
 
-		virtual ~ExtData() = default;
+	TActionExt(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual ~TActionExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
+
+public:
 
 	static bool Execute(TActionClass* pThis, HouseClass* pHouse,
 			ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location, bool& bHandled);
@@ -71,10 +83,18 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(ToggleMCVRedeploy);
+	ACTION_FUNC(UndeployToWaypoint);
+	ACTION_FUNC(SetFollowsIndexForVehicle);
+	ACTION_FUNC(SetMissionTimer);
+
+	ACTION_FUNC(SetDropCrate);
 
 	ACTION_FUNC(EditAngerNode);
 	ACTION_FUNC(ClearAngerNode);
 	ACTION_FUNC(SetForceEnemy);
+	ACTION_FUNC(SetFreeRadar);
+	ACTION_FUNC(SetTeamDelay);
+	ACTION_FUNC(SetNextScanario);
 
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);
@@ -85,6 +105,7 @@ public:
 #undef ACTION_FUNC
 #pragma pop_macro("ACTION_FUNC")
 
+public:
 	class ExtContainer final : public Container<TActionExt>
 	{
 	public:
@@ -93,4 +114,15 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static TActionExt* Fetch(const TActionClass* pThis)
+	{
+		return AbstractExt::Fetch<TActionExt>(pThis);
+	}
+
+	static TActionExt* TryFetch(const TActionClass* pThis)
+	{
+		return AbstractExt::TryFetch<TActionExt>(pThis);
+	}
 };
+

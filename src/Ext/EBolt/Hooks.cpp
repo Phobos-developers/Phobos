@@ -1,11 +1,7 @@
 #include "Body.h"
-#include <ParticleSystemClass.h>
 
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/AresHelper.h>
-#include <Helpers/Macro.h>
 
 namespace BoltTemp
 {
@@ -33,7 +29,7 @@ DEFINE_HOOK(0x6FD55F, TechnoClass_FireEBolt_ParticleSystem, 0x5)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 	GET_STACK(EBolt*, pBolt, STACK_OFFSET(0x30, -0x20));
 
-	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+	if (const auto particle = WeaponTypeExt::Fetch(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
 		GameCreate<ParticleSystemClass>(particle, pBolt->Point2, nullptr, nullptr, CoordStruct::Empty, nullptr);
 
 	return 0;
@@ -62,7 +58,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
-	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
+	GET_STACK(const int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
 	const int arcCount = BoltTemp::ExtData->Arcs;
 
 	return plotIndex < arcCount ? DoLoop : Break;
@@ -112,7 +108,7 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 	if (pTechno && pTechno->IsAlive)
 	{
 		auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 		if (!pWeaponExt->Bolt_FollowFLH.Get(pTechno->WhatAmI() == AbstractType::Unit))
 			return;
@@ -120,14 +116,14 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 		this->Owner = pTechno;
 		this->WeaponSlot = weaponIndex;
 
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		auto const pExt = TechnoExt::Fetch(pTechno);
 		pExt->ElectricBolts.push_back(this);
 	}
 }
 
 void EBoltFake::_RemoveFromOwner()
 {
-	auto const pExt = TechnoExt::ExtMap.Find(this->Owner);
+	auto const pExt = TechnoExt::Fetch(this->Owner);
 	auto& vec = pExt->ElectricBolts;
 	vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	this->Owner = nullptr;
@@ -155,12 +151,13 @@ DEFINE_HOOK(0x4C285D, EBolt_DrawAll_BurstIndex, 0x5)
 
 	GET(TechnoClass*, pTechno, ECX);
 	GET_STACK(EBolt*, pThis, STACK_OFFSET(0x34, -0x24));
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x34, -0xC));
 
-	int burstIndex = pTechno->CurrentBurstIndex;
+	const int burstIndex = pTechno->CurrentBurstIndex;
 	pTechno->CurrentBurstIndex = EBoltExt::ExtMap.Find(pThis)->BurstIndex;
-	auto const fireCoords = pTechno->GetFLH(pThis->WeaponSlot, CoordStruct::Empty);
+	pTechno->GetFLH(pCoords, pThis->WeaponSlot, CoordStruct::Empty);
 	pTechno->CurrentBurstIndex = burstIndex;
-	R->EAX(&fireCoords);
+	R->EAX(pCoords);
 
 	return SkipGameCode;
 }
@@ -188,3 +185,37 @@ DEFINE_HOOK(0x4C2A02, EBolt_DestroyVector, 0x6)
 	return SkipGameCode;
 }
 #pragma endregion
+
+DEFINE_HOOK(0x6FD4E4, TechnoClass_FireEBolt_Building_ClampPositive, 0x9)
+{
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+	GET(CoordStruct*, pV13, EAX);
+	GET(const int, Y, ESI);
+
+	int zAdjust = Y - pV13->Y;
+
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+	const bool clamp = pWeaponExt->EBoltZAdjust_ClampInitialDepthForBuilding.Get(RulesExt::Global()->EBoltZAdjust_ClampInitialDepthForBuilding);
+
+	if (clamp && zAdjust > 0)
+		zAdjust = 0;
+
+	R->ESI(zAdjust);
+
+	return 0x6FD4ED;
+}
+
+DEFINE_HOOK(0x6FD4ED, TechnoClass_FireEBolt_ZAdjust, 0x7)
+{
+	GET_STACK(TechnoClass*, pTarget, STACK_OFFSET(0x30, 0x4));
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+	GET(int, zAdjust, ESI);
+
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+	zAdjust += pWeaponExt->EBoltZAdjust.Get(RulesExt::Global()->EBoltZAdjust);
+
+	R->ESI(zAdjust);
+	R->ECX(pTarget);
+
+	return (pTarget ? 0x6FD4F5 : 0x6FD50A);
+}
