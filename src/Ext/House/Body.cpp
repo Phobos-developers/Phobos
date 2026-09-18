@@ -713,6 +713,8 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
+		.Process(this->TiberiumStorage)
+		.Process(this->WeedStorage)
 		;
 }
 
@@ -1227,3 +1229,76 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 
 	return 0;
 }
+
+float HouseExt::GetTiberiumStorage(int index) const
+{
+	if (index >= 0 && index < static_cast<int>(this->TiberiumStorage.size()) && this->TiberiumStorage[index] > 0.0f)
+		return this->TiberiumStorage[index];
+
+	if (index >= 0 && index < 4 && this->OwnerObject())
+		return this->OwnerObject()->OwnedTiberium.GetAmount(index);
+
+	return 0.0f;
+}
+
+float HouseExt::GetTotalTiberiumStorage() const
+{
+	float total = 0.0f;
+	auto const pOwner = this->OwnerObject();
+	for (size_t i = 0; i < this->TiberiumStorage.size(); ++i)
+	{
+		if (i < 4 && pOwner)
+			total += (this->TiberiumStorage[i] > 0.0f) ? this->TiberiumStorage[i] : pOwner->OwnedTiberium.GetAmount(static_cast<int>(i));
+		else
+			total += this->TiberiumStorage[i];
+	}
+	if (this->TiberiumStorage.empty() && pOwner)
+		total = pOwner->OwnedTiberium.GetTotalAmount();
+
+	return total;
+}
+
+float HouseExt::AddTiberiumStorage(float amount, int index)
+{
+	if (index >= 0 && amount > 0.0f)
+	{
+		if (index >= static_cast<int>(this->TiberiumStorage.size()))
+			this->TiberiumStorage.resize(std::max(index + 1, static_cast<int>(TiberiumClass::Array.Count)), 0.0f);
+
+		this->TiberiumStorage[index] += amount;
+		return this->TiberiumStorage[index];
+	}
+
+	return 0.0f;
+}
+
+float HouseExt::RemoveTiberiumStorage(float amount, int index)
+{
+	auto const pOwner = this->OwnerObject();
+
+	if (index >= 0 && index < static_cast<int>(this->TiberiumStorage.size()) && amount > 0.0f)
+	{
+		float const removed = std::min(this->TiberiumStorage[index], amount);
+		this->TiberiumStorage[index] -= removed;
+
+		if (index < 4 && pOwner)
+			pOwner->OwnedTiberium.RemoveAmount(removed, index);
+
+		if (removed > 0.0f)
+			return removed;
+	}
+
+	if (index >= 0 && index < 4 && pOwner)
+	{
+		float const cur = pOwner->OwnedTiberium.GetAmount(index);
+		float const removed = std::min(cur, amount);
+		if (removed > 0.0f)
+		{
+			pOwner->OwnedTiberium.RemoveAmount(removed, index);
+			return removed;
+		}
+	}
+
+	return 0.0f;
+}
+

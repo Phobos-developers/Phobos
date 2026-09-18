@@ -5,6 +5,10 @@
 #include <CRT.h>
 
 #include <Ext/Techno/Body.h>
+#include <Ext/BuildingType/Body.h>
+
+#include <cmath>
+#include <string>
 
 const char* ObjectInfoCommandClass::GetName() const
 {
@@ -64,7 +68,48 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		distance = pCurrent->DistanceFrom(pTarget) / Unsorted::LeptonsPerCell;
 	};
 
-	auto printFoots = [&append, &display, &getTargetInfo](FootClass* pFoot)
+	auto appendStorageInfo = [&append](TechnoClass* pTechno, TechnoTypeClass* pType)
+	{
+		auto const pTechnoExt = TechnoExt::Fetch(pTechno);
+		float const totalStored = pTechnoExt ? pTechnoExt->GetTotalTiberium() : (pType->Storage > 0 ? pTechno->Tiberium.GetTotalAmount() : 0.0f);
+		int const maxStorage = pType->Storage;
+
+		std::string breakdown;
+		size_t const slotCount = std::max({ pTechnoExt ? pTechnoExt->TiberiumStorage.size() : static_cast<size_t>(0), static_cast<size_t>(TiberiumClass::Array.Count), static_cast<size_t>(4) });
+		for (size_t i = 0; i < slotCount; ++i)
+		{
+			float const bails = pTechnoExt ? pTechnoExt->GetTiberium(static_cast<int>(i)) : (i < 4 ? pTechno->Tiberium.GetAmount(static_cast<int>(i)) : 0.0f);
+			if (bails >= 0.01f)
+			{
+				auto const pTib = TiberiumClass::Array.GetItemOrDefault(static_cast<int>(i));
+				int const val = pTib ? static_cast<int>(std::round(bails * static_cast<float>(pTib->Value))) : 0;
+				auto const tibId = (pTib && pTib->ID && pTib->ID[0] != '\0') ? pTib->ID : "Unknown";
+				if (!breakdown.empty())
+					breakdown += ", ";
+
+				char pairBuf[64];
+				if (std::abs(bails - std::round(bails)) < 0.01f)
+					sprintf_s(pairBuf, "%s:%d:%d", tibId, static_cast<int>(std::round(bails)), val);
+				else
+					sprintf_s(pairBuf, "%s:%.1f:%d", tibId, bails, val);
+
+				breakdown += pairBuf;
+			}
+		}
+
+		char totalBuf[32];
+		if (std::abs(totalStored - std::round(totalStored)) < 0.01f)
+			sprintf_s(totalBuf, "%d", static_cast<int>(std::round(totalStored)));
+		else
+			sprintf_s(totalBuf, "%.1f", totalStored);
+
+		if (!breakdown.empty())
+			append("Storage: %s / %d (%s)\n", totalBuf, maxStorage, breakdown.c_str());
+		else
+			append("Storage: %s / %d\n", totalBuf, maxStorage);
+	};
+
+	auto printFoots = [&append, &display, &getTargetInfo, &appendStorageInfo](FootClass* pFoot)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto const pType = pFoot->GetTechnoType();
@@ -131,6 +176,10 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("Destination = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
 		}
 
+		auto const pUnitType = abstract_cast<UnitTypeClass*>(pType);
+		if ((pUnitType && (pUnitType->Harvester || pUnitType->Weeder)) || pType->Storage > 0)
+			appendStorageInfo(pFoot, pType);
+
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
 
 		auto const pTechnoExt = TechnoExt::Fetch(pFoot);
@@ -146,7 +195,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		display();
 	};
 
-	auto printBuilding = [&append, &display, &getTargetInfo](BuildingClass* pBuilding)
+	auto printBuilding = [&append, &display, &getTargetInfo, &appendStorageInfo](BuildingClass* pBuilding)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto const pType = pBuilding->Type;
@@ -164,6 +213,10 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		{
 			append("Money: %d\n", pBuilding->Owner->Available_Money());
 		}
+
+		auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pType);
+		if (pBuildingTypeExt->Refinery_UseStorage || pType->Storage > 0)
+			appendStorageInfo(pBuilding, pType);
 
 		if (pBuilding->Occupants.Count > 0)
 		{

@@ -3,6 +3,8 @@
 #include <BitFont.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -88,9 +90,74 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 		{
 			// Store Tiberium in structures
 			depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-			pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+			if (idxStorageTiberiumType < 4)
+			{
+				pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+			}
+			else
+			{
+				BuildingExt::StoreTiberium(pThis, depositableTiberiumAmount, idxStorageTiberiumType);
+			}
 		}
 	}
+}
+
+float BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType)
+{
+	if (amount <= 0.0f || !pThis || !pThis->Owner)
+		return 0.0f;
+
+	auto const pHouse = pThis->Owner;
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
+
+	const auto lastStorage = static_cast<int>(pHouseExt ? pHouseExt->GetTotalTiberiumStorage() : pHouse->OwnedTiberium.GetTotalAmount());
+	const auto lastTotalStorage = pHouse->TotalStorage;
+
+	// First, try to store in the unloading building (dock / refinery)
+	std::vector<BuildingClass*> targetBuildings;
+	if (pThis->Type->Storage > 0 && pThis->IsOnMap)
+		targetBuildings.push_back(pThis);
+
+	// Then, other storage structures of the same house
+	for (auto const pBld : pHouse->Buildings)
+	{
+		if (pBld && pBld != pThis && pBld->IsOnMap && pBld->Type->Storage > 0)
+			targetBuildings.push_back(pBld);
+	}
+
+	float remaining = amount;
+	for (auto const pBld : targetBuildings)
+	{
+		if (remaining <= 0.0f)
+			break;
+
+		auto const pBldExt = TechnoExt::Fetch(pBld);
+		float const curStored = pBldExt ? pBldExt->GetTotalTiberium() : (pBld->Type->Storage > 0 ? pBld->Tiberium.GetTotalAmount() : 0.0f);
+		float const freeSpace = static_cast<float>(pBld->Type->Storage) - curStored;
+
+		if (freeSpace > 0.0f)
+		{
+			float const toStore = std::min(remaining, freeSpace);
+			if (pBldExt)
+				pBldExt->AddTiberium(toStore, idxTiberiumType);
+
+			if (idxTiberiumType < 4)
+			{
+				pBld->Tiberium.AddAmount(toStore, idxTiberiumType);
+				pHouse->OwnedTiberium.AddAmount(toStore, idxTiberiumType);
+			}
+
+			if (pHouseExt)
+				pHouseExt->AddTiberiumStorage(toStore, idxTiberiumType);
+
+			pBld->Mark(MarkType::Change);
+
+			remaining -= toStore;
+		}
+	}
+
+	pHouse->UpdateAllSilos(lastStorage, lastTotalStorage);
+	return amount - remaining;
 }
 
 void BuildingExt::UpdatePrimaryFactoryAI()
