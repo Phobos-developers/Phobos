@@ -135,7 +135,7 @@ DEFINE_HOOK(0x6F9039, TechnoClass_SelectAutoTarget_HealGuardRange, 0x5)
 	}
 
 	if (pHealWeapon && isHealWeapon(pHealWeapon))
-		rangeLeptons = pHealWeapon->Range > 512 ? pHealWeapon->Range : 512;
+		rangeLeptons = std::max(rangeLeptons, pHealWeapon->Range + Unsorted::LeptonsPerCell);
 
 	R->EDI(rangeLeptons);
 	return 0x6F903E;
