@@ -354,7 +354,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (!pWeaponExt->SkipWeaponPicking && pTargetCell)
 	{
-		const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+		const auto pTargetExt = TechnoExt::Fetch(pTargetTechno);
 
 		if (pWeaponExt->OnlyAttacker.Get() && !pTargetExt->ContainFirer(pWeapon, pThis))
 			return CannotFire;
@@ -722,12 +722,12 @@ DEFINE_HOOK(0x6FDE0E, TechnoClass_FireAt_OnlyAttacker, 0x6)
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 	if (pWeaponExt->OnlyAttacker.Get() && pTarget == pThis->Target
 		&& pTarget->AbstractFlags & AbstractFlags::Techno)
 	{
-		const auto pTargetExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pTarget));
+		const auto pTargetExt = TechnoExt::Fetch(static_cast<TechnoClass*>(pTarget));
 		pTargetExt->AddFirer(pWeapon, pThis);
 	}
 
