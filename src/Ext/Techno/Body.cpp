@@ -1228,13 +1228,16 @@ void TechnoExt::Serialize(T& Stm)
 		;
 }
 
-void TechnoExt::OnDetach(AbstractClass* pTarget, bool removed)
+void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
 {
 	if (removed)
-	{
 		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
+}
+
+void TechnoExt::OnDetach(TechnoClass* pTarget, bool removed)
+{
+	if (removed)
 		std::erase_if(this->OnlyAttackData, [pTarget](const auto& data) { return data.Attacker == pTarget; });
-	}
 }
 
 void TechnoExt::LoadFromStream(PhobosStreamReader& Stm)

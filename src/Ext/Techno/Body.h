@@ -11,7 +11,7 @@
 
 class BulletClass;
 
-class TechnoExt : public RadioExt, public Detach::Listener<AbstractClass>
+class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>, public Detach::Listener<TechnoClass>
 {
 public:
 	using base_type = TechnoClass;
@@ -208,7 +208,8 @@ public:
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
-	virtual void OnDetach(AbstractClass* pTarget, bool removed) override;
+	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
+	virtual void OnDetach(TechnoClass* pTarget, bool removed) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
