@@ -138,5 +138,6 @@ public:
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
 		static bool DisableLaserTracking;
+		static bool DisablePsychicDetectable;
 	};
 };
