@@ -475,6 +475,12 @@ public:
 	Nullable<bool> Unsellable;
 	Nullable<bool> KeepAlive;
 
+	PhobosFixedString<0x20> SpareCameoFile;
+	SHPStruct* SpareCameo;
+	bool SHPCameo_IsLoad;
+	PhobosPCXFile SpareCameoPCX;
+	
+
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, Array {}
 
@@ -869,6 +875,10 @@ public:
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
 
+		, SpareCameoFile { NONE_STR }
+		, SpareCameo { nullptr }
+		, SHPCameo_IsLoad { false }
+		, SpareCameoPCX {}
 		, SubterraneanSpeed { -1 }
 		, SubterraneanHeight {}
 
