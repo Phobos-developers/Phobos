@@ -453,6 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
+  - When a weapon has `OnlyAttacker=yes`, it prevents other units using that weapon from attacking the same target
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

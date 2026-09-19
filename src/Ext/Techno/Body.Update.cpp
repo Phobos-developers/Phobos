@@ -27,6 +27,9 @@ void TechnoExt::OnEarlyUpdate()
 		return;
 
 	this->ApplyInterceptor();
+
+	const auto pThis = this->OwnerObject();
+	std::erase_if(this->OnlyAttackData, [pThis](const auto& data) { return data.Attacker->Target != pThis; });
 }
 
 void TechnoExt::ApplyInterceptor()
@@ -1351,4 +1354,35 @@ void TechnoExt::UpdateLastTargetCrd()
 			pTimer->Stop();
 		}
 	}
+}
+
+void TechnoExt::ExtData::AddFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker)
+{
+	if (pAttacker->InLimbo)
+		return;
+
+	const int index = this->FindFirer(pWeapon);
+	const OnlyAttackStruct Data { pWeapon ,pAttacker };
+
+	if (index < 0)
+		this->OnlyAttackData.push_back(Data);
+	else
+		this->OnlyAttackData[index] = Data;
+}
+
+bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker) const
+{
+	const int index = this->FindFirer(pWeapon);
+
+	if (index >= 0)
+		return this->OnlyAttackData[index].Attacker == pAttacker;
+
+	return true;
+}
+
+int TechnoExt::ExtData::FindFirer(WeaponTypeClass* pWeapon) const
+{
+	const auto& attackerData = this->OnlyAttackData;
+	const auto it = std::ranges::find_if(attackerData, [=](const auto& data) { return data.Weapon == pWeapon && data.Attacker; });
+	return it != attackerData.cend() ? std::distance(attackerData.cbegin(), it) : - 1;
 }

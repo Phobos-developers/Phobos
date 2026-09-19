@@ -207,6 +207,8 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
 
+	this->OnlyAttacker.Read(exINI, pSection, "OnlyAttacker");
+
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
@@ -316,6 +318,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
+		.Process(this->OnlyAttacker)
 		;
 };
 
