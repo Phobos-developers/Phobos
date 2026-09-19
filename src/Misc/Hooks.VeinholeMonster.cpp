@@ -1,7 +1,9 @@
 #include <Ext/Anim/Body.h>
 
+#include <CellClass.h>
 #include <ColorScheme.h>
 #include <HouseClass.h>
+#include <OverlayTypeClass.h>
 #include <VeinholeMonsterClass.h>
 
 ///
@@ -12,13 +14,24 @@
 DEFINE_HOOK_AGAIN(0x47FA5C, CellClass_Draw_Overlay_VeinsPalette, 0x6)
 DEFINE_HOOK(0x47FA1F, CellClass_Draw_Overlay_VeinsPalette, 0x6)
 {
-	if (auto const pPlayer = HouseClass::CurrentPlayer)
+	GET(CellClass* const, pCell, ESI);
+
+	if (pCell)
 	{
-		if (auto const pScheme = ColorScheme::Array.GetItemOrDefault(pPlayer->ColorSchemeIndex))
-			R->EDX(pScheme->LightConvert);
+		auto const pOverlay = OverlayTypeClass::Array.GetItemOrDefault(pCell->OverlayTypeIndex);
+		auto const pPlayer = HouseClass::CurrentPlayer;
+
+		if (pOverlay && pOverlay->IsVeins && pPlayer)
+		{
+			if (auto const pScheme = ColorScheme::Array.GetItemOrDefault(pPlayer->ColorSchemeIndex))
+			{
+				R->EDX(pScheme->LightConvert);
+				return R->Origin() + 0x6;
+			}
+		}
 	}
 
-	return R->Origin() + 0x6;
+	return 0;
 }
 
 // Loads the veinhole monster art
