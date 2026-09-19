@@ -125,8 +125,24 @@ public:
 		static bool ToggleSuperWeaponSidebarCommand;
 		static bool DeselectObjectCommand;
 		static bool SelectCapturedCommand;
+		static bool AllowSwitchNoMoveCommand;
+		static bool ApplyNoMoveCommand;
 		static bool SuperWeaponSidebarCommands;
 		static bool DevelopmentCommands;
+		// Distribution mode
+		static bool AllowDistributionCommand;
+		static bool AllowDistributionCommandOnOwner;
+		static bool AllowDistributionCommandOnAllies;
+		static bool AllowDistributionCommandOnEnemies;
+		static bool AllowDistributionCommandOnNeutral;
+		static bool AllowDistributionFilterCommand;
+		static bool AllowDistributionSpreadCommand;
+		static bool AllowDistributionSpreadScroll;
+		static bool AllowDistributionSpreadDrag;
+		static bool AllowDistributionUseClick;
+		static unsigned int DistributionSpreadRange;
+		static unsigned int DistributionSpreadScrollStep;
+		static int DistributionFilterMode;
 	};
 
 	class Misc
