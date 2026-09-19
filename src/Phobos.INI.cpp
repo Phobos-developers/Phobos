@@ -132,14 +132,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
 
 	Phobos::Config::ApplyNoMoveCommand = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DefaultApplyNoMoveCommand", true);
-	Phobos::Config::DistributionSpreadRange = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionSpreadRange", 2048));
-	Phobos::Config::DistributionSpreadRange = std::clamp(Phobos::Config::DistributionSpreadRange, 0u, 5120u);
-	Phobos::Config::DistributionSpreadScrollStep = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DistributionSpreadScrollStep", 256));
-	Phobos::Config::DistributionSpreadScrollStep = std::max(Phobos::Config::DistributionSpreadScrollStep, 16u);
-	Phobos::Config::DistributionFilterMode = static_cast<unsigned int>(CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "DefaultDistributionFilterMode", 2));
-	Phobos::Config::DistributionFilterMode = std::clamp(Phobos::Config::DistributionFilterMode, 0, 3);
 
-	Phobos::Config::AllowDistributionSpreadHotkey = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadHotkey", true);
 	Phobos::Config::AllowDistributionSpreadScroll = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadScroll", true);
 	Phobos::Config::AllowDistributionSpreadDrag = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionSpreadDrag", true);
 	Phobos::Config::AllowDistributionUseClick = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "AllowDistributionUseClick", true);
@@ -334,7 +327,15 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::AllowDistributionCommandOnAllies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnAllies", Phobos::Config::AllowDistributionCommandOnAllies);
 	Phobos::Config::AllowDistributionCommandOnEnemies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnEnemies", Phobos::Config::AllowDistributionCommandOnEnemies);
 	Phobos::Config::AllowDistributionCommandOnNeutral = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnNeutral", Phobos::Config::AllowDistributionCommandOnNeutral);
+	Phobos::Config::AllowDistributionSpreadHotkey = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionSpreadHotkey", Phobos::Config::AllowDistributionSpreadHotkey);
 	Phobos::Config::AllowDistributionFilterHotkey = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionFilterHotkey", Phobos::Config::AllowDistributionFilterHotkey);
+
+	Phobos::Config::DistributionSpreadRange = static_cast<unsigned int>(pINI_RULESMD->ReadInteger("GlobalControls", "DefaultDistributionSpreadRange", Phobos::Config::DistributionSpreadRange));
+	Phobos::Config::DistributionSpreadRange = std::clamp(Phobos::Config::DistributionSpreadRange, 0u, 5120u);
+	Phobos::Config::DistributionSpreadScrollStep = static_cast<unsigned int>(pINI_RULESMD->ReadInteger("GlobalControls", "DistributionSpreadScrollStep", Phobos::Config::DistributionSpreadScrollStep));
+	Phobos::Config::DistributionSpreadScrollStep = std::max(Phobos::Config::DistributionSpreadScrollStep, 16u);
+	Phobos::Config::DistributionFilterMode = static_cast<unsigned int>(pINI_RULESMD->ReadInteger("GlobalControls", "DefaultDistributionFilterMode", Phobos::Config::DistributionFilterMode));
+	Phobos::Config::DistributionFilterMode = std::clamp(Phobos::Config::DistributionFilterMode, 0, 3);
 
 	return 0;
 }

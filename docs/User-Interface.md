@@ -672,7 +672,11 @@ AllowDistributionCommandOnOwner=true                ; boolean
 AllowDistributionCommandOnAllies=true               ; boolean
 AllowDistributionCommandOnEnemies=true              ; boolean
 AllowDistributionCommandOnNeutral=true              ; boolean
+AllowDistributionSpreadHotkey=false                 ; boolean
 AllowDistributionFilterHotkey=false                 ; boolean
+DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120
+DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
+DistributionSpreadScrollStep=256                    ; integer, minimum 16
 
 [AudioVisual]
 StartDistributionModeSound=                         ; sound entry, defaults to `StartPlanningModeSound`
@@ -683,13 +687,9 @@ AddDistributionModeCommandSound=                    ; sound entry
 In `ra2md.ini`:
 ```ini
 [Phobos]
-AllowDistributionSpreadHotkey=true                  ; boolean
 AllowDistributionSpreadScroll=true                  ; boolean
 AllowDistributionSpreadDrag=true                    ; boolean
 AllowDistributionUseClick=true                      ; boolean
-DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120
-DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
-DistributionSpreadScrollStep=256                    ; integer, minimum 16
 ```
 
 In `uimd.ini`:
