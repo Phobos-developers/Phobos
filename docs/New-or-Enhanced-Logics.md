@@ -2451,18 +2451,6 @@ Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] ->
 Overload.ParticleSysCount=    ; integer, default to [CombatDamage] -> Overload.ParticleSysCount
 ```
 
-### Prevent firing at target when another techno is attacking it
-
-- If the techno's target is being attacked by another TechnoType that's listed in its `PreventFire.Types`, it'll not be able to fire at this target.
-  - `PreventFire.AffectsHouse` determines that TechnoType from which house can trigger the attack prevention.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                  ; TechnoType
-PreventFire.Types=            ; List of TechnoTypes
-PreventFire.AffectsHouse=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
-```
-
 ### Promoted Spawns
 
 ![image](_static/images/promotedspawns-01.gif)

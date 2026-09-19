@@ -402,7 +402,6 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	enum { FireErrorRearm = 0x6FC0DF, FireErrorIllegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x20, 0x8));
 
 	if (pThis->SlaveOwner)
@@ -420,31 +419,6 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 		}
 
 		return FireErrorRearm;
-	}
-
-	auto const pTypeExt = pExt->TypeExtData;
-
-	if (pTypeExt->PreventFire_Types.size() > 0 && pExt->CheckPreventFireType)
-	{
-		auto const pOwner = pThis->Owner;
-		auto const affectHouse = pTypeExt->PreventFire_AffectsHouse;
-
-		for (auto const pType : pTypeExt->PreventFire_Types)
-		{
-			for (auto const pTechno : TechnoTypeExt::Fetch(pType)->Array)
-			{
-				if (pTechno == pThis)
-					continue;
-
-				auto const pTechnoTarget = TechnoExt::Fetch(pTechno)->PreventFireTarget;
-
-				if (pTechnoTarget && pTechnoTarget == pTarget
-					&& EnumFunctions::CanTargetHouse(affectHouse, pOwner, pTechno->Owner))
-				{
-					return FireErrorRearm;
-				}
-			}
-		}
 	}
 
 	return Continue;
@@ -733,17 +707,6 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 			}
 		}
 	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FDE0E, TechnoClass_FireAt_RecordTarget, 0x6)
-{
-	GET(TechnoClass* const, pThis, ESI);
-	GET_BASE(AbstractClass* const, pTarget, 0x8);
-
-	if (pThis->Target == pTarget)
-		TechnoExt::Fetch(pThis)->PreventFireTarget = pTarget;
 
 	return 0;
 }

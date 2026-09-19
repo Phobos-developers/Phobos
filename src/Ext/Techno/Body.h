@@ -89,9 +89,6 @@ public:
 
 	bool PreventCrewEscape;
 
-	bool CheckPreventFireType;
-	AbstractClass* PreventFireTarget;
-
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -142,8 +139,6 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
-		, CheckPreventFireType { true }
-		, PreventFireTarget { nullptr }
 	{ }
 
 	void OnEarlyUpdate();
