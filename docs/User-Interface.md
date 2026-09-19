@@ -672,7 +672,7 @@ AllowDistributionCommandOnOwner=true                ; boolean
 AllowDistributionCommandOnAllies=true               ; boolean
 AllowDistributionCommandOnEnemies=true              ; boolean
 AllowDistributionCommandOnNeutral=true              ; boolean
-AllowDistributionFilterHotkey=true                  ; boolean
+AllowDistributionFilterHotkey=false                 ; boolean
 
 [AudioVisual]
 StartDistributionModeSound=                         ; sound entry, defaults to `StartPlanningModeSound`
