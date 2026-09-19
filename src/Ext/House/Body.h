@@ -76,6 +76,8 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	BuildingTypeClass* ActiveEvaVoiceBuildingType;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -107,6 +109,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, ActiveEvaVoiceBuildingType { nullptr }
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
