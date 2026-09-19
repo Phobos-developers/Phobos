@@ -34,6 +34,7 @@ bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
 bool Phobos::Optimizations::DisableLaserTracking = true;
+bool Phobos::Optimizations::DisablePsychicDetectable = true;
 
 // The leading L"" widens the narrow metadata literals it is concatenated with, so that the
 // name and the version are taken from Phobos.version.h rather than spelled out again.
@@ -417,6 +418,10 @@ void Phobos::ApplyOptimizations()
 		Patch::Apply_RAW(0x73F0A7, { 0x8B, 0xD9, 0x8B, 0x8C, 0x24, 0x88, 0x00, 0x00, 0x00 });
 		Patch::Apply_RAW(0x4D62C0, { 0x8A, 0x88, 0x95, 0x06, 0x00, 0x00 });
 	}
+
+	// Disable PsychicDetectable
+	if (Phobos::Optimizations::DisablePsychicDetectable)
+		Patch::Apply_RAW(0x43B150, { 0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8 });
 
 	if (!SessionClass::IsMultiplayer())
 	{

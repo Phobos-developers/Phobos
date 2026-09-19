@@ -1099,7 +1099,7 @@ Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDes
   - By default Y axis shift will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
   - For X axis the shift direction can also be switched by setting `XDrawOffset.InvertBracketShift=true`. The default is positive shift, towards right-hand side of the screen.
   - The bracket-based shift can be further adjusted with offset from `X/YDrawOffset.BracketAdjust`, overridden by `X/YDrawOffset.BracketAdjust.Buildings` for buildings only.
- 
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                            ; AnimationType
@@ -1750,6 +1750,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+
+- Now `MissileSafetyAltitude` can be customized on each projectile.
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MissileKeepTargetCoord=false  ; boolean
+
+[SOMEPROJECTILE]              ; Projectile, with ROT>=1
+MissileSafetyAltitude=        ; integer, defaults to [General] -> MissileSafetyAltitude
+MissileKeepTargetCoord=       ; boolean, defaults to [General] -> MissileKeepTargetCoord
 ```
 
 ### Customizing initial facing behavior

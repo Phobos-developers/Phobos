@@ -4154,6 +4154,17 @@ msgstr ""
 "由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 [直线弹道"
 "](New-or-Enhanced-Logics.md#projectile-trajectories) 替代。"
 
+msgid "Customize whether missiles fly to the target or climb when losing target"
+msgstr "自定义导弹在丢失目标后应飞向目标处还是爬升"
+
+msgid "Now `MissileSafetyAltitude` can be customized on each projectile."
+msgstr "现在 `MissileSafetyAltitude` 可以在每个抛射体上自定义了。"
+
+msgid ""
+"In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there."
+msgstr ""
+"在原版中导弹攻击空中目标时如果丢失了目标（例如目标被摧毁），它会立刻爬升到 `MissileSafetyAltitude` 高度然后爆炸。当 `MissileKeepTargetCoord=true`，导弹将会飞到目标处爆炸。"
+
 msgid "Customizing initial facing behavior"
 msgstr "自定义初始朝向行为"
 

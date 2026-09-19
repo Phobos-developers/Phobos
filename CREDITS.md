@@ -582,6 +582,7 @@ This page lists all the individual contributions to the project by their author.
   - Cloak Enhancement
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -773,6 +774,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
