@@ -2190,6 +2190,17 @@ In `rulesmd.ini`:
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
+### Customize `DefaultToGuardArea` per gunner mode
+
+- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType, with Gunner=yes
+DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
+DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.

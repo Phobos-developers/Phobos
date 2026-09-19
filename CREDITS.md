@@ -775,6 +775,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

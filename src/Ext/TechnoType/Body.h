@@ -448,6 +448,9 @@ public:
 
 	Nullable<AffectedHouse> RevealHouses;
 
+	ValueableVector<int> DefaultToGuardArea_Modes;
+	ValueableVector<int> DefaultToGuardArea_AIModes;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -868,6 +871,9 @@ public:
 		, VoiceEnterGrinder {}
 
 		, RevealHouses {}
+
+		, DefaultToGuardArea_Modes {}
+		, DefaultToGuardArea_AIModes {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
