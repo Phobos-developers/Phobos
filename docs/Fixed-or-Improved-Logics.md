@@ -2170,17 +2170,6 @@ FlyNoWobbles=  ; boolean
 FlyNoWobbles=  ; boolean, defaults to [AudioVisual] -> FlyNoWobbles
 ```
 
-### Customize `DefaultToGuardArea` per gunner mode
-
-- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                     ; TechnoType, with Gunner=yes
-DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
-DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
-```
-
 ### Customize whether the unit can be detected by psychic detector
 
 - Now you can use the following flag to define whether the unit can be detected by buildings that have `PsychicDetectionRadius`.
@@ -2199,6 +2188,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize `DefaultToGuardArea` per gunner mode
+
+- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType, with Gunner=yes
+DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
+DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
 ```
 
 ### Damaged speed customization
