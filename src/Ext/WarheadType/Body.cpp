@@ -117,8 +117,9 @@ bool WarheadTypeExt::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTy
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
 		return false;
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
-		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
+	// no need to calculate AffectTypes here
+	//if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+	if (this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
