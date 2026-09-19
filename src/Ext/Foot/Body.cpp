@@ -177,6 +177,8 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	auto const pNewTypeExt = TechnoTypeExt::Fetch(pCurrentType);
 	this->TypeExtData = pNewTypeExt;
+	pOldTypeExt->Array.Remove(pThis);
+	pNewTypeExt->Array.AddItem(pThis);
 
 	this->UpdateSelfOwnedAttachEffects();
 
@@ -938,6 +940,8 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->LastWarpDistance)
 		.Process(this->JumpjetSpeed)
 		.Process(this->IsInTunnel)
+		.Process(this->IsBurrowed)
+		.Process(this->UndergroundTracked)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)

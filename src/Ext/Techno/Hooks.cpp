@@ -289,8 +289,11 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 		if (!pType) return;
 	}
 
+	this->RandomFactor = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	this->TypeExtData = pTypeExt;
+	pTypeExt->Array.AddItem(pThis);
 
 	auto const pShieldType = pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0 ? pTypeExt->ShieldType : nullptr;
 	this->CurrentShieldType = pShieldType;
@@ -321,7 +324,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
-		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(45, 60));
+		pThis->TargetingTimer.Start(45 + this->RandomFactor);
 	}
 }
 
@@ -982,7 +985,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	if (pTypeExt->OwnerObject()->RadarInvisible
 		&& EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
 	{
-			return Invisible;
+		return Invisible;
 	}
 
 	return GoOtherChecks;
@@ -1220,21 +1223,21 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	const int strength = pTargetType->Strength;
 
 	auto repair = [strength, pTarget](int repair)
+	{
+		int repairAmount = strength;
+
+		if (repair > 0)
 		{
-			int repairAmount = strength;
+			repairAmount = std::clamp(pTarget->Health + repair, 0, strength);
+		}
+		else if (repair < 0)
+		{
+			const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
+			repairAmount = static_cast<int>(std::round(strength * percentage));
+		}
 
-			if (repair > 0)
-			{
-				repairAmount = std::clamp(pTarget->Health + repair, 0, strength);
-			}
-			else if (repair < 0)
-			{
-				const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
-				repairAmount = static_cast<int>(std::round(strength * percentage));
-			}
-
-			return repairAmount;
-		};
+		return repairAmount;
+	};
 
 	pTarget->Health = Math::min(repair(repairBuilding), repair(repairEngineer));
 	pTarget->EstimatedHealth = pTarget->Health;
@@ -1485,7 +1488,7 @@ DEFINE_HOOK(0x71A8BD, TemporalClass_Update_WarpAwayAnim, 0x5)
 		AnimExt::CreateRandomAnim(pExt->WarpAway, pTarget->Location, nullptr, pTarget->Owner);
 		return 0x71A90E;
 	}
-	
+
 	return 0;
 }
 
@@ -1517,7 +1520,7 @@ DEFINE_HOOK(0x728F9A, TunnelLocomotionClass_Process_Track, 0x7)
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
 	const auto pTechno = pLoco->LinkedTo;
 	ScenarioExt::Global()->UndergroundTracker.AddUnique(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = true;
+	FootExt::Fetch(pTechno)->UndergroundTracked = true;
 
 	return 0;
 }
@@ -1527,7 +1530,7 @@ DEFINE_HOOK(0x7297F6, TunnelLocomotionClass_ProcessDigging_Track, 0x7)
 	GET(FootClass*, pTechno, ECX);
 
 	ScenarioExt::Global()->UndergroundTracker.Remove(pTechno);
-	UnitExt::Fetch(static_cast<UnitClass*>(pTechno))->UndergroundTracked = false;
+	FootExt::Fetch(pTechno)->UndergroundTracked = false;
 
 	return 0;
 }
@@ -2227,11 +2230,11 @@ DEFINE_HOOK(0x4CEC31, FlyLocomotionClass_ProcessLanding_CarryallAnim, 0x5)
 
 DEFINE_HOOK(0x4CF8B1, FlyLocomotionClass_Draw_Point_NoWobbles, 0x6)
 {
-    enum { Continue = 0x4CF8B7 };
-    GET(TechnoTypeClass*, pType, EAX);
+	enum { Continue = 0x4CF8B7 };
+	GET(TechnoTypeClass*, pType, EAX);
 
 	auto const pTypeExt = AircraftTypeExt::Fetch(static_cast<AircraftTypeClass*>(pType));
-    R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
+	R->CL(pTypeExt->FlyNoWobbles.Get(RulesExt::Global()->FlyNoWobbles.Get(pType->IsDropship)));
 
 	return Continue;
 }
@@ -2347,7 +2350,7 @@ int WarpPerStep::TemporalClassFake::_GetWarpPerStep(int helperCount)
 			weaponIdx = reinterpret_cast<WarpPerStep::DummyExtHere*>(*(uintptr_t*)((char*)pOwner + 0x154))->WeaponIndex_Warp;
 		else
 			weaponIdx = pOwner->SelectWeapon(nullptr);
-		
+
 		const auto pWeapon = pOwner->GetWeapon(weaponIdx)->WeaponType;
 		int warpPerStep = pWeapon->Damage;
 
@@ -2494,3 +2497,101 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E418C, CrewTemp::BuildingClassFake::_GetCrewCoun
 // UnitClass::UpdateRotation
 // Allow turret turn to target immediately
 DEFINE_JUMP(LJMP, 0x7369A5, 0x7369B3)
+
+DEFINE_HOOK(0x6FFD4C, TechnoClass_ClickedMission_VoiceSpecialAttack, 0x6)
+{
+	enum { SkipVoice = 0x6FFDA5, VoiceEnter = 0x6FFD11 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const Mission, mission, EDI);
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x98, 0xC));
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (pBuilding && mission == Mission::Eaten)
+	{
+		auto const pBuildingType = pBuilding->Type;
+
+		if (pBuildingType->Grinding)
+		{
+			GET(TechnoTypeClass* const, pType, EAX);
+
+			auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+			if (pTypeExt->VoiceEnterGrinder.isset())
+			{
+				const int vocIndex = pTypeExt->VoiceEnterGrinder.Get();
+
+				if (vocIndex != -1)
+					pThis->QueueVoice(vocIndex);
+
+				return SkipVoice;
+			}
+		}
+		else if (pBuildingType->Passengers > 0 ||
+			(AresHelper::CanUseAres && BuildingTypeExt::Fetch(pBuildingType)->Tunnel))
+		{
+			const auto RulesExt = RulesExt::Global();
+			const bool noQueueUpToEnter = TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+				RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter));
+
+			if (noQueueUpToEnter)
+			{
+				bool canEnter = false;
+
+				switch (pThis->WhatAmI())
+				{
+				case AbstractType::Infantry:
+					canEnter = pBuildingType->InfantryAbsorb;
+					break;
+				case AbstractType::Unit:
+					canEnter = pBuildingType->UnitAbsorb;
+					break;
+				default:
+					break;
+				}
+
+				if (canEnter)
+					return VoiceEnter;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x70B1F2, TechnoClass_RevealHouses, 0x6)	// TechnoClass::vt_entry_48C
+DEFINE_HOOK_AGAIN(0x70B15A, TechnoClass_RevealHouses, 0x6)	// TechnoClass::UpdateSight
+DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
+{
+	const DWORD address = R->Origin();
+	auto const pPlayer = HouseClass::CurrentPlayer;
+	bool canShow = false;
+
+	if (pPlayer)
+	{
+		auto const pTechno = address == 0x70B1F2 ? R->ECX<TechnoClass*>() : R->ESI<TechnoClass*>();
+		auto const pHouse = pTechno->Owner;
+
+		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+		auto const pHouseTypeExt = HouseTypeExt::Fetch(pHouse->Type);
+
+		const AffectedHouse affectHouses = pTypeExt->RevealHouses.Get(pHouseTypeExt->RevealHouses.Get(RulesExt::Global()->RevealHouses));
+		canShow = EnumFunctions::CanTargetHouse(affectHouses, pHouse, pPlayer);
+	}
+
+	switch (address)
+	{
+	case 0x70B1F2:
+		R->ESI(canShow ? pPlayer : nullptr);
+		break;
+	case 0x70B15A:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70B160;
+	default:
+		R->EDX(canShow ? pPlayer : nullptr);
+		return 0x70AF28;
+	}
+
+	return 0;
+}

@@ -567,40 +567,41 @@ SetTabBySelecting=-1            ; integer, index of tab
 
 ## Hotkey Commands
 
-### `[ ]` Display Damage Numbers
-
-- Switches on/off floating numbers when dealing damage. See [this](Miscellanous.md#display-damage-numbers) for details.
-- For localization add `TXT_DISPLAY_DAMAGE` and `TXT_DISPLAY_DAMAGE_DESC` into your `.csf` file.
-
-### `[ ]` Dump Object Info
-
-- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
-- For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
-
-### `[ ]` Toggle Frame By Frame Mode
-
-- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
-- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
-
-### `[ ]` Save Variables
-
-- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
-- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
-
 ### `[ ]` Toggle Designator Range
 
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
 - For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDesignatorRangeKeyEnabled=true    ; boolean
+```
 
 ### `[ ]` Toggle Digital Display
 
 - Switches on/off [digital display types](#digital-display).
+- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDigitalDisplayKeyEnabled=true    ; boolean
+```
 
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
+- Enable the hotkey by setting `NextIdleHarvesterKeyEnabled` to true.
 - For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+NextIdleHarvesterKeyEnabled=true    ; boolean
+```
 
 ### `[ ]` Quicksave
 
@@ -610,19 +611,53 @@ SetTabBySelecting=-1            ; integer, index of tab
 For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
 ```
 
+- Enable the hotkey by setting `QuickSaveKeyEnabled` to true.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
   - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
 
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+QuickSaveKeyEnabled=true    ; boolean
+```
+
 ### `[ ]` Toggle Message Label
 
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
+- Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true.
 - For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleMessageListKeyEnabled=true    ; boolean
+```
 
 ### `[ ]` Deselect Object(s)
 
 - Deselect 1 or 5 object(s) from current selected objects.
+- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
 - For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+DeselectObjectKeysEnabled=true    ; boolean
+```
+
+### `[ ]` Select Captured Units
+
+- Select the units within the current screen that are captured by non-permanent mind-controller.
+- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
+- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
+- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SelectCapturedKeyEnabled=false    ; boolean
+```
 
 ### `[ ]` Switch No-Move Command
 
@@ -632,12 +667,7 @@ For this command to work in multiplayer - you need to use a version of [YRpp spa
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-AllowSwitchNoMoveCommand=false                      ; boolean
-```
-
-In `ra2md.ini`:
-```ini
-[Phobos]
+AllowSwitchNoMoveKeyEnabled=false                   ; boolean
 DefaultApplyNoMoveCommand=true                      ; boolean
 ```
 
@@ -645,13 +675,13 @@ DefaultApplyNoMoveCommand=true                      ; boolean
 
 - You can now distribute commands across similar targets in a specified range when holding down a hotkey if `AllowDistributionCommand` is enabled. This behavior is like using the selected objects one by one to click on each target within the spread range.
   - The targets within the spread range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated (e.g. a healer will only be allocated friendly targets it can heal, while combat units will only be allocated the targets they would attack). Neutral targets are only eligible if the clicked target itself is neutral. Otherwise, the techno will fall back to the vanilla behavior of clicking the original target (the move fallback, or area guard if the switch no-move command is active). This will display a range ring.
-  - `AllowDistributionFilterHotkey` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
+  - `AllowDistributionFilterKeyEnabled` allows you to set target filter by hotkey, which default to `DefaultDistributionFilterMode`.
     - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
       - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
       - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
       - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
   - `DefaultDistributionSpreadRange` controls the initial spread range, which is a number that's corresponding to the amount of cell radius * 512.
-- `AllowDistributionSpreadHotkey` allows you to cycle through preset spread ranges by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
+- `AllowDistributionSpreadKeyEnabled` allows you to cycle through preset spread ranges by hotkey. There're 4 tiers of range that can be selected by this hotkey which are identical to 0, 4, 8 and 16 cells.
   - When the range is 0, it is the original default behavior of the game.
 - `AllowDistributionUseClick` controls whether distribution mode is activated by clicking on a target. When set to false, distribution mode only works via press-and-drag, and the range ring will only be shown while dragging.
 - You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionSpreadScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
@@ -672,8 +702,8 @@ AllowDistributionCommandOnOwner=true                ; boolean
 AllowDistributionCommandOnAllies=true               ; boolean
 AllowDistributionCommandOnEnemies=true              ; boolean
 AllowDistributionCommandOnNeutral=true              ; boolean
-AllowDistributionSpreadHotkey=true                  ; boolean
-AllowDistributionFilterHotkey=false                 ; boolean
+AllowDistributionSpreadKeyEnabled=true              ; boolean
+AllowDistributionFilterKeyEnabled=false             ; boolean
 DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120
 DefaultDistributionFilterMode=2                     ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
 DistributionSpreadScrollStep=256                    ; integer, minimum 16
@@ -701,18 +731,35 @@ ButtonList=[Button1],DistributionMode,[ButtonX]     ; List of button entry
 ButtonList=[Button1],DistributionMode,[ButtonX]     ; List of button entry
 ```
 
-### `[ ]` Select Captured Units
+### `[ ]` Development Hotkey Commands
 
-- Select the units within the current screen that are captured by non-permanent mind-controller.
-- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
-- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
-- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+- The following hotkeys are for debug purpose and require setting `DebugKeysEnabled` to true to enable.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-SelectCapturedKeyEnabled=false    ; boolean
+DebugKeysEnabled=false    ; boolean
 ```
+
+### `[ ]` Display Damage Numbers
+
+- Switches on/off floating numbers when dealing damage. See [this](Miscellanous.md#display-damage-numbers) for details.
+- For localization add `TXT_DISPLAY_DAMAGE` and `TXT_DISPLAY_DAMAGE_DESC` into your `.csf` file.
+
+### `[ ]` Dump Object Info
+
+- Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
+- For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Frame By Frame Mode
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
+
+### `[ ]` Save Variables
+
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
+- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ## Loading screen
 
@@ -953,6 +1000,7 @@ While a mod maker can "ban" certain superweapons from appearing on a sidebar com
 ```
 
   - There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
+    - Enable the hotkey by setting `ToggleSuperWeaponSidebarKeyEnabled` to true.
     - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
   - `SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for superweapons displayed on the sidebar.
     - The hotkeys are positional and are only provided for the first 10 superweapons.
@@ -978,6 +1026,7 @@ SuperWeaponSidebar.MaxColumns=              ; integer
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
+ToggleSuperWeaponSidebarKeyEnabled=true     ; boolean
 SuperWeaponSidebarKeysEnabled=false         ; boolean
 
 [AudioVisual]

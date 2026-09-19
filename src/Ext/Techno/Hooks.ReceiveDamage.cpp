@@ -49,6 +49,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		double multiplier = 1.0;
 
+		// Calculate health multiplier first since it'll need to be multiplied by later multipliers
+		if (pWHExt->DamageSourceHealthMultiplier && pAttacker)
+			multiplier += pWHExt->DamageSourceHealthMultiplier * pAttacker->GetHealthPercentage();
+
+		if (pWHExt->DamageTargetHealthMultiplier)
+			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+
 		if (pAttacker && pAttacker->Berzerk)
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
@@ -67,12 +74,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			else
 				multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
 		}
-
-		if (pWHExt->DamageSourceHealthMultiplier && pAttacker)
-			multiplier += pWHExt->DamageSourceHealthMultiplier * pAttacker->GetHealthPercentage();
-
-		if (pWHExt->DamageTargetHealthMultiplier)
-			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
 
 		if (multiplier != 1.0)
 		{
@@ -261,8 +262,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 
-	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead, pSourceHouse);
 
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);

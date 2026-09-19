@@ -85,8 +85,6 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool PriorityDeployFiltering;
 		static bool TypeSelectUseIFVMode;
-		static bool DevelopmentCommands;
-		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
@@ -118,19 +116,30 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
+		// Hotkeys
+		static bool NextIdleHarvesterCommand;
+		static bool QuickSaveCommand;
+		static bool ToggleDigitalDisplayCommand;
+		static bool ToggleDesignatorRangeCommand;
+		static bool ToggleMessageListCommand;
+		static bool ToggleSuperWeaponSidebarCommand;
+		static bool DeselectObjectCommand;
 		static bool SelectCapturedCommand;
 		static bool AllowSwitchNoMoveCommand;
+		static bool ApplyNoMoveCommand;
+		static bool SuperWeaponSidebarCommands;
+		static bool DevelopmentCommands;
+		// Distribution mode
 		static bool AllowDistributionCommand;
 		static bool AllowDistributionCommandOnOwner;
 		static bool AllowDistributionCommandOnAllies;
 		static bool AllowDistributionCommandOnEnemies;
 		static bool AllowDistributionCommandOnNeutral;
-		static bool AllowDistributionFilterHotkey;
-		static bool AllowDistributionSpreadHotkey;
+		static bool AllowDistributionFilterCommand;
+		static bool AllowDistributionSpreadCommand;
 		static bool AllowDistributionSpreadScroll;
 		static bool AllowDistributionSpreadDrag;
 		static bool AllowDistributionUseClick;
-		static bool ApplyNoMoveCommand;
 		static unsigned int DistributionSpreadRange;
 		static unsigned int DistributionSpreadScrollStep;
 		static int DistributionFilterMode;
@@ -153,5 +162,6 @@ public:
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
 		static bool DisableLaserTracking;
+		static bool DisablePsychicDetectable;
 	};
 };

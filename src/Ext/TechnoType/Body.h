@@ -33,6 +33,8 @@ public:
 		return static_cast<TechnoTypeClass*>(this->GetAttachedObject());
 	}
 
+	DynamicVectorClass<TechnoClass*> Array;
+
 	Valueable<bool> HealthBar_Hide;
 	Valueable<bool> HealthBar_HidePips;
 	Valueable<bool> HealthBar_Permanent;
@@ -442,6 +444,16 @@ public:
 	ValueableVector<AnimTypeClass*> DecloakAnims;
 	Nullable<bool> Cloak_KickOutParasite;
 
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
+	NullableIdx<VocClass> VoiceEnterGrinder;
+
+	Nullable<AffectedHouse> RevealHouses;
+
+	ValueableVector<int> DefaultToGuardArea_Modes;
+	ValueableVector<int> DefaultToGuardArea_AIModes;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -465,6 +477,8 @@ public:
 	Nullable<bool> KeepAlive;
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, Array {}
+
 		, HealthBar_Hide { false }
 		, HealthBar_HidePips { false }
 		, HealthBar_Permanent { false }
@@ -848,7 +862,7 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
-		
+
 		, PsychicDetectable { true }
 
 		, ExitThroughRoof {}
@@ -856,6 +870,16 @@ public:
 		, CloakAnims {}
 		, DecloakAnims {}
 		, Cloak_KickOutParasite {}
+
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
+
+		, VoiceEnterGrinder {}
+
+		, RevealHouses {}
+
+		, DefaultToGuardArea_Modes {}
+		, DefaultToGuardArea_AIModes {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
