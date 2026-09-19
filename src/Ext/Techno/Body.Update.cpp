@@ -304,6 +304,8 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 			if (pTarget->Owner == pOwner)
 				TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
 		}
+
+		this->AutoDeathFlag = 0;
 	}
 
 	return false;
