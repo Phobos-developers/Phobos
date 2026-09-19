@@ -11,6 +11,7 @@ class TechnoTypeClass;
 
 struct DistributionTargetInfo
 {
+	TechnoClass* pTechno;
 	CoordStruct Center;
 	bool TargetIsNeutral;
 	TechnoTypeClass* pType;
@@ -29,6 +30,16 @@ public:
 };
 
 class DistributionModeSpreadCommandClass : public CommandClass
+{
+public:
+	virtual const char* GetName() const override;
+	virtual const wchar_t* GetUIName() const override;
+	virtual const wchar_t* GetUICategory() const override;
+	virtual const wchar_t* GetUIDescription() const override;
+	virtual void Execute(WWKey eInput) const override;
+};
+
+class DistributionModeFilterCommandClass : public CommandClass
 {
 public:
 	virtual const char* GetName() const override;
@@ -70,6 +81,7 @@ public:
 
 	static void ProcessWaypointCommand(int idxPath, unsigned char idxWP);
 	static bool IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno);
+	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
 	static std::vector<std::pair<TechnoClass*, int>> CollectAndSortTargets(CoordStruct center, double range);
 	static void ProcessDistributionMode(const DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);

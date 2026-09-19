@@ -121,6 +121,11 @@ public:
 		static bool SelectCapturedCommand;
 		static bool AllowSwitchNoMoveCommand;
 		static bool AllowDistributionCommand;
+		static bool AllowDistributionCommandOnOwner;
+		static bool AllowDistributionCommandOnAllies;
+		static bool AllowDistributionCommandOnEnemies;
+		static bool AllowDistributionCommandOnNeutral;
+		static bool AllowDistributionFilterHotkey;
 		static bool AllowDistributionSpreadHotkey;
 		static bool AllowDistributionSpreadScroll;
 		static bool AllowDistributionSpreadDrag;

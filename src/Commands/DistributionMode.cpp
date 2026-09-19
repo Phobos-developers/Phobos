@@ -1,4 +1,4 @@
-﻿#include "DistributionMode.h"
+#include "DistributionMode.h"
 
 #include "AdvancedCommandBarButtons.h"
 #include <Ext/Techno/Body.h>
@@ -87,6 +87,32 @@ void DistributionModeSpreadCommandClass::Execute(WWKey eInput) const
 
 	// Wrap around to the first step (0 = no distribution).
 	range = DistributionSpreadHotkeySteps[0];
+	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
+}
+
+const char* DistributionModeFilterCommandClass::GetName() const
+{
+	return "Distribution Mode Filter";
+}
+
+const wchar_t* DistributionModeFilterCommandClass::GetUIName() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER", L"Change distribution filter");
+}
+
+const wchar_t* DistributionModeFilterCommandClass::GetUICategory() const
+{
+	return CATEGORY_CONTROL;
+}
+
+const wchar_t* DistributionModeFilterCommandClass::GetUIDescription() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER_DESC", L"Automatically and averagely select similar targets around the original target. This is for changing the filter criteria");
+}
+
+void DistributionModeFilterCommandClass::Execute(WWKey eInput) const
+{
+	Phobos::Config::DistributionFilterMode = ((Phobos::Config::DistributionFilterMode + 1) & 3);
 	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
 
@@ -247,6 +273,16 @@ bool grinderCheck(Action action, TechnoClass* pTechno)
 	return true;
 }
 
+bool DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action)
+{
+	return (pOwner->IsNeutral() ? Phobos::Config::AllowDistributionCommandOnNeutral :
+		(HouseClass::CurrentPlayer->IsAlliedWith(pOwner)
+			? (action != Action::Attack && action != Action::Sabotage && HouseClass::CurrentPlayer == pOwner
+			? Phobos::Config::AllowDistributionCommandOnOwner
+			: Phobos::Config::AllowDistributionCommandOnAllies)
+			: Phobos::Config::AllowDistributionCommandOnEnemies));
+}
+
 bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno)
 {
 	return Enabled
@@ -255,7 +291,8 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& action != Action::NoMove
 		&& !PlanningNodeClass::PlanningModeActive
 		&& pTechno
-		&& grinderCheck(action, pTechno);
+		&& grinderCheck(action, pTechno)
+		&& DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pTechno->Owner, action);
 }
 
 std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
@@ -311,6 +348,7 @@ std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::
 DistributionTargetInfo DistributionModeHoldDownCommandClass::CollectTargetInfo(TechnoClass* pTechno, Action action)
 {
 	DistributionTargetInfo info;
+	info.pTechno = pTechno;
 	info.Center = pTechno->GetCoords();
 	info.TargetIsNeutral = pTechno->Owner->IsNeutral();
 	info.pType = pTechno->GetTechnoType();
@@ -328,6 +366,13 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 	const size_t recordSize = record.size();
 	const size_t maxSize = recordSize;
 	int current = 1;
+	Armor infoArmor = Armor::None;
+
+	if (filterMode == 1)
+	{
+		const auto pInfoShield = TechnoExt::Fetch(info.pTechno)->Shield.get();
+		infoArmor = pInfoShield ? Armor(pInfoShield->GetArmorType()) : info.pType->Armor;
+	}
 
 	for (const auto& pSelect : ObjectClass::CurrentObjects)
 	{
@@ -347,6 +392,9 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 			if (!grinderCheck(info.Action, pItem))
 				continue;
 
+			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pItem->Owner, info.Action))
+				continue;
+
 			if (filterMode)
 			{
 				const auto pItemType = pItem->GetTechnoType();
@@ -359,7 +407,10 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				{
 					if (filterMode == 1)
 					{
-						if (pItemType->Armor != info.pType->Armor)
+						const auto pItemShield = TechnoExt::Fetch(static_cast<TechnoClass*>(pItem))->Shield.get();
+						const auto itemArmor = pItemShield ? Armor(pItemShield->GetArmorType()) : pItemType->Armor;
+
+						if (itemArmor != infoArmor)
 							continue;
 					}
 					else if (filterMode == 2)
