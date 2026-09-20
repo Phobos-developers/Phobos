@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class LaserTrailTypeClass final : public Enumerable<LaserTrailTypeClass>
 {
@@ -14,6 +14,7 @@ public:
 	Nullable<ColorStruct> Bolt_Color[3];
 	Valueable<bool> Bolt_Disable[3];
 	Valueable<int> Bolt_Arcs;
+	Valueable<int> Bolt_ZAdjust;
 	Nullable<ColorStruct> Beam_Color;
 	Valueable<double> Beam_Amplitude;
 	Nullable<int> FadeDuration;
@@ -23,6 +24,7 @@ public:
 	Valueable<bool> CloakVisible;
 	Valueable<bool> CloakVisible_DetectedOnly;
 	Valueable<bool> DroppodOnly;
+	Valueable<bool> IsHideable;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
 		, DrawType { LaserTrailDrawType::Laser }
@@ -33,6 +35,7 @@ public:
 		, Bolt_Color {}
 		, Bolt_Disable { Valueable<bool>(false) }
 		, Bolt_Arcs { 8 }
+		, Bolt_ZAdjust { 0 }
 		, Beam_Color {}
 		, Beam_Amplitude { 40.0 }
 		, FadeDuration {}
@@ -42,6 +45,7 @@ public:
 		, CloakVisible { false }
 		, CloakVisible_DetectedOnly { false }
 		, DroppodOnly { false }
+		, IsHideable { true }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

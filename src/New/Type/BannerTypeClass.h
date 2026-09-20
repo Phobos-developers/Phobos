@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Utilities/Enum.h>
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
 class BannerTypeClass final : public Enumerable<BannerTypeClass>
 {
@@ -21,6 +20,14 @@ public:
 	Valueable<bool> CSF_Background;
 	Valueable<BannerNumberType> CSF_VariableFormat;
 
+	//Duration
+	Valueable<int> Duration;
+	Valueable<int> Delay;
+	Valueable<bool> Shape_RefreshAfterDelay;
+
+	//Clamp to screen
+	Valueable<bool> ClampToScreen;
+
 	BannerTypeClass(const char* const pTitle) : Enumerable<BannerTypeClass>(pTitle)
 		, PCX { }
 		, Shape { }
@@ -29,6 +36,10 @@ public:
 		, CSF_Color { }
 		, CSF_Background { false }
 		, CSF_VariableFormat { BannerNumberType::None }
+		, Duration { -1 }
+		, Delay { -1 }
+		, Shape_RefreshAfterDelay { false }
+		, ClampToScreen { true }
 	{ }
 
 	virtual void LoadFromINI(CCINIClass* pINI);

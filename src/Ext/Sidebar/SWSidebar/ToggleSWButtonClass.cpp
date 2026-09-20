@@ -1,12 +1,11 @@
 #include "ToggleSWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <GameOptionsClass.h>
-#include <ScenarioClass.h>
 
 #include <Ext/Side/Body.h>
 
-ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), false)
+ToggleSWButtonClass::ToggleSWButtonClass(int x, int y, int width, int height)
+	: GadgetClass(x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), false)
 {
 	SWSidebarClass::Instance.ToggleButton = this;
 }
@@ -18,7 +17,7 @@ bool ToggleSWButtonClass::Draw(bool forced)
 	if (columns.empty())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 	const auto pTogglePCX = SWSidebarClass::IsEnabled() ? pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : pSideExt->SuperWeaponSidebar_OffPCX.GetSurface();
 
 	if (!pTogglePCX)
@@ -61,7 +60,7 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if (columns.empty())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 
 	if (SWSidebarClass::IsEnabled() ? !pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : !pSideExt->SuperWeaponSidebar_OffPCX.GetSurface())
 		return false;
@@ -75,8 +74,7 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 		ToggleSWButtonClass::SwitchSidebar();
 	}
 
-	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
-	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	this->GadgetClass::Action(flags, pKey, KeyModifier::None);
 	return true;
 }
 
@@ -102,7 +100,7 @@ void ToggleSWButtonClass::UpdatePosition()
 
 bool ToggleSWButtonClass::SwitchSidebar()
 {
-	VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
+	VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0f);
 	ScenarioExt::Global()->SWSidebar_Enable = !ScenarioExt::Global()->SWSidebar_Enable;
 
 	const bool disabled = !SWSidebarClass::IsEnabled();

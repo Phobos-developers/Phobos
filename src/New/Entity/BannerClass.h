@@ -1,10 +1,6 @@
 #pragma once
 
-#include <vector>
-
-#include <GeneralStructures.h>
-
-#include <Utilities/Savegame.h>
+#include <New/Type/BannerTypeClass.h>
 
 class BannerTypeClass;
 
@@ -19,6 +15,8 @@ public:
 	int Variable {};
 	int ShapeFrameIndex {};
 	bool IsGlobalVariable {};
+	int Duration { -1 };
+	int Delay { -1 };
 
 	BannerClass() = default;
 

@@ -1,0 +1,24 @@
+#include <windows.h>
+#include "ExceptionHandler.Resource.h"
+
+// Side-by-side manifest with the Common Controls v6 dependency, activated
+// around the exception dialog so it renders with modern visual styles.
+// ID 2 = ISOLATIONAWARE_MANIFEST_RESOURCE_ID; the project itself builds with
+// GenerateManifest=false, so this is the DLL's only manifest resource.
+2 RT_MANIFEST "ExceptionHandler.manifest"
+
+IDD_EXCEPTION DIALOGEX 0, 0, 350, 320
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "Fatal Error - Yuri's Revenge"
+FONT 9, "Segoe UI", 400, 0, 0x1
+BEGIN
+    CTEXT           "The game has encountered a fatal error and is unable to continue.\nA crash report and a minidump have been saved to the game's ""debug"" folder.",-1,7,7,335,19,NOT WS_GROUP
+    LTEXT           "Press Quit to close the game immediately.",-1,17,29,325,8,NOT WS_GROUP
+    LTEXT           "Press Debug to break into an attached debugger.",-1,17,39,325,8,NOT WS_GROUP
+    LTEXT           "Press Save Full Dump to also write a full memory dump (large, but most useful to developers).",-1,17,49,325,8,NOT WS_GROUP
+    GROUPBOX        "Crash report",IDC_EXCEPTION_GROUPBOX,12,60,326,237
+    EDITTEXT        IDC_EXCEPTION_LOG,17,73,316,219,ES_MULTILINE | ES_NOHIDESEL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "Save Full Dump",IDC_EXCEPTION_FULLDUMP,12,302,90,14,BS_CENTER
+    PUSHBUTTON      "Debug",IDC_EXCEPTION_DEBUG,216,302,60,14,BS_CENTER
+    DEFPUSHBUTTON   "Quit",IDC_EXCEPTION_QUIT,283,302,60,14
+END

@@ -1,4 +1,3 @@
-#include <CCINIClass.h>
 #include "Commands.h"
 
 #include "ObjectInfo.h"
@@ -10,19 +9,48 @@
 #include "ToggleDigitalDisplay.h"
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
+#include "SelectCaptured.h"
 #include "ToggleSWSidebar.h"
 #include "FireTacticalSW.h"
+#include "ToggleMessageList.h"
+#include "DeselectObject.h"
+#include "DeselectObject5.h"
+
+#include <CCINIClass.h>
+
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
+#include <Misc/MessageColumn.h>
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
 	// Load it after Ares'
 
-	MakeCommand<NextIdleHarvesterCommandClass>();
-	MakeCommand<QuickSaveCommandClass>();
-	MakeCommand<ToggleDigitalDisplayCommandClass>();
-	MakeCommand<ToggleDesignatorRangeCommandClass>();
-	MakeCommand<ToggleSWSidebar>();
+	if (Phobos::Config::NextIdleHarvesterCommand)
+		MakeCommand<NextIdleHarvesterCommandClass>();
+
+	if (Phobos::Config::QuickSaveCommand)
+		MakeCommand<QuickSaveCommandClass>();
+
+	if (Phobos::Config::ToggleDigitalDisplayCommand)
+		MakeCommand<ToggleDigitalDisplayCommandClass>();
+
+	if (Phobos::Config::ToggleDesignatorRangeCommand)
+		MakeCommand<ToggleDesignatorRangeCommandClass>();
+
+	if (Phobos::Config::MessageDisplayInCenter && Phobos::Config::ToggleMessageListCommand)
+		MakeCommand<ToggleMessageListCommandClass>();
+
+	if (Phobos::UI::SuperWeaponSidebar && Phobos::Config::ToggleSuperWeaponSidebarCommand)
+		MakeCommand<ToggleSWSidebar>();
+
+	if (Phobos::Config::DeselectObjectCommand)
+	{
+		MakeCommand<DeselectObjectCommandClass>();
+		MakeCommand<DeselectObject5CommandClass>();
+	}
+
+	if (Phobos::Config::SelectCapturedCommand)
+		MakeCommand<SelectCapturedCommandClass>();
 
 	if (Phobos::Config::SuperWeaponSidebarCommands)
 	{
@@ -53,4 +81,39 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	}
 
 	return 0;
+}
+
+static void MouseWheelDownCommand()
+{
+	if (MessageColumnClass::Instance.IsHovering())
+		MessageColumnClass::Instance.ScrollDown();
+}
+
+static void MouseWheelUpCommand()
+{
+	if (MessageColumnClass::Instance.IsHovering())
+		MessageColumnClass::Instance.ScrollUp();
+}
+
+DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
+{
+	GET(const WPARAM, WParam, ECX);
+
+	if (WParam & 0x80000000u)
+		MouseWheelDownCommand();
+	else
+		MouseWheelUpCommand();
+
+	return 0;
+}
+
+static inline bool CheckSkipScrollSidebar()
+{
+	return MessageColumnClass::Instance.IsHovering();
+}
+
+DEFINE_HOOK(0x533F50, Game_ScrollSidebar_Skip, 0x5)
+{
+	enum { SkipScrollSidebar = 0x533FC3 };
+	return CheckSkipScrollSidebar() ? SkipScrollSidebar : 0;
 }

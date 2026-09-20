@@ -1,20 +1,23 @@
 #include "LaserTrailClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <Ext/EBolt/Body.h>
 
 // Draws LaserTrail if the conditions are suitable.
 // Returns true if drawn, false otherwise.
 bool LaserTrailClass::Update(CoordStruct location)
 {
+	if (Phobos::Config::HideLaserTrailEffects && this->Type->IsHideable)
+		return false;
+
 	bool result = false;
+	const double segmentLength = (double)this->Type->SegmentLength;
 
 	if (!this->LastLocation.isset())
 	{
 		// The trail was just inited
 		this->LastLocation = location;
 	}
-	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
+	else if (location.DistanceFromSquared(this->LastLocation.Get()) > segmentLength * segmentLength) // TODO reimplement IgnoreVertical properly?
 	{
 		auto const pType = this->Type;
 
@@ -23,7 +26,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 		{
 			if (pType->DrawType == LaserTrailDrawType::Laser)
 			{
-				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+				const auto pLaser = GameCreate<LaserDrawClass>(
 					this->LastLocation.Get(), location,
 					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
 					pType->FadeDuration.Get(64));
@@ -36,6 +39,8 @@ bool LaserTrailClass::Update(CoordStruct location)
 			{
 				const auto pBolt = GameCreate<EBolt>();
 				const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+				const auto& boltDisable = pType->Bolt_Disable;
+				const auto& boltColor = pType->Bolt_Color;
 
 				const int alternateIdx = pType->IsAlternateColor ? 5 : 10;
 				const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
@@ -43,10 +48,10 @@ bool LaserTrailClass::Update(CoordStruct location)
 
 				for (int idx = 0; idx < 3; ++idx)
 				{
-					if (pType->Bolt_Disable[idx])
+					if (boltDisable[idx])
 						pBoltExt->Disable[idx] = true;
-					else if (pType->Bolt_Color[idx].isset())
-						pBoltExt->Color[idx] = pType->Bolt_Color[idx].Get();
+					else if (boltColor[idx].isset())
+						pBoltExt->Color[idx] = boltColor[idx].Get();
 					else
 						pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
 				}
@@ -55,7 +60,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 				pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
 				pBolt->AlternateColor = pType->IsAlternateColor;
 
-				pBolt->Fire(this->LastLocation, location, 0);
+				pBolt->Fire(this->LastLocation, location, pType->Bolt_ZAdjust);
 			}
 			else if (pType->DrawType == LaserTrailDrawType::RadBeam)
 			{

@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <VeinholeMonsterClass.h>
+
+#include <Ext/House/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -40,10 +41,10 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
 		return;
 
-	int nCount = pINI->GetKeyCount("VariableNames");
+	const int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
-		auto pKey = pINI->GetKeyName("VariableNames", i);
+		const auto pKey = pINI->GetKeyName("VariableNames", i);
 		int nIndex;
 		if (sscanf_s(pKey, "%d", &nIndex) == 1)
 		{
@@ -90,6 +91,11 @@ void ScenarioExt::Remove(ScenarioClass* pThis)
 void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (auto const pHouse : HouseClass::Array)
+	{
+		HouseExt::Fetch(pHouse)->FreeRadar = ScenarioClass::Instance->FreeRadar;
+	}
 }
 
 void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
@@ -111,6 +117,19 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 
 		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
+	}
+}
+
+void ScenarioExt::ExtData::RegisterAutoDeath(TechnoClass* pTechno)
+{
+	if (auto const pExt = TechnoExt::Fetch(pTechno))
+	{
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto& vec = this->AutoDeathObjects;
+			if (std::find(vec.begin(), vec.end(), pExt) == vec.end())
+				vec.push_back(pExt);
+		}
 	}
 }
 
@@ -163,7 +182,20 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransportReloaders)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
-//		.Process(this->NewMessageList); // Should not S/L
+		.Process(this->RecordMessages)
+		.Process(this->DefaultLS640BkgdName)
+		.Process(this->DefaultLS800BkgdName)
+		.Process(this->DefaultLS800BkgdPal)
+		.Process(this->LimboLaunchers)
+		.Process(this->TriggerTypePlayerAtXOwners)
+		.Process(this->UndergroundTracker)
+		.Process(this->SpecialTracker)
+		.Process(this->FallingDownTracker)
+		.Process(this->EVAIndex)
+		.Process(this->FiringAnimUpdateCount)
+		.Process(this->MissionTimer_Type)
+		.Process(this->MissionTimer_Variable)
+		.Process(this->MissionTimer_Reverse)
 		;
 }
 
@@ -175,6 +207,8 @@ void ScenarioExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 
 void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Global()->EVAIndex = VoxClass::EVAIndex;
+
 	Extension<ScenarioClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
@@ -191,6 +225,7 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	ScenarioExt::Global()->Waypoints.clear();
 	ScenarioExt::Global()->Variables[0].clear();
 	ScenarioExt::Global()->Variables[1].clear();
+	ScenarioExt::Global()->TriggerTypePlayerAtXOwners.clear();
 
 	return 0;
 }
