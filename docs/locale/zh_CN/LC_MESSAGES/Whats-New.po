@@ -2958,11 +2958,6 @@ msgid ""
 msgstr "修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug（by NetsuNegi）"
 
 msgid ""
-"Fixed the bug that ai will try to product aircraft even the airport has "
-"no free dock for it (by NetsuNegi)"
-msgstr "修复了即便在没有可用的空余机位时 AI 也仍会尝试生产战机的 Bug（by NetsuNegi）"
-
-msgid ""
 "Fixed the issue where non-repairer units needed sensors to attack cloaked"
 " friendly units (by TaranDahl)"
 msgstr "修复了非维修单位需要能够反隐才能攻击友军隐形单位的问题（by TaranDahl）"
