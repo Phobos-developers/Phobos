@@ -888,6 +888,7 @@ ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
   - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
+  - `Horizontal` and `Vertical` set the anchor point from which the banner is drawn relative to the drawing point from trigger.
 
 In `rulesmd.ini`:
 ```ini
@@ -906,6 +907,8 @@ CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variabl
 Duration=-1                  ; integer
 Delay=-1                     ; integer
 ClampToScreen=true           ; boolean
+Horizontal=center            ; Horizontal position enumeration (left|center/centre|right)
+Vertical=center              ; Vertical position enumeration (top|center/centre|bottom)
 ```
 
 In `mycampaign.map`:
