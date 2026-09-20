@@ -33,6 +33,14 @@ struct DistributionItemInfo
 	int TotalPassenger;
 	int CurrentPassenger;
 	bool BySize;
+	bool CanBeOccupied;
+};
+
+struct SelectionInfo
+{
+	ObjectClass* pSelect;
+	int Size;
+	bool CanOccupy;
 };
 
 class SwitchNoMoveCommandClass : public CommandClass
