@@ -35,6 +35,8 @@ public:
 	ValueableVector<InfantryTypeClass*> EliteInfantry;
 	ValueableVector<UnitTypeClass*> EliteUnits;
 	ValueableVector<AircraftTypeClass*> EliteAircraft;
+	ValueableVector<BuildingTypeClass*> EliteBuildings;
+	ValueableVector<BuildingTypeClass*> EliteDefenses;
 	Valueable<bool> Elite_AffectsAll;
 
 	ValueableVector<BuildingTypeClass*> VeteranBuildings;
@@ -50,6 +52,8 @@ public:
 		, EliteInfantry {}
 		, EliteUnits {}
 		, EliteAircraft {}
+		, EliteBuildings {}
+		, EliteDefenses {}
 		, Elite_AffectsAll { true }
 		, VeteranBuildings {}
 		, VeteranDefenses {}

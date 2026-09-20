@@ -57,19 +57,29 @@ static void SetElite(TechnoClass* pTechno)
 	{
 		case AbstractType::Infantry:
 		{
-			if(pHouseTypeExt->EliteInfantry.Contains(abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType())))
+			if(pHouseTypeExt->EliteInfantry.Contains(static_cast<InfantryTypeClass*>(pTechno->GetTechnoType())))
 				pTechno->Veterancy.SetElite();
 			break;
 		}
 		case AbstractType::Unit:
 		{
-			if(pHouseTypeExt->EliteUnits.Contains(abstract_cast<UnitTypeClass*>(pTechno->GetTechnoType())))
+			if(pHouseTypeExt->EliteUnits.Contains(static_cast<UnitTypeClass*>(pTechno->GetTechnoType())))
 				pTechno->Veterancy.SetElite();
 			break;
 		}
 		case AbstractType::Aircraft:
 		{
-			if(pHouseTypeExt->EliteAircraft.Contains(abstract_cast<AircraftTypeClass*>(pTechno->GetTechnoType())))
+			if(pHouseTypeExt->EliteAircraft.Contains(static_cast<AircraftTypeClass*>(pTechno->GetTechnoType())))
+				pTechno->Veterancy.SetElite();
+			break;
+		}
+		case AbstractType::Building:
+		{
+			const auto pType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType());
+			const bool isDefense = pType->BuildCat == BuildCat::Combat;
+			const auto& EliteVector = isDefense ? pHouseTypeExt->EliteDefenses : pHouseTypeExt->EliteBuildings;
+
+			if(EliteVector.Contains(pType))
 				pTechno->Veterancy.SetElite();
 			break;
 		}
@@ -91,7 +101,7 @@ DEFINE_HOOK(0x6A980A, StripClass_Draw_DrawSHPCameo, 0x8)
 	{
 		case AbstractType::InfantryType:
 		{
-			if(pHouseTypeExt->EliteInfantry.Contains(abstract_cast<InfantryTypeClass*>(pType)))
+			if(pHouseTypeExt->EliteInfantry.Contains(static_cast<InfantryTypeClass*>(pType)))
 			{
 				pHouseExt->TechnoPCX_IsLoad.push_back(pType);
 				pSHP = LoadSHPCameo(pType);
@@ -100,7 +110,7 @@ DEFINE_HOOK(0x6A980A, StripClass_Draw_DrawSHPCameo, 0x8)
 		}
 		case AbstractType::UnitType:
 		{
-			if(pHouseTypeExt->EliteUnits.Contains(abstract_cast<UnitTypeClass*>(pType)))
+			if(pHouseTypeExt->EliteUnits.Contains(static_cast<UnitTypeClass*>(pType)))
 			{
 				pHouseExt->TechnoPCX_IsLoad.push_back(pType);
 				pSHP = LoadSHPCameo(pType);
@@ -109,7 +119,20 @@ DEFINE_HOOK(0x6A980A, StripClass_Draw_DrawSHPCameo, 0x8)
 		}
 		case AbstractType::AircraftType:
 		{
-			if(pHouseTypeExt->EliteAircraft.Contains(abstract_cast<AircraftTypeClass*>(pType)))
+			if(pHouseTypeExt->EliteAircraft.Contains(static_cast<AircraftTypeClass*>(pType)))
+			{
+				pHouseExt->TechnoPCX_IsLoad.push_back(pType);
+				pSHP = LoadSHPCameo(pType);
+			}
+			break;
+		}
+		case AbstractType::BuildingType:
+		{
+			const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+			const bool isDefense = pBuildingType->BuildCat == BuildCat::Combat;
+			const auto& EliteVector = isDefense ? pHouseTypeExt->EliteDefenses : pHouseTypeExt->EliteBuildings;
+
+			if(EliteVector.Contains(pBuildingType))
 			{
 				pHouseExt->TechnoPCX_IsLoad.push_back(pType);
 				pSHP = LoadSHPCameo(pType);
@@ -134,7 +157,7 @@ DEFINE_HOOK(0x6A99E7, StripClass_Draw_DrawPCXCameo, 0x6)
 	GET(const int, destY, EBP);
 	GET_STACK(SHPStruct*, pSHP, STACK_OFFSET(0x48C, -0x444));
 
-	auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
+	const auto pHouseExt = HouseExt::Fetch(HouseClass::CurrentPlayer);
 
 	for(auto pType : pHouseExt->TechnoPCX_IsLoad)
 	{		
@@ -158,9 +181,12 @@ DEFINE_HOOK(0x446EE8, BuildingClass_Place_OccupantsInitialElite, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
 
-	for(auto pOccupant : pThis->Occupants)
-		SetElite(pOccupant);
+	SetElite(pThis);
 
+	for(auto pOccupant : pThis->Occupants)
+	{
+		SetElite(pOccupant);
+	}
 	return 0;
 }
 
@@ -169,40 +195,23 @@ DEFINE_HOOK(0x4D71A0, FootClass_Put_PassengersInitialElite, 0x6)
 	GET(FootClass*, pFoot, ESI);
 
 	for(auto pPassenger = pFoot->Passengers.FirstPassenger; pPassenger ; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+	{
 		SetElite(pPassenger);
-	
+	}
 	return 0;
 }
 // Affects all
-DEFINE_HOOK(0x517CB4, InfantryClass_InitialElite, 0x5)
+DEFINE_HOOK_AGAIN(0x7355BA, TechnoClass_Init_InitialElite, 0x6) // UnitClass
+DEFINE_HOOK_AGAIN(0x41405D, TechnoClass_Init_InitialElite, 0x6) // AircraftClass
+DEFINE_HOOK_AGAIN(0x442D25, TechnoClass_Init_InitialElite, 0x6) // BuildingClass
+DEFINE_HOOK(0x517D51, TechnoClass_Init_InitialElite, 0x6)       // InfantryClass
 {
-	GET(InfantryClass*, pInfantry, EAX);
+	GET(TechnoClass*, pTechno, ESI);
 
-	const auto pHouseTypeExt = HouseTypeExt::Fetch(pInfantry->Owner->Type);
+	const auto pHouseTypeExt = HouseTypeExt::Fetch(pTechno->Owner->Type);
 
 	if(pHouseTypeExt->Elite_AffectsAll)
-		SetElite(pInfantry);
-	return 0;
-}
+		SetElite(pTechno);
 
-DEFINE_HOOK(0x73577A, UnitClass_InitialElite, 0x6)
-{
-	GET(UnitClass*, pUnit, EAX);
-
-	const auto pHouseTypeExt = HouseTypeExt::Fetch(pUnit->Owner->Type);
-
-	if(pHouseTypeExt->Elite_AffectsAll)
-		SetElite(pUnit);
-	return 0;
-}
-
-DEFINE_HOOK(0x413F6C, Aircraft_InitialElite, 0x5)
-{
-	GET(AircraftClass*, pAircraft, EAX);
-
-	const auto pHouseTypeExt = HouseTypeExt::Fetch(pAircraft->Owner->Type);
-
-	if(pHouseTypeExt->Elite_AffectsAll)
-		SetElite(pAircraft);
 	return 0;
 }
