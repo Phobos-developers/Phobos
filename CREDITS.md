@@ -164,6 +164,7 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium ramp expansion support
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
+  - Tiberium veins overlay palette fix
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -581,6 +582,7 @@ This page lists all the individual contributions to the project by their author.
   - Cloak Enhancement
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -772,6 +774,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

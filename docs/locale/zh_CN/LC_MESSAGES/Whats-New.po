@@ -984,6 +984,9 @@ msgid ""
 msgstr ""
 "[赴部队回收站语音](Fixed-or-Improved-Logics.md#enter-the-grinder-voice)（by FlyStar）"
 
+msgid "[Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)"
+msgstr "[自定义 `MissileSafetyAltitude` 以及导弹在丢失目标后应飞向目标处还是爬升](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target)（by NetsuNegi 与 Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -1062,6 +1065,11 @@ msgid ""
 "when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)"
 msgstr ""
 "修复了 `VoiceEnter` 和 `VoiceMove` 不会在单位进入 `NoQueueUpToEnter=yes` 的建筑时正确播放的 Bug（by FlyStar）"
+
+msgid ""
+"Fixed the bug where Tiberium veins overlay used the wrong palette instead of "
+"matching the Veinhole Monster (by FS-21)"
+msgstr "修复了泰伯利亚静脉蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug（by FS-21）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："

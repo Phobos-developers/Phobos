@@ -293,6 +293,7 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 
 	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
 	this->TypeExtData = pTypeExt;
+	pTypeExt->Array.AddItem(pThis);
 
 	auto const pShieldType = pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0 ? pTypeExt->ShieldType : nullptr;
 	this->CurrentShieldType = pShieldType;
