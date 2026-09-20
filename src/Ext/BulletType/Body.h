@@ -89,6 +89,9 @@ public:
 
 	Valueable<int> ZAdjust;
 
+	Nullable<bool> MissileKeepTargetCoord;
+	Nullable<int> MissileSafetyAltitude;
+
 	// Ares 0.7
 	Nullable<Leptons> BallisticScatter_Min;
 	Nullable<Leptons> BallisticScatter_Max;
@@ -148,6 +151,8 @@ public:
 		, BombParachute {}
 		, AU { false }
 		, ZAdjust { 0 }
+		, MissileKeepTargetCoord {}
+		, MissileSafetyAltitude {}
 	{ }
 
 	virtual ~BulletTypeExt() = default;

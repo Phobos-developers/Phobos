@@ -271,7 +271,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
-- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 - Fixed the issue that rockets do not consider the destination altitude during climbing.
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
@@ -332,8 +331,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that computer player record cannot be log normally in non English mode.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 - Observer can see IvanBomb that's attached by any house.
-- Fixed a long-game crash caused by Tiberium growth priority queue buffer overflow (`PriorityQueueClassNode`), where extensive Tiberium expansion on large maps corrupted memory and crashed the game.
-- Fixed Tiberium growth and spread queues stalling/freezing when queued cells fail to expand or are temporarily blocked.
+- Fixed crashes and freezes caused by Tiberium growth and spread.
+- Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 
 ## Fixes / interactions with other extensions
 
@@ -1099,7 +1098,7 @@ Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDes
   - By default Y axis shift will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
   - For X axis the shift direction can also be switched by setting `XDrawOffset.InvertBracketShift=true`. The default is positive shift, towards right-hand side of the screen.
   - The bracket-based shift can be further adjusted with offset from `X/YDrawOffset.BracketAdjust`, overridden by `X/YDrawOffset.BracketAdjust.Buildings` for buildings only.
- 
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                            ; AnimationType
@@ -1565,6 +1564,16 @@ VeteranDefenses=        ; List of BuildingTypes
 Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
 ```
 
+### Customizable crew type per country
+
+- You can now define `Crew` on a per-country basis.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]            ; Country
+Crew=                    ; InfantryType, defaults to [Side] -> Crew
+```
+
 ## Infantry
 
 ### Auto deploy for GI-like infantry
@@ -1740,6 +1749,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+
+- Now `MissileSafetyAltitude` can be customized on each projectile.
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MissileKeepTargetCoord=false  ; boolean
+
+[SOMEPROJECTILE]              ; Projectile, with ROT>=1
+MissileSafetyAltitude=        ; integer, defaults to [General] -> MissileSafetyAltitude
+MissileKeepTargetCoord=       ; boolean, defaults to [General] -> MissileKeepTargetCoord
 ```
 
 ### Customizing initial facing behavior
@@ -2058,15 +2082,6 @@ Insignia.ShowEnemy=                                         ; boolean, defaults 
 ```{note}
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
 ```
-### Customizable crew type per country
-
-- You can now define `Crew` on a per-country basis.
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]            ; Country
-Crew=E1              ; InfantryType
-```
 
 ### Customizable wake anim
 
@@ -2174,6 +2189,17 @@ In `rulesmd.ini`:
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
+### Customize `DefaultToGuardArea` per gunner mode
+
+- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType, with Gunner=yes
+DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
+DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
+```
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
@@ -2261,6 +2287,16 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 
 ```{note}
 `[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+```
+
+### Enter the grinder voice
+
+- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+VoiceEnterGrinder=         ; Sound entry
 ```
 
 ### Exploding object customizations
@@ -2691,15 +2727,14 @@ In `rulesmd.ini`:
 MinimapColor=  ; integer - Red,Green,Blue
 ```
 
-### Ramp expansion support
+### Grow and spread on slopes
 
-- In vanilla, Tiberium is hardcoded not to germinate, grow, or spread onto ramp/slope cells (slopes 1-4), and any ore on ramps is cleared during cell recalculation. Setting `AllowRamps=yes` allows the resource to naturally expand, grow, and spread across cardinal slope ramps.
-	- `AllowRamps` determines whether this Tiberium type is allowed to germinate from spawners, increase growth stages, and spread onto cardinal ramp cells (slopes 1..4).
+- In vanilla, Tiberium is hardcoded to be unable to grow and spread on slopes; even if forcibly placed, it will be cleared. Now you can customize it.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEORE]        ; Tiberium
-AllowRamps=false ; boolean
+[SOMEORE]         ; Tiberium
+AllowRamps=false  ; boolean
 ```
 
 ## Vehicles
