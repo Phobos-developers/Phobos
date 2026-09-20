@@ -2752,7 +2752,23 @@ DEFINE_HOOK(0x480EF6, CellClass_DamageWall_BecomUntargetable, 0x6)
 {
 	GET(CellClass*, pThis, EDI);
 
-	reinterpret_cast<void(__thiscall*)(AbstractClass*)>(0x70D4A0)(pThis);// pCell->BecomeUntargetable();
+	pThis->BecomeUntargetable();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x480952, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x48092B, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808FF, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808D8, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK(0x4808A9, Sub_480630_BecomUntargetable, 0xA)
+{
+	GET(CellClass*, pCell, ESI);
+
+	pCell->BecomeUntargetable();
+
+	if (R->Origin() == 0x4808A9)
+		pCell->WallOwnerIndex = -1;
 
 	return 0;
 }
