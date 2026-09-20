@@ -252,7 +252,7 @@ void DistributionModeHoldDownCommandClass::ProcessWaypointCommand(int idxPath, u
 		ClickedWaypoint(pSelect, idxPath, idxWP);
 }
 
-bool grinderCheck(Action action, TechnoClass* pTechno)
+bool grinderCheck(Action action, TechnoClass* pTechno, TechnoTypeClass* pItemType = nullptr)
 {
 	if (!pTechno)
 		return true;
@@ -262,9 +262,10 @@ bool grinderCheck(Action action, TechnoClass* pTechno)
 	if (action != Action::Repair)
 		return true;
 
-	auto pItemType = pTechno->GetTechnoType();
+	if (!pItemType)
+		pItemType = pTechno->GetTechnoType();
 		
-	if (auto pBuildingItemType = abstract_cast<BuildingTypeClass*>(pItemType))
+	if (const auto pBuildingItemType = abstract_cast<BuildingTypeClass*>(pItemType))
 	{
 		if (pBuildingItemType->Grinding)
 			return false;
@@ -295,7 +296,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pTechno->Owner, action);
 }
 
-std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
+std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
 	// and in-air targets are within the same distance check.
@@ -306,7 +307,7 @@ std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::
 
 	const auto pItems = Helpers::Alex::getCellSpreadItemsExt(center, range, true, true);
 
-	std::vector<std::pair<TechnoClass*, int>> record;
+	std::vector<DistributionItemInfo> record;
 	record.reserve(pItems.size());
 
 	for (const auto& pItem : pItems)
@@ -328,15 +329,21 @@ std::vector<std::pair<TechnoClass*, int>> DistributionModeHoldDownCommandClass::
 			coords.Z += CellClass::BridgeHeight;
 
 		if (!MapClass::Instance.IsLocationShrouded(coords))
-			record.emplace_back(pItem, 0);
+		{
+			DistributionItemInfo info;
+			info.pItem = pItem;
+			info.Num = 0;
+			info.TargetIsNeutral = pItem->Owner->IsNeutral();
+			record.emplace_back(info);
+		}
 	}
 
-	std::sort(record.begin(), record.end(), [&center](const auto& pairA, const auto& pairB)
+	std::sort(record.begin(), record.end(), [&center](const auto& recordA, const auto& recordB)
 		{
-			const auto coordsA = pairA.first->GetCoords();
+			const auto coordsA = recordA.pItem->GetCoords();
 			const double distanceA = Point2D{coordsA.X, coordsA.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
-			const auto coordsB = pairB.first->GetCoords();
+			const auto coordsB = recordB.pItem->GetCoords();
 			const double distanceB = Point2D{coordsB.X, coordsB.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
 			return distanceA < distanceB;
@@ -354,6 +361,7 @@ DistributionTargetInfo DistributionModeHoldDownCommandClass::CollectTargetInfo(T
 	info.pType = pTechno->GetTechnoType();
 	info.WhatAmI = pTechno->WhatAmI();
 	info.Action = action;
+	info.pFakeType = TechnoTypeExt::Fetch(info.pType)->FakeOf;
 	return info;
 }
 
@@ -374,48 +382,126 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		infoArmor = pInfoShield ? Armor(pInfoShield->GetArmorType()) : info.pType->Armor;
 	}
 
+	bool handlePassengerAmount = false;
+
+	if ((info.Action == Action::Enter || info.Action == Action::Eaten) && HouseClass::CurrentPlayer->IsAlliedWith(info.pTechno->Owner))
+	{
+		if (info.WhatAmI == AbstractType::Building)
+		{
+			const auto pBldType = static_cast<BuildingTypeClass*>(info.pType);
+
+			if (pBldType->MaxNumberOccupants > 0 || pBldType->Bunker)
+				handlePassengerAmount = true;
+			else if (pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb))
+				handlePassengerAmount = true;
+		}
+		else if (info.pType->Passengers > 0)
+		{
+			handlePassengerAmount = true;
+		}
+	}
+
+	if (filterMode || handlePassengerAmount)
+	{
+		for (size_t i = 0; i < recordSize; ++i)
+		{
+			auto& item = record[i];
+			const auto pItemType = item.pItem->GetTechnoType();
+			const auto pItemTypeExt = TechnoTypeExt::Fetch(pItemType);
+
+			if (filterMode)
+			{
+				item.pType = pItemType;
+				item.pFakeType = pItemTypeExt->FakeOf;
+
+				if (filterMode == 1)
+				{
+					const auto pItemShield = TechnoExt::Fetch(item.pItem)->Shield.get();
+					item.Armor = pItemShield ? Armor(pItemShield->GetArmorType()) : pItemType->Armor;
+				}
+
+				if (filterMode == 2)
+					item.WhatAmI = item.pItem->WhatAmI();
+			}
+
+			if (!handlePassengerAmount)
+				continue;
+
+			// Initialize
+			item.TotalPassenger = 0;
+			item.CurrentPassenger = 0;
+			item.BySize = true;
+
+			if (info.WhatAmI == AbstractType::Building)
+			{
+				const auto pBldType = static_cast<BuildingTypeClass*>(item.pType);
+
+				if (pBldType->MaxNumberOccupants > 0) // Garrison
+				{
+					item.TotalPassenger = pBldType->MaxNumberOccupants;
+					item.CurrentPassenger = static_cast<BuildingClass*>(item.pItem)->Occupants.Count;
+				}
+				else if (pBldType->Bunker) // Tank Bunker
+				{
+					item.TotalPassenger = 1;
+					item.CurrentPassenger = static_cast<BuildingClass*>(item.pItem)->BunkerLinkedItem ? 1 : 0;
+				}
+				else if (pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
+				{
+					item.TotalPassenger = pItemType->Passengers;
+					item.CurrentPassenger = item.TotalPassenger > 0 ? item.pItem->Passengers.NumPassengers : 0;
+				}
+
+				item.BySize = false;
+			}
+			else if (item.pType->Passengers > 0) // Other TechnoTypes
+			{
+				item.TotalPassenger = pItemType->Passengers;
+				item.CurrentPassenger = item.TotalPassenger > 0 ? item.pItem->Passengers.NumPassengers : 0;
+				item.BySize = pItemTypeExt->Passengers_BySize;
+			}
+		}
+	}
+
 	for (const auto& pSelect : ObjectClass::CurrentObjects)
 	{
 		size_t canTargetIndex = maxSize;
 		size_t newTargetIndex = maxSize;
+		int selectedSize = 0;
+
+		if (handlePassengerAmount)
+			selectedSize = (int)static_cast<TechnoClass*>(pSelect)->GetTechnoType()->Size;
 
 		for (size_t i = 0; i < recordSize; ++i)
 		{
-			const auto& [pItem, num] = record[i];
+			auto& item = record[i];
 
-			if (pSelect->MouseOverObject(pItem) != info.Action)
+			if (pSelect->MouseOverObject(item.pItem) != info.Action)
 				continue;
 
-			if (!info.TargetIsNeutral && pItem->Owner->IsNeutral())
+			if (!info.TargetIsNeutral && item.TargetIsNeutral)
 				continue;
 
-			if (!grinderCheck(info.Action, pItem))
+			if (!grinderCheck(info.Action, item.pItem, item.pType))
 				continue;
 
-			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pItem->Owner, info.Action))
+			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(item.pItem->Owner, info.Action))
 				continue;
 
 			if (filterMode)
 			{
-				const auto pItemType = pItem->GetTechnoType();
+				const auto pItemType = item.pType;
 
-				if (!pItemType)
-					continue;
-
-				if (TechnoTypeExt::Fetch(info.pType)->FakeOf != pItemType
-					&& TechnoTypeExt::Fetch(pItemType)->FakeOf != info.pType)
+				if (info.pFakeType != pItemType && item.pFakeType != info.pType)
 				{
 					if (filterMode == 1)
 					{
-						const auto pItemShield = TechnoExt::Fetch(static_cast<TechnoClass*>(pItem))->Shield.get();
-						const auto itemArmor = pItemShield ? Armor(pItemShield->GetArmorType()) : pItemType->Armor;
-
-						if (itemArmor != infoArmor)
+						if (item.Armor != infoArmor)
 							continue;
 					}
 					else if (filterMode == 2)
 					{
-						if (pItem->WhatAmI() != info.WhatAmI)
+						if (item.WhatAmI != info.WhatAmI)
 							continue;
 					}
 					else // filterMode == 3
@@ -426,9 +512,19 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				}
 			}
 
+			if (handlePassengerAmount)
+			{
+				const int objectSize = selectedSize > 0 ? (item.BySize ? selectedSize : 1) : 0;
+
+				if (item.CurrentPassenger + objectSize > item.TotalPassenger)
+					continue;
+
+				item.CurrentPassenger += objectSize;
+			}
+
 			canTargetIndex = i;
 
-			if (num < current)
+			if (item.Num < current)
 			{
 				newTargetIndex = i;
 				break;
@@ -443,11 +539,11 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 
 		if (newTargetIndex != maxSize)
 		{
-			auto& [pNewTarget, recordCount] = record[newTargetIndex];
+			auto& clickedItem = record[newTargetIndex];
 
-			ClickedTargetAction(pSelect, info.Action, pNewTarget);
+			ClickedTargetAction(pSelect, info.Action, clickedItem.pItem);
 
-			++recordCount;
+			++clickedItem.Num;
 			continue;
 		}
 
