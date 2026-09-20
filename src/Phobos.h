@@ -62,6 +62,8 @@ public:
 		static int SuperWeaponSidebar_CameoHeight;
 		static int SuperWeaponSidebar_Max;
 		static int SuperWeaponSidebar_MaxColumns;
+		static int CreditsIndicator_MaxStep;
+		static bool CreditsIndicator_Smooth;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -81,8 +83,8 @@ public:
 		static bool ToolTipDescriptions;
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
-		static bool DevelopmentCommands;
-		static bool SuperWeaponSidebarCommands;
+		static bool PriorityDeployFiltering;
+		static bool TypeSelectUseIFVMode;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
@@ -98,6 +100,7 @@ public:
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool ShowPowerPlantEnhancerRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
 		static bool ShowBriefing;
@@ -111,6 +114,19 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static bool ShowGameTime;
+		static int ShowGameTime_BoardOpacity;
+		// Hotkeys
+		static bool NextIdleHarvesterCommand;
+		static bool QuickSaveCommand;
+		static bool ToggleDigitalDisplayCommand;
+		static bool ToggleDesignatorRangeCommand;
+		static bool ToggleMessageListCommand;
+		static bool ToggleSuperWeaponSidebarCommand;
+		static bool DeselectObjectCommand;
+		static bool SelectCapturedCommand;
+		static bool SuperWeaponSidebarCommands;
+		static bool DevelopmentCommands;
 	};
 
 	class Misc
@@ -126,7 +142,10 @@ public:
 	{
 	public:
 		static bool Applied;
+		static bool DisableBalloonHoverPathingFix;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
+		static bool DisableLaserTracking;
+		static bool DisablePsychicDetectable;
 	};
 };

@@ -1,9 +1,6 @@
 #pragma once
-#include <GeneralStructures.h>
-#include <TechnoClass.h>
 
 #include <Utilities/TemplateDef.h>
-#include <Utilities/AresFunctions.h>
 
 class RadarJammerClass
 {

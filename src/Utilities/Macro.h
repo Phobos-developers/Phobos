@@ -3,6 +3,16 @@
 #include <ASMMacros.h>
 #include "Patch.h"
 
+// Export / calling-convention macros for public C ABI functions
+// Usage:
+//   DEFINE_EXPORT(return_type, func_name, arglist...)
+#define DEFINE_EXPORT(ret, name, ...) extern "C" __declspec(dllexport) ret __stdcall name(__VA_ARGS__)
+
+// Callback typedef helper
+// Usage:
+//   DEFINE_CALLBACK(return_type, func_name, arglist...)
+#define DEFINE_CALLBACK(ret, name, ...) typedef ret (__stdcall* name)(__VA_ARGS__)
+
 #define GET_REGISTER_STATIC_TYPE(type, dst, reg) static type dst; _asm { mov dst, reg }
 
 template<typename T>
@@ -100,7 +110,11 @@ typedef _VTABLE _OFFSET;
 	{                                                             \
 		__declspec(allocate(PATCH_SECTION_NAME))                  \
 		Patch patch = {offset, size, (byte*)data};                \
-	}
+	}                                                             \
+	_YR_DEFINE_INCLUDE_ANCHOR(                                    \
+		_YR_PP_CAT(YrKeepPatch_, offset),                         \
+		&STATIC_PATCH##offset::patch                              \
+	)
 
 #define DEFINE_PATCH_TYPED(type, offset, ...)                     \
 	namespace STATIC_PATCH##offset                                \
@@ -121,7 +135,7 @@ typedef _VTABLE _OFFSET;
 
 #define DEFINE_NAKED_HOOK(hook, funcname)                         \
 	void funcname();                                              \
-	DEFINE_FUNCTION_JUMP(LJMP, hook, funcname)                 \
+	DEFINE_FUNCTION_JUMP(LJMP, hook, funcname)                    \
 	void NAKED funcname()
 
 #pragma endregion Static Patch

@@ -6,7 +6,6 @@
   "recommendations": [
     "ms-vscode.cpptools",
     "executablebookproject.myst-highlight",
-    "visualstudioexptteam.vscodeintellicode",
     "fernandoescolar.vscode-solution-explorer",
     "editorconfig.editorconfig",
     "michelemelluso.gitignore",

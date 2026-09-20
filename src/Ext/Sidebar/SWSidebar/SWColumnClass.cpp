@@ -1,9 +1,6 @@
 #include "SWColumnClass.h"
 #include "SWSidebarClass.h"
 
-#include <Ext/SWType/Body.h>
-#include <Ext/Side/Body.h>
-
 SWColumnClass::SWColumnClass(int maxButtons, int x, int y, int width, int height)
 	: GadgetClass(x, y, width, height, static_cast<GadgetFlag>(0), false)
 	, MaxButtons(maxButtons)
@@ -25,7 +22,7 @@ bool SWColumnClass::Draw(bool forced)
 	if (!SWSidebarClass::IsEnabled())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int cameoBackgroundWidth = Phobos::UI::SuperWeaponSidebar_Interval + cameoWidth;
 	const int coordX = this->X;
@@ -93,8 +90,8 @@ bool SWColumnClass::AddButton(int superIdx)
 
 		auto Compare = [ownerBits](const int left, const int right)
 		{
-			const auto pExtA = SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItemOrDefault(left));
-			const auto pExtB = SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItemOrDefault(right));
+			const auto pExtA = SWTypeExt::TryFetch(SuperWeaponTypeClass::Array.GetItemOrDefault(left));
+			const auto pExtB = SWTypeExt::TryFetch(SuperWeaponTypeClass::Array.GetItemOrDefault(right));
 
 			if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
 				return false;
@@ -175,7 +172,7 @@ void SWColumnClass::ClearButtons(bool remove)
 
 void SWColumnClass::SetHeight(int height)
 {
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 
 	this->Height = height;
 

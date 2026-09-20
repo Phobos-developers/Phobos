@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
+#include <Utilities/TemplateDef.h>
 
 class CreateUnitTypeClass
 {
