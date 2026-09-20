@@ -590,7 +590,6 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 	enum { CanNotFire = 0x6FDE03 };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 
 	if (pWeapon->LimboLaunch)
