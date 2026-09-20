@@ -23,6 +23,7 @@ struct DistributionTargetInfo
 struct DistributionItemInfo
 {
 	TechnoClass* pItem;
+	CoordStruct Center;
 	int Num;
 	TechnoTypeClass* pType;
 	TechnoTypeClass* pFakeType;

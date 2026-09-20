@@ -318,7 +318,8 @@ std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectA
 		if (pItem->CloakState == CloakState::Cloaked && !pItem->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex))
 			continue;
 
-		auto coords = pItem->GetCoords();
+		const auto center = pItem->GetCoords();
+		auto coords = center;
 
 		if (!MapClass::Instance.IsWithinUsableArea(coords))
 			continue;
@@ -333,6 +334,7 @@ std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectA
 			DistributionItemInfo info;
 			info.pItem = pItem;
 			info.Num = 0;
+			info.Center = center;
 			info.TargetIsNeutral = pItem->Owner->IsNeutral();
 			record.emplace_back(info);
 		}
@@ -340,10 +342,10 @@ std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectA
 
 	std::sort(record.begin(), record.end(), [&center](const auto& recordA, const auto& recordB)
 		{
-			const auto coordsA = recordA.pItem->GetCoords();
+			const auto coordsA = recordA.Center;
 			const double distanceA = Point2D{coordsA.X, coordsA.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
-			const auto coordsB = recordB.pItem->GetCoords();
+			const auto coordsB = recordB.Center;
 			const double distanceB = Point2D{coordsB.X, coordsB.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
 			return distanceA < distanceB;
@@ -430,7 +432,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 			// Initialize
 			item.TotalPassenger = 0;
 			item.CurrentPassenger = 0;
-			item.BySize = true;
+			item.BySize = false;
 
 			if (info.WhatAmI == AbstractType::Building)
 			{
@@ -451,8 +453,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 					item.TotalPassenger = pItemType->Passengers;
 					item.CurrentPassenger = item.TotalPassenger > 0 ? item.pItem->Passengers.NumPassengers : 0;
 				}
-
-				item.BySize = false;
 			}
 			else if (item.pType->Passengers > 0) // Other TechnoTypes
 			{
@@ -468,6 +468,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		size_t canTargetIndex = maxSize;
 		size_t newTargetIndex = maxSize;
 		int selectedSize = 0;
+		int canTargetSize = 0;
 
 		if (handlePassengerAmount)
 			selectedSize = (int)static_cast<TechnoClass*>(pSelect)->GetTechnoType()->Size;
@@ -512,17 +513,13 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				}
 			}
 
-			if (handlePassengerAmount)
-			{
-				const int objectSize = selectedSize > 0 ? (item.BySize ? selectedSize : 1) : 0;
+			const int objectSize = selectedSize > 0 ? (item.BySize ? selectedSize : 1) : 0;
 
-				if (item.CurrentPassenger + objectSize > item.TotalPassenger)
-					continue;
-
-				item.CurrentPassenger += objectSize;
-			}
+			if (handlePassengerAmount && item.CurrentPassenger + objectSize > item.TotalPassenger)
+				continue;
 
 			canTargetIndex = i;
+			canTargetSize = objectSize;
 
 			if (item.Num < current)
 			{
@@ -540,6 +537,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		if (newTargetIndex != maxSize)
 		{
 			auto& clickedItem = record[newTargetIndex];
+			clickedItem.CurrentPassenger += canTargetSize;
 
 			ClickedTargetAction(pSelect, info.Action, clickedItem.pItem);
 
