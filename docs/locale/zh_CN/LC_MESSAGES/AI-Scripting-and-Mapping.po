@@ -1671,6 +1671,7 @@ msgid ""
 "`Horizontal` and `Vertical` set the anchor point from which the banner is"
 " drawn relative to the drawing point from trigger."
 msgstr ""
+"`Horizontal` 和 `Vertical` 设置横幅以触发位置为哪个锚点进行绘制。"
 
 msgid "Trigger events"
 msgstr "触发条件"
