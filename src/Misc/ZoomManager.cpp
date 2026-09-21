@@ -8,6 +8,8 @@
 #include <cmath>
 
 bool ZoomManager::Enabled = true;
+bool ZoomManager::WheelEnabled = true;
+bool ZoomManager::HotkeysEnabled = true;
 double ZoomManager::CurrentZoom = 1.0;
 double ZoomManager::TargetZoom = 1.0;
 double ZoomManager::MinZoom = 1.0;

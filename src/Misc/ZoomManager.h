@@ -9,6 +9,8 @@ class ZoomManager
 {
 public:
 	static bool Enabled;
+	static bool WheelEnabled;
+	static bool HotkeysEnabled;
 	static double CurrentZoom;
 	static double TargetZoom;
 	static double MinZoom;

@@ -3,82 +3,59 @@
 #include <Surface.h>
 #include <Utilities/Macro.h>
 
-// Intercepts tactical mouse input messages at the root dispatcher (ScrollClass::Message_Handler).
-// By transforming the LPARAM coordinate payload for mouse clicks, all downstream unit selection,
-// move orders, attack commands, and rubberband drag start points receive accurate tactical coordinates.
-// Middle-click (WM_MBUTTONDOWN) resets magnification back to standard 1.0x view.
-DEFINE_HOOK(0x6930A0, ScrollClass_MessageHandler_TranslateCoordinates, 0x5)
+// Intercepts coordinate conversion at DisplayClass::ProcessClickCoords.
+// This is the single engine bottleneck where tactical viewport mouse coordinates map to map cells and objects.
+// Translates coordinates for:
+// - Unit hover and contextual action cursors (ScrollClass::Scroll_AI)
+// - Unit click selection (ScrollClass::Message_Handler WM_LBUTTONDOWN)
+// - Unit move and attack commands (ScrollClass::Message_Handler WM_RBUTTONDOWN)
+// - Drag selection band anchor coordinate (DisplayClass::StartDragBand)
+// - Multi-unit rubberband box drag selection (ScrollClass::Select_Boxes)
+// - Building placement foundation grid snapping (HouseClass::PlaceObject)
+// - Direct tactical context actions (DisplayClass::Action)
+// Because this hook modifies only the stack-allocated local Point2D passed into ProcessClickCoords
+// without mutating Windows LPARAM messages or WWMouseClass, the Windows OS cursor and the in-game cursor
+// remain 100% synchronized with zero offset, drift, or jumping.
+DEFINE_HOOK(0x692300, DisplayClass_ProcessClickCoords_TranslateCoordinates, 0x7)
 {
-	GET_STACK(const UINT*, pMessage, 0x8);
-	GET_STACK(LPARAM*, pLParam, 0x10);
-
-	if (!pMessage || !pLParam)
-	{
-		return 0;
-	}
-
-	const UINT msg = *pMessage;
-
-	if (msg == WM_MBUTTONDOWN && ZoomManager::IsZoomed())
-	{
-		ZoomManager::ResetZoom();
-		return 0;
-	}
-
 	if (ZoomManager::IsZoomed())
 	{
-		if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP)
+		GET_STACK(Point2D*, pPoint, 0x4);
+		if (pPoint)
 		{
-			const short rawX = static_cast<short>(LOWORD(*pLParam));
-			const short rawY = static_cast<short>(HIWORD(*pLParam));
-
-			Point2D screenPoint { rawX - DSurface::ViewBounds.X, rawY - DSurface::ViewBounds.Y };
-			Point2D virtualPoint = ZoomManager::ScreenToTactical(screenPoint);
-
-			const short newX = static_cast<short>(virtualPoint.X + DSurface::ViewBounds.X);
-			const short newY = static_cast<short>(virtualPoint.Y + DSurface::ViewBounds.Y);
-
-			*pLParam = MAKELPARAM(newX, newY);
+			*pPoint = ZoomManager::ScreenToTactical(*pPoint);
 		}
 	}
 
 	return 0;
 }
 
-// Translates per-frame cursor coordinates in ScrollClass::Scroll_AI.
-// Ensures hover selection detection, dynamic action cursor changes (e.g. attack, enter, move),
-// and active rubberband drag-selection box tracking align precisely with the magnified tactical display.
-DEFINE_HOOK(0x4AE55B, ScrollClass_ScrollAI_TranslateCoordinates, 0x5)
+// Intercepts active rubberband rectangle coordinate updates in DisplayClass::UpdateDragBand.
+// Ensures that while dragging, the visual selection box rendered to DSurface::Composite tracks
+// the zoomed mouse position with subpixel precision.
+DEFINE_HOOK(0x4AC380, DisplayClass_UpdateDragBand_TranslateCoordinates, 0x6)
 {
 	if (ZoomManager::IsZoomed())
 	{
-		auto pPoint = reinterpret_cast<Point2D*>(R->ESP() + 0x1C);
-		*pPoint = ZoomManager::ScreenToTactical(*pPoint);
+		GET_STACK(Point2D*, pPoint, 0x4);
+		if (pPoint)
+		{
+			*pPoint = ZoomManager::ScreenToTactical(*pPoint);
+		}
 	}
 
 	return 0;
 }
 
-// Translates coordinates during building placement preview in HouseClass::PlaceObject.
-// Keeps the building blueprint grid snapping accurately aligned under the cursor while zoomed.
-DEFINE_HOOK(0x4FB44D, HouseClass_PlaceObject_TranslateCoordinates, 0x5)
+// Resets tactical magnification back to standard 1.0x view when middle mouse button is pressed.
+// Does NOT modify *pLParam so Windows message dispatching remains pristine.
+DEFINE_HOOK(0x6930A0, ScrollClass_MessageHandler_MiddleClickReset, 0x5)
 {
-	if (ZoomManager::IsZoomed())
-	{
-		auto pPoint = reinterpret_cast<Point2D*>(R->ESP() + 0x24);
-		*pPoint = ZoomManager::ScreenToTactical(*pPoint);
-	}
+	GET_STACK(const UINT*, pMessage, 0x8);
 
-	return 0;
-}
-
-// Translates coordinates in DisplayClass::Action when resolving tactical context actions.
-DEFINE_HOOK(0x4AACB5, DisplayClass_Action_TranslateCoordinates, 0x5)
-{
-	if (ZoomManager::IsZoomed())
+	if (ZoomManager::IsZoomed() && ZoomManager::WheelEnabled && pMessage && *pMessage == WM_MBUTTONDOWN)
 	{
-		auto pPoint = reinterpret_cast<Point2D*>(R->ESP() + 0x1C);
-		*pPoint = ZoomManager::ScreenToTactical(*pPoint);
+		ZoomManager::ResetZoom();
 	}
 
 	return 0;
@@ -91,4 +68,5 @@ DEFINE_HOOK(0x4F4480, GScreenClass_Render_ZoomUpdate, 0x9)
 	ZoomManager::Update();
 	return 0;
 }
+
 
