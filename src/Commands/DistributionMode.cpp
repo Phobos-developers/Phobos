@@ -485,13 +485,14 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	for (const auto pSelect : ObjectClass::CurrentObjects)
 	{
 		DistributionSelectInfo selectInfo;
-		selectInfo.pSelect = pSelect;
+		selectInfo.pTechno = pSelect;
 		selectInfo.Size = 0;
 		selectInfo.CanOccupy = false;
 
 		if ((handlePassenger || handleOccupant) && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 		{
 			const auto pSelectType = static_cast<TechnoClass*>(pSelect)->GetTechnoType();
+			selectInfo.ID = pSelectType->get_ID();
 			selectInfo.Size = (int)pSelectType->Size;
 			
 			if (handleOccupant)
@@ -508,7 +509,17 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	{
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
+				if (objectA.Size == objectB.Size)
+					return strcmp(objectA.ID, objectB.ID) < 0;
+
 				return objectA.Size > objectB.Size;
+			});
+	}
+	else
+	{
+		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
+			{
+				return strcmp(objectA.ID, objectB.ID) < 0;
 			});
 	}
 
@@ -524,7 +535,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		{
 			auto& item = record[i];
 
-			if (selectInfo.pSelect->MouseOverObject(item.pTechno) != info.Action)
+			if (selectInfo.pTechno->MouseOverObject(item.pTechno) != info.Action)
 				continue;
 
 			if (!info.TargetIsNeutral && item.TargetIsNeutral)
@@ -585,24 +596,24 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		{
 			auto& clickedItem = record[newTargetIndex];
 
-			ClickedTargetAction(selectInfo.pSelect, info.Action, clickedItem.pTechno);
+			ClickedTargetAction(selectInfo.pTechno, info.Action, clickedItem.pTechno);
 
 			++clickedItem.Num;
 			clickedItem.CurrentPassenger += canTargetSize;
 			continue;
 		}
 
-		const auto currentAction = pTarget ? selectInfo.pSelect->MouseOverObject(pTarget) : Action::NoMove;
+		const auto currentAction = pTarget ? selectInfo.pTechno->MouseOverObject(pTarget) : Action::NoMove;
 
-		if ((noMove && currentAction == Action::NoMove && (selectInfo.pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+		if ((noMove && currentAction == Action::NoMove && (selectInfo.pTechno->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 			|| (handlePassenger && info.CurrentPassenger + canTargetSize > info.TotalPassenger)
 			|| (handleOccupant && info.CurrentPassenger + canTargetSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy))
 		{
-			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pSelect));
+			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pTechno));
 		}
 		else if (pTarget)
 		{
-			ClickedTargetAction(selectInfo.pSelect, currentAction, pTarget);
+			ClickedTargetAction(selectInfo.pTechno, currentAction, pTarget);
 			info.CurrentPassenger += canTargetSize;
 		}
 	}

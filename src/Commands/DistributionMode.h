@@ -29,7 +29,8 @@ struct DistributionTargetInfo
 
 struct DistributionSelectInfo
 {
-	ObjectClass* pSelect;
+	ObjectClass* pTechno;
+	const char* ID;
 	int Size;
 	bool CanOccupy;
 };
