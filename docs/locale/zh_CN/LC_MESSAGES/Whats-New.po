@@ -1018,6 +1018,7 @@ msgstr ""
 
 msgid "Attach effect when weapon fire (by CrimRecya)"
 msgstr ""
+"开火赋予 AE（by CrimRecya）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

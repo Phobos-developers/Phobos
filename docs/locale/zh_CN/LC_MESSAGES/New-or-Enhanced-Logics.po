@@ -708,6 +708,7 @@ msgid ""
 "range. When it is used on a Weapon, it will directly act on the target at"
 " the instant after firing."
 msgstr ""
+"AE 可以通过 `AttachEffect.AttachTypes` 被弹头或武器赋予给对象。当用于弹头时，它仅在弹头范围内被击中的目标上被使用。当用于武器时，它会在开火后立即作用于目标。"
 
 msgid ""
 "`AttachEffect.CumulativeSourceMaxCount` can be used to determine the "
