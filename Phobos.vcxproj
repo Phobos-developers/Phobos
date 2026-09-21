@@ -33,6 +33,7 @@
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <!-- src\Commands -->
     <ClCompile Include="src\Commands\Commands.cpp" />
+    <ClCompile Include="src\Commands\AdvancedCommandBarButtons.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\DeselectObject.cpp" />
     <ClCompile Include="src\Commands\DeselectObject5.cpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
+    <ClCompile Include="src\Commands\DistributionMode.cpp" />
     <!-- src\Ext -->
     <!-- src\Ext\Aircraft -->
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
@@ -309,6 +311,7 @@
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <!-- src\Commands\ -->
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Commands\AdvancedCommandBarButtons.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\DeselectObject.h" />
     <ClInclude Include="src\Commands\DeselectObject5.h" />
@@ -325,6 +328,7 @@
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\ToggleMessageList.h" />
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
+    <ClInclude Include="src\Commands\DistributionMode.h" />
     <!-- src\Ext -->
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
