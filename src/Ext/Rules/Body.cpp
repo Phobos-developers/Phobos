@@ -708,6 +708,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
 	}
 
+	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
+	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -1166,6 +1168,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Cloak_KickOutParasite)
 		.Process(this->CustomSequenceRates)
 		.Process(this->CustomSequenceNormalized)
+		.Process(this->RevealHouses)
+		.Process(this->MissileKeepTargetCoord)
     ;
 }
 

@@ -79,6 +79,8 @@ public:
 	Valueable<bool> DiscardOn_OwnerChange_HumanToComputer;
 	Valueable<bool> DiscardOn_OwnerChange_ComputerToHuman;
 	Valueable<bool> DiscardOn_OwnerChange_IgnoreRevertOnExit;
+	Nullable<bool> AllowTransfer;
+	Nullable<bool> AllowTransfer_Convert;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	ValueableVector<TechnoTypeClass*> AffectTypes;
@@ -166,6 +168,8 @@ public:
 		, DiscardOn_OwnerChange_HumanToComputer { true }
 		, DiscardOn_OwnerChange_ComputerToHuman { true }
 		, DiscardOn_OwnerChange_IgnoreRevertOnExit { false }
+		, AllowTransfer {}
+		, AllowTransfer_Convert {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, AffectTypes {}

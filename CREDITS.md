@@ -164,6 +164,7 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium ramp expansion support
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
+  - Tiberium veins overlay palette fix
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -451,6 +452,7 @@ This page lists all the individual contributions to the project by their author.
   - Customized transport plane for teams
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
+  - Customize the country displayed in `Sight`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -518,7 +520,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
-  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
   - Allow techno type considered as other type when recruiting techno for teams
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
@@ -580,6 +581,7 @@ This page lists all the individual contributions to the project by their author.
   - Cloak Enhancement
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -691,6 +693,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
+  - Attach effect when weapon fire
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -771,6 +774,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -975,3 +980,4 @@ This page lists all the individual contributions to the project by their author.
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **dh381-1** - Detonate ivan bomb on impact
