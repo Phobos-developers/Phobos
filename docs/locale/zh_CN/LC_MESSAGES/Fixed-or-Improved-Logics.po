@@ -1728,7 +1728,7 @@ msgstr "修复了矿石生长和扩散导致的崩溃和冻结。"
 msgid ""
 "Fixed the bug where Tiberium veins overlay used the wrong palette instead"
 " of matching the Veinhole Monster."
-msgstr "修复了泰伯利亚静脉蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug。"
+msgstr "修复了泰伯利亚藤蔓蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
