@@ -279,6 +279,9 @@ public:
 	Valueable<bool> IvanBomb_Detonate_AffectsParasite;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
 
+	ValueableVector<int> InfDeaths;
+	ValueableVector<int> InfDeaths_RollChances;
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	Valueable<bool> AffectsEnemies;
@@ -587,6 +590,9 @@ public:
 		, IvanBomb_Detonate_PenetratesGarrison { false }
 		, IvanBomb_Detonate_AffectsParasite { false }
 		, IvanBomb_Detonate_AffectTypes {}
+
+		, InfDeaths {}
+		, InfDeaths_RollChances {}
 	{ }
 
 	void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
