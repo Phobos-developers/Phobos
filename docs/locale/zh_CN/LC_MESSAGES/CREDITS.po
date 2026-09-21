@@ -1398,6 +1398,7 @@ msgstr "赴部队回收站语音"
 
 msgid "Customize the country displayed in `Sight`"
 msgstr ""
+"自定义 `Sight` 可见性"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："

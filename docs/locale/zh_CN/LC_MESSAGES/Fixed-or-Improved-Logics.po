@@ -4751,11 +4751,13 @@ msgstr ""
 
 msgid "Customize the country displayed in `Sight`"
 msgstr ""
+"自定义 `Sight` 可见性"
 
 msgid ""
 "You can now customize which countries the `Sight` unit for that nation "
 "provides map visibility to."
 msgstr ""
+"自定义国家单位的 `Sight` 可以给哪些国家显示视野。"
 
 msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
 msgstr "自定义 `Locomotor=Fly` 单位的降落动画"

@@ -992,6 +992,7 @@ msgid ""
 "[Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md"
 "#customize-the-country-displayed-in-sight) (by FlyStar)"
 msgstr ""
+"[自定义 `Sight` 可见性](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight)（by FlyStar）"
 
 msgid ""
 "[Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-"
