@@ -1014,6 +1014,7 @@ msgid ""
 "[Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-"
 "Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)"
 msgstr ""
+"[为不同 IFV 模式自定义 `DefaultToGuardArea` 效果](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode)（by Noble_Fish）"
 
 msgid "Attach effect when weapon fire (by CrimRecya)"
 msgstr ""

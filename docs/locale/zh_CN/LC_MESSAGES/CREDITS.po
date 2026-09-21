@@ -2658,6 +2658,7 @@ msgstr "自定义 `IdleActionFrequency`"
 
 msgid "Customize `DefaultToGuardArea` per gunner mode"
 msgstr ""
+"为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

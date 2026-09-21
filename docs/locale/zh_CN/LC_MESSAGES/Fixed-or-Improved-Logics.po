@@ -4812,11 +4812,13 @@ msgstr "在原版中，有 `BalloonHover=true` 或 `JumpJet=true` 的单位会�
 
 msgid "Customize `DefaultToGuardArea` per gunner mode"
 msgstr ""
+"为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid ""
 "Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and "
 "the `GUARD_AREA` promotion ability to specific gunner modes."
 msgstr ""
+"现在拥有 `Gunner=yes` 的单位可以将 `DefaultToGuardArea` 和 `GUARD_AREA` 升级能力限制到特定的 IFV 模式。"
 
 msgid "Damaged speed customization"
 msgstr "自定义伤残速度"
