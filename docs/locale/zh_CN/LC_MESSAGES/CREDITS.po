@@ -2314,7 +2314,7 @@ msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 
 msgid "Attach effect when weapon fire"
 msgstr ""
-"开火赋予 AE"
+"在武器开火时赋予 AE"
 
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
