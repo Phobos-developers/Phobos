@@ -8,6 +8,7 @@
 #include <Utilities/Macro.h>
 
 #include "Misc/BlittersFix.h"
+#include "Misc/ZoomManager.h"
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
@@ -75,6 +76,10 @@ bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
+bool Phobos::Config::TacticalZoom = true;
+double Phobos::Config::TacticalZoom_Max = 2.5;
+double Phobos::Config::TacticalZoom_Step = 0.15;
+bool Phobos::Config::TacticalZoom_Smooth = true;
 // Hotkeys
 bool Phobos::Config::NextIdleHarvesterCommand = true;
 bool Phobos::Config::QuickSaveCommand = true;
@@ -123,6 +128,15 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 	Phobos::Config::ShowGameTime = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowGameTime", false);
 	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
+	Phobos::Config::TacticalZoom = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom", true);
+	Phobos::Config::TacticalZoom_Max = CCINIClass::INI_RA2MD.ReadDouble(phobosSection, "TacticalZoom.Max", 2.5);
+	Phobos::Config::TacticalZoom_Step = CCINIClass::INI_RA2MD.ReadDouble(phobosSection, "TacticalZoom.Step", 0.15);
+	Phobos::Config::TacticalZoom_Smooth = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Smooth", true);
+
+	ZoomManager::Enabled = Phobos::Config::TacticalZoom;
+	ZoomManager::MaxZoom = std::max(1.0, Phobos::Config::TacticalZoom_Max);
+	ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
+	ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);

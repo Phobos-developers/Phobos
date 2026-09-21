@@ -116,6 +116,10 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
+		static bool TacticalZoom;
+		static double TacticalZoom_Max;
+		static double TacticalZoom_Step;
+		static bool TacticalZoom_Smooth;
 		// Hotkeys
 		static bool NextIdleHarvesterCommand;
 		static bool QuickSaveCommand;

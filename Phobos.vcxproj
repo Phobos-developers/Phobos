@@ -47,6 +47,7 @@
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
+    <ClCompile Include="src\Commands\ZoomCommands.cpp" />
     <!-- src\Ext -->
     <!-- src\Ext\Aircraft -->
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
@@ -259,6 +260,8 @@
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
+    <ClCompile Include="src\Misc\ZoomManager.cpp" />
+    <ClCompile Include="src\Misc\ZoomManager.Hooks.cpp" />
     <!-- src\New -->
     <!-- src\New\Entity -->
     <ClCompile Include="src\New\Entity\Ares\RadarJammerClass.cpp" />
@@ -325,6 +328,7 @@
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\ToggleMessageList.h" />
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
+    <ClInclude Include="src\Commands\ZoomCommands.h" />
     <!-- src\Ext -->
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
@@ -399,6 +403,7 @@
     <ClInclude Include="src\Misc\MessageColumn.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
+    <ClInclude Include="src\Misc\ZoomManager.h" />
     <!-- src\New -->
     <!-- src\New\Entity -->
     <ClInclude Include="src\New\Entity\Ares\RadarJammerClass.h" />
