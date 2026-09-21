@@ -998,6 +998,7 @@ msgid ""
 "[Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-"
 "bomb-on-impact) (by dh381)"
 msgstr ""
+"[引爆伊文炸弹弹头](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact)（by dh381）"
 
 msgid ""
 "[Customize `MissileSafetyAltitude` and whether missiles fly to the target"

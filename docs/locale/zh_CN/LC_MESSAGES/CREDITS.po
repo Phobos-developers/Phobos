@@ -3369,5 +3369,5 @@ msgid ""
 msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"
 
 msgid "**dh381-1** - Detonate ivan bomb on impact"
-msgstr ""
+msgstr "**dh381-1** - 引爆伊文炸弹弹头"
 
