@@ -36,7 +36,7 @@ This page describes all the engine features that are either new and introduced b
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
     - In other words, the original `DiscardOn=stationary` is equivalent to `DiscardOn=harvesting,stationary` when this flag is set to `false`.
-  - `AllowTransfer` controls whether or not the effect can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to false if shield was attached by the TechnoType itself, otherwise true.
+  - `AllowTransfer` controls whether or not the effect can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to false if the effect was attached by the TechnoType itself, otherwise true.
     - `AllowTransfer.Convert` can be used to set this separately for type conversion, defaults to value of `AllowTransfer`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.

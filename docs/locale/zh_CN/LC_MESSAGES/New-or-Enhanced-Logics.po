@@ -252,22 +252,20 @@ msgstr ""
 "换而言之，原先的 `DiscardOn=stationary` 等价于本标志设为 `false` 时的 "
 "`DiscardOn=harvesting,stationary`。"
 
-#, fuzzy
 msgid ""
 "`AllowTransfer` controls whether or not the effect can be transferred if "
 "the TechnoType changes (such as `(Un)DeploysInto` or Ares type "
-"conversion). If not set, defaults to false if shield was attached by the "
+"conversion). If not set, defaults to false if the effect was attached by the "
 "TechnoType itself, otherwise true."
 msgstr ""
 "`AllowTransfer` 控制如果科技类型发生变化（例如 `(Un)DeploysInto` 或 Ares "
-"的单位转换）时护盾能否转移。如果未设置，通过 `Shield.AttachTypes` 被赋予来的护盾默认为 true 其他默认为 false。"
+"的单位转换）时 AE 能否转移。如果未设置，通过单位自身属性赋予来的 AE 默认为 true 其他默认为 false。"
 
-#, fuzzy
 msgid ""
 "`AllowTransfer.Convert` can be used to set this separately for type "
 "conversion, defaults to value of `AllowTransfer`."
 msgstr ""
-"`PenetratesForceShield` 可以用于为处于力场护盾保护中的对象分离控制，默认为 `PenetratesIronCurtain`"
+"`AllowTransfer.Convert` 可以用于为类型转换的对象分离控制，默认为 `AllowTransfer`"
 " 的值。"
 
 msgid ""
