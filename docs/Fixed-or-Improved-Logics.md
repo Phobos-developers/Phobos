@@ -2140,6 +2140,22 @@ In `rulesmd.ini`:
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [SOMECOUNTRY] -> RevealHouses
+```
+
 ### Customize the landing animation of technos that have `Locomotor=Fly`
 
 - In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
