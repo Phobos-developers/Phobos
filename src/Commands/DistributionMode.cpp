@@ -594,9 +594,9 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 
 		const auto currentAction = pTarget ? selectInfo.pSelect->MouseOverObject(pTarget) : Action::NoMove;
 
-		if (noMove && currentAction == Action::NoMove && (selectInfo.pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None
-			&& ((handlePassenger && info.CurrentPassenger + canTargetSize > info.TotalPassenger)
-				|| (handleOccupant && info.CurrentPassenger + canTargetSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy)))
+		if ((noMove && currentAction == Action::NoMove && (selectInfo.pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+			|| (handlePassenger && info.CurrentPassenger + canTargetSize > info.TotalPassenger)
+			|| (handleOccupant && info.CurrentPassenger + canTargetSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy))
 		{
 			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pSelect));
 		}
