@@ -1391,11 +1391,6 @@ msgid ""
 msgstr "修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug。"
 
 msgid ""
-"Fixed the bug that ai will try to product aircraft even the airport has "
-"no free dock for it."
-msgstr "修复了即便在没有可用的空余机位时 AI 也仍会尝试生产战机的 Bug。"
-
-msgid ""
 "Fixed the issue where non-repairer units needed sensors to attack cloaked"
 " friendly units."
 msgstr "修复了非维修单位需要能够反隐才能攻击友军隐形单位的问题。"
@@ -1731,6 +1726,11 @@ msgid ""
 "Fixed crashes and freezes caused by Tiberium growth and spread."
 msgstr ""
 "修复了矿石生长和扩散导致的崩溃和冻结。"
+
+msgid ""
+"Fixed the bug where Tiberium veins overlay used the wrong palette instead of "
+"matching the Veinhole Monster."
+msgstr "修复了泰伯利亚静脉蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
@@ -4148,6 +4148,17 @@ msgid ""
 msgstr ""
 "由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 [直线弹道"
 "](New-or-Enhanced-Logics.md#projectile-trajectories) 替代。"
+
+msgid "Customize whether missiles fly to the target or climb when losing target"
+msgstr "自定义导弹在丢失目标后应飞向目标处还是爬升"
+
+msgid "Now `MissileSafetyAltitude` can be customized on each projectile."
+msgstr "现在 `MissileSafetyAltitude` 可以在每个抛射体上自定义了。"
+
+msgid ""
+"In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there."
+msgstr ""
+"在原版中导弹攻击空中目标时如果丢失了目标（例如目标被摧毁），它会立刻爬升到 `MissileSafetyAltitude` 高度然后爆炸。当 `MissileKeepTargetCoord=true`，导弹将会飞到目标处爆炸。"
 
 msgid "Customizing initial facing behavior"
 msgstr "自定义初始朝向行为"

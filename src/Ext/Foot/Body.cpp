@@ -177,6 +177,8 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	auto const pNewTypeExt = TechnoTypeExt::Fetch(pCurrentType);
 	this->TypeExtData = pNewTypeExt;
+	pOldTypeExt->Array.Remove(pThis);
+	pNewTypeExt->Array.AddItem(pThis);
 
 	this->UpdateSelfOwnedAttachEffects();
 
