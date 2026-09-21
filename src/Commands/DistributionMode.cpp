@@ -296,7 +296,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pTechno->Owner, action);
 }
 
-std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
+std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
 	// and in-air targets are within the same distance check.
@@ -307,7 +307,7 @@ std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectA
 
 	const auto pItems = Helpers::Alex::getCellSpreadItemsExt(center, range, true, true);
 
-	std::vector<DistributionItemInfo> record;
+	std::vector<DistributionTargetInfo> record;
 	record.reserve(pItems.size());
 
 	for (const auto& pItem : pItems)
@@ -331,8 +331,8 @@ std::vector<DistributionItemInfo> DistributionModeHoldDownCommandClass::CollectA
 
 		if (!MapClass::Instance.IsLocationShrouded(coords))
 		{
-			DistributionItemInfo info;
-			info.pItem = pItem;
+			DistributionTargetInfo info;
+			info.pTechno = pItem;
 			info.Num = 0;
 			info.Center = itemCenter;
 			info.TargetIsNeutral = pItem->Owner->IsNeutral();
@@ -372,7 +372,7 @@ DistributionTargetInfo DistributionModeHoldDownCommandClass::CollectTargetInfo(T
 	return info;
 }
 
-void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove)
+void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove)
 {
 	VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 	const auto spreadRange = Phobos::Config::DistributionSpreadRange;
@@ -388,7 +388,8 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		infoArmor = pInfoShield ? Armor(pInfoShield->GetArmorType()) : info.pType->Armor;
 	}
 
-	bool handlePassengerAmount = false;
+	bool handlePassenger = false;
+	bool handleOccupant = false;
 
 	if ((info.Action == Action::Enter || info.Action == Action::Repair) && HouseClass::CurrentPlayer->IsAlliedWith(info.pTechno->Owner))
 	{
@@ -397,29 +398,41 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 			const auto pBldType = static_cast<BuildingTypeClass*>(info.pType);
 
 			if (pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb))
-				handlePassengerAmount = true;
+			{
+				handlePassenger = true;
+				info.TotalPassenger = pBldType->Passengers;
+				info.CurrentPassenger = info.pTechno->Passengers.NumPassengers;
+			}
 		}
 		else if (info.pType->Passengers > 0)
 		{
-			handlePassengerAmount = true;
+			handlePassenger = true;
+			info.TotalPassenger = info.pType->Passengers;
+			info.BySize = TechnoTypeExt::Fetch(info.pType)->Passengers_BySize;
+			info.CurrentPassenger = info.BySize ? info.pTechno->Passengers.GetTotalSize() : info.pTechno->Passengers.NumPassengers;
 		}
 	}
 	else if (info.Action == Action::Capture && info.WhatAmI == AbstractType::Building)
 	{
 		// both Engineer capture and garrison use Capture action. Additional check needs to be done
 		// Can't check house here since you can garrison neutral and enemy buildings
-		const auto pItemBldType = static_cast<BuildingTypeClass*>(info.pType);
+		const auto pBldType = static_cast<BuildingTypeClass*>(info.pType);
 
-		if (pItemBldType->CanBeOccupied && pItemBldType->MaxNumberOccupants > 0)
-			handlePassengerAmount = true;
+		if (pBldType->CanBeOccupied && pBldType->MaxNumberOccupants > 0)
+		{
+			handleOccupant = true;
+			info.TotalPassenger = pBldType->MaxNumberOccupants;
+			info.CurrentPassenger = static_cast<BuildingClass*>(info.pTechno)->Occupants.Count;
+			info.CanBeOccupied = true;
+		}
 	}
 
-	if (filterMode || handlePassengerAmount)
+	if (filterMode || handlePassenger || handleOccupant)
 	{
 		for (size_t i = 0; i < recordSize; ++i)
 		{
 			auto& item = record[i];
-			const auto pItemExt = TechnoExt::Fetch(item.pItem);
+			const auto pItemExt = TechnoExt::Fetch(item.pTechno);
 			const auto pItemTypeExt = pItemExt->TypeExtData;
 			const auto pItemType = pItemTypeExt->OwnerObject();
 
@@ -435,60 +448,63 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 				}
 
 				if (filterMode == 2)
-					item.WhatAmI = item.pItem->WhatAmI();
+					item.WhatAmI = item.pTechno->WhatAmI();
 			}
 
-			if (!handlePassengerAmount)
+			if (!handlePassenger && !handleOccupant)
 				continue;
 
 			if (info.WhatAmI == AbstractType::Building)
 			{
 				const auto pBldType = static_cast<BuildingTypeClass*>(pItemType);
 
-				if (pBldType->CanBeOccupied && pBldType->MaxNumberOccupants > 0) // Garrison
+				if (handleOccupant && pBldType->CanBeOccupied && pBldType->MaxNumberOccupants > 0) // Garrison
 				{
 					item.TotalPassenger = pBldType->MaxNumberOccupants;
-					item.CurrentPassenger = static_cast<BuildingClass*>(item.pItem)->Occupants.Count;
+					item.CurrentPassenger = static_cast<BuildingClass*>(item.pTechno)->Occupants.Count;
 					item.CanBeOccupied = true;
 				}
-				else if (pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
+				else if (handlePassenger && pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
 				{
 					item.TotalPassenger = pBldType->Passengers;
-					item.CurrentPassenger = item.pItem->Passengers.NumPassengers;
+					item.CurrentPassenger = item.pTechno->Passengers.NumPassengers;
 				}
 			}
-			else if (pItemType->Passengers > 0) // Other TechnoTypes
+			else if (handlePassenger && pItemType->Passengers > 0) // Other TechnoTypes
 			{
 				item.TotalPassenger = pItemType->Passengers;
 				item.BySize = pItemTypeExt->Passengers_BySize;
-				item.CurrentPassenger = item.BySize ? item.pItem->Passengers.GetTotalSize() : item.pItem->Passengers.NumPassengers;
+				item.CurrentPassenger = item.BySize ? item.pTechno->Passengers.GetTotalSize() : item.pTechno->Passengers.NumPassengers;
 			}
 		}
 	}
 
-	std::vector<SelectionInfo> selectedObjects;
+	std::vector<DistributionSelectInfo> selectedObjects;
 	selectedObjects.reserve(ObjectClass::CurrentObjects.Count);
 
 	for (const auto pSelect : ObjectClass::CurrentObjects)
 	{
-		SelectionInfo selectInfo;
+		DistributionSelectInfo selectInfo;
 		selectInfo.pSelect = pSelect;
 		selectInfo.Size = 0;
 		selectInfo.CanOccupy = false;
 
-		if (handlePassengerAmount && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+		if ((handlePassenger || handleOccupant) && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 		{
 			const auto pSelectType = static_cast<TechnoClass*>(pSelect)->GetTechnoType();
 			selectInfo.Size = (int)pSelectType->Size;
 			
-			if (const auto pSelectInfType = abstract_cast<InfantryTypeClass*, true>(pSelectType))
-				selectInfo.CanOccupy = pSelectInfType->Occupier;
+			if (handleOccupant)
+			{
+				if (const auto pSelectInfType = abstract_cast<InfantryTypeClass*, true>(pSelectType))
+					selectInfo.CanOccupy = pSelectInfType->Occupier;
+			}
 		}
 
 		selectedObjects.emplace_back(selectInfo);
 	}
 
-	if (handlePassengerAmount)
+	if (handlePassenger)
 	{
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
@@ -508,16 +524,16 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		{
 			auto& item = record[i];
 
-			if (selectInfo.pSelect->MouseOverObject(item.pItem) != info.Action)
+			if (selectInfo.pSelect->MouseOverObject(item.pTechno) != info.Action)
 				continue;
 
 			if (!info.TargetIsNeutral && item.TargetIsNeutral)
 				continue;
 
-			if (!grinderCheck(info.Action, item.pItem, item.pType))
+			if (!grinderCheck(info.Action, item.pTechno, item.pType))
 				continue;
 
-			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(item.pItem->Owner, info.Action))
+			if (!DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(item.pTechno->Owner, info.Action))
 				continue;
 
 			if (filterMode)
@@ -544,18 +560,10 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 
 			const int objectSize = selectInfo.Size > 0 ? (item.BySize ? selectInfo.Size : 1) : 0;
 
-			if (handlePassengerAmount && item.CurrentPassenger + objectSize > item.TotalPassenger)
-			{
-				if (item.CanBeOccupied)
-				{
-					if (selectInfo.CanOccupy)
-						continue;
-				}
-				else
-				{
-					continue;
-				}
-			}
+			if (handlePassenger && item.CurrentPassenger + objectSize > item.TotalPassenger)
+				continue;
+			else if (handleOccupant && item.CurrentPassenger + objectSize > item.TotalPassenger && item.CanBeOccupied && selectInfo.CanOccupy)
+				continue;
 
 			canTargetIndex = i;
 			canTargetSize = objectSize;
@@ -577,7 +585,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 		{
 			auto& clickedItem = record[newTargetIndex];
 
-			ClickedTargetAction(selectInfo.pSelect, info.Action, clickedItem.pItem);
+			ClickedTargetAction(selectInfo.pSelect, info.Action, clickedItem.pTechno);
 
 			++clickedItem.Num;
 			clickedItem.CurrentPassenger += canTargetSize;
@@ -586,10 +594,17 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(const Distrib
 
 		const auto currentAction = pTarget ? selectInfo.pSelect->MouseOverObject(pTarget) : Action::NoMove;
 
-		if (noMove && currentAction == Action::NoMove && (selectInfo.pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+		if (noMove && currentAction == Action::NoMove && (selectInfo.pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None
+			&& ((handlePassenger && info.CurrentPassenger + canTargetSize > info.TotalPassenger)
+				|| (handleOccupant && info.CurrentPassenger + canTargetSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy)))
+		{
 			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pSelect));
+		}
 		else if (pTarget)
+		{
 			ClickedTargetAction(selectInfo.pSelect, currentAction, pTarget);
+			info.CurrentPassenger += canTargetSize;
+		}
 	}
 }
 

@@ -13,30 +13,21 @@ struct DistributionTargetInfo
 {
 	TechnoClass* pTechno;
 	CoordStruct Center;
-	bool TargetIsNeutral;
-	TechnoTypeClass* pType;
-	TechnoTypeClass* pFakeType;
-	AbstractType WhatAmI;
-	Action Action;
-};
-
-struct DistributionItemInfo
-{
-	TechnoClass* pItem;
-	CoordStruct Center;
 	int Num;
+	bool TargetIsNeutral;
 	TechnoTypeClass* pType;
 	TechnoTypeClass* pFakeType;
 	AbstractType WhatAmI;
 	Armor Armor;
-	bool TargetIsNeutral;
+	Action Action;
+	int Size;
 	int TotalPassenger;
 	int CurrentPassenger;
 	bool BySize;
 	bool CanBeOccupied;
 };
 
-struct SelectionInfo
+struct DistributionSelectInfo
 {
 	ObjectClass* pSelect;
 	int Size;
@@ -107,8 +98,8 @@ public:
 	static bool IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno);
 	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
-	static std::vector<DistributionItemInfo> CollectAndSortTargets(CoordStruct center, double range);
-	static void ProcessDistributionMode(const DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);
+	static std::vector<DistributionTargetInfo> CollectAndSortTargets(CoordStruct center, double range);
+	static void ProcessDistributionMode(DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);
 	static void ProcessNormalTargetClick(ObjectClass* pTarget, Action action, bool noMove);
 	static void ProcessCellClick(CellStruct* pCell, Action action);
 };
