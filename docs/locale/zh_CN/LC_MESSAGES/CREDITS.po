@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-13 20:18+0800\n"
+"POT-Creation-Date: 2026-09-21 22:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -477,23 +477,17 @@ msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
 msgid "Modify ammo on impact"
 msgstr "修改弹药弹头"
 
-msgid ""
-"Tiberium ramp expansion support"
-msgstr ""
-"矿石的斜坡支持"
+msgid "Tiberium ramp expansion support"
+msgstr "矿石的斜坡支持"
 
-msgid ""
-"Fix crashes and freezes caused by Tiberium growth and spread"
-msgstr ""
-"修复了矿石生长和扩散导致的崩溃和冻结"
+msgid "Fix crashes and freezes caused by Tiberium growth and spread"
+msgstr "修复了矿石生长和扩散导致的崩溃和冻结"
 
-msgid ""
-"Fix Tiberium types not supporting overrides in map and game mode INIs"
-msgstr ""
-"修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
+msgid "Fix Tiberium types not supporting overrides in map and game mode INIs"
+msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
 
 msgid "Tiberium veins overlay palette fix"
-msgstr "泰伯利亚静脉蔓延地表色板修复"
+msgstr "泰伯利亚藤蔓蔓延地表色板修复"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -1400,8 +1394,11 @@ msgid ""
 msgstr "修复了 *国家层级生还者自定义* 覆盖单位微观设置的 Bug"
 
 msgid "Enter the grinder voice"
+msgstr "赴部队回收站语音"
+
+msgid "Customize the country displayed in `Sight`"
 msgstr ""
-"赴部队回收站语音"
+"自定义 `Sight` 可见性"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1932,7 +1929,9 @@ msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画�
 msgid "Observer can see IvanBomb that's attached by any house"
 msgstr "允许了观察者看到任何所属方赋予的伊文炸弹"
 
-msgid "Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target"
+msgid ""
+"Customize `MissileSafetyAltitude` and whether missiles fly to the target "
+"or climb when losing target"
 msgstr "自定义 `MissileSafetyAltitude` 以及导弹在丢失目标后应飞向目标处还是爬升"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -2313,6 +2312,10 @@ msgstr "RA1 风格多炮塔与多炮管"
 msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
 msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 
+msgid "Attach effect when weapon fire"
+msgstr ""
+"在武器开火时赋予 AE"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2653,6 +2656,10 @@ msgstr "修复了 *国家层级生还者自定义* 未考虑解析顺序而使�
 
 msgid "Customize `IdleActionFrequency`"
 msgstr "自定义 `IdleActionFrequency`"
+
+msgid "Customize `DefaultToGuardArea` per gunner mode"
+msgstr ""
+"为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -3309,8 +3316,7 @@ msgstr "**Sovietianqi**："
 msgid ""
 "Fix the issue where Ares' `Flash.Duration` cannot override the weapon's "
 "repair flash effect"
-msgstr ""
-"修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题"
+msgstr "修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题"
 
 msgid "Customizable crew type per country"
 msgstr "国家层级生还者自定义"
@@ -3363,4 +3369,7 @@ msgid ""
 "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "
 "houses"
 msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"
+
+msgid "**dh381-1** - Detonate ivan bomb on impact"
+msgstr "**dh381-1** - 引爆伊文炸弹弹头"
 

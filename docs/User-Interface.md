@@ -694,14 +694,10 @@ In `rulesmd.ini`:
 SelectCapturedKeyEnabled=false    ; boolean
 ```
 
-### `[ ]` Development Hotkey Commands
+```{important}
+**Development Hotkey Commands**
 
-- The following hotkeys are for debug purpose and require setting `DebugKeysEnabled` to true to enable.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-DebugKeysEnabled=false    ; boolean
+- The following hotkeys are for debug purpose and require setting [`DebugKeysEnabled`](https://ares-developers.github.io/Ares-docs/ui-features/keyboardcommandshotkeys.html#disabling-keyboard-commands) to true to enable.
 ```
 
 ### `[ ]` Display Damage Numbers

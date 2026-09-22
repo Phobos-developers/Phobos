@@ -24,7 +24,6 @@ public:
 		return static_cast<WeaponTypeClass*>(this->GetAttachedObject());
 	}
 
-
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
 	Nullable<bool> ProjectileRange_ApplyModifiers;
@@ -74,6 +73,8 @@ public:
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
 	Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 	Nullable<bool> AmbientDamage_IgnoreTarget;
+	AEAttachInfoTypeClass AttachEffects;
+	Valueable<bool> AttachEffect_Enable;
 	ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 	std::vector<std::string> AttachEffect_RequiredGroups;
@@ -169,6 +170,8 @@ public:
 		, ExtraWarheads_FullDetonation {}
 		, AmbientDamage_Warhead {}
 		, AmbientDamage_IgnoreTarget {}
+		, AttachEffects {}
+		, AttachEffect_Enable { false }
 		, AttachEffect_RequiredTypes {}
 		, AttachEffect_DisallowedTypes {}
 		, AttachEffect_RequiredGroups {}
