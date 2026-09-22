@@ -702,6 +702,9 @@ DEFINE_HOOK(0x5185CE, Infantry_ReceiveDamage_RandomInfDeath, 0x7)
 	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
 	const auto& infDeaths = pWHExt->InfDeaths;
 
+	if(infDeaths.empty())
+		return 0;
+
 	int roll = Randomizer::Global.RandomRanged(0, infDeaths.size() - 1);
 
 	R->EDI(infDeaths[roll] - 1);
