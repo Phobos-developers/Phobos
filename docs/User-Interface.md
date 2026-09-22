@@ -567,13 +567,13 @@ SetTabBySelecting=-1            ; integer, index of tab
 
 ### Tactical zoom
 
-- Magnifies the battlefield tactical view using the mouse wheel (`Ctrl + Wheel`) and configurable keyboard hotkeys.
-  - `TacticalZoom` enables or disables tactical zoom for the mod. Defaults to `false`. Requires both the modder to enable it here and the player to have it enabled in `RA2MD.INI` (`[Phobos] -> TacticalZoom=true`, which is enabled by default).
-  - `TacticalZoom.Scroll` allows zooming in and out using `Ctrl + Mouse Wheel`, as well as resetting the zoom level to 1.0x by clicking the middle mouse button. Defaults to `true`.
-  - `TacticalZoom.KeyEnabled` enables the customizable keyboard hotkeys for Zoom In, Zoom Out, and Reset Zoom under the Interface options menu. Defaults to `true`.
-  - `TacticalZoom.Max` sets the maximum allowable zoom magnification multiplier (e.g., `2.5` permits zooming in up to 2.5x / 250% magnification, scaling the visible tactical viewport down to 1 / 2.5 of its dimensions). Values lower than `1.0` are clamped to `1.0` (no zoom). Defaults to `2.5`.
-  - `TacticalZoom.Step` sets the magnification increment added or subtracted per mouse wheel notch or hotkey press (e.g., `0.15` changes the zoom factor by 15% per step). Values lower than `0.01` are clamped to `0.01`. Defaults to `0.15`.
-  - `TacticalZoom.Smooth` toggles smooth frame-by-frame linear interpolation (lerp) between zoom levels instead of instantaneous stepping. Can also be overridden locally by the player in `RA2MD.INI`. Defaults to `true`.
+- Magnifies the battlefield tactical view using mouse wheel (`Ctrl + Wheel`) and configurable keyboard hotkeys.
+  - `TacticalZoom` enables or disables tactical zoom.
+  - `TacticalZoom.Scroll` enables mouse wheel zooming (`Ctrl + Wheel`) and middle click zoom reset.
+  - `TacticalZoom.KeyEnabled` enables keyboard commands.
+  - `TacticalZoom.Max` sets the maximum zoom magnification (e.g. `2.5` allows zooming in up to 2.5x).
+  - `TacticalZoom.Step` sets the zoom increment per wheel notch or hotkey press.
+  - `TacticalZoom.Smooth` toggles smooth frame-by-frame interpolation between zoom levels.
 
 In `uimd.ini`:
 ```ini
