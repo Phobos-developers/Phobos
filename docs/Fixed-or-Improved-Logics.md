@@ -271,7 +271,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
-- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 - Fixed the issue that rockets do not consider the destination altitude during climbing.
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
@@ -333,6 +332,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 - Observer can see IvanBomb that's attached by any house.
 - Fixed crashes and freezes caused by Tiberium growth and spread.
+- Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 
 ## Fixes / interactions with other extensions
 
@@ -1098,7 +1098,7 @@ Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDes
   - By default Y axis shift will only apply if the bracket position is negative e.g it is moved upwards from the object center. If `YDrawOffset.InvertBracketShift` is set to true, the opposite is true and negative shift is ignored.
   - For X axis the shift direction can also be switched by setting `XDrawOffset.InvertBracketShift=true`. The default is positive shift, towards right-hand side of the screen.
   - The bracket-based shift can be further adjusted with offset from `X/YDrawOffset.BracketAdjust`, overridden by `X/YDrawOffset.BracketAdjust.Buildings` for buildings only.
- 
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                            ; AnimationType
@@ -1751,6 +1751,21 @@ In `rulesmd.ini`:
 Gravity=6.0             ; floating point value
 ```
 
+### Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+
+- Now `MissileSafetyAltitude` can be customized on each projectile.
+- In vanilla, when a missile projectile attacking an airborne target loses its target (e.g. the target is destroyed), it immediately climbs to `MissileSafetyAltitude` altitude and explodes. With `MissileKeepTargetCoord=true`, the missile will instead fly to the target's position and explode there.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MissileKeepTargetCoord=false  ; boolean
+
+[SOMEPROJECTILE]              ; Projectile, with ROT>=1
+MissileSafetyAltitude=        ; integer, defaults to [General] -> MissileSafetyAltitude
+MissileKeepTargetCoord=       ; boolean, defaults to [General] -> MissileKeepTargetCoord
+```
+
 ### Customizing initial facing behavior
 
 - Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
@@ -2172,6 +2187,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize `DefaultToGuardArea` per gunner mode
+
+- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType, with Gunner=yes
+DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
+DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
 ```
 
 ### Damaged speed customization

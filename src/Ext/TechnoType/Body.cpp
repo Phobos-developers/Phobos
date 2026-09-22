@@ -1200,6 +1200,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
 	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
 
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
+
 	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
@@ -1210,6 +1213,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 	
 	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
+
+	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
+	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1454,6 +1460,8 @@ template <typename T>
 void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Array)
+
 		.Process(this->HealthBar_Hide)
 		.Process(this->HealthBar_HidePips)
 		.Process(this->HealthBar_Permanent)
@@ -1852,6 +1860,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->VoiceEnterGrinder)
 
+		.Process(this->DefaultToGuardArea_Modes)
+		.Process(this->DefaultToGuardArea_AIModes)
+
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
 
@@ -1879,6 +1890,9 @@ void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
 }
 
 void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
