@@ -4,6 +4,9 @@
 #include <Surface.h>
 #include <MapClass.h>
 
+#include <Utilities/Debug.h>
+#include <Utilities/Macro.h>
+
 #include <algorithm>
 #include <cmath>
 
@@ -18,11 +21,13 @@ double ZoomManager::Step = 0.15;
 bool ZoomManager::Smooth = true;
 double ZoomManager::SmoothRate = 0.25;
 
+// Checks whether zoom level is currently greater than 1.0x
 bool ZoomManager::IsZoomed()
 {
 	return Enabled && CurrentZoom > 1.0;
 }
 
+// Steps target zoom inward toward maximum magnification
 void ZoomManager::ZoomIn()
 {
 	if (!Enabled || !TacticalClass::Instance)
@@ -33,10 +38,13 @@ void ZoomManager::ZoomIn()
 	if (!Smooth)
 	{
 		CurrentZoom = TargetZoom;
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
 
+// Steps target zoom outward toward default 1.0x
 void ZoomManager::ZoomOut()
 {
 	if (!Enabled || !TacticalClass::Instance)
@@ -47,10 +55,13 @@ void ZoomManager::ZoomOut()
 	if (!Smooth)
 	{
 		CurrentZoom = TargetZoom;
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
 
+// Resets target zoom immediately back to 1.0x scale
 void ZoomManager::ResetZoom()
 {
 	if (!TacticalClass::Instance)
@@ -61,39 +72,90 @@ void ZoomManager::ResetZoom()
 	if (!Smooth)
 	{
 		CurrentZoom = 1.0;
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
 
+// Smoothly interpolates current zoom toward target zoom each frame
 void ZoomManager::Update()
 {
 	if (!TacticalClass::Instance)
 		return;
 
-	if (Smooth)
+	if (Smooth && std::abs(CurrentZoom - TargetZoom) > 0.0001)
 	{
-		if (std::abs(CurrentZoom - TargetZoom) > 0.0001)
-		{
-			CurrentZoom += (TargetZoom - CurrentZoom) * SmoothRate;
+		CurrentZoom += (TargetZoom - CurrentZoom) * SmoothRate;
 
-			if (std::abs(CurrentZoom - TargetZoom) <= 0.0001)
-				CurrentZoom = TargetZoom;
-
-			MapClass::Instance.MarkNeedsRedraw(2);
-		}
-		else if (CurrentZoom != TargetZoom)
-		{
+		if (std::abs(CurrentZoom - TargetZoom) <= 0.0001)
 			CurrentZoom = TargetZoom;
-			MapClass::Instance.MarkNeedsRedraw(2);
-		}
+
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 	else if (CurrentZoom != TargetZoom)
 	{
 		CurrentZoom = TargetZoom;
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
 
+// Restricts camera coordinates to playable map boundaries, scaled by current zoom
+bool ZoomManager::ClampTacticalPos(Point2D* pPoint)
+{
+	if (!pPoint)
+		return false;
+
+	const auto& viewBounds = DSurface::ViewBounds;
+	const double zoom = IsZoomed() ? CurrentZoom : 1.0;
+
+	const int effectiveWidth = static_cast<int>(viewBounds.Width / zoom + 0.5);
+	const int effectiveHeight = static_cast<int>(viewBounds.Height / zoom + 0.5);
+
+	const int v1 = Make_Global<int>(0x87F8E4);
+	const int v2 = Make_Global<int>(0x87F8DC);
+	const int v3 = Make_Global<int>(0x87F8E8);
+	const int v4 = Make_Global<int>(0x87F8EC);
+	const int v5 = Make_Global<int>(0x87F8F0);
+
+	const int minX = 30 * (2 * v1 - v2) + (effectiveWidth / 2);
+	const int maxX = std::max(minX, minX + (60 * v4) - effectiveWidth);
+
+	const int minY = 15 * (v2 + 2 * v3 - 5) + (effectiveHeight / 2);
+	const int maxY = std::max(minY, minY + ((60 * v5 + 270) / 2) - effectiveHeight);
+
+	bool bClamped = false;
+
+	if (pPoint->Y < minY)
+	{
+		pPoint->Y = minY;
+		bClamped = true;
+	}
+	else if (pPoint->Y > maxY)
+	{
+		pPoint->Y = maxY;
+		bClamped = true;
+	}
+
+	if (pPoint->X < minX)
+	{
+		pPoint->X = minX;
+		bClamped = true;
+	}
+	else if (pPoint->X > maxX)
+	{
+		pPoint->X = maxX;
+		bClamped = true;
+	}
+
+	return bClamped;
+}
+
+// Maps screen pixel coordinates into tactical surface space under zoom
 Point2D ZoomManager::ScreenToTactical(const Point2D& screenPoint)
 {
 	if (!IsZoomed())
@@ -125,6 +187,7 @@ Point2D ZoomManager::ScreenToTactical(const Point2D& screenPoint)
 	return virtualPoint;
 }
 
+// Maps tactical surface coordinates back to screen pixel space
 Point2D ZoomManager::TacticalToScreen(const Point2D& virtualPoint)
 {
 	if (!IsZoomed())
@@ -150,6 +213,7 @@ Point2D ZoomManager::TacticalToScreen(const Point2D& virtualPoint)
 	return screenPoint;
 }
 
+// Blits centered viewport crop from Alternate surface onto Composite surface
 void ZoomManager::ApplyTacticalBlit()
 {
 	if (!IsZoomed() || !DSurface::Alternate || !DSurface::Composite)
