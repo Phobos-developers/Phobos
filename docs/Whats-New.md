@@ -435,8 +435,6 @@ HideShakeEffects=false           ; boolean
 - [Customize whether the unit can be detected by psychic detector](Fixed-or-Improved-Logics.md#customize-whether-the-unit-can-be-detected-by-psychic-detector) (by Noble_Fish)
 - [Cloak Enhancement](New-or-Enhanced-Logics.md#cloak-enhancement) (by NetsuNegi)
 - [`513` Set mission timer properties](AI-Scripting-and-Mapping.md#set-mission-timer-properties) (by Ollerus)
-- [`514` Set tactical zoom](AI-Scripting-and-Mapping.md#set-tactical-zoom) (by FS-21)
-- [Tactical zoom](User-Interface.md#tactical-zoom) (by FS-21)
 - [Extended `CanTargetHouses` to allow targeting neutral houses](New-or-Enhanced-Logics.md#weapon-targeting-filter) (by weiyongxuan)
 - [Customizable infantry sequence rates](New-or-Enhanced-Logics.md#customizable-infantry-sequence-rates) (by Noble_Fish)
 - `<Player @ X>` can now be used as owner for triggers on skirmish and multiplayer maps (by Starkku)
@@ -454,6 +452,8 @@ HideShakeEffects=false           ; boolean
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
+- [`514` Set tactical zoom](AI-Scripting-and-Mapping.md#set-tactical-zoom) (by FS-21)
+- [Tactical zoom](User-Interface.md#tactical-zoom) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
