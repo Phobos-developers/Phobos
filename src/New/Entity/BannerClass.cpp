@@ -66,9 +66,31 @@ void BannerClass::Render()
 void BannerClass::RenderPCX(Point2D position)
 {
 	auto const pType = this->Type;
-	BSurface* pcx = this->Type->PCX.GetSurface();
-	position.X -= pcx->Width / 2;
-	position.Y -= pcx->Height / 2;
+	BSurface* pcx = pType->PCX.GetSurface();
+
+	switch (pType->Horizontal)
+	{
+	case HorizontalPosition::Center:
+		position.X -= pcx->Width / 2;
+		break;
+	case HorizontalPosition::Right:
+		position.X -= pcx->Width;
+		break;
+	default:
+		break;
+	}
+
+	switch (pType->Vertical)
+	{
+	case VerticalPosition::Center:
+		position.Y -= pcx->Height / 2;
+		break;
+	case VerticalPosition::Bottom:
+		position.Y -= pcx->Height;
+		break;
+	default:
+		break;
+	}
 
 	// Clamp the position to keep the PCX within the visible area,
 	// preventing it from being drawn partially off-screen.
@@ -89,8 +111,30 @@ void BannerClass::RenderSHP(Point2D position)
 	auto const pType = this->Type;
 	SHPStruct* shape = pType->Shape;
 	ConvertClass* palette = pType->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	position.X -= shape->Width / 2;
-	position.Y -= shape->Height / 2;
+
+	switch (pType->Horizontal)
+	{
+	case HorizontalPosition::Center:
+		position.X -= shape->Width / 2;
+		break;
+	case HorizontalPosition::Right:
+		position.X -= shape->Width;
+		break;
+	default:
+		break;
+	}
+
+	switch (pType->Vertical)
+	{
+	case VerticalPosition::Center:
+		position.Y -= shape->Height / 2;
+		break;
+	case VerticalPosition::Bottom:
+		position.Y -= shape->Height;
+		break;
+	default:
+		break;
+	}
 
 	// Clamp the position to keep the SHP within the visible area,
 	// preventing it from being drawn partially off-screen.
@@ -168,14 +212,36 @@ void BannerClass::RenderCSF(Point2D position)
 			? TextPrintType::LASTPOINT
 			: TextPrintType::Center);
 
+	RectangleStruct textRect = Drawing::GetTextDimensions(
+		text.c_str(), position, static_cast<WORD>(textFlags));
+	
+	switch (pType->Horizontal)
+	{
+	case HorizontalPosition::Center:
+		position.X -= textRect.Width / 2;
+		break;
+	case HorizontalPosition::Right:
+		position.X -= textRect.Width;
+		break;
+	default:
+		break;
+	}
+
+	switch (pType->Vertical)
+	{
+	case VerticalPosition::Center:
+		position.Y -= textRect.Height / 2;
+		break;
+	case VerticalPosition::Bottom:
+		position.Y -= textRect.Height;
+		break;
+	default:
+		break;
+	}
 
 	// Measure the text, manually center, then clamp to screen bounds.
 	if (pType->ClampToScreen)
 	{
-		RectangleStruct textRect = Drawing::GetTextDimensions(
-			text.c_str(), position, static_cast<WORD>(textFlags));
-		position.X -= textRect.Width / 2;
-		position.Y -= textRect.Height / 2;
 		int maxX = std::max(0, DSurface::ViewBounds.Width - textRect.Width);
 		int maxY = std::max(0, DSurface::ViewBounds.Height - textRect.Height);
 		position.X = std::clamp(position.X, 0, maxX);
