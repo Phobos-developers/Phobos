@@ -360,7 +360,6 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::DeselectObjectCommand = pINI_RULESMD->ReadBool("GlobalControls", "DeselectObjectKeysEnabled", Phobos::Config::DeselectObjectCommand);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
-
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
