@@ -59,20 +59,20 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (pAttacker && pAttacker->Berzerk)
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
-				multiplier = pWHExt->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier));
+				multiplier *= pWHExt->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier));
 			else if (pSourceHouse != pTargetHouse)
-				multiplier = pWHExt->DamageAlliesMultiplier_Berzerk.Get(RulesExt::Global()->DamageAlliesMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier));
+				multiplier *= pWHExt->DamageAlliesMultiplier_Berzerk.Get(RulesExt::Global()->DamageAlliesMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier));
 			else
-				multiplier = pWHExt->DamageOwnerMultiplier_Berzerk.Get(RulesExt::Global()->DamageOwnerMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier));
+				multiplier *= pWHExt->DamageOwnerMultiplier_Berzerk.Get(RulesExt::Global()->DamageOwnerMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier));
 		}
 		else
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
-				multiplier = pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
+				multiplier *= pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
 			else if (pSourceHouse != pTargetHouse)
-				multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);
+				multiplier *= pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);
 			else
-				multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
+				multiplier *= pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
 		}
 
 		if (multiplier != 1.0)
