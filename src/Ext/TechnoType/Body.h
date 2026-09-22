@@ -184,10 +184,12 @@ public:
 	Valueable<int> ForceWeapon_UnderEMP;
 	Valueable<int> ForceWeapon_UnderBerzerk;
 	Valueable<int> ForceWeapon_Parasited;
+	Valueable<AffectedHouse> ForceWeapon_Parasited_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> ForceWeapon_Parasited_Allow;
 	ValueableVector<TechnoTypeClass*> ForceWeapon_Parasited_Disallow;
 	Valueable<int> ForceWeapon_BombAttached;
 	Valueable<bool> ForceWeapon_BombAttached_SameSourceOnly;
+	Valueable<AffectedHouse> ForceWeapon_BombAttached_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> ForceWeapon_BombAttached_AffectTypes;
 	Valueable<int> ForceWeapon_MindControlled;
 	Valueable<AffectedHouse> ForceWeapon_MindControlled_AffectsOriginalHouse;
@@ -628,10 +630,12 @@ public:
 		, ForceWeapon_UnderEMP { -1 }
 		, ForceWeapon_UnderBerzerk { -1 }
 		, ForceWeapon_Parasited { -1 }
+		, ForceWeapon_Parasited_AffectsHouse { AffectedHouse::All }
 		, ForceWeapon_Parasited_Allow {}
 		, ForceWeapon_Parasited_Disallow {}
 		, ForceWeapon_BombAttached { -1 }
 		, ForceWeapon_BombAttached_SameSourceOnly { true }
+		, ForceWeapon_BombAttached_AffectsHouse { AffectedHouse::All }
 		, ForceWeapon_BombAttached_AffectTypes {}
 		, ForceWeapon_MindControlled { -1 }
 		, ForceWeapon_MindControlled_AffectsOriginalHouse { AffectedHouse::All }

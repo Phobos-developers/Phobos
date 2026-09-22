@@ -180,6 +180,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveMindControl_AffectsOriginalHouse.Read(exINI, pSection, "RemoveMindControl.AffectsOriginalHouse");
 	this->RemoveMindControl_Silent.Read(exINI, pSection, "RemoveMindControl.Silent");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
+	this->RemoveParasite_AffectsHouse.Read(exINI, pSection, "RemoveParasite.AffectsHouse");
 	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
 	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
@@ -601,6 +602,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->RemoveMindControl_AffectsOriginalHouse)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->RemoveParasite)
+		.Process(this->RemoveParasite_AffectsHouse)
 		.Process(this->RemoveParasite_Allow)
 		.Process(this->RemoveParasite_Disallow)
 		.Process(this->DecloakDamagedTargets)

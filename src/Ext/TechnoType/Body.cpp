@@ -145,14 +145,15 @@ int TechnoTypeExt::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
 			forceWeaponIndex = this->ForceWeapon_UnderBerzerk;
 		}
 		else if (pParasiteType
+			&& EnumFunctions::CanTargetHouse(ForceWeapon_Parasited_AffectsHouse, pThis->Owner, pParasite->Owner)
 			&& (this->ForceWeapon_Parasited_Allow.empty() || this->ForceWeapon_Parasited_Allow.Contains(pParasiteType))
 			&& !this->ForceWeapon_Parasited_Disallow.Contains(pParasiteType))
 		{
 			forceWeaponIndex = this->ForceWeapon_Parasited;
 		}
 		else if (pBomb && (!this->ForceWeapon_BombAttached_SameSourceOnly || pBomb->Owner == pThis)
-			&& (this->ForceWeapon_BombAttached_AffectTypes.empty()
-				|| (pBomb->Owner && this->ForceWeapon_BombAttached_AffectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+			&& EnumFunctions::CanTargetHouse(ForceWeapon_BombAttached_AffectsHouse, pThis->Owner, pBomb->Owner ? pBomb->Owner->Owner : pBomb->OwnerHouse)
+			&& (this->ForceWeapon_BombAttached_AffectTypes.empty() || (pBomb->Owner && this->ForceWeapon_BombAttached_AffectTypes.Contains(pBomb->Owner->GetTechnoType()))))
 		{
 			forceWeaponIndex = this->ForceWeapon_BombAttached;
 		}
@@ -983,10 +984,12 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
 	this->ForceWeapon_UnderBerzerk.Read(exINI, pSection, "ForceWeapon.UnderBerzerk");
 	this->ForceWeapon_Parasited.Read(exINI, pSection, "ForceWeapon.Parasited");
+	this->ForceWeapon_Parasited_AffectsHouse.Read(exINI, pSection, "ForceWeapon.Parasited.AffectsHouse");
 	this->ForceWeapon_Parasited_Allow.Read(exINI, pSection, "ForceWeapon.Parasited.Allow");
 	this->ForceWeapon_Parasited_Disallow.Read(exINI, pSection, "ForceWeapon.Parasited.Disallow");
 	this->ForceWeapon_BombAttached.Read(exINI, pSection, "ForceWeapon.BombAttached");
 	this->ForceWeapon_BombAttached_SameSourceOnly.Read(exINI, pSection, "ForceWeapon.BombAttached.SameSourceOnly");
+	this->ForceWeapon_BombAttached_AffectsHouse.Read(exINI, pSection, "ForceWeapon.BombAttached.AffectsHouse");
 	this->ForceWeapon_BombAttached_AffectTypes.Read(exINI, pSection, "ForceWeapon.BombAttached.AffectTypes");
 	this->ForceWeapon_MindControlled.Read(exINI, pSection, "ForceWeapon.MindControlled");
 	this->ForceWeapon_MindControlled_AffectsOriginalHouse.Read(exINI, pSection, "ForceWeapon.MindControlled.AffectsOriginalHouse");
@@ -1009,7 +1012,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ForceWeapon_Check = (
 		this->ForceWeapon_IronCurtained >= 0
-		|| this->ForceWeapon_ForceShielded >= 0
+		|| (this->ForceWeapon_ForceShielded.isset() && this->ForceWeapon_ForceShielded.Get() >= 0)
 		|| this->ForceWeapon_Naval_Decloaked >= 0
 		|| this->ForceWeapon_Cloaked >= 0
 		|| this->ForceWeapon_Disguised >= 0
@@ -1682,10 +1685,12 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ForceWeapon_UnderEMP)
 		.Process(this->ForceWeapon_UnderBerzerk)
 		.Process(this->ForceWeapon_Parasited)
+		.Process(this->ForceWeapon_Parasited_AffectsHouse)
 		.Process(this->ForceWeapon_Parasited_Allow)
 		.Process(this->ForceWeapon_Parasited_Disallow)
 		.Process(this->ForceWeapon_BombAttached)
 		.Process(this->ForceWeapon_BombAttached_SameSourceOnly)
+		.Process(this->ForceWeapon_BombAttached_AffectsHouse)
 		.Process(this->ForceWeapon_BombAttached_AffectTypes)
 		.Process(this->ForceWeapon_MindControlled)
 		.Process(this->ForceWeapon_MindControlled_AffectsOriginalHouse)

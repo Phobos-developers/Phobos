@@ -2163,10 +2163,12 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
   - `ForceWeapon.UnderBerzerk` forces specified weapon to be used if the target is under Berzerk effect.
   - `ForceWeapon.Parasited` forces specified weapon to be used if the target is being parasited.
+    - `ForceWeapon.Parasited.AffectsHouse` can be used to configure parasites from which house can force the weapon.
     - `ForceWeapon.Parasited.Allow` can be used to define which parasites can force the weapon.
     - `ForceWeapon.Parasited.Disallow` can be used to define which parasites cannot force the weapon.
   - `ForceWeapon.BombAttached` forces specified weapon to be used if the target is attached by an `IvanBomb`.
     - `ForceWeapon.BombAttached.SameInvokerOnly` can be used to configure whether the weapon will be forced to a target with ivan bombs only if they come from the same invoker.
+    - `ForceWeapon.BombAttached.AffectsHouse` can be used to configure Ivan bombs from which house can force the weapon.
     - `ForceWeapon.BombAttached.AffectTypes` can be used to configure Ivan bombs from which TechnoType can force the weapon, use empty for all types.
   - `ForceWeapon.MindControlled` forces specified weapon to be used if the target is mind controlled. Doesn't work for perma control.
     - `ForceWeapon.MindControlled.AffectsOriginalHouse` can be used to configure whether the weapon will be forced to a mind controlled target based on the target's original owner.
@@ -2196,10 +2198,12 @@ ForceWeapon.Disguised=-1                              ; integer, -1 to disable
 ForceWeapon.UnderEMP=-1                               ; integer, -1 to disable
 ForceWeapon.UnderBerzerk=-1                           ; integer, -1 to disable
 ForceWeapon.Parasited=-1                              ; integer, -1 to disable
+ForceWeapon.Parasited.AffectsHouse=all                ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ForceWeapon.Parasited.Allow=                          ; List of TechnoTypes
 ForceWeapon.Parasited.Disallow=                       ; List of TechnoTypes
 ForceWeapon.BombAttached=-1                           ; integer, -1 to disable
 ForceWeapon.BombAttached.SameInvokerOnly=true         ; boolean
+ForceWeapon.BombAttached.AffectsHouse=all             ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ForceWeapon.BombAttached.AffectTypes                  ; List of TechnoTypes
 ForceWeapon.MindControlled=-1                         ; integer, -1 to disable
 ForceWeapon.MindControlled.AffectsOriginalHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
@@ -3226,7 +3230,8 @@ PlayAnimAboveSurface=false            ; boolean
   - `IvanBomb.Detonate.SameInvokerOnly` can be used to configure whether the warhead can detonate ivan bombs only if they come from the same invoker.
   - `IvanBomb.Detonate.PenetratesTransport` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
   - `IvanBomb.Detonate.PenetratesGarrison` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
-  - `IvanBomb.Detonate.AffectsParasite` can be used to configure whether the warhead can detonate IvanBombs on a parasite. the bomb will explode after the parasite leave the victim.
+  - `IvanBomb.Detonate.AffectsParasite` can be used to configure whether the warhead can detonate ivan bombs on a parasite. the bomb will explode after the parasite leave the victim.
+  - `IvanBomb.Detonate.AffectsHouse` can be used to configure Ivan bombs from which house can be detonated by warhead.
   - `IvanBomb.Detonate.AffectTypes` can be used to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
 
 In `rulesmd.ini`:
@@ -3237,6 +3242,7 @@ IvanBomb.Detonate.SameInvokerOnly=true       ; boolean
 IvanBomb.Detonate.PenetratesTransport=false  ; boolean
 IvanBomb.Detonate.PenetratesGarrison=false   ; boolean
 IvanBomb.Detonate.AffectsParasite=false      ; boolean
+IvanBomb.Detonate.AffectsHouse=all           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 IvanBomb.Detonate.AffectTypes=               ; List of TechnoTypes
 ```
 

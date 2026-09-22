@@ -50,6 +50,7 @@ public:
 	Valueable<AffectedHouse> RemoveMindControl_AffectsOriginalHouse;
 	Nullable<bool> RemoveMindControl_Silent;
 	Nullable<bool> RemoveParasite;
+	Valueable<AffectedHouse> RemoveParasite_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 	Nullable<bool> DecloakDamagedTargets;
@@ -282,6 +283,7 @@ public:
 	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
 	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
 	Valueable<bool> IvanBomb_Detonate_AffectsParasite;
+	Valueable<AffectedHouse> IvanBomb_Detonate_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
 
 	// Ares tags
@@ -341,6 +343,7 @@ public:
 		, RemoveMindControl_AffectsOriginalHouse { AffectedHouse::All }
 		, RemoveMindControl_Silent {}
 		, RemoveParasite {}
+		, RemoveParasite_AffectsHouse { AffectedHouse::All }
 		, RemoveParasite_Allow {}
 		, RemoveParasite_Disallow {}
 		, DecloakDamagedTargets {}
@@ -639,7 +642,7 @@ private:
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
-	void IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget);
+	void IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget, HouseClass* pHouse);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>
