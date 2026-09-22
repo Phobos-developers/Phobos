@@ -27,7 +27,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
 	// Load it after Ares'
 
-	if (ZoomManager::Enabled && ZoomManager::HotkeysEnabled)
+	if (ZoomManager::Enabled && ZoomManager::KeyEnabled)
 	{
 		MakeCommand<ZoomInCommandClass>();
 		MakeCommand<ZoomOutCommandClass>();
@@ -108,7 +108,7 @@ DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
 {
 	GET(const WPARAM, WParam, ECX);
 
-	if (ZoomManager::CanPlayerZoom() && ZoomManager::WheelEnabled && (GetAsyncKeyState(VK_CONTROL) & 0x8000))
+	if (ZoomManager::CanPlayerZoom() && ZoomManager::ScrollEnabled && (GetAsyncKeyState(VK_CONTROL) & 0x8000))
 	{
 		if (WParam & 0x80000000u)
 			ZoomManager::ZoomOut();
@@ -128,7 +128,7 @@ DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
 
 static inline bool CheckSkipScrollSidebar()
 {
-	if (ZoomManager::CanPlayerZoom() && ZoomManager::WheelEnabled && (GetAsyncKeyState(VK_CONTROL) & 0x8000))
+	if (ZoomManager::CanPlayerZoom() && ZoomManager::ScrollEnabled && (GetAsyncKeyState(VK_CONTROL) & 0x8000))
 		return true;
 
 	return MessageColumnClass::Instance.IsHovering();

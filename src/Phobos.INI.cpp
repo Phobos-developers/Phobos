@@ -77,8 +77,8 @@ int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
 bool Phobos::Config::TacticalZoom = false;
-bool Phobos::Config::TacticalZoom_Wheel = true;
-bool Phobos::Config::TacticalZoom_Hotkeys = true;
+bool Phobos::Config::TacticalZoom_Scroll = true;
+bool Phobos::Config::TacticalZoom_KeyEnabled = true;
 double Phobos::Config::TacticalZoom_Max = 2.5;
 double Phobos::Config::TacticalZoom_Step = 0.15;
 bool Phobos::Config::TacticalZoom_Smooth = true;
@@ -130,7 +130,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 	Phobos::Config::ShowGameTime = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowGameTime", false);
 	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
-
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);
@@ -273,11 +272,15 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		const bool modderZoomEnabled = ini_uimd.ReadBool(section, "TacticalZoom",
 			ini_uimd.ReadBool(section, "Enabled", false));
 
-		Phobos::Config::TacticalZoom_Wheel = ini_uimd.ReadBool(section, "TacticalZoom.Wheel",
-			ini_uimd.ReadBool(section, "Wheel", true));
+		Phobos::Config::TacticalZoom_Scroll = ini_uimd.ReadBool(section, "TacticalZoom.Scroll",
+			ini_uimd.ReadBool(section, "Scroll",
+			ini_uimd.ReadBool(section, "TacticalZoom.Wheel",
+			ini_uimd.ReadBool(section, "Wheel", true))));
 
-		Phobos::Config::TacticalZoom_Hotkeys = ini_uimd.ReadBool(section, "TacticalZoom.Hotkeys",
-			ini_uimd.ReadBool(section, "Hotkeys", true));
+		Phobos::Config::TacticalZoom_KeyEnabled = ini_uimd.ReadBool(section, "TacticalZoom.KeyEnabled",
+			ini_uimd.ReadBool(section, "KeyEnabled",
+			ini_uimd.ReadBool(section, "TacticalZoom.Hotkeys",
+			ini_uimd.ReadBool(section, "Hotkeys", true))));
 
 		Phobos::Config::TacticalZoom_Max = ini_uimd.ReadDouble(section, "TacticalZoom.Max",
 			ini_uimd.ReadDouble(section, "Max", 2.5));
@@ -295,8 +298,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::Config::TacticalZoom = modderZoomEnabled && playerZoomEnabled;
 
 		ZoomManager::Enabled = Phobos::Config::TacticalZoom;
-		ZoomManager::WheelEnabled = Phobos::Config::TacticalZoom_Wheel;
-		ZoomManager::HotkeysEnabled = Phobos::Config::TacticalZoom_Hotkeys;
+		ZoomManager::ScrollEnabled = Phobos::Config::TacticalZoom_Scroll;
+		ZoomManager::KeyEnabled = Phobos::Config::TacticalZoom_KeyEnabled;
 		ZoomManager::MaxZoom = std::max(1.0, Phobos::Config::TacticalZoom_Max);
 		ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
 		ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
@@ -357,7 +360,6 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::DeselectObjectCommand = pINI_RULESMD->ReadBool("GlobalControls", "DeselectObjectKeysEnabled", Phobos::Config::DeselectObjectCommand);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
-
 
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);

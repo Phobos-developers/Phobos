@@ -13,8 +13,8 @@
 #include <cmath>
 
 bool ZoomManager::Enabled = false;
-bool ZoomManager::WheelEnabled = true;
-bool ZoomManager::HotkeysEnabled = true;
+bool ZoomManager::ScrollEnabled = true;
+bool ZoomManager::KeyEnabled = true;
 double ZoomManager::CurrentZoom = 1.0;
 double ZoomManager::TargetZoom = 1.0;
 double ZoomManager::MinZoom = 1.0;

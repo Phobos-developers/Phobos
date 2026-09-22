@@ -54,7 +54,7 @@ DEFINE_HOOK(0x6930A0, ScrollClass_MessageHandler_MiddleClickReset, 0x5)
 {
 	GET_STACK(const UINT*, pMessage, 0x8);
 
-	if (ZoomManager::IsZoomed() && ZoomManager::WheelEnabled && pMessage && *pMessage == WM_MBUTTONDOWN)
+	if (ZoomManager::IsZoomed() && ZoomManager::ScrollEnabled && pMessage && *pMessage == WM_MBUTTONDOWN)
 		ZoomManager::ResetZoom();
 
 	return 0;
