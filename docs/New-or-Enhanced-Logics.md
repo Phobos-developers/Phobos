@@ -2204,7 +2204,7 @@ ForceWeapon.Parasited.Disallow=                       ; List of TechnoTypes
 ForceWeapon.BombAttached=-1                           ; integer, -1 to disable
 ForceWeapon.BombAttached.SameInvokerOnly=true         ; boolean
 ForceWeapon.BombAttached.AffectsHouse=all             ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
-ForceWeapon.BombAttached.AffectTypes                  ; List of TechnoTypes
+ForceWeapon.BombAttached.AffectTypes=                 ; List of TechnoTypes
 ForceWeapon.MindControlled=-1                         ; integer, -1 to disable
 ForceWeapon.MindControlled.AffectsOriginalHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ForceWeapon.InRange=                                  ; List of integers
