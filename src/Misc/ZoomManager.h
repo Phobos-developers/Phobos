@@ -15,6 +15,13 @@ public:
 	static double Step;
 	static bool Smooth;
 	static double SmoothRate;
+	static double ActiveSmoothRate;
+
+	// Checks whether player manual zoom interaction is allowed
+	static bool CanPlayerZoom();
+
+	// Applies scripted tactical zoom from map triggers with optional resolution clamping
+	static void SetScriptZoom(double targetZoom, int transitionRate, int minWidth, int minHeight);
 
 	// Adjusts target zoom level incrementally
 	static void ZoomIn();

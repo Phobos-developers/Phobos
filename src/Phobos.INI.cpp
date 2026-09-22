@@ -76,7 +76,7 @@ bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
-bool Phobos::Config::TacticalZoom = true;
+bool Phobos::Config::TacticalZoom = false;
 bool Phobos::Config::TacticalZoom_Wheel = true;
 bool Phobos::Config::TacticalZoom_Hotkeys = true;
 double Phobos::Config::TacticalZoom_Max = 2.5;
@@ -130,19 +130,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 	Phobos::Config::ShowGameTime = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowGameTime", false);
 	Phobos::Config::ShowGameTime_BoardOpacity = CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "ShowGameTime.BoardOpacity", 40);
-	Phobos::Config::TacticalZoom = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom", true);
-	Phobos::Config::TacticalZoom_Wheel = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Wheel", true);
-	Phobos::Config::TacticalZoom_Hotkeys = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Hotkeys", true);
-	Phobos::Config::TacticalZoom_Max = CCINIClass::INI_RA2MD.ReadDouble(phobosSection, "TacticalZoom.Max", 2.5);
-	Phobos::Config::TacticalZoom_Step = CCINIClass::INI_RA2MD.ReadDouble(phobosSection, "TacticalZoom.Step", 0.15);
-	Phobos::Config::TacticalZoom_Smooth = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Smooth", true);
 
-	ZoomManager::Enabled = Phobos::Config::TacticalZoom;
-	ZoomManager::WheelEnabled = Phobos::Config::TacticalZoom_Wheel;
-	ZoomManager::HotkeysEnabled = Phobos::Config::TacticalZoom_Hotkeys;
-	ZoomManager::MaxZoom = std::max(1.0, Phobos::Config::TacticalZoom_Max);
-	ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
-	ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);
@@ -278,6 +266,42 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
 	}
 
+	// TacticalZoom
+	{
+		const char* const section = ini_uimd.GetSection("TacticalZoom") ? "TacticalZoom" : UISETTINGS_SECTION;
+
+		const bool modderZoomEnabled = ini_uimd.ReadBool(section, "TacticalZoom",
+			ini_uimd.ReadBool(section, "Enabled", false));
+
+		Phobos::Config::TacticalZoom_Wheel = ini_uimd.ReadBool(section, "TacticalZoom.Wheel",
+			ini_uimd.ReadBool(section, "Wheel", true));
+
+		Phobos::Config::TacticalZoom_Hotkeys = ini_uimd.ReadBool(section, "TacticalZoom.Hotkeys",
+			ini_uimd.ReadBool(section, "Hotkeys", true));
+
+		Phobos::Config::TacticalZoom_Max = ini_uimd.ReadDouble(section, "TacticalZoom.Max",
+			ini_uimd.ReadDouble(section, "Max", 2.5));
+
+		Phobos::Config::TacticalZoom_Step = ini_uimd.ReadDouble(section, "TacticalZoom.Step",
+			ini_uimd.ReadDouble(section, "Step", 0.15));
+
+		Phobos::Config::TacticalZoom_Smooth = ini_uimd.ReadBool(section, "TacticalZoom.Smooth",
+			ini_uimd.ReadBool(section, "Smooth", true));
+
+		// Player preference overrides from RA2MD.INI [Phobos]
+		const bool playerZoomEnabled = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom", true);
+		Phobos::Config::TacticalZoom_Smooth = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Smooth", Phobos::Config::TacticalZoom_Smooth);
+
+		Phobos::Config::TacticalZoom = modderZoomEnabled && playerZoomEnabled;
+
+		ZoomManager::Enabled = Phobos::Config::TacticalZoom;
+		ZoomManager::WheelEnabled = Phobos::Config::TacticalZoom_Wheel;
+		ZoomManager::HotkeysEnabled = Phobos::Config::TacticalZoom_Hotkeys;
+		ZoomManager::MaxZoom = std::max(1.0, Phobos::Config::TacticalZoom_Max);
+		ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
+		ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
+	}
+
 	return 0;
 }
 
@@ -333,10 +357,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::DeselectObjectCommand = pINI_RULESMD->ReadBool("GlobalControls", "DeselectObjectKeysEnabled", Phobos::Config::DeselectObjectCommand);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
-	Phobos::Config::TacticalZoom = pINI_RULESMD->ReadBool("GlobalControls", "TacticalZoomEnabled", Phobos::Config::TacticalZoom);
-	Phobos::Config::TacticalZoom_Hotkeys = pINI_RULESMD->ReadBool("GlobalControls", "TacticalZoomKeysEnabled", Phobos::Config::TacticalZoom_Hotkeys);
-	ZoomManager::Enabled = Phobos::Config::TacticalZoom;
-	ZoomManager::HotkeysEnabled = Phobos::Config::TacticalZoom_Hotkeys;
+
 
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);

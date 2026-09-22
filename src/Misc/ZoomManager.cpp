@@ -3,6 +3,8 @@
 #include <TacticalClass.h>
 #include <Surface.h>
 #include <MapClass.h>
+#include <ScenarioClass.h>
+#include <Unsorted.h>
 
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
@@ -10,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
-bool ZoomManager::Enabled = true;
+bool ZoomManager::Enabled = false;
 bool ZoomManager::WheelEnabled = true;
 bool ZoomManager::HotkeysEnabled = true;
 double ZoomManager::CurrentZoom = 1.0;
@@ -20,19 +22,78 @@ double ZoomManager::MaxZoom = 2.5;
 double ZoomManager::Step = 0.15;
 bool ZoomManager::Smooth = true;
 double ZoomManager::SmoothRate = 0.25;
+double ZoomManager::ActiveSmoothRate = 0.25;
 
-// Checks whether zoom level is currently greater than 1.0x
+static bool LastInputLockedState = false;
+
+// Checks whether tactical zoom is currently magnifying the view
 bool ZoomManager::IsZoomed()
 {
-	return Enabled && CurrentZoom > 1.0;
+	return CurrentZoom > 1.0001;
+}
+
+// Determines if the human player is currently permitted to interact with tactical zoom
+bool ZoomManager::CanPlayerZoom()
+{
+	if (!Enabled)
+		return false;
+
+	if (Unsorted::UserInputLocked)
+		return false;
+
+	if (ScenarioClass::Instance && ScenarioClass::Instance->UserInputLocked)
+		return false;
+
+	return true;
+}
+
+// Applies scripted tactical zoom from map triggers with resolution clamping and transition rate
+void ZoomManager::SetScriptZoom(double targetZoom, int transitionRate, int minWidth, int minHeight)
+{
+	if (!TacticalClass::Instance)
+		return;
+
+	double clampedZoom = targetZoom;
+
+	// Clamp zoom level to preserve minimum visible tactical viewport dimensions
+	if (minWidth > 0 && DSurface::ViewBounds.Width > 0)
+	{
+		const double maxByWidth = static_cast<double>(DSurface::ViewBounds.Width) / static_cast<double>(minWidth);
+		clampedZoom = std::min(clampedZoom, maxByWidth);
+	}
+
+	if (minHeight > 0 && DSurface::ViewBounds.Height > 0)
+	{
+		const double maxByHeight = static_cast<double>(DSurface::ViewBounds.Height) / static_cast<double>(minHeight);
+		clampedZoom = std::min(clampedZoom, maxByHeight);
+	}
+
+	TargetZoom = std::max(1.0, clampedZoom);
+
+	// Synchronize input lock state to prevent cutscene reset from overriding scripted target
+	LastInputLockedState = Unsorted::UserInputLocked || (ScenarioClass::Instance && ScenarioClass::Instance->UserInputLocked);
+
+	if (transitionRate <= 0)
+	{
+		CurrentZoom = TargetZoom;
+		ActiveSmoothRate = SmoothRate;
+		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
+		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		MapClass::Instance.MarkNeedsRedraw(2);
+	}
+	else
+	{
+		ActiveSmoothRate = std::clamp(static_cast<double>(transitionRate) / 100.0, 0.01, 1.0);
+	}
 }
 
 // Steps target zoom inward toward maximum magnification
 void ZoomManager::ZoomIn()
 {
-	if (!Enabled || !TacticalClass::Instance)
+	if (!CanPlayerZoom() || !TacticalClass::Instance)
 		return;
 
+	ActiveSmoothRate = SmoothRate;
 	TargetZoom = std::clamp(TargetZoom + Step, MinZoom, MaxZoom);
 
 	if (!Smooth)
@@ -47,9 +108,10 @@ void ZoomManager::ZoomIn()
 // Steps target zoom outward toward default 1.0x
 void ZoomManager::ZoomOut()
 {
-	if (!Enabled || !TacticalClass::Instance)
+	if (!CanPlayerZoom() || !TacticalClass::Instance)
 		return;
 
+	ActiveSmoothRate = SmoothRate;
 	TargetZoom = std::clamp(TargetZoom - Step, MinZoom, MaxZoom);
 
 	if (!Smooth)
@@ -64,9 +126,10 @@ void ZoomManager::ZoomOut()
 // Resets target zoom immediately back to 1.0x scale
 void ZoomManager::ResetZoom()
 {
-	if (!TacticalClass::Instance)
+	if (!CanPlayerZoom() || !TacticalClass::Instance)
 		return;
 
+	ActiveSmoothRate = SmoothRate;
 	TargetZoom = 1.0;
 
 	if (!Smooth)
@@ -84,12 +147,30 @@ void ZoomManager::Update()
 	if (!TacticalClass::Instance)
 		return;
 
+	const bool currentLocked = Unsorted::UserInputLocked || (ScenarioClass::Instance && ScenarioClass::Instance->UserInputLocked);
+
+	if (currentLocked && !LastInputLockedState)
+	{
+		// Smoothly restore default view when input is locked for cutscenes without an active script override
+		if (std::abs(TargetZoom - 1.0) > 0.0001)
+		{
+			TargetZoom = 1.0;
+			ActiveSmoothRate = SmoothRate;
+		}
+	}
+	LastInputLockedState = currentLocked;
+
+	const double effectiveRate = (ActiveSmoothRate > 0.0) ? ActiveSmoothRate : SmoothRate;
+
 	if (Smooth && std::abs(CurrentZoom - TargetZoom) > 0.0001)
 	{
-		CurrentZoom += (TargetZoom - CurrentZoom) * SmoothRate;
+		CurrentZoom += (TargetZoom - CurrentZoom) * effectiveRate;
 
 		if (std::abs(CurrentZoom - TargetZoom) <= 0.0001)
+		{
 			CurrentZoom = TargetZoom;
+			ActiveSmoothRate = SmoothRate;
+		}
 
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		TacticalClass::Instance->SetTacticalPosition(&currentPos);
@@ -98,6 +179,7 @@ void ZoomManager::Update()
 	else if (CurrentZoom != TargetZoom)
 	{
 		CurrentZoom = TargetZoom;
+		ActiveSmoothRate = SmoothRate;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		TacticalClass::Instance->SetTacticalPosition(&currentPos);
 		MapClass::Instance.MarkNeedsRedraw(2);

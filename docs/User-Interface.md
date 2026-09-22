@@ -565,7 +565,42 @@ SetTabBySelectingFactory=false  ; boolean
 SetTabBySelecting=-1            ; integer, index of tab
 ```
 
+### Tactical zoom
+
+- Magnifies the battlefield tactical view using mouse wheel (`Ctrl + Wheel`) and configurable keyboard hotkeys.
+  - `TacticalZoom` enables or disables tactical zoom.
+  - `TacticalZoom.Wheel` enables mouse wheel zooming (`Ctrl + Wheel`).
+  - `TacticalZoom.Hotkeys` enables keyboard commands.
+  - `TacticalZoom.Max` sets the maximum zoom magnification.
+  - `TacticalZoom.Step` sets the zoom increment per step.
+  - `TacticalZoom.Smooth` toggles smooth frame-by-frame interpolation.
+
+In `uimd.ini`:
+```ini
+[TacticalZoom]
+TacticalZoom=false          ; boolean
+TacticalZoom.Wheel=true     ; boolean
+TacticalZoom.Hotkeys=true   ; boolean
+TacticalZoom.Max=2.5        ; double
+TacticalZoom.Step=0.15      ; double
+TacticalZoom.Smooth=true    ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+TacticalZoom=true          ; boolean
+TacticalZoom.Smooth=true   ; boolean
+```
+
 ## Hotkey Commands
+
+### `[ ]` Tactical Zoom Commands
+
+- Allows zooming in, zooming out, or resetting the battlefield view magnification. Configurable under Interface options.
+- Hotkeys are enabled when Tactical Zoom and hotkeys are enabled in `uimd.ini`.
+- For localization add `TXT_ZOOM_IN`, `TXT_ZOOM_IN_DESC`, `TXT_ZOOM_OUT`, `TXT_ZOOM_OUT_DESC`, `TXT_RESET_ZOOM`, and `TXT_RESET_ZOOM_DESC` into your `.csf` file.
+
 
 ### `[ ]` Toggle Designator Range
 

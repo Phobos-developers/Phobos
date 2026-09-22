@@ -744,6 +744,28 @@ ID=ActionCount,[Action1],513,0,0,[MissionTimerType],[BaseValue or VariableIndex]
 This won't affect how the global mission timer really ticks, so it'll still end after the mission tiemr expired.
 ```
 
+### `514` Set tactical zoom
+
+- Adjusts the tactical view magnification level with transition rate and resolution bounds.
+  - Parameter 1 (`Value`): Zoom percentage above 100% base (`0` = 1.0x / 100%, `50` = 1.5x, `100` = 2.0x, `150` = 2.5x).
+  - Parameter 2 (`Param3`): Transition rate (`0` = instant cut, `>0` = smooth transition speed per frame).
+  - Parameter 3 (`Param4`): Minimum visible screen width in pixels (`0` = unconstrained).
+  - Parameter 4 (`Param5`): Minimum visible screen height in pixels (`0` = unconstrained).
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],514,0,0,[TransitionRate],[MinVisibleWidth],[MinVisibleHeight],0,A,[ZoomPercentage]
+...
+```
+
+```{note}
+- Smooth transitions interpolate directly from the current view zoom without resetting to default first.
+- Player zoom controls are disabled while user input is locked (e.g. via map action) and re-enabled once unlocked. The view automatically returns to 100% unless a scripted zoom is specified.
+- Parameters 3 and 4 automatically clamp the requested zoom so the visible battlefield does not drop below the specified pixel dimensions on lower resolutions.
+```
+
 ### `600` Configure Drop Crate
 
 - Set or overwrite the `DropCrate` of the affected objects.
