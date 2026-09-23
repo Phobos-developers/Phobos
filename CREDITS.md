@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Allow the creation of new Tiberium types
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -625,6 +626,7 @@ This page lists all the individual contributions to the project by their author.
   - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
   - Keep Syringe open until the game exits (ported from Vinifera)
+  - Allow the creation of new Tiberium types
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
