@@ -156,7 +156,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 
 	// Death by conditions out of this function
-	if (this->ShouldBeDead)
+	if (this->AutoDeathFlag == 1)
 	{
 		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 		return true;
@@ -183,29 +183,15 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
+	// Already checked and no need to be killed by owner conditions
+	if (this->AutoDeathFlag == -1)
+	{
+		this->AutoDeathFlag = 0;
+		return false;
+	}
+
 	auto const pOwner = pThis->Owner;
-
-	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
-		{
-			auto existSingleType = [pOwner, affectedHouse, allowLimbo](TechnoTypeClass* pType)
-				{
-					if (affectedHouse == AffectedHouse::Owner)
-						return allowLimbo ? HouseExt::Fetch(pOwner)->CountOwnedPresentAndLimboed(pType) > 0 : pOwner->CountOwnedAndPresent(pType) > 0;
-
-					for (auto const pHouse : HouseClass::Array)
-					{
-						if (EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pHouse)
-							&& (allowLimbo ? HouseExt::Fetch(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
-							return true;
-					}
-
-					return false;
-				};
-
-			return any
-				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
-				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
-		};
+	bool needUpdate = false;
 
 	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
 	{
@@ -216,8 +202,17 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
 	}
 
 	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
@@ -229,9 +224,40 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
 	}
+
+	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
+		{
+			auto existSingleType = [pOwner, affectedHouse, allowLimbo](TechnoTypeClass* pType)
+				{
+					if (affectedHouse == AffectedHouse::Owner)
+						return allowLimbo ? HouseExt::Fetch(pOwner)->HasOwnedPresentAndLimboed(pType) : pOwner->CountOwnedAndPresent(pType) > 0;
+
+					for (auto const pHouse : HouseClass::Array)
+					{
+						if (EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pHouse)
+							&& (allowLimbo ? HouseExt::Fetch(pHouse)->HasOwnedPresentAndLimboed(pType) : pHouse->CountOwnedAndPresent(pType) > 0))
+							return true;
+					}
+
+					return false;
+				};
+
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+		};
 
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
@@ -240,8 +266,16 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
 	}
 
 	// death if listed technos exist
@@ -251,8 +285,27 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				if (pTarget->Owner == pOwner)
+					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
+	}
+
+	if (needUpdate)
+	{
+		for (const auto pTarget : pTypeExt->Array)
+		{
+			if (pTarget->Owner == pOwner)
+				TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
+		}
+
+		this->AutoDeathFlag = 0;
 	}
 
 	return false;
@@ -725,15 +778,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, cons
 		{
 			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
 				pFoot->ParasiteImUsing->ExitUnit();
-		}
-
-		// Remove limbo buildings' tracking here because their are not truely InLimbo
-		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
-		{
-			auto const pBldType = pBuilding->Type;
-
-			if (!pBuilding->InLimbo && !pBldType->Insignificant && !pBldType->DontScore)
-				HouseExt::Fetch(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
 		}
 
 		auto const pTransport = pThis->Transporter;
