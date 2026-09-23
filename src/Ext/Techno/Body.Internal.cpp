@@ -1,4 +1,5 @@
 #include <Ext/Foot/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
@@ -149,12 +150,11 @@ void TechnoExt::InitializeDisplayInfo(TechnoTypeClass* pType)
 void TechnoExt::InitializeAttachEffects()
 {
 	auto const pTypeExt = this->TypeExtData;
-
-	if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
-		return;
-
 	auto const pThis = this->OwnerObject();
-	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects, true);
+	auto const pOwner = pThis->Owner;
+
+	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, pTypeExt->AttachEffects, true, true);
+	AttachEffectClass::Attach(pThis, pOwner, pThis, pThis, HouseTypeExt::Fetch(pOwner->Type)->AttachEffects, false, true);
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.

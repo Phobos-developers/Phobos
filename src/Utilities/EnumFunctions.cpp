@@ -8,6 +8,8 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 		return true;
 	if (ownerHouse == targetHouse)
 		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (targetHouse->IsNeutral() && (flags & AffectedHouse::Neutral) != AffectedHouse::None)
+		return true;
 	if (ownerHouse->IsAlliedWith(targetHouse))
 		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
 	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;

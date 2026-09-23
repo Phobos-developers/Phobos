@@ -25,14 +25,29 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
 	// Load it after Ares'
 
-	MakeCommand<NextIdleHarvesterCommandClass>();
-	MakeCommand<QuickSaveCommandClass>();
-	MakeCommand<ToggleDigitalDisplayCommandClass>();
-	MakeCommand<ToggleDesignatorRangeCommandClass>();
-	MakeCommand<ToggleMessageListCommandClass>();
-	MakeCommand<ToggleSWSidebar>();
-	MakeCommand<DeselectObjectCommandClass>();
-	MakeCommand<DeselectObject5CommandClass>();
+	if (Phobos::Config::NextIdleHarvesterCommand)
+		MakeCommand<NextIdleHarvesterCommandClass>();
+
+	if (Phobos::Config::QuickSaveCommand)
+		MakeCommand<QuickSaveCommandClass>();
+
+	if (Phobos::Config::ToggleDigitalDisplayCommand)
+		MakeCommand<ToggleDigitalDisplayCommandClass>();
+
+	if (Phobos::Config::ToggleDesignatorRangeCommand)
+		MakeCommand<ToggleDesignatorRangeCommandClass>();
+
+	if (Phobos::Config::MessageDisplayInCenter && Phobos::Config::ToggleMessageListCommand)
+		MakeCommand<ToggleMessageListCommandClass>();
+
+	if (Phobos::UI::SuperWeaponSidebar && Phobos::Config::ToggleSuperWeaponSidebarCommand)
+		MakeCommand<ToggleSWSidebar>();
+
+	if (Phobos::Config::DeselectObjectCommand)
+	{
+		MakeCommand<DeselectObjectCommandClass>();
+		MakeCommand<DeselectObject5CommandClass>();
+	}
 
 	if (Phobos::Config::SelectCapturedCommand)
 		MakeCommand<SelectCapturedCommandClass>();

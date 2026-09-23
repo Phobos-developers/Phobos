@@ -50,6 +50,7 @@ public:
 	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
+	Nullable<bool> AllowTransfer_Convert;
 
 	Valueable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
@@ -106,6 +107,7 @@ public:
 		, ReceivedDamage_Minimum { INT32_MIN }
 		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
+		, AllowTransfer_Convert { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
