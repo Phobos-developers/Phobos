@@ -16,6 +16,10 @@ public:
 	static bool Smooth;
 	static double SmoothRate;
 	static double ActiveSmoothRate;
+	static bool BlitAppliedThisFrame;
+
+	// Redirects hardcoded DSurface::Composite references to DSurface::Temp for tactical rendering
+	static void ApplySurfacePatches();
 
 	// Checks whether player manual zoom interaction is allowed
 	static bool CanPlayerZoom();

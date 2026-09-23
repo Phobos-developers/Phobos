@@ -81,7 +81,9 @@ DEFINE_HOOK(0x6930A0, ScrollClass_MessageHandler_MiddleClickReset, 0x5)
 // Advance smooth zoom interpolation at the beginning of each frame
 DEFINE_HOOK(0x4F4480, GScreenClass_Render_ZoomUpdate, 0x9)
 {
+	ZoomManager::ApplySurfacePatches();
 	ZoomManager::Update();
+
 	return 0;
 }
 
@@ -104,11 +106,22 @@ DEFINE_HOOK(0x4F44CB, GScreenClass_Render_TacticalAndCommandBar, 0x5)
 	TacticalClass::Instance->Render(DSurface::Alternate, flag, 2);
 
 	DSurface::Temp = pComposite;
-	ZoomManager::ApplyTacticalBlit();
+
+	if (!ZoomManager::BlitAppliedThisFrame)
+		ZoomManager::ApplyTacticalBlit();
 
 	pGScreen->Draw(bDraw ? 1 : 0);
 
 	return 0x4F451B;
+}
+
+// Blit zoomed tactical map before on-screen timers (superweapon countdowns, mission timer) are rendered
+DEFINE_HOOK(0x6D4941, TacticalClass_Render_Pass2_WorldEnd, 0x6)
+{
+	if (ZoomManager::IsZoomed())
+		ZoomManager::ApplyTacticalBlit();
+
+	return 0;
 }
 
 // Evaluate camera scrolling boundary in Scroll_Not_Really with zoom-scaled limits

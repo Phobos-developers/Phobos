@@ -8,6 +8,7 @@
 
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
+#include <Utilities/Patch.h>
 
 #include <algorithm>
 #include <cmath>
@@ -23,6 +24,7 @@ double ZoomManager::Step = 0.15;
 bool ZoomManager::Smooth = true;
 double ZoomManager::SmoothRate = 0.25;
 double ZoomManager::ActiveSmoothRate = 0.25;
+bool ZoomManager::BlitAppliedThisFrame = false;
 
 static bool LastInputLockedState = false;
 
@@ -152,6 +154,8 @@ void ZoomManager::ResetZoom()
 // Smoothly interpolates current zoom toward target zoom each frame
 void ZoomManager::Update()
 {
+	BlitAppliedThisFrame = false;
+
 	if (!TacticalClass::Instance)
 		return;
 
@@ -356,8 +360,83 @@ void ZoomManager::ApplyTacticalBlit()
 	if (!IsZoomed() || !DSurface::Alternate || !DSurface::Composite)
 		return;
 
+	BlitAppliedThisFrame = true;
+
 	RectangleStruct srcRect, dstRect;
 	GetBlitRects(srcRect, dstRect);
 
 	DSurface::Composite->CopyFrom(&dstRect, &dstRect, DSurface::Alternate, &dstRect, &srcRect, false, false);
 }
+
+// Redirects hardcoded DSurface::Composite references in world-space rendering to DSurface::Temp
+void ZoomManager::ApplySurfacePatches()
+{
+	static bool applied = false;
+	if (applied)
+		return;
+
+	applied = true;
+
+	// EBolt::Draw: redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x4C1EF4 + 2, { 0x14 });
+	Patch::Apply_RAW(0x4C24EC + 2, { 0x14 });
+	Patch::Apply_RAW(0x4C2601 + 2, { 0x14 });
+	Patch::Apply_RAW(0x4C26EE + 2, { 0x14 });
+
+	// LineTrail::Draw: redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x556CDA + 2, { 0x14 });
+
+	// FootClass::Draw_Action_Line (non-player): redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x4DC5BD + 2, { 0x14 });
+	Patch::Apply_RAW(0x4DC64A + 2, { 0x14 });
+	Patch::Apply_RAW(0x4DC6FE + 1, { 0x14 });
+
+	// TechnoClass order and target action lines (0x007049C0, called by FootClass::DrawActionLines for player units):
+	// redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x704AE6 + 2, { 0x14 });
+	Patch::Apply_RAW(0x704B93 + 2, { 0x14 });
+	Patch::Apply_RAW(0x704C13 + 2, { 0x14 });
+	Patch::Apply_RAW(0x704CFD + 2, { 0x14 });
+	Patch::Apply_RAW(0x704D87 + 2, { 0x14 });
+	Patch::Apply_RAW(0x704DDD + 2, { 0x14 });
+	Patch::Apply_RAW(0x704E1D + 2, { 0x14 });
+
+	// TechnoClass mind control, slave, and spawn action lines (0x00704E40):
+	// redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x704F76 + 2, { 0x14 });
+	Patch::Apply_RAW(0x705000 + 2, { 0x14 });
+	Patch::Apply_RAW(0x7051BB + 2, { 0x14 });
+	Patch::Apply_RAW(0x70521F + 2, { 0x14 });
+
+	// Planning Mode waypoint nodes and lines: redirect target surface from DSurface::Composite to DSurface::Temp
+	Patch::Apply_RAW(0x6353CF + 2, { 0x14 });
+	Patch::Apply_RAW(0x635530 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63560D + 2, { 0x14 });
+	Patch::Apply_RAW(0x635758 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B28D + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B3CA + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B4E6 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B792 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B88F + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B8F8 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63B9F4 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63BA68 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63BBA5 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63BC1B + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C14D + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C208 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C311 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C395 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C476 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63C948 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63CEE3 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D44A + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D4D5 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D5F5 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D6E2 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D758 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D7E7 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D8C3 + 2, { 0x14 });
+	Patch::Apply_RAW(0x63D8F0 + 2, { 0x14 });
+}
+
