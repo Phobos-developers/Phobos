@@ -1894,37 +1894,40 @@ DrainMoneyDisplay.OnTarget.UseDisplayIncome=        ; boolean
 - You can also customize range bonus and damage multiplier for passenger inside the transport with `OpenTransport.RangeBonus/DamageMultiplier`, which works independently from transport's `OpenTopped.RangeBonus/DamageMultiplier`.
 - `OpenTopped.DecloakToFire` can customize if a transport has to uncloak to have passengers fireout if transport is also OpenTopped.
 - `OpenTopped/OpenTransport.FireWhileMoving` can be used to customize whether or not passengers can fire out when the transport is moving, for transport and passenger respectively. Both of them and the weapon's `FireWhileMoving` toggle need to be set to true to allow firing out when moving.
+  - `OpenTopped.FireWhileMoving.BasedOnDestination` defines whether to determine the movement state according to the presence or absence of a destination. This is more similar to how vanilla `FireWhileMoving` work.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-OpenTopped.IgnoreRangefinding=false               ; boolean
-OpenTopped.AllowFiringIfDeactivated=true          ; boolean
-OpenTopped.AllowFiringIfAttackedByLocomotor=true  ; boolean
-OpenTopped.ShareTransportTarget=true              ; boolean
-OpenTopped.DecloakToFire=true                     ; boolean
-OpenTopped.FireWhileMoving=true                   ; boolean
-OpenTransport.FireWhileMoving=true                ; boolean
+OpenTopped.IgnoreRangefinding=false                 ; boolean
+OpenTopped.AllowFiringIfDeactivated=true            ; boolean
+OpenTopped.AllowFiringIfAttackedByLocomotor=true    ; boolean
+OpenTopped.ShareTransportTarget=true                ; boolean
+OpenTopped.DecloakToFire=true                       ; boolean
+OpenTopped.FireWhileMoving=true                     ; boolean
+OpenTopped.FireWhileMoving.BasedOnDestination=false ; boolean
+OpenTransport.FireWhileMoving=true                  ; boolean
 
 [CombatDamage]
-OpenTransport.RangeBonus=0                        ; integer
-OpenTransport.DamageMultiplier=1.0                ; floating point value
+OpenTransport.RangeBonus=0                          ; integer
+OpenTransport.DamageMultiplier=1.0                  ; floating point value
 
-[SOMETECHNO]                                      ; TechnoType, transport with OpenTopped=yes
-OpenTopped.RangeBonus=                            ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
-OpenTopped.DamageMultiplier=                      ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
-OpenTopped.WarpDistance=                          ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
-OpenTopped.IgnoreRangefinding=                    ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
-OpenTopped.AllowFiringIfDeactivated=              ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
-OpenTopped.AllowFiringIfAttackedByLocomotor=      ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
-OpenTopped.ShareTransportTarget=                  ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
-OpenTopped.DecloakToFire=                         ; boolean, default to [General] -> OpenTopped.DecloakToFire
-OpenTopped.FireWhileMoving=                       ; boolean, default to [General] -> OpenTopped.FireWhileMoving
+[SOMETECHNO]                                        ; TechnoType, transport with OpenTopped=yes
+OpenTopped.RangeBonus=                              ; integer, default to [CombatDamage] -> OpenToppedRangeBonus
+OpenTopped.DamageMultiplier=                        ; floating point value, default to [CombatDamage] -> OpenToppedDamageMultiplier
+OpenTopped.WarpDistance=                            ; integer, default to [CombatDamage] -> OpenToppedWarpDistance
+OpenTopped.IgnoreRangefinding=                      ; boolean, default to [General] -> OpenTopped.IgnoreRangefinding
+OpenTopped.AllowFiringIfDeactivated=                ; boolean, default to [General] -> OpenTopped.AllowFiringIfDeactivated
+OpenTopped.AllowFiringIfAttackedByLocomotor=        ; boolean, default to [General] -> OpenTopped.AllowFiringIfAttackedByLocomotor
+OpenTopped.ShareTransportTarget=                    ; boolean, default to [General] -> OpenTopped.ShareTransportTarget
+OpenTopped.DecloakToFire=                           ; boolean, default to [General] -> OpenTopped.DecloakToFire
+OpenTopped.FireWhileMoving=                         ; boolean, default to [General] -> OpenTopped.FireWhileMoving
+OpenTopped.FireWhileMoving.BasedOnDestination=      ; boolean, default to [General] -> OpenTopped.FireWhileMoving.BasedOnDestination
 
-[SOMETECHNO]                                      ; TechnoType, passenger
-OpenTransport.RangeBonus=                         ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
-OpenTransport.DamageMultiplier=                   ; floating point value, default to [CombatDamage] -> OpenTransport.DamageMultiplier
-OpenTransport.FireWhileMoving=                    ; boolean, default to [General] -> OpenTransport.FireWhileMoving
+[SOMETECHNO]                                        ; TechnoType, passenger
+OpenTransport.RangeBonus=                           ; integer, default to [CombatDamage] -> OpenTransport.RangeBonus
+OpenTransport.DamageMultiplier=                     ; floating point value, default to [CombatDamage] -> OpenTransport.DamageMultiplier
+OpenTransport.FireWhileMoving=                      ; boolean, default to [General] -> OpenTransport.FireWhileMoving
 ```
 
 ```{note}
@@ -1932,7 +1935,7 @@ Range of passive acquiring of passengers in an OpenTopped transport won't be aff
 ```
 
 ```{note}
-Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMoving` and `FireWhileMoving` for opentopped transport are somewhat different from `FireWhileMoving` for regular techno. This might be changed in the future.
+Due to technical issues, the behaviors of `OpenTopped/OpenTransport.FireWhileMoving` and `FireWhileMoving` for opentopped transport are somewhat different from `FireWhileMoving` for regular techno even if `OpenTopped.FireWhileMoving.BasedOnDestination` is set to true. This might be changed in the future.
 ```
 
 ### Customizable spawns queue
