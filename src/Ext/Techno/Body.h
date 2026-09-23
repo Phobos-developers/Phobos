@@ -83,7 +83,7 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	bool ShouldBeDead;
+	int AutoDeathFlag;
 
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
@@ -144,7 +144,7 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, ShouldBeDead { false }
+		, AutoDeathFlag { 0 }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }

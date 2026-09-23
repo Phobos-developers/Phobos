@@ -520,7 +520,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
-  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
   - Allow techno type considered as other type when recruiting techno for teams
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
@@ -694,6 +693,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
+  - Attach effect when weapon fire
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -775,6 +775,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

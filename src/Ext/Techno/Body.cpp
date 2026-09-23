@@ -20,6 +20,8 @@ TechnoExt::~TechnoExt()
 	// Besides BuildingClass, calling pThis->WhatAmI() here will only result in AbstractType::None
 	auto const whatAmI = pType->WhatAmI();
 
+	pTypeExt->Array.Remove(pThis);
+
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
@@ -1200,7 +1202,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->HoverShutdown)
 		.Process(this->LastTargetCrd)
 		.Process(this->LastTargetCrdClearTimer)
-		.Process(this->ShouldBeDead)
+		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
 		.Process(this->TiberiumStorage)
 		;
