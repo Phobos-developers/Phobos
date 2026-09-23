@@ -934,10 +934,10 @@ namespace DeployPriorityTemp
 {
 	int Frame;
 	int DeployPriority;
-	std::set<TechnoTypeClass*> SelectType;
+	std::vector<TechnoTypeClass*> SelectType;
 }
 
-DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_DeployFilter, 0x6)
 {
 	enum { SkipDeploy = 0x730D24 };
 
@@ -956,7 +956,10 @@ DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
 				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 				{
 					const auto pObjTypeExt = TechnoExt::Fetch(static_cast<TechnoClass*>(pObject))->TypeExtData;
-					DeployPriorityTemp::SelectType.insert(pObjTypeExt->OwnerObject());
+					const auto pObjType = pObjTypeExt->OwnerObject();
+
+					if (std::ranges::find(DeployPriorityTemp::SelectType, pObjType) == DeployPriorityTemp::SelectType.cend())
+						DeployPriorityTemp::SelectType.push_back(pObjType);
 
 					if (pObjTypeExt->HighDeployPriority)
 						DeployPriorityTemp::DeployPriority = 1;
@@ -971,7 +974,7 @@ DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
 
 		for (const auto pForbidType : pTypeExt->DeployForbidTypes)
 		{
-			if (DeployPriorityTemp::SelectType.contains(pForbidType))
+			if (std::ranges::find(DeployPriorityTemp::SelectType, pForbidType) != DeployPriorityTemp::SelectType.cend())
 				return SkipDeploy;
 		}
 
