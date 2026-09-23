@@ -1987,6 +1987,24 @@ inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char*
 	}
 }
 
+// Specialization: use FindOrAllocate for building type vectors, avoiding dependency on [BuildingTypes] table registration
+// (countries are read from INI before building types are constructed, same as vanilla FindOrAllocate semantics)
+template <>
+inline void ValueableVector<BuildingTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pBuilding = BuildingTypeClass::FindOrAllocate(cur))
+				this->push_back(pBuilding);
+		}
+	}
+}
+
 template <>
 inline void ValueableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {

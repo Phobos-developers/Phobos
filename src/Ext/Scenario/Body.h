@@ -46,7 +46,7 @@ public:
 
 		std::map<int, int> TriggerTypePlayerAtXOwners; // TriggerTypeClass ArrayIndex -> Player slot index
 
-		DynamicVectorClass<TechnoClass*> UndergroundTracker; // Technos that are underground.
+		DynamicVectorClass<FootClass*> UndergroundTracker; // Technos that are underground.
 		DynamicVectorClass<TechnoClass*> SpecialTracker; // For special purposes, like tracking technos that are forced moving. Currently unused.
 		DynamicVectorClass<TechnoClass*> FallingDownTracker; // Technos that are falling down, parachutes and land technos falling from bridge.
 

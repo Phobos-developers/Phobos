@@ -5,6 +5,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -454,7 +455,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
+	const auto pExt = FootExt::Fetch(pLoco->LinkedTo);
 	pExt->IsBurrowed = true;
 
 	if (const auto pShieldData = pExt->Shield.get())
@@ -476,7 +477,7 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 
 	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
 	{
-		const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
+		const auto pExt = FootExt::Fetch(pLoco->LinkedTo);
 		pExt->IsBurrowed = false;
 
 		if (const auto pShieldData = pExt->Shield.get())
@@ -498,7 +499,7 @@ DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 
 	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -513,7 +514,7 @@ DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 
 	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -529,7 +530,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
@@ -546,7 +547,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 	GET(TechnoClass*, pLinkedTo, EAX);
 	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 
 	return SkipGameCode;
@@ -1117,6 +1118,27 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 	{
 		R->EAX(0);
 		return 0x43B4B0;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
+{
+	enum { Continue = 0x738B6D, GoAreaGuardDecision = 0x738BA4, GoGuard = 0x738C98 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Gunner)
+	{
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+		bool const hasExplicit = pThis->Owner->IQLevel2 >= RulesClass::Instance->GuardArea || pType->DefaultToGuardArea || pThis->HasAbility(Ability::GuardArea);
+		auto const& modes = pThis->Owner->IsControlledByHuman() ? pTypeExt->DefaultToGuardArea_Modes : pTypeExt->DefaultToGuardArea_AIModes;
+
+		if (hasExplicit && !modes.empty() && (modes.size() != 1 || modes[0] != -1))
+			return modes.Contains(pThis->CurrentWeaponNumber) ? GoAreaGuardDecision : GoGuard;
+
 	}
 
 	return 0;
