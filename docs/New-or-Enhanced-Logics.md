@@ -36,6 +36,8 @@ This page describes all the engine features that are either new and introduced b
     - If used for an AE that has `DiscardOn=harvesting`, in order for it to judge correctly, this should be set to `true`.
   - `DiscardOn.ConsiderHarvestingAsStationary` defines whether to treat `harvesting` as `stationary`. When this flag is set to `false`, `DiscardOn=harvesting` can be used and it will not be considered `stationary` while `harvesting`.
     - In other words, the original `DiscardOn=stationary` is equivalent to `DiscardOn=harvesting,stationary` when this flag is set to `false`.
+  - `AllowTransfer` controls whether or not the effect can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to false if the effect was attached by the TechnoType itself, otherwise true.
+    - `AllowTransfer.Convert` can be used to set this separately for type conversion, defaults to value of `AllowTransfer`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `AffectTypes`, if set to a non-empty list, restricts the effect to only be applicable on the specific unit types listed. If this is not set or empty, no whitelist filtering occurs. This check has the highest priority.
@@ -94,7 +96,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.DurationOverrides`, `AttachEffect.Delays`, `AttachEffect.InitialDelays` and `AttachEffect.RecreationDelays` have the same functionalities like those tags on TechnoTypes.
   - `AttachEffect.AttachOnOwnerChange` can be used to make the Country's AttachEffectTypes also attach to a TechnoType once it's changed to this house.
 
-- AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
+- AttachEffectTypes can be attached to objects via Warheads or Weapons using `AttachEffect.AttachTypes`. When it is used on a Warhead, it will only be used when the warhead hits the target within the cellspread range. When it is used on a Weapon, it will directly act on the target at the instant after firing.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeSourceMaxCount` can be used to determine the maximum count of `Cumulative=true` effect from this source, or with no limit if `AttachEffect.CumulativeSourceMaxCount` is a negative number. Work independently from `Cumulative.MaxCount` of the effect. If the target already has `AttachEffect.CumulativeSourceMaxCount` number of the same effect from the same source applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
@@ -152,6 +154,8 @@ DiscardOn.ConsiderHarvestingAsStationary=          ; boolean, default to [Genera
 DiscardOn.OwnerChange.HumanToComputer=true         ; boolean
 DiscardOn.OwnerChange.ComputerToHuman=true         ; boolean
 DiscardOn.OwnerChange.IgnoreRevertOnExit=false     ; boolean
+AllowTransfer=                                     ; boolean
+AllowTransfer.Convert=                             ; boolean
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 AffectTypes=                                       ; List of TechnoTypes
@@ -228,6 +232,15 @@ AttachEffect.RecreationDelays=                     ; integer - recreation delays
 AttachEffect.AttachOnOwnerChange=                  ; boolean, default to [General] -> AttachEffect.AttachOnOwnerChange
 
 [SOMEWEAPON]                                       ; WeaponType
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.CumulativeRefreshAll=false            ; boolean
+AttachEffect.CumulativeRefreshAll.OnAttach=false   ; boolean
+AttachEffect.CumulativeRefreshSameSourceOnly=true  ; boolean
+AttachEffect.RemoveTypes=                          ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                         ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=            ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                      ; List of AttachEffectTypes
 AttachEffect.RequiredGroups=                       ; comma-separated list of strings (group IDs)
@@ -440,6 +453,7 @@ PassPercent=0.0                             ; floating point value
 ReceivedDamage.Minimum=-2147483648          ; integer
 ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
+AllowTransfer.Convert=                      ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
 Tint.Color=                                 ; integer - Red,Green,Blue
@@ -529,6 +543,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
+  - `AllowTransfer.Convert` can be used to set this separately for type conversion, defaults to value of `AllowTransfer`.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`.
   - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
@@ -2053,16 +2068,6 @@ In `rulesmd.ini`:
 DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
 ```
 
-### Enter the grinder voice
-
-- Now, you can customize the new voice that plays when entering the grinder to override the original `VoiceSpecialAttack`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-VoiceEnterGrinder=         ; Sound entry
-```
-
 ### Exclusion from base center calculations
 
 - It is possible to exclude TechnoType from base center calculations (used for number of things such as certain AI scripts and AI superweapon targeting modes etc). Normally only buildings are factored in, but the initial base center does count house's starting technos which this does affect.
@@ -3204,6 +3209,33 @@ In `rulesmd.ini`:
 AffectsUnderground=false              ; boolean
 PlayAnimUnderground=true              ; boolean
 PlayAnimAboveSurface=false            ; boolean
+```
+
+### Detonate ivan bomb on impact
+
+![image](_static/images/IvanBombDetonate.gif)
+*Ivan detonated the bomb via deploy*
+
+- Now you can detonate planted Ivan bombs using custom werhead.
+  - `IvanBomb.Detonate.SameInvokerOnly` can be used to configure whether the warhead can detonate ivan bombs only if they come from the same invoker.
+  - `IvanBomb.Detonate.PenetratesTransport` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
+  - `IvanBomb.Detonate.PenetratesGarrison` can be used to configure whether the warhead can detonate ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
+  - `IvanBomb.Detonate.AffectsParasite` can be used to configure whether the warhead can detonate IvanBombs on a parasite. the bomb will explode after the parasite leave the victim.
+  - `IvanBomb.Detonate.AffectTypes` can be used to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                ; WarheadType
+IvanBomb.Detonate=false                      ; boolean
+IvanBomb.Detonate.SameInvokerOnly=true       ; boolean
+IvanBomb.Detonate.PenetratesTransport=false  ; boolean
+IvanBomb.Detonate.PenetratesGarrison=false   ; boolean
+IvanBomb.Detonate.AffectsParasite=false      ; boolean
+IvanBomb.Detonate.AffectTypes=               ; List of TechnoTypes
+```
+
+```{note}
+`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. This may change in future.
 ```
 
 ### Detonate Warhead on all objects on map

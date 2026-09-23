@@ -159,6 +159,11 @@
   background: rgb(0, 0, 0, 0.25) !important;
 }
 
+/* hint / important / tip share the same green palette in sphinx_rtd_theme,
+   so they must also share the same dark override (important was missing,
+   which left it on the light theme's #dbfaf4 background with white text) */
+.tip,
+.important,
 .hint {
   background: rgb(90, 180, 90, 0.5) !important;
 }
@@ -167,6 +172,8 @@
   background: rgba(190, 90, 90, 0.5) !important;
 }
 
+/* seealso is an alias of note in sphinx_rtd_theme */
+.seealso,
 .note {
   background: rgba(140, 140, 140, 0.5) !important;
 }

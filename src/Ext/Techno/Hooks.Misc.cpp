@@ -5,6 +5,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -1112,6 +1113,27 @@ DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
 	{
 		R->EAX(0);
 		return 0x43B4B0;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
+{
+	enum { Continue = 0x738B6D, GoAreaGuardDecision = 0x738BA4, GoGuard = 0x738C98 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Gunner)
+	{
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+		bool const hasExplicit = pThis->Owner->IQLevel2 >= RulesClass::Instance->GuardArea || pType->DefaultToGuardArea || pThis->HasAbility(Ability::GuardArea);
+		auto const& modes = pThis->Owner->IsControlledByHuman() ? pTypeExt->DefaultToGuardArea_Modes : pTypeExt->DefaultToGuardArea_AIModes;
+
+		if (hasExplicit && !modes.empty() && (modes.size() != 1 || modes[0] != -1))
+			return modes.Contains(pThis->CurrentWeaponNumber) ? GoAreaGuardDecision : GoGuard;
+
 	}
 
 	return 0;
