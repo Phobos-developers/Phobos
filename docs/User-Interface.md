@@ -707,9 +707,9 @@ DisableEmptySpawnPositions=false  ; boolean
 ![image](_static/images/dropship_loadout_default_view.gif)
 *Dropship Loadout in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
-- This feature allows modders to implement a customizable Dropship Loadout interface. Players can use this screen to purchase, sell, and arrange units into dropships using allocated funds before deploying them.
-- The configuration can be defined globally in the scenario file (`.map`) under the `[Basic]` section, or customized per country in `rulesmd.ini` under their respective country section (e.g. `[Americans]` or `[Russians]`). Note that for global map configuration under `[Basic]`, the native `StartingDropships` tag is used instead of the custom `DropshipLoadout.StartingDropships` tag.
-- `DropshipLoadout.StartingDropships`: The number of starting dropships available for the player. Note that in the map file `[Basic]` section, the native `StartingDropships` key is used instead.
+- A remake of the never released Dropship Loadout interface but very customizable. Players can use this screen to purchase, sell, and arrange units into dropships using allocated funds before deploying them.
+- The configuration can be defined globally in the scenario file (`.map`) under the `[Basic]` section, or customized per country in `rulesmd.ini`.
+- `DropshipLoadout.StartingDropships`: The number of starting dropships available for the player. In the map file `[Basic]` section, if omitted it falls back to the native `StartingDropships` key.
 - `DropshipLoadout.Money`: The amount of starting loadout money allocated to buy units. If negative, uses the player's current treasury money.
 - `DropshipLoadout.Theme`: The audio theme/soundtrack to play while the Dropship Loadout screen is open.
 - `DropshipLoadout.StartEVA`: The EVA announcement vox index to play when the screen opens.
@@ -807,6 +807,8 @@ DropshipLoadout.EndingDragDropSound=                 ; Sound
 In scenario map files:
 ```ini
 [Basic]
+DropshipLoadout.StartingDropships=0                  ; integer, default to [Basic] -> StartingDropships
+; or
 StartingDropships=0                                  ; integer
 DropshipLoadout.Money=-1                             ; integer
 DropshipLoadout.Theme=                               ; Theme
