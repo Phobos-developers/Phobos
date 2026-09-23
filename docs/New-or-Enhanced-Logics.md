@@ -2546,7 +2546,7 @@ RecountBurst=       ; boolean, default to [General] -> RecountBurst
 
 - When a spawner unit converts to another type with different `Spawns`, existing active and docked spawned units can now be recursively converted to the new `Spawns` type instead of being destroyed.
   - `Convert.SpawnsConversion` on `[TechnoType]` controls whether existing spawned units are recursively converted when the spawner undergoes type conversion. Defaults to `false`.
-  - When either the old or the new spawner uses `MissileSpawn=yes`, spawn conversion is automatically bypassed (existing missiles are destroyed/reset as in vanilla) to prevent suicidal pathing or frozen missile states.
+  - When either the old or the new spawner uses `MissileSpawn=yes`, spawn conversion is automatically bypassed to prevent suicidal pathing or frozen missile states.
 
 In `rulesmd.ini`:
 ```ini

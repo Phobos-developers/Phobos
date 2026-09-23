@@ -7726,10 +7726,10 @@ msgstr ""
 
 msgid ""
 "When either the old or the new spawner uses `MissileSpawn=yes`, spawn "
-"conversion is automatically bypassed (existing missiles are destroyed/reset "
-"as in vanilla) to prevent suicidal pathing or frozen missile states."
+"conversion is automatically bypassed to prevent suicidal pathing or frozen "
+"missile states."
 msgstr ""
-"当原有母机或新母机任意一方使用 `MissileSpawn=yes` 时，将自动跳过子机转换（现存导弹将按原版逻辑摧毁/重置），以避免自杀式寻路或导弹空中悬停的异常状态。"
+"当原有母机或新母机任意一方使用 `MissileSpawn=yes` 时，将自动跳过子机转换，以避免自杀式寻路或导弹空中悬停的异常状态。"
 
 #~ msgid ""
 #~ "AttachEffectTypes can be attached to "
