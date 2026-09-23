@@ -344,14 +344,41 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 			if (pSpawnManager->SpawnType != pCurrentType->Spawns)
 			{
-				pSpawnManager->SpawnType = pCurrentType->Spawns;
+				const auto pTypeExt = TechnoTypeExt::Fetch(pCurrentType);
 
-				for (const auto pSpawnNode : pSpawnManager->SpawnedNodes)
+				bool isFromMissile = pSpawnManager->SpawnType && pSpawnManager->SpawnType->MissileSpawn;
+				if (!isFromMissile)
 				{
-					pSpawnNode->IsSpawnMissile = pCurrentType->MissileSpawn;
+					for (const auto pNode : pSpawnManager->SpawnedNodes)
+					{
+						if (pNode && pNode->IsSpawnMissile)
+						{
+							isFromMissile = true;
+							break;
+						}
+					}
+				}
 
-					if (const auto pAircraft = pSpawnNode->Unit)
-						TechnoExt::ConvertToType(pAircraft, pCurrentType->Spawns);
+				const bool isToMissile = pCurrentType->MissileSpawn
+					|| (pCurrentType->Spawns && pCurrentType->Spawns->MissileSpawn);
+
+				if (pTypeExt->Convert_SpawnsConversion.Get() && !isFromMissile && !isToMissile)
+				{
+					pSpawnManager->SpawnType = pCurrentType->Spawns;
+
+					for (const auto pSpawnNode : pSpawnManager->SpawnedNodes)
+					{
+						pSpawnNode->IsSpawnMissile = pCurrentType->MissileSpawn;
+
+						if (const auto pAircraft = pSpawnNode->Unit)
+							TechnoExt::ConvertToType(pAircraft, pCurrentType->Spawns);
+					}
+				}
+				else
+				{
+					pSpawnManager->KillNodes();
+					GameDelete(pSpawnManager);
+					pSpawnManager = GameCreate<SpawnManagerClass>(pThis, pCurrentType->Spawns, pCurrentType->SpawnsNumber, pCurrentType->SpawnRegenRate, pCurrentType->SpawnReloadRate);
 				}
 			}
 

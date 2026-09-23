@@ -2542,6 +2542,18 @@ RecountBurst=false  ; boolean
 RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ```
 
+### Recursive conversion of spawned units
+
+- When a spawner unit converts to another type with different `Spawns`, existing active and docked spawned units can now be recursively converted to the new `Spawns` type instead of being destroyed.
+  - `Convert.SpawnsConversion` on `[TechnoType]` controls whether existing spawned units are recursively converted when the spawner undergoes type conversion. Defaults to `false`.
+  - When either the old or the new spawner uses `MissileSpawn=yes`, spawn conversion is automatically bypassed (existing missiles are destroyed/reset as in vanilla) to prevent suicidal pathing or frozen missile states.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+Convert.SpawnsConversion=false  ; boolean
+```
+
 ### Reload speed adjustment on promotion
 
 - Now you can add the following abilities to `VeteranAbilities` and `EliteAbilities` to speed up or slow down their ammo reload.
