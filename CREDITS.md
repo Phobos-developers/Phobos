@@ -166,6 +166,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
   - Flying production
+  - Rally point customization
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:

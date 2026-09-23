@@ -425,6 +425,7 @@ HideShakeEffects=false           ; boolean
 
 #### New:
 - [Flying production](New-or-Enhanced-Logics.md#flying-production) (by FS-21)
+- [Rally point customization](New-or-Enhanced-Logics.md#rally-point-customization) (by FS-21)
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)

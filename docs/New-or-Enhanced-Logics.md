@@ -800,6 +800,16 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 PowerPlantEnhancer.MaxCount=-1     ; integer
 ```
 
+### Rally point customization
+
+- `HasRallyPoint` on `[BuildingType]` controls whether the building can establish a rally point. If set to `true`, enables rally point placement on structures that are not standard vehicle or infantry factories (e.g. helipads or towers), allowing them to establish a rally point with EVA confirmation and tactical line. If set to `false`, disables rally point capability even on factories. If omitted, standard vanilla factory behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+HasRallyPoint=                     ; boolean, defaults to vanilla behavior
+```
+
 ### Roof production anim
 
 - Now, you can use the `RoofProductionAnim*` series of flags to replace the `ProductionAnim*` series of flags when the produced infantry and vehicles are leaving the factory through the roof hatch.
@@ -2154,7 +2164,6 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `FlyingProduction.SpawnOffset` on `[BuildingType]` sets a 2D coordinate offset in leptons (X, Y) relative to the center of the structure for positioning the spawn point.
   - `FlyingProduction.SpawnHeight` on `[BuildingType]` overrides the spawn altitude for units appearing at this structure.
   - `FlyingProduction.SpawnFacing` on `[BuildingType]` specifies the facing (0-255) the unit takes upon spawning, as well as the exit direction if no rally point exists.
-  - `HasRallyPoint` on `[BuildingType]` controls whether the building can establish a rally point. If set to `true`, enables rally point placement on structures that are not standard vehicle or infantry factories (e.g. helipads or towers), allowing them to establish a rally point with EVA confirmation and tactical line. If set to `false`, disables rally point capability even on factories. If omitted, standard vanilla factory behavior is preserved.
 
 In `rulesmd.ini`:
 ```ini
@@ -2175,7 +2184,6 @@ FlyingProduction.RallyPointFromSpawnBuilding=false ; boolean
 FlyingProduction.SpawnOffset=0,0           ; Point2D, leptons
 FlyingProduction.SpawnHeight=              ; integer, defaults to the spawned unit's FlyingProduction.SpawnHeight
 FlyingProduction.SpawnFacing=              ; DirType (0-255), defaults to the building's facing (128 / South)
-HasRallyPoint=                             ; boolean, defaults to vanilla behavior
 ```
 
 ### Forcing specific weapon against certain targets
