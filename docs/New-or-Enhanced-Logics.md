@@ -1472,13 +1472,13 @@ These parameters configure the interactive Dropship Loadout purchase window that
 * `DropshipLoadout.PilotLitPCX`: The PCX file used for the status indicator lights. Takes precedence over `DropshipLoadout.PilotLit`.
 * `DropshipLoadout.PilotLitLocation`: Screen coordinates `(X,Y)` for the status indicator lights (relative to window background).
 * `DropshipLoadout.SidebarCameosCount`: Total number of selectable cameo slots displayed on the purchase sidebar.
-* `DropshipLoadout.SidebarCameoLocationN`: Screen coordinates `(X,Y)` for the sidebar cameo slot at index `N` (0-based, e.g. `DropshipLoadout.SidebarCameoLocation0`).
+* `DropshipLoadout.SidebarCameoLocationN`: Screen coordinates `(X,Y)` for the sidebar cameo slot at index `N` (0-based).
 * `DropshipLoadout.DropshipCameosCount` / `DropshipLoadout.Dropship0.CameosCount`: Total number of cargo cameo slots displayed in the dropship payload bay.
-* `DropshipLoadout.CameoLocationN` / `DropshipLoadout.Dropship0.CameoLocationN`: Screen coordinates `(X,Y)` for the cargo cameo slot at index `N` (0-based, e.g. `DropshipLoadout.CameoLocation0`).
+* `DropshipLoadout.CameoLocationN` / `DropshipLoadout.Dropship0.CameoLocationN`: Screen coordinates `(X,Y)` for the cargo cameo slot at index `N` (0-based).
 * `DropshipLoadout.DGreenList`: List of SHP files used for the green status indicator animations.
 * `DropshipLoadout.DGreenListPCX`: List of PCX file names or base animation patterns used for the green status indicator animations. Takes precedence over `DropshipLoadout.DGreenList`.
 * `DropshipLoadout.DGreenAnimationsCount`: Number of green status indicator animations to display.
-* `DropshipLoadout.DGreenLocationN`: Screen coordinates `(X,Y)` for the green status indicator animation at index `N` (0-based, e.g. `DropshipLoadout.DGreenLocation0`).
+* `DropshipLoadout.DGreenLocationN`: Screen coordinates `(X,Y)` for the green status indicator animation at index `N` (0-based).
 * `DropshipLoadout.BuyClickSound`: Audio sound effect played when purchasing a unit.
 * `DropshipLoadout.SellClickSound`: Audio sound effect played when selling/refunding a unit.
 * `DropshipLoadout.ArrowsClickSound`: Audio sound effect played when clicking navigation scroll arrows.

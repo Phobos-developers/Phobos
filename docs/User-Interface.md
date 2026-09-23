@@ -733,14 +733,14 @@ DisableEmptySpawnPositions=false  ; boolean
 - `DropshipLoadout.PilotLitPCX`: The PCX file used for the pilot status indicator lights. Takes precedence over `DropshipLoadout.PilotLit`.
 - `DropshipLoadout.PilotLitLocation`: Screen coordinates `(X,Y)` for placing the pilot status indicators (relative to window background).
 - `DropshipLoadout.SidebarCameosCount`: The number of cameos to display in the side selection panel.
-- `DropshipLoadout.SidebarCameoLocationN`: Screen coordinates `(X,Y)` for the sidebar unit selection cameo at index `N` (0-based, e.g. `DropshipLoadout.SidebarCameoLocation0`).
+- `DropshipLoadout.SidebarCameoLocationN`: Screen coordinates `(X,Y)` for the sidebar unit selection cameo at index `N` (0-based).
 - `DropshipLoadout.DropshipCameosCount`: The default number of cameos representing the cargo slots inside the dropship.
 - `DropshipLoadout.DropshipN.CameosCount`: The number of cameos representing the cargo slots inside the cargo view of dropship index `N` (0-based).
 - `DropshipLoadout.CameoLocationN` / `DropshipLoadout.DropshipN.CameoLocationM`: Screen coordinates `(X,Y)` for the cargo cameo slot at index `M` of dropship `N` (0-based).
 - `DropshipLoadout.DGreenList`: The list of SHP files used for the green status indicator animations.
 - `DropshipLoadout.DGreenListPCX`: The list of PCX files used for the green status indicator animations. Takes precedence over `DropshipLoadout.DGreenList`.
 - `DropshipLoadout.DGreenAnimationsCount`: The number of green status lights or animations to display.
-- `DropshipLoadout.DGreenLocationN`: Screen coordinates `(X,Y)` for placing the green status animation at index `N` (0-based, e.g. `DropshipLoadout.DGreenLocation0`).
+- `DropshipLoadout.DGreenLocationN`: Screen coordinates `(X,Y)` for placing the green status animation at index `N` (0-based).
 - `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`: A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
 - `DropshipLoadout.AllowableUnitMaximums` / `DropshipLoadout.AllowableUnitMaximumsN`: The maximum allowed quantity that can be purchased for each unit in `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`. Use `-1` for unlimited.
 - `DropshipLoadout.DropshipN.FixedUnits`: A list of TechnoTypes pre-placed as fixed cargo in dropship index `N`. Players cannot sell or remove these units.
