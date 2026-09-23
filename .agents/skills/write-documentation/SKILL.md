@@ -61,11 +61,6 @@ Two styles for the first bullet point:
   - In vanilla, <describe the problem>. Now you can <describe the fix/enhancement>.
   ```
 
-Guidelines for explanation bullets:
-- **Never include default values or `(defaults to ...)` in explanation bullets.** The explanation describes purely functionality, syntax, parameters, and consequences. Default values belong exclusively in the INI code block.
-- **For assets supporting both SHP and PCX formats**: Always list the base engine format (`.SHP`) first, followed immediately by the override format (`.PCX`), explicitly stating that the PCX file takes precedence over the SHP file. If pattern formatting (`%d`) is supported, state it in the PCX description.
-- **Separation of concerns**: Separate counts from coordinates/locations into their own distinct bullet entries. Never bundle unrelated UI keys together.
-
 Wait for the user to approve the drafted text before proceeding to write it into the actual doc files.
 
 **Step 4: Write the main documentation**
@@ -91,18 +86,14 @@ UIDescription=<none> ; CSF entry key
 
 Key rules for INI documentation:
 - Use ` ```ini ` fenced code blocks.
-- Section header comment format: `[SOMENAME]` followed by spaces then `; ObjectType` (e.g., `; BuildingType`, `; TechnoType`, `; WarheadType`, `; SuperWeaponType`, `; HouseType`).
-- For global sections use the literal section name: `[General]`, `[AudioVisual]`, `[CombatDamage]`, `[Radiation]`, `[AI]`, `[Basic]`.
-- **Default values**: Must match the C++ source code implementation exactly (`Tag=default_value`). Do not leave tags empty if the C++ code assigns a non-empty fallback/default (including filenames like `DROPUP.SHP` or coordinates like `45,2`). Empty `Tag=` is strictly reserved for nullable or optional tags without defaults.
+- Section header comment format: `[SOMENAME]` followed by spaces then `; ObjectType` (e.g., `; BuildingType`, `; TechnoType`, `; WarheadType`, `; SuperWeaponType`).
+- For global sections use the literal section name: `[General]`, `[AudioVisual]`, `[CombatDamage]`, `[Radiation]`, `[AI]`, etc.
 - Key name, equals sign, default value (or blank if empty), spaces, semicolon, type description.
 - Boolean types are documented as `; boolean`.
 - Integer types as `; integer`.
-- Coordinate pairs as `; coordinate pair (X,Y)`.
 - Floating point types as `; double` or `; float`.
 - Pointer types as `; AnimType` (just the game class name, not full C++ type).
-- List types as `; List of TechnoTypes`, `; List of integers`, etc.
-- If a sound or value defaults to a global section, annotate cleanly: `; Sound, default to [AudioVisual] -> GenericClick`.
-- **Prohibited**: NEVER include inline examples or conversational notes after the semicolon (e.g. `; e.g. CameoLocation0=55,69` is strictly forbidden).
+- List types as `; list of TechnoType` etc.
 - If the INI key name contains dots, it maps naturally (e.g. `KeyName.SubKey` stays as-is in docs).
 
 When there are many related keys, group them logically within the same section and INI block. Put them in the order they appear in the INI section.
