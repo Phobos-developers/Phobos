@@ -751,7 +751,7 @@ DisableEmptySpawnPositions=false  ; boolean
 - `DropshipLoadout.StartingDragDropSound`: Sound played when picking up a cameo to drag and drop.
 - `DropshipLoadout.EndingDragDropSound`: Sound played when releasing a dragged cameo into a slot.
 
-In `rulesmd.ini` (under country sections):
+In `rulesmd.ini`:
 ```ini
 [SOMECOUNTRY]                                        ; HouseType
 DropshipLoadout.StartingDropships=0                  ; integer
