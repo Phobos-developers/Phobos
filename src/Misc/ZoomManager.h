@@ -33,6 +33,9 @@ public:
 	// Smoothly interpolates current zoom toward target zoom each frame
 	static void Update();
 
+	// Calculates source crop and destination blit rectangles maintaining strict center parity
+	static void GetBlitRects(RectangleStruct& srcRect, RectangleStruct& dstRect);
+
 	// Blits tactical surface to composite buffer with centering and scaling
 	static void ApplyTacticalBlit();
 

@@ -78,7 +78,9 @@ void ZoomManager::SetScriptZoom(double targetZoom, int transitionRate, int minWi
 		CurrentZoom = TargetZoom;
 		ActiveSmoothRate = SmoothRate;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 	else
@@ -100,7 +102,9 @@ void ZoomManager::ZoomIn()
 	{
 		CurrentZoom = TargetZoom;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
@@ -118,7 +122,9 @@ void ZoomManager::ZoomOut()
 	{
 		CurrentZoom = TargetZoom;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
@@ -136,7 +142,9 @@ void ZoomManager::ResetZoom()
 	{
 		CurrentZoom = 1.0;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 }
@@ -158,6 +166,7 @@ void ZoomManager::Update()
 			ActiveSmoothRate = SmoothRate;
 		}
 	}
+
 	LastInputLockedState = currentLocked;
 
 	const double effectiveRate = (ActiveSmoothRate > 0.0) ? ActiveSmoothRate : SmoothRate;
@@ -173,7 +182,9 @@ void ZoomManager::Update()
 		}
 
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
 	else if (CurrentZoom != TargetZoom)
@@ -181,9 +192,60 @@ void ZoomManager::Update()
 		CurrentZoom = TargetZoom;
 		ActiveSmoothRate = SmoothRate;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
-		TacticalClass::Instance->SetTacticalPosition(&currentPos);
+		if (ClampTacticalPos(&currentPos))
+			TacticalClass::Instance->SetTacticalPosition(&currentPos);
+
 		MapClass::Instance.MarkNeedsRedraw(2);
 	}
+}
+
+// Calculates source crop and destination blit rectangles maintaining strict center parity
+void ZoomManager::GetBlitRects(RectangleStruct& srcRect, RectangleStruct& dstRect)
+{
+	const RectangleStruct& vb = DSurface::ViewBounds;
+	dstRect = vb;
+
+	if (vb.Width <= 0 || vb.Height <= 0)
+	{
+		srcRect = vb;
+		return;
+	}
+
+	if (!IsZoomed())
+	{
+		srcRect = vb;
+		return;
+	}
+
+	const double zoom = CurrentZoom;
+	int srcW = static_cast<int>(std::round(vb.Width / zoom));
+	srcW = std::clamp(srcW, 2, vb.Width);
+	if ((srcW % 2) != (vb.Width % 2))
+	{
+		if (vb.Width / zoom > srcW && srcW + 1 <= vb.Width)
+			srcW += 1;
+		else if (srcW - 1 >= 2)
+			srcW -= 1;
+		else
+			srcW += 1;
+	}
+
+	int srcH = static_cast<int>(std::round(vb.Height / zoom));
+	srcH = std::clamp(srcH, 2, vb.Height);
+	if ((srcH % 2) != (vb.Height % 2))
+	{
+		if (vb.Height / zoom > srcH && srcH + 1 <= vb.Height)
+			srcH += 1;
+		else if (srcH - 1 >= 2)
+			srcH -= 1;
+		else
+			srcH += 1;
+	}
+
+	const int cropX = vb.X + (vb.Width - srcW) / 2;
+	const int cropY = vb.Y + (vb.Height - srcH) / 2;
+
+	srcRect = { cropX, cropY, srcW, srcH };
 }
 
 // Restricts camera coordinates to playable map boundaries, scaled by current zoom
@@ -193,10 +255,14 @@ bool ZoomManager::ClampTacticalPos(Point2D* pPoint)
 		return false;
 
 	const auto& viewBounds = DSurface::ViewBounds;
-	const double zoom = IsZoomed() ? CurrentZoom : 1.0;
+	if (viewBounds.Width <= 0 || viewBounds.Height <= 0)
+		return false;
 
-	const int effectiveWidth = static_cast<int>(viewBounds.Width / zoom + 0.5);
-	const int effectiveHeight = static_cast<int>(viewBounds.Height / zoom + 0.5);
+	RectangleStruct srcRect, dstRect;
+	GetBlitRects(srcRect, dstRect);
+
+	const int effectiveWidth = srcRect.Width;
+	const int effectiveHeight = srcRect.Height;
 
 	const int v1 = Make_Global<int>(0x87F8E4);
 	const int v2 = Make_Global<int>(0x87F8DC);
@@ -243,28 +309,24 @@ Point2D ZoomManager::ScreenToTactical(const Point2D& screenPoint)
 	if (!IsZoomed())
 		return screenPoint;
 
-	const double zoom = CurrentZoom;
-	const int surfaceWidth = DSurface::Composite ? DSurface::Composite->Width : DSurface::ViewBounds.Width;
-	const int surfaceHeight = DSurface::Composite ? DSurface::Composite->Height : DSurface::ViewBounds.Height;
+	RectangleStruct srcRect, dstRect;
+	GetBlitRects(srcRect, dstRect);
 
-	if (surfaceWidth <= 0 || surfaceHeight <= 0)
+	if (dstRect.Width <= 0 || dstRect.Height <= 0)
 		return screenPoint;
 
-	if (screenPoint.X < 0 || screenPoint.X >= surfaceWidth || screenPoint.Y < 0 || screenPoint.Y >= surfaceHeight)
+	if (screenPoint.X < dstRect.X || screenPoint.X >= dstRect.X + dstRect.Width ||
+	    screenPoint.Y < dstRect.Y || screenPoint.Y >= dstRect.Y + dstRect.Height)
+	{
 		return screenPoint;
-
-	const double zoomedWidth = static_cast<double>(surfaceWidth) / zoom;
-	const double zoomedHeight = static_cast<double>(surfaceHeight) / zoom;
-
-	const double cropX = (static_cast<double>(surfaceWidth) - zoomedWidth) * 0.5;
-	const double cropY = (static_cast<double>(surfaceHeight) - zoomedHeight) * 0.5;
+	}
 
 	Point2D virtualPoint;
-	virtualPoint.X = static_cast<int>(cropX + (static_cast<double>(screenPoint.X) / zoom) + 0.5);
-	virtualPoint.Y = static_cast<int>(cropY + (static_cast<double>(screenPoint.Y) / zoom) + 0.5);
+	virtualPoint.X = static_cast<int>(srcRect.X + (static_cast<double>(screenPoint.X - dstRect.X) * srcRect.Width / dstRect.Width) + 0.5);
+	virtualPoint.Y = static_cast<int>(srcRect.Y + (static_cast<double>(screenPoint.Y - dstRect.Y) * srcRect.Height / dstRect.Height) + 0.5);
 
-	virtualPoint.X = std::clamp(virtualPoint.X, 0, surfaceWidth - 1);
-	virtualPoint.Y = std::clamp(virtualPoint.Y, 0, surfaceHeight - 1);
+	virtualPoint.X = std::clamp(virtualPoint.X, srcRect.X, srcRect.X + srcRect.Width - 1);
+	virtualPoint.Y = std::clamp(virtualPoint.Y, srcRect.Y, srcRect.Y + srcRect.Height - 1);
 
 	return virtualPoint;
 }
@@ -275,22 +337,15 @@ Point2D ZoomManager::TacticalToScreen(const Point2D& virtualPoint)
 	if (!IsZoomed())
 		return virtualPoint;
 
-	const double zoom = CurrentZoom;
-	const int surfaceWidth = DSurface::Composite ? DSurface::Composite->Width : DSurface::ViewBounds.Width;
-	const int surfaceHeight = DSurface::Composite ? DSurface::Composite->Height : DSurface::ViewBounds.Height;
+	RectangleStruct srcRect, dstRect;
+	GetBlitRects(srcRect, dstRect);
 
-	if (surfaceWidth <= 0 || surfaceHeight <= 0)
+	if (srcRect.Width <= 0 || srcRect.Height <= 0)
 		return virtualPoint;
 
-	const double zoomedWidth = static_cast<double>(surfaceWidth) / zoom;
-	const double zoomedHeight = static_cast<double>(surfaceHeight) / zoom;
-
-	const double cropX = (static_cast<double>(surfaceWidth) - zoomedWidth) * 0.5;
-	const double cropY = (static_cast<double>(surfaceHeight) - zoomedHeight) * 0.5;
-
 	Point2D screenPoint;
-	screenPoint.X = static_cast<int>((static_cast<double>(virtualPoint.X) - cropX) * zoom + 0.5);
-	screenPoint.Y = static_cast<int>((static_cast<double>(virtualPoint.Y) - cropY) * zoom + 0.5);
+	screenPoint.X = static_cast<int>(dstRect.X + (static_cast<double>(virtualPoint.X - srcRect.X) * dstRect.Width / srcRect.Width) + 0.5);
+	screenPoint.Y = static_cast<int>(dstRect.Y + (static_cast<double>(virtualPoint.Y - srcRect.Y) * dstRect.Height / srcRect.Height) + 0.5);
 
 	return screenPoint;
 }
@@ -301,23 +356,8 @@ void ZoomManager::ApplyTacticalBlit()
 	if (!IsZoomed() || !DSurface::Alternate || !DSurface::Composite)
 		return;
 
-	const RectangleStruct& vb = DSurface::ViewBounds;
-	const double zoom = CurrentZoom;
-
-	const double zoomedWidth = static_cast<double>(vb.Width) / zoom;
-	const double zoomedHeight = static_cast<double>(vb.Height) / zoom;
-
-	const double cropX = vb.X + (static_cast<double>(vb.Width) - zoomedWidth) * 0.5;
-	const double cropY = vb.Y + (static_cast<double>(vb.Height) - zoomedHeight) * 0.5;
-
-	RectangleStruct srcRect
-	{
-		static_cast<int>(cropX + 0.5),
-		static_cast<int>(cropY + 0.5),
-		static_cast<int>(zoomedWidth + 0.5),
-		static_cast<int>(zoomedHeight + 0.5)
-	};
-	RectangleStruct dstRect = vb;
+	RectangleStruct srcRect, dstRect;
+	GetBlitRects(srcRect, dstRect);
 
 	DSurface::Composite->CopyFrom(&dstRect, &dstRect, DSurface::Alternate, &dstRect, &srcRect, false, false);
 }

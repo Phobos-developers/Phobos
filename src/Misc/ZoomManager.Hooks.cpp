@@ -31,6 +31,24 @@ DEFINE_HOOK(0x692300, DisplayClass_ProcessClickCoords_TranslateCoordinates, 0x7)
 	return 0;
 }
 
+// Translate mouse coordinates on initial mouse button press for the unit selection box (rubberband)
+DEFINE_HOOK(0x4AC310, DisplayClass_MouseLeftPress_TranslateCoordinates, 0x6)
+{
+	if (!ZoomManager::IsZoomed())
+		return 0;
+
+	GET_STACK(Point2D*, pPoint, 0x4);
+
+	if (pPoint)
+	{
+		static Point2D pressPoint;
+		pressPoint = ZoomManager::ScreenToTactical(*pPoint);
+		R->Stack<Point2D*>(0x4, &pressPoint);
+	}
+
+	return 0;
+}
+
 // Translate mouse coordinates for the unit selection box (rubberband)
 DEFINE_HOOK(0x4AC380, DisplayClass_UpdateDragBand_TranslateCoordinates, 0x6)
 {
