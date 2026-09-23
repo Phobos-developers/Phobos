@@ -1,12 +1,14 @@
 #pragma once
 
 #include <HouseTypeClass.h>
+#include <InfantryTypeClass.h>
 
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/EVATypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class HouseTypeExt final : public AbstractTypeExt
 {
@@ -65,6 +67,15 @@ public:
 	NullableIdx<VocClass> DropshipLoadout_StartingDragDropSound;
 	NullableIdx<VocClass> DropshipLoadout_EndingDragDropSound;
 
+	AEAttachInfoTypeClass AttachEffects;
+	Nullable<bool> AttachEffects_AttachOnOwnerChange;
+	Nullable<InfantryTypeClass*> Crew;
+
+	ValueableVector<BuildingTypeClass*> VeteranBuildings;
+	ValueableVector<BuildingTypeClass*> VeteranDefenses;
+
+	Nullable<AffectedHouse> RevealHouses;
+
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
 		, DropshipLoadout_StartingDropships {}
@@ -103,6 +114,12 @@ public:
 		, DropshipLoadout_ArrowsClickSound {}
 		, DropshipLoadout_StartingDragDropSound {}
 		, DropshipLoadout_EndingDragDropSound {}
+		, AttachEffects {}
+		, AttachEffects_AttachOnOwnerChange {}
+		, Crew {}
+		, VeteranBuildings {}
+		, VeteranDefenses {}
+		, RevealHouses {}
 	{ }
 
 	virtual ~HouseTypeExt() = default;

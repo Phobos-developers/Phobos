@@ -331,7 +331,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive)
+					&& !pHouse->IsNeutral())
 				{
 					housesList.push_back(pHouse);
 				}
@@ -451,13 +451,9 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 
 	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
-	auto canUndeploy = [&](BuildingClass* const pBuilding)
+	auto canUndeploy = [&](BuildingClass* const pBuilding, const bool isConYard)
 	{
-		auto const pType = pBuilding->Type;
-
-		if (!pType->UndeploysInto
-			|| pBuilding->Owner != vHouse
-			|| (!allBuilding && pType != pBuildingType)
+		if (pBuilding->Owner != vHouse
 			|| pBuilding->CurrentMission == Mission::Selling 
 			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
 		{
@@ -465,37 +461,52 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		}
 
 		// verify whether the building's source is LimboDelivery.
-		if (existLimboBuilding
-			&& std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
-		{
+		if (existLimboBuilding && std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
 			return false;
-		}
 
-		if (pType->ConstructionYard)
-		{
-			// Conyards can't undeploy if MCVRedeploy=no
-			if (!GameModeOptionsClass::Instance.MCVRedeploy)
-				return false;
-			// or MindControlledBy YURIX (why? for balance?)
-			if (!RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
-				return false;
-		}
+		// MindControlledBy YURIX(why ? for balance ? )
+		if (isConYard && !RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
+			return false;
 
 		return true;
 	};
 
-	for (const auto pBuilding : BuildingClass::Array)
+	auto executeUndeploy = [&](BuildingTypeClass* pType)
 	{
-		if (!canUndeploy(pBuilding))
-			continue;
+		const bool isConYard = pType->ConstructionYard;
 
-		// Why does having this allow it to undeploy?
-		// Why don't vehicles move when waypoints are placed off the map?
+		// Conyards can't undeploy if MCVRedeploy=no
+		if (isConYard && !GameModeOptionsClass::Instance.MCVRedeploy)
+			return;
 
-		const bool old = std::exchange(VocClass::VoicesEnabled, false);
-		pBuilding->SetArchiveTarget(pCell);
-		pBuilding->Sell(true);
-		VocClass::VoicesEnabled = old;
+		for (const auto pTechno : TechnoTypeExt::Fetch(pType)->Array)
+		{
+			const auto pBuilding = static_cast<BuildingClass*>(pTechno);
+
+			if (!canUndeploy(pBuilding, isConYard))
+				continue;
+
+			// Why does having this allow it to undeploy?
+			// Why don't vehicles move when waypoints are placed off the map?
+
+			const bool old = std::exchange(VocClass::VoicesEnabled, false);
+			pBuilding->SetArchiveTarget(pCell);
+			pBuilding->Sell(true);
+			VocClass::VoicesEnabled = old;
+		}
+	};
+
+	if (pBuildingType)
+	{
+		executeUndeploy(pBuildingType);
+	}
+	else
+	{
+		for (const auto pType : BuildingTypeClass::Array)
+		{
+			if (pType->UndeploysInto)
+				executeUndeploy(pType);
+		}
 	}
 
 	return true;
@@ -503,24 +514,18 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 
 bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	int followerIndex = pThis->Param3;
+	const int followerIndex = pThis->Param3;
 
 	if (followerIndex < 0 || followerIndex >= UnitClass::Array.Count)
 		return false;
 
-	UnitClass* pNewFollower = UnitClass::Array[followerIndex];
+	auto const pNewFollower = UnitClass::Array[followerIndex];
+
 	if (!pNewFollower)
 		return false;
 
-	for (auto const pTechno : TechnoClass::Array)
+	for (auto const pTechno : UnitClass::Array)
 	{
-		FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
-		if (!pFoot)
-			continue;
-
-		if (pFoot->WhatAmI() != AbstractType::Unit)
-			continue;
-
 		const auto pAttachedTag = pTechno->AttachedTag;
 
 		if (!pAttachedTag)
@@ -542,15 +547,13 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 		if (!foundTrigger)
 			continue;
 
-		UnitClass* pLeader = static_cast<UnitClass*>(pFoot);
-
-		if (UnitClass* pOldFollower = pLeader->FollowerCar)
+		if (auto const pOldFollower = pTechno->FollowerCar)
 		{
 			pOldFollower->IsFollowerCar = false;
-			pLeader->FollowerCar = nullptr;
+			pTechno->FollowerCar = nullptr;
 		}
 
-		for (auto pOther : UnitClass::Array)
+		for (auto const pOther : UnitClass::Array)
 		{
 			if (pOther && pOther->FollowerCar == pNewFollower)
 			{
@@ -559,9 +562,8 @@ bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHou
 			}
 		}
 
-		pLeader->FollowerCar = pNewFollower;
+		pTechno->FollowerCar = pNewFollower;
 		pNewFollower->IsFollowerCar = true;
-
 	}
 
 	return true;

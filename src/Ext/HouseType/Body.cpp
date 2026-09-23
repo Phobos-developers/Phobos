@@ -446,6 +446,16 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->DropshipLoadout_ArrowsClickSound.Read(exINI, pSection, "DropshipLoadout.ArrowsClickSound");
 	this->DropshipLoadout_StartingDragDropSound.Read(exINI, pSection, "DropshipLoadout.StartingDragDropSound");
 	this->DropshipLoadout_EndingDragDropSound.Read(exINI, pSection, "DropshipLoadout.EndingDragDropSound");
+
+	this->AttachEffects.LoadFromINI(pINI, pSection);
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, pSection, "AttachEffect.AttachOnOwnerChange");
+
+	this->Crew.Read<true>(exINI, pSection, "Crew");
+
+	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
+	this->VeteranDefenses.Read(exINI, pSection, "VeteranDefenses");
+
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
 }
 
 template <typename T>
@@ -487,6 +497,12 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_EndingDragDropSound)
 		.Process(this->DropshipLoadout_AllowableUnitsLists)
 		.Process(this->DropshipLoadout_AllowableUnitMaximumsLists)
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
+		.Process(this->Crew)
+		.Process(this->VeteranBuildings)
+		.Process(this->VeteranDefenses)
+		.Process(this->RevealHouses)
 		;
 
 	int numDropships = (int)this->DropshipLoadout_FixedUnits.size();
