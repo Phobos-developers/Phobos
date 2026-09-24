@@ -2,6 +2,8 @@
 
 #include <GeneralStructures.h>
 
+class DSurface;
+
 class ZoomManager
 {
 public:
@@ -17,6 +19,9 @@ public:
 	static double SmoothRate;
 	static double ActiveSmoothRate;
 	static bool BlitAppliedThisFrame;
+
+	// Performs high-performance CPU software stretch blit directly in RAM, bypassing DirectDraw Blt stalls
+	static void FastStretchBlit(DSurface* pDst, const RectangleStruct& dstRect, DSurface* pSrc, const RectangleStruct& srcRect);
 
 	// Redirects hardcoded DSurface::Composite references to DSurface::Temp for tactical rendering
 	static void ApplySurfacePatches();

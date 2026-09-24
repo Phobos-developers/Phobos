@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 bool ZoomManager::Enabled = false;
 bool ZoomManager::ScrollEnabled = true;
@@ -367,6 +368,97 @@ Point2D ZoomManager::TacticalToScreen(const Point2D& virtualPoint)
 	return screenPoint;
 }
 
+// Performs high-performance CPU software stretch blit directly in RAM, bypassing DirectDraw Blt stalls
+void ZoomManager::FastStretchBlit(DSurface* pDst, const RectangleStruct& dstRect, DSurface* pSrc, const RectangleStruct& srcRect)
+{
+	if (!pDst || !pSrc || dstRect.Width <= 0 || dstRect.Height <= 0 || srcRect.Width <= 0 || srcRect.Height <= 0)
+		return;
+
+	WORD* pSrcBase = static_cast<WORD*>(pSrc->Lock(0, 0));
+	WORD* pDstBase = static_cast<WORD*>(pDst->Lock(0, 0));
+
+	if (!pSrcBase || !pDstBase)
+	{
+		if (pDstBase)
+			pDst->Unlock();
+
+		if (pSrcBase)
+			pSrc->Unlock();
+
+		RectangleStruct clippedDst = dstRect;
+		RectangleStruct clippedSrc = srcRect;
+		pDst->CopyFrom(&clippedDst, &clippedDst, pSrc, &clippedDst, &clippedSrc, false, false);
+		return;
+	}
+
+	const int srcPitch = pSrc->GetPitch();
+	const int dstPitch = pDst->GetPitch();
+	const BYTE* pSrcBytes = reinterpret_cast<const BYTE*>(pSrcBase);
+	BYTE* pDstBytes = reinterpret_cast<BYTE*>(pDstBase);
+
+	const int dw = dstRect.Width;
+	const int dh = dstRect.Height;
+	const int sw = srcRect.Width;
+	const int sh = srcRect.Height;
+	const int srcMaxX = pSrc->Width - 1;
+	const int srcMaxY = pSrc->Height - 1;
+
+	thread_local std::vector<int> xMap;
+	if (static_cast<int>(xMap.size()) < dw)
+		xMap.resize(dw);
+
+	for (int dx = 0; dx < dw; ++dx)
+	{
+		const int sx = srcRect.X + (dx * sw) / dw;
+		xMap[dx] = std::clamp(sx, 0, srcMaxX);
+	}
+
+	const int dwPairs = dw / 2;
+
+	for (int dy = 0; dy < dh; ++dy)
+	{
+		int sy = srcRect.Y + (dy * sh) / dh;
+		sy = std::clamp(sy, 0, srcMaxY);
+
+		const WORD* pSrcRow = reinterpret_cast<const WORD*>(pSrcBytes + sy * srcPitch);
+		WORD* pDstRow = reinterpret_cast<WORD*>(pDstBytes + (dstRect.Y + dy) * dstPitch) + dstRect.X;
+		DWORD* pDstRow32 = reinterpret_cast<DWORD*>(pDstRow);
+
+		int i = 0;
+		int dx = 0;
+
+		for (; i + 4 <= dwPairs; i += 4, dx += 8)
+		{
+			const WORD p0 = pSrcRow[xMap[dx + 0]];
+			const WORD p1 = pSrcRow[xMap[dx + 1]];
+			const WORD p2 = pSrcRow[xMap[dx + 2]];
+			const WORD p3 = pSrcRow[xMap[dx + 3]];
+			const WORD p4 = pSrcRow[xMap[dx + 4]];
+			const WORD p5 = pSrcRow[xMap[dx + 5]];
+			const WORD p6 = pSrcRow[xMap[dx + 6]];
+			const WORD p7 = pSrcRow[xMap[dx + 7]];
+
+			pDstRow32[i + 0] = static_cast<DWORD>(p0) | (static_cast<DWORD>(p1) << 16);
+			pDstRow32[i + 1] = static_cast<DWORD>(p2) | (static_cast<DWORD>(p3) << 16);
+			pDstRow32[i + 2] = static_cast<DWORD>(p4) | (static_cast<DWORD>(p5) << 16);
+			pDstRow32[i + 3] = static_cast<DWORD>(p6) | (static_cast<DWORD>(p7) << 16);
+		}
+
+		for (; i < dwPairs; ++i, dx += 2)
+		{
+			const WORD p0 = pSrcRow[xMap[dx + 0]];
+			const WORD p1 = pSrcRow[xMap[dx + 1]];
+			pDstRow32[i] = static_cast<DWORD>(p0) | (static_cast<DWORD>(p1) << 16);
+		}
+
+		if (dx < dw)
+			pDstRow[dx] = pSrcRow[xMap[dx]];
+	}
+
+	pDst->Unlock();
+	pSrc->Unlock();
+}
+
 // Blits centered viewport crop from Alternate surface onto Composite surface
 void ZoomManager::ApplyTacticalBlit()
 {
@@ -378,7 +470,7 @@ void ZoomManager::ApplyTacticalBlit()
 	RectangleStruct srcRect, dstRect;
 	GetBlitRects(srcRect, dstRect);
 
-	DSurface::Composite->CopyFrom(&dstRect, &dstRect, DSurface::Alternate, &dstRect, &srcRect, false, false);
+	FastStretchBlit(DSurface::Composite, dstRect, DSurface::Alternate, srcRect);
 }
 
 // Redirects hardcoded DSurface::Composite references in world-space rendering to DSurface::Temp
