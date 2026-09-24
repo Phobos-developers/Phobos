@@ -159,7 +159,12 @@ This page lists all the individual contributions to the project by their author.
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
-  - ScriptType action `Play speech`
+  - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Modify ammo on impact
+  - Tiberium ramp expansion support
+  - Fix crashes and freezes caused by Tiberium growth and spread
+  - Fix Tiberium types not supporting overrides in map and game mode INIs
+  - Tiberium veins overlay palette fix
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -279,7 +284,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
-  - `<Player @ X>` as owner for pre-placed objects
+  - `<Player @ X>` as owner for pre-placed objects and triggers
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
@@ -307,6 +312,7 @@ This page lists all the individual contributions to the project by their author.
   - Tank Bunker improvements
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
+  - Attached animation draw offset customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -381,14 +387,14 @@ This page lists all the individual contributions to the project by their author.
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
   - Teleport, Tunnel and Fly loco visual tilt fix
-  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip units' turret rotation and jumpjets' wobbling under EMP
   - Droppod properties dehardcode
   - `Deployer = yes->no` infantry conversion sequence fix
   - Waypoint entering building together with engineer/agent bug fix
   - Skippable game save on scenario start
-  - `InfDeath=9` versus jumpjet infantry 0 damage fix
+  - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
   - Skip rally point line drawing when undeploying a building
+  - `InfDeath=9` versus jumpjet infantry 0 damage fix
   - Ares' `SW.Shots` hint on extended tooltips
   - Ares' Abductor weapon fix
   - Suppress Ares' swizzle warning when parsing tags and taskforces
@@ -438,9 +444,15 @@ This page lists all the individual contributions to the project by their author.
   - SHP turret vehicles support the use of `*tur.shp` files
   - Fix a bug where game will crash after loading if a techno with `AlphaImage` converts to a type without it, or an anim with `AlphaImage` changes to a type without it through `Next`
   - `EVA.Tag` already supports being set for specific countries, and `EVAIndex` is no longer reset after load game
-  - DeployFire supports buildings
-  - `OmniFire` supports buildings with `Turret=yes`
-  - Fixed an issue where setting a production building as `Primary` could cause it to enter an unload state
+  - `DeployFire` supports buildings
+  - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
+  - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
+  - SkipMapSelect Enhancement
+  - Add a global default value for `KeepAlive`
+  - Customized transport plane for teams
+  - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
+  - Enter the grinder voice
+  - Customize the country displayed in `Sight`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -508,7 +520,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue that units will goto farest location if target is closer than `MinimumRange`
   - Fix a bug introduced by Ares where building types that have `UndeploysInto` cannot display `AltCameo` or `AltCameoPCX` even when you infiltrate enemy buildings with `Factory=UnitType`
   - Fix a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`
-  - Fix the bug that ai will try to product aircraft even the airport has no free dock for it
   - Allow techno type considered as other type when recruiting techno for teams
   - Fix the issue that technos cannot spawn survivors due to non-probabilistic reasons when the tech type was destroyed
   - Fix the bug that vehicle survivor can spawn on wrong position when transport has been destroyed
@@ -562,6 +573,15 @@ This page lists all the individual contributions to the project by their author.
   - Customize crash spin multiplier
   - Customize reveal radius of `RevealToAll`
   - Fix the bug that technos do not reset their link with the linked building when deactivated
+  - Customize whether warhead can prevent crew escape from techno
+  - Fix the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time
+  - Customize ivan bomb visibility
+  - Fix the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately
+  - Fix a bug that computer player record cannot be log normally in non English mode
+  - Cloak Enhancement
+  - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
+  - Observer can see IvanBomb that's attached by any house
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -673,6 +693,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `DeploysInto` and `UndeploysInto` will make damaged techno lose 1 health
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
+  - Attach effect when weapon fire
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -735,6 +756,26 @@ This page lists all the individual contributions to the project by their author.
   - Separately define the global default values of TerrainTypes' `IsPassable` and `CanBeBuiltOn` based on `SpawnsTiberium`
   - Remove the restriction that prohibits InfantryTypes from using the InitialPayload logic
   - Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to `DiscardOn`
+  - Disable AlphaImage during Buildup
+  - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
+  - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
+  - Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
+  - Fix the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button
+  - Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button
+  - Customize whether mind-controlled `Insignificant` technos can be auto-targeted
+  - Roof production anim
+  - Customize whether the unit exits from the roof
+  - Customize whether the unit can be detected by psychic detector
+  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
+  - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
+  - Customizable infantry sequence rates
+  - Country-specific veteran buildings
+  - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
+  - Customize `IdleActionFrequency`
+  - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Customize `DefaultToGuardArea` per gunner mode
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -766,6 +807,11 @@ This page lists all the individual contributions to the project by their author.
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
+  - Fix a game crash when parsing string list with null entry
+  - `513` Set mission timer properties
+  - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
+  - Fix several shield respawn/self heal issues
+  - Country-based attached effects
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -868,6 +914,8 @@ This page lists all the individual contributions to the project by their author.
   - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
   - Fix the issue that spawnee or slave would execute some player commands
   - Customize whether aircraft is a cargo plane
+  - Allow the unit to stop immediately if the target enters the range during ApproachTarget
+  - Allow the unit to keep pursuing the target during ApproachTarget
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
@@ -875,6 +923,7 @@ This page lists all the individual contributions to the project by their author.
   - Add target filtering options to attacheffect system
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
+  - Add new AutoDeath conditions based on the owner's power status and the player's credits
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -913,6 +962,9 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **Sovietianqi**:
+  - Fix the issue where Ares' `Flash.Duration` cannot override the weapon's repair flash effect
+  - Customizable crew type per country
 - **11EJDE11**:
   - Prevent mpdebug number from being drawn when visibility toggled off
   - Keep Syringe open until the game exits (ported from Vinifera)
@@ -927,3 +979,8 @@ This page lists all the individual contributions to the project by their author.
 - **Igor Kolchinskii (leosnake2208)**:
   - Right-click to command
   - Type selection by double/triple-click
+- **obsidianus** - Automatic conversion based on health
+- **Nuke** - Reload speed adjustment on promotion
+- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **dh381-1** - Detonate ivan bomb on impact

@@ -2,6 +2,27 @@ name: Pull Request Nightly Build
 
 on:
   pull_request:
+    # Only build when source code or project/build configuration files change.
+    paths:
+    - '**/*.c'
+    - '**/*.cc'
+    - '**/*.cpp'
+    - '**/*.cxx'
+    - '**/*.h'
+    - '**/*.hh'
+    - '**/*.hpp'
+    - '**/*.hxx'
+    - '**/*.inl'
+    - '**/*.inc'
+    - '**/*.rc'
+    - '**/*.sln'
+    - '**/*.vcxproj'
+    - '**/*.props'
+    - '**/*.targets'
+    - '.github/**'
+    - 'scripts/**'
+    - 'YRpp/**'
+    - '.gitmodules'
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -10,13 +31,10 @@ env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: DevBuild
-  # GIT_COMMIT: $(git rev-parse --short "$GITHUB_SHA")
-  # GIT_BRANCH: ${GITHUB_REF#refs/heads/}
+  BUILD_CONFIGURATION: Release
 
 jobs:
   build:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no test needed') }}
     runs-on: windows-latest
 
     steps:
@@ -30,3 +48,5 @@ jobs:
       with:
         sln-path: ${{env.SOLUTION_FILE_PATH}}
         build-config: ${{env.BUILD_CONFIGURATION}}
+        build-type: NIGHTLY
+

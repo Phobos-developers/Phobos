@@ -1,21 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2025, The Phobos Contributors
-# This file is distributed under the same license as the Phobos package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 18:48+0800\n"
+"POT-Creation-Date: 2026-09-21 22:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "Credits"
 msgstr "鸣谢"
@@ -459,12 +454,10 @@ msgid "`Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
 msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
 
 msgid "Map Action 600 for overwriting DropCrate behaviour in attached Technos"
-msgstr ""
-"用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
+msgstr "用于覆盖附着单位 `DropCrate` 行为的触发结果 600"
 
 msgid "`DropCrate` for setting what crate drop when Techno is destroyed"
-msgstr ""
-"用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
+msgstr "用于设置单位被摧毁时掉落哪种箱子的 `DropCrate`"
 
 msgid "Warhead activation target health thresholds enhancements"
 msgstr "目标血量作为弹头生效条件的进一步改进"
@@ -477,6 +470,24 @@ msgstr "联动超武"
 
 msgid "Unit & infantry auto-conversion on ammo change"
 msgstr "基于弹药量的自动变形"
+
+msgid "Restore the ScriptType action#24 `Play speech` from Tiberian Sun"
+msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`"
+
+msgid "Modify ammo on impact"
+msgstr "修改弹药弹头"
+
+msgid "Tiberium ramp expansion support"
+msgstr "矿石的斜坡支持"
+
+msgid "Fix crashes and freezes caused by Tiberium growth and spread"
+msgstr "修复了矿石生长和扩散导致的崩溃和冻结"
+
+msgid "Fix Tiberium types not supporting overrides in map and game mode INIs"
+msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
+
+msgid "Tiberium veins overlay palette fix"
+msgstr "泰伯利亚藤蔓蔓延地表色板修复"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
@@ -828,8 +839,8 @@ msgstr "自定义 `Scorch`／`Flamer` 火焰动画"
 msgid "EM Pulse cannon logic improvements"
 msgstr "EMP 炮逻辑改进"
 
-msgid "`<Player @ X>` as owner for pre-placed objects"
-msgstr "允许 `<Player @ X>` 作为地图预置对象所有者"
+msgid "`<Player @ X>` as owner for pre-placed objects and triggers"
+msgstr "允许 `<Player @ X>` 作为地图预置对象和触发器的所有者"
 
 msgid "Custom exit cell for infantry factory"
 msgstr "自定义兵营退出单元格"
@@ -906,6 +917,15 @@ msgstr "动画使用气候／地块色盘的开关"
 
 msgid "Tank Bunker improvements"
 msgstr "坦克碉堡改进"
+
+msgid "`ProjectileRange` weapon range modifiers interaction fix"
+msgstr "`ProjectileRange` 应用武器射程修正的交互修复"
+
+msgid "Berzerk duration stacking behaviour customization"
+msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
+
+msgid "Attached animation draw offset customizations"
+msgstr "附着动画绘制偏移"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -1130,9 +1150,6 @@ msgstr "读档后重置超时空计时器修复"
 msgid "Teleport, Tunnel and Fly loco visual tilt fix"
 msgstr "Teleport、Tunnel 和 Fly 运动模式视觉倾斜的修复"
 
-msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
-msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
-
 msgid "Skip units' turret rotation and jumpjets' wobbling under EMP"
 msgstr "在 EMP 状态下跳过单位的炮塔旋转和 Jumpjet 浮动"
 
@@ -1148,11 +1165,14 @@ msgstr "工程师／间谍路径点自偷 Bug 的修复"
 msgid "Skippable game save on scenario start"
 msgstr "可跳过的场景开始时自动存档"
 
-msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
-msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
+msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
+msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
 
 msgid "Skip rally point line drawing when undeploying a building"
 msgstr "跳过建筑反部署时的集结线绘制"
+
+msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
+msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
 
 msgid "Ares' `SW.Shots` hint on extended tooltips"
 msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
@@ -1345,6 +1365,40 @@ msgid ""
 "`EVA.Tag` already supports being set for specific countries, and "
 "`EVAIndex` is no longer reset after load game"
 msgstr "`EVA.Tag` 已经支持在国家层面设置并且 `EVAIndex` 不再在读档后重置"
+
+msgid "`DeployFire` supports buildings"
+msgstr "`DeployFire` 支持建筑"
+
+msgid ""
+"Fix an issue where `OmniFire` was ineffective on buildings with "
+"`Turret=yes`"
+msgstr "修复了 `OmniFire` 在 `Turret=yes` 的建筑上无效的问题"
+
+msgid ""
+"Fix an issue where setting a production building as `Primary` could cause"
+" it to enter an unload state"
+msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入卸载状态的问题"
+
+msgid "SkipMapSelect Enhancement"
+msgstr "`SkipMapSelect` 增强"
+
+msgid "Add a global default value for `KeepAlive`"
+msgstr "为 `KeepAlive` 添加全局默认值"
+
+msgid "Customized transport plane for teams"
+msgstr "为作战小队自定义运输机"
+
+msgid ""
+"Fix the bug where *Customizable crew type per country* overrides the pre-"
+"techno settings"
+msgstr "修复了 *国家层级生还者自定义* 覆盖单位微观设置的 Bug"
+
+msgid "Enter the grinder voice"
+msgstr "赴部队回收站语音"
+
+msgid "Customize the country displayed in `Sight`"
+msgstr ""
+"自定义 `Sight` 可见性"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1604,11 +1658,6 @@ msgid ""
 msgstr "修复了由触发结果创建的单位即便拥有 `Trainable=false` 也可以被升级的 Bug"
 
 msgid ""
-"Fix the bug that ai will try to product aircraft even the airport has no "
-"free dock for it"
-msgstr "修复了即便在没有可用的空余机位时 AI 也仍会尝试生产战机的 Bug"
-
-msgid ""
 "Allow techno type considered as other type when recruiting techno for "
 "teams"
 msgstr "允许单位作为其他类型的单位参与小队招募"
@@ -1847,6 +1896,43 @@ msgid ""
 "Fix the bug that technos do not reset their link with the linked building"
 " when deactivated"
 msgstr "修复了单位失灵时不会重置其与相链接建筑链接状态的 Bug"
+
+msgid "Customize whether warhead can prevent crew escape from techno"
+msgstr "自定义弹头是否阻止生还者逃出"
+
+msgid ""
+"Fix the issue of significant lagging caused by frequent lighting updates "
+"due to the accumulation of a large amount of radsite in a short time"
+msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题"
+
+msgid "Customize ivan bomb visibility"
+msgstr "自定义伊文炸弹可见性"
+
+msgid ""
+"Fix the issue where vehicles always finish turret resetting first before "
+"turn to a new attack target, now it should turn to new target immediately"
+msgstr "修复了车辆在转向新目标前总是会先回正炮塔的问题，现在它应当立即转向新目标"
+
+msgid ""
+"Fix a bug that computer player record cannot be log normally in non "
+"English mode"
+msgstr "修复了非英文模式下，电脑玩家的战绩数据无法正常录入日志文件的 Bug"
+
+msgid "Cloak Enhancement"
+msgstr "隐形增强"
+
+msgid ""
+"Allow customize that whether `Temporal=yes` warhead will cause target "
+"building animation poweroff"
+msgstr "允许自定义 `Temporal=yes` 弹头是否会触发目标建筑动画停电"
+
+msgid "Observer can see IvanBomb that's attached by any house"
+msgstr "允许了观察者看到任何所属方赋予的伊文炸弹"
+
+msgid ""
+"Customize `MissileSafetyAltitude` and whether missiles fly to the target "
+"or climb when losing target"
+msgstr "自定义 `MissileSafetyAltitude` 以及导弹在丢失目标后应飞向目标处还是爬升"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2226,6 +2312,10 @@ msgstr "RA1 风格多炮塔与多炮管"
 msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
 msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 
+msgid "Attach effect when weapon fire"
+msgstr ""
+"在武器开火时赋予 AE"
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2482,6 +2572,95 @@ msgid ""
 "InitialPayload logic"
 msgstr "移除了禁止步兵使用初始载员逻辑的限制"
 
+msgid ""
+"Add `ammo`, `health`, `mission`, `landtype` and `sequence` conditions to "
+"`DiscardOn`"
+msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
+
+msgid "Disable AlphaImage during Buildup"
+msgstr "建筑拔起期间关闭 AlphaImage"
+
+msgid ""
+"Allow customizing the default value of `[Warhead] -> PreventScatter` via "
+"`[CombatDamage] -> Warhead.PreventScatter`"
+msgstr ""
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> "
+"PreventScatter` 的默认值"
+
+msgid ""
+"Allow `(Pre)ProductionAnim` animations to use `Powered` & "
+"`PoweredLight/Effect/Special` keys"
+msgstr ""
+"允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
+"类的标签"
+
+msgid ""
+"Allow `SW.ShowCameo` and `SW.ManualFire` to work independently of "
+"`SW.AutoFire`"
+msgstr "允许了 `SW.ShowCameo` 和 `SW.ManualFire` 独立于 `SW.AutoFire` 工作"
+
+msgid ""
+"Fix the bug where a building with `Factory=BuildingType` owned by the AI "
+"did not play `ProductionAnim` when placing a produced building"
+msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
+
+msgid ""
+"Fix the bug that buildings with passengers cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr "修复有乘客建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
+
+msgid ""
+"Fix the bug that Ares tunnel-type buildings cannot unload via the Deploy "
+"hotkey or command bar button"
+msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug"
+
+msgid ""
+"Customize whether mind-controlled `Insignificant` technos can be auto-"
+"targeted"
+msgstr "自定义 `Insignificant` 的单位是否会因被心控而变得可以被主动寻敌索到"
+
+msgid "Roof production anim"
+msgstr "天窗生产动画"
+
+msgid "Customize whether the unit exits from the roof"
+msgstr "自定义单位是否从天窗退出"
+
+msgid "Customize whether the unit can be detected by psychic detector"
+msgstr "自定义单位能否被心灵感应"
+
+msgid ""
+"Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game "
+"(integer divide-by-zero) the moment an object of that type started moving"
+msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
+
+msgid ""
+"Fix the bug where `Ranged=true` causes projectiles using the new "
+"Trajectory to ignore settings such as `BounceTimes`"
+msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
+
+msgid "Customizable infantry sequence rates"
+msgstr "自定义步兵序列播放速率"
+
+msgid "Country-specific veteran buildings"
+msgstr "国家专属老兵建筑"
+
+msgid ""
+"Fix the Spotlight-transport interaction bug caused by the incorrect "
+"reference removal fix"
+msgstr "修复了错误脱引用修复导致的探照灯运输工具交互 Bug"
+
+msgid ""
+"Fix the issue that *Customizable crew type per country* not considering "
+"parsing order caused game parsing failure and a warning in the log"
+msgstr "修复了 *国家层级生还者自定义* 未考虑解析顺序而使游戏解析失败并在 log 中警告的问题"
+
+msgid "Customize `IdleActionFrequency`"
+msgstr "自定义 `IdleActionFrequency`"
+
+msgid "Customize `DefaultToGuardArea` per gunner mode"
+msgstr ""
+"为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -2562,6 +2741,21 @@ msgid ""
 "Customize whether or not passenger can fire out when the transport is "
 "moving"
 msgstr "自定义乘客能否在运输工具移动时向外开火"
+
+msgid "Fix a game crash when parsing string list with null entry"
+msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃"
+
+msgid "`513` Set mission timer properties"
+msgstr "设置任务计时器属性"
+
+msgid "`RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities"
+msgstr "`RANGE`、`CRITIMMUNE` 和 `CRITCHANCE` 升级能力"
+
+msgid "Fix several shield respawn/self heal issues"
+msgstr "修复了护盾重生／自愈的一系列问题"
+
+msgid "Country-based attached effects"
+msgstr "基于国家的 AE"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -2929,6 +3123,14 @@ msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 msgid "Customize whether aircraft is a cargo plane"
 msgstr "自定义飞机是否是cargo plane"
 
+msgid ""
+"Allow the unit to stop immediately if the target enters the range during "
+"ApproachTarget"
+msgstr "允许单位在接近目标期间若目标进入射程则立即停止"
+
+msgid "Allow the unit to keep pursuing the target during ApproachTarget"
+msgstr "允许单位在接近目标期间持续追踪目标"
+
 msgid "**solar-III (凤九歌)**"
 msgstr "**solar-III（凤九歌）**"
 
@@ -2949,6 +3151,11 @@ msgstr "为武器和弹头添加基于经验等级的目标过滤"
 
 msgid "Recipient-specific message and EVA on superweapon activation"
 msgstr "针对特定接收者的超武激活消息与 EVA 语音"
+
+msgid ""
+"Add new AutoDeath conditions based on the owner's power status and the "
+"player's credits"
+msgstr "添加了基于所有者电力状态和玩家资金的新自毁条件"
 
 msgid "**tyuah8**:"
 msgstr "**tyuah8**："
@@ -3103,6 +3310,17 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
+msgid "**Sovietianqi**:"
+msgstr "**Sovietianqi**："
+
+msgid ""
+"Fix the issue where Ares' `Flash.Duration` cannot override the weapon's "
+"repair flash effect"
+msgstr "修复了 Ares 的 `[WarheadType] -> Flash.Duration=` 无法覆盖维修武器闪光效果的问题"
+
+msgid "Customizable crew type per country"
+msgstr "国家层级生还者自定义"
+
 msgid "**11EJDE11**:"
 msgstr "**11EJDE11**："
 
@@ -3133,4 +3351,25 @@ msgid ""
 "Add `ClampToScreen` tag for `BannerType` to control whether banner "
 "position is clamped to the visible area"
 msgstr "为 `BannerType` 添加了 `ClampToScreen` 标签以控制横幅位置是否被限制在可视化区域内"
+
+msgid "**obsidianus** - Automatic conversion based on health"
+msgstr "**obsidianus** - 自动根据血量变形"
+
+msgid "**Nuke** - Reload speed adjustment on promotion"
+msgstr "**Nuke** - 升级时调整装填速率"
+
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being "
+"respected when the master is sold or self-destructed"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
+"不被遵守的问题"
+
+msgid ""
+"**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "
+"houses"
+msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"
+
+msgid "**dh381-1** - Detonate ivan bomb on impact"
+msgstr "**dh381-1** - 引爆伊文炸弹弹头"
 

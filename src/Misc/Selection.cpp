@@ -26,7 +26,7 @@ public:
 	} Array {};
 
 	static inline bool ProcessingIDMatches = false;
-	static inline std::vector<const char*> IFVGroups;
+	static inline std::vector<std::string> IFVGroups;
 
 	// Reversed from Is_Selectable, w/o Select call
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
@@ -135,12 +135,9 @@ public:
 
 			if (pTechnoType->Gunner && !ExtSelection::IFVGroups.empty())
 			{
-				char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+				const std::string gunnerID = pTypeExt->GetGunnerID(pTechno->CurrentWeaponNumber);
 
-				if (!GeneralUtils::IsValidString(gunnerID))
-					sprintf_s(gunnerID, 0x20, "%d", RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
-
-				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
+				if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const std::string& id) { return !_stricmp(id.c_str(), gunnerID.c_str()); }))
 					break;
 			}
 
@@ -186,10 +183,21 @@ DEFINE_FUNCTION_JUMP(CALL, 0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelectio
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
 DEFINE_FUNCTION_JUMP(LJMP, 0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
 
+const std::string TechnoTypeExt::GetGunnerID(int idx) const
+{
+	if (idx < static_cast<int>(this->WeaponGroupAs.size()))
+	{
+		const char* pWeaponGroup = this->WeaponGroupAs[idx];
+
+		if (GeneralUtils::IsValidString(pWeaponGroup))
+			return std::string(pWeaponGroup);
+	}
+
+	return std::to_string(RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode ? idx + 1 : 0);
+}
+
 DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 {
-	const bool useIFVMode = RulesExt::Global()->TypeSelectUseIFVMode && Phobos::Config::TypeSelectUseIFVMode;
-
 	for (const auto pObject : ObjectClass::CurrentObjects)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
@@ -203,12 +211,9 @@ DEFINE_HOOK(0x73298D, TypeSelectExecute_UseIFVMode, 0x5)
 			continue;
 
 		const auto pTypeExt = TechnoTypeExt::Fetch(pTechnoType);
-		char* gunnerID = pTypeExt->WeaponGroupAs[pTechno->CurrentWeaponNumber];
+		const std::string gunnerID = pTypeExt->GetGunnerID(pTechno->CurrentWeaponNumber);
 
-		if (!GeneralUtils::IsValidString(gunnerID))
-			sprintf_s(gunnerID, 0x20, "%d", useIFVMode ? pTechno->CurrentWeaponNumber + 1 : 0);
-
-		if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const char* pID) { return !_stricmp(pID, gunnerID); }))
+		if (std::ranges::none_of(ExtSelection::IFVGroups, [gunnerID](const std::string& id) { return !_stricmp(id.c_str(), gunnerID.c_str()); }))
 			ExtSelection::IFVGroups.emplace_back(gunnerID);
 	}
 

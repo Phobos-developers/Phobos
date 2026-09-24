@@ -33,8 +33,6 @@ public:
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool PreventEscape);
 
-	static bool(__thiscall* ReverseEngineer)(void* pAresHouseExt, TechnoTypeClass* pType);
-
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
 	static void(__thiscall* UnitDeliveryStateMachine_Update)(void*);
@@ -51,10 +49,15 @@ public:
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
+	static PhobosMap<BombClass*, WeaponTypeClass**>* BombExtMap;
 
 	// BuildingTypeExt
 	static void* (__thiscall* GetTunnel)(void*, HouseClass*);
 	static void(__thiscall* AddPassengerFromTunnel)(void*, BuildingClass*, FootClass*);
+
+	// HouseExt
+	static bool(__thiscall* ReverseEngineer)(void*, TechnoTypeClass* pType);
+	static InfantryTypeClass* (__thiscall* GetCrew)(void*);
 
 	// VoxClass
 	static int(__stdcall* FindEVAIndex)(const char* buffer);

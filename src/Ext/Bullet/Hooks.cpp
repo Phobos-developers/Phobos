@@ -175,6 +175,53 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x466B51, BulletClass_AI_GetTargetCoords, 0xB)
+{
+	enum { SkipGameCode = 0x466B67 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
+		return 0;
+
+	GET(AbstractClass*, pTarget, ECX);
+	LEA_STACK(CoordStruct*, outBuffer, STACK_OFFSET(0x1A8, -0x100));
+
+	if (!pTarget)
+		*outBuffer = pThis->TargetCoords;
+	else if (const auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+		*outBuffer = pThis->TargetCoords = pTargetObject->GetTargetCoords();
+	else
+		*outBuffer = pThis->TargetCoords = pTarget->GetCenterCoords();
+
+	R->EAX(outBuffer);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
+{
+	enum { SkipGameCode = 0x466BAF };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
+		return 0;
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x466EA5, BulletClass_AI_MissileSafetyAltitude, 0x6)
+{
+	enum { SkipDestroy = 0x466EB6, SetDestroy = 0x466EAD };
+
+	GET(const int, height, EAX);
+	GET(BulletClass*, pThis, EBP);
+
+	const auto altitude = BulletTypeExt::Fetch(pThis->Type)->MissileSafetyAltitude.Get(RulesClass::Instance->MissileSafetyAltitude);
+
+	return height < altitude ? SkipDestroy : SetDestroy;
+}
+
 #pragma region Gravity
 
 #define APPLYGRAVITY(pType)\
@@ -647,7 +694,7 @@ DEFINE_HOOK(0x467B8E, BulletClass_AI_Ranged, 0x6)
 		int maxRange = pThis->Range;
 
 		if (maxRange > 0 && pThis->WeaponType && pThis->Owner
-			&& WeaponTypeExt::Fetch(pThis->WeaponType)->ProjectileRange_ApplyModifiers)
+			&& WeaponTypeExt::Fetch(pThis->WeaponType)->ProjectileRange_ApplyModifiers.Get(RulesExt::Global()->ProjectileRange_ApplyModifiers))
 		{
 			maxRange = WeaponTypeExt::GetRangeWithModifiers(pThis->WeaponType, pThis->Owner, maxRange);
 		}

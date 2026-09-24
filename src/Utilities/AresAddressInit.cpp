@@ -7,7 +7,6 @@
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
 decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
-decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 decltype(AresFunctions::UnitDeliveryStateMachine_Update) AresFunctions::UnitDeliveryStateMachine_Update = nullptr;
 decltype(AresFunctions::SetSpotlight) AresFunctions::SetSpotlight = nullptr;
@@ -16,9 +15,13 @@ decltype(AresFunctions::DetailsCurrentlyEnabled) AresFunctions::DetailsCurrently
 decltype(AresFunctions::SendPDPlane) AresFunctions::SendPDPlane = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
+PhobosMap<BombClass*, WeaponTypeClass**>* AresFunctions::BombExtMap = nullptr;
 
 decltype(AresFunctions::GetTunnel) AresFunctions::GetTunnel = nullptr;
 decltype(AresFunctions::AddPassengerFromTunnel) AresFunctions::AddPassengerFromTunnel = nullptr;
+
+decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullptr;
+decltype(AresFunctions::GetCrew) AresFunctions::GetCrew = nullptr;
 
 decltype(AresFunctions::FindEVAIndex) AresFunctions::FindEVAIndex = nullptr;
 
@@ -45,8 +48,6 @@ void AresFunctions::InitAres3_0()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
 	}
 
-	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
-
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032110);
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x075DE0);
@@ -64,10 +65,15 @@ void AresFunctions::InitAres3_0()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
+	NOTE_ARES_FUN(BombExtMap, 0xC1DE0);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0D740);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09000);
+
+	// HouseExt
+	NOTE_ARES_FUN(ReverseEngineer, 0x022360);
+	NOTE_ARES_FUN(GetCrew, 0x021230);
 
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x063560);
@@ -94,8 +100,6 @@ void AresFunctions::InitAres3_0p1()
 		NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
 	}
 
-	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
-
 	NOTE_ARES_FUN(IsTargetConstraintsEligible, 0x032AF0);
 
 	NOTE_ARES_FUN(UnitDeliveryStateMachine_Update, 0x076E90);
@@ -113,10 +117,15 @@ void AresFunctions::InitAres3_0p1()
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
+	NOTE_ARES_FUN(BombExtMap, 0xC2DFC);
 
 	// BuildingTypeExt
 	NOTE_ARES_FUN(AresFunctions::GetTunnel, 0x0DA30);
 	NOTE_ARES_FUN(AresFunctions::AddPassengerFromTunnel, 0x09040);
+
+	// HouseExt
+	NOTE_ARES_FUN(ReverseEngineer, 0x022DE0);
+	NOTE_ARES_FUN(GetCrew, 0x021CB0);
 
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x0642B0);

@@ -835,6 +835,7 @@ namespace detail
 				{"ally", AffectedHouse::Allies},
 				{"enemies", AffectedHouse::Enemies},
 				{"enemy", AffectedHouse::Enemies},
+				{"neutral", AffectedHouse::Neutral},
 				{"team", AffectedHouse::Team},
 				{"others", AffectedHouse::NotOwner},
 				{"all", AffectedHouse::All},
@@ -1756,6 +1757,34 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
 	}
+
+	template <>
+	inline bool read<PowerStatus>(PowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PowerStatus> Names[] =
+			{
+				{"none", PowerStatus::None},
+				{"consumer", PowerStatus::Low},
+				{"low", PowerStatus::Low},
+				{"full", PowerStatus::Full},
+				{"normal", PowerStatus::Full},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerState (none, full, low|consumer");
+		}
+		return false;
+	}
 }
 
 // Valueable
@@ -1954,6 +1983,24 @@ inline void ValueableVector<WarheadTypeClass*>::Read(INI_EX& parser, const char*
 		{
 			if (auto pWarhead = WarheadTypeClass::FindOrAllocate(cur))
 				this->push_back(pWarhead);
+		}
+	}
+}
+
+// Specialization: use FindOrAllocate for building type vectors, avoiding dependency on [BuildingTypes] table registration
+// (countries are read from INI before building types are constructed, same as vanilla FindOrAllocate semantics)
+template <>
+inline void ValueableVector<BuildingTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pBuilding = BuildingTypeClass::FindOrAllocate(cur))
+				this->push_back(pBuilding);
 		}
 	}
 }

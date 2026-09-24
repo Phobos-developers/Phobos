@@ -114,46 +114,80 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 	return 0;
 }
 
-DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
+#pragma region MapSelectExtension
+
+static bool __fastcall MapSelectClass_SetNextScenario_CustomMission(MapSelectClass* pThis, void* _, ScenarioClass* pItem)
 {
-	enum { AltNextScenario = 0x685A4C, NextScenario = 0x685A59, Continue = 0x685A63 };
-
-	if (ScenarioClass::Instance->SkipMapSelect)
+	// It can be directly filled in the map file name without being restricted by mapselmd.ini.
+	if (pItem->SkipMapSelect)
 	{
-		if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
+		std::string scenario {};
+		auto const pGlobal = ScenarioExt::Global();
+
+		do
 		{
-			auto const& LocalVariables = ScenarioExt::Global()->Variables[false];
-			auto const& GlobalVariables = ScenarioExt::Global()->Variables[true];
-
-			if (!LocalVariables.empty())
+			if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
 			{
-				for (auto const& itr : LocalVariables)
-				{
-					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
-						continue;
+				const auto& localVariables = pGlobal->Variables[false];
+				const auto& globalVariables = pGlobal->Variables[true];
+				bool success = false;
 
-					return AltNextScenario;
+				if (!localVariables.empty())
+				{
+					for (const auto& itr : localVariables)
+					{
+						if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+							continue;
+
+						success = true;
+						break;
+					}
+				}
+
+				if (!success && !globalVariables.empty())
+				{
+					for (const auto& itr : globalVariables)
+					{
+						if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+							continue;
+
+						success = true;
+						break;
+					}
+
+					if (!success && globalVariables.contains(1) && globalVariables.find(1)->second.Value > 0)
+						success = true;
+				}
+
+				if (success)
+				{
+					scenario = pItem->AltNextScenario;
+					break;
 				}
 			}
 
-			if (!GlobalVariables.empty())
-			{
-				for (auto const& itr : GlobalVariables)
-				{
-					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
-						continue;
+			scenario = pItem->NextScenario;
+		}
+		while (false);
 
-					return AltNextScenario;
-				}
+		if (!scenario.empty())
+		{
+			// Does this Stage have any function ? If anyone knows, please let me know.
+			pItem->Stage = 0;
+			strncpy(pItem->FileName, scenario.c_str(), 0x104u);
+			pItem->FileName[259] = '\0';
 
-				if (GlobalVariables.contains(1) && GlobalVariables.find(1)->second.Value > 0)
-					return AltNextScenario;
-			}
+			return true;
 		}
 
-		if (strcmp(ScenarioClass::Instance->NextScenario, ""))
-			return NextScenario;
+		return false;
 	}
 
-	return Continue;
+	// Return to the original function.
+	return pThis->SetNextScenario(pItem);
 }
+
+DEFINE_JUMP(LJMP, 0x685A38, 0x685A63)	// Skip the original code
+DEFINE_FUNCTION_JUMP(CALL, 0x5ADD63, MapSelectClass_SetNextScenario_CustomMission)
+
+#pragma endregion

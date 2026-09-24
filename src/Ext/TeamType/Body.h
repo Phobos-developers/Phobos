@@ -22,16 +22,18 @@ public:
 		return static_cast<TeamTypeClass*>(this->GetAttachedObject());
 	}
 
+	Nullable<int> SetRecruitableOnLiberate;
+	Valueable<AircraftTypeClass*> ParaDropAircraft;
+
 	TeamTypeExt(TeamTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
-		, SetRecruitableOnLiberate { }
+		, SetRecruitableOnLiberate {}
+		, ParaDropAircraft { nullptr }
 	{ }
 
 	virtual ~TeamTypeExt() = default;
 
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 	// virtual void Initialize() override;
-
-	Nullable<int> SetRecruitableOnLiberate;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

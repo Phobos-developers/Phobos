@@ -23,17 +23,18 @@ git submodule update --init --recursive
 | Config | Command | Output |
 |--------|---------|--------|
 | Debug (recommended for dev) | `scripts\build_debug.bat` | `Debug\Phobos.dll` + `.pdb` |
-| DevBuild (CI nightly) | `scripts\build_devbuild.bat` | `DevBuild\Phobos.dll` + `.pdb` |
 | Release | `scripts\build_release.bat` | `Release\Phobos.dll` + `.pdb` |
+
+There are only two build configurations, `Debug` and `Release`. What kind of build is produced (nightly or stable release) is a separate axis, set by the `BuildType` MSBuild property (`NIGHTLY` or `RELEASE`), which defines the preprocessor macro of the same name; an unset `BuildType` means a plain local build. A pre-release is a `RELEASE` build whose `PRERELEASE_SUFFIX` (hardcoded in `src/Phobos.version.h`) is still defined; remove the suffix there to build a stable release.
 
 These scripts invoke `scripts\run_msbuild.bat`, which locates the VS Developer Command Prompt via `vswhere.exe` (bundled in `scripts/`), then runs `msbuild`. **VS 2022 or VS Build Tools 2022** with the components listed in `.vsconfig` must be installed:
 - `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`
 - `Microsoft.VisualStudio.Component.Windows10SDK.20348`
 - `Microsoft.VisualStudio.Component.VC.ATL`
 
-**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/DevBuild/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
+**In VS Code**, prefer the pre-configured build tasks over running scripts directly unless there are issues. The workspace defines a **"Build Phobos"** task (default build task) that prompts for Debug/Release. Run it via `Ctrl+Shift+B` or the `Tasks: Run Build Task` command. A **"Cleanup build folders"** task is also available.
 
-**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/DevBuild/Release). The batch scripts are not needed when building from VS.
+**In Visual Studio 2022**, most contributors build directly from the IDE using `Build > Build Solution` (`Ctrl+Shift+B`) with the solution configuration dropdown (Debug/Release). The batch scripts are not needed when building from VS.
 
 The build takes roughly 1–3 minutes for a full rebuild. Incremental builds are much faster. To clean:
 ```
@@ -42,19 +43,17 @@ scripts\clean.bat
 
 ### CI build (GitHub Actions)
 
-The CI workflow (`.github/actions/build-phobos/action.yml`) builds the **DevBuild** config with MSBuild, passing `/p:GitCommit=<sha> /p:GitBranch=<ref>` for version stamping. The agent should replicate the CI as:
+The release workflow (`.github/workflows/release.yml`) builds the **Release** config with MSBuild, passing `/p:BuildType=RELEASE`; whether that build is a pre-release is decided by `PRERELEASE_SUFFIX` in `src/Phobos.version.h`, not by the workflow. Nightly builds (`.github/workflows/nightly.yml` and the PR nightly) pass `/p:BuildType=NIGHTLY`. Git commit/ref info is not passed from CI in either case: `Phobos.props` runs a `ComputeGitInfo` target that derives the short commit SHA, the ref (e.g. `refs/heads/develop`) and a dirty marker straight from the repository, so local builds are stamped identically. The agent should replicate a nightly CI build as:
 ```
-msbuild /m /p:Configuration=DevBuild Phobos.sln
+msbuild /m /p:Configuration=Release /p:BuildType=NIGHTLY Phobos.sln
 ```
 
 ## Tests & Validation
 
 There is **no automated test suite**. Validation is:
 1. **Successful compilation** with zero errors (warning level 4, but not treated as errors).
-2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds DevBuild config).
-3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - unless the PR has the `No Documentation Needed` label, these files must be modified:
-   - `docs/Whats-New.md` (changelog entry)
-   - `CREDITS.md` (credit entry; skipped if the `Bugfix` label is set)
+2. **PR CI checks** - the `Pull Request Nightly Build` workflow must pass (builds the Release config as a nightly).
+3. **PR doc checker** (`.github/workflows/pr-doc-checker.yml`) - its three checks (changelog, credits, docs) each pass when the corresponding file is modified, and are skipped individually when the matching label is applied (`Skip Changelog`, `Skip Docs`, `Skip Credits`). Labels are applied by maintainers; see the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 Always verify your changes compile by running `scripts\build_debug.bat` before committing.
 
@@ -373,6 +372,8 @@ scripts\build_docs.bat
 
 Output goes to `docs/_build/html/`. Pull requests are automatically built and served by Read the Docs - check the PR status checks for a preview link.
 
+**Local extension `docs/_ext/`**: a small local Sphinx extension (`sanitize_system_messages`, registered as `_ext.sanitize_system_messages` in `docs/conf.py`) strips docutils `system_message` nodes and repairs the `rawsource` that Sphinx's `ApplySourceWorkaround` pollutes with them. Without it, the "Duplicate implicit target name" warnings caused by repeated sub-headings (e.g. the many `#### Vanilla fixes:` blocks inside `{dropdown}`s in `Whats-New.md`) leak into the gettext `.pot`/`.po` files as bogus translatable strings. Do not remove it or drop `sys.path.insert(0, os.path.abspath('.'))` from `conf.py` - the extension is only importable because of that path insert. A standalone reproduction of the underlying Sphinx/MyST bug is in this [gist](https://gist.github.com/Metadorius/ee435861903ba132cd70563c2bdffec1).
+
 ### Translations
 
 The project uses Sphinx internationalization with `.po` files. Currently only **zh_CN** (Chinese) is maintained. The translation workflow:
@@ -401,12 +402,12 @@ Many contributors are non-native English speakers, so the existing documentation
 
 ## PR Checklist
 
-For non-trivial changes (unless labeled `No Documentation Needed`):
+For non-trivial changes:
 1. Update `docs/Whats-New.md` with a changelog entry.
 2. Update `CREDITS.md` with your contribution.
 3. Update relevant documentation pages in `docs/`.
 
-Use `[Minor]` in the PR title for small changes that don't need documentation updates.
+If one of these doesn't apply to your change, ask a maintainer to apply the matching label (`Skip Changelog`, `Skip Docs` or `Skip Credits`) so the corresponding check is skipped. See the table in `docs/Contributing.md` for what each kind of change is expected to cover.
 
 ## Trust These Instructions
 

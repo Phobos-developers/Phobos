@@ -89,8 +89,6 @@ public:
 		static int TypeSelectByMultiClick_Range;
 		static int TypeSelectByMultiClick_DeployDelay;
 		static bool TypeSelectUseIFVMode;
-		static bool DevelopmentCommands;
-		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
@@ -122,7 +120,17 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
+		// Hotkeys
+		static bool NextIdleHarvesterCommand;
+		static bool QuickSaveCommand;
+		static bool ToggleDigitalDisplayCommand;
+		static bool ToggleDesignatorRangeCommand;
+		static bool ToggleMessageListCommand;
+		static bool ToggleSuperWeaponSidebarCommand;
+		static bool DeselectObjectCommand;
 		static bool SelectCapturedCommand;
+		static bool SuperWeaponSidebarCommands;
+		static bool DevelopmentCommands;
 	};
 
 	class Misc
@@ -141,5 +149,7 @@ public:
 		static bool DisableBalloonHoverPathingFix;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
+		static bool DisableLaserTracking;
+		static bool DisablePsychicDetectable;
 	};
 };

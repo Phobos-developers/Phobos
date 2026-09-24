@@ -58,6 +58,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	}
 
 	bool inactive = pSource->InLimbo;
+	int frame = Unsorted::CurrentFrame;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pSource))
 	{
@@ -68,24 +69,35 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 			const auto pDisguise = pTechno->GetDisguise(true);
 			inactive |= pDisguise && pDisguise->WhatAmI() == AbstractType::TerrainType;
 		}
+
+		frame += TechnoExt::Fetch(pTechno)->RandomFactor;
 	}
 
 	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
-	if (pBuilding && !inactive && pBuilding->GetCurrentMission() != Mission::Construction)
-		inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
+	if (pBuilding && !inactive)
+	{
+		if (pBuilding->GetCurrentMission() != Mission::Construction)
+			inactive |= !pBuilding->IsPowerOnline() || BuildingExt::Fetch(pBuilding)->LimboID != -1;
+		else if (BuildingTypeExt::Fetch(pBuilding->Type)->NoAlphaImageOnBuildup.Get(RulesExt::Global()->NoAlphaImageOnBuildup))
+			inactive = true;
+	}
 
 	auto& alphaExt = *AresFunctions::AlphaExtMap;
 
 	if (inactive)
 	{
 		if (const auto pAlpha = alphaExt.get_or_default(pSource))
+		{
+			const RectangleStruct dirty = { pAlpha->Rect.X - tacticalPos->X, pAlpha->Rect.Y - tacticalPos->Y, pAlpha->Rect.Width, pAlpha->Rect.Height };
+			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 			GameDelete(pAlpha);
+		}
 
 		return;
 	}
 
-	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
+	if (frame % 2) // lag reduction - don't draw a new alpha every frame
 	{
 		if (alphaExt.get_or_default(pSource) && pBuilding && pImage->Frames <= 1)
 			return;
@@ -108,6 +120,21 @@ DEFINE_HOOK(0x5F3E78, ObjectClass_AI_UpdateAlphaShape, 0x6)
 
 	if (AresFunctions::AlphaExtMap)
 		UpdateAlphaShape(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5045, ObjectClass_Place_NoAlphaImageOnBuildup, 0x6)
+{
+	GET(ObjectTypeClass* const, pType, EBX);
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType))
+	{
+		if (BuildingTypeExt::Fetch(pBuildingType)->NoAlphaImageOnBuildup.Get(RulesExt::Global()->NoAlphaImageOnBuildup))
+			return 0x5F514B; // jump past the AlphaShape creation block (the `jz` skip target)
+	}
+
+	R->EAX(pType ? pType->AlphaImage : nullptr);
 
 	return 0;
 }

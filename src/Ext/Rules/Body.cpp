@@ -1,5 +1,12 @@
 #include "Body.h"
 
+#include <cmath>
+#include <algorithm>
+
+#include <ScenarioClass.h>
+
+#include <Utilities/SequenceRates.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -9,6 +16,8 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <TiberiumClass.h>
+#include <Ext/Tiberium/Body.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -25,6 +34,23 @@ void RulesExt::Remove(RulesClass* pThis)
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		const char* pSection = pTib->ID;
+		if (!pINI->GetSection(pSection))
+			continue;
+
+		pINI->GetInteger(pSection, "Spread", pTib->Spread);
+		pINI->GetDouble(pSection, "SpreadPercentage", pTib->SpreadPercentage);
+		pINI->GetInteger(pSection, "Growth", pTib->Growth);
+		pINI->GetDouble(pSection, "GrowthPercentage", pTib->GrowthPercentage);
+		pINI->GetInteger(pSection, "Value", pTib->Value);
+		pINI->GetInteger(pSection, "Power", pTib->Power);
+
+		if (const auto pTibExt = TiberiumExt::TryFetch(pTib))
+			pTibExt->LoadFromINIFile(pINI);
+	}
 }
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -150,6 +176,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
 
+	this->ShowGameTime.Read(exINI, GameStrings::General, "ShowGameTime");
+
 	Nullable<double>AirShadowBaseScale;
 	AirShadowBaseScale.Read(exINI, GameStrings::AudioVisual, "AirShadowBaseScale");
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0)
@@ -256,6 +284,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
+	this->CloakAnims.Read(exINI, GameStrings::AudioVisual, "CloakAnims");
+	this->DecloakAnims.Read(exINI, GameStrings::AudioVisual, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, GameStrings::General, "Cloak.KickOutParasite");
+
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Delay.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Delay");
 	if (!this->DisplayIncome_Delay)
@@ -352,6 +384,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
 	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, GameStrings::General, "NoReload.Temporal");
+
+	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
+
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
 	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
@@ -407,6 +445,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->WarheadAnimZAdjust.Read(exINI, GameStrings::AudioVisual, "WarheadAnimZAdjust");
 
 	this->IvanBombAttachToCenter.Read(exINI, GameStrings::CombatDamage, "IvanBombAttachToCenter");
+	this->IvanBomb_Visibility.Read(exINI, GameStrings::AudioVisual, "IvanIconVisibility");
+	this->MissileSpawnAttackCell.Read(exINI, GameStrings::CombatDamage, "MissileSpawnAttackCell");
 
 	this->FallingDownTargetingFix.Read(exINI, GameStrings::General, "FallingDownTargetingFix");
 	this->AIAirTargetingFix.Read(exINI, GameStrings::General, "AIAirTargetingFix");
@@ -420,6 +460,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
@@ -542,6 +583,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
+	this->Temporal_KillPoweredAnim.Read(exINI, GameStrings::General, "Temporal.KillPoweredAnim");
 
 	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
@@ -550,6 +592,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->AttachEffect_ReplaceLongerDuration.Read(exINI, GameStrings::General, "AttachEffect.ReplaceLongerDuration");
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, GameStrings::General, "AttachEffects.AttachOnOwnerChange");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
@@ -592,6 +636,28 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PoseDir_Production.Read(exINI, GameStrings::AudioVisual, "PoseDir.Production");
 	this->PoseDir_Field.Read(exINI, GameStrings::AudioVisual, "PoseDir.Field");
 
+	if (exINI.ReadString(GameStrings::General, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", GameStrings::General);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
+	this->ApproachTarget_StopWhenInRange.Read(exINI, GameStrings::General, "ApproachTarget.StopWhenInRange");
+
+	this->NoAlphaImageOnBuildup.Read(exINI, GameStrings::AudioVisual, "NoAlphaImageOnBuildup");
+	this->ReadyToNextMission_MovingCheck.Read(exINI, GameStrings::General, "ReadyToNextMission.MovingCheck");
+
+	this->Warhead_PreventScatter.Read(exINI, GameStrings::CombatDamage, "Warhead.PreventScatter");
+
+	this->ProjectileRange_ApplyModifiers.Read(exINI, GameStrings::CombatDamage, "ProjectileRange.ApplyModifiers");
+
+	this->KeepAlive_Infantry.Read(exINI, GameStrings::General, "KeepAlive.Infantry");
+	this->KeepAlive_Units.Read(exINI, GameStrings::General, "KeepAlive.Units");
+	this->KeepAlive_Aircraft.Read(exINI, GameStrings::General, "KeepAlive.Aircraft");
+	this->KeepAlive_Buildings.Read(exINI, GameStrings::General, "KeepAlive.Buildings");
+	this->KeepAlive_Defenses.Read(exINI, GameStrings::General, "KeepAlive.Defenses");
+
+	this->AutoTarget_InsignificantWhenMindControlled.Read(exINI, GameStrings::CombatDamage, "AutoTarget.InsignificantWhenMindControlled");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -629,6 +695,22 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Global default per-sequence animation rates for infantry.
+	for (size_t i = 0; i < SequenceRates::Entries.size(); ++i)
+	{
+		char key[64];
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultRate", SequenceRates::Entries[i].Name);
+		exINI.ReadInteger(GameStrings::AudioVisual, key, &this->CustomSequenceRates[i]);
+
+		bool normalized;
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultNormalized", SequenceRates::Entries[i].Name);
+		if (exINI.ReadBool(GameStrings::AudioVisual, key, &normalized))
+			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
+	}
+
+	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
+	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -846,6 +928,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->ShowPowerPlantEnhancerRange)
+		.Process(this->ShowGameTime)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
@@ -890,6 +973,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -931,6 +1018,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AdjacentWallDamage)
 		.Process(this->WarheadAnimZAdjust)
 		.Process(this->IvanBombAttachToCenter)
+		.Process(this->IvanBomb_Visibility)
+		.Process(this->MissileSpawnAttackCell)
 		.Process(this->FallingDownTargetingFix)
 		.Process(this->AIAirTargetingFix)
 		.Process(this->ReloadInTransport)
@@ -942,6 +1031,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1033,9 +1123,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->Temporal_KillPoweredAnim)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->AttachEffect_ReplaceLongerDuration)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->FlyNoWobbles)
@@ -1061,6 +1154,24 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDir_DefaultToPoseDir)
 		.Process(this->PoseDir_Production)
 		.Process(this->PoseDir_Field)
+		.Process(this->ApproachTarget_StopWhenInRange)
+		.Process(this->NoAlphaImageOnBuildup)
+		.Process(this->ReadyToNextMission_MovingCheck)
+		.Process(this->Warhead_PreventScatter)
+		.Process(this->ProjectileRange_ApplyModifiers)
+		.Process(this->KeepAlive_Infantry)
+		.Process(this->KeepAlive_Units)
+		.Process(this->KeepAlive_Aircraft)
+		.Process(this->KeepAlive_Buildings)
+		.Process(this->KeepAlive_Defenses)
+		.Process(this->AutoTarget_InsignificantWhenMindControlled)
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
+		.Process(this->CustomSequenceRates)
+		.Process(this->CustomSequenceNormalized)
+		.Process(this->RevealHouses)
+		.Process(this->MissileKeepTargetCoord)
     ;
 }
 
@@ -1250,16 +1361,56 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
-DEFINE_JUMP(LJMP, 0x668EED, 0x668EF5) // Load types later
-DEFINE_HOOK(0x668F6A, RulesClass_Read_File_LoadTypes, 0x5)
+namespace
 {
-	GET(RulesClass*, pRules, EDI);
-	GET(CCINIClass*, pINI, ESI);
+	template <typename T>
+	void ReadSpecialWeaponType(T& value, INI_EX& parser, CCINIClass* pINI, const char* pKey)
+	{
+		using base_type = std::remove_pointer_t<T>;
 
-	pRules->LoadTypesFromINI(pINI);
+		if (!parser.ReadString("SpecialWeapons", pKey))
+			return;
 
-	return 0;
+		auto pValue = parser.value();
+		if (INIClass::IsBlank(pValue))
+		{
+			value = nullptr;
+			return;
+		}
+
+		if (auto pType = base_type::Find(pValue))
+		{
+			value = pType;
+			return;
+		}
+
+		if (auto pType = GameCreate<base_type>(pValue))
+		{
+			pType->LoadFromINI(pINI);
+			value = pType;
+			return;
+		}
+
+		Debug::INIParseFailed("SpecialWeapons", pKey, pValue);
+	}
+}
+
+DEFINE_JUMP(LJMP, 0x66919B, 0x6691B7) // Don't read warhead here!
+DEFINE_HOOK(0x668FDB, RulesClass_Read_SpecialWeapons, 0x6)
+{
+	GET(RulesClass*, pRules, ESI);
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	ReadSpecialWeaponType(pRules->NukeWarhead, exINI, pINI, "NukeWarhead");
+	ReadSpecialWeaponType(pRules->NukeProjectile, exINI, pINI, "NukeProjectile");
+	ReadSpecialWeaponType(pRules->NukeDown, exINI, pINI, "NukeDown");
+	ReadSpecialWeaponType(pRules->MutateWarhead, exINI, pINI, "MutateWarhead");
+	ReadSpecialWeaponType(pRules->MutateExplosionWarhead, exINI, pINI, "MutateExplosionWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseWarhead, exINI, pINI, "EMPulseWarhead");
+	ReadSpecialWeaponType(pRules->EMPulseProjectile, exINI, pINI, "EMPulseProjectile");
+
+	return 0x6691B7;
 }
 
 // skip vanilla JumpjetControls and make it earlier load

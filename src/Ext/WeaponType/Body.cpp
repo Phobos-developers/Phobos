@@ -2,7 +2,11 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/AresFunctions.h>
+
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+
+PhobosMap<BombClass*, WeaponTypeExt*> WeaponTypeExt::BombExtMap;
 
 bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
@@ -96,6 +100,7 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
+	this->IvanBomb_Visibility.Read(exINI, pSection, "IvanBomb.Visibility");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -119,6 +124,8 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->LaserPositionUpdate.Read(exINI, pSection, "LaserPositionUpdate");
+	if (this->LaserPositionUpdate != PositionFollow::None)
+		Phobos::Optimizations::DisableLaserTracking = false;
 	this->LaserPositionUpdate_StopOnFirerConvert.Read(exINI, pSection, "LaserPositionUpdate.StopOnFirerConvert");
 	this->LaserZAdjust.Read(exINI, pSection, "LaserZAdjust");
 	this->EBoltZAdjust.Read(exINI, pSection, "EBoltZAdjust");
@@ -159,6 +166,11 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
+
+	// AttachEffect
+	this->AttachEffects.LoadFromINI(pINI, pSection);
+	this->AttachEffect_Enable = (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0);
+
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
 	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
 	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
@@ -228,6 +240,7 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)
+		.Process(this->IvanBomb_Visibility)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
@@ -267,6 +280,8 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_FullDetonation)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffect_Enable)
 		.Process(this->AttachEffect_RequiredTypes)
 		.Process(this->AttachEffect_DisallowedTypes)
 		.Process(this->AttachEffect_RequiredGroups)
@@ -328,6 +343,7 @@ bool WeaponTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
 }
 
@@ -335,7 +351,16 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Process(OldRadius)
+		.Process(BombExtMap)
 		.Success();
+}
+
+WeaponTypeExt* WeaponTypeExt::GetBombExtData(BombClass* pBomb)
+{
+	if (const auto pAresMap = AresFunctions::BombExtMap)
+		return WeaponTypeExt::Fetch(*pAresMap->get_or_default(pBomb));
+
+	return WeaponTypeExt::BombExtMap.get_or_default(pBomb);
 }
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
@@ -390,6 +415,9 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	}
 
 	auto const pTechnoExt = TechnoExt::Fetch(pTechno);
+
+	if (TechnoExt::HasAdditionalAbility(pTechno, AdditionalAbility::Range))
+		range = GeneralUtils::SafeMultiply(range, Math::max(pTechnoExt->TypeExtData->VeteranRange.Get(RulesExt::Global()->VeteranRange), 0.0));
 
 	if (!pTechnoExt->AE.HasRangeModifier)
 		return range;

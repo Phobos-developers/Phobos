@@ -29,9 +29,9 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	{
 		GET(HouseClass*, pAI, EBX);
 
-		if (const auto count = pAI->ConYards.Count)
+		if (pAI->ConYards.Count > 1)
 		{
-			const auto wayPoint = pAI->GetSpawnPosition();
+			const int wayPoint = pAI->GetSpawnPosition();
 
 			if (wayPoint != -1)
 			{
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 				auto newCenter = center;
 				double distanceSquared = 131072.0;
 
-				for (int i = 0; i < count; ++i)
+				for (int i = 0; i < pAI->ConYards.Count; ++i)
 				{
 					if (const auto pBuilding = pAI->ConYards.GetItem(i))
 					{

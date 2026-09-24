@@ -12,6 +12,45 @@
 
 #include <Utilities/AresHelper.h>
 
+namespace
+{
+	constexpr std::pair<const char*, AdditionalAbility> AbilityTokens[] = {
+		{ "RELOAD",       AdditionalAbility::Reload },
+		{ "EMPTY_RELOAD", AdditionalAbility::EmptyReload },
+		{ "RANGE",		  AdditionalAbility::Range },
+		{ "CRITIMMUNE",	  AdditionalAbility::CritImmune },
+		{ "CRITCHANCE",	  AdditionalAbility::CritChance }
+	};
+
+	void ReadAdditionalAbilities(
+			INI_EX& parser,
+			const char* section,
+			const char* key,
+			std::bitset<AdditionalAbilityCount>& result)
+	{
+		std::vector<std::string> values;
+
+		if (!parser.ParseStringList(values, section, key))
+			return;
+
+		// When the key is present, fully replace the previous value with this
+		// list so that map INIs can override rules values.
+		result.reset();
+
+		for (const auto& value : values)
+		{
+			for (const auto& [name, ability] : AbilityTokens)
+			{
+				if (!_stricmp(value.c_str(), name))
+				{
+					result.set(static_cast<size_t>(ability));
+					break;
+				}
+			}
+		}
+	}
+}
+
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -792,6 +831,14 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
+	this->AutoDeath_PlayerPowerState.Read(exINI, pSection, "AutoDeath.PlayerPowerState");
+	this->AutoDeath_PlayerMoney_Max.Read(exINI, pSection, "AutoDeath.PlayerMoney.Max");
+	this->AutoDeath_PlayerMoney_Min.Read(exINI, pSection, "AutoDeath.PlayerMoney.Min");
+
+	if ((this->AutoDeath_PlayerMoney_Max != -1)
+		&& (this->AutoDeath_PlayerMoney_Min != -1)
+		&& (this->AutoDeath_PlayerMoney_Max < this->AutoDeath_PlayerMoney_Min))
+		Debug::Log("[Developer warning][%s] AutoDeath.PlayerMoney.Min is bigger than AutoDeath.PlayerMoney.Max, AutoDeath will never activate!\n", pSection);
 
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
@@ -840,6 +887,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, pSection, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, pSection, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, pSection, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, pSection, "OpenTransport.FireWhileMoving");
@@ -964,7 +1012,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
-	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_Undeploy.Read(exINI, pSection, "Convert.Undeploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
@@ -1010,6 +1057,14 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoReload_UnderEMP.Read(exINI, pSection, "NoReload.UnderEMP");
 	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
 
+	ReadAdditionalAbilities(exINI, pSection, "VeteranAbilities", this->AdditionalVeteranAbilities);
+	ReadAdditionalAbilities(exINI, pSection, "EliteAbilities", this->AdditionalEliteAbilities);
+
+	this->VeteranReload.Read(exINI, pSection, "VeteranReload");
+	this->VeteranEmptyReload.Read(exINI, pSection, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, pSection, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, pSection, "VeteranCritChance");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -1031,6 +1086,20 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
+
+	if (exINI.ReadString(pSection, "AttackMove.StopWhenTargetAcquired") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.StopWhenTargetAcquired is deprecated and has been replaced by ApproachTarget.StopWhenInRange! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
+	this->ApproachTarget_StopWhenInRange.Read(exINI, pSection, "ApproachTarget.StopWhenInRange");
+
+	if (exINI.ReadString(pSection, "AttackMove.PursuitTarget") > 0)
+	{
+		Debug::Log("[Developer warning][%s] AttackMove.PursuitTarget is deprecated and has been replaced by ApproachTarget.PursuitTarget! If both are set, the latter will be used.\n", pSection);
+	}
+	this->ApproachTarget_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
+	this->ApproachTarget_PursuitTarget.Read(exINI, pSection, "ApproachTarget.PursuitTarget");
 
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_Weapon.Read(exINI, pSection, "KeepTargetOnMove.Weapon");
@@ -1129,10 +1198,28 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
+	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
+	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
+
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
+
+	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
+	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
+
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+	
+	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
+
+	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
+	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
-
-	// Ares 0.3
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1147,9 +1234,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
+	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
 
 	if (pThis->Gunner)
 	{
@@ -1372,6 +1461,8 @@ template <typename T>
 void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Array)
+
 		.Process(this->HealthBar_Hide)
 		.Process(this->HealthBar_HidePips)
 		.Process(this->HealthBar_Permanent)
@@ -1387,15 +1478,11 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->InterceptorType)
 
-		.Process(this->GroupAs)
 		.Process(this->WeaponGroupAs)
-		.Process(this->RadarJamRadius)
 		.Process(this->RadarJamHouses)
 		.Process(this->RadarJamDelay)
 		.Process(this->RadarJamAffect)
 		.Process(this->RadarJamIgnore)
-		.Process(this->InhibitorRange)
-		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
 		.Process(this->TurretShadow)
 		.Process(this->ShadowIndices)
@@ -1441,6 +1528,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
+		.Process(this->AutoDeath_PlayerPowerState)
+		.Process(this->AutoDeath_PlayerMoney_Max)
+		.Process(this->AutoDeath_PlayerMoney_Min)
 
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
@@ -1491,6 +1581,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1500,8 +1591,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->AllowWeaponSelectAgainstWalls)
-		.Process(this->NoAmmoWeapon)
-		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
@@ -1584,7 +1673,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->TiberiumEaterType)
 
-		.Process(this->Convert_Deploy)
 		.Process(this->Convert_Undeploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
@@ -1616,7 +1704,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoQueueUpToEnter)
 		.Process(this->NoQueueUpToEnter_BoardDistance)
 		.Process(this->NoQueueUpToUnload)
-		.Process(this->Passengers_BySize)
 
 		.Process(this->RateDown_Delay)
 		.Process(this->RateDown_Reset)
@@ -1627,6 +1714,12 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
 		.Process(this->NoReload_Temporal)
+		.Process(this->AdditionalVeteranAbilities)
+		.Process(this->AdditionalEliteAbilities)
+		.Process(this->VeteranReload)
+		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
@@ -1647,6 +1740,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->AttackMove_Aggressive)
 		.Process(this->AttackMove_UpdateTarget)
+
+		.Process(this->ApproachTarget_StopWhenInRange)
+		.Process(this->ApproachTarget_PursuitTarget)
 
 		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)
@@ -1740,8 +1836,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->JumpjetClimbIgnoreBuilding)
 
-		.Process(this->Unsellable)
-
 		.Process(this->ExtraThreat_Enabled)
 		.Process(this->ExtraThreat_IsThreat)
 		.Process(this->AlwaysConsideredThreat)
@@ -1753,12 +1847,54 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
+
+		.Process(this->ExitThroughRoof)
+		.Process(this->PsychicDetectable)
+
+		.Process(this->CloakAnims)
+		.Process(this->DecloakAnims)
+		.Process(this->Cloak_KickOutParasite)
+			
+		.Process(this->RevealHouses)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
+
+		.Process(this->VoiceEnterGrinder)
+
+		.Process(this->DefaultToGuardArea_Modes)
+		.Process(this->DefaultToGuardArea_AIModes)
+
+		// Ares 0.2
+		.Process(this->RadarJamRadius)
+
+		// Ares 0.9
+		.Process(this->InhibitorRange)
+		.Process(this->DesignatorRange)
+
+		// Ares 0.A
+		.Process(this->GroupAs)
+			
+		// Ares 0.C
+		.Process(this->NoAmmoWeapon)
+		.Process(this->NoAmmoAmount)
+
+		// Ares 2.0
+		.Process(this->Passengers_BySize)
+		.Process(this->Convert_Deploy)
+
+		// Ares 3.0
+		.Process(this->Unsellable)
+		.Process(this->KeepAlive)
 		;
 }
 void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
 }
 
 void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)

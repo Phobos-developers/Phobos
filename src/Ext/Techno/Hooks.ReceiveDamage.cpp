@@ -18,6 +18,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pWHExt = WarheadTypeExt::Fetch(args->WH);
+	const auto pAttacker = args->Attacker;
 	int& damage = *args->Damage;
 
 	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
@@ -25,21 +26,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (!pWHExt->IsHealthInThreshold(pThis)
 	|| !pWHExt->IsVeterancyInThreshold(pThis)
 	|| (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral())
-	|| !pWHExt->IsInvokerAllowed(pThis, args->Attacker))
+	|| !pWHExt->IsInvokerAllowed(pThis, pAttacker))
 	{
 		damage = 0;
 		return 0;
 	}
 
 	const auto pExt = TechnoExt::Fetch(pThis);
-	const auto pSourceHouse = args->SourceHouse;
+	const auto pSourceHouse = pAttacker ? pAttacker->Owner : args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
-		const auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, args->Attacker);
-		pWHExt->DetonateOnOneUnit(args->SourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, args->Attacker, nullptr, args->DistanceToEpicenter);
+		const auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, pAttacker);
+		pWHExt->DetonateOnOneUnit(pSourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, pAttacker, nullptr, args->DistanceToEpicenter);
 		pWHExt->DamageAreaInvoker = pOldInvoker;
 	}
 
@@ -48,30 +49,31 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		double multiplier = 1.0;
 
-		if (args->Attacker && args->Attacker->Berzerk)
+		// Calculate health multiplier first since it'll need to be multiplied by later multipliers
+		if (pWHExt->DamageSourceHealthMultiplier && pAttacker)
+			multiplier += pWHExt->DamageSourceHealthMultiplier * pAttacker->GetHealthPercentage();
+
+		if (pWHExt->DamageTargetHealthMultiplier)
+			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+
+		if (pAttacker && pAttacker->Berzerk)
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
-				multiplier = pWHExt->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier));
+				multiplier *= pWHExt->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier_Berzerk.Get(RulesExt::Global()->DamageEnemiesMultiplier));
 			else if (pSourceHouse != pTargetHouse)
-				multiplier = pWHExt->DamageAlliesMultiplier_Berzerk.Get(RulesExt::Global()->DamageAlliesMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier));
+				multiplier *= pWHExt->DamageAlliesMultiplier_Berzerk.Get(RulesExt::Global()->DamageAlliesMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier));
 			else
-				multiplier = pWHExt->DamageOwnerMultiplier_Berzerk.Get(RulesExt::Global()->DamageOwnerMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier));
+				multiplier *= pWHExt->DamageOwnerMultiplier_Berzerk.Get(RulesExt::Global()->DamageOwnerMultiplier_Berzerk.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier));
 		}
 		else
 		{
 			if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
-				multiplier = pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
+				multiplier *= pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
 			else if (pSourceHouse != pTargetHouse)
-				multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);
+				multiplier *= pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);
 			else
-				multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
+				multiplier *= pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
 		}
-
-		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
-			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();
-
-		if (pWHExt->DamageTargetHealthMultiplier)
-			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
 
 		if (multiplier != 1.0)
 		{
@@ -140,6 +142,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (!args->IgnoreDefenses)
 	{
 		int nDamageLeft = damage;
+		const int damageRecord = damage;
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -149,6 +152,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 				if (nDamageLeft >= 0)
 				{
+					if (damage > nDamageLeft) // deal actual damage
+					{
+						pShieldData->SetRespawnRestartInCombat();
+						pShieldData->SetSelfHealingRestartInCombat();
+					}
+
 					damage = nDamageLeft;
 
 					if (const auto pTag = pThis->AttachedTag)
@@ -158,9 +167,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-			else if (!pShieldData->IsAvailable() || pShieldData->GetHP() <= 0)
+
+			// update RestartInCombat timers regardless of the shield is active or not
+			if (damageRecord > 0 && !args->WH->Psychedelic && (damageRecord - damage > 0 || GeneralUtils::GetWarheadVersusArmor(args->WH, pThis, pExt->TypeExtData->OwnerObject()) * damageRecord >= 1.0))
 			{
 				pShieldData->SetRespawnRestartInCombat();
+				pShieldData->SetSelfHealingRestartInCombat();
 			}
 		}
 
@@ -248,13 +260,39 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 
-	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead, pSourceHouse);
 
 	if (pSource)
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
+
+	const auto pWHExt = WarheadTypeExt::Fetch(pWarhead);
+
+	if (pWHExt->PreventCrewEscape)
+		TechnoExt::Fetch(pThis)->PreventCrewEscape = true;
+
+	if (pWHExt->PreventPassengerEscape)
+		pThis->KillPassengers(pSource);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x442635, BuildingClass_ReceiveDamage_PreventOccupantEscape, 0x6)
+{
+	enum { SkipClearOccupants = 0x442640 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	if (WarheadTypeExt::Fetch(pWarhead)->PreventOccupantEscape)
+	{
+		GET(BuildingClass*, pThis, ESI);
+		GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x9C, 0x10));
+		pThis->KillOccupants(pSource);
+		return SkipClearOccupants;
+	}
 
 	return 0;
 }
@@ -363,85 +401,102 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 		return 0;
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pWarhead);
-
-	if (pWHExt->Reflected)
-		return 0;
-
 	auto const pExt = TechnoExt::Fetch(pThis);
-	auto& random = ScenarioClass::Instance->Random;
-	const auto& suppressType = pWHExt->SuppressReflectDamage_Types;
-	const auto& suppressGroup = pWHExt->SuppressReflectDamage_Groups;
-	const bool suppress = pWHExt->SuppressReflectDamage;
-	const bool suppressByType = suppressType.size() > 0;
-	const bool suppressByGroup = suppressGroup.size() > 0;
 
-	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
+	if (!pWHExt->Reflected)
+	{
+		auto& random = ScenarioClass::Instance->Random;
+		const auto& suppressType = pWHExt->SuppressReflectDamage_Types;
+		const auto& suppressGroup = pWHExt->SuppressReflectDamage_Groups;
+		const bool suppress = pWHExt->SuppressReflectDamage;
+		const bool suppressByType = suppressType.size() > 0;
+		const bool suppressByGroup = suppressGroup.size() > 0;
+
+		if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
+		{
+			for (auto const& attachEffect : pExt->AttachedEffects)
+			{
+				if (!attachEffect->IsActive())
+					continue;
+
+				auto const pType = attachEffect->GetType();
+
+				if (!pType->ReflectDamage)
+					continue;
+
+				if (pType->ReflectDamage_Chance < random.RandomDouble())
+					continue;
+
+				if (suppress)
+				{
+					if (suppressByType && suppressType.Contains(pType))
+						continue;
+
+					if (suppressByGroup && pType->HasGroups(suppressGroup, false))
+						continue;
+				}
+
+				auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+				int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
+
+				if (pType->ReflectDamage_UseInvokerAsOwner)
+				{
+					auto const pInvoker = attachEffect->GetInvoker();
+
+					if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
+					{
+						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+						pWHExtRef->Reflected = true;
+
+						if (pType->ReflectDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
+						else
+							pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
+
+						pWHExtRef->Reflected = false;
+					}
+					else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
+					{
+						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+						pWHExtRef->Reflected = true;
+
+						if (pType->ReflectDamage_Warhead_Detonate)
+							WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
+						else
+							pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
+
+						pWHExtRef->Reflected = false;
+					}
+				}
+				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
+				{
+					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
+					pWHExtRef->Reflected = true;
+
+					if (pType->ReflectDamage_Warhead_Detonate)
+						WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
+					else
+						pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+
+					pWHExtRef->Reflected = false;
+				}
+			}
+		}
+	}
+
+	if (pExt->AE.HasOnDamageDiscardables)
 	{
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
-			if (!attachEffect->IsActive())
-				continue;
+			const auto pType = attachEffect->GetType();
 
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->ReflectDamage)
-				continue;
-
-			if (pType->ReflectDamage_Chance < random.RandomDouble())
-				continue;
-
-			if (suppress)
+			if ((pType->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
+				&& EnumFunctions::CanTargetHouse(pType->DiscardOn_ReceivedDamage_AffectsHouse, pThis->Owner, pSourceHouse))
 			{
-				if (suppressByType && suppressType.Contains(pType))
-					continue;
+				attachEffect->ReceivedDamageCount++;
 
-				if (suppressByGroup && pType->HasGroups(suppressGroup, false))
-					continue;
-			}
-
-			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
-
-			if (pType->ReflectDamage_UseInvokerAsOwner)
-			{
-				auto const pInvoker = attachEffect->GetInvoker();
-
-				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
-				{
-					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-					pWHExtRef->Reflected = true;
-
-					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
-					else
-						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
-
-					pWHExtRef->Reflected = false;
-				}
-				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
-				{
-					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-					pWHExtRef->Reflected = true;
-
-					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
-					else
-						pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
-
-					pWHExtRef->Reflected = false;
-				}
-			}
-			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
-			{
-				auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-				pWHExtRef->Reflected = true;
-
-				if (pType->ReflectDamage_Warhead_Detonate)
-					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
-				else
-					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
-
-				pWHExtRef->Reflected = false;
+				if (attachEffect->ReceivedDamageCount >= pType->DiscardOn_ReceivedDamage_Count)
+					attachEffect->ShouldBeDiscarded = true;
 			}
 		}
 	}
@@ -478,7 +533,7 @@ DEFINE_HOOK(0x701D2E, TechnoClass_ReceiveDamage_AllowBerzerkOnAllies, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xC4, 0x4));
 
-	if (!RulesExt::Global()->AllowBerzerkOnAllies && pThis->Owner->IsAlliedWith(receiveDamageArgs.SourceHouse))
+	if (!RulesExt::Global()->AllowBerzerkOnAllies && pThis->Owner->IsAlliedWith(receiveDamageArgs.Attacker ? receiveDamageArgs.Attacker->Owner : receiveDamageArgs.SourceHouse))
 		return DisallowBerzerk;
 
 	return 0;

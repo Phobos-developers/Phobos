@@ -14,8 +14,8 @@ env:
 jobs:
   Changelog-Check:
     name: Changelog Mention
-    # If the No Documentation Needed label is set, then workflow will not be executed
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') }}
+    # If the Skip Changelog label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Changelog') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -31,14 +31,14 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Changelog! 🧐"
-            echo "Please, mention your changes in 'docs/Whats-New.md' or use [No Documentation Needed] label for your Pull Request."
+            echo "Please, mention your changes in 'docs/Whats-New.md' or ask a maintainer to apply the Skip Changelog label for your Pull Request."
             exit 1
           fi
 
   Credits-Check:
     name: Credits List Mention
-    # If the No Documentation Needed or Bugfix label is set, then workflow will not be executed
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') && !contains(github.event.pull_request.labels.*.name, 'Bugfix') }}
+    # If the Skip Credits label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Credits') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -54,14 +54,14 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to update the Credits List! 🧐"
-            echo "Please, mention your contribution in 'CREDITS.md' or use [No Documentation Needed] label for your Pull Request."
+            echo "Please, mention your contribution in 'CREDITS.md' or ask a maintainer to apply the Skip Credits label for your Pull Request."
             exit 1
           fi
 
   Documentation-Check:
     name: Documentation for Changes
-    # If the No Documentation Needed or Bugfix label is set, then workflow will not be executed
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') && !contains(github.event.pull_request.labels.*.name, 'Bugfix') }}
+    # If the Skip Docs label is set, then workflow will not be executed
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Docs') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -85,14 +85,12 @@ jobs:
             exit 0
           else
             echo "It looks like you forgot to add your changes to the docs! 🧐"
-            echo "Please, document your changes or use [No Documentation Needed] label for your Pull Request."
+            echo "Please, document your changes or ask a maintainer to apply the Skip Docs label for your Pull Request."
             exit 1
           fi
 
   Interop-Version-Check:
     name: Interop API Version Updated
-    # If the No Documentation Needed label is set, then workflow will not be executed
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'No Documentation Needed') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -104,12 +102,12 @@ jobs:
           # Check if any files in src/Interop/ were modified (excluding Version.h itself for initial checks)
           CHANGED_FILES=$(git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD))
           INTEROP_MODIFIED=$(echo "$CHANGED_FILES" | grep -E "^src/Interop/.*\.(h|cpp)$" | grep -v "^src/Interop/Version\." || true)
-          
+
           if [ -z "$INTEROP_MODIFIED" ]; then
             echo "No Interop files modified. Skipping version check."
             exit 0
           fi
-          
+
           # If Interop files were modified, check if Version.h was also modified
           if echo "$CHANGED_FILES" | grep -q "^src/Interop/Version\.h$"; then
             echo "Thank you for updating the Interop API version! 😋"

@@ -107,41 +107,39 @@ namespace LaserRT
 
 	std::unordered_map<LaserDrawClass*, TrackingData> TrackingMap;
 
-	std::unordered_multimap<ObjectClass*, LaserDrawClass*> ShooterToLasers;
-	std::unordered_multimap<ObjectClass*, LaserDrawClass*> TargetToLasers;
+	std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> ShooterToLasers;
+	std::unordered_map<ObjectClass*, std::vector<LaserDrawClass*>> TargetToLasers;
 
 	static void RegisterTracking(LaserDrawClass* pLaser, const TrackingData& data)
 	{
 		if (data.Shooter && (data.FollowMode & PositionFollow::Firer))
-			ShooterToLasers.emplace(data.Shooter, pLaser);
+			ShooterToLasers[data.Shooter].push_back(pLaser);
 		if (data.Target && (data.FollowMode & PositionFollow::Target))
-			TargetToLasers.emplace(data.Target, pLaser);
+			TargetToLasers[data.Target].push_back(pLaser);
 	}
 
 	static void UnregisterTracking(LaserDrawClass* pLaser, const TrackingData& data)
 	{
 		if (data.Shooter)
 		{
-			auto [begin, end] = ShooterToLasers.equal_range(data.Shooter);
-			for (auto it = begin; it != end; ++it)
+			auto it = ShooterToLasers.find(data.Shooter);
+			if (it != ShooterToLasers.end())
 			{
-				if (it->second == pLaser)
-				{
+				auto& vec = it->second;
+				vec.erase(std::remove(vec.begin(), vec.end(), pLaser), vec.end());
+				if (vec.empty())
 					ShooterToLasers.erase(it);
-					break;
-				}
 			}
 		}
 		if (data.Target)
 		{
-			auto [begin, end] = TargetToLasers.equal_range(data.Target);
-			for (auto it = begin; it != end; ++it)
+			auto it = TargetToLasers.find(data.Target);
+			if (it != TargetToLasers.end())
 			{
-				if (it->second == pLaser)
-				{
+				auto& vec = it->second;
+				vec.erase(std::remove(vec.begin(), vec.end(), pLaser), vec.end());
+				if (vec.empty())
 					TargetToLasers.erase(it);
-					break;
-				}
 			}
 		}
 	}
@@ -193,8 +191,11 @@ namespace LaserRT
 // IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
 DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 {
-	GET(LaserDrawClass*, pLaser, ECX);
-	LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+	if (!Phobos::Optimizations::DisableLaserTracking)
+	{
+		GET(LaserDrawClass*, pLaser, ECX);
+		LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+	}
 	return 0;
 }
 
@@ -217,43 +218,43 @@ DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 
 void WeaponTypeExt::OnObjectRemoved(ObjectClass* pObject)
 {
-	auto shooterRange = LaserRT::ShooterToLasers.equal_range(pObject);
-	for (auto it = shooterRange.first; it != shooterRange.second; ++it)
+	auto itShoot = LaserRT::ShooterToLasers.find(pObject);
+	if (itShoot != LaserRT::ShooterToLasers.end())
 	{
-		LaserDrawClass* pLaser = it->second;
-		auto dataIt = LaserRT::TrackingMap.find(pLaser);
-		if (dataIt != LaserRT::TrackingMap.end())
+		for (auto pLaser : itShoot->second)
 		{
-			auto& data = dataIt->second;
-			if (data.Shooter == pObject)
-				data.Shooter = nullptr;
-
-			if (!data.Shooter && !data.Target)
+			auto dataIt = LaserRT::TrackingMap.find(pLaser);
+			if (dataIt != LaserRT::TrackingMap.end())
 			{
-				LaserRT::UnregisterTracking(pLaser, data);
-				LaserRT::TrackingMap.erase(dataIt);
+				auto& data = dataIt->second;
+				if (data.Shooter == pObject)
+					data.Shooter = nullptr;
+				if (!data.Shooter && !data.Target)
+				{
+					LaserRT::TrackingMap.erase(dataIt);
+				}
 			}
 		}
+		LaserRT::ShooterToLasers.erase(itShoot);
 	}
 	LaserRT::ShooterToLasers.erase(pObject);
 
-	auto targetRange = LaserRT::TargetToLasers.equal_range(pObject);
-	for (auto it = targetRange.first; it != targetRange.second; ++it)
+	auto itTarget = LaserRT::TargetToLasers.find(pObject);
+	if (itTarget != LaserRT::TargetToLasers.end())
 	{
-		LaserDrawClass* pLaser = it->second;
-		auto dataIt = LaserRT::TrackingMap.find(pLaser);
-		if (dataIt != LaserRT::TrackingMap.end())
+		for (auto pLaser : itTarget->second)
 		{
-			auto& data = dataIt->second;
-			if (data.Target == pObject)
-				data.Target = nullptr;
-
-			if (!data.Shooter && !data.Target)
+			auto dataIt = LaserRT::TrackingMap.find(pLaser);
+			if (dataIt != LaserRT::TrackingMap.end())
 			{
-				LaserRT::UnregisterTracking(pLaser, data);
-				LaserRT::TrackingMap.erase(dataIt);
+				auto& data = dataIt->second;
+				if (data.Target == pObject)
+					data.Target = nullptr;
+				if (!data.Shooter && !data.Target)
+					LaserRT::TrackingMap.erase(dataIt);
 			}
 		}
+		LaserRT::TargetToLasers.erase(itTarget);
 	}
 	LaserRT::TargetToLasers.erase(pObject);
 }
@@ -262,9 +263,12 @@ void WeaponTypeExt::OnObjectRemoved(ObjectClass* pObject)
 
 DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(TechnoClass*, pShooter, ECX);
 	GET_STACK(ObjectClass*, pTarget, 0x4);
-	GET_STACK(int, weaponIdx, 0x8);
+	GET_STACK(const int, weaponIdx, 0x8);
 
 	LaserRT::Shooter = LaserRT::IgnoreShooter ? nullptr : pShooter;
 	LaserRT::Target = pTarget;
@@ -286,6 +290,9 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(WeaponTypeClass*, pWeapon, ECX);
 	GET(LaserDrawClass*, pLaser, EAX);
 	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
@@ -305,8 +312,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 	return 0;
 }
 
-static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget
-	, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
+static LaserDrawClass* __fastcall Shrapnel_CreateLaser_Wrapper(TechnoClass* pShooter, void*, ObjectClass* pTarget, int weaponIdx, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords)
 {
 	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
 
@@ -324,6 +330,9 @@ DEFINE_FUNCTION_JUMP(CALL, 0x46AD81, Shrapnel_CreateLaser_Wrapper)
 // DiskLaser main beam activation
 DEFINE_HOOK(0x4A7696, DiskLaser_Update_ActivateMainBeam_Tracking, 0x6)
 {
+	if (Phobos::Optimizations::DisableLaserTracking)
+		return 0;
+
 	GET(LaserDrawClass*, pLaser, EAX);
 
 	if (!pLaser)

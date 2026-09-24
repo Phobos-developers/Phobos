@@ -129,7 +129,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 
 	const auto pSWExt = SWTypeExt::Fetch(pSWType);
 
-	if (!pSWExt->SW_ShowCameo && pSWExt->SW_AutoFire)
+	if (!pSWExt->SW_ShowCameo)
 		return false;
 
 	if (!pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
