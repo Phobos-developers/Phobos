@@ -2336,7 +2336,7 @@ HighDeployPriority=false ; boolean
 DeployForbidTypes=       ; List of TechnoTypes
 ```
 
-- Lower/high deploy priority is designed to be toggleable by users. For now you can only do that externally via client or manually.
+- Low/high deploy priority is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
 ```ini
