@@ -159,6 +159,7 @@ public:
 	Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 	Nullable<bool> OpenTopped_DecloakToFire;
 	Nullable<bool> OpenTopped_FireWhileMoving;
+	Nullable<bool> OpenTopped_FireWhileMoving_BasedOnDestination;
 	Nullable<int> OpenTransport_RangeBonus;
 	Nullable<float> OpenTransport_DamageMultiplier;
 	Nullable<bool> OpenTransport_FireWhileMoving;
@@ -561,6 +562,7 @@ public:
 		, OpenTopped_CheckTransportDisableWeapons {}
 		, OpenTopped_DecloakToFire {}
 		, OpenTopped_FireWhileMoving {}
+		, OpenTopped_FireWhileMoving_BasedOnDestination {}
 		, OpenTransport_RangeBonus {}
 		, OpenTransport_DamageMultiplier {}
 		, OpenTransport_FireWhileMoving {}
