@@ -2324,17 +2324,22 @@ AutoDeath.PlayerMoneyMoreThan=-1                  ; integer
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
-### Low priority for deploy
+### Customize whether the unit can deploy
 
-- You can now set lower priority for TechnoType deploying which means it will be excluded from deploy command if selected together with other units. This will not affect the cursor action which requires no other objects to be selected in the first place.
+- You can now set lower/high priority for TechnoType deploying. This will not affect the cursor action which requires no other objects to be selected in the first place.
+  - `LowDeployPriority` will be excluded from deploy command if selected together with other units.
+  - `HighDeployPriority` will exclude other units without it from deploy command if selected together.
+- You can also set `DeployForbidTypes` to exclude TechnoType from deploy command if selected together with units listed in it.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 LowDeployPriority=false  ; boolean
+HighDeployPriority=false ; boolean
+DeployForbidTypes=       ; List of TechnoTypes
 ```
 
-- This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
+- Low/high deploy priority is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
 In `RA2MD.INI`:
 ```ini
