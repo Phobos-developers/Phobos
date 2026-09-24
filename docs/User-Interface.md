@@ -666,7 +666,7 @@ CycleSelectionKeyEnabled=true    ; boolean
 - Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
-- Every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
+- If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
 - Enable the hotkey by setting `CycleTypeSelectionKeyEnabled` to true.
 - For localization add `TXT_CYCLE_TYPE_SELECTION` and `TXT_CYCLE_TYPE_SELECTION_DESC` into your `.csf` file.
 
@@ -680,9 +680,10 @@ In `rulesmd.ini`:
 ```ini
 [GlobalControls]
 CycleTypeSelectionKeyEnabled=true    ; boolean
+CycleTypeSelectionPrintSummary=true  ; boolean
 
-[SOMETECHNO]            ; TechnoType
-TypeCyclePriority=0     ; integer
+[SOMETECHNO]                         ; TechnoType
+TypeCyclePriority=0                  ; integer
 ```
 
 ### `[ ]` Select Captured Units

@@ -30,20 +30,18 @@ namespace CycleTypeSelection
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pObject);
 
-		if (!pTechno || pTechno->InLimbo)
+		if (!pTechno || pTechno->Health <= 0 || !pTechno->IsAlive || pTechno->InLimbo)
 			return false;
 
 		const auto pOwner = pTechno->GetOwningHouse();
 
-		if (!pTechno->IsAlive || !pOwner || !pOwner->IsControlledByCurrentPlayer())
+		if (!pOwner || !pOwner->IsControlledByCurrentPlayer())
 			return false;
 
 		if (pTechno->IsPlayerAliveUnitOf(pID))
 			return true;
 
-		const auto pType = pTechno->GetTechnoType();
-
-		return pType && TechnoTypeExt::HasSelectionGroupID(pType, pID);
+		return TechnoTypeExt::HasSelectionGroupID(pTechno->GetTechnoType(), pID);
 	}
 
 	void CollectFromCurrentSelection()
@@ -52,26 +50,21 @@ namespace CycleTypeSelection
 		Types.clear();
 		Index = -1;
 
-		for (int i = 0; i < ObjectClass::CurrentObjects.Count; ++i)
+		for (const auto pObject : ObjectClass::CurrentObjects)
 		{
-			const auto pObject = ObjectClass::CurrentObjects.GetItem(i);
-
-			if (!pObject)
-				continue;
-
 			Objects.push_back(pObject);
 
-			const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+			const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
+
 			if (!pTechno)
 				continue;
 
 			const auto pType = pTechno->GetTechnoType();
+
 			if (!pType)
 				continue;
 
-			const char* const pID = TechnoTypeExt::GetSelectionGroupID(pType);
-			if (!pID || !*pID)
-				continue;
+			const auto pID = TechnoTypeExt::GetSelectionGroupID(pType);
 
 			// Only the first object of a type contributes its type's properties
 			const auto it = std::ranges::find_if(Types,
@@ -80,11 +73,8 @@ namespace CycleTypeSelection
 			if (it != Types.end())
 				continue;
 
-			const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
-			const int nPriority = pTypeExt ? pTypeExt->TypeCyclePriority : 0;
 			const int nTypeIndex = TechnoTypeClass::Array.FindItemIndex(pType);
-
-			Types.emplace_back(TypeGroup { pID, nPriority, pType->Cost, nTypeIndex });
+			Types.emplace_back(TypeGroup { pID, TechnoTypeExt::Fetch(pType)->TypeCyclePriority, pType->Cost, nTypeIndex });
 		}
 
 		// Cycle by:
@@ -134,7 +124,7 @@ namespace CycleTypeSelection
 		}
 
 		// Everything selected is of the cycled type: label the summary with the type's name.
-		if (!pString && ObjectClass::CurrentObjects.Count > 0)
+		if (ObjectClass::CurrentObjects.Count > 0)
 			pString = ObjectClass::CurrentObjects.GetItem(0)->GetUIName();
 
 		// Vanilla only formats anything if it has both a selection set and a name to report;
@@ -205,7 +195,7 @@ void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const
 
 	CycleTypeSelection::Index = (CycleTypeSelection::Index + 1) % count;
 
-	const char* const pID = CycleTypeSelection::Types[CycleTypeSelection::Index].ID.c_str();
+	const auto pID = CycleTypeSelection::Types[CycleTypeSelection::Index].ID.c_str();
 
 	// This also zeroes Unsorted::NavCycleMode.
 	MapClass::UnselectAll();
@@ -226,6 +216,7 @@ void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const
 	MapClass::Instance.MarkNeedsRedraw(1);
 	Unsorted::NavCycleMode = CycleTypeSelection::NavCycleMode_CycleTypeSelection;
 
-	// Vanilla's own type cycle prints a selection summary on every step; do the same here.
-	CycleTypeSelection::PrintTypeSummary(pID);
+	// Vanilla's own type cycle prints a selection summary on every step.
+	if (Phobos::Config::CycleTypeSelectionPrintSummary)
+		CycleTypeSelection::PrintTypeSummary(pID);
 }

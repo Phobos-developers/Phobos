@@ -116,6 +116,7 @@ public:
 		static int SuperWeaponSidebar_RequiredSignificance;
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
+		static bool CycleTypeSelectionPrintSummary;
 		// Hotkeys
 		static bool NextIdleHarvesterCommand;
 		static bool QuickSaveCommand;

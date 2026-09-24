@@ -41,10 +41,9 @@ void CycleSelectionCommandClass::Execute(WWKey eInput) const
 	{
 		CycleSelection::Objects.clear();
 
-		for (int i = 0; i < ObjectClass::CurrentObjects.Count; ++i)
+		for (const auto pObject : ObjectClass::CurrentObjects)
 		{
-			if (ObjectClass* const pObject = ObjectClass::CurrentObjects.GetItem(i))
-				CycleSelection::Objects.push_back(pObject);
+			CycleSelection::Objects.push_back(pObject);
 		}
 
 		CycleSelection::Index = -1;
@@ -66,9 +65,9 @@ void CycleSelectionCommandClass::Execute(WWKey eInput) const
 	{
 		index = (index + 1) % count;
 
-		if (ObjectClass* const pObject = CycleSelection::Objects[index])
+		if (const auto pObject = abstract_cast<ObjectClass*>(CycleSelection::Objects[index])) // in case of wild pointer
 		{
-			if (pObject->IsAlive && !pObject->InLimbo)
+			if (pObject->Health > 0 && pObject->IsAlive && !pObject->InLimbo)
 			{
 				pTarget = pObject;
 				break;
