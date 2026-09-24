@@ -81,9 +81,10 @@ void ZoomManager::SetScriptZoom(double targetZoom, int transitionRate, int minWi
 		ActiveSmoothRate = SmoothRate;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		if (ClampTacticalPos(&currentPos))
+		{
 			TacticalClass::Instance->SetTacticalPosition(&currentPos);
-
-		MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
 	}
 	else
 	{
@@ -105,9 +106,10 @@ void ZoomManager::ZoomIn()
 		CurrentZoom = TargetZoom;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		if (ClampTacticalPos(&currentPos))
+		{
 			TacticalClass::Instance->SetTacticalPosition(&currentPos);
-
-		MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
 	}
 }
 
@@ -125,9 +127,10 @@ void ZoomManager::ZoomOut()
 		CurrentZoom = TargetZoom;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		if (ClampTacticalPos(&currentPos))
+		{
 			TacticalClass::Instance->SetTacticalPosition(&currentPos);
-
-		MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
 	}
 }
 
@@ -175,6 +178,8 @@ void ZoomManager::Update()
 
 	const double effectiveRate = (ActiveSmoothRate > 0.0) ? ActiveSmoothRate : SmoothRate;
 
+	static bool wasZoomed = false;
+
 	if (Smooth && std::abs(CurrentZoom - TargetZoom) > 0.0001)
 	{
 		CurrentZoom += (TargetZoom - CurrentZoom) * effectiveRate;
@@ -187,9 +192,10 @@ void ZoomManager::Update()
 
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		if (ClampTacticalPos(&currentPos))
+		{
 			TacticalClass::Instance->SetTacticalPosition(&currentPos);
-
-		MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
 	}
 	else if (CurrentZoom != TargetZoom)
 	{
@@ -197,10 +203,17 @@ void ZoomManager::Update()
 		ActiveSmoothRate = SmoothRate;
 		Point2D currentPos = TacticalClass::Instance->TacticalCoord1;
 		if (ClampTacticalPos(&currentPos))
+		{
 			TacticalClass::Instance->SetTacticalPosition(&currentPos);
-
-		MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
+		}
 	}
+
+	const bool isZoomedNow = IsZoomed();
+	if (wasZoomed && !isZoomedNow)
+		MapClass::Instance.MarkNeedsRedraw(2);
+
+	wasZoomed = isZoomedNow;
 }
 
 // Calculates source crop and destination blit rectangles maintaining strict center parity
