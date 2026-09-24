@@ -1418,8 +1418,6 @@ Superweapons can be configured to manage customizable cargo deployments. This lo
 1. **Launch Dropship**: Spawns the transport carrier and deploys loaded cargo onto the battlefield.
 2. **Open Window**: Opens the interactive user interface to purchase and configure cargo.
 
----
-
 #### Launch Dropship
 
 These parameters configure the superweapon that spawns a transport carrier to deliver your cargo to the battlefield:
@@ -1437,8 +1435,6 @@ DropshipLoadout.Carrier=              ; TechnoType
 DropshipLoadout.PersistentCargo=false  ; boolean
 DropshipLoadout.VeteranLevel=1        ; integer
 ```
-
----
 
 #### Open Window
 
