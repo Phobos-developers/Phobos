@@ -702,6 +702,169 @@ In `uimd.ini`:
 DisableEmptySpawnPositions=false  ; boolean
 ```
 
+## Dropship Loadout
+
+![image](_static/images/dropship_loadout_default_view.gif)
+*Dropship Loadout in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- A remake of the never released Dropship Loadout interface but very customizable. Players can use this screen to purchase, sell, and arrange units into dropships using allocated funds before deploying them.
+- The configuration can be defined globally in the scenario file (`.map`) under the `[Basic]` section, or customized per country in `rulesmd.ini`.
+- `DropshipLoadout.StartingDropships`: The number of starting dropships available for the player. In the map file `[Basic]` section, if omitted it falls back to the native `StartingDropships` key.
+- `DropshipLoadout.Money`: The amount of starting loadout money allocated to buy units. If negative, uses the player's current treasury money.
+- `DropshipLoadout.Theme`: The audio theme/soundtrack to play while the Dropship Loadout screen is open.
+- `DropshipLoadout.StartEVA`: The EVA announcement vox index to play when the screen opens.
+- `DropshipLoadout.Palette`: Custom PAL file used for rendering the dialog and cameos.
+- `DropshipLoadout.Carriers`: Comma-separated list of TechnoTypes used as the carrier units for each dropship index.
+- `DropshipLoadout.Carriers.SizeLimit`: Comma-separated list of passenger capacity/size limits for each carrier. Each unit's `Size=` tag dictates its space usage.
+- `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money in the loadout screen will be added back to the player's main funds.
+- `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased". Its cost is not deducted from the starting budget when reopening the window (so the preload can succeed even with a $0 budget), and selling it refunds its cost. If set to `false`, preloaded cargo is treated as "pending", and its cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
+- `DropshipLoadout.Background`: The SHP file used for the window background graphic.
+- `DropshipLoadout.BackgroundPCX`: The PCX file used for the window background graphic. Takes precedence over `DropshipLoadout.Background`. Can contain `%d` which will be replaced by the current dropship index.
+- `DropshipLoadout.UpArrow`: The SHP file used for the scroll-up navigation arrow.
+- `DropshipLoadout.UpArrowPCX`: The PCX file used for the scroll-up navigation arrow. Takes precedence over `DropshipLoadout.UpArrow`.
+- `DropshipLoadout.UpArrowLocation`: Screen coordinates `(X,Y)` for placing the scroll-up arrow button (relative to window background). If omitted, automatically calculated and centered below the sidebar cameos.
+- `DropshipLoadout.DownArrow`: The SHP file used for the scroll-down navigation arrow.
+- `DropshipLoadout.DownArrowPCX`: The PCX file used for the scroll-down navigation arrow. Takes precedence over `DropshipLoadout.DownArrow`.
+- `DropshipLoadout.DownArrowLocation`: Screen coordinates `(X,Y)` for placing the scroll-down arrow button (relative to window background). If omitted, automatically calculated and centered below the sidebar cameos.
+- `DropshipLoadout.Loadout`: The SHP file used for the loadout/cargo selection box.
+- `DropshipLoadout.LoadoutPCX`: The PCX file used for the loadout/cargo selection box. Takes precedence over `DropshipLoadout.Loadout`.
+- `DropshipLoadout.LoadoutLocation`: Screen coordinates `(X,Y)` for placing the cargo select box (relative to window background).
+- `DropshipLoadout.PilotLit`: The SHP file used for the pilot status indicator lights.
+- `DropshipLoadout.PilotLitPCX`: The PCX file used for the pilot status indicator lights. Takes precedence over `DropshipLoadout.PilotLit`.
+- `DropshipLoadout.PilotLitLocation`: Screen coordinates `(X,Y)` for placing the pilot status indicators (relative to window background).
+- `DropshipLoadout.SidebarCameosCount`: The number of cameos to display in the side selection panel.
+- `DropshipLoadout.SidebarCameoLocationN`: Screen coordinates `(X,Y)` for the sidebar unit selection cameo at index `N` (0-based).
+- `DropshipLoadout.DropshipCameosCount`: The default number of cameos representing the cargo slots inside the dropship.
+- `DropshipLoadout.DropshipN.CameosCount`: The number of cameos representing the cargo slots inside the cargo view of dropship index `N` (0-based).
+- `DropshipLoadout.CameoLocationN` / `DropshipLoadout.DropshipN.CameoLocationM`: Screen coordinates `(X,Y)` for the cargo cameo slot at index `M` of dropship `N` (0-based).
+- `DropshipLoadout.DGreenList`: The list of SHP files used for the green status indicator animations.
+- `DropshipLoadout.DGreenListPCX`: The list of PCX files used for the green status indicator animations. Takes precedence over `DropshipLoadout.DGreenList`.
+- `DropshipLoadout.DGreenAnimationsCount`: The number of green status lights or animations to display.
+- `DropshipLoadout.DGreenLocationN`: Screen coordinates `(X,Y)` for placing the green status animation at index `N` (0-based).
+- `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`: A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
+- `DropshipLoadout.AllowableUnitMaximums` / `DropshipLoadout.AllowableUnitMaximumsN`: The maximum allowed quantity that can be purchased for each unit in `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`. Use `-1` for unlimited.
+- `DropshipLoadout.DropshipN.FixedUnits`: A list of TechnoTypes pre-placed as fixed cargo in dropship index `N`. Players cannot sell or remove these units.
+- `DropshipLoadout.DropshipN.InitialUnits`: A list of TechnoTypes pre-placed as customizable cargo in dropship index `N`. Players can sell or remove these units to refund their cost. Unlike preloaded cargo, their cost is not deducted from starting money. These units are one-time use: once the dropship is generated, this list is cleared for the rest of the match.
+- `DropshipLoadout.BuyClickSound`: Sound played when purchasing a unit cameo.
+- `DropshipLoadout.SellClickSound`: Sound played when selling/removing a unit cameo.
+- `DropshipLoadout.ArrowsClickSound`: Sound played when clicking navigation arrows.
+- `DropshipLoadout.StartingDragDropSound`: Sound played when picking up a cameo to drag and drop.
+- `DropshipLoadout.EndingDragDropSound`: Sound played when releasing a dragged cameo into a slot.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]                                        ; HouseType
+DropshipLoadout.StartingDropships=0                  ; integer
+DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.Theme=                               ; Theme
+DropshipLoadout.StartEVA=-1                          ; Vox
+DropshipLoadout.Palette=DROPSHIP.PAL                 ; filename (.pal)
+DropshipLoadout.Carriers=                            ; List of TechnoTypes
+DropshipLoadout.Carriers.SizeLimit=                  ; List of integers
+DropshipLoadout.AddUnusedMoneyToPlayer=false         ; boolean
+DropshipLoadout.RememberPurchasedCargo=true          ; boolean
+DropshipLoadout.Background=DROP0001.SHP              ; filename (.shp)
+DropshipLoadout.BackgroundPCX=                       ; filename (.pcx)
+DropshipLoadout.UpArrow=DROPUP.SHP                   ; filename (.shp)
+DropshipLoadout.UpArrowPCX=                          ; filename (.pcx)
+DropshipLoadout.UpArrowLocation=                     ; coordinate pair (X,Y)
+DropshipLoadout.DownArrow=DROPDOWN.SHP               ; filename (.shp)
+DropshipLoadout.DownArrowPCX=                        ; filename (.pcx)
+DropshipLoadout.DownArrowLocation=                   ; coordinate pair (X,Y)
+DropshipLoadout.Loadout=LOADOUT.SHP                  ; filename (.shp)
+DropshipLoadout.LoadoutPCX=                          ; filename (.pcx)
+DropshipLoadout.LoadoutLocation=45,2                 ; coordinate pair (X,Y)
+DropshipLoadout.PilotLit=PILOTLIT.SHP                ; filename (.shp)
+DropshipLoadout.PilotLitPCX=                         ; filename (.pcx)
+DropshipLoadout.PilotLitLocation=284,151             ; coordinate pair (X,Y)
+DropshipLoadout.SidebarCameosCount=8                 ; integer
+DropshipLoadout.SidebarCameoLocationN=               ; coordinate pair (X,Y)
+DropshipLoadout.DropshipCameosCount=5                ; integer
+; or
+DropshipLoadout.DropshipN.CameosCount=5              ; integer
+DropshipLoadout.CameoLocationN=                      ; coordinate pair (X,Y)
+; or
+DropshipLoadout.DropshipN.CameoLocationM=            ; coordinate pair (X,Y)
+DropshipLoadout.DGreenList=DGREEN1.SHP,DGREEN2.SHP,DGREEN3.SHP,DGREEN4.SHP ; List of filenames (.shp)
+DropshipLoadout.DGreenListPCX=                       ; List of filenames (.pcx)
+DropshipLoadout.DGreenAnimationsCount=4              ; integer
+DropshipLoadout.DGreenLocationN=                     ; coordinate pair (X,Y)
+DropshipLoadout.AllowableUnits=                      ; List of TechnoTypes
+; or
+DropshipLoadout.AllowableUnitsN=                     ; List of TechnoTypes
+DropshipLoadout.AllowableUnitMaximums=               ; List of integers
+; or
+DropshipLoadout.AllowableUnitMaximumsN=              ; List of integers
+DropshipLoadout.DropshipN.FixedUnits=                ; List of TechnoTypes
+DropshipLoadout.DropshipN.InitialUnits=              ; List of TechnoTypes
+DropshipLoadout.BuyClickSound=                       ; Sound, default to [AudioVisual] -> GenericClick
+DropshipLoadout.SellClickSound=                      ; Sound, default to [AudioVisual] -> SellSound
+DropshipLoadout.ArrowsClickSound=                    ; Sound, default to [AudioVisual] -> GUITabSound
+DropshipLoadout.StartingDragDropSound=               ; Sound
+DropshipLoadout.EndingDragDropSound=                 ; Sound
+```
+
+In scenario map files:
+```ini
+[Basic]
+DropshipLoadout.StartingDropships=0                  ; integer, default to [Basic] -> StartingDropships
+; or
+StartingDropships=0                                  ; integer
+DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.Theme=                               ; Theme
+DropshipLoadout.StartEVA=-1                          ; Vox
+DropshipLoadout.Palette=DROPSHIP.PAL                 ; filename (.pal)
+DropshipLoadout.Carriers=                            ; List of TechnoTypes
+DropshipLoadout.Carriers.SizeLimit=                  ; List of integers
+DropshipLoadout.AddUnusedMoneyToPlayer=false         ; boolean
+DropshipLoadout.RememberPurchasedCargo=true          ; boolean
+DropshipLoadout.Background=DROP0001.SHP              ; filename (.shp)
+DropshipLoadout.BackgroundPCX=                       ; filename (.pcx)
+DropshipLoadout.UpArrow=DROPUP.SHP                   ; filename (.shp)
+DropshipLoadout.UpArrowPCX=                          ; filename (.pcx)
+DropshipLoadout.UpArrowLocation=                     ; coordinate pair (X,Y)
+DropshipLoadout.DownArrow=DROPDOWN.SHP               ; filename (.shp)
+DropshipLoadout.DownArrowPCX=                        ; filename (.pcx)
+DropshipLoadout.DownArrowLocation=                   ; coordinate pair (X,Y)
+DropshipLoadout.Loadout=LOADOUT.SHP                  ; filename (.shp)
+DropshipLoadout.LoadoutPCX=                          ; filename (.pcx)
+DropshipLoadout.LoadoutLocation=45,2                 ; coordinate pair (X,Y)
+DropshipLoadout.PilotLit=PILOTLIT.SHP                ; filename (.shp)
+DropshipLoadout.PilotLitPCX=                         ; filename (.pcx)
+DropshipLoadout.PilotLitLocation=284,151             ; coordinate pair (X,Y)
+DropshipLoadout.SidebarCameosCount=8                 ; integer
+DropshipLoadout.SidebarCameoLocationN=               ; coordinate pair (X,Y)
+DropshipLoadout.DropshipCameosCount=5                ; integer
+; or
+DropshipLoadout.DropshipN.CameosCount=5              ; integer
+DropshipLoadout.CameoLocationN=                      ; coordinate pair (X,Y)
+; or
+DropshipLoadout.DropshipN.CameoLocationM=            ; coordinate pair (X,Y)
+DropshipLoadout.DGreenList=DGREEN1.SHP,DGREEN2.SHP,DGREEN3.SHP,DGREEN4.SHP ; List of filenames (.shp)
+DropshipLoadout.DGreenListPCX=                       ; List of filenames (.pcx)
+DropshipLoadout.DGreenAnimationsCount=4              ; integer
+DropshipLoadout.DGreenLocationN=                     ; coordinate pair (X,Y)
+DropshipLoadout.AllowableUnits=                      ; List of TechnoTypes
+; or
+DropshipLoadout.AllowableUnitsN=                     ; List of TechnoTypes
+DropshipLoadout.AllowableUnitMaximums=               ; List of integers
+; or
+DropshipLoadout.AllowableUnitMaximumsN=              ; List of integers
+DropshipLoadout.DropshipN.FixedUnits=                ; List of TechnoTypes
+DropshipLoadout.DropshipN.InitialUnits=              ; List of TechnoTypes
+DropshipLoadout.BuyClickSound=                       ; Sound, default to [AudioVisual] -> GenericClick
+DropshipLoadout.SellClickSound=                      ; Sound, default to [AudioVisual] -> SellSound
+DropshipLoadout.ArrowsClickSound=                    ; Sound, default to [AudioVisual] -> GUITabSound
+DropshipLoadout.StartingDragDropSound=               ; Sound
+DropshipLoadout.EndingDragDropSound=                 ; Sound
+```
+
+- For customizing or localizing the interface strings, you can add the following entries to your `.csf` file:
+  - `TXT_DROPSHIP_CREDITS` - The text for the credits/money label. Default value: `Credits: %d`
+  - `TXT_DROPSHIP_START_MISSION` - The text prompting the player to continue or start the mission. Default value: `Press SPACE to continue`
+  - `TXT_DROPSHIP_AVAILABLE` - The label text for availability in the tooltip. Default value: `Available: `
+  - `TXT_DROPSHIP_COST` - The label text for unit cost in the tooltip. Default value: `Cost: `
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
