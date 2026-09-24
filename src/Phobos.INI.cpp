@@ -2,6 +2,7 @@
 
 #include <GameOptionsClass.h>
 
+#include <Utilities/Debug.h>
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
@@ -44,6 +45,9 @@ bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::PriorityDeployFiltering = true;
+bool Phobos::Config::RightClickCommand = false;
+bool Phobos::Config::TypeSelectByMultiClick = false;
+int Phobos::Config::TypeSelectByMultiClick_Range = -1;
 bool Phobos::Config::TypeSelectUseIFVMode = true;
 bool Phobos::Config::ShowPlanningPath = false;
 bool Phobos::Config::ArtImageSwap = false;
@@ -100,6 +104,18 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PrioritySelectionFiltering", true);
 	Phobos::Config::PriorityDeployFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PriorityDeployFiltering", true);
+	Phobos::Config::RightClickCommand = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RightClickCommand", false);
+	Phobos::Config::TypeSelectByMultiClick = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectByMultiClick", false);
+
+	// Multi-click type select only works when the left button is select-only. With vanilla
+	// controls the second click already commands the unit, so it would deploy an MCV or an
+	// Allied GI instead of selecting the group.
+	if (Phobos::Config::TypeSelectByMultiClick && !Phobos::Config::RightClickCommand)
+	{
+		Debug::Log("[Phobos] TypeSelectByMultiClick requires RightClickCommand=true, it'll be reset to false.\n");
+		Phobos::Config::TypeSelectByMultiClick = false;
+	}
+
 	Phobos::Config::TypeSelectUseIFVMode = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TypeSelectUseIFVMode", true);
 	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
 	Phobos::Config::MessageApplyHoverState = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MessageApplyHoverState", false);
@@ -302,6 +318,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
+	Phobos::Config::TypeSelectByMultiClick_Range = pINI_RULESMD->ReadInteger("GlobalControls", "TypeSelectByMultiClick.Range", -1);
 
 	// Hotkeys
 	Phobos::Config::NextIdleHarvesterCommand = pINI_RULESMD->ReadBool("GlobalControls", "NextIdleHarvesterKeyEnabled", Phobos::Config::NextIdleHarvesterCommand);

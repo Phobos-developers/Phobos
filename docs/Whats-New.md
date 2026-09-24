@@ -169,6 +169,10 @@ ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
+RightClickCommand=false          ; boolean
+TypeSelectByMultiClick=false     ; boolean
+TypeSelectByMultiClick.Range=-1  ; integer, cells
+TypeSelectByMultiClick.DeployDelay=500  ; integer, milliseconds
 PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
@@ -452,6 +456,8 @@ HideShakeEffects=false           ; boolean
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
 - Attach effect when weapon fire (by CrimRecya)
+- [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

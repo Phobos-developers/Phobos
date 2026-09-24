@@ -84,6 +84,9 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool PriorityDeployFiltering;
+		static bool RightClickCommand;
+		static bool TypeSelectByMultiClick;
+		static int TypeSelectByMultiClick_Range;
 		static bool TypeSelectUseIFVMode;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
