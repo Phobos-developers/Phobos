@@ -424,6 +424,9 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 				if (!pType->ReflectDamage)
 					continue;
 
+				if (attachEffect->ReflectDamageTimer.InProgress())
+					continue;
+
 				if (pType->ReflectDamage_Chance < random.RandomDouble())
 					continue;
 
@@ -453,6 +456,9 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 						else
 							pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
 
+						if (pType->ReflectDamage_Delay > 0)
+							attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
+
 						pWHExtRef->Reflected = false;
 					}
 					else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
@@ -464,6 +470,9 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 							WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
 						else
 							pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
+
+						if (pType->ReflectDamage_Delay > 0)
+							attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
 
 						pWHExtRef->Reflected = false;
 					}
@@ -477,6 +486,9 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 						WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
 					else
 						pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+
+					if (pType->ReflectDamage_Delay > 0)
+						attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
 
 					pWHExtRef->Reflected = false;
 				}
