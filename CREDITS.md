@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Movie subtitles background
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -981,3 +982,4 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
+

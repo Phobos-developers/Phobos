@@ -704,6 +704,25 @@ DisableEmptySpawnPositions=false  ; boolean
 
 ## Miscellanous
 
+### Movie subtitles background
+
+- Now you can display a translucent background behind in-game movie and briefing subtitles to improve readability against bright or contrasting scenes.
+  - `MovieSubtitles.Background` controls whether the background box is rendered behind movie subtitles.
+  - `MovieSubtitles.BackgroundOpacity` determines the opacity percentage of the background box.
+  - `MovieSubtitles.BackgroundColor` determines the RGB color of the background box.
+  - `MovieSubtitles.BackgroundPaddingX` determines the horizontal padding of the background box in pixels.
+  - `MovieSubtitles.BackgroundPaddingY` determines the vertical padding of the background box in pixels.
+
+In `uimd.ini`:
+```ini
+[UISettings]
+MovieSubtitles.Background=false                      ; boolean
+MovieSubtitles.BackgroundOpacity=60                  ; integer
+MovieSubtitles.BackgroundColor=0,0,0                 ; ColorStruct
+MovieSubtitles.BackgroundPaddingX=6                  ; integer
+MovieSubtitles.BackgroundPaddingY=3                  ; integer
+```
+
 ### Skip saving game on starting a new campaign
 
 - When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
