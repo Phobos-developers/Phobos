@@ -58,7 +58,6 @@ namespace RightClickCommand
 		case Action::None:
 		case Action::Select:
 		case Action::ToggleSelect:
-		case Action::Self_Deploy:
 			return true;
 		default:
 			return false;
@@ -123,14 +122,7 @@ namespace RightClickCommand
 		if (action != Action::Self_Deploy || !Phobos::Config::TypeSelectByMultiClick)
 			return false;
 
-		// A click that reselects is the first click of a possible double click, never a deploy.
-		if (reselects)
-		{
-			R->EAX(static_cast<DWORD>(Action::Select));
-			return true;
-		}
-
-		return false;
+		return reselects;
 	}
 }
 
@@ -195,8 +187,8 @@ DEFINE_HOOK(0x6539D3, RadarClass_GetMouseAction_RightClickCommand, 0x5)
 // EAX is what the following push forwards to the applier).
 DEFINE_HOOK(0x6931B4, TacticalMsgHandler_LButtonDown_RightClickSelectOnly, 0x5)
 {
-	if (!RightClickCommand::ApplyDeployHoldOff(R))
-		RightClickCommand::NeutraliseLeftCommand(R);
+	RightClickCommand::ApplyDeployHoldOff(R);
+	RightClickCommand::NeutraliseLeftCommand(R);
 
 	return 0;
 }
@@ -215,7 +207,10 @@ DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 
 	// A held-off deploy leaves the unit selected, so no deselect here.
 	if (RightClickCommand::ApplyDeployHoldOff(R))
+	{
+		R->EAX(static_cast<DWORD>(Action::Select));
 		return 0;
+	}
 
 	if (RightClickCommand::NeutraliseLeftCommand(R))
 		MapClass::UnselectAll();
