@@ -15,6 +15,8 @@
 #include "ToggleMessageList.h"
 #include "DeselectObject.h"
 #include "DeselectObject5.h"
+#include "CycleSelection.h"
+#include "CycleTypeSelection.h"
 
 #include <CCINIClass.h>
 
@@ -48,6 +50,12 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		MakeCommand<DeselectObjectCommandClass>();
 		MakeCommand<DeselectObject5CommandClass>();
 	}
+
+	if (Phobos::Config::CycleSelectionCommand)
+		MakeCommand<CycleSelectionCommandClass>();
+
+	if (Phobos::Config::CycleTypeSelectionCommand)
+		MakeCommand<CycleTypeSelectionCommandClass>();
 
 	if (Phobos::Config::SelectCapturedCommand)
 		MakeCommand<SelectCapturedCommandClass>();

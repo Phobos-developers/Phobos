@@ -83,6 +83,8 @@ bool Phobos::Config::ToggleDesignatorRangeCommand = true;
 bool Phobos::Config::ToggleMessageListCommand = true;
 bool Phobos::Config::ToggleSuperWeaponSidebarCommand = true;
 bool Phobos::Config::DeselectObjectCommand = true;
+bool Phobos::Config::CycleSelectionCommand = true;
+bool Phobos::Config::CycleTypeSelectionCommand = true;
 bool Phobos::Config::SelectCapturedCommand = false;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::DevelopmentCommands = true;
@@ -311,6 +313,8 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::ToggleMessageListCommand = pINI_RULESMD->ReadBool("GlobalControls", "ToggleMessageListKeyEnabled", Phobos::Config::ToggleMessageListCommand);
 	Phobos::Config::ToggleSuperWeaponSidebarCommand = pINI_RULESMD->ReadBool("GlobalControls", "ToggleSuperWeaponSidebarKeyEnabled", Phobos::Config::ToggleSuperWeaponSidebarCommand);
 	Phobos::Config::DeselectObjectCommand = pINI_RULESMD->ReadBool("GlobalControls", "DeselectObjectKeysEnabled", Phobos::Config::DeselectObjectCommand);
+	Phobos::Config::CycleSelectionCommand = pINI_RULESMD->ReadBool("GlobalControls", "CycleSelectionKeyEnabled", Phobos::Config::CycleSelectionCommand);
+	Phobos::Config::CycleTypeSelectionCommand = pINI_RULESMD->ReadBool("GlobalControls", "CycleTypeSelectionKeyEnabled", Phobos::Config::CycleTypeSelectionCommand);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
 #ifndef DEBUG

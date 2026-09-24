@@ -646,6 +646,45 @@ In `rulesmd.ini`:
 DeselectObjectKeysEnabled=true    ; boolean
 ```
 
+### `[ ]` Cycle Selection
+
+- Cycles through the objects that were selected when the cycle was started, selecting one of them at a time and wrapping around at the end of the list.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- Enable the hotkey by setting `CycleSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_SELECTION` and `TXT_CYCLE_SELECTION_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+CycleSelectionKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Cycle Type Selection
+
+- Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
+- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- Every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
+- Enable the hotkey by setting `CycleTypeSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_TYPE_SELECTION` and `TXT_CYCLE_TYPE_SELECTION_DESC` into your `.csf` file.
+
+The order in which the types are cycled to is customizable, and is decided by the following rules, in order:
+
+1. Higher `TypeCyclePriority` wins.
+2. Ties are broken by the type's `Cost`, from the highest to the lowest. The raw cost registered in the INI is used - never the cost the type currently has for the selecting player - so cost multipliers of the owning house do not affect the order.
+3. Remaining ties are broken by the reversed INI load order: the type written further down in the INI is cycled to first.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+CycleTypeSelectionKeyEnabled=true    ; boolean
+
+[SOMETECHNO]            ; TechnoType
+TypeCyclePriority=0     ; integer
+```
+
 ### `[ ]` Select Captured Units
 
 - Select the units within the current screen that are captured by non-permanent mind-controller.

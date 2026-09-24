@@ -765,6 +765,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
+	this->TypeCyclePriority.Read(exINI, pSection, "TypeCyclePriority");
 
 	if (pThis->Gunner)
 	{
@@ -1469,6 +1470,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->LowDeployPriority)
+		.Process(this->TypeCyclePriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MindControlSize)

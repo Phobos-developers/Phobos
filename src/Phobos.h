@@ -124,6 +124,8 @@ public:
 		static bool ToggleMessageListCommand;
 		static bool ToggleSuperWeaponSidebarCommand;
 		static bool DeselectObjectCommand;
+		static bool CycleSelectionCommand;
+		static bool CycleTypeSelectionCommand;
 		static bool SelectCapturedCommand;
 		static bool SuperWeaponSidebarCommands;
 		static bool DevelopmentCommands;
