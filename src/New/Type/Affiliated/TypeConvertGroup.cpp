@@ -13,10 +13,12 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 
 		if (fromTypes.size())
 		{
+			const auto pType = pTargetFoot->GetTechnoType();
+
 			for (const auto& from : fromTypes)
 			{
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
-				if (from == pTargetFoot->GetTechnoType())
+				if (from == pType)
 				{
 					TechnoExt::ConvertToType(pTargetFoot, toType);
 					goto end; // Breaking out of nested loops without extra checks one of the very few remaining valid usecases for goto, leave it be.
@@ -30,6 +32,49 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 		}
 	}
 end:
+	return;
+}
+
+void TypeConvertGroup::ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+{
+	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
+	{
+		if (!toType.Get())
+			continue;
+
+		if (fromTypes.size())
+		{
+			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
+			{
+				std::vector<T> vec(dvc.Count);
+				std::copy(dvc.begin(), dvc.end(), vec.begin());
+				return vec;
+			};
+
+			for (const auto& from : fromTypes)
+			{
+				auto const items = copy_dvc(TechnoTypeExt::Fetch(from)->Array);
+
+				for (const auto pTarget : items)
+				{
+					const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
+					if (!pTargetFoot || (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner)))
+						continue;
+
+					TechnoExt::ConvertToType(pTargetFoot, toType);
+				}
+			}
+		}
+		else
+		{
+			for (auto const pTargetFoot : FootClass::Array)
+			{
+				TypeConvertGroup::Convert(pTargetFoot, convertPairs, pOwner);
+			}
+		}
+	}
+
 	return;
 }
 
