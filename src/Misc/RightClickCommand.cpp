@@ -48,9 +48,6 @@ namespace RightClickCommand
 	// passes through.
 	bool RmbCommandInProgress = false;
 
-	// Tick of the click that last selected something, used by HoldsOffDeploy below.
-	static DWORD LastSelectTick = 0;
-
 	// Actions the LEFT button may still perform: selection and self-deploy only. Everything
 	// else (Move/Attack/Enter/Harvest/Capture/Guard/...) is a command and belongs to the
 	// RIGHT button now.
@@ -83,28 +80,6 @@ namespace RightClickCommand
 			}
 		}
 		return false;
-	}
-
-	// A deployable unit is deployed by clicking it again once it is selected, which collides
-	// with the double-click type select: the second click would unpack the MCV instead. So
-	// for a short while after a click selected something, the left button does not deploy.
-	// Same trick Emperor: Battle for Dune uses. Only active with TypeSelectByMultiClick on.
-	//
-	// Known limit: the delay is armed by a click that selects, so a unit that is already
-	// selected on its own is not covered - it deploys on the first click of a double click.
-	// Covering that means holding the deploy back for the delay and cancelling it on the
-	// second click, which needs a per-frame hook to fire the deploy afterwards.
-	static bool DeployHoldOffEnabled()
-	{
-		return Phobos::Config::TypeSelectByMultiClick
-			&& Phobos::Config::TypeSelectByMultiClick_DeployDelay > 0;
-	}
-
-	static bool HoldsOffDeploy()
-	{
-		const auto delay = static_cast<DWORD>(Phobos::Config::TypeSelectByMultiClick_DeployDelay);
-
-		return GetTickCount() - LastSelectTick <= delay;
 	}
 
 	// Mouse flags RadarClass::GetMouseAction (0x6539D0) is called with, in its first stack
@@ -145,10 +120,7 @@ namespace RightClickCommand
 		const bool reselects = pClicked
 			&& (!pClicked->IsSelected || ObjectClass::CurrentObjects.Count > 1);
 
-		if (reselects)
-			LastSelectTick = GetTickCount();
-
-		if (action != Action::Self_Deploy || !DeployHoldOffEnabled())
+		if (action != Action::Self_Deploy || !Phobos::Config::TypeSelectByMultiClick)
 			return false;
 
 		// A click that reselects is the first click of a possible double click, never a deploy.
@@ -158,11 +130,7 @@ namespace RightClickCommand
 			return true;
 		}
 
-		if (!HoldsOffDeploy())
-			return false;
-
-		R->EAX(static_cast<DWORD>(Action::None));
-		return true;
+		return false;
 	}
 }
 
