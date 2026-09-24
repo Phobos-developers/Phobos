@@ -43,6 +43,8 @@ public:
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> LowDeployPriority;
 	Valueable<int> TypeCyclePriority;
+	Valueable<bool> HighDeployPriority;
+	ValueableVector<TechnoTypeClass*> DeployForbidTypes;
 	std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 	Nullable<AffectedHouse> RadarJamHouses;
 	Nullable<int> RadarJamDelay;
@@ -160,6 +162,7 @@ public:
 	Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 	Nullable<bool> OpenTopped_DecloakToFire;
 	Nullable<bool> OpenTopped_FireWhileMoving;
+	Nullable<bool> OpenTopped_FireWhileMoving_BasedOnDestination;
 	Nullable<int> OpenTransport_RangeBonus;
 	Nullable<float> OpenTransport_DamageMultiplier;
 	Nullable<bool> OpenTransport_FireWhileMoving;
@@ -487,6 +490,8 @@ public:
 		, LowSelectionPriority { false }
 		, LowDeployPriority { false }
 		, TypeCyclePriority { 0 }
+		, HighDeployPriority { false }
+		, DeployForbidTypes {}
 		, WeaponGroupAs {}
 		, RadarJamHouses {}
 		, RadarJamDelay {}
@@ -563,6 +568,7 @@ public:
 		, OpenTopped_CheckTransportDisableWeapons {}
 		, OpenTopped_DecloakToFire {}
 		, OpenTopped_FireWhileMoving {}
+		, OpenTopped_FireWhileMoving_BasedOnDestination {}
 		, OpenTransport_RangeBonus {}
 		, OpenTransport_DamageMultiplier {}
 		, OpenTransport_FireWhileMoving {}
