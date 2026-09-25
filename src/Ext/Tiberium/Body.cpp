@@ -14,6 +14,103 @@ void TiberiumExt::Serialize(T& Stm)
 		;
 }
 
+bool TiberiumExt::HasRampOverlays()
+{
+	if (!this->RampOverlays[0])
+		this->AutoDetectRampOverlays();
+
+	for (const auto pOverlay : this->RampOverlays)
+	{
+		if (!pOverlay)
+			return false;
+	}
+
+	return true;
+}
+
+OverlayTypeClass* TiberiumExt::GetRampOverlay(int slopeOffset)
+{
+	if (slopeOffset >= 0 && slopeOffset < 8)
+	{
+		if (!this->RampOverlays[0])
+			this->AutoDetectRampOverlays();
+
+		return this->RampOverlays[slopeOffset];
+	}
+
+	return nullptr;
+}
+
+void TiberiumExt::AutoDetectRampOverlays()
+{
+	for (auto& pOverlay : this->RampOverlays)
+		pOverlay = nullptr;
+
+	auto pThis = this->OwnerObject();
+	if (!pThis || !pThis->Image)
+		return;
+
+	// 1. Suffix-based automatic detection:
+	// Extract prefix from Image->ID (e.g. "GEM01" -> "GEM")
+	std::string imageId = pThis->Image->ID;
+	while (!imageId.empty() && std::isdigit(static_cast<unsigned char>(imageId.back())))
+		imageId.pop_back();
+
+	if (!imageId.empty())
+	{
+		bool allFound = true;
+		for (int i = 13; i <= 20; ++i)
+		{
+			char buf[64];
+			sprintf_s(buf, "%s%d", imageId.c_str(), i);
+			auto pFound = OverlayTypeClass::Find(buf);
+			if (!pFound)
+			{
+				allFound = false;
+				break;
+			}
+
+			this->RampOverlays[i - 13] = pFound;
+		}
+
+		if (allFound)
+		{
+			for (auto pOverlay : this->RampOverlays)
+				pOverlay->Tiberium = true;
+
+			if (pThis->NumSlopes < 8)
+				pThis->NumSlopes = 8;
+
+			return;
+		}
+	}
+
+	// 2. Fallback to contiguous overlays if present:
+	const int baseIdx = pThis->Image->ArrayIndex + pThis->NumFrames;
+	if (baseIdx + 8 <= OverlayTypeClass::Array.Count)
+	{
+		bool allContiguousValid = true;
+		for (int i = 0; i < 8; ++i)
+		{
+			auto pContiguous = OverlayTypeClass::Array.GetItem(baseIdx + i);
+			if (!pContiguous || !pContiguous->Tiberium)
+			{
+				allContiguousValid = false;
+				break;
+			}
+		}
+
+		if (allContiguousValid)
+		{
+			for (int i = 0; i < 8; ++i)
+				this->RampOverlays[i] = OverlayTypeClass::Array.GetItem(baseIdx + i);
+
+			if (pThis->NumSlopes < 8)
+				pThis->NumSlopes = 8;
+		}
+	}
+}
+
 void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
@@ -23,8 +120,8 @@ void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 	this->AllowRamps.Read(exINI, pSection, "AllowRamps");
 
-	if (this->AllowRamps && pThis->NumSlopes < 8)
-		pThis->NumSlopes = 8;
+	if (this->AllowRamps)
+		this->AutoDetectRampOverlays();
 }
 
 void TiberiumExt::LoadFromStream(PhobosStreamReader& Stm)

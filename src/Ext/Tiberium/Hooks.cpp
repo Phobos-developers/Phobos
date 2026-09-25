@@ -5,6 +5,7 @@
 #include <OverlayClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <Theater.h>
 
 namespace
 {
@@ -32,7 +33,16 @@ namespace
 
 	bool HasRampArt(TiberiumClass* pTib)
 	{
-		if (!pTib || !pTib->Image)
+		if (!pTib)
+			return false;
+
+		if (const auto pExt = TiberiumExt::TryFetch(pTib))
+		{
+			if (pExt->HasRampOverlays())
+				return true;
+		}
+
+		if (!pTib->Image)
 			return false;
 
 		const int rampOverlayIdx = pTib->Image->ArrayIndex + pTib->NumFrames;
@@ -41,6 +51,41 @@ namespace
 
 		const auto pRampOverlay = OverlayTypeClass::Array.GetItem(rampOverlayIdx);
 		return pRampOverlay && pRampOverlay->Tiberium;
+	}
+
+	OverlayTypeClass* GetRampOverlay(TiberiumClass* pTib, int slopeOffset)
+	{
+		if (!pTib)
+			return nullptr;
+
+		OverlayTypeClass* pRamp = nullptr;
+
+		if (const auto pExt = TiberiumExt::TryFetch(pTib))
+		{
+			pRamp = pExt->GetRampOverlay(slopeOffset);
+		}
+
+		if (!pRamp && pTib->Image)
+		{
+			const int rampOverlayIdx = pTib->Image->ArrayIndex + pTib->NumFrames + slopeOffset;
+			pRamp = OverlayTypeClass::Array.GetItemOrDefault(rampOverlayIdx);
+		}
+
+		if (pRamp && !pRamp->Image && ScenarioClass::Instance)
+		{
+			const auto theater = ScenarioClass::Instance->Theater;
+			const auto& ext = Theater::GetTheater(theater).Extension;
+			char filename[64];
+			sprintf_s(filename, "%s.%s", pRamp->ImageFile, ext);
+			pRamp->Image = FileSystem::LoadSHPFile(filename);
+			if (!pRamp->Image)
+			{
+				sprintf_s(filename, "%s.shp", pRamp->ImageFile);
+				pRamp->Image = FileSystem::LoadSHPFile(filename);
+			}
+		}
+
+		return pRamp;
 	}
 
 	bool CanResourceGerminateOnRamp(TiberiumClass* pTib, BYTE slopeIndex)
@@ -440,6 +485,30 @@ DEFINE_HOOK(0x4837BB, CellClass_SpreadTiberium_RampSupport, 0xA)
 	return ContinueSpread;
 }
 
+DEFINE_HOOK(0x487228, CellClass_IncreaseTiberium_RampOverlayType, 0x9)
+{
+	enum { SetOverlayAndJump = 0x487289 };
+
+	GET(CellClass*, pThis, ESI);
+	GET(TiberiumClass*, pTib, EDI);
+
+	const int variation = R->EAX();
+	const int slopeOffset = (static_cast<int>(pThis->SlopeIndex) - 1) * 2 + variation;
+	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+
+	if (pRampType)
+	{
+		R->EAX(pRampType);
+		return SetOverlayAndJump;
+	}
+
+	// Replicate stolen instructions if overlay not found
+	R->ECX(R->EDX() + static_cast<int>(pThis->SlopeIndex) * 2);
+	R->EDX(pTib->NumFrames);
+
+	return 0x487231;
+}
+
 DEFINE_HOOK(0x4872A0, CellClass_IncreaseTiberium_Germinate_RegisterSpread, 0x6)
 {
 	GET(CellClass*, pThis, ESI);
@@ -498,6 +567,22 @@ DEFINE_HOOK(0x47F87D, CellClass_DrawOverlay_DivZeroGuard, 0x9)
 	return DrawFlat;
 }
 
+DEFINE_HOOK(0x47F8B7, CellClass_DrawOverlay_RampOverlayType, 0x6)
+{
+	enum { JumpToDraw = 0x47F900, JumpToFlat = 0x47F8D7 };
+
+	GET(TiberiumClass*, pTib, EAX);
+	GET(int, slopeOffset, EDX);
+
+	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+	if (!pRampType || !pRampType->GetImage())
+		return JumpToFlat;
+
+	R->ECX(pRampType);
+
+	return JumpToDraw;
+}
+
 DEFINE_HOOK(0x47FBE5, CellClass_GetContainingRect_DivZeroGuard, 0xA)
 {
 	enum { RectFlat = 0x47FC49, RectRamp = 0x47FBEF };
@@ -511,5 +596,48 @@ DEFINE_HOOK(0x47FBE5, CellClass_GetContainingRect_DivZeroGuard, 0xA)
 		return RectRamp;
 
 	return RectFlat;
+}
+
+DEFINE_HOOK(0x47FC20, CellClass_GetOverlayRect_RampOverlayType, 0x6)
+{
+	enum { JumpToCall = 0x47FC39, JumpToFlat = 0x47FC49 };
+
+	GET(TiberiumClass*, pTib, EDI);
+	GET(int, slopeOffset, EDX);
+
+	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+	if (!pRampType || !pRampType->GetImage())
+		return JumpToFlat;
+
+	R->ECX(pRampType);
+
+	return JumpToCall;
+}
+
+DEFINE_HOOK(0x5FDD28, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
+{
+	enum { FoundTiberium = 0x5FDDCF, DefaultCheck = 0x0 };
+
+	GET(int, overlayTypeIndex, ECX);
+
+	if (overlayTypeIndex != -1)
+	{
+		for (const auto pTib : TiberiumClass::Array)
+		{
+			if (const auto pExt = TiberiumExt::TryFetch(pTib))
+			{
+				for (const auto pRampOverlay : pExt->RampOverlays)
+				{
+					if (pRampOverlay && pRampOverlay->ArrayIndex == overlayTypeIndex)
+					{
+						R->EAX(pTib->ArrayIndex);
+						return FoundTiberium;
+					}
+				}
+			}
+		}
+	}
+
+	return DefaultCheck;
 }
 

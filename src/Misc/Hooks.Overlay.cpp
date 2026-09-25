@@ -33,24 +33,24 @@ struct OverlayReader
 		{
 			if (IsAvailable())
 			{
-				unsigned char ret;
-				ls.Get(&ret, sizeof(ret));
-				return ret;
+				unsigned char ret = 0xFF;
+				if (ls.Get(&ret, sizeof(ret)) == sizeof(ret))
+					return ret;
 			}
 
-			return 0;
+			return 0xFF;
 		}
 
 		unsigned short GetWord()
 		{
 			if (IsAvailable())
 			{
-				unsigned short ret;
-				ls.Get(&ret, sizeof(ret));
-				return ret;
+				unsigned short ret = 0xFFFF;
+				if (ls.Get(&ret, sizeof(ret)) == sizeof(ret))
+					return ret;
 			}
 
-			return 0;
+			return 0xFFFF;
 		}
 
 		size_t uuLength;
@@ -168,22 +168,25 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 
 				if (nOvl != 0xFFFFFFFF)
 				{
-					auto const pType = OverlayTypeClass::Array.GetItem(nOvl);
-
-					if (pType->GetImage() || pType->CellAnim)
+					if (OverlayTypeClass::Array.ValidIndex(nOvl))
 					{
-						if (SessionClass::Instance.GameMode != GameMode::Campaign && pType->Crate)
-							continue;
+						auto const pType = OverlayTypeClass::Array.GetItem(nOvl);
 
-						if (!MapClass::Instance.CoordinatesLegal(mapCoord))
-							continue;
+						if (pType && (pType->GetImage() || pType->CellAnim))
+						{
+							if (SessionClass::Instance.GameMode != GameMode::Campaign && pType->Crate)
+								continue;
 
-						auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
-						auto const nOriginOvlData = pCell->OverlayData;
-						GameCreate<OverlayClass>(pType, mapCoord, -1);
+							if (!MapClass::Instance.CoordinatesLegal(mapCoord))
+								continue;
 
-						if (nOvl == 24 || nOvl == 25 || nOvl == 237 || nOvl == 238) // bridges
-							pCell->OverlayData = nOriginOvlData;
+							auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
+							auto const nOriginOvlData = pCell->OverlayData;
+							GameCreate<OverlayClass>(pType, mapCoord, -1);
+
+							if (nOvl == 24 || nOvl == 25 || nOvl == 237 || nOvl == 238) // bridges
+								pCell->OverlayData = nOriginOvlData;
+						}
 					}
 				}
 			}
