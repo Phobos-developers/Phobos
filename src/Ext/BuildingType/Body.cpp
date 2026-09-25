@@ -310,6 +310,11 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DeployFireDelay.Read(exINI, pSection, "DeployFireDelay");
 
+	this->ActiveAnim_MoneyAmount.Read(exINI, pSection, "ActiveAnim.MoneyAmount");
+	this->ActiveAnimTwo_MoneyAmount.Read(exINI, pSection, "ActiveAnimTwo.MoneyAmount");
+	this->ActiveAnimThree_MoneyAmount.Read(exINI, pSection, "ActiveAnimThree.MoneyAmount");
+	this->ActiveAnimFour_MoneyAmount.Read(exINI, pSection, "ActiveAnimFour.MoneyAmount");
+
 	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);
 	preProdAnim.Powered = pArtINI->ReadBool(pArtSection, "PreProductionAnimPowered", preProdAnim.Powered);
 	preProdAnim.PoweredLight = pArtINI->ReadBool(pArtSection, "PreProductionAnimPoweredLight", preProdAnim.PoweredLight);
@@ -496,6 +501,10 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->RoofProductionAnimPoweredLight)
 		.Process(this->RoofProductionAnimPoweredEffect)
 		.Process(this->RoofProductionAnimPoweredSpecial)
+		.Process(this->ActiveAnim_MoneyAmount)
+		.Process(this->ActiveAnimTwo_MoneyAmount)
+		.Process(this->ActiveAnimThree_MoneyAmount)
+		.Process(this->ActiveAnimFour_MoneyAmount)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
