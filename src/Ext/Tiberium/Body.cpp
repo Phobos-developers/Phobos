@@ -1,4 +1,8 @@
 #include "Body.h"
+#include <OverlayTypeClass.h>
+
+#include <algorithm>
+#include <string>
 
 TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 
@@ -11,6 +15,7 @@ void TiberiumExt::Serialize(T& Stm)
 	Stm
 		.Process(this->MinimapColor)
 		.Process(this->AllowRamps)
+		.Process(this->PipFrame)
 		;
 }
 
@@ -22,6 +27,39 @@ void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 	this->AllowRamps.Read(exINI, pSection, "AllowRamps");
+	this->PipFrame.Read(exINI, pSection, "PipFrame");
+
+	char overlayBuf[32] = { 0 };
+	pINI->ReadString(pSection, "Overlay", "", overlayBuf, sizeof(overlayBuf));
+
+	char prefixBuf[32] = { 0 };
+	pINI->ReadString(pSection, "OverlayPrefix", "", prefixBuf, sizeof(prefixBuf));
+
+	int variety = pINI->ReadInteger(pSection, "Variety", pThis->NumImages > 0 ? pThis->NumImages : 12);
+	pThis->NumImages = std::max(1, variety);
+
+	OverlayTypeClass* pOvl = nullptr;
+	if (overlayBuf[0] != '\0')
+	{
+		pOvl = OverlayTypeClass::Find(overlayBuf);
+	}
+	else if (prefixBuf[0] != '\0')
+	{
+		char buf[32];
+		_snprintf_s(buf, sizeof(buf), "%s01", prefixBuf);
+		pOvl = OverlayTypeClass::Find(buf);
+		if (!pOvl)
+		{
+			_snprintf_s(buf, sizeof(buf), "%s1", prefixBuf);
+			pOvl = OverlayTypeClass::Find(buf);
+		}
+	}
+
+	if (pOvl)
+	{
+		pThis->Image = pOvl;
+		pThis->NumFrames = 12;
+	}
 
 	if (this->AllowRamps && pThis->NumSlopes < 8)
 		pThis->NumSlopes = 8;
