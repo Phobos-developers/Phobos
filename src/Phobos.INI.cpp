@@ -283,10 +283,10 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			ini_uimd.ReadBool(section, "Hotkeys", true))));
 
 		Phobos::Config::TacticalZoom_Max = ini_uimd.ReadDouble(section, "TacticalZoom.Max",
-			ini_uimd.ReadDouble(section, "Max", 2.5));
+			ini_uimd.ReadDouble(section, "Max", 3.6));
 
 		Phobos::Config::TacticalZoom_Step = ini_uimd.ReadDouble(section, "TacticalZoom.Step",
-			ini_uimd.ReadDouble(section, "Step", 0.15));
+			ini_uimd.ReadDouble(section, "Step", 0.2));
 
 		Phobos::Config::TacticalZoom_Smooth = ini_uimd.ReadBool(section, "TacticalZoom.Smooth",
 			ini_uimd.ReadBool(section, "Smooth", true));

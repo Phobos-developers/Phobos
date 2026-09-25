@@ -12,6 +12,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
+#include <emmintrin.h>
 #include <vector>
 
 bool ZoomManager::Enabled = false;
@@ -20,8 +22,8 @@ bool ZoomManager::KeyEnabled = true;
 double ZoomManager::CurrentZoom = 1.0;
 double ZoomManager::TargetZoom = 1.0;
 double ZoomManager::MinZoom = 1.0;
-double ZoomManager::MaxZoom = 2.5;
-double ZoomManager::Step = 0.15;
+double ZoomManager::MaxZoom = 3.6;
+double ZoomManager::Step = 0.2;
 bool ZoomManager::Smooth = true;
 double ZoomManager::SmoothRate = 0.25;
 double ZoomManager::ActiveSmoothRate = 0.25;
@@ -403,31 +405,41 @@ void ZoomManager::FastStretchBlit(DSurface* pDst, const RectangleStruct& dstRect
 	const int srcMaxX = pSrc->Width - 1;
 	const int srcMaxY = pSrc->Height - 1;
 
-	thread_local std::vector<int> xMap;
+	thread_local std::vector<WORD> xMap;
 	if (static_cast<int>(xMap.size()) < dw)
 		xMap.resize(dw);
 
 	for (int dx = 0; dx < dw; ++dx)
 	{
 		const int sx = srcRect.X + (dx * sw) / dw;
-		xMap[dx] = std::clamp(sx, 0, srcMaxX);
+		xMap[dx] = static_cast<WORD>(std::clamp(sx, 0, srcMaxX));
 	}
 
-	const int dwPairs = dw / 2;
+	const int hexadecs = dw / 16;
+	const size_t rowBytes = static_cast<size_t>(dw) * sizeof(WORD);
+	int lastSy = -1;
+	const WORD* pPrevDstRow = nullptr;
 
 	for (int dy = 0; dy < dh; ++dy)
 	{
 		int sy = srcRect.Y + (dy * sh) / dh;
 		sy = std::clamp(sy, 0, srcMaxY);
 
-		const WORD* pSrcRow = reinterpret_cast<const WORD*>(pSrcBytes + sy * srcPitch);
 		WORD* pDstRow = reinterpret_cast<WORD*>(pDstBytes + (dstRect.Y + dy) * dstPitch) + dstRect.X;
-		DWORD* pDstRow32 = reinterpret_cast<DWORD*>(pDstRow);
 
-		int i = 0;
+		if (sy == lastSy && pPrevDstRow)
+		{
+			std::memcpy(pDstRow, pPrevDstRow, rowBytes);
+			continue;
+		}
+
+		pPrevDstRow = pDstRow;
+		lastSy = sy;
+
+		const WORD* pSrcRow = reinterpret_cast<const WORD*>(pSrcBytes + sy * srcPitch);
 		int dx = 0;
 
-		for (; i + 4 <= dwPairs; i += 4, dx += 8)
+		for (int h = 0; h < hexadecs; ++h, dx += 16)
 		{
 			const WORD p0 = pSrcRow[xMap[dx + 0]];
 			const WORD p1 = pSrcRow[xMap[dx + 1]];
@@ -438,20 +450,38 @@ void ZoomManager::FastStretchBlit(DSurface* pDst, const RectangleStruct& dstRect
 			const WORD p6 = pSrcRow[xMap[dx + 6]];
 			const WORD p7 = pSrcRow[xMap[dx + 7]];
 
-			pDstRow32[i + 0] = static_cast<DWORD>(p0) | (static_cast<DWORD>(p1) << 16);
-			pDstRow32[i + 1] = static_cast<DWORD>(p2) | (static_cast<DWORD>(p3) << 16);
-			pDstRow32[i + 2] = static_cast<DWORD>(p4) | (static_cast<DWORD>(p5) << 16);
-			pDstRow32[i + 3] = static_cast<DWORD>(p6) | (static_cast<DWORD>(p7) << 16);
+			const __m128i val0 = _mm_setr_epi16(p0, p1, p2, p3, p4, p5, p6, p7);
+			_mm_storeu_si128(reinterpret_cast<__m128i*>(pDstRow + dx + 0), val0);
+
+			const WORD p8 = pSrcRow[xMap[dx + 8]];
+			const WORD p9 = pSrcRow[xMap[dx + 9]];
+			const WORD p10 = pSrcRow[xMap[dx + 10]];
+			const WORD p11 = pSrcRow[xMap[dx + 11]];
+			const WORD p12 = pSrcRow[xMap[dx + 12]];
+			const WORD p13 = pSrcRow[xMap[dx + 13]];
+			const WORD p14 = pSrcRow[xMap[dx + 14]];
+			const WORD p15 = pSrcRow[xMap[dx + 15]];
+
+			const __m128i val1 = _mm_setr_epi16(p8, p9, p10, p11, p12, p13, p14, p15);
+			_mm_storeu_si128(reinterpret_cast<__m128i*>(pDstRow + dx + 8), val1);
 		}
 
-		for (; i < dwPairs; ++i, dx += 2)
+		for (; dx + 8 <= dw; dx += 8)
 		{
 			const WORD p0 = pSrcRow[xMap[dx + 0]];
 			const WORD p1 = pSrcRow[xMap[dx + 1]];
-			pDstRow32[i] = static_cast<DWORD>(p0) | (static_cast<DWORD>(p1) << 16);
+			const WORD p2 = pSrcRow[xMap[dx + 2]];
+			const WORD p3 = pSrcRow[xMap[dx + 3]];
+			const WORD p4 = pSrcRow[xMap[dx + 4]];
+			const WORD p5 = pSrcRow[xMap[dx + 5]];
+			const WORD p6 = pSrcRow[xMap[dx + 6]];
+			const WORD p7 = pSrcRow[xMap[dx + 7]];
+
+			const __m128i val = _mm_setr_epi16(p0, p1, p2, p3, p4, p5, p6, p7);
+			_mm_storeu_si128(reinterpret_cast<__m128i*>(pDstRow + dx), val);
 		}
 
-		if (dx < dw)
+		for (; dx < dw; ++dx)
 			pDstRow[dx] = pSrcRow[xMap[dx]];
 	}
 

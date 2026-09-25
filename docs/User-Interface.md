@@ -571,7 +571,7 @@ SetTabBySelecting=-1            ; integer, index of tab
   - `TacticalZoom` enables or disables tactical zoom.
   - `TacticalZoom.Scroll` enables mouse wheel zooming (`Ctrl + Wheel`) and middle click zoom reset.
   - `TacticalZoom.KeyEnabled` enables keyboard commands.
-  - `TacticalZoom.Max` sets the maximum zoom magnification (e.g. `2.5` allows zooming in up to 2.5x).
+  - `TacticalZoom.Max` sets the maximum zoom magnification (e.g. `3.6` allows zooming in up to 3.6x).
   - `TacticalZoom.Step` sets the zoom increment per wheel notch or hotkey press.
   - `TacticalZoom.Smooth` toggles smooth frame-by-frame interpolation between zoom levels.
 
@@ -581,8 +581,8 @@ In `uimd.ini`:
 TacticalZoom=false            ; boolean
 TacticalZoom.Scroll=true      ; boolean
 TacticalZoom.KeyEnabled=true  ; boolean
-TacticalZoom.Max=2.5          ; double
-TacticalZoom.Step=0.15        ; double
+TacticalZoom.Max=3.6          ; double
+TacticalZoom.Step=0.2         ; double
 TacticalZoom.Smooth=true      ; boolean
 ```
 
