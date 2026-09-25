@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Misc/MapSelectionClass.h>
 
 DEFINE_HOOK(0x689910, ScenarioClass_SetLocalToByID, 0x5)
 {
@@ -183,8 +184,23 @@ static bool __fastcall MapSelectClass_SetNextScenario_CustomMission(MapSelectCla
 		return false;
 	}
 
-	// Return to the original function.
-	return pThis->SetNextScenario(pItem);
+	// Try opening our interactive Map Selection Screen if SkipMapSelect is false
+	if (MapSelectionClass::OpenMapSelectionWindow(pItem))
+	{
+		return true;
+	}
+
+	// Safe fallback to NextScenario if map selection was cancelled or empty (prevents crashing on dead vanilla code)
+	const char* nextScenario = (pItem->NextScenario && pItem->NextScenario[0]) ? pItem->NextScenario : pItem->FileName;
+	if (nextScenario && nextScenario[0])
+	{
+		pItem->Stage = 0;
+		strncpy(pItem->FileName, nextScenario, 0x104u);
+		pItem->FileName[259] = '\0';
+		return true;
+	}
+
+	return false;
 }
 
 DEFINE_JUMP(LJMP, 0x685A38, 0x685A63)	// Skip the original code
