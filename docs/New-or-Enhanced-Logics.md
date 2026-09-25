@@ -3382,6 +3382,16 @@ PenetratesTransport.FatalRateMultiplier=1.0     ; double
 PenetratesTransport.DamageMultiplier=1.0        ; double
 ```
 
+### Random InfDeaths
+
+- In vanilla, only one `InfDeath` can be configured for a warhead. Now multiple can be configured. When infantry are killed by this warhead, one `InfDeath` is randomly selected and played. You can increase its chance of being selected by writing duplicate `InfDeath` entries.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+InfDeaths=                  ; List of integar
+```
+
 ### Remove disguise on impact
 
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
