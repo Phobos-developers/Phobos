@@ -333,6 +333,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Observer can see IvanBomb that's attached by any house.
 - Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 
 ## Fixes / interactions with other extensions
 

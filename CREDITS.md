@@ -582,6 +582,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

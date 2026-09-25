@@ -462,6 +462,7 @@ HideShakeEffects=false           ; boolean
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
