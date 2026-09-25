@@ -1150,6 +1150,28 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 }
 
 // =============================
+// Other
+
+template <typename T>
+bool TechnoExt::ExtData::OnlyAttackStruct::Serialize(T& Stm)
+{
+	return Stm
+		.Process(this->Weapon)
+		.Process(this->Attacker)
+		.Success();
+}
+
+bool TechnoExt::ExtData::OnlyAttackStruct::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Serialize(Stm);
+}
+
+bool TechnoExt::ExtData::OnlyAttackStruct::Save(PhobosStreamWriter& Stm) const
+{
+	return const_cast<OnlyAttackStruct*>(this)->Serialize(Stm);
+}
+
+// =============================
 // load / save
 
 template <typename T>
@@ -1204,6 +1226,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
+		.Process(this->OnlyAttackData)
 		;
 }
 
@@ -1211,6 +1234,12 @@ void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
 {
 	if (removed)
 		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
+}
+
+void TechnoExt::OnDetach(TechnoClass* pTarget, bool removed)
+{
+	if (removed)
+		std::erase_if(this->OnlyAttackData, [pTarget](const auto& data) { return data.Attacker == pTarget; });
 }
 
 void TechnoExt::LoadFromStream(PhobosStreamReader& Stm)

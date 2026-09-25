@@ -9,10 +9,9 @@
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
 
-class AirstrikeClass;
 class BulletClass;
 
-class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
+class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>, public Detach::Listener<TechnoClass>
 {
 public:
 	using base_type = TechnoClass;
@@ -89,6 +88,20 @@ public:
 
 	bool PreventCrewEscape;
 
+	struct OnlyAttackStruct
+	{
+		WeaponTypeClass* Weapon { nullptr };
+		TechnoClass* Attacker { nullptr };
+
+		bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+		bool Save(PhobosStreamWriter& Stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& Stm);
+	};
+	std::vector<OnlyAttackStruct> OnlyAttackData;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -139,6 +152,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, OnlyAttackData {}
 	{ }
 
 	void OnEarlyUpdate();
@@ -187,10 +201,15 @@ public:
 	void UpdateLastTargetCrd();
 	int GetSight();
 
+	void AddFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker);
+	bool ContainFirer(WeaponTypeClass* pWeapon, TechnoClass* pAttacker) const;
+	int FindFirer(WeaponTypeClass* pWeapon) const;
+
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
+	virtual void OnDetach(TechnoClass* pTarget, bool removed) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

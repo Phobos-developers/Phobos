@@ -3931,3 +3931,13 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
+
+### Single Attacker
+
+- When a weapon has `OnlyAttacker=yes`, it prevents other units using that weapon from attacking the same target.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]           ; WarheadType
+OnlyAttacker=no         ; boolean
+```
