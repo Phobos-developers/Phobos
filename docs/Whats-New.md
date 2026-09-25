@@ -272,6 +272,7 @@ HideShakeEffects=false           ; boolean
   511=Building Type undeploy at... (Phobos),-10,47,2,0,0,0,1,0,0,Recycle the building type into a vehicle and move it to the specified waypoint. If the type is `<All>`, recycle all buildings.,0,1,511
   512=Set Follower for Associated Unit... (Phobos),0,0,73,0,0,0,0,0,0,Sets the follower for the associated object. The parameter is the index of the follower unit.,0,1,512
   513=Set Mission Timer Properties... (Phobos),0,0,74,48,75,0,0,0,0,Set the method to display mission timer and whether the timer should be displayed reversedly based on given value. Method 0=default, 1=percentage based on given value, 2=digit, 3=local variable, 4=global variable.,0,1,513
+  514=Set Tactical Zoom... (Phobos),0,0,0,0,0,0,0,0,0,Adjusts the tactical view magnification level. Param 1: Zoom percentage above 100% base. Param 2: Transition rate (0=instant). Param 3: Min visible screen width in pixels. Param 4: Min visible screen height in pixels.,0,1,514
   600=Configure dropped crate... (Phobos),0,72,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when the attached object is destroyed. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate.,0,1,600
   606=Edit hate-value... (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value... (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
@@ -452,6 +453,8 @@ HideShakeEffects=false           ; boolean
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
 - Attach effect when weapon fire (by CrimRecya)
+- [`514` Set tactical zoom](AI-Scripting-and-Mapping.md#set-tactical-zoom) (by FS-21)
+- [Tactical zoom](User-Interface.md#tactical-zoom) (by FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

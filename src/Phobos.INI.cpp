@@ -8,6 +8,7 @@
 #include <Utilities/Macro.h>
 
 #include "Misc/BlittersFix.h"
+#include "Misc/ZoomManager.h"
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
@@ -75,6 +76,12 @@ bool Phobos::Config::UnitPowerDrain = false;
 int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
+bool Phobos::Config::TacticalZoom = false;
+bool Phobos::Config::TacticalZoom_Scroll = true;
+bool Phobos::Config::TacticalZoom_KeyEnabled = true;
+double Phobos::Config::TacticalZoom_Max = 2.5;
+double Phobos::Config::TacticalZoom_Step = 0.15;
+bool Phobos::Config::TacticalZoom_Smooth = true;
 // Hotkeys
 bool Phobos::Config::NextIdleHarvesterCommand = true;
 bool Phobos::Config::QuickSaveCommand = true;
@@ -256,6 +263,48 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		ini_uimd.ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonStatusLabel", "STT:BriefingButtonReturn", Phobos::readBuffer);
 		strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
+	}
+
+	// TacticalZoom
+	{
+		const char* const section = ini_uimd.GetSection("TacticalZoom") ? "TacticalZoom" : UISETTINGS_SECTION;
+
+		const bool modderZoomEnabled = ini_uimd.ReadBool(section, "TacticalZoom",
+			ini_uimd.ReadBool(section, "Enabled", false));
+
+		Phobos::Config::TacticalZoom_Scroll = ini_uimd.ReadBool(section, "TacticalZoom.Scroll",
+			ini_uimd.ReadBool(section, "Scroll",
+			ini_uimd.ReadBool(section, "TacticalZoom.Wheel",
+			ini_uimd.ReadBool(section, "Wheel", true))));
+
+		Phobos::Config::TacticalZoom_KeyEnabled = ini_uimd.ReadBool(section, "TacticalZoom.KeyEnabled",
+			ini_uimd.ReadBool(section, "KeyEnabled",
+			ini_uimd.ReadBool(section, "TacticalZoom.Hotkeys",
+			ini_uimd.ReadBool(section, "Hotkeys", true))));
+
+		Phobos::Config::TacticalZoom_Max = ini_uimd.ReadDouble(section, "TacticalZoom.Max",
+			ini_uimd.ReadDouble(section, "Max", 3.6));
+
+		Phobos::Config::TacticalZoom_Step = ini_uimd.ReadDouble(section, "TacticalZoom.Step",
+			ini_uimd.ReadDouble(section, "Step", 0.2));
+
+		Phobos::Config::TacticalZoom_Smooth = ini_uimd.ReadBool(section, "TacticalZoom.Smooth",
+			ini_uimd.ReadBool(section, "Smooth", true));
+
+		// Player preference overrides from RA2MD.INI [Phobos]
+		const bool playerZoomEnabled = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom", true);
+		Phobos::Config::TacticalZoom_Smooth = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "TacticalZoom.Smooth", Phobos::Config::TacticalZoom_Smooth);
+
+		Phobos::Config::TacticalZoom = modderZoomEnabled && playerZoomEnabled;
+
+		ZoomManager::Enabled = Phobos::Config::TacticalZoom;
+		ZoomManager::ScrollEnabled = Phobos::Config::TacticalZoom_Scroll;
+		ZoomManager::KeyEnabled = Phobos::Config::TacticalZoom_KeyEnabled;
+		ZoomManager::MaxZoom = std::max(1.0, Phobos::Config::TacticalZoom_Max);
+		ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
+		ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
+
+		ZoomManager::ApplySurfacePatches();
 	}
 
 	return 0;
