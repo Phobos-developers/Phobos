@@ -215,20 +215,104 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
+		auto const pChild = this->Child;
+		this->Child = nullptr;
+
+		auto const pChildExt = TechnoExt::ExtMap.Find(pChild);
 		pChildExt->ParentAttachment = nullptr;
 
 		auto pType = this->GetType();
 
 		if (pType->DestructionWeapon_Child.isset())
-			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+			TechnoExt::FireWeaponAtSelf(pChild, pType->DestructionWeapon_Child);
 
-		if (pType->InheritDestruction && this->Child)
-			TechnoExt::Kill(this->Child, pSource);
-		else if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
-			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+		if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
+			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
 
-		this->Child = nullptr;
+		const bool isAirborneChild = pChild->WhatAmI() == AbstractType::Aircraft
+			|| pChild->GetTechnoType()->ConsideredAircraft
+			|| pChild->GetTechnoType()->JumpJet;
+
+		CellClass* pCell = MapClass::Instance.GetCellAt(pChild->Location);
+		if (!pCell)
+			pCell = pChild->GetCell();
+
+		const CoordStruct groundLoc = pCell ? pCell->GetCoordsWithBridge() : CoordStruct::Empty;
+		const bool isParentAirborne = (this->Parent && (this->Parent->IsInAir() || this->Parent->Location.Z > groundLoc.Z + 64 || this->Parent->GetHeight() > 0));
+		const bool isChildElevated = pChild->Location.Z > groundLoc.Z + 64 || pChild->GetHeight() > 0 || isParentAirborne;
+
+		if (pType->InheritDestruction && pChild->IsAlive)
+		{
+			TechnoExt::Kill(pChild, pSource);
+		}
+		else if (pChild->IsAlive)
+		{
+			bool shouldDie = false;
+
+			if (isChildElevated && !isAirborneChild)
+			{
+				if (!pCell)
+				{
+					shouldDie = true;
+				}
+				else
+				{
+					const auto speedType = pChild->GetTechnoType()->SpeedType;
+					if (pCell->LandType == LandType::Water && speedType != SpeedType::Hover && speedType != SpeedType::Float)
+					{
+						shouldDie = true;
+					}
+					else
+					{
+						bool hasSolidObstacle = false;
+						for (ObjectClass* pObj = pCell->FirstObject; pObj; pObj = pObj->NextObject)
+						{
+							if (pObj == pChild || pObj == this->Parent)
+								continue;
+
+							if (pObj->WhatAmI() == AbstractType::Infantry)
+							{
+								if (auto const pInf = abstract_cast<InfantryClass*>(pObj))
+								{
+									if (pInf->IsAlive)
+										TechnoExt::Kill(pInf, pChild);
+								}
+							}
+							else if (pObj->WhatAmI() == AbstractType::Unit || pObj->WhatAmI() == AbstractType::Building)
+							{
+								hasSolidObstacle = true;
+							}
+						}
+
+						if (hasSolidObstacle)
+						{
+							shouldDie = true;
+						}
+						else
+						{
+							pChild->Mark(MarkType::Up);
+							pChild->SetLocation(groundLoc);
+							pChild->SetHeight(0);
+							pChild->UpdatePosition(PCPType::During);
+							pChild->Mark(MarkType::Down);
+							pChild->EnterIdleMode(false, true);
+						}
+					}
+				}
+			}
+
+			if (shouldDie)
+			{
+				TechnoExt::Kill(pChild, pSource);
+			}
+			else if (!pChild->InLimbo)
+			{
+				if (pType->ParentDestructionMission.isset())
+					pChild->QueueMission(pType->ParentDestructionMission.Get(), false);
+				else
+					pChild->QueueMission(Mission::Guard, false);
+			}
+		}
 	}
 }
 
@@ -236,14 +320,18 @@ void AttachmentClass::ChildDestroyed()
 {
 	if (this->Child)
 	{
-		if (auto const pChildExt = TechnoExt::ExtMap.Find(this->Child))
+		auto const pChild = this->Child;
+		this->Child = nullptr;
+
+		if (auto const pChildExt = TechnoExt::ExtMap.Find(pChild))
 			pChildExt->ParentAttachment = nullptr;
 
 		AttachmentTypeClass* pType = this->GetType();
 		if (pType->DestructionWeapon_Parent.isset())
 			TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
-		this->Child = nullptr;
+		if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
+			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
 	}
 }
 

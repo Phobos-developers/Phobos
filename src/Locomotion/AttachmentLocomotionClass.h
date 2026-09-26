@@ -197,7 +197,7 @@ public:
 
 	inline AttachmentLocomotionClass(noinit_t) : LocomotionClass { noinit_t() } { }
 
-	inline virtual ~AttachmentLocomotionClass() override = default;
+	virtual ~AttachmentLocomotionClass() override;
 	virtual int Size() override { return sizeof(*this); }
 
 public:
