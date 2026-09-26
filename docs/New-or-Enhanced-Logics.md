@@ -108,11 +108,12 @@ This page describes all the engine features that are either new and introduced b
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
 
 - Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
-  - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
-  - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+  - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire. If `AttachEffect.Required.Any` is set to true, any of the listed effect types will allow firing if present. Otherwise, all listed effect types must be present to allow firing.
+  - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing. If `AttachEffect.Disallowed.Any` is set to true, any of the listed effect types will prevent firing if present. Otherwise, all listed effect types must be present to prevent firing.
   - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
+  - `AttachEffect.Required/Disallowed.Houses` can be used to set effects from which houses can allow/prevent firing.
   - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
-  - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
+  - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead. `AttachEffect.SameSourceOnly` does the opposite thing that'll ignore effects that come from other sources.
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
 
 In `rulesmd.ini`:
@@ -250,9 +251,14 @@ AttachEffect.RequiredGroups=                       ; comma-separated list of str
 AttachEffect.DisallowedGroups=                     ; comma-separated list of strings (group IDs)
 AttachEffect.RequiredMinCounts=                    ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.RequiredMaxCounts=                    ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.Required.Any=false                    ; boolean
+AttachEffect.Required.Houses=all                   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 AttachEffect.DisallowedMinCounts=                  ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.Disallowed.Any=true                   ; boolean
+AttachEffect.Disallowed.Houses=all                 ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 AttachEffect.IgnoreFromSameSource=false            ; boolean
+AttachEffect.SameSourceOnly=false                  ; boolean
 AttachEffect.CheckOnFirer=false                    ; boolean
 
 [SOMEWARHEAD]                                      ; WarheadType
