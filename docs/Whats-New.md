@@ -182,6 +182,8 @@ SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
 HideLaserTrailEffects=false      ; boolean
 HideShakeEffects=false           ; boolean
+MovieSubtitles.Background=false  ; boolean
+MovieSubtitles.BackgroundOpacity=60 ; integer
 ```
 
 ## For Map Editor (Final Alert 2)
@@ -424,6 +426,7 @@ HideShakeEffects=false           ; boolean
 :open:
 
 #### New:
+- [Movie subtitles background](User-Interface.md#movie-subtitles-background) (by FS-21)
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)

@@ -1744,3 +1744,38 @@ msgid ""
 "to enable this effect, otherwise leave it to 0.0 so it stays disabled."
 msgstr "模糊效果非常占用资源，请确保你的确想要启用此效果，否则请保持 0.0 以禁用。"
 
+msgid "Movie subtitles background"
+msgstr "过场动画字幕背景"
+
+msgid ""
+"Now you can display a translucent background behind in-game movie and "
+"briefing subtitles to improve readability against bright or contrasting scenes."
+msgstr "现在你可以在游戏过场动画和简报字幕后方显示半透明背景，以改善在明亮或高对比度场景下的可读性。"
+
+msgid ""
+"`MovieSubtitles.Background` controls whether the background box is rendered "
+"behind movie subtitles."
+msgstr "`MovieSubtitles.Background` 控制是否在过场动画字幕后方渲染背景框。"
+
+msgid ""
+"`MovieSubtitles.BackgroundOpacity` determines the opacity percentage of the "
+"background box."
+msgstr "`MovieSubtitles.BackgroundOpacity` 决定背景框的不透明度百分比。"
+
+msgid ""
+"`MovieSubtitles.BackgroundColor` determines the RGB color of the background "
+"box."
+msgstr "`MovieSubtitles.BackgroundColor` 决定背景框的 RGB 颜色。"
+
+msgid ""
+"`MovieSubtitles.BackgroundPaddingX` determines the horizontal padding of the "
+"background box in pixels."
+msgstr "`MovieSubtitles.BackgroundPaddingX` 决定背景框的水平内边距（以像素为单位）。"
+
+msgid ""
+"`MovieSubtitles.BackgroundPaddingY` determines the vertical padding of the "
+"background box in pixels."
+msgstr "`MovieSubtitles.BackgroundPaddingY` 决定背景框的垂直内边距（以像素为单位）。"
+
+
+
