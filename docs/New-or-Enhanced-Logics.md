@@ -829,6 +829,57 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+## Country
+
+### Allow Ares Academy add country-level filters
+
+- Ares' Academy feature could previously only add `Academy.Types` and `Academy.Ignore` to buildings. Now, `Academy.Country.Types.*` and `Academy.Country.Ignore.*` can be used to add country-level filters to buildings.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+Academy.Country.Types.0=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.0=    ; List of TechnoType
+Academy.Country.Types.1=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.1=    ; List of TechnoType
+Academy.Country.Types.2=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.2=    ; List of TechnoType
+Academy.Country.Types.3=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.3=    ; List of TechnoType
+Academy.Country.Types.4=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.4=    ; List of TechnoType
+Academy.Country.Types.5=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.5=    ; List of TechnoType
+Academy.Country.Types.6=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.6=    ; List of TechnoType
+Academy.Country.Types.7=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.7=    ; List of TechnoType
+Academy.Country.Types.8=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.8=    ; List of TechnoType
+Academy.Country.Types.9=     ; List of TechnoType, empty for all types
+Academy.Country.Ignore.9=    ; List of TechnoType
+Academy.Country.Types.10=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.10=   ; List of TechnoType
+Academy.Country.Types.11=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.11=   ; List of TechnoType
+Academy.Country.Types.12=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.12=   ; List of TechnoType
+Academy.Country.Types.13=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.13=   ; List of TechnoType
+Academy.Country.Types.14=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.14=   ; List of TechnoType
+Academy.Country.Types.15=    ; List of TechnoType, empty for all types
+Academy.Country.Ignore.15=   ; List of TechnoType
+```
+
+- Additionally, `Academy.AllowCountryFilter` must be set for a country to enable this feature. Only countries with this feature enabled will use the academy's `Academy.Country.Types.*` and `Academy.Country.Ignore.*` instead of `Academy.Types` and `Academy.Ignore`.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]                       ; Country
+Academy.AllowCountryFilter=false    ; boolean
+```
+
 ## Infantry
 
 ### Allow infantry to perform type conversion when deploying and undeploying

@@ -78,6 +78,7 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Placing.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Hooks.Academy.cpp" />
     <!-- src\Ext\Bullet -->
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.cpp" />

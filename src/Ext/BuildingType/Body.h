@@ -141,6 +141,46 @@ public:
 	Nullable<bool> RoofProductionAnimPoweredEffect;
 	Nullable<bool> RoofProductionAnimPoweredSpecial;
 
+	bool Academy;
+	Valueable<double> Academy_Infantry_Veterancy;
+	Valueable<double> Academy_Vehicle_Veterancy;
+	Valueable<double> Academy_Aircraft_Veterancy;
+	Valueable<double> Academy_Building_Veterancy;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_0;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_0;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_1;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_1;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_2;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_2;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_3;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_3;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_4;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_4;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_5;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_5;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_6;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_6;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_7;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_7;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_8;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_8;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_9;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_9;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_10;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_10;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_11;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_11;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_12;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_12;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_13;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_13;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_14;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_14;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types_15;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore_15;
+	std::vector<ValueableVector<TechnoTypeClass*>> Academy_Country_Types;
+	std::vector<ValueableVector<TechnoTypeClass*>> Academy_Country_Ignore;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -252,6 +292,46 @@ public:
 		, RoofProductionAnimPoweredLight { }
 		, RoofProductionAnimPoweredEffect { }
 		, RoofProductionAnimPoweredSpecial { }
+
+		, Academy { false }
+		, Academy_Infantry_Veterancy { 0.0 }
+		, Academy_Vehicle_Veterancy { 0.0 }
+		, Academy_Aircraft_Veterancy { 0.0 }
+		, Academy_Building_Veterancy { 0.0 }
+		, Academy_Country_Types_0 {}
+		, Academy_Country_Ignore_0 {}
+		, Academy_Country_Types_1 {}
+		, Academy_Country_Ignore_1 {}
+		, Academy_Country_Types_2 {}
+		, Academy_Country_Ignore_2 {}
+		, Academy_Country_Types_3 {}
+		, Academy_Country_Ignore_3 {}
+		, Academy_Country_Types_4 {}
+		, Academy_Country_Ignore_4 {}
+		, Academy_Country_Types_5 {}
+		, Academy_Country_Ignore_5 {}
+		, Academy_Country_Types_6 {}
+		, Academy_Country_Ignore_6 {}
+		, Academy_Country_Types_7 {}
+		, Academy_Country_Ignore_7 {}
+		, Academy_Country_Types_8 {}
+		, Academy_Country_Ignore_8 {}
+		, Academy_Country_Types_9 {}
+		, Academy_Country_Ignore_9 {}
+		, Academy_Country_Types_10 {}
+		, Academy_Country_Ignore_10 {}
+		, Academy_Country_Types_11 {}
+		, Academy_Country_Ignore_11 {}
+		, Academy_Country_Types_12 {}
+		, Academy_Country_Ignore_12 {}
+		, Academy_Country_Types_13 {}
+		, Academy_Country_Ignore_13 {}
+		, Academy_Country_Types_14 {}
+		, Academy_Country_Ignore_14 {}
+		, Academy_Country_Types_15 {}
+		, Academy_Country_Ignore_15 {}
+		, Academy_Country_Types {}
+		, Academy_Country_Ignore {}
 
 		// Ares 0.2
 		, CloningFacility { false }

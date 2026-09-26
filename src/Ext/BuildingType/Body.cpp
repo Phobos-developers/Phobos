@@ -334,6 +334,83 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
 	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
 
+	this->Academy_Infantry_Veterancy.Read(exINI, pSection, "Academy.InfantryVeterancy");
+	this->Academy_Vehicle_Veterancy.Read(exINI, pSection, "Academy.VehicleVeterancy");
+	this->Academy_Aircraft_Veterancy.Read(exINI, pSection, "Academy.AircraftVeterancy");
+	this->Academy_Building_Veterancy.Read(exINI, pSection, "Academy.BuildingVeterancy");
+	this->Academy = Academy_Infantry_Veterancy > 0.0
+					|| Academy_Vehicle_Veterancy > 0.0
+					|| Academy_Aircraft_Veterancy > 0.0
+					|| Academy_Building_Veterancy > 0.0;
+	this->Academy_Country_Types_0.Read(exINI, pSection, "Academy.Country.Types.0");
+	this->Academy_Country_Ignore_0.Read(exINI, pSection, "Academy.Country.Ignore.0");
+	this->Academy_Country_Types_1.Read(exINI, pSection, "Academy.Country.Types.1");
+	this->Academy_Country_Ignore_1.Read(exINI, pSection, "Academy.Country.Ignore.1");
+	this->Academy_Country_Types_2.Read(exINI, pSection, "Academy.Country.Types.2");
+	this->Academy_Country_Ignore_2.Read(exINI, pSection, "Academy.Country.Ignore.2");
+	this->Academy_Country_Types_3.Read(exINI, pSection, "Academy.Country.Types.3");
+	this->Academy_Country_Ignore_3.Read(exINI, pSection, "Academy.Country.Ignore.3");
+	this->Academy_Country_Types_4.Read(exINI, pSection, "Academy.Country.Types.4");
+	this->Academy_Country_Ignore_4.Read(exINI, pSection, "Academy.Country.Ignore.4");
+	this->Academy_Country_Types_5.Read(exINI, pSection, "Academy.Country.Types.5");
+	this->Academy_Country_Ignore_5.Read(exINI, pSection, "Academy.Country.Ignore.5");
+	this->Academy_Country_Types_6.Read(exINI, pSection, "Academy.Country.Types.6");
+	this->Academy_Country_Ignore_6.Read(exINI, pSection, "Academy.Country.Ignore.6");
+	this->Academy_Country_Types_7.Read(exINI, pSection, "Academy.Country.Types.7");
+	this->Academy_Country_Ignore_7.Read(exINI, pSection, "Academy.Country.Ignore.7");
+	this->Academy_Country_Types_8.Read(exINI, pSection, "Academy.Country.Types.8");
+	this->Academy_Country_Ignore_8.Read(exINI, pSection, "Academy.Country.Ignore.8");
+	this->Academy_Country_Types_9.Read(exINI, pSection, "Academy.Country.Types.9");
+	this->Academy_Country_Ignore_9.Read(exINI, pSection, "Academy.Country.Ignore.9");
+	this->Academy_Country_Types_10.Read(exINI, pSection, "Academy.Country.Types.10");
+	this->Academy_Country_Ignore_10.Read(exINI, pSection, "Academy.Country.Ignore.10");
+	this->Academy_Country_Types_11.Read(exINI, pSection, "Academy.Country.Types.11");
+	this->Academy_Country_Ignore_11.Read(exINI, pSection, "Academy.Country.Ignore.11");
+	this->Academy_Country_Types_12.Read(exINI, pSection, "Academy.Country.Types.12");
+	this->Academy_Country_Ignore_12.Read(exINI, pSection, "Academy.Country.Ignore.12");
+	this->Academy_Country_Types_13.Read(exINI, pSection, "Academy.Country.Types.13");
+	this->Academy_Country_Ignore_13.Read(exINI, pSection, "Academy.Country.Ignore.13");
+	this->Academy_Country_Types_14.Read(exINI, pSection, "Academy.Country.Types.14");
+	this->Academy_Country_Ignore_14.Read(exINI, pSection, "Academy.Country.Ignore.14");
+	this->Academy_Country_Types_15.Read(exINI, pSection, "Academy.Country.Types.15");
+	this->Academy_Country_Ignore_15.Read(exINI, pSection, "Academy.Country.Ignore.15");
+	this->Academy_Country_Types = {
+		Academy_Country_Types_0,
+		Academy_Country_Types_1,
+		Academy_Country_Types_2,
+		Academy_Country_Types_3,
+		Academy_Country_Types_4,
+		Academy_Country_Types_5,
+		Academy_Country_Types_6,
+		Academy_Country_Types_7,
+		Academy_Country_Types_8,
+		Academy_Country_Types_9,
+		Academy_Country_Types_10,
+		Academy_Country_Types_11,
+		Academy_Country_Types_12,
+		Academy_Country_Types_13,
+		Academy_Country_Types_14,
+		Academy_Country_Types_15
+	};
+	this->Academy_Country_Ignore = {
+		Academy_Country_Ignore_0,
+		Academy_Country_Ignore_1,
+		Academy_Country_Ignore_2,
+		Academy_Country_Ignore_3,
+		Academy_Country_Ignore_4,
+		Academy_Country_Ignore_5,
+		Academy_Country_Ignore_6,
+		Academy_Country_Ignore_7,
+		Academy_Country_Ignore_8,
+		Academy_Country_Ignore_9,
+		Academy_Country_Ignore_10,
+		Academy_Country_Ignore_11,
+		Academy_Country_Ignore_12,
+		Academy_Country_Ignore_13,
+		Academy_Country_Ignore_14,
+		Academy_Country_Ignore_15
+	};
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -496,6 +573,44 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->RoofProductionAnimPoweredLight)
 		.Process(this->RoofProductionAnimPoweredEffect)
 		.Process(this->RoofProductionAnimPoweredSpecial)
+		.Process(this->Academy_Infantry_Veterancy)
+		.Process(this->Academy_Vehicle_Veterancy)
+		.Process(this->Academy_Aircraft_Veterancy)
+		.Process(this->Academy_Building_Veterancy)
+		.Process(this->Academy_Country_Types_0)
+		.Process(this->Academy_Country_Ignore_0)
+		.Process(this->Academy_Country_Types_1)
+		.Process(this->Academy_Country_Ignore_1)
+		.Process(this->Academy_Country_Types_2)
+		.Process(this->Academy_Country_Ignore_2)
+		.Process(this->Academy_Country_Types_3)
+		.Process(this->Academy_Country_Ignore_3)
+		.Process(this->Academy_Country_Types_4)
+		.Process(this->Academy_Country_Ignore_4)
+		.Process(this->Academy_Country_Types_5)
+		.Process(this->Academy_Country_Ignore_5)
+		.Process(this->Academy_Country_Types_6)
+		.Process(this->Academy_Country_Ignore_6)
+		.Process(this->Academy_Country_Types_7)
+		.Process(this->Academy_Country_Ignore_7)
+		.Process(this->Academy_Country_Types_8)
+		.Process(this->Academy_Country_Ignore_8)
+		.Process(this->Academy_Country_Types_9)
+		.Process(this->Academy_Country_Ignore_9)
+		.Process(this->Academy_Country_Types_10)
+		.Process(this->Academy_Country_Ignore_10)
+		.Process(this->Academy_Country_Types_11)
+		.Process(this->Academy_Country_Ignore_11)
+		.Process(this->Academy_Country_Types_12)
+		.Process(this->Academy_Country_Ignore_12)
+		.Process(this->Academy_Country_Types_13)
+		.Process(this->Academy_Country_Ignore_13)
+		.Process(this->Academy_Country_Types_14)
+		.Process(this->Academy_Country_Ignore_14)
+		.Process(this->Academy_Country_Types_15)
+		.Process(this->Academy_Country_Ignore_15)
+		.Process(this->Academy_Country_Types)
+		.Process(this->Academy_Country_Ignore)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
