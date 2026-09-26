@@ -424,10 +424,24 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
 DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 {
+	GET(UnitClass* const, pThis, EBP);
 	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
 
+	bool isTunnelTilted = false;
+	auto const pTop = TechnoExt::GetTopLevelParent(pThis);
+	auto const pFoot = abstract_cast<FootClass*>(pTop ? pTop : pThis);
+	if (pFoot)
+	{
+		if (auto const pTunnel = locomotion_cast<TunnelLocomotionClass*>(pFoot->Locomotor))
+			isTunnelTilted = (pTunnel->State != TunnelLocomotionClass::State::Idle);
+	}
+
+	const bool isTilted = isTunnelTilted || key.IsJumpjetKey()
+		|| std::abs(pThis->AngleRotatedForwards) >= 0.005f
+		|| std::abs(pThis->AngleRotatedSideways) >= 0.005f;
+
 	// Main body drawing completed, then enable accurate drawing of turrets and barrels
-	if (key.Base.Is_Valid_Key() && key.IsJumpjetKey())
+	if (key.Base.Is_Valid_Key() && isTilted)
 		key.Base.Invalidate();
 
 	return 0;
