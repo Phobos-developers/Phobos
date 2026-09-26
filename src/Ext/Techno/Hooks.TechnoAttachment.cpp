@@ -117,7 +117,7 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 	auto const pTechno = abstract_cast<TechnoClass*>(pOccupier);
 	if (pTechno)
 	{
-		if (TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::IsChildOf(pTechno, pThis))
+		if (TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::AreRelatives(pTechno, pThis))
 			return true;
 
 		if (pThis && pThis->GetCurrentMission() == Mission::Enter)
@@ -170,7 +170,7 @@ void AccountForMovingInto(CellClass* into, bool isAlt, TechnoClass* pThis, byte&
 
 	// Non-occupiers shouldn't be inserted as incoming units anyways so don't check that
 	if (pIncoming && pIncoming != pThis &&
-		!TechnoExt::IsChildOf(pIncoming, pThis))
+		!TechnoExt::AreRelatives(pIncoming, pThis))
 	{
 		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
 		isVehicleFlagSet = (occupyFlags & 0x20) != 0;
@@ -293,7 +293,7 @@ DEFINE_HOOK(0x47C432, CellClass_CellTechno_HandleAttachments, 0x0)
 	if (pOccupier == pSelf  // restored code
 		|| noAttachments && TechnoExt::IsAttached(pOccupier)
 		|| noVirtual && TechnoExt::DoesntOccupyCellAsChild(pOccupier)
-		|| noRelatives && TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pSelf))
+		|| noRelatives && TechnoExt::AreRelatives(pOccupier, (TechnoClass*)pSelf))
 	{
 		return IgnoreOccupier;
 	}
@@ -673,6 +673,22 @@ AbstractClass* TechnoExt::RedirectUntargetableAttachment(AbstractClass* pObj)
 	return pObj;
 }
 
+void ResetChildCommandsOnMove(TechnoClass* pChild)
+{
+	pChild->SetTarget(nullptr);
+	if (pChild->GetCurrentMission() == Mission::Attack)
+		pChild->QueueMission(Mission::Guard, false);
+
+	if (auto const& pChildExt = TechnoExt::ExtMap.Find(pChild))
+	{
+		for (auto const& pSubAttachment : pChildExt->ChildAttachments)
+		{
+			if (pSubAttachment->Child && pSubAttachment->GetType()->InheritCommands)
+				ResetChildCommandsOnMove(pSubAttachment->Child);
+		}
+	}
+}
+
 void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* pCell, CellStruct* pSecondCell)
 {
 	// Rewrite of the original code
@@ -699,7 +715,12 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
+			{
+				if (!pTarget && pCell)
+					ResetChildCommandsOnMove(pAttachment->Child);
+				else
+					ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
+			}
 		}
 	}
 }
@@ -712,7 +733,12 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	for (auto const& pObject : ObjectClass::CurrentObjects)
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (TechnoExt::IsAttached(pTechno))
+				continue;
+
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
+		}
 	}
 
 	GET_STACK(ObjectClass*, pTarget, STACK_OFFSET(0x18, +0x4));
@@ -731,7 +757,12 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	for (auto const& pObject : ObjectClass::CurrentObjects)
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (TechnoExt::IsAttached(pTechno))
+				continue;
+
 			ParentClickedAction(pTechno, pTarget, pCell, pSecondCell);
+		}
 	}
 
 	Unsorted::MoveFeedback = true;

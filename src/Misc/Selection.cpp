@@ -93,14 +93,15 @@ public:
 
 				if (auto const pTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
+					auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject));
+					bool isLowPriorityByAttachment = pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+					if (isLowPriorityByAttachment)
+						continue;
+
 					if (bPriorityFiltering)
 					{
-						auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject));
-						// Attached units shouldn't be selected regardless of the setting
-						bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
 						bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt->LowSelectionPriority;
-
-						if (isLowPriorityByAttachment || isLowPriorityByTechno)
+						if (isLowPriorityByTechno)
 							continue;
 					}
 
