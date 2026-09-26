@@ -489,6 +489,9 @@ msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
 msgid "Tiberium veins overlay palette fix"
 msgstr "泰伯利亚藤蔓蔓延地表色板修复"
 
+msgid "Recursive spawn conversion on spawner type conversion"
+msgstr "母机变形时子机的递归转换"
+
 msgid "**Starkku**:"
 msgstr "**Starkku**："
 

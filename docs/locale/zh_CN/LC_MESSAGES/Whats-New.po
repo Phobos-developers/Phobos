@@ -1123,6 +1123,10 @@ msgid ""
 msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug（by Noble_Fish）"
 
 msgid ""
+"[Recursive conversion of spawned units](New-or-Enhanced-Logics.md#recursive-conversion-of-spawned-units) (by FS-21)"
+msgstr "[子机的递归转换](New-or-Enhanced-Logics.md#recursive-conversion-of-spawned-units)（by FS-21）"
+
+msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
 "or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)"
 msgstr ""
