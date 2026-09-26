@@ -564,16 +564,22 @@ bool ObjectFake::_IsCRCHashable()
 			return false;
 
 		auto const pAnim = reinterpret_cast<AnimClass*>(this);
+		std::vector<AnimTypeClass*> processed {};
 		auto pType = pAnim->Type;
 
 		while (pType)
 		{
+			if (std::ranges::find(processed, pType) != processed.cend())
+				break;
+
 			// If animation type has logic that affects game simulation, don't ignore.
 			if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
 				|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::Fetch(pType)->CreateUnitType.get())
 			{
 				return true;
 			}
+
+			processed.emplace_back(pType);
 
 			// Check anim's Next type recursively until not present.
 			pType = pType->Next;

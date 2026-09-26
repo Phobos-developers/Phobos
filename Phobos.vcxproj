@@ -33,6 +33,8 @@
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <!-- src\Commands -->
     <ClCompile Include="src\Commands\Commands.cpp" />
+    <ClCompile Include="src\Commands\CycleSelection.cpp" />
+    <ClCompile Include="src\Commands\CycleTypeSelection.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\DeselectObject.cpp" />
     <ClCompile Include="src\Commands\DeselectObject5.cpp" />
@@ -310,6 +312,8 @@
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <!-- src\Commands\ -->
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Commands\CycleSelection.h" />
+    <ClInclude Include="src\Commands\CycleTypeSelection.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\DeselectObject.h" />
     <ClInclude Include="src\Commands\DeselectObject5.h" />
