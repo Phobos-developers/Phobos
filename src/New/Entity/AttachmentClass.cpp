@@ -103,6 +103,9 @@ void AttachmentClass::AI()
 		else if (!this->Child->InLimbo && this->Parent->InLimbo)
 			this->Limbo();
 
+		if (!this->Child)
+			return;
+
 		this->Child->SetLocation(this->GetChildLocation());
 
 		DirStruct childDir = this->Data->IsOnTurret
