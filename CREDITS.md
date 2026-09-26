@@ -812,6 +812,7 @@ This page lists all the individual contributions to the project by their author.
   - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
   - Fix several shield respawn/self heal issues
   - Country-based attached effects
+  - More `ForceWeapon` types and options
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`

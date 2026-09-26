@@ -253,6 +253,10 @@ public:
 		Nullable<double> DamageOwnerMultiplier_Berzerk;
 		Nullable<double> DamageAlliesMultiplier_Berzerk;
 		Nullable<double> DamageEnemiesMultiplier_Berzerk;
+		Valueable<double> DamageOriginalOwnerMultiplier_Owner;
+		Valueable<double> DamageOriginalOwnerMultiplier_Allies;
+		Valueable<double> DamageOriginalOwnerMultiplier_Enemies;
+		Valueable<PartialVector2D<double>> DamageRandomMultiplier;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -778,6 +782,10 @@ public:
 			, DamageOwnerMultiplier_Berzerk {}
 			, DamageAlliesMultiplier_Berzerk {}
 			, DamageEnemiesMultiplier_Berzerk {}
+			, DamageOriginalOwnerMultiplier_Owner { 1.0 }
+			, DamageOriginalOwnerMultiplier_Allies { 1.0 }
+			, DamageOriginalOwnerMultiplier_Enemies { 1.0 }
+			, DamageRandomMultiplier { { 0.0 } }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
