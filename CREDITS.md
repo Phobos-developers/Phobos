@@ -165,6 +165,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Superweapon cooldown groups
+  - Randomize AI superweapon priority
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
