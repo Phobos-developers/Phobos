@@ -1,6 +1,7 @@
 #include "AttachmentClass.h"
 
 #include <Dir.h>
+#include <BuildingClass.h>
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
@@ -98,12 +99,24 @@ void AttachmentClass::AI()
 
 	if (this->Child)
 	{
-		if (this->Child->InLimbo && !this->Parent->InLimbo)
+		bool parentInLimbo = this->Parent->InLimbo;
+
+		if (auto const pBuilding = abstract_cast<BuildingClass*>(this->Parent))
+		{
+			if (pBuilding->GetCurrentMission() == Mission::Construction
+				|| pBuilding->BState == static_cast<int>(BStateType::Construction)
+				|| pBuilding->GetCurrentMission() == Mission::Selling)
+			{
+				parentInLimbo = true;
+			}
+		}
+
+		if (this->Child->InLimbo && !parentInLimbo)
 			this->Unlimbo();
-		else if (!this->Child->InLimbo && this->Parent->InLimbo)
+		else if (!this->Child->InLimbo && parentInLimbo)
 			this->Limbo();
 
-		if (!this->Child)
+		if (!this->Child || this->Child->InLimbo)
 			return;
 
 		this->Child->SetLocation(this->GetChildLocation());
@@ -660,9 +673,11 @@ bool AttachmentClass::DetachChild()
 			else
 			{
 				CoordStruct curLoc = pChild->Location;
-				if (CellClass* pCell = MapClass::Instance.GetCellAt(curLoc))
+				if (CellClass* pDestCell = MapClass::Instance.GetCellAt(curLoc))
+				{
 					if (!pChild->IsInAir())
-						pChild->SetLocation(pCell->GetCoordsWithBridge());
+						pChild->SetLocation(pDestCell->GetCoordsWithBridge());
+				}
 
 				pChild->ForceMission(detachmentMission);
 			}
