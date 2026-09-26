@@ -154,6 +154,11 @@ public:
 	// Ares 3.0
 	Nullable<bool> UnitSell;
 
+	Nullable<Point2D> FlyingProduction_SpawnOffset;
+	Nullable<int> FlyingProduction_SpawnHeight;
+	Nullable<DirType> FlyingProduction_SpawnFacing;
+	Nullable<bool> HasRallyPoint;
+
 	BuildingTypeExt(BuildingTypeClass* OwnerObject) : TechnoTypeExt(OwnerObject)
 		, PowersUp_Owner { AffectedHouse::Owner }
 		, PowersUp_Buildings {}
@@ -265,6 +270,11 @@ public:
 
 		// Ares 3.0
 		, UnitSell {}
+
+		, FlyingProduction_SpawnOffset {}
+		, FlyingProduction_SpawnHeight {}
+		, FlyingProduction_SpawnFacing {}
+		, HasRallyPoint {}
 	{ }
 
 	// typed owner accessor (shadows the TechnoTypeClass one from the base)
