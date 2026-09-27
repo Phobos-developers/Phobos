@@ -89,56 +89,51 @@ bool TypeConvertGroup::Save(PhobosStreamWriter& stm) const
 	return const_cast<TypeConvertGroup*>(this)->Serialize(stm);
 }
 
-void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection, AffectedHouse defaultAffectHouse)
+bool TypeConvertGroup::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, AffectedHouse& defaultAffectsHouse)
 {
-	for (size_t i = 0; ; ++i)
-	{
-		char tempBuffer[32];
-		ValueableVector<TechnoTypeClass*> convertFrom;
-		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectsHouse;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
-		convertFrom.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
-		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i); // Temporary solution for the INI tags renaming issue, see #2093
-		convertAffectsHouse.Read(exINI, pSection, tempBuffer);
-		if (convertAffectsHouse.isset())
-		{
-			Debug::Log("[Developer warning][%s] %s is deprecated and has been replaced by Convert%d.AffectsHouse! If both are set, the latter will be used.\n",
-				pSection, tempBuffer, i);
-		}
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectsHouse", i);
-		convertAffectsHouse.Read(exINI, pSection, tempBuffer);
-
-		if (!convertTo.isset())
-			break;
-
-		if (!convertAffectsHouse.isset())
-			convertAffectsHouse = defaultAffectHouse;
-
-		list.emplace_back(convertFrom, convertTo, convertAffectsHouse);
-	}
+	char flagName[0x40];
 	ValueableVector<TechnoTypeClass*> convertFrom;
 	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectsHouse;
-	convertFrom.Read(exINI, pSection, "Convert.From");
-	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectsHouse.Read(exINI, pSection, "Convert.AffectedHouses"); // Temporary solution for the INI tags renaming issue, see #2093
+
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.From", pBaseFlag);
+	convertFrom.Read(parser, pSection, flagName);
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.To", pBaseFlag);
+	convertTo.Read(parser, pSection, flagName);
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.AffectedHouses", pBaseFlag); // Temporary solution for the INI tags renaming issue, see #2093
+	convertAffectsHouse.Read(parser, pSection, flagName);
 	if (convertAffectsHouse.isset())
 	{
-		Debug::Log("[Developer warning][%s] Convert.AffectedHouses is deprecated and has been replaced by Convert.AffectsHouse! If both are set, the latter will be used.\n", pSection);
+		Debug::Log("[Developer warning][%s] %s is deprecated and has been replaced by %s.AffectsHouse! If both are set, the latter will be used.\n",
+			pSection, flagName, pBaseFlag);
 	}
-	convertAffectsHouse.Read(exINI, pSection, "Convert.AffectsHouse");
-	if (convertTo.isset())
-	{
-		if (!convertAffectsHouse.isset())
-			convertAffectsHouse = defaultAffectHouse;
+	_snprintf_s(flagName, sizeof(flagName), _TRUNCATE, "%s.AffectsHouse", pBaseFlag);
+	convertAffectsHouse.Read(parser, pSection, flagName);
 
-		if (list.size())
-			list[0] = { convertFrom, convertTo, convertAffectsHouse };
+	if (!convertTo.isset())
+		return false;
+
+	if (!convertAffectsHouse.isset())
+		convertAffectsHouse = defaultAffectsHouse;
+
+	*this = { std::move(convertFrom), std::move(convertTo), std::move(convertAffectsHouse) };
+
+	return true;
+}
+
+void TypeConvertGroupList::Read(INI_EX& parser, const char* const pSection, AffectedHouse defaultAffectsHouse)
+{
+	MultiflagValueableVector::Read(parser, pSection, "Convert", defaultAffectsHouse);
+
+	// Un-numbered tags, kept for backward compatibility, override the first pair if present
+	TypeConvertGroup legacyPair;
+
+	if (legacyPair.Read(parser, pSection, "Convert", defaultAffectsHouse))
+	{
+		if (this->size())
+			(*this)[0] = std::move(legacyPair);
 		else
-			list.emplace_back(convertFrom, convertTo, convertAffectsHouse);
+			this->push_back(std::move(legacyPair));
 	}
 }
 
