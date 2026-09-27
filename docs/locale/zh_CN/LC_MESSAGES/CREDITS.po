@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-21 22:27+0800\n"
+"POT-Creation-Date: 2026-09-28 06:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1397,8 +1397,7 @@ msgid "Enter the grinder voice"
 msgstr "赴部队回收站语音"
 
 msgid "Customize the country displayed in `Sight`"
-msgstr ""
-"自定义 `Sight` 可见性"
+msgstr "自定义 `Sight` 可见性"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -2313,8 +2312,7 @@ msgid "Fix the issue of Ares' EMP not suspending the production of AI factories"
 msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 
 msgid "Attach effect when weapon fire"
-msgstr ""
-"在武器开火时赋予 AE"
+msgstr "在武器开火时赋予 AE"
 
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
@@ -2658,8 +2656,7 @@ msgid "Customize `IdleActionFrequency`"
 msgstr "自定义 `IdleActionFrequency`"
 
 msgid "Customize `DefaultToGuardArea` per gunner mode"
-msgstr ""
-"为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
+msgstr "为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -3168,8 +3165,17 @@ msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 
 msgid "Destroyed unit leaves sensors bugfix"
 msgstr "单位被摧毁后遗留反隐区域的 bug 修复"
 
-msgid "**FrozenFog** - Hotkey for deselect object from current selection"
-msgstr "**FrozenFog** - 从当前已选中中取消选择对象的快捷键"
+msgid "**FrozenFog**:"
+msgstr "**Fryone**："
+
+msgid "Hotkey for deselect object from current selection"
+msgstr "**从当前已选中中取消选择对象的快捷键"
+
+msgid "Hotkey for cycling through the current selection"
+msgstr ""
+
+msgid "Hotkey for cycling through the types in the current selection"
+msgstr ""
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "

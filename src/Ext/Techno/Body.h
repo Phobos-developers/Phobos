@@ -177,8 +177,8 @@ public:
 	void InitializeLaserTrails();
 	void InitializeAttachEffects();
 	void UpdateSelfOwnedAttachEffects();
-	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims = false) const;
-	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr, bool requireAnims = false) const;
+	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource, bool sameSourceOnly, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims = false, AffectedHouse affectedHouse = AffectedHouse::All) const;
+	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, bool sameSourceOnly = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr, bool requireAnims = false, AffectedHouse affectedHouse = AffectedHouse::All) const;
 	void InitializeDisplayInfo(TechnoTypeClass* pType);
 	void ApplyMindControlRangeLimit();
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
@@ -240,7 +240,7 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);
-	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim = false);
+	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool realHit = false);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

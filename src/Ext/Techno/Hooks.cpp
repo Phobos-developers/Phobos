@@ -529,7 +529,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim)
+double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool realHit)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
 	double mult = pExt->AE.ArmorMultiplier;
@@ -549,6 +549,9 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 			if (!type->RestrictedArmorMultiplier)
 				continue;
 
+			if (attachEffect->ArmorMultiplierTimer.InProgress())
+				continue;
+
 			if (type->ArmorMultiplier_Chance < random.RandomDouble())
 				continue;
 
@@ -566,9 +569,14 @@ double TechnoExt::CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass
 
 			mult *= type->ArmorMultiplier;
 
-			// HitAnim
-			if (hitAnim)
+			// HitAnim and Delay
+			if (realHit)
+			{
+				if (type->ArmorMultiplier_Delay > 0)
+					attachEffect->ArmorMultiplierTimer.Start(type->ArmorMultiplier_Delay);
+
 				AnimExt::CreateRandomAnim(type->ArmorMultiplier_HitAnim, pThis->GetCoords(), pThis, nullptr, true, true);
+			}
 		}
 	}
 
