@@ -5038,34 +5038,36 @@ msgstr "请注意 **如果你没有使用 Ares 3.0+** 那么对于携带载员�
 
 msgid "Customize whether the unit can deploy"
 msgstr ""
+"自定义单位能否部署"
 
-#, fuzzy
 msgid ""
 "You can now set lower/high priority for TechnoType deploying. This will "
 "not affect the cursor action which requires no other objects to be "
 "selected in the first place."
-msgstr "现在你可以为单位在部署行为中设置低优先级，这意味着如果它与其他单位一同被选中那么不会与其他单位一起执行部署指令。这不影响通过光标下达部署指令，这种情况本就不需要事先选中其他对象。"
+msgstr "现在你可以为单位的部署行为设置低优先级或高优先级。这不影响通过光标下达部署指令，这种情况本就不需要事先选中其他对象。"
 
 msgid ""
 "`LowDeployPriority` will be excluded from deploy command if selected "
 "together with other units."
 msgstr ""
+"`LowDeployPriority` 的单位与其他单位一同被选中时会被部署指令排除在外。"
 
 msgid ""
 "`HighDeployPriority` will exclude other units without it from deploy "
 "command if selected together."
 msgstr ""
+"其他单位与 `HighDeployPriority` 的单位一同被选中时会被部署指令排除在外。"
 
 msgid ""
 "You can also set `DeployForbidTypes` to exclude TechnoType from deploy "
 "command if selected together with units listed in it."
 msgstr ""
+"你还可以设置 `DeployForbidTypes` 列出一些当它们与该单位一同被选中时不会执行部署指令的单位。"
 
-#, fuzzy
 msgid ""
 "Low/high deploy priority is designed to be toggleable by users. For now "
 "you can only do that externally via client or manually."
-msgstr "此行为设计为可由用户切换。目前你只能通过客户端或进行手动设置。"
+msgstr "低/高部署优先级设计为可由用户切换。目前你只能通过客户端或手动进行设置。"
 
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
