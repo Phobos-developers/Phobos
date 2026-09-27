@@ -24,6 +24,10 @@ static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const consider
 		return;
 
 	const auto pType = pTechno->GetTechnoType();
+
+	if (!pType->Trainable)
+		return;
+
 	const auto pHouseExt = HouseExt::Fetch(pTechno->Owner);
 	const auto pHouseTypeExt = HouseTypeExt::Fetch(pTechno->Owner->Type);
 	const int countryIdx = pTechno->Owner->Type->ArrayIndex;
@@ -31,12 +35,21 @@ static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const consider
 	if (!pHouseTypeExt->Academy_AllowCountryFilter)
 		return;
 
-	double finalBonus = 0.0;
+	double maximumBonus = 0.0;
 
 	for (const auto pBuilding : pHouseExt->Academies)
 	{
 		const auto pBuildingType = pBuilding->Type;
 		const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+
+		const auto& academyWhiteList = pBuildingTypeExt->Academy_Country_Types[countryIdx];
+		const auto& academyBlackList = pBuildingTypeExt->Academy_Country_Ignore[countryIdx];
+
+		const bool canAffect = (academyWhiteList.empty() || academyWhiteList.Contains(pType))
+			&& !academyBlackList.Contains(pType);
+
+		if (!canAffect)
+			continue;
 
 		double veterancyBonus = 0.0;
 
@@ -62,24 +75,15 @@ static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const consider
 			break;
 		}
 
-		const auto& academyWhiteList = pBuildingTypeExt->Academy_Country_Types[countryIdx];
-		const auto& academyBlackList = pBuildingTypeExt->Academy_Country_Ignore[countryIdx];
-
-		const bool canAffect = (academyWhiteList.empty() || academyWhiteList.Contains(pType))
-			&& !academyBlackList.Contains(pType);
-
-		if (canAffect)
-			finalBonus = std::max(finalBonus, veterancyBonus);
+		if (maximumBonus < veterancyBonus)
+			maximumBonus = veterancyBonus;
 	}
 
-	if (pType->Trainable)
-	{
-		auto& value = pTechno->Veterancy.Veterancy;
-		value = static_cast<float>(TechnoExt::Fetch(pTechno)->OriginVeterancy);
+	auto& value = pTechno->Veterancy.Veterancy;
+	value = static_cast<float>(TechnoExt::Fetch(pTechno)->OriginVeterancy);
 
-		if (finalBonus > value)
-			value = static_cast<float>(std::min(finalBonus, RulesClass::Instance->VeteranCap));
-	}
+	if (maximumBonus > value)
+		value = static_cast<float>(std::min(maximumBonus, RulesClass::Instance->VeteranCap));
 }
 
 static void SetOriginVeterancy(TechnoClass* pTechno)
