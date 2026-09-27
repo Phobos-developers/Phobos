@@ -7,88 +7,77 @@
 
 static void UpdateAcademy(HouseExt* pHouseExt, BuildingClass* pAcademy, bool added)
 {
-	auto it = std::find(pHouseExt->Academies.cbegin(), pHouseExt->Academies.cend(), pAcademy);
+	const auto it = std::find(pHouseExt->Academies.cbegin(), pHouseExt->Academies.cend(), pAcademy);
 
-	if(added == (it != pHouseExt->Academies.cend()))
+	if (added == (it != pHouseExt->Academies.cend()))
 		return;
 
-	if(added)
-	{
+	if (added)
 		pHouseExt->Academies.push_back(pAcademy);
-	} 
-	else 
-	{
+	else
 		pHouseExt->Academies.erase(it);
-	}
 }
+
 static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const considerAs)
 {
-	if(Unsorted::ScenarioInit) {
+	if (Unsorted::ScenarioInit)
 		return;
-	}
-	
+
 	const auto pType = pTechno->GetTechnoType();
 	const auto pHouseExt = HouseExt::Fetch(pTechno->Owner);
 	const auto pHouseTypeExt = HouseTypeExt::Fetch(pTechno->Owner->Type);
 	const int countryIdx = pTechno->Owner->Type->ArrayIndex;
 
-	if(!pHouseTypeExt->Academy_AllowCountryFilter)
+	if (!pHouseTypeExt->Academy_AllowCountryFilter)
 		return;
 
 	double finalBonus = 0.0;
 
-	for(auto const& pBuilding : pHouseExt->Academies) 
+	for (const auto pBuilding : pHouseExt->Academies)
 	{
 		const auto pBuildingType = pBuilding->Type;
 		const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
-		
+
 		double veterancyBonus = 0.0;
 
-		switch(considerAs)
+		switch (considerAs)
 		{
-			case AbstractType::Infantry:
-			{
-				veterancyBonus = pBuildingTypeExt->Academy_Infantry_Veterancy;
-				break;
-			}
-			case AbstractType::Unit:
-			{
-				veterancyBonus = pBuildingTypeExt->Academy_Vehicle_Veterancy;
-				break;
-			}
-			case AbstractType::Aircraft:
-			{
-				veterancyBonus = pBuildingTypeExt->Academy_Aircraft_Veterancy;
-				break;
-			}
-			case AbstractType::Building:
-			{
-				veterancyBonus = pBuildingTypeExt->Academy_Building_Veterancy;
-				break;
-			}
-			default:
-				break;
+		case AbstractType::Infantry:
+			veterancyBonus = pBuildingTypeExt->Academy_Infantry_Veterancy;
+			break;
+
+		case AbstractType::Unit:
+			veterancyBonus = pBuildingTypeExt->Academy_Vehicle_Veterancy;
+			break;
+
+		case AbstractType::Aircraft:
+			veterancyBonus = pBuildingTypeExt->Academy_Aircraft_Veterancy;
+			break;
+
+		case AbstractType::Building:
+			veterancyBonus = pBuildingTypeExt->Academy_Building_Veterancy;
+			break;
+
+		default:
+			break;
 		}
 
 		const auto& academyWhiteList = pBuildingTypeExt->Academy_Country_Types[countryIdx];
-
 		const auto& academyBlackList = pBuildingTypeExt->Academy_Country_Ignore[countryIdx];
 
 		const bool canAffect = (academyWhiteList.empty() || academyWhiteList.Contains(pType))
-								&& (!academyBlackList.Contains(pType));
+			&& !academyBlackList.Contains(pType);
 
-		if(canAffect)
+		if (canAffect)
 			finalBonus = std::max(finalBonus, veterancyBonus);
 	}
 
-	if(pType->Trainable)
+	if (pType->Trainable)
 	{
 		auto& value = pTechno->Veterancy.Veterancy;
-		
-		const auto pTechnoExt = TechnoExt::Fetch(pTechno);
-		value = static_cast<float>(pTechnoExt->OriginVeterancy);
+		value = static_cast<float>(TechnoExt::Fetch(pTechno)->OriginVeterancy);
 
-		if(finalBonus > value)
+		if (finalBonus > value)
 			value = static_cast<float>(std::min(finalBonus, RulesClass::Instance->VeteranCap));
 	}
 }
@@ -96,12 +85,23 @@ static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const consider
 static void SetOriginVeterancy(TechnoClass* pTechno)
 {
 	const auto pHouse = pTechno->Owner;
-	auto pTechnoExt = TechnoExt::Fetch(pTechno);
 
-	if(pTechno->WhatAmI() == AbstractType::Infantry && pHouse->BarracksInfiltrated
-		|| pTechno->WhatAmI() == AbstractType::Unit && pHouse->WarFactoryInfiltrated)
+	switch (pTechno->WhatAmI())
 	{
-		pTechnoExt->OriginVeterancy = 1.0;
+	case AbstractType::Infantry:
+		if (pHouse->BarracksInfiltrated)
+			TechnoExt::Fetch(pTechno)->OriginVeterancy = 1.0;
+
+		break;
+
+	case AbstractType::Unit:
+		if (pHouse->WarFactoryInfiltrated)
+			TechnoExt::Fetch(pTechno)->OriginVeterancy = 1.0;
+
+		break;
+
+	default:
+		break;
 	}
 }
 
@@ -109,11 +109,8 @@ DEFINE_HOOK(0x446366, BuildingClass_Place_Academy, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
 
-	auto pBuildingExt = BuildingTypeExt::Fetch(pThis->Type);
-	auto pHouseExt = HouseExt::Fetch(pThis->Owner);
-
-	if(pBuildingExt->Academy)
-		UpdateAcademy(pHouseExt, pThis, true);
+	if (BuildingTypeExt::Fetch(pThis->Type)->Academy)
+		UpdateAcademy(HouseExt::Fetch(pThis->Owner), pThis, true);
 
 	return 0;
 }
@@ -122,37 +119,28 @@ DEFINE_HOOK(0x445905, BuildingClass_Remove_Academy, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pBuildingExt = BuildingTypeExt::Fetch(pThis->Type);
-	auto pHouseExt = HouseExt::Fetch(pThis->Owner);
-
-	if(pThis->IsOnMap && pBuildingExt->Academy)
-		UpdateAcademy(pHouseExt, pThis, false);
+	if (pThis->IsOnMap && BuildingTypeExt::Fetch(pThis->Type)->Academy)
+		UpdateAcademy(HouseExt::Fetch(pThis->Owner), pThis, false);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x448AB2, BuildingClass_ChangeOwnership_Remove_Academy, 0x6)
+DEFINE_HOOK(0x448AB2, BuildingClass_SetOwningHouse_Remove_Academy, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pBuildingExt = BuildingTypeExt::Fetch(pThis->Type);
-	auto pHouseExt = HouseExt::Fetch(pThis->Owner);
-
-	if(pThis->IsOnMap && pBuildingExt->Academy) 
-		UpdateAcademy(pHouseExt, pThis, false);
+	if (pThis->IsOnMap && BuildingTypeExt::Fetch(pThis->Type)->Academy)
+		UpdateAcademy(HouseExt::Fetch(pThis->Owner), pThis, false);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x4491D5, BuildingClass_ChangeOwnership_Add_Academy, 0x6)
+DEFINE_HOOK(0x4491D5, BuildingClass_SetOwningHouse_Add_Academy, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pBuildingExt = BuildingTypeExt::Fetch(pThis->Type);
-	auto pHouseExt = HouseExt::Fetch(pThis->Owner);
-
-	if(pThis->IsOnMap && pBuildingExt->Academy) 
-		UpdateAcademy(pHouseExt, pThis, true);
+	if (pThis->IsOnMap && BuildingTypeExt::Fetch(pThis->Type)->Academy)
+		UpdateAcademy(HouseExt::Fetch(pThis->Owner), pThis, true);
 
 	return 0;
 }
@@ -160,30 +148,26 @@ DEFINE_HOOK(0x4491D5, BuildingClass_ChangeOwnership_Add_Academy, 0x6)
 DEFINE_HOOK(0x517D57, InfantryClass_Init_Academy, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
+
 	SetOriginVeterancy(pThis);
 	ApplyAcademy(pThis, AbstractType::Infantry);
+
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x735678, UnitClass_Init_Academy, 0x6) // in CTOR
+DEFINE_HOOK_AGAIN(0x735678, UnitClass_Init_Academy, 0x6) // CTOR
 DEFINE_HOOK(0x74689B, UnitClass_Init_Academy, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
 	SetOriginVeterancy(pThis);
 
-	if(pThis->Type->ConsideredAircraft) 
-	{
+	if (pThis->Type->ConsideredAircraft)
 		ApplyAcademy(pThis, AbstractType::Aircraft);
-	} 
-	else if(pThis->Type->Organic) 
-	{
+	else if (pThis->Type->Organic)
 		ApplyAcademy(pThis, AbstractType::Infantry);
-	} 
-	else 
-	{
+	else
 		ApplyAcademy(pThis, AbstractType::Unit);
-	}
 
 	return 0;
 }
@@ -191,15 +175,19 @@ DEFINE_HOOK(0x74689B, UnitClass_Init_Academy, 0x6)
 DEFINE_HOOK(0x413FD2, AircraftClass_Init_Academy, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
+
 	SetOriginVeterancy(pThis);
 	ApplyAcademy(pThis, AbstractType::Aircraft);
+
 	return 0;
 }
 
 DEFINE_HOOK(0x442D34, BuildingClass_Init_Academy, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
+
 	SetOriginVeterancy(pThis);
 	ApplyAcademy(pThis, AbstractType::Building);
+
 	return 0;
 }
