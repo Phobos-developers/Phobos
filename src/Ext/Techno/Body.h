@@ -82,7 +82,7 @@ public:
 	CoordStruct LastTargetCrd;
 	CDTimerClass LastTargetCrdClearTimer;
 
-	bool ShouldBeDead;
+	int AutoDeathFlag;
 
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
@@ -137,7 +137,7 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
-		, ShouldBeDead { false }
+		, AutoDeathFlag { 0 }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
@@ -243,7 +243,7 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);
-	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool hitAnim = false);
+	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool realHit = false);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

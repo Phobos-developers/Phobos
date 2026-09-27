@@ -460,6 +460,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
@@ -709,6 +710,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
+	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -1029,6 +1031,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1168,6 +1171,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomSequenceRates)
 		.Process(this->CustomSequenceNormalized)
 		.Process(this->RevealHouses)
+		.Process(this->MissileKeepTargetCoord)
     ;
 }
 

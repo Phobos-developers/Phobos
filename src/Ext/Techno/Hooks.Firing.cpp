@@ -466,7 +466,12 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
 			|| (pWeapon && !pWeapon->FireWhileMoving))
 		{
-			if (pTypeExt->OwnerObject()->BalloonHover)
+			if (!pTypeExt->OpenTopped_FireWhileMoving_BasedOnDestination.Get(RulesExt::Global()->OpenTopped_FireWhileMoving_BasedOnDestination))
+			{
+				if (pTransportFoot->Locomotor->Is_Really_Moving_Now())
+					return Illegal;
+			}
+			else if (pTypeExt->OwnerObject()->BalloonHover)
 			{
 				if (pTransportFoot->Locomotor->Is_Moving_Now())
 					return Illegal;
@@ -640,7 +645,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	enum { SkipFiring = 0x6FDE03 };
 
 	GET(TechnoClass* const, pThis, ESI);
-//	GET(AbstractClass* const, pTarget, EDI);
+	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(const int, weaponIndex, 0xC);
 
@@ -705,6 +710,17 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
 					attachEffect->ShouldBeDiscarded = true;
 			}
+		}
+	}
+
+	if (pWeaponExt->AttachEffect_Enable)
+	{
+		if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			auto const& info = pWeaponExt->AttachEffects;
+			AttachEffectClass::Attach(pTargetTechno, pThis->Owner, pThis, pWeapon->Warhead, info);
+			AttachEffectClass::Detach(pTargetTechno, info);
+			AttachEffectClass::DetachByGroups(pTargetTechno, info);
 		}
 	}
 

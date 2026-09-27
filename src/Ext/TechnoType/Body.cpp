@@ -765,6 +765,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
+	this->TypeCyclePriority.Read(exINI, pSection, "TypeCyclePriority");
+	this->HighDeployPriority.Read(exINI, pSection, "HighDeployPriority");
+	this->DeployForbidTypes.Read(exINI, pSection, "DeployForbidTypes");
 
 	if (pThis->Gunner)
 	{
@@ -887,6 +890,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, pSection, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, pSection, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, pSection, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, pSection, "OpenTransport.FireWhileMoving");
@@ -1200,6 +1204,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExitThroughRoof.Read(exINI, pSection, "ExitThroughRoof");
 	this->PsychicDetectable.Read(exINI, pSection, "PsychicDetectable");
 
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
+
 	this->CloakAnims.Read(exINI, pSection, "CloakAnims");
 	this->DecloakAnims.Read(exINI, pSection, "DecloakAnims");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
@@ -1210,6 +1217,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 	
 	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
+
+	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
+	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1454,6 +1464,8 @@ template <typename T>
 void TechnoTypeExt::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Array)
+
 		.Process(this->HealthBar_Hide)
 		.Process(this->HealthBar_HidePips)
 		.Process(this->HealthBar_Permanent)
@@ -1461,6 +1473,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->LowDeployPriority)
+		.Process(this->TypeCyclePriority)
+		.Process(this->HighDeployPriority)
+		.Process(this->DeployForbidTypes)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MindControlSize)
@@ -1572,6 +1587,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1852,6 +1868,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->VoiceEnterGrinder)
 
+		.Process(this->DefaultToGuardArea_Modes)
+		.Process(this->DefaultToGuardArea_AIModes)
+
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
 
@@ -1879,6 +1898,9 @@ void TechnoTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (!this->PsychicDetectable)
+		Phobos::Optimizations::DisablePsychicDetectable = false;
 }
 
 void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)

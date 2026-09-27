@@ -77,6 +77,9 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 			&& (!pInvokerHouse || EnumFunctions::CanTargetHouse(pType->ArmorMultiplier_AffectsHouse, pTechno->Owner, pInvokerHouse))))
 		{
 			armorMultiplier *= pType->ArmorMultiplier;
+
+			if (pType->ArmorMultiplier_Delay > 0)
+				this->ArmorMultiplierTimer.Start(pType->ArmorMultiplier_Delay);
 		}
 
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
@@ -1313,6 +1316,13 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				// discard count
 				pAE->FiringCount = attachEffect->FiringCount;
 				pAE->ReceivedDamageCount = attachEffect->ReceivedDamageCount;
+
+				// delay
+				if (type->ArmorMultiplier_Delay > 0 && attachEffect->ArmorMultiplierTimer.HasTimeLeft())
+					pAE->ArmorMultiplierTimer.Start(attachEffect->ArmorMultiplierTimer.GetTimeLeft());
+
+				if (type->ReflectDamage_Delay > 0 && attachEffect->ReflectDamageTimer.HasTimeLeft())
+					pAE->ReflectDamageTimer.Start(attachEffect->ReflectDamageTimer.GetTimeLeft());
 			}
 		}
 
@@ -1405,6 +1415,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastSequenceCheck)
 		.Process(this->FiringCount)
 		.Process(this->ReceivedDamageCount)
+		.Process(this->ArmorMultiplierTimer)
+		.Process(this->ReflectDamageTimer)
 		.Success();
 }
 
