@@ -992,9 +992,8 @@ msgstr "在循环开始时已选中的对象所包含的类型之间循环切换
 
 msgid ""
 "Type identity follows the game's own type selection: vanilla's Type ID, "
-"as extended by Ares `GroupAs` and Phobos selection group IDs."
-msgstr ""
-"类型判定遵循游戏自身的类型选择：原版的类型 ID，以及 Ares 和 Phobos 的选择组 ID 扩展。"
+"as extended by Ares's `GroupAs`."
+msgstr "类型判定遵循游戏自身的类型选择：原版的类型 ID，以及 Ares 的 `GroupAs` 扩展。"
 
 msgid ""
 "If `CycleTypeSelectionPrintSummary` is set to true, every step prints the"
