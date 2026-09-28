@@ -42,6 +42,9 @@ public:
 	Valueable<CSFText> UIDescription;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> LowDeployPriority;
+	Valueable<int> TypeCyclePriority;
+	Valueable<bool> HighDeployPriority;
+	ValueableVector<TechnoTypeClass*> DeployForbidTypes;
 	std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 	Nullable<AffectedHouse> RadarJamHouses;
 	Nullable<int> RadarJamDelay;
@@ -486,6 +489,9 @@ public:
 		, UIDescription {}
 		, LowSelectionPriority { false }
 		, LowDeployPriority { false }
+		, TypeCyclePriority { 0 }
+		, HighDeployPriority { false }
+		, DeployForbidTypes {}
 		, WeaponGroupAs {}
 		, RadarJamHouses {}
 		, RadarJamDelay {}
