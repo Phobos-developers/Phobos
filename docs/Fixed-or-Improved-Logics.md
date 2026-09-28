@@ -271,7 +271,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed MPDebug timer displaying when debug's visibility is off.
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange`.
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false`.
-- Fixed the bug that ai will try to product aircraft even the airport has no free dock for it.
 - Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
 - Fixed the issue that rockets do not consider the destination altitude during climbing.
 - Fixed the bug that if object has been removed from LogicClass in Update(), next object will be skip.
@@ -2141,6 +2140,22 @@ In `rulesmd.ini`:
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
+### Customize the country displayed in `Sight`
+
+- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+RevealHouses=team       ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+
+[SOMECOUNTRY]           ; Country
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [AudioVisual] -> RevealHouses
+
+[SOMETECHNO]            ; TechnoType
+RevealHouses=           ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all), defaults to [SOMECOUNTRY] -> RevealHouses
+```
+
 ### Customize the landing animation of technos that have `Locomotor=Fly`
 
 - In vanilla, if a techno has `Locomotor=Fly` and `IsDropship=true`, it plays the `[DROPLAND]` animation when landing; if `IsDropship=false` but it is an aircraft with `Carryall=true`, it will play the `[CARYLAND]` animation when landing. Now you can customize this logic.
@@ -2188,6 +2203,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize `DefaultToGuardArea` per gunner mode
+
+- Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType, with Gunner=yes
+DefaultToGuardArea.Modes=-1      ; List of integers, IFVMode
+DefaultToGuardArea.AIModes=-1    ; List of integers, IFVMode
 ```
 
 ### Damaged speed customization
