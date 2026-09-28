@@ -450,9 +450,9 @@ HideShakeEffects=false           ; boolean
 - [Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight) (by FlyStar)
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
-- [New Tiberium types](New-or-Enhanced-Logics.md#new-tiberium-types) (by ZivDero, FS-21)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
 - Attach effect when weapon fire (by CrimRecya)
+- [New Tiberium types](New-or-Enhanced-Logics.md#new-tiberium-types) (by ZivDero & FS-21)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
