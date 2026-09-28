@@ -567,85 +567,6 @@ SetTabBySelecting=-1            ; integer, index of tab
 
 ## Hotkey Commands
 
-### `[ ]` Toggle Designator Range
-
-- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
-- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
-- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-ToggleDesignatorRangeKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Toggle Digital Display
-
-- Switches on/off [digital display types](#digital-display).
-- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
-- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-ToggleDigitalDisplayKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Next Idle Harvester
-
-- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
-- Enable the hotkey by setting `NextIdleHarvesterKeyEnabled` to true.
-- For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-NextIdleHarvesterKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Quicksave
-
-- Saves the current game.
-
-```{note}
-For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
-```
-
-- Enable the hotkey by setting `QuickSaveKeyEnabled` to true.
-- For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-QuickSaveKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Toggle Message Label
-
-- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
-- Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true.
-- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-ToggleMessageListKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Deselect Object(s)
-
-- Deselect 1 or 5 object(s) from current selected objects.
-- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
-- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-DeselectObjectKeysEnabled=true    ; boolean
-```
-
 ### `[ ]` Cycle Selection
 
 - Cycles through the objects that were selected when the cycle was started, selecting one of them at a time and wrapping around at the end of the list.
@@ -684,6 +605,85 @@ CycleTypeSelectionPrintSummary=true  ; boolean
 
 [SOMETECHNO]                         ; TechnoType
 TypeCyclePriority=0                  ; integer
+```
+
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+DeselectObjectKeysEnabled=true    ; boolean
+```
+
+### `[ ]` Next Idle Harvester
+
+- Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
+- Enable the hotkey by setting `NextIdleHarvesterKeyEnabled` to true.
+- For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+NextIdleHarvesterKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Quicksave
+
+- Saves the current game.
+
+```{note}
+For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
+- Enable the hotkey by setting `QuickSaveKeyEnabled` to true.
+- For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+QuickSaveKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Designator Range
+
+- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
+- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDesignatorRangeKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Digital Display
+
+- Switches on/off [digital display types](#digital-display).
+- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
+- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDigitalDisplayKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Message Label
+
+- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
+- Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true.
+- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleMessageListKeyEnabled=true    ; boolean
 ```
 
 ### `[ ]` Select Captured Units
