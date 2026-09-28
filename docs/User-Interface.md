@@ -718,7 +718,7 @@ In `uimd.ini`:
 [UISettings]
 MovieSubtitles.Background=false                      ; boolean
 MovieSubtitles.BackgroundOpacity=60                  ; integer
-MovieSubtitles.BackgroundColor=0,0,0                 ; ColorStruct
+MovieSubtitles.BackgroundColor=0,0,0                 ; integer - Red,Green,Blue
 MovieSubtitles.BackgroundPaddingX=6                  ; integer
 MovieSubtitles.BackgroundPaddingY=3                  ; integer
 ```
