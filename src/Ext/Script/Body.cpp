@@ -1077,7 +1077,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 bool ScriptExt::IsExtVariableAction(int action)
 {
 	auto const eAction = static_cast<PhobosScripts>(action);
-	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
+	return eAction >= PhobosScripts::LocalVariableSet && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
 
 void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count)
