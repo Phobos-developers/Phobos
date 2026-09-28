@@ -502,7 +502,7 @@ In `rulesmd.ini`:
 
 #### `16005` Jump Back To Previous Script
 
-- Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
+- Used in a Random Script picked by action `16004`. It can jump back to the previous script, and continue in the line after `x=16004,n`.
 
 In `aimd.ini`:
 ```ini
@@ -535,7 +535,7 @@ In `aimd.ini`:
 x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
 ```
 
-#### `18000 - 18071` Edit Variable using Global Variable
+#### `18048 - 18071` Edit Variable using Global Variable
 
 - Operate a variable's value using a global variable's value.
 - Similar to `18000-18023`, but the number to operate the value is being read from a global variable.
