@@ -466,7 +466,12 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
 			|| (pWeapon && !pWeapon->FireWhileMoving))
 		{
-			if (pTypeExt->OwnerObject()->BalloonHover)
+			if (!pTypeExt->OpenTopped_FireWhileMoving_BasedOnDestination.Get(RulesExt::Global()->OpenTopped_FireWhileMoving_BasedOnDestination))
+			{
+				if (pTransportFoot->Locomotor->Is_Really_Moving_Now())
+					return Illegal;
+			}
+			else if (pTypeExt->OwnerObject()->BalloonHover)
 			{
 				if (pTransportFoot->Locomotor->Is_Moving_Now())
 					return Illegal;
