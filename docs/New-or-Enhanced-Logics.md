@@ -2168,22 +2168,22 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 In `rulesmd.ini`:
 ```ini
 [General]
-FlyingProduction.Jumpjet=false             ; boolean
-FlyingProduction.Aircraft=false            ; boolean
+FlyingProduction.Jumpjet=false                      ; boolean
+FlyingProduction.Aircraft=false                     ; boolean
 
-[SOMETECHNO]                               ; TechnoType
-FlyingProduction=                          ; boolean, defaults to [General] -> FlyingProduction.Jumpjet / FlyingProduction.Aircraft
-FlyingProduction.SpawnHeight=              ; integer, defaults to JumpjetHeight or FlightLevel
-FlyingProduction.PlayFactoryAnim=false     ; boolean
-FlyingProduction.SpawnAnim=                ; AnimType
-FlyingProduction.SpawnAnim.AttachedToObject=false ; boolean
-FlyingProduction.SpawnAt=                  ; List of BuildingTypes
-FlyingProduction.RallyPointFromSpawnBuilding=false ; boolean
+[SOMETECHNO]                                        ; TechnoType
+FlyingProduction=                                   ; boolean, defaults to [General] -> FlyingProduction.Jumpjet / FlyingProduction.Aircraft
+FlyingProduction.SpawnHeight=                       ; integer, defaults to JumpjetHeight or FlightLevel
+FlyingProduction.PlayFactoryAnim=false              ; boolean
+FlyingProduction.SpawnAnim=                         ; AnimType
+FlyingProduction.SpawnAnim.AttachedToObject=false   ; boolean
+FlyingProduction.SpawnAt=                           ; List of BuildingTypes
+FlyingProduction.RallyPointFromSpawnBuilding=false  ; boolean
 
-[SOMEBUILDING]                             ; BuildingType
-FlyingProduction.SpawnOffset=0,0           ; Point2D, leptons
-FlyingProduction.SpawnHeight=              ; integer, defaults to the spawned unit's FlyingProduction.SpawnHeight
-FlyingProduction.SpawnFacing=              ; DirType (0-255), defaults to the building's facing (128 / South)
+[SOMEBUILDING]                                      ; BuildingType
+FlyingProduction.SpawnOffset=0,0                    ; X,Y, leptons relative to default
+FlyingProduction.SpawnHeight=                       ; integer, defaults to the spawned unit's FlyingProduction.SpawnHeight
+FlyingProduction.SpawnFacing=                       ; Direction type (integers from 0-255), defaults to the building's facing (128 / South)
 ```
 
 ### Forcing specific weapon against certain targets
