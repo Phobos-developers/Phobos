@@ -454,6 +454,9 @@ MovieSubtitles.BackgroundOpacity=60  ; integer
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
 - Attach effect when weapon fire (by CrimRecya)
+- [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
+- [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Movie subtitles background](User-Interface.md#movie-subtitles-background) (by FS-21)
 
 #### Vanilla fixes:
