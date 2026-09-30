@@ -170,7 +170,7 @@ const wchar_t* CycleTypeSelectionCommandClass::GetUICategory() const
 
 const wchar_t* CycleTypeSelectionCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_CYCLE_TYPE_SELECTION_DESC", L"Cycle through the types in the current selection, ordered by their TypeCyclePriority, unit cost and INI load order.");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_CYCLE_TYPE_SELECTION_DESC", L"Cycle through the types in the current selection.");
 }
 
 void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const

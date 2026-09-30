@@ -305,7 +305,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
-	Phobos::Config::CycleTypeSelectionPrintSummary = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::CycleTypeSelectionPrintSummary);
+	Phobos::Config::CycleTypeSelectionPrintSummary = pINI_RULESMD->ReadBool("GlobalControls", "CycleTypeSelectionPrintSummary", Phobos::Config::CycleTypeSelectionPrintSummary);
 
 	// Hotkeys
 	Phobos::Config::NextIdleHarvesterCommand = pINI_RULESMD->ReadBool("GlobalControls", "NextIdleHarvesterKeyEnabled", Phobos::Config::NextIdleHarvesterCommand);

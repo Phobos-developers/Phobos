@@ -348,7 +348,7 @@ void AttachEffectClass::UpdateConditionalAnimDrawingLogic()
 	{
 		auto const pTechnoExt = TechnoExt::Fetch(this->Techno);
 
-		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, nullptr, nullptr, nullptr, nullptr))
+		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, false, nullptr, nullptr, nullptr, nullptr))
 		{
 			// Inlined because calling KillAnim() would cause recursive calls to this function.
 			if (this->Animation)
@@ -372,7 +372,7 @@ void AttachEffectClass::UpdateConditionalAnimDrawingLogic()
 
 		for (auto const& drawOffset : this->Type->Animation_DrawOffsets)
 		{
-			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, nullptr, nullptr, nullptr, nullptr, true))
+			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, false, nullptr, nullptr, nullptr, nullptr, true))
 				pAnimExt->AEDrawOffset += drawOffset.Offset;
 		}
 	}

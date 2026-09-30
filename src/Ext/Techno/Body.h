@@ -177,8 +177,8 @@ public:
 	void InitializeLaserTrails();
 	void InitializeAttachEffects();
 	void UpdateSelfOwnedAttachEffects();
-	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims = false) const;
-	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr, bool requireAnims = false) const;
+	bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> const& attachEffectTypes, bool requireAll, bool ignoreSameSource, bool sameSourceOnly, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts, bool requireAnims = false, AffectedHouse affectedHouse = AffectedHouse::All) const;
+	int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, bool sameSourceOnly = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr, bool requireAnims = false, AffectedHouse affectedHouse = AffectedHouse::All) const;
 	void InitializeDisplayInfo(TechnoTypeClass* pType);
 	void ApplyMindControlRangeLimit();
 	int ApplyForceWeaponInRange(AbstractClass* pTarget);
