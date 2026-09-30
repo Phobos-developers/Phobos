@@ -1,6 +1,7 @@
 #include "CycleSelection.h"
 
 #include <Utilities/GeneralUtils.h>
+#include <Helpers/Template.h>
 
 namespace CycleSelection
 {
@@ -65,7 +66,7 @@ void CycleSelectionCommandClass::Execute(WWKey eInput) const
 	{
 		index = (index + 1) % count;
 
-		if (const auto pObject = abstract_cast<ObjectClass*>(CycleSelection::Objects[index])) // in case of wild pointer
+		if (const auto pObject = CycleSelection::Objects[index])
 		{
 			if (pObject->Health > 0 && pObject->IsAlive && !pObject->InLimbo)
 			{
@@ -91,5 +92,15 @@ void CycleSelectionCommandClass::Execute(WWKey eInput) const
 		MapClass::Instance.MarkNeedsRedraw(1);
 		// UnselectAll and Select sets NavCycleMode to 0
 		Unsorted::NavCycleMode = CycleSelection::NavCycleMode_CycleSelection;
+	}
+}
+
+void CycleSelectionCommandClass::OnDetach(ObjectClass* pTarget, bool removed)
+{
+	if (removed)
+	{
+		// 保留槽位和顺序以避免循环索引漂移；只置空，不在通知期间改变容器结构。
+		for (auto& pObject : CycleSelection::Objects)
+			AnnounceInvalidPointer(pObject, pTarget);
 	}
 }

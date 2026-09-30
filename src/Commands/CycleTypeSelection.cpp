@@ -2,6 +2,7 @@
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
+#include <Helpers/Template.h>
 
 namespace CycleTypeSelection
 {
@@ -219,4 +220,14 @@ void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const
 	// Vanilla's own type cycle prints a selection summary on every step.
 	if (Phobos::Config::CycleTypeSelectionPrintSummary)
 		CycleTypeSelection::PrintTypeSummary(pID);
+}
+
+void CycleTypeSelectionCommandClass::OnDetach(ObjectClass* pTarget, bool removed)
+{
+	if (removed)
+	{
+		// 保留槽位和顺序以避免循环索引漂移；只置空，不在通知期间改变容器结构。
+		for (auto& pObject : CycleTypeSelection::Objects)
+			AnnounceInvalidPointer(pObject, pTarget);
+	}
 }

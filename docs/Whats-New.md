@@ -2055,6 +2055,7 @@ HideShakeEffects=false           ; boolean
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
+- Fixed potential crashes in Cycle Selection and Cycle Type Selection after an object in the cached selection is destroyed (by WLChara)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
 - Fixed several shield respawn/self heal issues (by Ollerus)
