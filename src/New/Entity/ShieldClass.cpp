@@ -190,7 +190,6 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	auto const pWH = args->WH;
 	auto const pWHExt = WarheadTypeExt::Fetch(pWH);
-	auto const pAttacker = args->Attacker;
 	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
 	if (!IC || this->CanBePenetrated(pWH))
@@ -610,10 +609,8 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldSh
 {
 	const auto pTechnoExt = TechnoExt::Fetch(this->Techno);
 	const auto pOldType = this->Type;
-	const bool allowTransfer = pOldShield ? pOldType->AllowTransfer.Get(Attached)
-		: pOldType->AllowTransfer_Convert.Get(pOldType->AllowTransfer.Get(Attached));
 
-	if (!allowTransfer)
+	if (!pOldType->AllowTransfer.Get(Attached))
 	{
 		const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pTechnoType);
 		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0 ? pTechnoTypeExt->ShieldType : nullptr;
