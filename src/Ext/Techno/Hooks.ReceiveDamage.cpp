@@ -5,10 +5,72 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/Detach.h>
+
+#include <vector>
 
 namespace ReceiveDamageTemp
 {
 	bool SkipLowDamageCheck = false;
+
+	// 反伤快照只保存值，不把附加效果指针带过同步伤害回调。
+	struct PendingReflection
+	{
+		WarheadTypeClass* Warhead;
+		int Damage;
+		TechnoClass* Invoker;
+		HouseClass* House;
+		HouseClass* InvokerHouseFallback;
+		AffectedHouse AffectsHouse;
+		bool UseInvokerAsOwner;
+		bool Detonate;
+	};
+
+	struct ReflectionPointerTracker final : Detach::Listener<TechnoClass>
+	{
+		TechnoClass* Victim;
+		TechnoClass* Source;
+		std::vector<PendingReflection>& Jobs;
+
+		ReflectionPointerTracker(TechnoClass* pVictim, TechnoClass* pSource, std::vector<PendingReflection>& jobs)
+			: Victim { pVictim }, Source { pSource }, Jobs { jobs }
+		{ }
+
+		void OnDetach(TechnoClass* pTarget, bool removed) override
+		{
+			if (!removed)
+				return;
+
+			if (this->Victim == pTarget)
+				this->Victim = nullptr;
+
+			if (this->Source == pTarget)
+				this->Source = nullptr;
+
+			for (auto& job : this->Jobs)
+			{
+				if (job.Invoker == pTarget)
+					job.Invoker = nullptr;
+			}
+		}
+	};
+
+	struct ReflectedStateGuard
+	{
+		WarheadTypeExt* Ext;
+		bool Previous;
+
+		explicit ReflectedStateGuard(WarheadTypeClass* pWarhead)
+			: Ext { WarheadTypeExt::Fetch(pWarhead) }, Previous { this->Ext->Reflected }
+		{
+			this->Ext->Reflected = true;
+		}
+
+		~ReflectedStateGuard()
+		{
+			this->Ext->Reflected = this->Previous;
+		}
+	};
 }
 
 // #issue 88 : shield logic
@@ -402,6 +464,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pWarhead);
 	auto const pExt = TechnoExt::Fetch(pThis);
+	std::vector<ReceiveDamageTemp::PendingReflection> pending;
 
 	if (!pWHExt->Reflected)
 	{
@@ -414,6 +477,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 		if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
 		{
+			// 按本次受击时的效果列表和随机判定顺序生成快照，离开迭代后再执行。
 			for (auto const& attachEffect : pExt->AttachedEffects)
 			{
 				if (!attachEffect->IsActive())
@@ -441,69 +505,90 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 				auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
 				int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
+				const auto invokerHouse = attachEffect->GetInvokerHouse();
+				const auto enqueue = [&](TechnoClass* pInvoker, HouseClass* pHouse, HouseClass* pInvokerHouseFallback)
+				{
+					pending.push_back(ReceiveDamageTemp::PendingReflection
+					{
+						pWH,
+						damage,
+						pInvoker,
+						pHouse,
+						pInvokerHouseFallback,
+						pType->ReflectDamage_AffectsHouse,
+						pType->ReflectDamage_UseInvokerAsOwner,
+						pType->ReflectDamage_Warhead_Detonate
+					});
+
+					if (pType->ReflectDamage_Delay > 0)
+					{
+						// 在命中快照时启动冷却，回调可能重入或销毁当前效果。
+						attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
+					}
+				};
 
 				if (pType->ReflectDamage_UseInvokerAsOwner)
 				{
 					auto const pInvoker = attachEffect->GetInvoker();
 
 					if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pInvoker->Owner, pSourceHouse))
-					{
-						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-						pWHExtRef->Reflected = true;
-
-						if (pType->ReflectDamage_Warhead_Detonate)
-							WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
-						else
-							pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
-
-						if (pType->ReflectDamage_Delay > 0)
-							attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
-
-						pWHExtRef->Reflected = false;
-					}
+						enqueue(pInvoker, pInvoker->Owner, invokerHouse);
 					else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, attachEffect->GetInvokerHouse(), pSourceHouse))
-					{
-						auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-						pWHExtRef->Reflected = true;
-
-						if (pType->ReflectDamage_Warhead_Detonate)
-							WarheadTypeExt::DetonateAt(pWH, pSource, nullptr, damage, attachEffect->GetInvokerHouse());
-						else
-							pSource->ReceiveDamage(&damage, 0, pWH, nullptr, false, false, attachEffect->GetInvokerHouse());
-
-						if (pType->ReflectDamage_Delay > 0)
-							attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
-
-						pWHExtRef->Reflected = false;
-					}
+						enqueue(nullptr, invokerHouse, invokerHouse);
 				}
 				else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouse, pThis->Owner, pSourceHouse))
-				{
-					auto const pWHExtRef = WarheadTypeExt::Fetch(pWH);
-					pWHExtRef->Reflected = true;
-
-					if (pType->ReflectDamage_Warhead_Detonate)
-						WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
-					else
-						pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
-
-					if (pType->ReflectDamage_Delay > 0)
-						attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
-
-					pWHExtRef->Reflected = false;
-				}
+					enqueue(pThis, pThis->Owner, nullptr);
 			}
 		}
 	}
 
-	if (pExt->AE.HasOnDamageDiscardables)
+	TechnoClass* pReflector = pThis;
+
+	if (!pending.empty())
 	{
-		for (auto const& attachEffect : pExt->AttachedEffects)
+		ReceiveDamageTemp::ReflectionPointerTracker tracker { pThis, pSource, pending };
+
+		for (const auto& job : pending)
+		{
+			if (!tracker.Victim || !tracker.Source)
+				break;
+
+			TechnoClass* pInvoker = job.Invoker;
+			HouseClass* pHouse = job.House;
+
+			if (job.UseInvokerAsOwner && !pInvoker)
+			{
+				if (!EnumFunctions::CanTargetHouse(job.AffectsHouse, job.InvokerHouseFallback, pSourceHouse))
+					continue;
+
+				pHouse = job.InvokerHouseFallback;
+			}
+
+			int damage = job.Damage;
+			ReceiveDamageTemp::ReflectedStateGuard reflectedGuard { job.Warhead };
+
+			if (job.Detonate)
+				WarheadTypeExt::DetonateAt(job.Warhead, tracker.Source, pInvoker, damage, pHouse);
+			else
+				tracker.Source->ReceiveDamage(&damage, 0, job.Warhead, pInvoker, false, false, pHouse);
+		}
+
+		pReflector = tracker.Victim;
+	}
+
+	if (!pReflector)
+		return 0;
+
+	const auto pCurrentExt = TechnoExt::TryFetch(pReflector);
+
+	if (pCurrentExt && pCurrentExt->AE.HasOnDamageDiscardables)
+	{
+		for (auto const& attachEffect : pCurrentExt->AttachedEffects)
 		{
 			const auto pType = attachEffect->GetType();
 
 			if ((pType->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
-				&& EnumFunctions::CanTargetHouse(pType->DiscardOn_ReceivedDamage_AffectsHouse, pThis->Owner, pSourceHouse))
+				&& EnumFunctions::CanTargetHouse(pType->DiscardOn_ReceivedDamage_AffectsHouse, pReflector->Owner, pSourceHouse))
 			{
 				attachEffect->ReceivedDamageCount++;
 

@@ -984,4 +984,6 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
-- **WLChara** - Fix stale object pointers in the Cycle Selection and Cycle Type Selection hotkeys
+- **WLChara**:
+  - Fix stale object pointers in the Cycle Selection and Cycle Type Selection hotkeys
+  - Fix reflected damage accessing removed attached effects
