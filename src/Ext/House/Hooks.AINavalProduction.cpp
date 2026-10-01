@@ -16,7 +16,7 @@ DEFINE_HOOK(0x444113, BuildingClass_ExitObject_NavalProductionFix1, 0x6)
 
 	auto const pHouse = pThis->Owner;
 
-	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
+	if (pObject->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pObject)->Type->Naval)
 	{
 		auto const pHouseExt = HouseExt::Fetch(pHouse);
 		pHouseExt->ProducingNavalUnitTypeIndex = -1;
@@ -33,7 +33,7 @@ DEFINE_HOOK(0x444137, BuildingClass_ExitObject_NavalProductionFix2, 0x6)
 
 	auto const pHouse = pThis->Owner;
 
-	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
+	if (pObject->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pObject)->Type->Naval)
 		pHouse->ProducingUnitTypeIndex = ExitObjectTemp::ProducingUnitIndex;
 
 	return 0;
@@ -56,12 +56,7 @@ DEFINE_HOOK(0x450319, BuildingClass_AI_Factory_NavalProductionFix, 0x6)
 		index = pHouse->ProducingAircraftTypeIndex;
 
 		if (index >= 0)
-		{
-			const auto pAircraftType = AircraftTypeClass::Array.GetItem(index);
-
-			if (!pAircraftType->AirportBound || BuildingExt::HasFreeDocks(pThis))
-				pTechnoType = pAircraftType;
-		}
+			pTechnoType = AircraftTypeClass::Array.GetItem(index);
 
 		break;
 
@@ -105,7 +100,7 @@ DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 
 	auto const pObject = pThis->Object;
 
-	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
+	if (pObject->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pObject)->Type->Naval)
 	{
 		if (auto const pHouseExt = HouseExt::TryFetch(pThis->Owner))
 		{
