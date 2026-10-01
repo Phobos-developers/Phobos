@@ -106,6 +106,50 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->EVA_Activated_Owner)
 		.Process(this->EVA_Activated_Allies)
 		.Process(this->EVA_Activated_Enemies)
+		.Process(this->DropshipLoadout_OpenWindow)
+		.Process(this->DropshipLoadout_Launch)
+		.Process(this->DropshipLoadout_PersistentCargo)
+		.Process(this->DropshipLoadout_PreloadCargo)
+		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
+		.Process(this->DropshipLoadout_RememberPurchasedCargo)
+		.Process(this->DropshipLoadout_Palette)
+		.Process(this->DropshipLoadout_Carrier)
+		.Process(this->DropshipLoadout_AllowableUnits)
+		.Process(this->DropshipLoadout_AllowableUnitMaximums)
+		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_Theme)
+		.Process(this->DropshipLoadout_StartEVA)
+		.Process(this->DropshipLoadout_SizeLimit)
+		.Process(this->DropshipLoadout_BackgroundPCX)
+		.Process(this->DropshipLoadout_UpArrowPCX)
+		.Process(this->DropshipLoadout_DownArrowPCX)
+		.Process(this->DropshipLoadout_UpArrowLocation)
+		.Process(this->DropshipLoadout_DownArrowLocation)
+		.Process(this->DropshipLoadout_SidebarCameosCount)
+		.Process(this->DropshipLoadout_SidebarCameosLocations)
+		.Process(this->DropshipLoadout_PilotLitPCX)
+		.Process(this->DropshipLoadout_PilotLitLocation)
+		.Process(this->DropshipLoadout_LoadoutPCX)
+		.Process(this->DropshipLoadout_LoadoutLocation)
+		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_Background)
+		.Process(this->DropshipLoadout_UpArrow)
+		.Process(this->DropshipLoadout_DownArrow)
+		.Process(this->DropshipLoadout_Loadout)
+		.Process(this->DropshipLoadout_PilotLit)
+		.Process(this->DropshipLoadout_DGreenList)
+		.Process(this->DropshipLoadout_DGreenAnimationsCount)
+		.Process(this->DropshipLoadout_DGreenLocations)
+		.Process(this->DropshipLoadout_DropshipCameosCount)
+		.Process(this->DropshipLoadout_DropshipCameosLocations)
+		.Process(this->DropshipLoadout_FixedUnits)
+		.Process(this->DropshipLoadout_InitialUnits)
+		.Process(this->DropshipLoadout_BuyClickSound)
+		.Process(this->DropshipLoadout_SellClickSound)
+		.Process(this->DropshipLoadout_ArrowsClickSound)
+		.Process(this->DropshipLoadout_StartingDragDropSound)
+		.Process(this->DropshipLoadout_EndingDragDropSound)
+		.Process(this->DropshipLoadout_VeteranLevel)
 		;
 }
 
@@ -306,6 +350,208 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		pNewSWType->Initialize(const_cast<SWTypeExt*>(this), OwnerObject());
 		pNewSWType->LoadFromINI(const_cast<SWTypeExt*>(this), OwnerObject(), pINI);
 	}
+
+	this->DropshipLoadout_OpenWindow.Read(exINI, pSection, "DropshipLoadout.OpenWindow");
+	this->DropshipLoadout_Launch.Read(exINI, pSection, "DropshipLoadout.Launch");
+	this->DropshipLoadout_PersistentCargo.Read(exINI, pSection, "DropshipLoadout.PersistentCargo");
+	this->DropshipLoadout_PreloadCargo.Read(exINI, pSection, "DropshipLoadout.PreloadCargo");
+	this->DropshipLoadout_AddUnusedMoneyToPlayer.Read(exINI, pSection, "DropshipLoadout.AddUnusedMoneyToPlayer");
+	this->DropshipLoadout_RememberPurchasedCargo.Read(exINI, pSection, "DropshipLoadout.RememberPurchasedCargo");
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
+	this->DropshipLoadout_Carrier.Read(exINI, pSection, "DropshipLoadout.Carrier");
+
+	this->DropshipLoadout_AllowableUnits.Read(exINI, pSection, "DropshipLoadout.AllowableUnits");
+	this->DropshipLoadout_AllowableUnitMaximums.Read(exINI, pSection, "DropshipLoadout.AllowableUnitMaximums");
+	this->DropshipLoadout_Money.Read(exINI, pSection, "DropshipLoadout.Money");
+	this->DropshipLoadout_VeteranLevel.Read(exINI, pSection, "DropshipLoadout.VeteranLevel");
+	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
+	this->DropshipLoadout_SizeLimit.Read(exINI, pSection, "DropshipLoadout.SizeLimit");
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.Theme", "", Phobos::readBuffer) > 0)
+		this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", -1);
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
+	{
+		this->DropshipLoadout_BackgroundPCXPattern = Phobos::readBuffer;
+		char filename[260];
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, 1);
+		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
+	}
+
+	pINI->ReadString(pSection, "DropshipLoadout.UpArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_UpArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(pSection, "DropshipLoadout.DownArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_DownArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(pSection, "DropshipLoadout.LoadoutPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_LoadoutPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(pSection, "DropshipLoadout.PilotLitPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_PilotLitPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	char* context = nullptr;
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.DGreenListPCX", "", Phobos::readBuffer) > 0)
+	{
+		this->DropshipLoadout_DGreenListPCX.clear();
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pFrames = GeneralUtils::GetAnimationPCX(cur))
+			{
+				for (auto& frame : *pFrames)
+				{
+					this->DropshipLoadout_DGreenListPCX.emplace_back(std::move(frame));
+				}
+			}
+		}
+	}
+
+	this->DropshipLoadout_Background.Read(exINI, pSection, "DropshipLoadout.Background");
+	this->DropshipLoadout_UpArrow.Read(exINI, pSection, "DropshipLoadout.UpArrow");
+	this->DropshipLoadout_DownArrow.Read(exINI, pSection, "DropshipLoadout.DownArrow");
+	this->DropshipLoadout_Loadout.Read(exINI, pSection, "DropshipLoadout.Loadout");
+	this->DropshipLoadout_PilotLit.Read(exINI, pSection, "DropshipLoadout.PilotLit");
+	context = nullptr;
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.DGreenList", "", Phobos::readBuffer) > 0)
+	{
+		this->DropshipLoadout_DGreenList.clear();
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			std::string Result = cur;
+
+			if (Result.size() < 4 || !std::equal(Result.end() - 4, Result.end(), ".shp", [](char input, char expected) { return std::tolower(input) == expected; }))
+				Result += ".shp";
+
+			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
+				this->DropshipLoadout_DGreenList.push_back(pImage);
+			else
+				Debug::Log("Failed to find file %s referenced by [%s]DropshipLoadout.DGreenList=%s\n", Result.c_str(), pSection, cur);
+		}
+	}
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.DGreenAnimationsCount", "", Phobos::readBuffer) > 0)
+	{
+		this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
+		this->DropshipLoadout_DGreenLocations.clear();
+
+		for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount.Get(0); i++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
+			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+			this->DropshipLoadout_DGreenLocations.push_back(location);
+		}
+	}
+	else
+	{
+		this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
+	}
+
+	this->DropshipLoadout_LoadoutLocation.Read(exINI, pSection, "DropshipLoadout.LoadoutLocation");
+	this->DropshipLoadout_PilotLitLocation.Read(exINI, pSection, "DropshipLoadout.PilotLitLocation");
+	this->DropshipLoadout_UpArrowLocation.Read(exINI, pSection, "DropshipLoadout.UpArrowLocation");
+	this->DropshipLoadout_DownArrowLocation.Read(exINI, pSection, "DropshipLoadout.DownArrowLocation");
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.SidebarCameosCount", "", Phobos::readBuffer) > 0)
+	{
+		this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
+		this->DropshipLoadout_SidebarCameosLocations.clear();
+
+		for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
+			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+			this->DropshipLoadout_SidebarCameosLocations.push_back(location);
+		}
+	}
+	else
+	{
+		this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
+	}
+
+	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+	int cameosCount = this->DropshipLoadout_DropshipCameosCount.Get(0);
+	char countKey[256];
+	_snprintf_s(countKey, sizeof(countKey), "DropshipLoadout.Dropship0.CameosCount");
+	cameosCount = pINI->ReadInteger(pSection, countKey, cameosCount);
+
+	if (cameosCount > 0)
+	{
+		this->DropshipLoadout_DropshipCameosCount = cameosCount;
+		this->DropshipLoadout_DropshipCameosLocations.clear();
+
+		for (int j = 0; j < cameosCount; j++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+
+			// Try DropshipLoadout.CameoLocation%d (preferred clean format)
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.CameoLocation%d", j);
+
+			if (pINI->Exists(pSection, tempBuffer))
+			{
+				pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+				this->DropshipLoadout_DropshipCameosLocations.push_back(location);
+				continue;
+			}
+
+			// Try DropshipLoadout.Dropship0.CameoLocation%d (matches DropshipN.CameoLocationM index 0)
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship0.CameoLocation%d", j);
+
+			if (pINI->Exists(pSection, tempBuffer))
+			{
+				pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+				this->DropshipLoadout_DropshipCameosLocations.push_back(location);
+				continue;
+			}
+
+			// Default: DropshipLoadout.Dropship.CameoLocation%d (legacy dot format)
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship.CameoLocation%d", j);
+			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+			this->DropshipLoadout_DropshipCameosLocations.push_back(location);
+		}
+	}
+
+	this->DropshipLoadout_FixedUnits.clear();
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.FixedUnits", "", Phobos::readBuffer) > 0)
+	{
+		char* ctx = nullptr;
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+		{
+			if (auto pType = TechnoTypeClass::Find(cur))
+				this->DropshipLoadout_FixedUnits.push_back(pType);
+		}
+	}
+
+	this->DropshipLoadout_InitialUnits.clear();
+
+	if (pINI->ReadString(pSection, "DropshipLoadout.InitialUnits", "", Phobos::readBuffer) > 0)
+	{
+		char* ctx = nullptr;
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &ctx); cur; cur = strtok_s(nullptr, Phobos::readDelims, &ctx))
+		{
+			if (auto pType = TechnoTypeClass::Find(cur))
+				this->DropshipLoadout_InitialUnits.push_back(pType);
+		}
+	}
+
+	this->DropshipLoadout_BuyClickSound.Read(exINI, pSection, "DropshipLoadout.BuyClickSound");
+	this->DropshipLoadout_SellClickSound.Read(exINI, pSection, "DropshipLoadout.SellClickSound");
+	this->DropshipLoadout_ArrowsClickSound.Read(exINI, pSection, "DropshipLoadout.ArrowsClickSound");
+	this->DropshipLoadout_StartingDragDropSound.Read(exINI, pSection, "DropshipLoadout.StartingDragDropSound");
+	this->DropshipLoadout_EndingDragDropSound.Read(exINI, pSection, "DropshipLoadout.EndingDragDropSound");
 }
 
 void SWTypeExt::LoadFromStream(PhobosStreamReader& Stm)

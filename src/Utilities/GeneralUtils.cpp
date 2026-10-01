@@ -329,3 +329,135 @@ int GeneralUtils::SafeMultiply(int value, double mult)
 
 	return static_cast<int>(product);
 }
+
+// SHP & PCX drawing support in the same function
+bool GeneralUtils::DrawImage(
+	DSurface* pSurface,
+	RectangleStruct destinationRect,
+	BSurface* pPCXSurface,
+	SHPStruct* fileSHP,
+	ConvertClass* pPalette,
+	int frameIndex,
+	int zAdjust,
+	BlitterFlags blitterFlags)
+{
+	if (!pSurface || (!pPCXSurface && !fileSHP))
+		return false;
+
+	bool painted = false;
+
+	// Prioritize drawing the PCX file if it's provided
+	if (pPCXSurface)
+	{
+		// This function handles stretching the PCX to fit the destinationRect
+		PCX::Instance.BlitToSurface(&destinationRect, pSurface, pPCXSurface);
+		painted = true;
+	}
+	// Otherwise, if an SHP is provided, draw it
+	else if (fileSHP)
+	{
+		// SHP drawing requires a palette converter
+		if (!pPalette)
+		{
+			Debug::Log("DrawImage Error: Attempted to draw SHP without providing a pPalette.\n");
+			return false;
+		}
+
+		Point2D noLocation = { 0, 0 };
+
+		CC_Draw_Shape(
+			pSurface,
+			pPalette,
+			fileSHP,
+			frameIndex,
+			&noLocation,
+			&destinationRect,
+			BlitterFlags::None,
+			0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+		);
+		painted = true;
+	}
+
+	// Use the Phobos PCX instance to blit the image
+	if (painted && blitterFlags == (BlitterFlags::Darken | BlitterFlags::bf_400))
+	{
+		auto black = ColorStruct { 0, 0, 0 };
+		int opacity = 40;
+		pSurface->FillRectTrans(&destinationRect, &black, opacity);
+	}
+
+	// Other new BlitterFlags cases should be placed here so both SHP & PCS will be affected
+	return true;
+}
+
+std::unique_ptr<std::vector<PhobosPCXFile>> GeneralUtils::GetAnimationPCX(const std::string& baseFilename)
+{
+	auto animationFrames = std::make_unique<std::vector<PhobosPCXFile>>();
+
+	std::string filenameBase = baseFilename;
+	std::string extension = ".PCX";
+
+	// Find the position of the last dot to separate the extension
+	size_t lastDot = baseFilename.find_last_of('.');
+	if (lastDot != std::string::npos)
+	{
+		filenameBase = baseFilename.substr(0, lastDot);
+		extension = baseFilename.substr(lastDot);
+	}
+
+	// Check if the part before the extension was a frame number and remove it if so
+	if (filenameBase.length() > 5 && filenameBase[filenameBase.length() - 5] == ' ')
+	{
+		std::string frameNumberStr = filenameBase.substr(filenameBase.length() - 4);
+		bool isNumeric = true;
+		for (char c : frameNumberStr)
+		{
+			if (!isdigit(c))
+			{
+				isNumeric = false;
+				break;
+			}
+		}
+		if (isNumeric)
+		{
+			filenameBase = filenameBase.substr(0, filenameBase.length() - 5);
+		}
+	}
+
+	// Try loading frame 0 as "<base> 0000.<ext>" first
+	char frame0Filename[256];
+	_snprintf_s(frame0Filename, sizeof(frame0Filename), "%s 0000%s", filenameBase.c_str(), extension.c_str());
+	PhobosPCXFile frame0(frame0Filename);
+	if (frame0.Exists())
+	{
+		animationFrames->emplace_back(std::move(frame0));
+	}
+	else
+	{
+		// If "<base> 0000.<ext>" doesn't exist, try loading the exact filename as provided (e.g. "LOADOUT.PCX")
+		PhobosPCXFile exactFile(baseFilename.c_str());
+		if (exactFile.Exists())
+		{
+			animationFrames->emplace_back(std::move(exactFile));
+		}
+		else
+		{
+			return animationFrames;
+		}
+	}
+
+	// Loop to find and load the subsequent frames, starting from frame 1
+	for (int i = 1; i < 10000; ++i)
+	{
+		char currentFilename[256];
+		_snprintf_s(currentFilename, sizeof(currentFilename), "%s %04d%s", filenameBase.c_str(), i, extension.c_str());
+
+		PhobosPCXFile filePCX(currentFilename);
+		if (filePCX.Exists())
+			animationFrames->emplace_back(std::move(filePCX));
+		else
+			break;
+	}
+
+	return animationFrames;
+}
