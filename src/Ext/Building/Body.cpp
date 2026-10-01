@@ -603,7 +603,8 @@ void BuildingExt::Serialize(T& Stm)
 		.Process(this->TurretAnimIdleFrame)
 		.Process(this->TurretAnimFiringFrame)
 		.Process(this->TurretAnimRateTick)
-		.Process(this->ConstructionStartFacing) 
+		.Process(this->ConstructionStartFacing)
+		//.Process(this->IsPlayingRoofProductionAnim) It is set and reset within a same function.
 		;
 }
 

@@ -537,6 +537,7 @@ namespace DrawTimerTemp
 {
 	bool AdjustLocation = false;
 	bool IsPercentage = false;
+	bool IsDigit = false;
 	double Percentage = 0.0;
 	int TimeLeft = 0;
 }
@@ -546,12 +547,65 @@ DEFINE_HOOK(0x6D3D10, TacticalClass_Render_BeforeAll, 0x6)
 	using namespace DrawTimerTemp;
 	AdjustLocation = false;
 	IsPercentage = false;
+	IsDigit = false;
 	return 0;
 }
 
 DEFINE_HOOK(0x6D4992, TacticalClass_Render_DrawMissionTimer_TimeLeft, 0x6)
 {
 	DrawTimerTemp::TimeLeft = R->EDX<int>();
+	DrawTimerTemp::IsPercentage = false;
+	DrawTimerTemp::IsDigit = false;
+
+	switch (ScenarioExt::Global()->MissionTimer_Type)
+	{
+	case 1:
+	{
+		DrawTimerTemp::IsPercentage = true;
+		const int totalTime = ScenarioExt::Global()->MissionTimer_Variable;
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::Percentage = totalTime > 0 ? static_cast<double>(DrawTimerTemp::TimeLeft) / totalTime : 1.0;
+		else
+			DrawTimerTemp::Percentage = totalTime > 0 ? static_cast<double>(totalTime - DrawTimerTemp::TimeLeft) / totalTime : 1.0;
+		break;
+	}
+	case 2:
+	{
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::TimeLeft = ScenarioExt::Global()->MissionTimer_Variable - DrawTimerTemp::TimeLeft;
+		DrawTimerTemp::IsDigit = true;
+		break;
+	}
+	case 3:
+	{
+		DrawTimerTemp::IsDigit = true;
+		const auto& variables = ScenarioExt::Global()->Variables[0];
+		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
+		if (it != variables.end())
+			DrawTimerTemp::TimeLeft = it->second.Value;
+		else
+			DrawTimerTemp::TimeLeft = 0;
+		break;
+	}
+	case 4:
+	{
+		DrawTimerTemp::IsDigit = true;
+		const auto& variables = ScenarioExt::Global()->Variables[1];
+		const auto& it = variables.find(ScenarioExt::Global()->MissionTimer_Variable);
+		if (it != variables.end())
+			DrawTimerTemp::TimeLeft = it->second.Value;
+		else
+			DrawTimerTemp::TimeLeft = 0;
+		break;
+	}
+	default:
+	{
+		if (ScenarioExt::Global()->MissionTimer_Reverse)
+			DrawTimerTemp::TimeLeft = ScenarioExt::Global()->MissionTimer_Variable - DrawTimerTemp::TimeLeft;
+		break;
+	}
+	}
+
 	return 0;
 }
 
@@ -562,6 +616,7 @@ DEFINE_HOOK(0x6D4A10, TacticalClass_Render_DrawSuperTimer_PercentageTimer, 0x6)
 	GET(SuperClass*, pSuper, ECX);
 
 	DrawTimerTemp::IsPercentage = false;
+	DrawTimerTemp::IsDigit = false;
 	const int timeLeft = pSuper->RechargeTimer.GetTimeLeft();
 	const auto pSWTypeExt = SWTypeExt::Fetch(pSuper->Type);
 
@@ -593,6 +648,8 @@ static int __fastcall TacticalClass_DrawTimer_swprintf(wchar_t* pBuffer, size_t 
 
 	if (IsPercentage)
 		return swprintf(pBuffer, bufferCount, L"%.2lf%s", Percentage * 100, L"%%");
+	else if (IsDigit)
+		return swprintf(pBuffer, bufferCount, L"%d", TimeLeft);
 	else
 		return swprintf(pBuffer, bufferCount, L"%02d:%02d", TimeLeft / 60 % 60, TimeLeft % 60);
 }

@@ -39,6 +39,7 @@ public:
 	DirStruct FiringAnim_LastFacing;
 	CoordStruct FiringAnim_LastCoords;
 	double FirepowerMult;
+		Point2D AEDrawOffset;
 
 	AnimExt(AnimClass* OwnerObject) : ObjectExt(OwnerObject)
 		, DeathUnitFacing { 0 }
@@ -59,6 +60,7 @@ public:
 		, FiringAnim_LastFacing {}
 		, FiringAnim_LastCoords {}
 		, FirepowerMult { 1.0 }
+			, AEDrawOffset { Point2D::Empty }
 	{ }
 
 	void SetInvoker(TechnoClass* pInvoker);

@@ -29,8 +29,6 @@ void UnitExt::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->SimpleDeployerAnimationTimer)
-		.Process(this->IsBurrowed)
-		.Process(this->UndergroundTracked)
 		.Process(this->ExtraTurretRecoil)
 		.Process(this->ExtraBarrelRecoil)
 		;
