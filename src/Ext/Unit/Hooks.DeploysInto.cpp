@@ -205,7 +205,10 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+				if (pObject == TechnoExt::Deployer
+					|| (pTechno && TechnoExt::Deployer && TechnoExt::IsChildOf(pTechno, TechnoExt::Deployer))
+					|| (pTechno && TechnoExt::DoesntOccupyCellAsChild(pTechno)))
 				{
 					skipFlag = true;
 				}
@@ -247,7 +250,10 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+				if (pObject == TechnoExt::Deployer
+					|| (pTechno && TechnoExt::Deployer && TechnoExt::IsChildOf(pTechno, TechnoExt::Deployer))
+					|| (pTechno && TechnoExt::DoesntOccupyCellAsChild(pTechno)))
 					skipFlag = true;
 				else
 					return CanNotExistHere;
