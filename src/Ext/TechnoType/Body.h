@@ -456,6 +456,8 @@ public:
 
 	ValueableVector<int> DefaultToGuardArea_Modes;
 	ValueableVector<int> DefaultToGuardArea_AIModes;
+	
+	ValueableVector<int> NoAmmoWeapons;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -886,6 +888,8 @@ public:
 
 		, DefaultToGuardArea_Modes {}
 		, DefaultToGuardArea_AIModes {}
+
+		, NoAmmoWeapons {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

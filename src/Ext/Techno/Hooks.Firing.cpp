@@ -88,6 +88,46 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	return 0;
 }
 
+// Disable Ares NoAmmoWeapon hook.
+DEFINE_PATCH(0x6F3410, 0x8A, 0x4F, 0x14);
+DEFINE_PATCH(0x6F3413, 0x8B, 0x16);
+
+DEFINE_HOOK(0x6F3415, TechnoClass_WhatWeaponShouldIUse_NoAmmoWeapon, 0x5)
+{
+	enum { UseWeaponIndex = 0x6F3406 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EDI);
+
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+
+	if (pType->Ammo >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	{
+		const auto& noAmmoWeapons = pTypeExt->NoAmmoWeapons;
+
+		for (int weaponIndex : noAmmoWeapons)
+		{
+			if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, pThis->GetWeapon(weaponIndex)->WeaponType))
+			{
+				R->EAX(weaponIndex);
+				return UseWeaponIndex;
+			}
+		}
+
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
+
+		if (noAmmoWeapon >= 0)
+		{
+			R->EAX(noAmmoWeapon);
+			return UseWeaponIndex;
+		}
+	}
+	
+	return 0;
+
+}
+
 DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
 	enum { UseWeaponIndex = 0x6F37AF };

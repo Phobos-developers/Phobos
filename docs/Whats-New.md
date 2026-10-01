@@ -2042,6 +2042,7 @@ HideShakeEffects=false           ; boolean
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- New `NoAmmoWeapons` tag supporting multiple weapon types by FlyStar
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
