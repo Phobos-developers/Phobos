@@ -218,6 +218,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		this->ApplyBuildingUndeploy(pTarget);
 
 	// Other one time effects
+	if (this->Ammo != 0)
+		this->ApplyAmmoModifier(pTarget);
+
 	if (this->RemoveDisguise)
 		this->ApplyRemoveDisguise(pTarget);
 
@@ -232,6 +235,9 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 
 	if (this->Taunt && pOwner)
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
+
+	if (this->IvanBomb_Detonate)
+		this->IvanBombDetonate(pOwner, pTarget);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -416,17 +422,11 @@ void WarheadTypeExt::ApplyShieldModifiers(TechnoClass* pTarget)
 				if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 				{
 					pShield->SetHP((int)(shieldType->Strength * ratio));
-
-					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
-					{
-						pShield->SetHP((int)(shieldType->Strength * ratio));
-
-						if (pShield->GetHP() == 0)
-						{
-							pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate,
-								shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
-						}
-					}
+					// Value doesn't matter here, it's just for restarting timer
+					pShield->SetRespawn(0, shieldType->Respawn, shieldType->Respawn_Rate,
+						shieldType->Respawn_RestartInCombat, -1, true, shieldType->Respawn_Anim);
+					pShield->SetSelfHealing(0, shieldType->SelfHealing, shieldType->SelfHealing_Rate,
+						shieldType->SelfHealing_RestartInCombat, -1, true);
 				}
 			}
 		}
@@ -491,7 +491,8 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	const bool isMindControl = this->ChangeOwner_SetAsMindControl;
-	const bool isImmune = (isMindControl && pTarget->GetTechnoType()->ImmuneToPsionics) || pTarget->IsMindControlled();
+	const auto pType = pTarget->GetTechnoType();
+	const bool isImmune = (isMindControl && pType->ImmuneToPsionics) || pTarget->IsMindControlled();
 
 	if (!isImmune)
 	{
@@ -509,7 +510,7 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 				if (isBld)
 					location.Z += static_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
 				else
-					location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+					location.Z += pType->MindControlRingOffset;
 
 				if (const auto pOwnerAnim = GameCreate<AnimClass>(pAnimType, location))
 				{
@@ -526,6 +527,16 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 
 void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletExt* pBulletExt)
 {
+	if (this->InApplyCrit)
+		return;
+
+	struct InApplyCritGuard
+	{
+		WarheadTypeExt* P;
+		InApplyCritGuard(WarheadTypeExt* p) : P(p) { P->InApplyCrit = true; }
+		~InApplyCritGuard() { P->InApplyCrit = false; }
+	} guard(this);
+
 	const double dice = this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget)
 		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) ? ScenarioClass::Instance->Random.RandomDouble() : this->Crit_RandomBuffer;
 
@@ -534,7 +545,7 @@ void WarheadTypeExt::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoC
 
 	auto const pTargetExt = TechnoExt::Fetch(pTarget);
 
-	if (pTargetExt->TypeExtData->ImmuneToCrit)
+	if (pTargetExt->TypeExtData->ImmuneToCrit || TechnoExt::HasAdditionalAbility(pTarget, AdditionalAbility::CritImmune))
 		return;
 
 	auto const pSld = pTargetExt->Shield.get();
@@ -733,6 +744,9 @@ double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 
 	auto const pExt = TechnoExt::Fetch(pFirer);
 
+	if (TechnoExt::HasAdditionalAbility(pFirer, AdditionalAbility::CritChance))
+		critChance = critChance * Math::max(pExt->TypeExtData->VeteranCritChance.Get(RulesExt::Global()->VeteranCritChance), 0);
+
 	if (!pExt->AE.HasCritModifiers)
 		return critChance;
 
@@ -906,5 +920,56 @@ void WarheadTypeExt::ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass*
 
 		if (cleanSound != -1)
 			VocClass::PlayAt(cleanSound, transporterCoords);
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
+{
+	const int maxAmmo = pTarget->GetTechnoType()->Ammo;
+	int newCurrentAmmo = this->Ammo + pTarget->Ammo;
+
+	newCurrentAmmo = newCurrentAmmo < 0 ? 0 : newCurrentAmmo;
+	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
+}
+
+void WarheadTypeExt::ExtData::IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
+	const bool sameInvokerOnly = this->IvanBomb_Detonate_SameInvokerOnly;
+
+	auto needsDetonate = [&](BombClass* pBomb)
+	{
+		// TODO: handle the case when the owner of IvanBomb is dead
+		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+		{
+			if (!sameInvokerOnly || (pOwner && pBomb->Owner == pOwner))
+				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+		}
+	};
+
+	needsDetonate(pTarget->AttachedBomb);
+
+	if (this->IvanBomb_Detonate_PenetratesTransport)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			needsDetonate(pPassenger->AttachedBomb);
+		}
+	}
+
+	if (this->IvanBomb_Detonate_PenetratesGarrison && pTarget->WhatAmI() == AbstractType::Building)
+	{
+		const auto pTargetBuilding = static_cast<BuildingClass*>(pTarget);
+
+		for (const auto pOccupant : pTargetBuilding->Occupants)
+		{
+			needsDetonate(pOccupant->AttachedBomb);
+		}
+	}
+
+	if (this->IvanBomb_Detonate_AffectsParasite && (pTarget->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		if (const auto pParasite = static_cast<FootClass*>(pTarget)->ParasiteEatingMe)
+			needsDetonate(pParasite->AttachedBomb);
 	}
 }

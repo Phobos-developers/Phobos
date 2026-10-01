@@ -5,6 +5,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -23,6 +24,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+DEFINE_HOOK_AGAIN(0x6B0BA4, SlaveManagerClass_Killed_DecideOwner, 0x6)
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
 	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
@@ -51,7 +53,22 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		break;
 	}
 
-	return 0x0;
+	if (R->Origin() == 0x6B0BA4)
+	{
+		// 0x6B0BA4: master sold / self-destroyed (killer == 0).
+		// Replicate the vanilla fallback: give the slave to the neutral house,
+		// otherwise destroy it. Avoid `return 0` here so we bypass the vanilla
+		// `mov eax,[esp+arg_4]; test eax,eax` sequence and branch explicitly.
+		if (const auto pNeutral = HouseClass::FindNeutral())
+		{
+			R->EAX(pNeutral);
+			return ChangeSlaveOwner;
+		}
+		return KillTheSlave;
+
+	}
+
+	return 0;
 }
 
 // Fix slaves cannot always suicide due to armor multiplier or something
@@ -184,7 +201,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	{
 		if (pNode->Unit)
 		{
-			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->GetTechnoType(); });
+			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->Type; });
 			if (it != vec.end())
 				vec.erase(it);
 		}
@@ -420,7 +437,7 @@ DEFINE_HOOK(0x75AC93, WalkLocomotionClass_Process_Wake, 0x6)
 		auto location = pLinkedTo->GetCoords();
 		GameCreate<AnimClass>(pAnimType, location, 0, 1, 0x600u, false);
 	}
-	
+
 	return 0;
 }
 
@@ -433,7 +450,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 	GET(ILocomotion*, pThis, ESI);
 
 	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
+	const auto pExt = FootExt::Fetch(pLoco->LinkedTo);
 	pExt->IsBurrowed = true;
 
 	if (const auto pShieldData = pExt->Shield.get())
@@ -455,7 +472,7 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 
 	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
 	{
-		const auto pExt = UnitExt::Fetch(static_cast<UnitClass*>(pLoco->LinkedTo));
+		const auto pExt = FootExt::Fetch(pLoco->LinkedTo);
 		pExt->IsBurrowed = false;
 
 		if (const auto pShieldData = pExt->Shield.get())
@@ -477,7 +494,7 @@ DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 
 	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -492,7 +509,7 @@ DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
 	GET(TechnoClass*, pLinkedTo, ECX);
 	GET(const int, height, EAX);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 
 	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
 		return Continue;
@@ -508,7 +525,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
@@ -525,7 +542,7 @@ DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeig
 	GET(TechnoClass*, pLinkedTo, EAX);
 	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
 
-	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
+	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 
 	return SkipGameCode;
@@ -912,28 +929,62 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 
-DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
+// Update it only once per frame, should be enough for the command
+namespace DeployPriorityTemp
+{
+	int Frame;
+	int DeployPriority;
+	std::vector<TechnoTypeClass*> SelectType;
+}
+
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_DeployFilter, 0x6)
 {
 	enum { SkipDeploy = 0x730D24 };
 
 	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
 
-	if (Phobos::Config::PriorityDeployFiltering && selectedObjectCount > 1)
+	if (selectedObjectCount > 1)
 	{
-		GET(TechnoClass* const, pTechno, ESI);
-
-		auto const pExt = TechnoExt::Fetch(pTechno);
-
-		if (pExt->TypeExtData->LowDeployPriority)
+		if (DeployPriorityTemp::Frame != Unsorted::CurrentFrame)
 		{
+			DeployPriorityTemp::Frame = Unsorted::CurrentFrame;
+			DeployPriorityTemp::DeployPriority = -1;
+			DeployPriorityTemp::SelectType.clear();
+
 			for (const auto pObject : ObjectClass::CurrentObjects)
 			{
 				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 				{
-					if (!TechnoExt::Fetch(static_cast<TechnoClass*>(pObject))->TypeExtData->LowDeployPriority)
-						return SkipDeploy;
+					const auto pObjTypeExt = TechnoExt::Fetch(static_cast<TechnoClass*>(pObject))->TypeExtData;
+					const auto pObjType = pObjTypeExt->OwnerObject();
+
+					if (std::ranges::find(DeployPriorityTemp::SelectType, pObjType) == DeployPriorityTemp::SelectType.cend())
+						DeployPriorityTemp::SelectType.push_back(pObjType);
+
+					if (pObjTypeExt->HighDeployPriority)
+						DeployPriorityTemp::DeployPriority = 1;
+					else if (DeployPriorityTemp::DeployPriority < 0 && !pObjTypeExt->LowDeployPriority)
+						DeployPriorityTemp::DeployPriority = 0;
 				}
 			}
+		}
+
+		GET(TechnoClass* const, pTechno, ESI);
+		const auto pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+
+		for (const auto pForbidType : pTypeExt->DeployForbidTypes)
+		{
+			if (std::ranges::find(DeployPriorityTemp::SelectType, pForbidType) != DeployPriorityTemp::SelectType.cend())
+				return SkipDeploy;
+		}
+
+		if (Phobos::Config::PriorityDeployFiltering)
+		{
+			if (DeployPriorityTemp::DeployPriority > 0 && !pTypeExt->HighDeployPriority)
+				return SkipDeploy;
+
+			if (pTypeExt->LowDeployPriority && DeployPriorityTemp::DeployPriority >= 0)
+				return SkipDeploy;
 		}
 	}
 
@@ -960,7 +1011,7 @@ DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
 	enum { SkipGameCode = 0x4DED4B };
 
 	GET(FootClass*, pThis, ESI);
-	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	const float multiplier = pTypeExt->CrashSpin_Multiplier;
 
 	if (multiplier > 0.0f)
@@ -1087,3 +1138,37 @@ DEFINE_HOOK(0x4C6CF0, EventClass_RespondToEvent_CheckControllability, 0x8)  // P
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x43B150, TechnoClass_PsychicSensorCheck_PsychicDetectable, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if (!TechnoExt::Fetch(pThis)->TypeExtData->PsychicDetectable)
+	{
+		R->EAX(0);
+		return 0x43B4B0;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
+{
+	enum { Continue = 0x738B6D, GoAreaGuardDecision = 0x738BA4, GoGuard = 0x738C98 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Gunner)
+	{
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+		bool const hasExplicit = pThis->Owner->IQLevel2 >= RulesClass::Instance->GuardArea || pType->DefaultToGuardArea || pThis->HasAbility(Ability::GuardArea);
+		auto const& modes = pThis->Owner->IsControlledByHuman() ? pTypeExt->DefaultToGuardArea_Modes : pTypeExt->DefaultToGuardArea_AIModes;
+
+		if (hasExplicit && !modes.empty() && (modes.size() != 1 || modes[0] != -1))
+			return modes.Contains(pThis->CurrentWeaponNumber) ? GoAreaGuardDecision : GoGuard;
+
+	}
+
+	return 0;
+}

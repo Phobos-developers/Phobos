@@ -117,8 +117,9 @@ bool WarheadTypeExt::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTy
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
 		return false;
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
-		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
+	// no need to calculate AffectTypes here
+	//if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+	if (this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
@@ -449,6 +450,15 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
 	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
 
+	this->Ammo.Read(exINI, pSection, "Ammo");
+
+	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
+	this->IvanBomb_Detonate_SameInvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.SameInvokerOnly");
+	this->IvanBomb_Detonate_PenetratesTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesTransport");
+	this->IvanBomb_Detonate_PenetratesGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesGarrison");
+	this->IvanBomb_Detonate_AffectsParasite.Read(exINI, pSection, "IvanBomb.Detonate.AffectsParasite");
+	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -514,6 +524,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
+		|| this->Ammo
+		|| this->IvanBomb_Detonate
 	);
 
 	char tempBuffer[32];
@@ -734,7 +746,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Parasite_DisableParticleSystem)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
-			
+
 		.Process(this->JumpjetTurnRate)
 		.Process(this->JumpjetSpeed)
 		.Process(this->JumpjetClimb)
@@ -812,10 +824,20 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->InApplyCrit)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->Ammo)
+
+		.Process(this->IvanBomb_Detonate)
+		.Process(this->IvanBomb_Detonate_SameInvokerOnly)
+		.Process(this->IvanBomb_Detonate_PenetratesTransport)
+		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
+		.Process(this->IvanBomb_Detonate_AffectsParasite)
+		.Process(this->IvanBomb_Detonate_AffectTypes)
 		;
 }
 

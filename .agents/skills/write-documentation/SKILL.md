@@ -38,6 +38,8 @@ Additionally, every change requires:
 - **`docs/Whats-New.md`** — changelog entry.
 - **`CREDITS.md`** — credit the author.
 
+**Breaking changes** (changes to vanilla behavior, changes to already-released Phobos behavior, renamed/removed INI tags, savegame incompatibilities, etc.) must *also* be recorded in `docs/Whats-New.md` under `## Migration (breaking changes)`, inside the `### <version>` section for the version currently being developed on `develop`. Place the entry under `#### Changes to vanilla behavior` (for vanilla behavior changes) or `#### Changes to Phobos behavior` (for Phobos behavior changes / tag renames or removals). See Step 6 for the exact format.
+
 **Step 3: Draft the documentation text — user review required before writing**
 
 Before writing any documentation, draft the descriptive text and present it to the user for review. Use the following format for the draft:
@@ -102,19 +104,56 @@ After the English documentation has been written and confirmed, produce a Chines
 
 **Step 6: Write `docs/Whats-New.md` entry**
 
-Whats-New entries go under the `### Version TBD (develop branch nightly builds)` section. Use the author identity determined in Step 0. The entry should be a bullet point with a feature description matching the phrasing used in other entries:
+Whats-New entries go under `## Changelog`, inside the `### <version>` section for the version currently being developed on `develop`.
+
+**Finding the right version section:**
+- Inspect `src/Phobos.version.h` (`VERSION_MAJOR`/`VERSION_MINOR`, and `PRERELEASE_SUFFIX` if defined) to identify the version `develop` is working towards.
+- In `docs/Whats-New.md` under `## Changelog`, locate the matching `### <version>` section (e.g. `### 0.6`). The currently-active section is the one whose `{dropdown}` block carries the `:open:` option; older sections omit it.
+- If no matching section exists yet, create one directly below `## Changelog` (above the previous version), using the `{dropdown}` format shown below with `:open:` so it is the expanded one. Move the `:open:` flag from the previously-active section to the new one.
+
+**Section format** (each version's changelog is wrapped in a MyST dropdown; the active one is left open):
+
+````markdown
+### <version>
+
+```{dropdown} Click to show
+:open:
+
+#### New:
+- <feature description> (by <AuthorName>)
+
+#### Vanilla fixes:
+- <fix description> (by <AuthorName>)
+
+#### Phobos fixes:
+- <fix description> (by <AuthorName>)
+
+#### Fixes / interactions with other extensions:
+- <fix description> (by <AuthorName>)
+```
+````
+
+**Pick the correct subsection** based on the change type:
+- `#### New:` — new features / enhancements of existing behavior that add new INI tags.
+- `#### Vanilla fixes:` — vanilla engine bugfixes.
+- `#### Phobos fixes:` — bugfixes for Phobos-introduced logic.
+- `#### Fixes / interactions with other extensions:` — fixes involving Ares / other libs interop.
+
+**Entry format** — a single bullet, phrasing matching existing entries, credited using the author identity from Step 0:
 
 ```markdown
 - <feature description matching the phrasing used in other entries> (by <AuthorName>)
 ```
 
-If new INI keys are user-facing settings in `RA2MD.INI`, also add them under the `### New user settings in RA2MD.INI` section:
+**User-facing RA2MD.INI settings** — if the new INI keys are user settings in `RA2MD.INI` (not rulesmd/artmd), additionally append them to the `## New user settings in RA2MD.INI` section (a top-level `##` section, separate from `## Changelog`):
+
 ```ini
 [Phobos]
 NewKeyName=true                  ; boolean
 ```
 
-If INI keys were renamed, add entries under `### Changed tags` using the format seen in existing entries:
+**Renamed / removed INI tags and other breaking changes** — do *not* record these in `## Changelog`. They belong in `## Migration (breaking changes)` under the matching `### <version>` section, inside `#### Changes to Phobos behavior` (for tag renames/removals or Phobos behavior changes) or `#### Changes to vanilla behavior` (for vanilla behavior changes). Tag renames use the format seen in existing entries:
+
 ```markdown
 - `[Section] -> OldName` -> `[Section] -> NewName`
 ```

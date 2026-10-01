@@ -434,7 +434,7 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 
 	const auto pOwner = pThis->Owner;
 	auto [power, extraPower] = BuildingTypeExt::GetEnhancedPower(pThis->Type, R->EDI<int>(), pOwner, pThis);
-	 
+
 	if (pThis->UpgradeLevel)
 	{
 		for (const auto pUpgrade : pThis->Upgrades)
@@ -533,6 +533,9 @@ static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAni
 	}
 	else if (anim == BuildingAnimSlot::Production || anim == BuildingAnimSlot::PreProduction)
 	{
+		if (anim == BuildingAnimSlot::Production && BuildingExt::Fetch(pBuilding)->IsPlayingRoofProductionAnim)
+			return true;
+
 		auto const animData = pType->GetBuildingAnim(anim);
 
 		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
