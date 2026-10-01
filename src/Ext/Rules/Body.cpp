@@ -1,6 +1,11 @@
 #include "Body.h"
 
 #include <cmath>
+#include <algorithm>
+
+#include <ScenarioClass.h>
+
+#include <Utilities/SequenceRates.h>
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -13,6 +18,8 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <TiberiumClass.h>
+#include <Ext/Tiberium/Body.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -29,6 +36,23 @@ void RulesExt::Remove(RulesClass* pThis)
 void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 {
 	Data->LoadFromINI(pINI);
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		const char* pSection = pTib->ID;
+		if (!pINI->GetSection(pSection))
+			continue;
+
+		pINI->GetInteger(pSection, "Spread", pTib->Spread);
+		pINI->GetDouble(pSection, "SpreadPercentage", pTib->SpreadPercentage);
+		pINI->GetInteger(pSection, "Growth", pTib->Growth);
+		pINI->GetDouble(pSection, "GrowthPercentage", pTib->GrowthPercentage);
+		pINI->GetInteger(pSection, "Value", pTib->Value);
+		pINI->GetInteger(pSection, "Power", pTib->Power);
+
+		if (const auto pTibExt = TiberiumExt::TryFetch(pTib))
+			pTibExt->LoadFromINIFile(pINI);
+	}
 }
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -365,6 +389,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->VeteranReload.Read(exINI, GameStrings::General, "VeteranReload");
 	this->VeteranEmptyReload.Read(exINI, GameStrings::General, "VeteranEmptyReload");
+	this->VeteranRange.Read(exINI, GameStrings::General, "VeteranRange");
+	this->VeteranCritChance.Read(exINI, GameStrings::General, "VeteranCritChance");
 
 	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
 
@@ -436,6 +462,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
@@ -558,6 +585,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Temporal_ApplyVersus.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyVersus");
 	this->Temporal_ApplyMultiplier.Read(exINI, GameStrings::CombatDamage, "Temporal.ApplyMultiplier");
+	this->Temporal_KillPoweredAnim.Read(exINI, GameStrings::General, "Temporal.KillPoweredAnim");
 
 	ValueableIdx<VocClass> deploySound { pThis->DeploySound };
 	deploySound.Read(exINI, GameStrings::AudioVisual, "DeploySound");
@@ -566,6 +594,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DiscardOn_Sequences_Immediate.Read(exINI, GameStrings::General, "DiscardOn.Sequences.Immediate");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, GameStrings::General, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, GameStrings::General, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->AttachEffect_ReplaceLongerDuration.Read(exINI, GameStrings::General, "AttachEffect.ReplaceLongerDuration");
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, GameStrings::General, "AttachEffects.AttachOnOwnerChange");
 
 	this->RemoveMindControl_Silent.Read(exINI, GameStrings::AudioVisual, "RemoveMindControl.Silent");
 	this->MindControl_Permanent_ReplaceSilent.Read(exINI, GameStrings::AudioVisual, "MindControl.Permanent.ReplaceSilent");
@@ -679,8 +709,21 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, "AI", "NewTeamsSelector.InfantryCategoryPercentage");
 	this->NewTeamsSelector_VIPWeight.Read(exINI, "AI", "NewTeamsSelector.VIPWeight");
 
-	// Section Generic Prerequisites
-	FillDefaultPrerequisites();
+	// Global default per-sequence animation rates for infantry.
+	for (size_t i = 0; i < SequenceRates::Entries.size(); ++i)
+	{
+		char key[64];
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultRate", SequenceRates::Entries[i].Name);
+		exINI.ReadInteger(GameStrings::AudioVisual, key, &this->CustomSequenceRates[i]);
+
+		bool normalized;
+		std::snprintf(key, sizeof(key), "Sequence.%s.DefaultNormalized", SequenceRates::Entries[i].Name);
+		if (exINI.ReadBool(GameStrings::AudioVisual, key, &normalized))
+			this->CustomSequenceNormalized[i] = normalized ? 1 : 0;
+	}
+
+	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
+	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 }
 
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -1097,6 +1140,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoReload_Temporal)
 		.Process(this->VeteranReload)
 		.Process(this->VeteranEmptyReload)
+		.Process(this->VeteranRange)
+		.Process(this->VeteranCritChance)
 		.Process(this->NoTurret_TrackTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
@@ -1151,6 +1196,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1242,9 +1288,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vertical_AircraftFix)
 		.Process(this->Temporal_ApplyVersus)
 		.Process(this->Temporal_ApplyMultiplier)
+		.Process(this->Temporal_KillPoweredAnim)
 		.Process(this->DiscardOn_Sequences_Immediate)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->AttachEffect_ReplaceLongerDuration)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->MindControl_Permanent_ReplaceSilent)
 		.Process(this->FlyNoWobbles)
@@ -1284,6 +1333,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
+		.Process(this->CustomSequenceRates)
+		.Process(this->CustomSequenceNormalized)
+		.Process(this->RevealHouses)
+		.Process(this->MissileKeepTargetCoord)
     ;
 }
 

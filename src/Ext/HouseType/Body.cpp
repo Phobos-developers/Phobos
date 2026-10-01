@@ -19,6 +19,16 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->EVATag.Read(pINI, pSection, "EVA.Tag");
 
+	this->AttachEffects.LoadFromINI(pINI, pSection);
+	this->AttachEffects_AttachOnOwnerChange.Read(exINI, pSection, "AttachEffect.AttachOnOwnerChange");
+
+	this->Crew.Read<true>(exINI, pSection, "Crew");
+
+	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
+	this->VeteranDefenses.Read(exINI, pSection, "VeteranDefenses");
+
+	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
+
 	this->NewTeamsSelector_MergeUnclassifiedCategoryWith.Read(exINI, pSection, "NewTeamsSelector.MergeUnclassifiedCategoryWith");
 	this->NewTeamsSelector_UnclassifiedCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.UnclassifiedCategoryPercentage");
 	this->NewTeamsSelector_GroundCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.GroundCategoryPercentage");
@@ -33,6 +43,12 @@ void HouseTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EVATag)
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_AttachOnOwnerChange)
+		.Process(this->Crew)
+		.Process(this->VeteranBuildings)
+		.Process(this->VeteranDefenses)
+		.Process(this->RevealHouses)
 		.Process(this->NewTeamsSelector_MergeUnclassifiedCategoryWith)
 		.Process(this->NewTeamsSelector_UnclassifiedCategoryPercentage)
 		.Process(this->NewTeamsSelector_GroundCategoryPercentage)
