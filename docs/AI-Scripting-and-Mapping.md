@@ -4,10 +4,11 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ## Bugfixes and Miscellanous
 
+- `<Player @ X>` can now be used as owner for pre-placed objects as well as owner for triggers on skirmish and multiplayer maps. Triggers with owners that are not present in the game are destroyed and never sprung.
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
-- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
-- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
+- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE configs](Whats-New.md#for-map-editor-world-altering-editor)).
+- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE configs](Whats-New.md#for-map-editor-world-altering-editor)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
@@ -15,6 +16,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 - Fixed AI team recruitment inconsistency causing underfilled teams.
 - Restored the ScriptType action#24 `Play speech` from Tiberian Sun.
+- Fixed Tiberium types not supporting overrides in map and game mode INIs.
 
 ### Dynamic Team Delays
 
@@ -500,7 +502,7 @@ In `rulesmd.ini`:
 
 #### `16005` Jump Back To Previous Script
 
-- Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
+- Used in a Random Script picked by action `16004`. It can jump back to the previous script, and continue in the line after `x=16004,n`.
 
 In `aimd.ini`:
 ```ini
@@ -533,7 +535,7 @@ In `aimd.ini`:
 x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
 ```
 
-#### `18000 - 18071` Edit Variable using Global Variable
+#### `18048 - 18071` Edit Variable using Global Variable
 
 - Operate a variable's value using a global variable's value.
 - Similar to `18000-18023`, but the number to operate the value is being read from a global variable.
@@ -840,6 +842,32 @@ ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `513` Set mission timer properties
+
+- Set the method to display mission timer and whether the timer should be displayed reversedly based on given value.
+  - For behaviours `0`, `1`, and `2`, the second parameter decides the base value for percentage timer type or reversed timer that'll be used for calculation.
+  - For behaviours `3` and `4`, the second parameter decides the index of variable that'll be displayed. If the local/global variable does not exist, 0 will be displayed.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],513,0,0,[MissionTimerType],[BaseValue or VariableIndex],[ReverseTimer],0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*                              |
+| :---------: | :----------------------------------------- |
+| 0           | Show normal timer                          |
+| 1           | show percentage based on the given value   |
+| 2           | Show timer in digit form                   |
+| 3           | Show value of the selected local variable  |
+| 4           | Show value of the selected global variable |
+
+```{note}
+This won't affect how the global mission timer really ticks, so it'll still end after the mission tiemr expired.
+```
+
 ### `600` Configure Drop Crate
 
 - Set or overwrite the `DropCrate` of the affected objects.
@@ -984,6 +1012,7 @@ ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
   - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
+  - `Horizontal` and `Vertical` set the anchor point from which the banner is drawn relative to the drawing point from trigger.
 
 In `rulesmd.ini`:
 ```ini
@@ -1002,6 +1031,8 @@ CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variabl
 Duration=-1                  ; integer
 Delay=-1                     ; integer
 ClampToScreen=true           ; boolean
+Horizontal=center            ; Horizontal position enumeration (left|center/centre|right)
+Vertical=center              ; Vertical position enumeration (top|center/centre|bottom)
 ```
 
 In `mycampaign.map`:
