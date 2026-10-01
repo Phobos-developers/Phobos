@@ -1,5 +1,6 @@
 #include "AttachEffectTypeClass.h"
 
+#include <Ext/Rules/Body.h>
 #include <Ext/TEvent/Body.h>
 
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
@@ -52,6 +53,14 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 	}
 
 	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());
+}
+
+bool AttachEffectTypeClass::HasAnim() const
+{
+	if (this->Cumulative)
+		return this->CumulativeAnimations.size() > 0 || this->Animation != nullptr;
+	else
+		return this->Animation != nullptr;
 }
 
 void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget)
@@ -123,6 +132,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_MoveBasedOnDestination.Read(exINI, pSection, "DiscardOn.MoveBasedOnDestination");
 	this->DiscardOn_ConsiderHarvestingAsStationary.Read(exINI, pSection, "DiscardOn.ConsiderHarvestingAsStationary");
+	this->DiscardOn_OwnerChange_HumanToComputer.Read(exINI, pSection, "DiscardOn.OwnerChange.HumanToComputer");
+	this->DiscardOn_OwnerChange_ComputerToHuman.Read(exINI, pSection, "DiscardOn.OwnerChange.ComputerToHuman");
+	this->DiscardOn_OwnerChange_IgnoreRevertOnExit.Read(exINI, pSection, "DiscardOn.OwnerChange.IgnoreRevertOnExit");
+	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+	this->AllowTransfer_Convert.Read(exINI, pSection, "AllowTransfer.Convert");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->AffectTypes.Read(exINI, pSection, "AffectTypes");
@@ -157,6 +171,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
 	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
 	this->ArmorMultiplier_Chance.Read(exINI, pSection, "ArmorMultiplier.Chance");
+	this->ArmorMultiplier_Delay.Read(exINI, pSection, "ArmorMultiplier.Delay");
 	this->ArmorMultiplier_AffectsHouse.Read(exINI, pSection, "ArmorMultiplier.AffectsHouse");
 	this->ArmorMultiplier_HitAnim.Read(exINI, pSection, "ArmorMultiplier.HitAnim");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
@@ -196,6 +211,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
+	this->ReflectDamage_Delay.Read(exINI, pSection, "ReflectDamage.Delay");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
 
@@ -207,12 +223,24 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
 
+	// Animation draw offsets.
+	for (int i = 0; i < INT32_MAX; i++)
+	{
+		AnimationDrawOffsetClass offset;
+
+		if (offset.LoadFromINI(pINI, pSection, i))
+			this->Animation_DrawOffsets.emplace_back(offset);
+		else
+			break;
+	}
+
 	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
-		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak
-		|| this->HasTint() || (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
-		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None)
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->HasTint()
+		|| (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
+		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
+		|| (this->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
 	{
 		this->RequiresRecalculation = true;
 	}
@@ -221,11 +249,23 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		this->RequiresRecalculation = false;
 	}
 
-	// RestrictedArmorMultiplier
-	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
-		this->RestrictedArmorMultiplier = true;
+	// RequiresAnimUpdate
+	if (this->Animation_HideIfAttachedWith.size() > 0 || this->Animation_DrawOffsets.size() > 0)
+		this->RequiresAnimUpdate = true;
 	else
+		this->RequiresAnimUpdate = false;
+
+	// RestrictedArmorMultiplier
+	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0
+		|| this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0
+		|| this->ArmorMultiplier_Delay > 0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
+	{
+		this->RestrictedArmorMultiplier = true;
+	}
+	else
+	{
 		this->RestrictedArmorMultiplier = false;
+	}
 }
 
 template <typename T>
@@ -254,6 +294,11 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_MoveBasedOnDestination)
 		.Process(this->DiscardOn_ConsiderHarvestingAsStationary)
+		.Process(this->DiscardOn_OwnerChange_HumanToComputer)
+		.Process(this->DiscardOn_OwnerChange_ComputerToHuman)
+		.Process(this->DiscardOn_OwnerChange_IgnoreRevertOnExit)
+		.Process(this->AllowTransfer)
+		.Process(this->AllowTransfer_Convert)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->AffectTypes)
@@ -279,6 +324,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ArmorMultiplier_AllowWarheads)
 		.Process(this->ArmorMultiplier_DisallowWarheads)
 		.Process(this->ArmorMultiplier_Chance)
+		.Process(this->ArmorMultiplier_Delay)
 		.Process(this->ArmorMultiplier_AffectsHouse)
 		.Process(this->ArmorMultiplier_HitAnim)
 		.Process(this->SpeedMultiplier)
@@ -303,13 +349,16 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouse)
 		.Process(this->ReflectDamage_Chance)
+		.Process(this->ReflectDamage_Delay)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
+		.Process(this->Animation_DrawOffsets)
 		.Process(this->RequiresRecalculation)
+		.Process(this->RequiresAnimUpdate)
 		;
 }
 
@@ -410,6 +459,10 @@ namespace detail
 				{
 					parsed |= DiscardCondition::ReceivedDamage;
 				}
+				else if (!_strcmpi(cur, "ownerchange"))
+				{
+					parsed |= DiscardCondition::OwnerChange;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
@@ -485,6 +538,7 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
 	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
 	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
+	this->ReplaceLongerDuration.Read(exINI, pSection, "AttachEffect.ReplaceLongerDuration");
 	this->RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
 	exINI.ParseStringList(this->RemoveGroups, pSection, "AttachEffect.RemoveGroups");
 	this->CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
@@ -495,14 +549,14 @@ void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 }
 
-AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool selfOwned) const
+AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool hasDelay) const
 {
 	AEAttachParams info { };
 
 	if (this->DurationOverrides.size() > 0)
 		info.DurationOverride = this->DurationOverrides[this->DurationOverrides.size() > index ? index : this->DurationOverrides.size() - 1];
 
-	if (selfOwned)
+	if (hasDelay)
 	{
 		if (this->Delays.size() > 0)
 			info.Delay = this->Delays[this->Delays.size() > index ? index : this->Delays.size() - 1];
@@ -519,6 +573,10 @@ AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool s
 		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
 		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
 		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
+		info.ReplaceLongerDuration = this->ReplaceLongerDuration.Get(RulesExt::Global()->AttachEffect_ReplaceLongerDuration);
+
+		// set Delay to -1 so it can't be renew
+		info.Delay = -1;
 	}
 
 	return info;
@@ -535,6 +593,7 @@ bool AEAttachInfoTypeClass::Serialize(T& stm)
 		.Process(this->CumulativeRefreshAll)
 		.Process(this->CumulativeRefreshAll_OnAttach)
 		.Process(this->CumulativeRefreshSameSourceOnly)
+		.Process(this->ReplaceLongerDuration)
 		.Process(this->RemoveTypes)
 		.Process(this->RemoveGroups)
 		.Process(this->CumulativeRemoveMinCounts)
@@ -554,6 +613,48 @@ bool AEAttachInfoTypeClass::Load(PhobosStreamReader& stm, bool registerForChange
 bool AEAttachInfoTypeClass::Save(PhobosStreamWriter& stm) const
 {
 	return const_cast<AEAttachInfoTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)
+
+// AnimationDrawOffsetClass
+
+bool AnimationDrawOffsetClass::LoadFromINI(CCINIClass* pINI, const char* pSection, int index)
+{
+	INI_EX exINI(pINI);
+	char tempBuffer[48];
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d", index);
+	this->Offset.Read(exINI, pSection, tempBuffer);
+
+	if (this->Offset.Get() == Point2D::Empty)
+		return false;
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "Animation.DrawOffset%d.RequiredTypes", index);
+	this->RequiredTypes.Read(exINI, pSection, tempBuffer);
+
+	return true;
+}
+
+#pragma region(save/load)
+
+template <class T>
+bool AnimationDrawOffsetClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Offset)
+		.Process(this->RequiredTypes)
+		.Success();
+}
+
+bool AnimationDrawOffsetClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool AnimationDrawOffsetClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AnimationDrawOffsetClass*>(this)->Serialize(stm);
 }
 
 #pragma endregion(save/load)
