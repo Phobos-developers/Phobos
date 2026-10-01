@@ -36,6 +36,15 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 
 	GET(BombListClass*, pBombList, EDI);
 	GET(BombClass*, pBomb, EBX);
+
+	const auto pCurrent = HouseClass::CurrentPlayer;
+
+	if (pCurrent->IsObserver())
+	{
+		R->AL(true);
+		return SkipGameCode;
+	}
+
 	AffectedHouse visibility = AffectedHouse::None;
 
 	if (const auto pWeaponExt = WeaponTypeExt::GetBombExtData(pBomb))
@@ -43,7 +52,6 @@ DEFINE_HOOK(0x438D44, BombListClass_AI_Visibility, 0x5)
 	else
 		visibility = RulesExt::Global()->IvanBomb_Visibility;
 
-	const auto pCurrent = HouseClass::CurrentPlayer;
 	bool visible = false;
 
 	if (EnumFunctions::CanTargetHouse(visibility, pBomb->OwnerHouse, pCurrent)
