@@ -602,28 +602,56 @@ TacticalZoom.Smooth=true   ; boolean
 - For localization add `TXT_ZOOM_IN`, `TXT_ZOOM_IN_DESC`, `TXT_ZOOM_OUT`, `TXT_ZOOM_OUT_DESC`, `TXT_RESET_ZOOM`, and `TXT_RESET_ZOOM_DESC` into your `.csf` file.
 
 
-### `[ ]` Toggle Designator Range
+### `[ ]` Cycle Selection
 
-- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
-- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
-- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+- Cycles through the objects that were selected when the cycle was started, selecting one of them at a time and wrapping around at the end of the list.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- Enable the hotkey by setting `CycleSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_SELECTION` and `TXT_CYCLE_SELECTION_DESC` into your `.csf` file.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-ToggleDesignatorRangeKeyEnabled=true    ; boolean
+CycleSelectionKeyEnabled=true    ; boolean
 ```
 
-### `[ ]` Toggle Digital Display
+### `[ ]` Cycle Type Selection
 
-- Switches on/off [digital display types](#digital-display).
-- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
-- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+- Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
+- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
+- Enable the hotkey by setting `CycleTypeSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_TYPE_SELECTION` and `TXT_CYCLE_TYPE_SELECTION_DESC` into your `.csf` file.
+
+The order in which the types are cycled to is customizable, and is decided by the following rules, in order:
+
+1. Higher `TypeCyclePriority` wins.
+2. Ties are broken by the type's `Cost`, from the highest to the lowest. The raw cost registered in the INI is used - never the cost the type currently has for the selecting player - so cost multipliers of the owning house do not affect the order.
+3. Remaining ties are broken by the reversed INI load order: the type written further down in the INI is cycled to first.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-ToggleDigitalDisplayKeyEnabled=true    ; boolean
+CycleTypeSelectionKeyEnabled=true    ; boolean
+CycleTypeSelectionPrintSummary=true  ; boolean
+
+[SOMETECHNO]                         ; TechnoType
+TypeCyclePriority=0                  ; integer
+```
+
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+DeselectObjectKeysEnabled=true    ; boolean
 ```
 
 ### `[ ]` Next Idle Harvester
@@ -657,6 +685,30 @@ In `rulesmd.ini`:
 QuickSaveKeyEnabled=true    ; boolean
 ```
 
+### `[ ]` Toggle Designator Range
+
+- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
+- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDesignatorRangeKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Digital Display
+
+- Switches on/off [digital display types](#digital-display).
+- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
+- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDigitalDisplayKeyEnabled=true    ; boolean
+```
+
 ### `[ ]` Toggle Message Label
 
 - Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
@@ -667,18 +719,6 @@ In `rulesmd.ini`:
 ```ini
 [GlobalControls]
 ToggleMessageListKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Deselect Object(s)
-
-- Deselect 1 or 5 object(s) from current selected objects.
-- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
-- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-DeselectObjectKeysEnabled=true    ; boolean
 ```
 
 ### `[ ]` Select Captured Units
