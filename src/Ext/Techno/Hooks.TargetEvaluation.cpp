@@ -363,19 +363,9 @@ static FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* p
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB418, InfantryClass__GetFireError_Wrapper)
 
-static ObjectClass* RedirectUntargetableAttachment(ObjectClass* pObj)
-{
-	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pObj))
-		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTargetTechno)->ParentAttachment)
-			if (!pAttachment->GetType()->Targetable && pAttachment->Parent)
-				return pAttachment->Parent;
-
-	return pObj;
-}
-
 static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	pObj = RedirectUntargetableAttachment(pObj);
+	pObj = TechnoExt::RedirectUntargetableAttachment(pObj);
 
 	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
@@ -415,7 +405,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 
 static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	pObj = RedirectUntargetableAttachment(pObj);
+	pObj = TechnoExt::RedirectUntargetableAttachment(pObj);
 
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
 	auto const result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);

@@ -304,6 +304,12 @@ public:
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static bool AreRelatives(TechnoClass* pThis, TechnoClass* pThat);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
+	static AbstractClass* RedirectUntargetableAttachment(AbstractClass* pObj);
+	template <typename T>
+	static T* RedirectUntargetableAttachment(T* pObj)
+	{
+		return static_cast<T*>(RedirectUntargetableAttachment(static_cast<AbstractClass*>(pObj)));
+	}
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);
