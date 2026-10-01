@@ -410,7 +410,16 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	auto const pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->AE.DisableWeapons && pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		// Handle IsAttackedByLocomotor
+		if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		{
+			if (pFoot->IsAttackedByLocomotor)
+				return Continue;
+		}
+
 		return FireErrorRearm;
+	}
 
 	return Continue;
 }
@@ -457,7 +466,12 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
 			|| (pWeapon && !pWeapon->FireWhileMoving))
 		{
-			if (pTypeExt->OwnerObject()->BalloonHover)
+			if (!pTypeExt->OpenTopped_FireWhileMoving_BasedOnDestination.Get(RulesExt::Global()->OpenTopped_FireWhileMoving_BasedOnDestination))
+			{
+				if (pTransportFoot->Locomotor->Is_Really_Moving_Now())
+					return Illegal;
+			}
+			else if (pTypeExt->OwnerObject()->BalloonHover)
 			{
 				if (pTransportFoot->Locomotor->Is_Moving_Now())
 					return Illegal;
@@ -631,7 +645,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	enum { SkipFiring = 0x6FDE03 };
 
 	GET(TechnoClass* const, pThis, ESI);
-//	GET(AbstractClass* const, pTarget, EDI);
+	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(const int, weaponIndex, 0xC);
 
@@ -696,6 +710,17 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
 					attachEffect->ShouldBeDiscarded = true;
 			}
+		}
+	}
+
+	if (pWeaponExt->AttachEffect_Enable)
+	{
+		if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			auto const& info = pWeaponExt->AttachEffects;
+			AttachEffectClass::Attach(pTargetTechno, pThis->Owner, pThis, pWeapon->Warhead, info);
+			AttachEffectClass::Detach(pTargetTechno, info);
+			AttachEffectClass::DetachByGroups(pTargetTechno, info);
 		}
 	}
 
@@ -1027,7 +1052,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(const int, weaponIndex, ESI);
 	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
-	REF_STACK(CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
+	REF_STACK(const CoordStruct, offset, STACK_OFFSET(0xD8, 0xC));
 
 	bool allowOnTurret = true;
 	CoordStruct flh = CoordStruct::Empty;
@@ -1172,11 +1197,10 @@ static inline int ScaleReloadDurationForVeterancy(TechnoClass* pThis, int durati
 		return duration;
 
 	const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
-	const auto pRulesExt = RulesExt::Global();
 
 	const double multiplier = ability == AdditionalAbility::EmptyReload
-		? pTypeExt->VeteranEmptyReload.Get(pRulesExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
-		: pTypeExt->VeteranReload.Get(pRulesExt->VeteranReload);
+		? pTypeExt->VeteranEmptyReload.Get(RulesExt::Global()->VeteranEmptyReload.Get(RulesExt::Global()->VeteranReload))
+		: pTypeExt->VeteranReload.Get(RulesExt::Global()->VeteranReload);
 
 	return Math::max(1, GeneralUtils::SafeMultiply(duration, multiplier));
 }
