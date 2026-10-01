@@ -18,9 +18,7 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 	if (RulesExt::Global()->AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues))
 		return 0;
 
-	if (pOwner->Type->MultiplayPassive
-		|| pOwner->IsCurrentPlayer()
-		|| pOwner->IsNeutral())
+	if (pOwner->IsCurrentPlayer() || pOwner->IsNeutral())
 		return 0;
 
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)
@@ -144,8 +142,9 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::Fetch(pFactory->Owner);
-	auto const pType = pTechno->GetTechnoType();
-	const bool forbid = TechnoTypeExt::Fetch(pType)->ForbidParallelAIQueues;
+	auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	const bool forbid = pTypeExt->ForbidParallelAIQueues;
 
 	switch (pTechno->WhatAmI())
 	{
