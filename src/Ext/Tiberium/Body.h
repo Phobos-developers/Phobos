@@ -26,11 +26,13 @@ public:
 	Nullable<ColorStruct> MinimapColor;
 	NullableIdx<ResourceTypeClass> ResourceType;
 	Nullable<int> ResourceValue;
+	Valueable<bool> AllowRamps;
 
 	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, MinimapColor {}
 		, ResourceType { -1 }
 		, ResourceValue {}
+		, AllowRamps { false }
 	{ }
 
 	virtual ~TiberiumExt() = default;

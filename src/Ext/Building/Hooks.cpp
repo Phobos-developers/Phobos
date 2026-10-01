@@ -294,11 +294,7 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
 	{
 		pExt->IsCreatedFromMapFile = true;
-
-		GET_STACK(bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
-
-		if (hasPower)
-			pExt->HasPowerFromMapFile = true;
+		pExt->HasPowerFromMapFile = true;
 	}
 
 	return 0;
@@ -309,7 +305,14 @@ DEFINE_HOOK(0x44FDC5, CreateBuildingFromINIFile_AfterCTOR_AfterUnlimbo, 0xA)
 	GET(BuildingClass* const, pBld, ESI);
 
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
+	{
 		pExt->HasPowerFromMapFile = false;
+
+		GET_STACK(const bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
+
+		if (!hasPower)
+			pBld->GoOffline();
+	}
 
 	return 0x44FDD3;
 }

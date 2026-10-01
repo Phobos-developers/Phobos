@@ -54,11 +54,6 @@ public:
 	bool ForceOnlyTargetHouseEnemy;
 	int ForceOnlyTargetHouseEnemyMode;
 
-	CounterClass LimboAircraft;  // Currently owned aircraft in limbo
-	CounterClass LimboBuildings; // Currently owned buildings in limbo
-	CounterClass LimboInfantry;  // Currently owned infantry in limbo
-	CounterClass LimboVehicles;  // Currently owned vehicles in limbo
-
 	BuildingClass* Factory_BuildingType;
 	BuildingClass* Factory_InfantryType;
 	BuildingClass* Factory_VehicleType;
@@ -111,10 +106,6 @@ public:
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
 		, OwnedCountedHarvesters {}
-		, LimboAircraft {}
-		, LimboBuildings {}
-		, LimboInfantry {}
-		, LimboVehicles {}
 		, Factory_BuildingType { nullptr }
 		, Factory_InfantryType { nullptr }
 		, Factory_VehicleType { nullptr }
@@ -159,9 +150,7 @@ public:
 	void ClearFactoryResourceState(FactoryClass* pFactory);
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
-	void AddToLimboTracking(TechnoTypeClass* pTechnoType);
-	void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
-	int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
+	bool HasOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
 	void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 	int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
 	float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
