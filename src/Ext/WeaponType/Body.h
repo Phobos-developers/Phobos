@@ -81,10 +81,15 @@ public:
 	std::vector<std::string> AttachEffect_DisallowedGroups;
 	ValueableVector<int> AttachEffect_RequiredMinCounts;
 	ValueableVector<int> AttachEffect_RequiredMaxCounts;
+	Valueable<bool> AttachEffect_Required_Any;
+	Valueable<AffectedHouse> AttachEffect_Required_Houses;
 	ValueableVector<int> AttachEffect_DisallowedMinCounts;
 	ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+	Valueable<bool> AttachEffect_Disallowed_Any;
+	Valueable<AffectedHouse> AttachEffect_Disallowed_Houses;
 	Valueable<bool> AttachEffect_CheckOnFirer;
 	Valueable<bool> AttachEffect_IgnoreFromSameSource;
+	Valueable<bool> AttachEffect_SameSourceOnly;
 	Valueable<Leptons> KeepRange;
 	Nullable<bool> KeepRange_AllowAI;
 	Nullable<bool> KeepRange_AllowPlayer;
@@ -178,10 +183,15 @@ public:
 		, AttachEffect_DisallowedGroups {}
 		, AttachEffect_RequiredMinCounts {}
 		, AttachEffect_RequiredMaxCounts {}
+		, AttachEffect_Required_Any { false }
+		, AttachEffect_Required_Houses { AffectedHouse::All }
 		, AttachEffect_DisallowedMinCounts {}
 		, AttachEffect_DisallowedMaxCounts {}
+		, AttachEffect_Disallowed_Any { true }
+		, AttachEffect_Disallowed_Houses { AffectedHouse::All }
 		, AttachEffect_CheckOnFirer { false }
 		, AttachEffect_IgnoreFromSameSource { false }
+		, AttachEffect_SameSourceOnly { false }
 		, KeepRange { Leptons(0) }
 		, KeepRange_AllowAI {}
 		, KeepRange_AllowPlayer {}

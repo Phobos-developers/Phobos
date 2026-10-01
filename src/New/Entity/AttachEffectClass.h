@@ -150,6 +150,8 @@ public:
 	bool ShouldUpdateAnim;
 	int FiringCount;
 	int ReceivedDamageCount;
+	CDTimerClass ArmorMultiplierTimer;
+	CDTimerClass ReflectDamageTimer;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
