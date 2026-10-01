@@ -17,7 +17,9 @@ DEFINE_EXPORT(HRESULT, AE_Attach,
 	int delay,
 	int initialDelay,
 	int recreationDelay,
-	int* pAttachedCount
+	int* pAttachedCount,
+	bool selfOwned,
+	bool hasDelay
 )
 {
 	if (!pTarget || !effectTypeNames || !pAttachedCount)
@@ -55,7 +57,7 @@ DEFINE_EXPORT(HRESULT, AE_Attach,
 	if (recreationDelay != RecreationDelay_NoOverride)
 		attachInfo.RecreationDelays.push_back(recreationDelay);
 
-	*pAttachedCount = AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, pSource, attachInfo);
+	*pAttachedCount = AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, pSource, attachInfo, selfOwned, hasDelay);
 	return S_OK;
 }
 
