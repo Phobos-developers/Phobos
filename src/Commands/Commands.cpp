@@ -70,13 +70,13 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 static void MouseWheelDownCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (MessageColumnClass::Instance.IsHovering() && !ScenarioClass::Instance->UserInputLocked)
 		MessageColumnClass::Instance.ScrollDown();
 }
 
 static void MouseWheelUpCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (MessageColumnClass::Instance.IsHovering() && !ScenarioClass::Instance->UserInputLocked)
 		MessageColumnClass::Instance.ScrollUp();
 }
 
