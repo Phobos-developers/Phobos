@@ -253,7 +253,7 @@ void SWTypeExt::ApplyLimboKill(HouseClass* pHouse)
 		pBuilding->Limbo();
 		pBuilding->RegisterDestruction(nullptr);
 
-		auto const pBldTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+		auto const pBldTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
 		if (pBldTypeExt->NewEvaVoice_Tag >= 0 && pBldTypeExt->NewEvaVoice_RecheckOnDeath)
 			SideExt::UpdateMainEvaVoice(pBuilding);
 
