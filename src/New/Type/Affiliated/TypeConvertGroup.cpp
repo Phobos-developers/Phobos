@@ -48,6 +48,55 @@ end:
 	return;
 }
 
+void TypeConvertGroup::ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType)
+{
+	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
+	{
+		if (!toType.Get())
+			continue;
+
+		if (fromTypes.size())
+		{
+			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
+			{
+				std::vector<T> vec(dvc.Count);
+				std::copy(dvc.begin(), dvc.end(), vec.begin());
+				return vec;
+			};
+
+			for (const auto& from : fromTypes)
+			{
+				auto const items = copy_dvc(TechnoTypeExt::Fetch(from)->Array);
+
+				for (const auto pTarget : items)
+				{
+					const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
+					if (!pTargetFoot || (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner)))
+						continue;
+
+					bool converted = TechnoExt::ConvertToType(pTargetFoot, toType);
+
+					if (converted && pAnimType)
+					{
+						if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTargetFoot->Location))
+							pAnim->SetOwnerObject(pTargetFoot);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (auto const pTargetFoot : FootClass::Array)
+			{
+				TypeConvertGroup::Convert(pTargetFoot, convertPairs, pOwner, pAnimType);
+			}
+		}
+	}
+
+	return;
+}
+
 
 bool TypeConvertGroup::Load(PhobosStreamReader& stm, bool registerForChange)
 {

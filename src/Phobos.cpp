@@ -12,6 +12,8 @@
 #include "Utilities/Parser.h"
 
 #include <Ext/Rules/Body.h>
+#include <TiberiumClass.h>
+#include <algorithm>
 
 #ifdef TESTING_BUILD
 bool HideWarning = false;
@@ -32,6 +34,7 @@ bool Phobos::Optimizations::DisableBalloonHoverPathingFix = false;
 bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
 bool Phobos::Optimizations::DisableSyncLogging = false;
 bool Phobos::Optimizations::DisableLaserTracking = true;
+bool Phobos::Optimizations::DisablePsychicDetectable = true;
 
 // The leading L"" widens the narrow metadata literals it is concatenated with, so that the
 // name and the version are taken from Phobos.version.h rather than spelled out again.
@@ -309,6 +312,17 @@ DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
 DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
 {
 	Phobos::ApplyOptimizations();
+
+	for (const auto pTib : TiberiumClass::Array)
+	{
+		pTib->SpreadLogic.Timer.Start(pTib->Spread);
+		const double growthMult = (ScenarioClass::Instance && ScenarioClass::Instance->SpecialFlags.TiberiumGrows) ? 0.3 : 1.0;
+		pTib->GrowthLogic.Timer.Start(std::max(1, static_cast<int>(pTib->Growth * growthMult)));
+
+		reinterpret_cast<void(__thiscall*)(TiberiumClass*)>(0x7228B0)(pTib);
+		reinterpret_cast<void(__thiscall*)(TiberiumClass*)>(0x7233A0)(pTib);
+	}
+
 	return 0;
 }
 
@@ -404,6 +418,10 @@ void Phobos::ApplyOptimizations()
 		Patch::Apply_RAW(0x73F0A7, { 0x8B, 0xD9, 0x8B, 0x8C, 0x24, 0x88, 0x00, 0x00, 0x00 });
 		Patch::Apply_RAW(0x4D62C0, { 0x8A, 0x88, 0x95, 0x06, 0x00, 0x00 });
 	}
+
+	// Disable PsychicDetectable
+	if (Phobos::Optimizations::DisablePsychicDetectable)
+		Patch::Apply_RAW(0x43B150, { 0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8 });
 
 	if (!SessionClass::IsMultiplayer())
 	{

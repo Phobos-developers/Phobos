@@ -31,7 +31,8 @@ DEFINE_EXPORT(HRESULT, AE_Attach,
 	int initialDelay,
 	int recreationDelay,
 	int* pAttachedCount,
-	bool selfOwned
+	bool selfOwned,
+	bool hasDelay
 );
 
 /// <summary>
