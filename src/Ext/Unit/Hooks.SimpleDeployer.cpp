@@ -309,14 +309,14 @@ DEFINE_HOOK(0x514A2A, HoverLocomotionClass_Process_DeployToLand, 0x8)
 	enum { SkipGameCode = 0x514AC8, Continue = 0x514A32 };
 
 	GET(ILocomotion*, pThis, ESI);
-	GET(bool, isMoving, EAX);
+	GET(const bool, isMoving, EAX);
 
 	auto const pLinkedTo = static_cast<LocomotionClass*>(pThis)->LinkedTo;
 	auto const pUnit = abstract_cast<UnitClass*, true>(pLinkedTo);
 
 	if (pUnit && pUnit->InAir)
 	{
-		auto const pType = pUnit->GetTechnoType();
+		auto const pType = pUnit->Type;
 
 		if (pType->DeployToLand)
 		{

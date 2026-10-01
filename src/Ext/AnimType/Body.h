@@ -35,6 +35,14 @@ public:
 	CustomPalette Palette;
 	std::unique_ptr<CreateUnitTypeClass> CreateUnitType;
 	Valueable<int> XDrawOffset;
+		Valueable<bool> XDrawOffset_ApplyBracketWidth;
+		Valueable<bool> XDrawOffset_InvertBracketShift;
+		Valueable<int> XDrawOffset_BracketAdjust;
+		Nullable<int> XDrawOffset_BracketAdjust_Buildings;
+		Valueable<bool> YDrawOffset_ApplyBracketHeight;
+		Valueable<bool> YDrawOffset_InvertBracketShift;
+		Valueable<int> YDrawOffset_BracketAdjust;
+		Nullable<int> YDrawOffset_BracketAdjust_Buildings;
 	Valueable<int> HideIfNoOre_Threshold;
 	Nullable<bool> Layer_UseObjectLayer;
 	Valueable<AttachedAnimPosition> AttachedAnimPosition;
@@ -79,6 +87,14 @@ public:
 		, Palette { CustomPalette::PaletteMode::Temperate }
 		, CreateUnitType { nullptr }
 		, XDrawOffset { 0 }
+			, XDrawOffset_ApplyBracketWidth { false }
+			, XDrawOffset_InvertBracketShift { false }
+			, XDrawOffset_BracketAdjust { 0 }
+			, XDrawOffset_BracketAdjust_Buildings {}
+			, YDrawOffset_ApplyBracketHeight { false }
+			, YDrawOffset_InvertBracketShift { false }
+			, YDrawOffset_BracketAdjust { 0 }
+			, YDrawOffset_BracketAdjust_Buildings {}
 		, HideIfNoOre_Threshold { 0 }
 		, Layer_UseObjectLayer {}
 		, AttachedAnimPosition { AttachedAnimPosition::Default }

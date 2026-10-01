@@ -88,7 +88,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		if (!pShieldData->IsBrokenAndNonRespawning())
 			pShieldData->DrawShieldBar_Building(length, pBound);
 	}
 
@@ -115,10 +115,11 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		if (!pShieldData->IsBrokenAndNonRespawning())
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar_Other(length, pBound);
+			const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
+			const int length = isInfantry ? 8 : 17;
+			pShieldData->DrawShieldBar_Other(length, pBound, isInfantry);
 		}
 	}
 
