@@ -658,12 +658,19 @@ bool AttachmentClass::DetachChild()
 				pChild->DropAsBomb();
 			}
 			else
+			{
+				CoordStruct curLoc = pChild->Location;
+				if (CellClass* pCell = MapClass::Instance.GetCellAt(curLoc))
+					if (!pChild->IsInAir())
+						pChild->SetLocation(pCell->GetCoordsWithBridge());
+
 				pChild->ForceMission(detachmentMission);
+			}
 		}
 
 		if (pType->InheritOwner)
 		{
-			HouseClass* targetOwner = pChild->GetOriginalOwner() ? pChild->GetOriginalOwner() : (this->Parent ? this->Parent->GetOriginalOwner() : nullptr);
+			HouseClass* targetOwner = this->ChildOriginalOwner ? this->ChildOriginalOwner : (this->Parent ? this->Parent->GetOriginalOwner() : nullptr);
 			if (targetOwner)
 				pChild->SetOwningHouse(targetOwner, false);
 		}
@@ -688,6 +695,7 @@ bool AttachmentClass::DetachChild()
 void AttachmentClass::AttachChildCore(TechnoClass* pChild)
 {
 	this->Child = pChild;
+	this->ChildOriginalOwner = pChild ? pChild->Owner : nullptr;
 	TechnoExt::ExtMap.Find(pChild)->ParentAttachment = this;
 }
 
@@ -697,6 +705,7 @@ void AttachmentClass::DetachChildCore()
 	{
 		TechnoExt::ExtMap.Find(this->Child)->ParentAttachment = nullptr;
 		this->Child = nullptr;
+		this->ChildOriginalOwner = nullptr;
 	}
 }
 
@@ -704,6 +713,7 @@ void AttachmentClass::InvalidatePointer(void* ptr)
 {
 	AnnounceInvalidPointer(this->Parent, ptr);
 	AnnounceInvalidPointer(this->Child, ptr);
+	AnnounceInvalidPointer(this->ChildOriginalOwner, ptr);
 	AnnounceInvalidPointer(this->LastValidParentTarget, ptr);
 	AnnounceInvalidPointer(this->LastValidParentDestination, ptr);
 }
@@ -717,6 +727,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child)
+		.Process(this->ChildOriginalOwner)
 		.Process(this->RespawnTimer)
 		.Process(this->LastValidParentTarget)
 		.Process(this->LastValidParentDestination)
