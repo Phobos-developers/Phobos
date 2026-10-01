@@ -1068,12 +1068,17 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
 		.Process(this->AltOccupation)
+		.Process(this->FallingInheritedTarget)
+		.Process(this->FallingInheritedDestination)
+		.Process(this->FallingInheritedMission)
 		;
 }
 
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+	AnnounceInvalidPointer(this->FallingInheritedTarget, ptr);
+	AnnounceInvalidPointer(this->FallingInheritedDestination, ptr);
 
 	for (auto const& pAttachment : ChildAttachments)
 		pAttachment->InvalidatePointer(ptr);

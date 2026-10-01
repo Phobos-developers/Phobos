@@ -18,14 +18,19 @@ public:
 	TechnoClass* Parent;
 	TechnoClass* Child;
 	CDTimerClass RespawnTimer;
-
+	AbstractClass* LastValidParentTarget;
+	AbstractClass* LastValidParentDestination;
+	Mission LastValidParentMission;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
 		Data { data },
 		Parent { pParent },
 		Child { pChild },
-		RespawnTimer { }
+		RespawnTimer { },
+		LastValidParentTarget { nullptr },
+		LastValidParentDestination { nullptr },
+		LastValidParentMission { Mission::None }
 	{
 		Array.push_back(this);
 	}
@@ -34,7 +39,10 @@ public:
 		Data { },
 		Parent { },
 		Child { },
-		RespawnTimer { }
+		RespawnTimer { },
+		LastValidParentTarget { nullptr },
+		LastValidParentDestination { nullptr },
+		LastValidParentMission { Mission::None }
 	{
 		Array.push_back(this);
 	}

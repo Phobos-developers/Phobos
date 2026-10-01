@@ -110,6 +110,10 @@ public:
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
 
+		AbstractClass* FallingInheritedTarget;
+		AbstractClass* FallingInheritedDestination;
+		Mission FallingInheritedMission;
+
 		// Ares
 		std::optional<bool> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
 
@@ -184,6 +188,9 @@ public:
 			, ParentAttachment {}
 			, ChildAttachments {}
 			, DormantAttachments {}
+			, FallingInheritedTarget { nullptr }
+			, FallingInheritedDestination { nullptr }
+			, FallingInheritedMission { Mission::None }
 			, AltOccupation {}
 		{ }
 

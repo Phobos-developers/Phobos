@@ -119,8 +119,39 @@ void AttachmentClass::AI()
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
 		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
 		if (pParentAsFoot && pChildAsFoot)
-		{
 			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
+
+		if (this->Parent)
+		{
+			const bool isParentDying = !this->Parent->IsAlive
+				|| this->Parent->Health <= 0
+				|| this->Parent->IsCrashing
+				|| this->Parent->InLimbo;
+
+			if (!isParentDying)
+			{
+				if (this->Parent->Target)
+					this->LastValidParentTarget = this->Parent->Target;
+
+				if (pParentAsFoot)
+				{
+					AbstractClass* pDest = pParentAsFoot->Destination ? pParentAsFoot->Destination : pParentAsFoot->MegaDestination;
+					if (!pDest)
+						pDest = pParentAsFoot->LastDestination;
+
+					if (pDest)
+						this->LastValidParentDestination = pDest;
+				}
+
+				auto const parentMission = this->Parent->GetCurrentMission();
+				if (parentMission == Mission::Move || parentMission == Mission::AttackMove || parentMission == Mission::QMove || parentMission == Mission::Patrol || parentMission == Mission::Hunt || parentMission == Mission::Attack)
+					this->LastValidParentMission = parentMission;
+			}
+			else if (!pType->InheritDestruction)
+			{
+				this->Destroy(nullptr);
+				return;
+			}
 		}
 
 		if (pType->InheritStateEffects)
@@ -199,7 +230,12 @@ void AttachmentClass::AI()
 			}
 			else if (this->Child->Target && this->Parent->GetCurrentMission() != Mission::Attack)
 			{
-				if (this->Child->Target == pParentTarget || !pParentTarget)
+				const bool isParentDying = !this->Parent->IsAlive
+					|| this->Parent->Health <= 0
+					|| this->Parent->IsCrashing
+					|| this->Parent->InLimbo;
+
+				if (!isParentDying && (this->Child->Target == pParentTarget || !pParentTarget))
 				{
 					this->Child->SetTarget(nullptr);
 					if (this->Child->GetCurrentMission() == Mission::Attack)
@@ -226,8 +262,136 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 		if (pType->DestructionWeapon_Child.isset())
 			TechnoExt::FireWeaponAtSelf(pChild, pType->DestructionWeapon_Child);
 
-		if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
+		auto const pChildAsFoot = abstract_cast<FootClass*>(pChild);
+		if (pChildAsFoot)
 			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
+
+		// Restore original owner if InheritOwner was active
+		if (pType->InheritOwner)
+		{
+			HouseClass* targetOwner = pChild->GetOriginalOwner() ? pChild->GetOriginalOwner() : (this->Parent ? this->Parent->GetOriginalOwner() : nullptr);
+			if (targetOwner)
+				pChild->SetOwningHouse(targetOwner, false);
+		}
+
+		// Clean up state effects if InheritStateEffects was active
+		if (pType->InheritStateEffects)
+		{
+			if (pChild->CloakState != CloakState::Uncloaked && !pChild->GetTechnoType()->Cloakable)
+				pChild->Uncloak(false);
+
+			pChild->ForceShielded = false;
+		}
+
+		// Synchronize attack target with parent
+		AbstractClass* pTargetToInherit = nullptr;
+		if (pType->InheritTarget)
+		{
+			if (this->Parent && this->Parent->Target && this->Parent->Target != pChild)
+				pTargetToInherit = this->Parent->Target;
+			else if (pChild->Target && pChild->Target != pChild)
+				pTargetToInherit = pChild->Target;
+			else if (this->LastValidParentTarget && this->LastValidParentTarget != pChild)
+				pTargetToInherit = this->LastValidParentTarget;
+			else if (this->Parent && this->Parent->LastTarget && this->Parent->LastTarget != pChild)
+				pTargetToInherit = this->Parent->LastTarget;
+			else if (pChild->LastTarget && pChild->LastTarget != pChild)
+				pTargetToInherit = pChild->LastTarget;
+
+			if (pTargetToInherit)
+			{
+				bool isTargetValid = false;
+				if (auto const pTargetObj = abstract_cast<ObjectClass*>(pTargetToInherit))
+					isTargetValid = pTargetObj->IsAlive && !pTargetObj->InLimbo;
+				else
+					isTargetValid = true;
+
+				if (isTargetValid)
+					pChild->SetTarget(pTargetToInherit);
+				else
+					pTargetToInherit = nullptr;
+			}
+		}
+
+		// Transfer destination and movement commands from parent
+		AbstractClass* pDestToInherit = nullptr;
+		if (pType->InheritCommands)
+		{
+			if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+			{
+				if (pParentFoot->Destination)
+					pDestToInherit = pParentFoot->Destination;
+				else if (pParentFoot->MegaDestination)
+					pDestToInherit = pParentFoot->MegaDestination;
+			}
+
+			if (!pDestToInherit && this->LastValidParentDestination)
+				pDestToInherit = this->LastValidParentDestination;
+
+			if (!pDestToInherit && this->Parent)
+			{
+				if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+				{
+					if (pParentFoot->LastDestination)
+						pDestToInherit = pParentFoot->LastDestination;
+				}
+			}
+
+			if (!pDestToInherit && pChildAsFoot)
+			{
+				if (pChildAsFoot->Destination)
+					pDestToInherit = pChildAsFoot->Destination;
+				else if (pChildAsFoot->MegaDestination)
+					pDestToInherit = pChildAsFoot->MegaDestination;
+				else if (pChildAsFoot->LastDestination)
+					pDestToInherit = pChildAsFoot->LastDestination;
+			}
+
+			if (pDestToInherit && pChildAsFoot)
+				pChildAsFoot->SetDestination(pDestToInherit, true);
+
+			if (pChildAsFoot && this->Parent)
+			{
+				if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+				{
+					if (pParentFoot->MegaMission == Mission::AttackMove)
+					{
+						pChildAsFoot->MegaMission = pParentFoot->MegaMission;
+						pChildAsFoot->MegaDestination = pParentFoot->MegaDestination;
+						pChildAsFoot->MegaTarget = pParentFoot->MegaTarget;
+						pChildAsFoot->HaveAttackMoveTarget = pParentFoot->HaveAttackMoveTarget;
+					}
+				}
+			}
+		}
+
+		// Determine child mission upon detachment or parent destruction
+		Mission detachmentMission = Mission::Guard;
+		if (pType->ParentDestructionMission.isset())
+			detachmentMission = pType->ParentDestructionMission.Get();
+		else if (pType->InheritTarget && pTargetToInherit)
+			detachmentMission = Mission::Attack;
+		else if (pType->InheritCommands)
+		{
+			Mission candidateMission = Mission::None;
+			if (this->Parent)
+			{
+				auto const parentMission = this->Parent->GetCurrentMission();
+				if (parentMission == Mission::Move || parentMission == Mission::AttackMove || parentMission == Mission::QMove || parentMission == Mission::Patrol || parentMission == Mission::Hunt)
+					candidateMission = parentMission;
+			}
+
+			if (candidateMission == Mission::None && this->LastValidParentMission != Mission::None && this->LastValidParentMission != Mission::Attack)
+				candidateMission = this->LastValidParentMission;
+
+			if (candidateMission == Mission::None && pDestToInherit)
+				candidateMission = Mission::Move;
+
+			if (candidateMission != Mission::None)
+				detachmentMission = candidateMission;
+		}
+
+		pChild->QueueMission(detachmentMission, false);
 
 		const bool isAirborneChild = pChild->WhatAmI() == AbstractType::Aircraft
 			|| pChild->GetTechnoType()->ConsideredAircraft
@@ -241,77 +405,25 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 		const bool isParentAirborne = (this->Parent && (this->Parent->IsInAir() || this->Parent->Location.Z > groundLoc.Z + 64 || this->Parent->GetHeight() > 0));
 		const bool isChildElevated = pChild->Location.Z > groundLoc.Z + 64 || pChild->GetHeight() > 0 || isParentAirborne;
 
-		if (pType->InheritDestruction && pChild->IsAlive)
+		if (isChildElevated && !isAirborneChild)
 		{
-			TechnoExt::Kill(pChild, pSource);
+			if (pChildExt)
+			{
+				pChildExt->FallingInheritedTarget = pTargetToInherit;
+				pChildExt->FallingInheritedDestination = pDestToInherit;
+				pChildExt->FallingInheritedMission = detachmentMission;
+				if (!pType->InheritDestruction)
+					pChildExt->OnParachuted = true;
+			}
+
+			pChild->DropAsBomb();
 		}
-		else if (pChild->IsAlive)
+		else
 		{
-			bool shouldDie = false;
-
-			if (isChildElevated && !isAirborneChild)
-			{
-				if (!pCell)
-				{
-					shouldDie = true;
-				}
-				else
-				{
-					const auto speedType = pChild->GetTechnoType()->SpeedType;
-					if (pCell->LandType == LandType::Water && speedType != SpeedType::Hover && speedType != SpeedType::Float)
-					{
-						shouldDie = true;
-					}
-					else
-					{
-						bool hasSolidObstacle = false;
-						for (ObjectClass* pObj = pCell->FirstObject; pObj; pObj = pObj->NextObject)
-						{
-							if (pObj == pChild || pObj == this->Parent)
-								continue;
-
-							if (pObj->WhatAmI() == AbstractType::Infantry)
-							{
-								if (auto const pInf = abstract_cast<InfantryClass*>(pObj))
-								{
-									if (pInf->IsAlive)
-										TechnoExt::Kill(pInf, pChild);
-								}
-							}
-							else if (pObj->WhatAmI() == AbstractType::Unit || pObj->WhatAmI() == AbstractType::Building)
-							{
-								hasSolidObstacle = true;
-							}
-						}
-
-						if (hasSolidObstacle)
-						{
-							shouldDie = true;
-						}
-						else
-						{
-							pChild->Mark(MarkType::Up);
-							pChild->SetLocation(groundLoc);
-							pChild->SetHeight(0);
-							pChild->UpdatePosition(PCPType::During);
-							pChild->Mark(MarkType::Down);
-							pChild->EnterIdleMode(false, true);
-						}
-					}
-				}
-			}
-
-			if (shouldDie)
-			{
+			if (pType->InheritDestruction && pChild->IsAlive)
 				TechnoExt::Kill(pChild, pSource);
-			}
-			else if (!pChild->InLimbo)
-			{
-				if (pType->ParentDestructionMission.isset())
-					pChild->QueueMission(pType->ParentDestructionMission.Get(), false);
-				else
-					pChild->QueueMission(Mission::Guard, false);
-			}
+			else if (pChild->IsAlive && !pChild->InLimbo)
+				pChild->ForceMission(detachmentMission);
 		}
 	}
 }
@@ -402,18 +514,167 @@ bool AttachmentClass::DetachChild()
 {
 	if (this->Child)
 	{
+		auto const pChild = this->Child;
 		AttachmentTypeClass* pType = this->GetType();
 
-		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
-			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
-
-		// FIXME this won't work probably
-		if (pType->InheritOwner)
-			this->Child->SetOwningHouse(this->Parent->GetOriginalOwner(), false);
-
-		// remove the attachment locomotor manually just to be safe
-		if (auto const pChildAsFoot = abstract_cast<FootClass*>(this->Child))
+		auto const pChildAsFoot = abstract_cast<FootClass*>(pChild);
+		if (pChildAsFoot)
 			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
+
+		if (!pChild->InLimbo)
+		{
+			// Synchronize attack target with parent
+			AbstractClass* pTargetToInherit = nullptr;
+			if (pType->InheritTarget)
+			{
+				if (this->Parent && this->Parent->Target && this->Parent->Target != pChild)
+					pTargetToInherit = this->Parent->Target;
+				else if (pChild->Target && pChild->Target != pChild)
+					pTargetToInherit = pChild->Target;
+				else if (this->LastValidParentTarget && this->LastValidParentTarget != pChild)
+					pTargetToInherit = this->LastValidParentTarget;
+				else if (this->Parent && this->Parent->LastTarget && this->Parent->LastTarget != pChild)
+					pTargetToInherit = this->Parent->LastTarget;
+				else if (pChild->LastTarget && pChild->LastTarget != pChild)
+					pTargetToInherit = pChild->LastTarget;
+
+				if (pTargetToInherit)
+				{
+					bool isTargetValid = false;
+					if (auto const pTargetObj = abstract_cast<ObjectClass*>(pTargetToInherit))
+						isTargetValid = pTargetObj->IsAlive && !pTargetObj->InLimbo;
+					else
+						isTargetValid = true;
+
+					if (isTargetValid)
+						pChild->SetTarget(pTargetToInherit);
+					else
+						pTargetToInherit = nullptr;
+				}
+			}
+
+			// Transfer destination and movement commands from parent
+			AbstractClass* pDestToInherit = nullptr;
+			if (pType->InheritCommands)
+			{
+				if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+				{
+					if (pParentFoot->Destination)
+						pDestToInherit = pParentFoot->Destination;
+					else if (pParentFoot->MegaDestination)
+						pDestToInherit = pParentFoot->MegaDestination;
+				}
+
+				if (!pDestToInherit && this->LastValidParentDestination)
+					pDestToInherit = this->LastValidParentDestination;
+
+				if (!pDestToInherit && this->Parent)
+				{
+					if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+					{
+						if (pParentFoot->LastDestination)
+							pDestToInherit = pParentFoot->LastDestination;
+					}
+				}
+
+				if (!pDestToInherit && pChildAsFoot)
+				{
+					if (pChildAsFoot->Destination)
+						pDestToInherit = pChildAsFoot->Destination;
+					else if (pChildAsFoot->MegaDestination)
+						pDestToInherit = pChildAsFoot->MegaDestination;
+					else if (pChildAsFoot->LastDestination)
+						pDestToInherit = pChildAsFoot->LastDestination;
+				}
+
+				if (pDestToInherit && pChildAsFoot)
+					pChildAsFoot->SetDestination(pDestToInherit, true);
+
+				if (pChildAsFoot && this->Parent)
+				{
+					if (auto const pParentFoot = abstract_cast<FootClass*>(this->Parent))
+					{
+						if (pParentFoot->MegaMission == Mission::AttackMove)
+						{
+							pChildAsFoot->MegaMission = pParentFoot->MegaMission;
+							pChildAsFoot->MegaDestination = pParentFoot->MegaDestination;
+							pChildAsFoot->MegaTarget = pParentFoot->MegaTarget;
+							pChildAsFoot->HaveAttackMoveTarget = pParentFoot->HaveAttackMoveTarget;
+						}
+					}
+				}
+			}
+
+			// Determine child mission upon detachment
+			Mission detachmentMission = Mission::Guard;
+			if (pType->ParentDetachmentMission.isset())
+				detachmentMission = pType->ParentDetachmentMission.Get();
+			else if (pType->InheritTarget && pTargetToInherit)
+				detachmentMission = Mission::Attack;
+			else if (pType->InheritCommands)
+			{
+				Mission candidateMission = Mission::None;
+				if (this->Parent)
+				{
+					auto const parentMission = this->Parent->GetCurrentMission();
+					if (parentMission == Mission::Move || parentMission == Mission::AttackMove || parentMission == Mission::QMove || parentMission == Mission::Patrol || parentMission == Mission::Hunt)
+						candidateMission = parentMission;
+				}
+
+				if (candidateMission == Mission::None && this->LastValidParentMission != Mission::None && this->LastValidParentMission != Mission::Attack)
+					candidateMission = this->LastValidParentMission;
+
+				if (candidateMission == Mission::None && pDestToInherit)
+					candidateMission = Mission::Move;
+
+				if (candidateMission != Mission::None)
+					detachmentMission = candidateMission;
+			}
+
+			pChild->QueueMission(detachmentMission, false);
+
+			const bool isAirborneChild = pChild->WhatAmI() == AbstractType::Aircraft
+				|| pChild->GetTechnoType()->ConsideredAircraft
+				|| pChild->GetTechnoType()->JumpJet;
+
+			CellClass* pCell = MapClass::Instance.GetCellAt(pChild->Location);
+			if (!pCell)
+				pCell = pChild->GetCell();
+
+			const CoordStruct groundLoc = pCell ? pCell->GetCoordsWithBridge() : CoordStruct::Empty;
+			const bool isParentAirborne = (this->Parent && (this->Parent->IsInAir() || this->Parent->Location.Z > groundLoc.Z + 64 || this->Parent->GetHeight() > 0));
+			const bool isChildElevated = pChild->Location.Z > groundLoc.Z + 64 || pChild->GetHeight() > 0 || isParentAirborne;
+
+			if (isChildElevated && !isAirborneChild)
+			{
+				if (auto const pChildExt = TechnoExt::ExtMap.Find(pChild))
+				{
+					pChildExt->FallingInheritedTarget = pTargetToInherit;
+					pChildExt->FallingInheritedDestination = pDestToInherit;
+					pChildExt->FallingInheritedMission = detachmentMission;
+					pChildExt->OnParachuted = true;
+				}
+
+				pChild->DropAsBomb();
+			}
+			else
+				pChild->ForceMission(detachmentMission);
+		}
+
+		if (pType->InheritOwner)
+		{
+			HouseClass* targetOwner = pChild->GetOriginalOwner() ? pChild->GetOriginalOwner() : (this->Parent ? this->Parent->GetOriginalOwner() : nullptr);
+			if (targetOwner)
+				pChild->SetOwningHouse(targetOwner, false);
+		}
+
+		if (pType->InheritStateEffects)
+		{
+			if (pChild->CloakState != CloakState::Uncloaked && !pChild->GetTechnoType()->Cloakable)
+				pChild->Uncloak(false);
+
+			pChild->ForceShielded = false;
+		}
 
 		this->DetachChildCore();
 
@@ -443,6 +704,8 @@ void AttachmentClass::InvalidatePointer(void* ptr)
 {
 	AnnounceInvalidPointer(this->Parent, ptr);
 	AnnounceInvalidPointer(this->Child, ptr);
+	AnnounceInvalidPointer(this->LastValidParentTarget, ptr);
+	AnnounceInvalidPointer(this->LastValidParentDestination, ptr);
 }
 
 #pragma region Save/Load
@@ -455,6 +718,9 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Parent)
 		.Process(this->Child)
 		.Process(this->RespawnTimer)
+		.Process(this->LastValidParentTarget)
+		.Process(this->LastValidParentDestination)
+		.Process(this->LastValidParentMission)
 		.Success();
 }
 
