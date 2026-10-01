@@ -222,6 +222,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> ShowPowerPlantEnhancerRange;
+		Valueable<bool> ShowGameTime;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
@@ -290,6 +291,8 @@ public:
 		Valueable<bool> NoReload_Temporal;
 		Valueable<double> VeteranReload;
 		Nullable<double> VeteranEmptyReload;
+		Valueable<double> VeteranRange;
+		Valueable<double> VeteranCritChance;
 		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
@@ -352,6 +355,7 @@ public:
 		Valueable<int> WarheadAnimZAdjust;
 
 		Valueable<bool> IvanBombAttachToCenter;
+		Valueable<AffectedHouse> IvanBomb_Visibility;
 		Valueable<bool> MissileSpawnAttackCell;
 
 		Valueable<bool> FallingDownTargetingFix;
@@ -366,6 +370,7 @@ public:
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 		Valueable<bool> OpenTopped_DecloakToFire;
 		Valueable<bool> OpenTopped_FireWhileMoving;
+		Valueable<bool> OpenTopped_FireWhileMoving_BasedOnDestination;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 		Valueable<bool> OpenTransport_FireWhileMoving;
@@ -489,10 +494,12 @@ public:
 
 		Valueable<bool> Temporal_ApplyVersus;
 		Valueable<bool> Temporal_ApplyMultiplier;
+		Valueable<bool> Temporal_KillPoweredAnim;
 
 		Valueable<bool> DiscardOn_Sequences_Immediate;
 		Valueable<bool> DiscardOn_MoveBasedOnDestination;
 		Valueable<bool> DiscardOn_ConsiderHarvestingAsStationary;
+		Valueable<bool> AttachEffect_ReplaceLongerDuration;
 		Valueable<bool> RemoveMindControl_Silent;
 		Valueable<bool> MindControl_Permanent_ReplaceSilent;
 		Nullable<bool> FlyNoWobbles;
@@ -536,6 +543,29 @@ public:
 		Valueable<bool> Warhead_PreventScatter;
 
 		Valueable<bool> ProjectileRange_ApplyModifiers;
+
+		Valueable<bool> KeepAlive_Infantry;
+		Valueable<bool> KeepAlive_Units;
+		Valueable<bool> KeepAlive_Aircraft;
+		Valueable<bool> KeepAlive_Buildings;
+		Valueable<bool> KeepAlive_Defenses;
+		Valueable<bool> AutoTarget_InsignificantWhenMindControlled;
+
+		ValueableVector<AnimTypeClass*> CloakAnims;
+		ValueableVector<AnimTypeClass*> DecloakAnims;
+		Valueable<bool> Cloak_KickOutParasite;
+
+		// Global default per-sequence animation rates for infantry
+		std::vector<int> CustomSequenceRates;
+
+		// Global default per-sequence game-speed normalization flags for infantry
+		std::vector<int> CustomSequenceNormalized;
+
+		Valueable<bool> AttachEffects_AttachOnOwnerChange;
+
+		Valueable<AffectedHouse> RevealHouses;
+
+		Valueable<bool> MissileKeepTargetCoord;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -732,6 +762,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, ShowPowerPlantEnhancerRange { true }
+			, ShowGameTime { true }
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
@@ -779,6 +810,8 @@ public:
 			, NoReload_Temporal { false }
 			, VeteranReload { 1.0 }
 			, VeteranEmptyReload {}
+			, VeteranRange { 1.0 }
+			, VeteranCritChance { 1.0 }
 			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
@@ -830,6 +863,7 @@ public:
 			, WarheadAnimZAdjust { -15 }
 
 			, IvanBombAttachToCenter { false }
+			, IvanBomb_Visibility { AffectedHouse::Owner }
 			, MissileSpawnAttackCell { true }
 
 			, FallingDownTargetingFix { false }
@@ -844,6 +878,7 @@ public:
 			, OpenTopped_CheckTransportDisableWeapons { false }
 			, OpenTopped_DecloakToFire { false }
 			, OpenTopped_FireWhileMoving { true }
+			, OpenTopped_FireWhileMoving_BasedOnDestination{ false }
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
 			, OpenTransport_FireWhileMoving { true }
@@ -959,9 +994,11 @@ public:
 			, Vertical_AircraftFix { true }
 			, Temporal_ApplyVersus { false }
 			, Temporal_ApplyMultiplier { false }
+			, Temporal_KillPoweredAnim { true }
 			, DiscardOn_Sequences_Immediate { true }
 			, DiscardOn_MoveBasedOnDestination { false }
 			, DiscardOn_ConsiderHarvestingAsStationary { true }
+			, AttachEffect_ReplaceLongerDuration { false }
 			, RemoveMindControl_Silent { false }
 			, MindControl_Permanent_ReplaceSilent { false }
 
@@ -1009,6 +1046,27 @@ public:
 			, Warhead_PreventScatter { false }
 
 			, ProjectileRange_ApplyModifiers { true }
+
+			, KeepAlive_Infantry { false }
+			, KeepAlive_Units { false }
+			, KeepAlive_Aircraft { false }
+			, KeepAlive_Buildings { true }
+			, KeepAlive_Defenses { true }
+
+			, AutoTarget_InsignificantWhenMindControlled { true }
+
+			, CloakAnims {}
+			, DecloakAnims {}
+			, Cloak_KickOutParasite { false }
+
+			, CustomSequenceRates(42, -1)
+			, CustomSequenceNormalized(42, -1)
+
+			, AttachEffects_AttachOnOwnerChange { false }
+
+			, RevealHouses { AffectedHouse::Team }
+
+			, MissileKeepTargetCoord { false }
 		{ }
 
 		virtual ~ExtData() = default;
