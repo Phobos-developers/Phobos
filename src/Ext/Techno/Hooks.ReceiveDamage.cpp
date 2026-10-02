@@ -34,6 +34,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
+	if (args->Attacker && damage > 0)
+		pExt->LastAttacker = abstract_cast<TechnoClass*>(args->Attacker);
+
 	if (!args->IgnoreDefenses && pExt->ParentAttachment && !pExt->ParentAttachment->GetType()->Damageable)
 	{
 		if (args->WH && args->WH->CellSpread <= 0.0f)

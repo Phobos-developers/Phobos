@@ -109,6 +109,7 @@ public:
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
+		TechnoClass* LastAttacker;
 
 		AbstractClass* FallingInheritedTarget;
 		AbstractClass* FallingInheritedDestination;
@@ -188,6 +189,7 @@ public:
 			, ParentAttachment {}
 			, ChildAttachments {}
 			, DormantAttachments {}
+			, LastAttacker { nullptr }
 			, FallingInheritedTarget { nullptr }
 			, FallingInheritedDestination { nullptr }
 			, FallingInheritedMission { Mission::None }
