@@ -2433,6 +2433,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 - Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)
 - Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
+- Fixed large `LaserZAdjust` values shifting laser endpoints on screen, particularly with black `LaserOuterColor`.
 - Fixed customized `WarpAway` anim's wrong definition (by Ollerus)
 - Fixed parsing of `DropPodTrailer` from INI (by Starkku)
 - Fixed issue with `ReturnWeapon` not always firing off correctly (by CrimRecya)
