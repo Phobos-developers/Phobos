@@ -36,6 +36,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	if (!args->IgnoreDefenses && pExt->ParentAttachment && !pExt->ParentAttachment->GetType()->Damageable)
 	{
+		if (args->WH && args->WH->CellSpread <= 0.0f)
+		{
+			if (auto const pTargetParent = TechnoExt::GetFirstDamageableParent(pThis))
+				pTargetParent->ReceiveDamage(args->Damage, args->DistanceToEpicenter, args->WH, args->Attacker, args->IgnoreDefenses, args->PreventsPassengerEscape, args->SourceHouse);
+		}
+
 		damage = 0;
 		ReceiveDamageTemp::SkipLowDamageCheck = true;
 		return 0;

@@ -372,9 +372,10 @@ static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _
 	AresScheme::Suffix();
 
 	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
-		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
-			if (result == Action::Enter)
-				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj) && result == Action::Enter)
+			result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+	}
 
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt->ParentAttachment)
@@ -417,9 +418,10 @@ static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis,
 	AresScheme::Suffix();
 
 	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
-		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
-			if (result == Action::Enter)
-				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj) && result == Action::Enter)
+			result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+	}
 
 	return result;
 }

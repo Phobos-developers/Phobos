@@ -304,6 +304,7 @@ public:
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static bool AreRelatives(TechnoClass* pThis, TechnoClass* pThat);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
+	static TechnoClass* GetFirstDamageableParent(TechnoClass* pThis);
 	static AbstractClass* RedirectUntargetableAttachment(AbstractClass* pObj);
 	template <typename T>
 	static T* RedirectUntargetableAttachment(T* pObj)
