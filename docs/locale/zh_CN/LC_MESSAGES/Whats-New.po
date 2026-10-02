@@ -1179,6 +1179,7 @@ msgid ""
 "Fixed operation `8` of trigger action `504 Binary operation` assigning "
 "the second variable's value instead of doing `~CurrentValue` (by ZivDero)"
 msgstr ""
+"修复了触发动作 `504 变量间计算` 的操作 `8` 会赋予第二个变量的值而不是执行 `~CurrentValue` 的问题（by ZivDero）"
 
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
