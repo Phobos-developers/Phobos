@@ -268,8 +268,6 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 		this->Child = nullptr;
 
 		auto const pChildExt = TechnoExt::ExtMap.Find(pChild);
-		pChildExt->ParentAttachment = nullptr;
-
 		auto pType = this->GetType();
 
 		if (pType->DestructionWeapon_Child.isset())
@@ -438,6 +436,15 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 			else if (pChild->IsAlive && !pChild->InLimbo)
 				pChild->ForceMission(detachmentMission);
 		}
+
+		if (pChildExt)
+			pChildExt->ParentAttachment = nullptr;
+
+		if (this->Parent && !this->Parent->InLimbo)
+		{
+			if (auto const pParentUnit = abstract_cast<UnitClass*>(this->Parent))
+				pParentUnit->MarkAllOccupationBits(this->Parent->Location);
+		}
 	}
 }
 
@@ -448,15 +455,21 @@ void AttachmentClass::ChildDestroyed()
 		auto const pChild = this->Child;
 		this->Child = nullptr;
 
-		if (auto const pChildExt = TechnoExt::ExtMap.Find(pChild))
-			pChildExt->ParentAttachment = nullptr;
-
 		AttachmentTypeClass* pType = this->GetType();
 		if (pType->DestructionWeapon_Parent.isset())
 			TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
 		if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
 			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
+
+		if (auto const pChildExt = TechnoExt::ExtMap.Find(pChild))
+			pChildExt->ParentAttachment = nullptr;
+
+		if (this->Parent && !this->Parent->InLimbo)
+		{
+			if (auto const pParentUnit = abstract_cast<UnitClass*>(this->Parent))
+				pParentUnit->MarkAllOccupationBits(this->Parent->Location);
+		}
 	}
 }
 
