@@ -86,19 +86,38 @@ DEFINE_HOOK(0x4416A2, BuildingClass_Destroy_DetectDisguise, 0x6)
 	return 0;
 }
 
-// Display DetectDisguiseRange on radial indicator if structure has no weapon or cloak range
-DEFINE_HOOK(0x456749, BuildingClass_GetRangeOfRadial_DetectDisguise, 0x6)
+// Display DetectDisguiseRange on radial indicator if structure has no valid weapon
+DEFINE_HOOK(0x45671E, BuildingClass_GetRangeOfRadial_DetectDisguise_NoWeapon, 0x6)
 {
-	enum { ReturnSet = 0x45674B, ReturnDefault = 0 };
+	enum { ReturnSet = 0x45674B };
 
+	GET(bool, isValid, EAX);
 	GET(BuildingClass*, pThis, ESI);
 	auto const pType = pThis->Type;
 
-	if (pType->DetectDisguise && pType->DetectDisguiseRange > 0)
+	if (!isValid && pType->DetectDisguise && pType->DetectDisguiseRange > 0)
 	{
 		R->EAX(pType->DetectDisguiseRange);
 		return ReturnSet;
 	}
 
-	return ReturnDefault;
+	return 0;
+}
+
+// Display DetectDisguiseRange on radial indicator if structure has no valid weapon range
+DEFINE_HOOK(0x45672A, BuildingClass_GetRangeOfRadial_DetectDisguise_NoRange, 0x5)
+{
+	enum { ReturnSet = 0x45674B };
+
+	GET(int, range, EAX);
+	GET(BuildingClass*, pThis, ESI);
+	auto const pType = pThis->Type;
+
+	if (range <= 0 && pType->DetectDisguise && pType->DetectDisguiseRange > 0)
+	{
+		R->EAX(pType->DetectDisguiseRange);
+		return ReturnSet;
+	}
+
+	return 0;
 }
