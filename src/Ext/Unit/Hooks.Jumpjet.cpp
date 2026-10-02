@@ -162,10 +162,7 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 
 	const int rot = pTypeExt->CrashROT;
 
-	if (rot == 0)
-		return NoRotation;
-
-	if (rot > 0)
+	if (rot >= 0)
 		pThis->LocomotionFacing.SetROT(rot);
 
 	return 0;
