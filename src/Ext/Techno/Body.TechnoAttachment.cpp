@@ -147,53 +147,54 @@ void TechnoExt::HandleAttachmentConversion(TechnoClass* pThis, TechnoTypeClass* 
 	for (auto& pNewMount : pThisExt->ChildAttachments)
 	{
 		const auto& newID = pNewMount->Data->ID;
-		if (!newID)
-			continue;
-
 		bool gotConverted = false;
-		for (auto it = oldMountsCopy.begin(); it != oldMountsCopy.end(); ++it)
+
+		if (newID)
 		{
-			const auto& oldID = (*it)->Data->ID;
-			if (!oldID || _strcmpi(oldID, newID) != 0)
-				continue;
-
-			// Transfer child techno if present
-			assert(!pNewMount->Child && "ID-matched new attachment mount already has a child before conversion illegally!");
-			if (TechnoClass* pChild = (*it)->Child)
+			for (auto it = oldMountsCopy.begin(); it != oldMountsCopy.end(); ++it)
 			{
-				auto* oldChildType = resolveChildType((*it)->Data->TechnoType);
-				auto* newChildType = resolveChildType(pNewMount->Data->TechnoType);
+				const auto& oldID = (*it)->Data->ID;
+				if (!oldID || _strcmpi(oldID, newID) != 0)
+					continue;
 
-				(*it)->DetachChildCore();
-
-				bool childMatchesType = pChild->GetTechnoType() == oldChildType;
-				bool typesDiffer = oldChildType != newChildType;
-				if (childMatchesType && typesDiffer && newChildType)
+				// Transfer child techno if present
+				assert(!pNewMount->Child && "ID-matched new attachment mount already has a child before conversion illegally!");
+				if (TechnoClass* pChild = (*it)->Child)
 				{
-					if (auto* pChildAsFoot = abstract_cast<FootClass*>(pChild))
-						TechnoExt::ConvertToType(pChildAsFoot, newChildType);
+					auto* oldChildType = resolveChildType((*it)->Data->TechnoType);
+					auto* newChildType = resolveChildType(pNewMount->Data->TechnoType);
+
+					(*it)->DetachChildCore();
+
+					bool childMatchesType = pChild->GetTechnoType() == oldChildType;
+					bool typesDiffer = oldChildType != newChildType;
+					if (childMatchesType && typesDiffer && newChildType)
+					{
+						if (auto* pChildAsFoot = abstract_cast<FootClass*>(pChild))
+							TechnoExt::ConvertToType(pChildAsFoot, newChildType);
+					}
+
+					pNewMount->AttachChildCore(pChild);
 				}
 
-				pNewMount->AttachChildCore(pChild);
+				// Synchronize respawn timer if both attachment types have respawn enabled.
+				// Preserves the completion percentage: newRemaining/newDelay == oldRemaining/oldDelay.
+				int oldDelay = (*it)->GetType()->RespawnDelay;
+				int newDelay = pNewMount->GetType()->RespawnDelay;
+				if (oldDelay > 0 && newDelay > 0 && (*it)->RespawnTimer.HasStarted())
+				{
+					int oldRemaining = (*it)->RespawnTimer.GetTimeLeft();
+					int newRemaining = (oldRemaining * newDelay) / oldDelay;
+					pNewMount->RespawnTimer.TimeLeft = newDelay;
+					pNewMount->RespawnTimer.StartTime = static_cast<int>(Unsorted::CurrentFrame) - (newDelay - newRemaining);
+
+					(*it)->RespawnTimer.Stop();  // old must giveth teh state to teh new
+				}
+
+				oldMountsCopy.erase(it);
+				gotConverted = true;
+				break;
 			}
-
-			// Synchronize respawn timer if both attachment types have respawn enabled.
-			// Preserves the completion percentage: newRemaining/newDelay == oldRemaining/oldDelay.
-			int oldDelay = (*it)->GetType()->RespawnDelay;
-			int newDelay = pNewMount->GetType()->RespawnDelay;
-			if (oldDelay > 0 && newDelay > 0 && (*it)->RespawnTimer.HasStarted())
-			{
-				int oldRemaining = (*it)->RespawnTimer.GetTimeLeft();
-				int newRemaining = (oldRemaining * newDelay) / oldDelay;
-				pNewMount->RespawnTimer.TimeLeft = newDelay;
-				pNewMount->RespawnTimer.StartTime = static_cast<int>(Unsorted::CurrentFrame) - (newDelay - newRemaining);
-
-				(*it)->RespawnTimer.Stop();  // old must giveth teh state to teh new
-			}
-
-			oldMountsCopy.erase(it);
-			gotConverted = true;
-			break;
 		}
 
 		// now that's what I call new - Kerbiter
