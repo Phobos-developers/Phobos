@@ -11,6 +11,7 @@
 #include <AircraftTrackerClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Techno/Body.h>
 #include <New/Entity/AttachmentClass.h>
@@ -75,6 +76,24 @@ Point2D AttachmentLocomotionClass::Draw_Point()
 	return pParentLoco
 		? pParentLoco->Draw_Point()
 		: LocomotionClass::Draw_Point();
+}
+
+Point2D AttachmentLocomotionClass::Shadow_Point()
+{
+	if (!this->LinkedTo)
+		return { 0, 0 };
+
+	const auto pCell = MapClass::Instance.GetCellAt(this->LinkedTo->Location);
+	auto height = this->LinkedTo->Location.Z - MapClass::Instance.GetCellFloorHeight(this->LinkedTo->Location);
+
+	if (pCell && pCell->ContainsBridge()
+		&& ((pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::North)->ContainsBridge()
+			|| !(pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
+	{
+		height -= CellClass::BridgeHeight;
+	}
+
+	return { 0, TacticalClass::AdjustForZ(height) };
 }
 
 VisualType AttachmentLocomotionClass::Visual_Character(bool raw)
