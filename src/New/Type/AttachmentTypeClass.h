@@ -19,6 +19,7 @@ public:
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
 	Valueable<bool> InheritDestruction;
 	Valueable<bool> InheritHeightStatus;
+	Valueable<bool> InheritTilt;
 	Valueable<bool> OccupiesCell;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> PassSelection;
@@ -43,6 +44,7 @@ public:
 		, OccupiesCell { true }
 		, InheritDestruction { true }
 		, InheritHeightStatus { true }
+		, InheritTilt { true }
 		, LowSelectionPriority { true }
 		, PassSelection { true }
 		, TransparentToMouse { false }

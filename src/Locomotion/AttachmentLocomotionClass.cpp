@@ -33,21 +33,27 @@ bool AttachmentLocomotionClass::Is_Moving()
 
 Matrix3D AttachmentLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
 {
-	if (auto const pParentFoot = abstract_cast<FootClass*>(this->GetAttachmentParent()))
+	auto const pAttachment = this->GetAttachment();
+	bool const inheritTilt = pAttachment ? pAttachment->GetType()->InheritTilt : true;
+
+	if (inheritTilt)
 	{
-		Matrix3D mtx = pParentFoot->Locomotor->Draw_Matrix(key);
+		if (auto const pParentFoot = abstract_cast<FootClass*>(this->GetAttachmentParent()))
+		{
+			Matrix3D mtx = pParentFoot->Locomotor->Draw_Matrix(key);
 
-		// adjust for the real facing which is the source of truth for hor. rotation
-		double childRotation = this->LinkedTo->PrimaryFacing.Current().GetRadian<32>();
-		double parentRotation = pParentFoot->PrimaryFacing.Current().GetRadian<32>();
-		float adjustmentAngle = (float)(childRotation - parentRotation);
+			// adjust for the real facing which is the source of truth for hor. rotation
+			double childRotation = this->LinkedTo->PrimaryFacing.Current().GetRadian<32>();
+			double parentRotation = pParentFoot->PrimaryFacing.Current().GetRadian<32>();
+			float adjustmentAngle = (float)(childRotation - parentRotation);
 
-		mtx.RotateZ(adjustmentAngle);
+			mtx.RotateZ(adjustmentAngle);
 
-		if (key && key->Is_Valid_Key())
-			key->MainVoxel.FrameIndex = this->LinkedTo->PrimaryFacing.Current().GetFacing<32>();
+			if (key && key->Is_Valid_Key())
+				key->MainVoxel.FrameIndex = this->LinkedTo->PrimaryFacing.Current().GetFacing<32>();
 
-		return mtx;
+			return mtx;
+		}
 	}
 
 	return LocomotionClass::Draw_Matrix(key);
