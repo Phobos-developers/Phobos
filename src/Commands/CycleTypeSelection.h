@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Commands.h"
+#include <Utilities/Detach.h>
+
+class ObjectClass;
 
 // Cycles through the object types present in the current selection, selecting every object
 // of one type at a time and wrapping around at the end of the type list.
@@ -9,7 +12,7 @@
 // command's own predicate rather than delegated, because the cycle must stay confined to
 // the objects the cycle was started with.
 // The order the types are cycled to is customizable through TypeCyclePriority.
-class CycleTypeSelectionCommandClass : public CommandClass
+class CycleTypeSelectionCommandClass : public CommandClass, public Detach::Listener<ObjectClass>
 {
 public:
 	// CommandClass
@@ -18,4 +21,5 @@ public:
 	virtual const wchar_t* GetUICategory() const override;
 	virtual const wchar_t* GetUIDescription() const override;
 	virtual void Execute(WWKey eInput) const override;
+	virtual void OnDetach(ObjectClass* pTarget, bool removed) override;
 };
