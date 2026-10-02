@@ -335,7 +335,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - Fixed the bug where building disguise detection (`DetectDisguise=yes`) failed to react to power outages, EMP deactivation, or ownership changes, and was permanently disabled if placed while unpowered or if double-deactivated upon destruction/selling. Also fixed radial indicator display for `DetectDisguiseRange`.
 
-
 ## Fixes / interactions with other extensions
 
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
