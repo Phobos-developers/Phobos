@@ -1933,6 +1933,9 @@ msgid ""
 "or climb when losing target"
 msgstr "自定义 `MissileSafetyAltitude` 以及导弹在丢失目标后应飞向目标处还是爬升"
 
+msgid "Customize turn rate when jumpjet vehicle crashing"
+msgstr "自定义 Jumpjet 载具坠毁时的转向速率"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
