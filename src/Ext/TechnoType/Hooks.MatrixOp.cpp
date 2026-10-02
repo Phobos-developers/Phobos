@@ -606,7 +606,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (cHeight > 0)
 			{
 				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
-				shadowMatrix.Scale((float)currentScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxlIndexKey.Invalidate();
@@ -622,7 +622,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (cHeight > 0)
 			{
 				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
-				shadowMatrix.Scale((float)currentScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
 				vxlIndexKey.Invalidate();
 			}
 		}
@@ -633,7 +633,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (cHeight > 0 && height > 208)
 			{
 				currentScale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
-				shadowMatrix.Scale((float)currentScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
 				vxlIndexKey.Invalidate();
 			}
 		}
@@ -641,7 +641,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	else if (!RulesExt::Global()->HeightShadowScaling && isAircraft)
 	{
 		currentScale = Pade2_2(baseScale_log);
-		shadowMatrix.Scale((float)currentScale);
+		shadowMatrix.Scale(static_cast<float>(currentScale));
 
 		if (pParentType && pParentType->ConsideredAircraft)
 			vxlIndexKey.Invalidate();

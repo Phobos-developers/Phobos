@@ -64,9 +64,14 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		if (pThis == pTechno || TechnoExt::AreRelatives(pThis, pTechno))
+			return DisallowedObject;
+
 		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechno)->ParentAttachment)
-			if (!pAttachment->GetType()->Targetable)
+		{
+			if (!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable)
 				return DisallowedObject;
+		}
 
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
@@ -365,16 +370,34 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB418, InfantryClass__GetFireError_Wrapper)
 
 static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	pObj = TechnoExt::RedirectUntargetableAttachment(pObj);
-
 	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 
 	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
 	{
-		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj) && result == Action::Enter)
-			result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+		else if (result == Action::Attack || result == Action::AreaAttack)
+		{
+			if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			{
+				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
+				{
+					auto const pTargetParent = TechnoExt::GetFirstDamageableParent(pTechnoObj);
+					auto const pRedirect = pTargetParent ? pTargetParent : pAttachment->Parent;
+
+					AresScheme::Prefix(pThis, pRedirect, -1, false);
+					result = pThis->UnitClass::MouseOverObject(pRedirect, ignoreForce);
+					AresScheme::Suffix();
+				}
+			}
+		}
 	}
 
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
@@ -411,16 +434,34 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 
 static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	pObj = TechnoExt::RedirectUntargetableAttachment(pObj);
-
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
 	auto result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 
 	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
 	{
-		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj) && result == Action::Enter)
-			result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+		else if (result == Action::Attack || result == Action::AreaAttack)
+		{
+			if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			{
+				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
+				{
+					auto const pTargetParent = TechnoExt::GetFirstDamageableParent(pTechnoObj);
+					auto const pRedirect = pTargetParent ? pTargetParent : pAttachment->Parent;
+
+					AresScheme::Prefix(pThis, pRedirect, -1, pThis->Type->Engineer);
+					result = pThis->InfantryClass::MouseOverObject(pRedirect, ignoreForce);
+					AresScheme::Suffix();
+				}
+			}
+		}
 	}
 
 	return result;
