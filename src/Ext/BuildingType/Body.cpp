@@ -314,6 +314,10 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ActiveAnimTwo_MoneyAmount.Read(exINI, pSection, "ActiveAnimTwo.MoneyAmount");
 	this->ActiveAnimThree_MoneyAmount.Read(exINI, pSection, "ActiveAnimThree.MoneyAmount");
 	this->ActiveAnimFour_MoneyAmount.Read(exINI, pSection, "ActiveAnimFour.MoneyAmount");
+	this->AllowSwitchAnim = this->ActiveAnim_MoneyAmount > -1
+							&& this->ActiveAnimTwo_MoneyAmount > -1
+							&& this->ActiveAnimThree_MoneyAmount > -1
+							&& this->ActiveAnimFour_MoneyAmount > -1;
 
 	auto& preProdAnim = pThis->GetBuildingAnim(BuildingAnimSlot::PreProduction);
 	preProdAnim.Powered = pArtINI->ReadBool(pArtSection, "PreProductionAnimPowered", preProdAnim.Powered);
@@ -505,6 +509,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->ActiveAnimTwo_MoneyAmount)
 		.Process(this->ActiveAnimThree_MoneyAmount)
 		.Process(this->ActiveAnimFour_MoneyAmount)
+		.Process(this->AllowSwitchAnim)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

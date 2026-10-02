@@ -145,6 +145,7 @@ public:
 	Valueable<int> ActiveAnimTwo_MoneyAmount;
 	Valueable<int> ActiveAnimThree_MoneyAmount;
 	Valueable<int> ActiveAnimFour_MoneyAmount;
+	bool AllowSwitchAnim;
 
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
@@ -249,6 +250,7 @@ public:
 		, ActiveAnimTwo_MoneyAmount { -1 }
 		, ActiveAnimThree_MoneyAmount { -1 }
 		, ActiveAnimFour_MoneyAmount { -1 }
+		, AllowSwitchAnim { false }
 
 		, RoofProductionAnim { nullptr }
 		, RoofProductionAnimDamaged { nullptr }

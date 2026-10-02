@@ -1554,42 +1554,28 @@ DEFINE_HOOK(0x450DDC, BuildingClass_UpdateAnimation_DestroyAnim, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if(pTypeExt->ActiveAnim_MoneyAmount != -1
-	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
-       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
-	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+	if(pTypeExt->AllowSwitchAnim)
 	{
-		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
-		{
-			long playerMoney = pThis->Owner->Available_Money();
-			int grade = pBuildingExt->MoneyGrade;
+		auto pBuildingExt = BuildingExt::Fetch(pThis);
+		const long playerMoney = pThis->Owner->Available_Money();
+		int grade = pBuildingExt->MoneyGrade;
 
-			if(playerMoney >= pTypeExt->ActiveAnimFour_MoneyAmount)
-			{
-				grade = 3;
-			}
-			else if(playerMoney >= pTypeExt->ActiveAnimThree_MoneyAmount)
-			{
-				grade = 2;
-			}
-			else if(playerMoney >= pTypeExt->ActiveAnimTwo_MoneyAmount)
-			{
-				grade = 1;
-			}
-			else if(playerMoney >= pTypeExt->ActiveAnim_MoneyAmount)
-			{
-				grade = 0;
-			}
-			else
-			{
-				grade = -1;
-			}
-			R->EAX(grade);
-			R->ECX(pBuildingExt->MoneyGrade);
-			pBuildingExt->MoneyGrade = grade;
-		}
+		if(playerMoney >= pTypeExt->ActiveAnimFour_MoneyAmount)
+			grade = 3;
+		else if(playerMoney >= pTypeExt->ActiveAnimThree_MoneyAmount)
+			grade = 2;
+		else if(playerMoney >= pTypeExt->ActiveAnimTwo_MoneyAmount)
+			grade = 1;
+		else if(playerMoney >= pTypeExt->ActiveAnim_MoneyAmount)
+			grade = 0;
+		else
+			grade = -1;
+
+		R->EAX(grade);
+		R->ECX(pBuildingExt->MoneyGrade);
+		pBuildingExt->MoneyGrade = grade;
 	}
 
 	return 0;
@@ -1599,18 +1585,14 @@ DEFINE_HOOK(0x450E3E, BuildingClass_UpdateAnimation_CalcMoneyGrade, 0x9)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
+	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if(pTypeExt->ActiveAnim_MoneyAmount != -1
-	   && pTypeExt->ActiveAnimTwo_MoneyAmount != -1
-       && pTypeExt->ActiveAnimThree_MoneyAmount != -1
-	   && pTypeExt->ActiveAnimFour_MoneyAmount != -1)
+	if(pTypeExt->AllowSwitchAnim)
 	{
-		if(auto pBuildingExt = BuildingExt::Fetch(pThis))
-		{
-			int grade = pBuildingExt->MoneyGrade;
-			R->EAX(grade);
-		}
+		const auto pBuildingExt = BuildingExt::Fetch(pThis);
+		int grade = pBuildingExt->MoneyGrade;
+		R->EAX(grade);
+		return 0;
 	}
 
 	return 0;
