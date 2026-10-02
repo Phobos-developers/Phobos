@@ -2423,8 +2423,9 @@ VoiceEliteWeaponNAttack=    ; Sound entry
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]        ; TechnoType
-NoAmmoWeapons=      ; List of integers
+[SOMETECHNO]                        ; TechnoType
+NoAmmoWeapons=                      ; List of integers
+NoAmmoWeapons.IgnoreNeverUse=yes    ; boolean
 ```
 
 ### No Manual Move

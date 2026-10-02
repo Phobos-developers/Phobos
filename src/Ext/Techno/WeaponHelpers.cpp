@@ -357,9 +357,10 @@ int TechnoExt::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	return forceWeaponIndex;
 }
 
-bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
+bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType, const bool ignoreNeverUse)
 {
-	if (!pWeaponType || pWeaponType->NeverUse
+	if (!pWeaponType
+		|| (!ignoreNeverUse && pWeaponType->NeverUse)
 		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
 	{
 		return false;

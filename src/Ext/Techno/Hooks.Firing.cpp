@@ -105,10 +105,11 @@ DEFINE_HOOK(0x6F3415, TechnoClass_WhatWeaponShouldIUse_NoAmmoWeapon, 0x5)
 	if (pType->Ammo >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
 	{
 		const auto& noAmmoWeapons = pTypeExt->NoAmmoWeapons;
+		const bool ignoreNeverUse = pTypeExt->NoAmmoWeapons_IgnoreNeverUse;
 
 		for (int weaponIndex : noAmmoWeapons)
 		{
-			if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, pThis->GetWeapon(weaponIndex)->WeaponType))
+			if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, pThis->GetWeapon(weaponIndex)->WeaponType), ignoreNeverUse)
 			{
 				R->EAX(weaponIndex);
 				return UseWeaponIndex;
@@ -125,7 +126,6 @@ DEFINE_HOOK(0x6F3415, TechnoClass_WhatWeaponShouldIUse_NoAmmoWeapon, 0x5)
 	}
 	
 	return 0;
-
 }
 
 DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
