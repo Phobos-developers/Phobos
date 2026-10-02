@@ -24,6 +24,7 @@ public:
 	Valueable<bool> PassSelection;
 	Valueable<bool> TransparentToMouse;
 	Valueable<bool> Targetable;
+	Valueable<bool> Damageable;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Parent;
@@ -46,6 +47,7 @@ public:
 		, PassSelection { true }
 		, TransparentToMouse { false }
 		, Targetable { true }
+		, Damageable { true }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		, DestructionWeapon_Child { }
 		, DestructionWeapon_Parent { }
