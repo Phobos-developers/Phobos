@@ -1173,6 +1173,7 @@ msgid ""
 "Fixed some of the variable comparison trigger events `512-535` not "
 "reacting to changes of the variables they compare (by ZivDero)"
 msgstr ""
+"修复了部分变量比较触发事件 `512-535` 不会对其所比较变量的变化作出反应的问题（by ZivDero）"
 
 msgid ""
 "Fixed operation `8` of trigger action `504 Binary operation` assigning "
