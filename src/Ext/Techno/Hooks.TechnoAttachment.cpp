@@ -119,12 +119,14 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 				if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 					pEnterTarget = abstract_cast<TechnoClass*>(pFoot->Destination);
 			}
+
 			if (!pEnterTarget)
 				pEnterTarget = pThis->QueueUpToEnter;
+
 			if (!pEnterTarget)
 				pEnterTarget = pThis->GetNthLink(0);
 
-			if (pEnterTarget && (pTechno == pEnterTarget || TechnoExt::IsChildOf(pTechno, pEnterTarget) || TechnoExt::AreRelatives(pTechno, pEnterTarget)))
+			if (pEnterTarget && pTechno != pEnterTarget && TechnoExt::AreRelatives(pTechno, pEnterTarget))
 				return true;
 		}
 	}
@@ -334,17 +336,27 @@ DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	{
 		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
 
-		if (pEntryTarget
-			&& pEntryTarget != pThis
-			&& !TechnoExt::AreRelatives(pThis, pEntryTarget)
-			&& pEntryTarget->GetMapCoords() == pThis->GetMapCoords()
-			&& (pThis->ContainsLink(pEntryTarget)
-				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
-				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget))
-			&& pEntryTarget->GetTechnoType()->Passengers > 0)
+		if (pEntryTarget && pEntryTarget != pThis && !TechnoExt::AreRelatives(pThis, pEntryTarget))
 		{
-			R->ESI<TechnoClass*>(pEntryTarget);
-			return TryEnterTarget;
+			if (pEntryTarget->GetTechnoType()->Passengers <= 0)
+				continue;
+
+			if (pEntryTarget->GetMapCoords() != pThis->GetMapCoords())
+				continue;
+
+			bool const isMatchingTarget = pThis->Target == pEntryTarget
+				|| pThis->Destination == pEntryTarget
+				|| pThis->ContainsLink(pEntryTarget)
+				|| pThis->QueueUpToEnter == pEntryTarget
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Destination), pEntryTarget)
+				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget);
+
+			if (isMatchingTarget)
+			{
+				R->ESI<TechnoClass*>(pEntryTarget);
+				return TryEnterTarget;
+			}
 		}
 	}
 
