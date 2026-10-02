@@ -1167,6 +1167,7 @@ msgstr "修复了泰伯利亚藤蔓蔓延地表使用了错误的色板而未能
 
 msgid "Fixed script action `18000 Local variable set` doing nothing (by ZivDero)"
 msgstr ""
+"修复了脚本动作 `18000 局部变量设置` 不起作用的问题（by ZivDero）"
 
 msgid ""
 "Fixed some of the variable comparison trigger events `512-535` not "
