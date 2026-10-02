@@ -751,6 +751,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis))
+		return true;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
