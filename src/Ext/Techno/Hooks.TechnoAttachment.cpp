@@ -106,10 +106,27 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 		return true;
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pOccupier);
-	if (pTechno &&
-		(TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::IsChildOf(pTechno, pThis)))
+	if (pTechno)
 	{
-		return true;
+		if (TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::IsChildOf(pTechno, pThis))
+			return true;
+
+		if (pThis && pThis->GetCurrentMission() == Mission::Enter)
+		{
+			TechnoClass* pEnterTarget = abstract_cast<TechnoClass*>(pThis->Target);
+			if (!pEnterTarget)
+			{
+				if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+					pEnterTarget = abstract_cast<TechnoClass*>(pFoot->Destination);
+			}
+			if (!pEnterTarget)
+				pEnterTarget = pThis->QueueUpToEnter;
+			if (!pEnterTarget)
+				pEnterTarget = pThis->GetNthLink(0);
+
+			if (pEnterTarget && (pTechno == pEnterTarget || TechnoExt::IsChildOf(pTechno, pEnterTarget) || TechnoExt::AreRelatives(pTechno, pEnterTarget)))
+				return true;
+		}
 	}
 
 	if (abstract_cast<UnitClass*>(pOccupier))
@@ -319,8 +336,11 @@ DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
 
 		if (pEntryTarget
 			&& pEntryTarget != pThis
+			&& !TechnoExt::AreRelatives(pThis, pEntryTarget)
 			&& pEntryTarget->GetMapCoords() == pThis->GetMapCoords()
-			&& pThis->ContainsLink(pEntryTarget)
+			&& (pThis->ContainsLink(pEntryTarget)
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
+				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget))
 			&& pEntryTarget->GetTechnoType()->Passengers > 0)
 		{
 			R->ESI<TechnoClass*>(pEntryTarget);
@@ -348,15 +368,29 @@ DEFINE_HOOK(0x51A0DA, InfantryClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	{
 		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
 
-		// TODO additional priority checks (original code gets technos in certain order) because may backfire
-
-		if (pEntryTarget && pEntryTarget != pThis
-			&& (pThis->Target == pEntryTarget || pThis->Destination == pEntryTarget
-				|| pThis->OnBridge && pCell == pEntryTarget->GetCell()))
+		if (pEntryTarget && pEntryTarget != pThis && !TechnoExt::AreRelatives(pThis, pEntryTarget))
 		{
-			R->EDI<TechnoClass*>(pEntryTarget);
-			R->EBP<size_t>(0);
-			return TryEnterTarget;
+			bool const canAcceptEntry = pEntryTarget->GetTechnoType()->Passengers > 0
+				|| pEntryTarget->WhatAmI() == AbstractType::Building;
+
+			if (!canAcceptEntry)
+				continue;
+
+			bool const isMatchingTarget = pThis->Target == pEntryTarget
+				|| pThis->Destination == pEntryTarget
+				|| pThis->ContainsLink(pEntryTarget)
+				|| pThis->QueueUpToEnter == pEntryTarget
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Destination), pEntryTarget)
+				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget)
+				|| (pThis->OnBridge && pCell == pEntryTarget->GetCell());
+
+			if (isMatchingTarget)
+			{
+				R->EDI<TechnoClass*>(pEntryTarget);
+				R->EBP<size_t>(0);
+				return TryEnterTarget;
+			}
 		}
 	}
 
@@ -557,7 +591,8 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 	if (pTarget)
 	{
 		Action whatAction = pThis->MouseOverObject(pTarget, false);
-		pThis->ObjectClickedAction(whatAction, pTarget, false);
+		if (whatAction != Action::Self_Deploy || pThis == pTarget)
+			pThis->ObjectClickedAction(whatAction, pTarget, false);
 	}
 	else
 	{
