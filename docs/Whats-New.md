@@ -2041,7 +2041,7 @@ HideShakeEffects=false           ; boolean
 - Attach effect when weapon fire (by CrimRecya)
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
-- [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog & WLChara)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -2055,8 +2055,6 @@ HideShakeEffects=false           ; boolean
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
-- Fixed potential crashes in Cycle Selection and Cycle Type Selection after an object in the cached selection is destroyed (by WLChara)
-- Fixed crashes when reflected damage removes or adds attached effects while processing the same hit (by WLChara)
 - Fixed the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)
 - Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with on-discard trigger on entry (by Starkku)
 - Fixed several shield respawn/self heal issues (by Ollerus)
