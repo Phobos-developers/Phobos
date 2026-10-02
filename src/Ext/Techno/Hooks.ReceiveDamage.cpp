@@ -13,7 +13,7 @@ namespace ReceiveDamageTemp
 {
 	bool SkipLowDamageCheck = false;
 
-	// 反伤快照只保存值，不把附加效果指针带过同步伤害回调。
+	// Keep reflection parameters by value across callbacks that can remove attached effects.
 	struct PendingReflection
 	{
 		WarheadTypeClass* Warhead;
@@ -477,7 +477,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 		if (pExt->AE.ReflectDamage && *pDamage > 0 && (!suppress || suppressByType || suppressByGroup))
 		{
-			// 按本次受击时的效果列表和随机判定顺序生成快照，离开迭代后再执行。
+			// Snapshot this hit's effects and chance rolls before callbacks can change the list.
 			for (auto const& attachEffect : pExt->AttachedEffects)
 			{
 				if (!attachEffect->IsActive())
@@ -522,7 +522,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 					if (pType->ReflectDamage_Delay > 0)
 					{
-						// 在命中快照时启动冷却，回调可能重入或销毁当前效果。
+						// Start cooldown before callbacks can re-enter or destroy this effect.
 						attachEffect->ReflectDamageTimer.Start(pType->ReflectDamage_Delay);
 					}
 				};

@@ -226,7 +226,7 @@ void CycleTypeSelectionCommandClass::OnDetach(ObjectClass* pTarget, bool removed
 {
 	if (removed)
 	{
-		// 保留槽位和顺序以避免循环索引漂移；只置空，不在通知期间改变容器结构。
+		// Keep empty slots so invalidation does not shift the cycle index or reorder survivors.
 		for (auto& pObject : CycleTypeSelection::Objects)
 			AnnounceInvalidPointer(pObject, pTarget);
 	}

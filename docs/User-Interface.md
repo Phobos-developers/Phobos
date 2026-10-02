@@ -570,7 +570,6 @@ SetTabBySelecting=-1            ; integer, index of tab
 ### `[ ]` Cycle Selection
 
 - Cycles through the objects that were selected when the cycle was started, selecting one of them at a time and wrapping around at the end of the list.
-- Destroyed objects are skipped without changing the order of the surviving objects.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
 - Enable the hotkey by setting `CycleSelectionKeyEnabled` to true.
@@ -585,7 +584,6 @@ CycleSelectionKeyEnabled=true    ; boolean
 ### `[ ]` Cycle Type Selection
 
 - Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
-- Destroyed objects are skipped during the cycle.
 - Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
