@@ -1574,7 +1574,6 @@ DEFINE_HOOK(0x450DDC, BuildingClass_UpdateAnimation_DestroyAnim, 0x6)
 			grade = -1;
 
 		R->EAX(grade);
-		R->ECX(pBuildingExt->MoneyGrade);
 		pBuildingExt->MoneyGrade = grade;
 	}
 
