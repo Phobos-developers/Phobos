@@ -983,4 +983,6 @@ This page lists all the individual contributions to the project by their author.
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
-- **dh381-1** - Detonate ivan bomb on impact
+- **dh381-1**:
+  - Detonate ivan bomb on impact
+  - Allow Ares Academy add country-level filters
