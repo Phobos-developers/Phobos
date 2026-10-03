@@ -24,6 +24,7 @@ decltype(AresFunctions::ReverseEngineer) AresFunctions::ReverseEngineer = nullpt
 decltype(AresFunctions::GetCrew) AresFunctions::GetCrew = nullptr;
 
 decltype(AresFunctions::FindEVAIndex) AresFunctions::FindEVAIndex = nullptr;
+decltype(AresFunctions::TabCameos) AresFunctions::TabCameos = nullptr;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;
@@ -78,6 +79,8 @@ void AresFunctions::InitAres3_0()
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x063560);
 
+	NOTE_ARES_FUN(TabCameos, 0xC00EC);
+
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
 #endif
@@ -129,6 +132,8 @@ void AresFunctions::InitAres3_0p1()
 
 	// VoxClass
 	NOTE_ARES_FUN(AresFunctions::FindEVAIndex, 0x0642B0);
+
+	NOTE_ARES_FUN(TabCameos, 0xC1150);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();
