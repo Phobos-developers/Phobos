@@ -140,6 +140,12 @@ public:
 	Nullable<bool> RoofProductionAnimPoweredLight;
 	Nullable<bool> RoofProductionAnimPoweredEffect;
 	Nullable<bool> RoofProductionAnimPoweredSpecial;
+	
+	Valueable<int> ActiveAnim_MoneyAmount;
+	Valueable<int> ActiveAnimTwo_MoneyAmount;
+	Valueable<int> ActiveAnimThree_MoneyAmount;
+	Valueable<int> ActiveAnimFour_MoneyAmount;
+	bool AllowSwitchAnim;
 
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
@@ -240,6 +246,11 @@ public:
 		, SetTabBySelecting { -1 }
 		, RevealToAll_Radius {}
 		, DeployFireDelay {}
+		, ActiveAnim_MoneyAmount { -1 }
+		, ActiveAnimTwo_MoneyAmount { -1 }
+		, ActiveAnimThree_MoneyAmount { -1 }
+		, ActiveAnimFour_MoneyAmount { -1 }
+		, AllowSwitchAnim { false }
 
 		, RoofProductionAnim { nullptr }
 		, RoofProductionAnimDamaged { nullptr }
