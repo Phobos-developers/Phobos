@@ -76,6 +76,14 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	std::vector<float> TiberiumStorage;
+	std::vector<float> WeedStorage;
+
+	float GetTiberiumStorage(int index) const;
+	float AddTiberiumStorage(float amount, int index);
+	float RemoveTiberiumStorage(float amount, int index);
+	float GetTotalTiberiumStorage() const;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -107,6 +115,8 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, TiberiumStorage {}
+		, WeedStorage {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

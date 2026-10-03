@@ -7,6 +7,7 @@
 #include <Ext/Event/Body.h>
 
 #include <BeaconManagerClass.h>
+#include <Utilities/AresHelper.h>
 
 #include <unordered_map>
 #include <algorithm>
@@ -22,6 +23,67 @@ DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
 	GET(HouseClass*, pThis, ECX);
 
 	pThis->RecheckPower = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5028B0, HouseClass_Remove_Building_CustomTiberium, 0x6)
+{
+	GET(HouseClass*, pThis, EDI);
+	GET(BuildingClass*, pBuilding, ESI);
+
+	if (!pThis || !pBuilding)
+		return 0;
+
+	auto const pBuildingExt = TechnoExt::Fetch(pBuilding);
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+
+	if (pBuildingExt && pHouseExt)
+	{
+		for (size_t i = 0; i < pBuildingExt->TiberiumStorage.size(); ++i)
+		{
+			float const amount = pBuildingExt->TiberiumStorage[i];
+			if (amount > 0.0f && i < pHouseExt->TiberiumStorage.size())
+			{
+				float const removed = std::min(pHouseExt->TiberiumStorage[i], amount);
+				pHouseExt->TiberiumStorage[i] -= removed;
+			}
+		}
+	}
+
+	pThis->UpdateAllSilos(0, 0);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x502B63, HouseClass_Add_Building_CustomTiberium, 0x6)
+{
+	GET(HouseClass*, pThis, EDI);
+	GET(BuildingClass*, pBuilding, ESI);
+
+	if (!pThis || !pBuilding)
+		return 0;
+
+	auto const pBuildingExt = TechnoExt::Fetch(pBuilding);
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+
+	if (pBuildingExt && pHouseExt)
+	{
+		for (size_t i = 0; i < pBuildingExt->TiberiumStorage.size(); ++i)
+		{
+			float const amount = pBuildingExt->TiberiumStorage[i];
+			if (amount > 0.0f)
+			{
+				if (i >= pHouseExt->TiberiumStorage.size())
+					pHouseExt->TiberiumStorage.resize(std::max(i + 1, static_cast<size_t>(TiberiumClass::Array.Count)), 0.0f);
+
+				pHouseExt->TiberiumStorage[i] += amount;
+			}
+		}
+	}
+
+	pBuilding->Mark(MarkType::Change);
+	pThis->UpdateAllSilos(0, 0);
 
 	return 0;
 }
@@ -64,17 +126,171 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	GET(int const, idxTiberium, EBP);
 	REF_STACK(float, amount, 0x1C);
 
-	auto const pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
+	if (!pBuilding || !pBuilding->Type || !pBuilding->Owner)
+		return 0;
 
+	auto const pTypeExt = BuildingTypeExt::Fetch(pBuilding->Type);
 	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
-	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
+	if (pTypeExt->Refinery_UseStorage)
 	{
-		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
-		amount = 0.0f;
+		if (storageTiberiumIndex >= 0)
+		{
+			BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
+			amount = 0.0f;
+		}
+		else
+		{
+			float const stored = BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium);
+
+			// For custom types (>= 4), Available_Money doesn't track them natively, so add to AccumulatedIncome
+			if (idxTiberium >= 4 && stored > 0.0f)
+			{
+				if (auto const pTib = TiberiumClass::Array.GetItemOrDefault(idxTiberium))
+				{
+					if (auto const pBldExt = BuildingExt::TryFetch(pBuilding))
+					{
+						pBldExt->AccumulatedIncome += static_cast<int>(stored * static_cast<float>(pTib->Value) * pBuilding->Owner->Type->IncomeMult);
+					}
+				}
+			}
+
+			amount = 0.0f;
+		}
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4F99A6, HouseClass_UpdateAllSilos_NewRatio, 0x6)
+{
+	GET(HouseClass*, pThis, EDI);
+
+	int newRatio = 0;
+	if (pThis->TotalStorage > 0)
+	{
+		auto const pHouseExt = HouseExt::Fetch(pThis);
+		float const newTib = pHouseExt ? pHouseExt->GetTotalTiberiumStorage() : pThis->OwnedTiberium.GetTotalAmount();
+		newRatio = static_cast<int>((static_cast<double>(newTib) / static_cast<double>(pThis->TotalStorage)) * 4.0 + 0.5);
+	}
+
+	R->EAX(newRatio);
+	return 0x4F99C8;
+}
+
+DEFINE_HOOK(0x4F69A9, HouseClass_Available_Money_TotalValue, 0x5)
+{
+	auto const pThis = reinterpret_cast<HouseClass*>(reinterpret_cast<char*>(R->ESI()) - 0x24);
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+
+	double totalValue = 0.0;
+	size_t const count = std::max(pHouseExt ? pHouseExt->TiberiumStorage.size() : static_cast<size_t>(0), static_cast<size_t>(TiberiumClass::Array.Count));
+	for (size_t i = 0; i < count; ++i)
+	{
+		float amount = 0.0f;
+		if (pHouseExt && i < pHouseExt->TiberiumStorage.size() && pHouseExt->TiberiumStorage[i] > 0.0f)
+			amount = pHouseExt->TiberiumStorage[i];
+		else if (i < 4)
+			amount = pThis->OwnedTiberium.GetAmount(static_cast<int>(i));
+
+		if (amount > 0.0f)
+		{
+			if (auto const pTib = TiberiumClass::Array.GetItemOrDefault(static_cast<int>(i)))
+				totalValue += static_cast<double>(amount) * static_cast<double>(pTib->Value);
+		}
+	}
+
+	R->EAX(static_cast<int>(totalValue));
+	return 0x4F69AE;
+}
+
+DEFINE_HOOK(0x4F69DB, HouseClass_Available_Storage_TotalAmount, 0x5)
+{
+	auto const pThis = reinterpret_cast<HouseClass*>(reinterpret_cast<char*>(R->ESI()) - 0x24);
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+	float const total = pHouseExt ? pHouseExt->GetTotalTiberiumStorage() : pThis->OwnedTiberium.GetTotalAmount();
+
+	__asm {
+		fld total
+	}
+
+	return 0x4F69E0;
+}
+
+DEFINE_HOOK(0x4F97A0, HouseClass_TakeMoney_InitialStorage, 0x5)
+{
+	GET(HouseClass*, pThis, EBX);
+
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+	float const total = pHouseExt ? pHouseExt->GetTotalTiberiumStorage() : pThis->OwnedTiberium.GetTotalAmount();
+
+	__asm {
+		fld total
+	}
+
+	return 0x4F97A5;
+}
+
+DEFINE_HOOK(0x4F97DD, HouseClass_TakeMoney_DrainTiberium, 0x7)
+{
+	GET(HouseClass*, pThis, EBX);
+	int remaining = R->EDI<int>();
+	REF_STACK(int, paidAmount, 0x24);
+
+	auto const pHouseExt = HouseExt::Fetch(pThis);
+	float const mult = pThis->Type ? pThis->Type->IncomeMult : 1.0f;
+	float const incomeMult = mult > 0.0f ? mult : 1.0f;
+
+	for (auto const pBld : pThis->Buildings)
+	{
+		if (remaining <= 0)
+			break;
+
+		if (!pBld || pBld->InLimbo || !pBld->IsOnMap)
+			continue;
+
+		auto const pBldExt = TechnoExt::Fetch(pBld);
+		if (!pBldExt)
+			continue;
+
+		while (remaining > 0)
+		{
+			int const slot = pBldExt->FirstUsedTiberiumSlot();
+			if (slot < 0)
+				break;
+
+			auto const pTib = TiberiumClass::Array.GetItemOrDefault(slot);
+			if (!pTib || pTib->Value <= 0)
+				break;
+
+			float const actualRemoved = pBldExt->RemoveTiberium(1.0f, slot);
+			if (actualRemoved <= 0.0f)
+				break;
+
+			if (pHouseExt)
+				pHouseExt->RemoveTiberiumStorage(actualRemoved, slot);
+
+			pBld->Mark(MarkType::Change);
+
+			int const credits = static_cast<int>(actualRemoved * static_cast<float>(pTib->Value) * incomeMult);
+			if (credits <= 0)
+				break;
+
+			remaining -= credits;
+			paidAmount += credits;
+
+			if (remaining < 0)
+			{
+				pThis->Balance = -remaining;
+				paidAmount += remaining;
+				remaining = 0;
+				break;
+			}
+		}
+	}
+
+	R->EDI(remaining);
+	return 0x4F9913;
 }
 
 namespace RecalcCenterTemp
@@ -838,3 +1054,5 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 }
 
 #pragma endregion
+
+
