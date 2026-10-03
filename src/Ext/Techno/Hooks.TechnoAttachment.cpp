@@ -607,6 +607,19 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B8, TechnoClass_Cloak) // InfantryClass
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E431C, TechnoClass_Cloak) // BuildingClass
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2704, TechnoClass_Cloak) // AircraftClass
 
+DEFINE_HOOK(0x6FB74B, TechnoClass_UpdateCloak_SkipAttached, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+			return 0x6FBC80;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
