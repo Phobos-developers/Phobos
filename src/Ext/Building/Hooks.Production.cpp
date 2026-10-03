@@ -1,6 +1,15 @@
 #include "Body.h"
 
+#include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <AircraftClass.h>
+#include <AnimClass.h>
+#include <CellClass.h>
+#include <FlyLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
+#include <Unsorted.h>
+#include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
@@ -244,3 +253,342 @@ DEFINE_HOOK(0x4449FB, BuildingClass_KickOutUnit_CloningVats, 0x8)
 
 	return SkipGameCode;
 }
+
+KickOutResult BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, TechnoClass* pProduction)
+{
+	if (!pFactory || !pProduction || pFactory->GetCurrentMission() == Mission::Construction)
+		return KickOutResult::Failed;
+
+	auto const pType = pProduction->GetTechnoType();
+	if (!pType)
+		return KickOutResult::Failed;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+	if (!pTypeExt || !pTypeExt->IsFlyingProductionEnabled())
+		return KickOutResult::Failed;
+
+	// Resolve which building should physically spawn the unit
+	BuildingClass* pSpawnBuilding = nullptr;
+
+	if (!pTypeExt->FlyingProduction_SpawnAt.empty())
+	{
+		for (auto const pTargetType : pTypeExt->FlyingProduction_SpawnAt)
+		{
+			if (!pTargetType)
+				continue;
+
+			// If the factory itself matches this target type and has free dock (or doesn't need docks), it takes immediate precedence
+			if (pFactory->Type == pTargetType)
+			{
+				if (pProduction->WhatAmI() != AbstractType::Aircraft || pFactory->Type->NumberOfDocks <= 0 || pFactory->HasFreeLink())
+				{
+					pSpawnBuilding = pFactory;
+					break;
+				}
+			}
+
+			BuildingClass* pPrimaryCandidate = nullptr;
+			BuildingClass* pClosestCandidate = nullptr;
+			int minDistance = (std::numeric_limits<int>::max)();
+
+			for (auto const pBld : pFactory->Owner->Buildings)
+			{
+				if (!pBld || !pBld->IsAlive || pBld->InLimbo || pBld->Health <= 0 || pBld->GetCurrentMission() == Mission::Selling)
+					continue;
+
+				if (pBld->Type == pTargetType)
+				{
+					if (pProduction->WhatAmI() == AbstractType::Aircraft && pBld->Type->NumberOfDocks > 0 && !pBld->HasFreeLink())
+						continue;
+
+					if (pBld->IsPrimaryFactory)
+					{
+						pPrimaryCandidate = pBld;
+						break;
+					}
+
+					const int dist = pFactory->DistanceFrom(pBld);
+					if (dist < minDistance)
+					{
+						minDistance = dist;
+						pClosestCandidate = pBld;
+					}
+				}
+			}
+
+			if (auto const pCandidate = pPrimaryCandidate ? pPrimaryCandidate : pClosestCandidate)
+			{
+				pSpawnBuilding = pCandidate;
+				break;
+			}
+		}
+	}
+
+	if (!pSpawnBuilding)
+		pSpawnBuilding = pFactory;
+
+	// If this is an aircraft and the spawn building has docks, ensure there is an available dock slot
+	if (pProduction->WhatAmI() == AbstractType::Aircraft && pSpawnBuilding->Type->NumberOfDocks > 0)
+	{
+		if (!pSpawnBuilding->HasFreeLink())
+			return KickOutResult::Busy;
+	}
+
+	auto const pSpawnBldTypeExt = BuildingTypeExt::Fetch(pSpawnBuilding->Type);
+
+	// Determine spawn height, offset, and facing
+	int height = pTypeExt->GetFlyingProductionSpawnHeight();
+	if (pSpawnBldTypeExt && pSpawnBldTypeExt->FlyingProduction_SpawnHeight.isset())
+		height = pSpawnBldTypeExt->FlyingProduction_SpawnHeight.Get();
+
+	if (height <= 0)
+		return KickOutResult::Failed;
+
+	CoordStruct spawnCoords = pSpawnBuilding->GetCoords();
+	if (pSpawnBldTypeExt && pSpawnBldTypeExt->FlyingProduction_SpawnOffset.isset())
+	{
+		const auto& offset = pSpawnBldTypeExt->FlyingProduction_SpawnOffset.Get();
+		spawnCoords.X += offset.X;
+		spawnCoords.Y += offset.Y;
+	}
+	spawnCoords.Z += height;
+
+	DirStruct facing = DirStruct(128); // Default facing South
+	if (pSpawnBldTypeExt && pSpawnBldTypeExt->FlyingProduction_SpawnFacing.isset())
+		facing = DirStruct(pSpawnBldTypeExt->FlyingProduction_SpawnFacing.Get());
+	else if (pSpawnBuilding->PrimaryFacing.Current().Raw != 0)
+		facing = pSpawnBuilding->PrimaryFacing.Current();
+
+	// Unlimbo unit in the air safely using ScenarioInitGuard
+	pProduction->SetOwningHouse(pFactory->Owner, true);
+
+	bool unlimboSuccess = false;
+	{
+		struct ScenarioInitGuard
+		{
+			ScenarioInitGuard() { ++Unsorted::ScenarioInit; }
+			~ScenarioInitGuard() { --Unsorted::ScenarioInit; }
+		} guard;
+
+		unlimboSuccess = pProduction->Unlimbo(spawnCoords, facing.GetDir());
+	}
+
+	if (!unlimboSuccess)
+		return KickOutResult::Busy;
+
+	// Establish aerial state and position
+	pProduction->SetLocation(spawnCoords);
+	pProduction->Location = spawnCoords;
+	pProduction->InAir = true;
+	pProduction->IsALoaner = false;
+	pProduction->UnmarkAllOccupationBits(spawnCoords);
+	pProduction->PrimaryFacing.SetCurrent(facing);
+	pProduction->PrimaryFacing.SetDesired(facing);
+
+	// Configure locomotor (Jumpjet / Aircraft)
+	if (auto const pFoot = abstract_cast<FootClass*>(pProduction))
+	{
+		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+		{
+			pJJLoco->CurrentHeight = height;
+			pJJLoco->LocomotionFacing.SetCurrent(facing);
+			pJJLoco->LocomotionFacing.SetDesired(facing);
+			pFoot->Jumpjet_OccupyCell(CellClass::Coord2Cell(spawnCoords));
+
+			if (height < pJJLoco->Height)
+			{
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+				FootExt::Fetch(pFoot)->JumpjetStraightAscend = true;
+			}
+			else
+			{
+				pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+			}
+		}
+		else if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pFoot->Locomotor))
+		{
+			const auto pFootType = pFoot->GetTechnoType();
+			const int cruiseFlightLevel = pFootType->GetFlightLevel();
+			const int targetFlightLevel = cruiseFlightLevel > 0 ? cruiseFlightLevel : (RulesClass::Instance ? RulesClass::Instance->FlightLevel : height);
+			pFlyLoco->FlightLevel = (height > targetFlightLevel) ? height : targetFlightLevel;
+			pFlyLoco->CurrentSpeed = 0.0;
+			pFlyLoco->TargetSpeed = 0.0;
+			pFlyLoco->IsTakingOff = height < targetFlightLevel ? 1 : 0;
+			pFlyLoco->IsLanding = false;
+		}
+	}
+
+	if (auto const pAircraft = abstract_cast<AircraftClass*>(pProduction))
+	{
+		if (pSpawnBuilding->Type->NumberOfDocks > 0)
+		{
+			pSpawnBuilding->SendCommand(RadioCommand::RequestLink, pAircraft);
+			pSpawnBuilding->SendCommand(RadioCommand::RequestTether, pAircraft);
+			pAircraft->DockNowHeadingTo = pSpawnBuilding;
+
+			if (!pSpawnBldTypeExt || !pSpawnBldTypeExt->FlyingProduction_SpawnOffset.isset())
+			{
+				CoordStruct dockCoords = spawnCoords;
+				pSpawnBuilding->GetDockCoords(&dockCoords, pAircraft);
+				dockCoords.Z = pSpawnBuilding->GetCoords().Z + height;
+				pAircraft->SetLocation(dockCoords);
+				pAircraft->Location = dockCoords;
+				spawnCoords = dockCoords;
+			}
+		}
+
+		pAircraft->SetHeight(height);
+	}
+
+	// Spawn visual effects
+	if (auto const pAnimType = pTypeExt->FlyingProduction_SpawnAnim.Get())
+	{
+		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, spawnCoords))
+		{
+			if (pTypeExt->FlyingProduction_SpawnAnim_AttachedToObject.Get())
+				pAnim->SetOwnerObject(pProduction);
+		}
+	}
+
+	// Direct unit towards rally point or nudge away from factory
+	AbstractClass* pRallyTarget = nullptr;
+	if (pTypeExt->FlyingProduction_RallyPointFromSpawnBuilding.Get() && pSpawnBuilding->ArchiveTarget)
+		pRallyTarget = pSpawnBuilding->ArchiveTarget;
+	else
+		pRallyTarget = pFactory->ArchiveTarget;
+
+	if (auto const pFoot = abstract_cast<FootClass*>(pProduction))
+	{
+		auto const pFootExt = FootExt::Fetch(pFoot);
+		int cruiseHeight = 0;
+
+		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+			cruiseHeight = pJJLoco->Height;
+		else if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pFoot->Locomotor))
+		{
+			const int cfl = pFoot->GetTechnoType()->GetFlightLevel();
+			cruiseHeight = cfl > 0 ? cfl : (RulesClass::Instance ? RulesClass::Instance->FlightLevel : 0);
+		}
+
+		if (cruiseHeight > 0 && height > cruiseHeight)
+		{
+			// Unit spawned higher than cruise altitude: descend straight down in place first
+			pFootExt->FlyingProduction_Descending = true;
+			pFootExt->FlyingProduction_TargetHeight = cruiseHeight;
+			pFootExt->FlyingProduction_RallyTarget = pRallyTarget;
+			pFootExt->FlyingProduction_SpawnBuilding = pSpawnBuilding;
+			pFootExt->FlyingProduction_ExitFacing = facing;
+
+			pProduction->QueueMission(Mission::Guard, true);
+		}
+		else
+		{
+			pFootExt->FlyingProduction_DispatchMove(pRallyTarget, pSpawnBuilding, facing);
+		}
+	}
+	else
+	{
+		if (pRallyTarget && pRallyTarget != pSpawnBuilding)
+		{
+			pProduction->SetDestination(pRallyTarget, true);
+			pProduction->QueueMission(Mission::Move, true);
+		}
+	}
+
+	// Trigger factory door/unload animation if requested
+	if (pTypeExt->FlyingProduction_PlayFactoryAnim.Get())
+		pFactory->QueueMission(Mission::Unload, false);
+
+	// Reset house production indices, factory pointers, and replicate via cloning vats
+	if (auto const pOwner = pFactory->Owner)
+	{
+		auto const pHouseExt = HouseExt::Fetch(pOwner);
+		auto const abs = pProduction->WhatAmI();
+
+		if (abs == AbstractType::Unit)
+		{
+			if (auto const pUnit = abstract_cast<UnitClass*>(pProduction))
+			{
+				if (pUnit->Type->Naval)
+				{
+					if (pHouseExt)
+						pHouseExt->ProducingNavalUnitTypeIndex = -1;
+				}
+				else
+				{
+					pOwner->ProducingUnitTypeIndex = -1;
+				}
+			}
+		}
+		else if (abs == AbstractType::Aircraft)
+		{
+			pOwner->ProducingAircraftTypeIndex = -1;
+		}
+		else if (abs == AbstractType::Infantry)
+		{
+			pOwner->ProducingInfantryTypeIndex = -1;
+		}
+		else if (abs == AbstractType::Building)
+		{
+			pOwner->ProducingBuildingTypeIndex = -1;
+		}
+
+		if (pHouseExt)
+		{
+			if (pHouseExt->Factory_VehicleType == pFactory)
+				pHouseExt->Factory_VehicleType = nullptr;
+			if (pHouseExt->Factory_NavyType == pFactory)
+				pHouseExt->Factory_NavyType = nullptr;
+			if (pHouseExt->Factory_InfantryType == pFactory)
+				pHouseExt->Factory_InfantryType = nullptr;
+			if (pHouseExt->Factory_AircraftType == pFactory)
+				pHouseExt->Factory_AircraftType = nullptr;
+			if (pHouseExt->Factory_BuildingType == pFactory)
+				pHouseExt->Factory_BuildingType = nullptr;
+		}
+
+		if (!pFactory->Type->Cloning)
+		{
+			auto info = std::make_pair(pType, pOwner);
+			for (const auto pVat : pOwner->CloningVats)
+				BuildingExt::KickOutClone(info, 0, pVat);
+		}
+	}
+
+	return KickOutResult::Succeeded;
+}
+
+DEFINE_HOOK(0x443C60, BuildingClass_KickOutUnit_FlyingProduction, 0x6)
+{
+	enum { DoneSucceeded = 0x4456A2 };
+
+	GET(BuildingClass*, pFactory, ECX);
+	GET_STACK(TechnoClass*, pProduction, 0x4);
+
+	const auto result = BuildingExt::TrySpawnFlyingProduction(pFactory, pProduction);
+	if (result != KickOutResult::Failed)
+	{
+		R->EAX(static_cast<int>(result));
+		return DoneSucceeded;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x455DA0, BuildingClass_IsUnitFactory_HasRallyPoint, 0x6)
+{
+	enum { ReturnFalse = 0x455DCB, ReturnTrue = 0x455DCD };
+
+	GET(BuildingClass*, pThis, ECX);
+
+	if (auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type))
+	{
+		if (pTypeExt->HasRallyPoint.isset())
+			return pTypeExt->HasRallyPoint.Get() ? ReturnTrue : ReturnFalse;
+	}
+
+	return 0;
+}
+
+
+
