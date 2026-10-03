@@ -584,7 +584,7 @@ CycleSelectionKeyEnabled=true    ; boolean
 ### `[ ]` Cycle Type Selection
 
 - Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
-- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
+- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares's `GroupAs`.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
 - If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
