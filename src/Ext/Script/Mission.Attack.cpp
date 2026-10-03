@@ -7,6 +7,12 @@
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
 
+static bool CanC4Target(TechnoClass* pTarget)
+{
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+	return pBuilding && pBuilding->Type->CanC4 && !pBuilding->Type->InvisibleInGame;
+}
+
 void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeatAction, int attackAITargetType, int idxAITargetTypeItem)
 {
 	bool noWaitLoop = false;
@@ -275,7 +281,8 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 							}
 
 							// Tanya / Commando C4 case
-							if ((pInfantryType->C4 || pFoot->HasAbility(Ability::C4))
+							if (CanC4Target(pSelectedTarget)
+								&& (pInfantryType->C4 || pFoot->HasAbility(Ability::C4))
 								&& pFoot->GetCurrentMission() != Mission::Sabotage)
 							{
 								pFoot->QueueMission(Mission::Sabotage, true);
@@ -395,10 +402,30 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 					}
 
 					// Tanya / Commando C4 case
-					if (mission != Mission::Sabotage
-						&& (pFoot->HasAbility(Ability::C4)
-							|| (whatAmI == AbstractType::Infantry
-								&& static_cast<InfantryTypeClass*>(pTechnoType)->C4)))
+					if (whatAmI == AbstractType::Infantry
+						&& (static_cast<InfantryTypeClass*>(pTechnoType)->C4 || pFoot->HasAbility(Ability::C4)))
+					{
+						if (pFoot->Target != pFocus)
+							pFoot->SetTarget(pFocus);
+
+						if (CanC4Target(pFocus))
+						{
+							if (mission != Mission::Sabotage)
+								pFoot->QueueMission(Mission::Sabotage, true);
+
+							continue;
+						}
+
+						if (mission == Mission::Sabotage)
+						{
+							pFoot->QueueMission(Mission::Attack, true);
+							continue;
+						}
+					}
+
+					if (whatAmI != AbstractType::Infantry
+						&& mission != Mission::Sabotage
+						&& pFoot->HasAbility(Ability::C4))
 					{
 						pFoot->QueueMission(Mission::Sabotage, true);
 
