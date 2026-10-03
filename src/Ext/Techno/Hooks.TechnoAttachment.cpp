@@ -598,7 +598,9 @@ void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
 		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
 		{
 			if (pAttachment->Child->CloakState != CloakState::Cloaked && pAttachment->Child->CloakState != CloakState::Cloaking)
-				pAttachment->Child->Cloak(false);
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pAttachment->Child, false);
+
+			reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(pAttachment->Child, false);
 		}
 	}
 }

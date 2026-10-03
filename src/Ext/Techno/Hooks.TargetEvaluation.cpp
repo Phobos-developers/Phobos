@@ -54,6 +54,46 @@ DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 	return 0;
 }
 
+static bool IsCloakedAndUndetected(TechnoClass* pTarget, HouseClass* pAttackerHouse)
+{
+	if (!pTarget || !pAttackerHouse)
+		return false;
+
+	if (pTarget->Owner == pAttackerHouse || pTarget->Owner->IsAlliedWith(pAttackerHouse))
+		return false;
+
+	bool isCloaked = pTarget->CloakState == CloakState::Cloaked || pTarget->CloakState == CloakState::Cloaking;
+
+	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Parent)
+		{
+			auto const pParent = pAttachment->Parent;
+			if (pParent->CloakState == CloakState::Cloaked || pParent->CloakState == CloakState::Cloaking)
+				isCloaked = true;
+		}
+	}
+
+	if (!isCloaked)
+		return false;
+
+	auto const pCell = pTarget->GetCell();
+	if (pCell && pCell->Sensors_InclHouse(pAttackerHouse->ArrayIndex))
+		return false;
+
+	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	{
+		if (pAttachment->Parent)
+		{
+			auto const pParentCell = pAttachment->Parent->GetCell();
+			if (pParentCell && pParentCell->Sensors_InclHouse(pAttackerHouse->ArrayIndex))
+				return false;
+		}
+	}
+
+	return true;
+}
+
 DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 {
 	enum { AllowedObject = 0x6F7EA2, DisallowedObject = 0x6F894F };
@@ -72,6 +112,9 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 			if (!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable)
 				return DisallowedObject;
 		}
+
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return DisallowedObject;
 
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
@@ -352,6 +395,12 @@ private:
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return FireError::ILLEGAL;
+	}
+
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->UnitClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
@@ -361,6 +410,12 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F6030, UnitClass__GetFireError_Wrapper)
 
 static FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return FireError::ILLEGAL;
+	}
+
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->InfantryClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
@@ -385,7 +440,11 @@ static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _
 		}
 		else if (result == Action::Attack || result == Action::AreaAttack)
 		{
-			if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			if (!ignoreForce && IsCloakedAndUndetected(pTechnoObj, pThis->Owner))
+			{
+				result = Action::None;
+			}
+			else if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
 			{
 				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
 				{
@@ -449,7 +508,11 @@ static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis,
 		}
 		else if (result == Action::Attack || result == Action::AreaAttack)
 		{
-			if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			if (!ignoreForce && IsCloakedAndUndetected(pTechnoObj, pThis->Owner))
+			{
+				result = Action::None;
+			}
+			else if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
 			{
 				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
 				{

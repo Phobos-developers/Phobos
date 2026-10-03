@@ -173,8 +173,15 @@ void AttachmentClass::AI()
 			this->Child->WasFallingDown = this->Parent->WasFallingDown;
 			if (this->Child->CloakState != this->Parent->CloakState)
 			{
+				const auto oldChildCloakState = this->Child->CloakState;
 				this->Child->CloakState = this->Parent->CloakState;
 				this->Child->Mark(MarkType::Change);
+
+				if ((this->Child->CloakState == CloakState::Cloaking || this->Child->CloakState == CloakState::Cloaked)
+					&& (oldChildCloakState == CloakState::Uncloaked || oldChildCloakState == CloakState::Uncloaking))
+				{
+					reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(this->Child, false);
+				}
 			}
 			this->Child->CloakProgress = this->Parent->CloakProgress;
 			this->Child->WarpingOut = this->Parent->WarpingOut;
