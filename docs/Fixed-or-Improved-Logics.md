@@ -2421,6 +2421,7 @@ RotateOnCrash=true         ; boolean
 
 [SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRotateOnCrash
+CrashROT=-1                ; integer, negative means no effects
 ```
 
 ```{warning}
