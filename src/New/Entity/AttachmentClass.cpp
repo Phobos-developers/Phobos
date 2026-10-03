@@ -123,7 +123,7 @@ void AttachmentClass::AI()
 
 		const bool parentHasTurret = this->Parent->GetTechnoType()->Turret;
 		DirStruct childDir = ((this->Data->IsOnTurret || this->Data->IsOnBarrel) && parentHasTurret)
-			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
+			? this->Parent->TurretFacing() : this->Parent->PrimaryFacing.Current();
 
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
@@ -255,10 +255,14 @@ void AttachmentClass::AI()
 					if (this->Child->GetCurrentMission() != Mission::Attack)
 						this->Child->QueueMission(Mission::Attack, false);
 				}
-				else if (this->Parent->GetCurrentMission() == Mission::Attack)
+				else
 				{
-					if (this->Child->Target != pParentTarget)
-						this->Child->SetTarget(pParentTarget);
+					if (this->Child->Target == pParentTarget)
+					{
+						this->Child->SetTarget(nullptr);
+						if (this->Child->GetCurrentMission() == Mission::Attack)
+							this->Child->QueueMission(Mission::Guard, false);
+					}
 				}
 			}
 			else if (this->Child->Target && this->Parent->GetCurrentMission() != Mission::Attack)
@@ -502,7 +506,7 @@ void AttachmentClass::Unlimbo()
 
 		const bool parentHasTurret = this->Parent->GetTechnoType()->Turret;
 		DirStruct childDir = ((this->Data->IsOnTurret || this->Data->IsOnBarrel) && parentHasTurret)
-			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
+			? this->Parent->TurretFacing() : this->Parent->PrimaryFacing.Current();
 
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
