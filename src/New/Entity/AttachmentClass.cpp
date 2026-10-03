@@ -171,16 +171,23 @@ void AttachmentClass::AI()
 		{
 			this->Child->IsFallingDown = this->Parent->IsFallingDown;
 			this->Child->WasFallingDown = this->Parent->WasFallingDown;
-			this->Child->CloakState = this->Parent->CloakState;
+			if (this->Child->CloakState != this->Parent->CloakState)
+			{
+				this->Child->CloakState = this->Parent->CloakState;
+				this->Child->Mark(MarkType::Change);
+			}
+			this->Child->CloakProgress = this->Parent->CloakProgress;
 			this->Child->WarpingOut = this->Parent->WarpingOut;
 			this->Child->unknown_280 = this->Parent->unknown_280; // sth related to teleport
 			this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
 			this->Child->Deactivated = this->Parent->Deactivated;
+			this->Child->IsImmobilized = this->Parent->IsImmobilized;
 			//this->Child->Flash(this->Parent->Flashing.DurationRemaining);
 
 			this->Child->IronCurtainTimer = this->Parent->IronCurtainTimer;
 			this->Child->IdleActionTimer = this->Parent->IdleActionTimer;
 			this->Child->IronTintTimer = this->Parent->IronTintTimer;
+			this->Child->ForceShielded = this->Parent->ForceShielded;
 			this->Child->CloakDelayTimer = this->Parent->CloakDelayTimer;
 			this->Child->ChronoLockRemaining = this->Parent->ChronoLockRemaining;
 			this->Child->Berzerk = this->Parent->Berzerk;

@@ -562,6 +562,51 @@ void __fastcall BuildingClass_Flash(BuildingClass* pThis, void*, int duration)
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
 
+void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	pThis->TechnoClass::Uncloak(bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Uncloaked && pAttachment->Child->CloakState != CloakState::Uncloaking)
+				pAttachment->Child->Uncloak(false);
+		}
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto const pParent = pExt->ParentAttachment->Parent;
+		if (pParent && pParent->IsAlive && !pParent->InLimbo && pParent->CloakState != CloakState::Uncloaked && pParent->CloakState != CloakState::Uncloaking)
+			pParent->Uncloak(bPlaySound);
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60CC, TechnoClass_Uncloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B4, TechnoClass_Uncloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4318, TechnoClass_Uncloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2700, TechnoClass_Uncloak) // AircraftClass
+
+void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	pThis->TechnoClass::Cloak(bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Cloaked && pAttachment->Child->CloakState != CloakState::Cloaking)
+				pAttachment->Child->Cloak(false);
+		}
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60D0, TechnoClass_Cloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B8, TechnoClass_Cloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E431C, TechnoClass_Cloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2704, TechnoClass_Cloak) // AircraftClass
+
 #pragma endregion
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
