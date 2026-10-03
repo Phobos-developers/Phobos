@@ -459,6 +459,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->IvanBomb_Detonate_AffectsParasite.Read(exINI, pSection, "IvanBomb.Detonate.AffectsParasite");
 	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
 
+	this->InfDeaths.Read(exINI, pSection, "InfDeaths");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -838,6 +840,8 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
 		.Process(this->IvanBomb_Detonate_AffectsParasite)
 		.Process(this->IvanBomb_Detonate_AffectTypes)
+
+		.Process(this->InfDeaths)
 		;
 }
 

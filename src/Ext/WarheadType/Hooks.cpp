@@ -694,3 +694,20 @@ DEFINE_HOOK(0x701D6B, TechnoClass_ReceiveDamage_Psychedelic, 0x6)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x5185CE, Infantry_ReceiveDamage_RandomInfDeath, 0x7)
+{
+	GET_STACK(WarheadTypeClass*, pWH, STACK_OFFSET(0xD0, 0xC));
+
+	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
+	const auto& infDeaths = pWHExt->InfDeaths;
+
+	if(infDeaths.empty())
+		return 0;
+
+	int roll = Randomizer::Global.RandomRanged(0, infDeaths.size() - 1);
+
+	R->EDI(infDeaths[roll] - 1);
+	
+	return 0;
+}
