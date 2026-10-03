@@ -70,6 +70,7 @@
     <ClCompile Include="src\Ext\InfantryType\Body.cpp" />
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.DetectDisguise.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Refinery.cpp" />

@@ -1730,6 +1730,17 @@ msgid ""
 " of matching the Veinhole Monster."
 msgstr "修复了泰伯利亚藤蔓蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug。"
 
+msgid ""
+"Fixed the bug where building disguise detection (`DetectDisguise=yes`) "
+"failed to react to power outages, EMP deactivation, or ownership changes, "
+"and was permanently disabled if placed while unpowered or if double-"
+"deactivated upon destruction/selling. Also fixed radial indicator display for "
+"`DetectDisguiseRange`."
+msgstr ""
+"修复了建筑伪装探测（`DetectDisguise=yes`）在停电、EMP失效或所有权变更时未能"
+"正确响应，且在无电力放置或建筑被摧毁/变卖时发生重复注销导致永久失效的问题。"
+"同时修复了 `DetectDisguiseRange` 的范围辐射圈指示器显示。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

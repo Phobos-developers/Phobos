@@ -14,6 +14,12 @@ This serves as a changelog for when you just need to drop the new version in wit
 You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
 ```
 
+### 0.6
+
+#### Changes to vanilla behavior
+
+- `DetectDisguise` and `DetectDisguiseRange` now work for buildings. In the vanilla game, these settings had no effect on buildings. To preserve the vanilla behavior, remove `DetectDisguise` and `DetectDisguiseRange` from affected BuildingTypes.
+
 ### 0.5
 
 #### Changes to vanilla behavior
@@ -2052,6 +2058,7 @@ HideShakeEffects=false           ; boolean
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed building disguise detector logic (by FS-21)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
