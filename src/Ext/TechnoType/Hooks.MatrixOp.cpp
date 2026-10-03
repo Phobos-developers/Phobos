@@ -440,8 +440,10 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 		|| std::abs(pThis->AngleRotatedForwards) >= 0.005f
 		|| std::abs(pThis->AngleRotatedSideways) >= 0.005f;
 
+	const bool isAttached = TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis);
+
 	// Main body drawing completed, then enable accurate drawing of turrets and barrels
-	if (key.Base.Is_Valid_Key() && isTilted)
+	if (key.Base.Is_Valid_Key() && (isTilted || isAttached))
 		key.Base.Invalidate();
 
 	return 0;

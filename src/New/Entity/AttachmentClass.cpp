@@ -128,12 +128,16 @@ void AttachmentClass::AI()
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
 		this->Child->PrimaryFacing.SetCurrent(childDir);
+		this->Child->PrimaryFacing.SetDesired(childDir);
 
 		if (this->Data->IsOnBarrel && parentHasTurret)
 			this->Child->AngleRotatedForwards = static_cast<float>(-this->Parent->BarrelFacing.Current().GetRadian<32>());
 
 		if (this->Child->GetTechnoType()->Turret && !this->Child->Target)
+		{
 			this->Child->SecondaryFacing.SetCurrent(childDir);
+			this->Child->SecondaryFacing.SetDesired(childDir);
+		}
 
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
 		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
@@ -238,11 +242,14 @@ void AttachmentClass::AI()
 					auto const pWeaponStruct = this->Child->GetWeapon(i);
 					if (pWeaponStruct && pWeaponStruct->WeaponType)
 					{
-						auto const err = this->Child->GetFireError(pParentTarget, i, false);
-						if (err == FireError::OK || err == FireError::FACING || err == FireError::REARM || err == FireError::ROTATING)
+						if (this->Child->IsCloseEnough(pParentTarget, i))
 						{
-							canAttackTarget = true;
-							break;
+							auto const err = this->Child->GetFireError(pParentTarget, i, true);
+							if (err == FireError::OK || err == FireError::FACING || err == FireError::REARM || err == FireError::ROTATING)
+							{
+								canAttackTarget = true;
+								break;
+							}
 						}
 					}
 				}
@@ -257,7 +264,7 @@ void AttachmentClass::AI()
 				}
 				else
 				{
-					if (this->Child->Target == pParentTarget)
+					if (this->Child->Target)
 					{
 						this->Child->SetTarget(nullptr);
 						if (this->Child->GetCurrentMission() == Mission::Attack)
@@ -515,7 +522,10 @@ void AttachmentClass::Unlimbo()
 		--Unsorted::ScenarioInit;
 
 		if (this->Child->GetTechnoType()->Turret)
+		{
 			this->Child->SecondaryFacing.SetCurrent(childDir);
+			this->Child->SecondaryFacing.SetDesired(childDir);
+		}
 	}
 }
 
