@@ -2069,6 +2069,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
 ```
 
 ### 0.5
