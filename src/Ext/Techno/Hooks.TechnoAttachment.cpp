@@ -564,7 +564,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
 
 void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
 {
-	pThis->TechnoClass::Uncloak(bPlaySound);
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pThis, bPlaySound);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	for (const auto& pAttachment : pExt->ChildAttachments)
@@ -590,7 +590,7 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2700, TechnoClass_Uncloak) // AircraftClass
 
 void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
 {
-	pThis->TechnoClass::Cloak(bPlaySound);
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pThis, bPlaySound);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	for (const auto& pAttachment : pExt->ChildAttachments)
