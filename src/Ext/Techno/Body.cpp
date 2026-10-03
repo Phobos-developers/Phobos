@@ -961,7 +961,6 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 	if (pThis->Owner == pToHouse)
 		return false;
 
-	pExt_Ares->DriverKilled = false;
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
 	auto& passengers = pThis->Passengers;
@@ -1076,7 +1075,10 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 		pThis->QueueMission(Mission::Harmless, true);
 
 	pThis->SetTarget(nullptr);
+	
+	pExt_Ares->DriverKilled = false;
 	pThis->SetDestination(nullptr, false);
+	pExt_Ares->DriverKilled = passive;
 
 	auto pTag = pThis->AttachedTag;
 
@@ -1088,7 +1090,6 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 	if (pTag && pThis->IsAlive)
 		pTag->RaiseEvent(static_cast<TriggerEvent>(0x43), pThis, CellStruct::Empty);
 
-	pExt_Ares->DriverKilled = passive;
 	return true;
 }
 
