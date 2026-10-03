@@ -332,6 +332,21 @@ msgstr "现在启用一个名为 `<Alternate Next Scenario>` 的局部变量也�
 msgid "Script Actions"
 msgstr "动作脚本"
 
+msgid "More convenient vanilla action script target specification"
+msgstr "更方便的原版动作脚本目标指定"
+
+msgid ""
+"Now you can use more convenient argument format in vanilla action script target specification, "
+"no need to write building type index and calc scan mode offset."
+msgstr "现在你可以使用更方便的参数格式来指定原版动作脚本的目标，无需手写建筑类型索引与计算扫描模式偏移量。"
+
+msgid ""
+"Scan mode has `low`(lowest threat), `high`(highest threat), `far`(farest), `near`(nearest) and default to `near`."
+msgstr "扫描模式具有 `low` （最低威胁）， `high` （最高威胁）， `far` （最远距离）， `near` （最近距离）且默认为 `near` 。"
+
+msgid "This is suitable for `46`, `47`, `56`, `58` action script."
+msgstr "这适用于 `46` 、`47` 、 `56` 、 `58` 号动作脚本。"
+
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
 
