@@ -649,6 +649,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->ActiveEvaVoiceBuildingType)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }
@@ -686,6 +687,7 @@ void HouseExt::OnDetach(BuildingClass* pTarget, bool removed)
 		AnnounceInvalidPointer(this->Factory_VehicleType, pTarget);
 		AnnounceInvalidPointer(this->Factory_NavyType, pTarget);
 		AnnounceInvalidPointer(this->Factory_AircraftType, pTarget);
+		AnnounceInvalidPointer(this->ActiveEvaVoiceBuildingType, pTarget);
 
 		if (!this->PowerPlantEnhancers.empty())
 		{

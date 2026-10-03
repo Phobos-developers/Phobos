@@ -28,6 +28,33 @@ IngameScore.WinTheme=   ; Soundtrack theme ID
 IngameScore.LoseTheme=  ; Soundtrack theme ID
 ```
 
+### New EVA voice after deploying a building
+
+- You can now replace the current EVA voice when a specific building is placed/deployed.
+- If any building is undeployed/sold/destroyed, the EVA voice will be evaluated again across all active player buildings defining `NewEVAVoice.Tag`.
+- `NewEVAVoice.Tag` specifies the EVA voice name (defined under `[EVATypes]` in `evamd.ini` via Ares, or vanilla voices `Allied`, `Russian`, `Yuri`).
+- In case of multiple buildings with different EVA voices, `NewEVAVoice.Priority` establishes a priority queue, where the building with the highest value is selected.
+- `NewEVAVoice.RecheckOnDeath` controls whether to re-evaluate the active EVA voice upon building destruction or sale.
+- `NewEVAVoice.InitialMessage` plays an EVA sound message to the player when a new EVA voice is activated.
+- `NewEVAVoice.EndingMessage` plays an EVA sound message / sound effect with the outgoing EVA voice when it is deactivated/replaced before transitioning to the new voice.
+- When no buildings with `NewEVAVoice` remain, the EVA voice automatically falls back hierarchically:
+  1. `[HouseType] -> EVA.Tag` (Country-specific EVA voice)
+  2. `[Side] -> EVA.Tag` (Side-specific EVA voice)
+  3. Default vanilla voice according to side index (Allied, Russian, Yuri)
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                        ; Side
+EVA.Tag=                          ; EVA type name from [EVATypes] or Allied/Russian/Yuri
+
+[SOMEBUILDING]                    ; BuildingType
+NewEVAVoice.Tag=                  ; EVA type name from [EVATypes] or Allied/Russian/Yuri
+NewEVAVoice.Priority=1            ; integer
+NewEVAVoice.RecheckOnDeath=false  ; boolean
+NewEVAVoice.InitialMessage=       ; EVA entry
+NewEVAVoice.EndingMessage=        ; EVA entry
+```
+
 ## Battle screen UI/UX
 
 ### Allow chat box in singleplayer
