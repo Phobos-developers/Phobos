@@ -2603,3 +2603,21 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 	return 0;
 }
+
+// After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
+#pragma region DriverKilledFix
+
+static bool __fastcall UnitClass_QueueMission(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->MissionClass::QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+static void __fastcall UnitClass_ForceMission(UnitClass* pThis, void*, Mission mission)
+{
+	pThis->MissionClass::ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E58, UnitClass_QueueMission)
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
+
+#pragma endregion
