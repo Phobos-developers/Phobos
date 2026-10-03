@@ -125,6 +125,8 @@ public:
 
 	Nullable<bool> CylinderRangefinding;
 
+	Valueable<bool> OnlyAttacker;
+
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }
 		, ProjectileRange { Leptons(100000) }
@@ -223,6 +225,7 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
+		, OnlyAttacker { false }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;

@@ -354,6 +354,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (!pWeaponExt->SkipWeaponPicking && pTargetCell)
 	{
+		const auto pTargetExt = TechnoExt::Fetch(pTargetTechno);
+
+		if (pWeaponExt->OnlyAttacker.Get() && !pTargetExt->ContainFirer(pWeapon, pThis))
+			return CannotFire;
+
 		if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true)
 			|| (pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis)))
 		{
@@ -722,6 +727,24 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 			AttachEffectClass::Detach(pTargetTechno, info);
 			AttachEffectClass::DetachByGroups(pTargetTechno, info);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FDE0E, TechnoClass_FireAt_OnlyAttacker, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(AbstractClass* const, pTarget, 0x8);
+
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+
+	if (pWeaponExt->OnlyAttacker.Get() && pTarget == pThis->Target
+		&& pTarget->AbstractFlags & AbstractFlags::Techno)
+	{
+		const auto pTargetExt = TechnoExt::Fetch(static_cast<TechnoClass*>(pTarget));
+		pTargetExt->AddFirer(pWeapon, pThis);
 	}
 
 	return 0;
@@ -1351,7 +1374,7 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 				pJumpjetLoco->MaxSpeed = 0;
 				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
 			}*/
-			
+
 			pThis->StopMoving();
 			pThis->AbortMotion();
 		}
