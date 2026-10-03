@@ -125,7 +125,7 @@ public:
 	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* key) override;
 	// virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* key) override;
 	virtual Point2D __stdcall Draw_Point() override;
-	// virtual Point2D __stdcall Shadow_Point() override;
+	virtual Point2D __stdcall Shadow_Point() override;
 	virtual VisualType __stdcall Visual_Character(bool raw) override;
 	virtual int __stdcall Z_Adjust() override;
 	virtual ZGradient __stdcall Z_Gradient() override;
@@ -197,7 +197,7 @@ public:
 
 	inline AttachmentLocomotionClass(noinit_t) : LocomotionClass { noinit_t() } { }
 
-	inline virtual ~AttachmentLocomotionClass() override = default;
+	virtual ~AttachmentLocomotionClass() override;
 	virtual int Size() override { return sizeof(*this); }
 
 public:

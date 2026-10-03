@@ -879,7 +879,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// vector contents can be properly overriden via scenario rules - Kerbiter
 	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
 	{
-		char tempBuffer[32];
 		NullableIdx<AttachmentTypeClass> type;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.Type", i);
 		type.Read(exINI, pSection, tempBuffer);
@@ -899,6 +898,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnTurret", i);
 		isOnTurret.Read(exINI, pSection, tempBuffer);
 
+		Valueable<bool> isOnBarrel;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnBarrel", i);
+		isOnBarrel.Read(exINI, pSection, tempBuffer);
+
 		Valueable<DirType> rotationAdjust;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.RotationAdjust", i);
 		rotationAdjust.Read(exINI, pSection, tempBuffer);
@@ -907,7 +910,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ID", i);
 		id.Read(pINI, pSection, tempBuffer);
 
-		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust, id };
+		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, isOnBarrel, rotationAdjust, id };
 		if (i == AttachmentData.size())
 			this->AttachmentData.push_back(entry);
 		else
@@ -1997,6 +2000,7 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 		.Process(this->TechnoType)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
+		.Process(this->IsOnBarrel)
 		.Process(this->RotationAdjust)
 		.Process(this->ID)
 		.Success();

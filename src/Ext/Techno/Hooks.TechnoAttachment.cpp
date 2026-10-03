@@ -13,7 +13,16 @@
 DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x4, 0x4));
+	REF_STACK(TechnoClass*, pSource, STACK_OFFSET(0x4, 0x4));
+
+	if (!pSource)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->LastAttacker)
+				pSource = pExt->LastAttacker;
+		}
+	}
 
 	TechnoExt::DestroyAttachments(pThis, pSource);
 
@@ -106,10 +115,29 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 		return true;
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pOccupier);
-	if (pTechno &&
-		(TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::IsChildOf(pTechno, pThis)))
+	if (pTechno)
 	{
-		return true;
+		if (TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::AreRelatives(pTechno, pThis))
+			return true;
+
+		if (pThis && pThis->GetCurrentMission() == Mission::Enter)
+		{
+			TechnoClass* pEnterTarget = abstract_cast<TechnoClass*>(pThis->Target);
+			if (!pEnterTarget)
+			{
+				if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+					pEnterTarget = abstract_cast<TechnoClass*>(pFoot->Destination);
+			}
+
+			if (!pEnterTarget)
+				pEnterTarget = pThis->QueueUpToEnter;
+
+			if (!pEnterTarget)
+				pEnterTarget = pThis->GetNthLink(0);
+
+			if (pEnterTarget && pTechno != pEnterTarget && TechnoExt::AreRelatives(pTechno, pEnterTarget))
+				return true;
+		}
 	}
 
 	if (abstract_cast<UnitClass*>(pOccupier))
@@ -142,7 +170,7 @@ void AccountForMovingInto(CellClass* into, bool isAlt, TechnoClass* pThis, byte&
 
 	// Non-occupiers shouldn't be inserted as incoming units anyways so don't check that
 	if (pIncoming && pIncoming != pThis &&
-		!TechnoExt::IsChildOf(pIncoming, pThis))
+		!TechnoExt::AreRelatives(pIncoming, pThis))
 	{
 		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
 		isVehicleFlagSet = (occupyFlags & 0x20) != 0;
@@ -265,7 +293,7 @@ DEFINE_HOOK(0x47C432, CellClass_CellTechno_HandleAttachments, 0x0)
 	if (pOccupier == pSelf  // restored code
 		|| noAttachments && TechnoExt::IsAttached(pOccupier)
 		|| noVirtual && TechnoExt::DoesntOccupyCellAsChild(pOccupier)
-		|| noRelatives && TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pSelf))
+		|| noRelatives && TechnoExt::AreRelatives(pOccupier, (TechnoClass*)pSelf))
 	{
 		return IgnoreOccupier;
 	}
@@ -317,14 +345,27 @@ DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	{
 		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
 
-		if (pEntryTarget
-			&& pEntryTarget != pThis
-			&& pEntryTarget->GetMapCoords() == pThis->GetMapCoords()
-			&& pThis->ContainsLink(pEntryTarget)
-			&& pEntryTarget->GetTechnoType()->Passengers > 0)
+		if (pEntryTarget && pEntryTarget != pThis && !TechnoExt::AreRelatives(pThis, pEntryTarget))
 		{
-			R->ESI<TechnoClass*>(pEntryTarget);
-			return TryEnterTarget;
+			if (pEntryTarget->GetTechnoType()->Passengers <= 0)
+				continue;
+
+			if (pEntryTarget->GetMapCoords() != pThis->GetMapCoords())
+				continue;
+
+			bool const isMatchingTarget = pThis->Target == pEntryTarget
+				|| pThis->Destination == pEntryTarget
+				|| pThis->ContainsLink(pEntryTarget)
+				|| pThis->QueueUpToEnter == pEntryTarget
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Destination), pEntryTarget)
+				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget);
+
+			if (isMatchingTarget)
+			{
+				R->ESI<TechnoClass*>(pEntryTarget);
+				return TryEnterTarget;
+			}
 		}
 	}
 
@@ -348,15 +389,29 @@ DEFINE_HOOK(0x51A0DA, InfantryClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	{
 		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
 
-		// TODO additional priority checks (original code gets technos in certain order) because may backfire
-
-		if (pEntryTarget && pEntryTarget != pThis
-			&& (pThis->Target == pEntryTarget || pThis->Destination == pEntryTarget
-				|| pThis->OnBridge && pCell == pEntryTarget->GetCell()))
+		if (pEntryTarget && pEntryTarget != pThis && !TechnoExt::AreRelatives(pThis, pEntryTarget))
 		{
-			R->EDI<TechnoClass*>(pEntryTarget);
-			R->EBP<size_t>(0);
-			return TryEnterTarget;
+			bool const canAcceptEntry = pEntryTarget->GetTechnoType()->Passengers > 0
+				|| pEntryTarget->WhatAmI() == AbstractType::Building;
+
+			if (!canAcceptEntry)
+				continue;
+
+			bool const isMatchingTarget = pThis->Target == pEntryTarget
+				|| pThis->Destination == pEntryTarget
+				|| pThis->ContainsLink(pEntryTarget)
+				|| pThis->QueueUpToEnter == pEntryTarget
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Target), pEntryTarget)
+				|| TechnoExt::AreRelatives(abstract_cast<TechnoClass*>(pThis->Destination), pEntryTarget)
+				|| TechnoExt::AreRelatives(pThis->QueueUpToEnter, pEntryTarget)
+				|| (pThis->OnBridge && pCell == pEntryTarget->GetCell());
+
+			if (isMatchingTarget)
+			{
+				R->EDI<TechnoClass*>(pEntryTarget);
+				R->EBP<size_t>(0);
+				return TryEnterTarget;
+			}
 		}
 	}
 
@@ -507,6 +562,66 @@ void __fastcall BuildingClass_Flash(BuildingClass* pThis, void*, int duration)
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
 
+void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pThis, bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Uncloaked && pAttachment->Child->CloakState != CloakState::Uncloaking)
+				pAttachment->Child->Uncloak(false);
+		}
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto const pParent = pExt->ParentAttachment->Parent;
+		if (pParent && pParent->IsAlive && !pParent->InLimbo && pParent->CloakState != CloakState::Uncloaked && pParent->CloakState != CloakState::Uncloaking)
+			pParent->Uncloak(bPlaySound);
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60CC, TechnoClass_Uncloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B4, TechnoClass_Uncloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4318, TechnoClass_Uncloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2700, TechnoClass_Uncloak) // AircraftClass
+
+void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pThis, bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Cloaked && pAttachment->Child->CloakState != CloakState::Cloaking)
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pAttachment->Child, false);
+
+			reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(pAttachment->Child, false);
+		}
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60D0, TechnoClass_Cloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B8, TechnoClass_Cloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E431C, TechnoClass_Cloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2704, TechnoClass_Cloak) // AircraftClass
+
+DEFINE_HOOK(0x6FB74B, TechnoClass_UpdateCloak_SkipAttached, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+			return 0x6FBC80;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
@@ -539,13 +654,52 @@ void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 	}
 }
 
+AbstractClass* TechnoExt::RedirectUntargetableAttachment(AbstractClass* pObj)
+{
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTargetTechno)->ParentAttachment)
+		{
+			if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
+			{
+				if (auto const pDamageable = TechnoExt::GetFirstDamageableParent(pTargetTechno))
+					return pDamageable;
+
+				return pAttachment->Parent;
+			}
+		}
+	}
+
+	return pObj;
+}
+
+void ResetChildCommandsOnMove(TechnoClass* pChild)
+{
+	pChild->SetTarget(nullptr);
+	if (pChild->GetCurrentMission() == Mission::Attack)
+		pChild->QueueMission(Mission::Guard, false);
+
+	if (auto const& pChildExt = TechnoExt::ExtMap.Find(pChild))
+	{
+		for (auto const& pSubAttachment : pChildExt->ChildAttachments)
+		{
+			if (pSubAttachment->Child && pSubAttachment->GetType()->InheritCommands)
+				ResetChildCommandsOnMove(pSubAttachment->Child);
+		}
+	}
+}
+
 void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* pCell, CellStruct* pSecondCell)
 {
 	// Rewrite of the original code
 	if (pTarget)
 	{
 		Action whatAction = pThis->MouseOverObject(pTarget, false);
-		pThis->ObjectClickedAction(whatAction, pTarget, false);
+		if (whatAction == Action::Attack || whatAction == Action::AreaAttack)
+			pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
+
+		if (whatAction != Action::Self_Deploy || pThis == pTarget)
+			pThis->ObjectClickedAction(whatAction, pTarget, false);
 	}
 	else
 	{
@@ -561,7 +715,12 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
+			{
+				if (!pTarget && pCell)
+					ResetChildCommandsOnMove(pAttachment->Child);
+				else
+					ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
+			}
 		}
 	}
 }
@@ -574,12 +733,20 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	for (auto const& pObject : ObjectClass::CurrentObjects)
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (TechnoExt::IsAttached(pTechno))
+				continue;
+
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
+		}
 	}
 
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x18, +0x4));
+	GET_STACK(ObjectClass*, pTarget, STACK_OFFSET(0x18, +0x4));
 	LEA_STACK(CellStruct* const, pCell, STACK_OFFSET(0x18, +0x8));
 	GET_STACK(Action const, action, STACK_OFFSET(0x18, +0xC));
+
+	if (action == Action::Attack || action == Action::AreaAttack)
+		pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
 
 	CellStruct invalidCell { -1, -1 };
 	CellStruct* pSecondCell = &invalidCell;
@@ -590,7 +757,12 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	for (auto const& pObject : ObjectClass::CurrentObjects)
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (TechnoExt::IsAttached(pTechno))
+				continue;
+
 			ParentClickedAction(pTechno, pTarget, pCell, pSecondCell);
+		}
 	}
 
 	Unsorted::MoveFeedback = true;

@@ -223,9 +223,11 @@ InheritStateEffects=true                  ; boolean (state effects = chaos, iron
 InheritCommands=true                      ; boolean
 InheritCommands.StopCommand=true          ; boolean
 InheritCommands.DeployCommand=true        ; boolean
+InheritTarget=true                        ; boolean, whether the child synchronizes target and attack mission with parent
 LowSelectionPriority=true                 ; boolean, whether the child is low priority while attached
 PassSelection=true                        ; boolean, whether the child selection propagates to parent
 TransparentToMouse=false                  ; boolean, can't click on attached techno if set
+Targetable=true                           ; boolean, whether the child can be targeted by enemies (if false, enemies and attack commands target parent)
 YSortPosition=default                     ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true                   ; boolean
 InheritHeightStatus=true                  ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent

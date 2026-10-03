@@ -8,6 +8,7 @@
 #include <Ext/TechnoType/Body.h>
 
 class TechnoClass;
+class HouseClass;
 
 class AttachmentClass
 {
@@ -17,15 +18,22 @@ public:
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data;
 	TechnoClass* Parent;
 	TechnoClass* Child;
+	HouseClass* ChildOriginalOwner;
 	CDTimerClass RespawnTimer;
-
+	AbstractClass* LastValidParentTarget;
+	AbstractClass* LastValidParentDestination;
+	Mission LastValidParentMission;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
 		Data { data },
 		Parent { pParent },
 		Child { pChild },
-		RespawnTimer { }
+		ChildOriginalOwner { pChild ? pChild->Owner : nullptr },
+		RespawnTimer { },
+		LastValidParentTarget { nullptr },
+		LastValidParentDestination { nullptr },
+		LastValidParentMission { Mission::None }
 	{
 		Array.push_back(this);
 	}
@@ -34,7 +42,11 @@ public:
 		Data { },
 		Parent { },
 		Child { },
-		RespawnTimer { }
+		ChildOriginalOwner { nullptr },
+		RespawnTimer { },
+		LastValidParentTarget { nullptr },
+		LastValidParentDestination { nullptr },
+		LastValidParentMission { Mission::None }
 	{
 		Array.push_back(this);
 	}

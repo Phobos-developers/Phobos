@@ -751,6 +751,9 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
 {
+	if (TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis))
+		return true;
+
 	const auto pType = pThis->Type;
 
 	if (pType->Speed == 0)
@@ -1068,12 +1071,19 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnParachuted)
 		.Process(this->HoverShutdown)
 		.Process(this->AltOccupation)
+		.Process(this->LastAttacker)
+		.Process(this->FallingInheritedTarget)
+		.Process(this->FallingInheritedDestination)
+		.Process(this->FallingInheritedMission)
 		;
 }
 
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+	AnnounceInvalidPointer(this->LastAttacker, ptr);
+	AnnounceInvalidPointer(this->FallingInheritedTarget, ptr);
+	AnnounceInvalidPointer(this->FallingInheritedDestination, ptr);
 
 	for (auto const& pAttachment : ChildAttachments)
 		pAttachment->InvalidatePointer(ptr);
