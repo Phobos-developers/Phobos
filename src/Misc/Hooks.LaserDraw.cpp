@@ -7,6 +7,13 @@
 namespace LaserDrawTemp
 {
 	ColorStruct maxColor;
+	static std::unordered_map<LaserDrawClass*, int> g_ConfiguredDepthDelta;
+
+	static int GetConfiguredDepthDelta(LaserDrawClass* laser)
+	{
+		const auto it = g_ConfiguredDepthDelta.find(laser);
+		return it != g_ConfiguredDepthDelta.end() ? it->second : 0;
+	}
 }
 
 DEFINE_HOOK(0x550D1F, LaserDrawClass_DrawInHouseColor_Context_Set, 0x6)
@@ -53,6 +60,31 @@ DEFINE_HOOK(0x6FD3FD, TechnoClass_LaserZap_ZAdjust, 0x5)
 	zAdjust += WeaponTypeExt::Fetch(pWeapon)->LaserZAdjust.Get(RulesExt::Global()->LaserZAdjust);
 	R->EAX(zAdjust);
 
+	return 0;
+}
+
+// The laser stores native bias and configured delta together; add only the delta to target depth to preserve the native depth slope and screen endpoints.
+DEFINE_HOOK(0x550457, LaserDrawClass_Draw_TargetDepthAdjust, 0x5)
+{
+	GET(LaserDrawClass*, laser, EBX);
+	const int configuredDepthDelta = LaserDrawTemp::GetConfiguredDepthDelta(laser);
+	if (configuredDepthDelta != 0)
+	{
+		GET(DWORD, targetDepthBase, EBP);
+		R->EBP(targetDepthBase + static_cast<DWORD>(configuredDepthDelta));
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x550BC4, LaserDrawClass_DrawHouseColor_TargetDepthAdjust, 0x6)
+{
+	GET(LaserDrawClass*, laser, EBX);
+	const int configuredDepthDelta = LaserDrawTemp::GetConfiguredDepthDelta(laser);
+	if (configuredDepthDelta != 0)
+	{
+		GET(DWORD, targetDepthBase, ESI);
+		R->ESI(targetDepthBase + static_cast<DWORD>(configuredDepthDelta));
+	}
 	return 0;
 }
 
@@ -191,10 +223,11 @@ namespace LaserRT
 // IsLaser this is no longer necessary, but the handling of DiskLaser is more complex, and keeping the CTOR is currently the most cost-effective solution.
 DEFINE_HOOK(0x54FE60, LaserDrawClass_CTOR_Update, 0x5)
 {
+	GET(LaserDrawClass*, laser, ECX);
+	LaserDrawTemp::g_ConfiguredDepthDelta.erase(laser);
 	if (!Phobos::Optimizations::DisableLaserTracking)
 	{
-		GET(LaserDrawClass*, pLaser, ECX);
-		LaserRT::TrackingMap[pLaser] = LaserRT::TrackingData {};
+		LaserRT::TrackingMap[laser] = LaserRT::TrackingData {};
 	}
 	return 0;
 }
@@ -204,7 +237,11 @@ DEFINE_HOOK_AGAIN(0x5500EF, LaserDrawClass_DTOR_Tracking, 0x5)
 DEFINE_HOOK_AGAIN(0x550016, LaserDrawClass_DTOR_Tracking, 0x6)
 DEFINE_HOOK(0x54FFB0, LaserDrawClass_DTOR_Tracking, 0x7) // LaserDrawClass::DTOR
 {
-	GET(LaserDrawClass*, pLaser, ECX);
+	GET(LaserDrawClass*, laserFromEcx, ECX);
+	GET(LaserDrawClass*, laserFromEsi, ESI);
+	// The member removal entry uses ECX; the three global cleanup and update entries hold the laser in ESI.
+	auto* pLaser = R->Origin() == 0x54FFB0 ? laserFromEcx : laserFromEsi;
+	LaserDrawTemp::g_ConfiguredDepthDelta.erase(pLaser);
 
 	auto it = LaserRT::TrackingMap.find(pLaser);
 	if (it != LaserRT::TrackingMap.end())
@@ -290,12 +327,19 @@ DEFINE_HOOK(0x6FD210, TechnoClass_LaserZap_SetTrackingContext, 0x7)
 
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_Tracking, 0x7)
 {
+	GET(WeaponTypeClass*, pWeapon, ECX);
+	GET(LaserDrawClass*, pLaser, EAX);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
+	const int configuredDepthDelta = pWeaponExt->LaserZAdjust.Get(RulesExt::Global()->LaserZAdjust);
+	if (configuredDepthDelta != 0)
+		LaserDrawTemp::g_ConfiguredDepthDelta[pLaser] = configuredDepthDelta;
+	else
+		LaserDrawTemp::g_ConfiguredDepthDelta.erase(pLaser);
+
 	if (Phobos::Optimizations::DisableLaserTracking)
 		return 0;
 
-	GET(WeaponTypeClass*, pWeapon, ECX);
-	GET(LaserDrawClass*, pLaser, EAX);
-	const auto mode = WeaponTypeExt::Fetch(pWeapon)->LaserPositionUpdate.Get();
+	const auto mode = pWeaponExt->LaserPositionUpdate.Get();
 
 	if (mode == PositionFollow::None)
 		return 0;
