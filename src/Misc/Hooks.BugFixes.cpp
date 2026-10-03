@@ -2746,6 +2746,33 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 
 #pragma endregion
 
+DEFINE_JUMP(LJMP, 0x4896B2, 0x4896BF) // No need this shit
+
+DEFINE_HOOK(0x480EF6, CellClass_DamageWall_BecomUntargetable, 0x6)
+{
+	GET(CellClass*, pThis, EDI);
+
+	pThis->BecomeUntargetable();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x480952, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x48092B, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808FF, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808D8, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK(0x4808A9, Sub_480630_BecomUntargetable, 0xA)
+{
+	GET(CellClass*, pCell, ESI);
+
+	pCell->BecomeUntargetable();
+
+	if (R->Origin() == 0x4808A9)
+		pCell->WallOwnerIndex = -1;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 {
 	enum { SkipDraw = 0x51958A };
