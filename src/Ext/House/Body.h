@@ -76,6 +76,8 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	ValueableVector<TechnoTypeClass*> TechnoPCX_IsLoad;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -107,6 +109,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, TechnoPCX_IsLoad {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
