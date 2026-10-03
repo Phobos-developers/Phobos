@@ -199,6 +199,7 @@
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Hooks.cpp" />
     <!-- src\Ext\Trigger -->
+    <ClCompile Include="src\Ext\Trigger\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <!-- src\Ext\Unit -->
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
@@ -382,6 +383,7 @@
     <ClInclude Include="src\Ext\TerrainType\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
     <ClInclude Include="src\Ext\Tiberium\Body.h" />
+    <ClInclude Include="src\Ext\Trigger\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\WarheadType\Body.h" />

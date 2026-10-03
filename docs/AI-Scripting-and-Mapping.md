@@ -1070,6 +1070,20 @@ ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
 ```
 
+### `1000` & `1001` Switch event evaluation mode (Sequential / Parallel)
+
+- By default, the game evaluates all trigger events in parallel (simultaneously).
+- **Event `1000` (`Force Sequential Events`)**: Switches evaluation to **sequential order** from this point onward. Subsequent events are evaluated strictly step-by-step and will short-circuit as soon as any step is not yet met. Timers (`ElapsedTime`, `RandomDelay`) for sequential steps only begin counting down once the preceding step has completed.
+- **Event `1001` (`Force Parallel Events`)**: Switches evaluation back to **parallel mode** from this point onward.
+- Multiple `1000` and `1001` control events can be placed within the same trigger to create alternating evaluation blocks (e.g., *Parallel Block* -> `1000` -> *Sequential Block* -> `1001` -> *Parallel Block*). Each block must be 100% satisfied before evaluation of the subsequent block begins.
+
+In `mycampaign.map`:
+```ini
+[Events]
+; Example: Parallel phase -> 1000 -> Sequential phase -> 1001 -> Parallel phase
+ID=EventCount,...,1000,0,0,0,...,1001,0,0,0,...
+```
+
 ## Teams
 
 ### Adjust recruitable status on team member liberate
