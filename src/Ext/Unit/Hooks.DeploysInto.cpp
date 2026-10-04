@@ -205,7 +205,12 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+				auto const pParent = pTechno ? TechnoExt::GetTopLevelParent(pTechno) : nullptr;
+				if (pObject == TechnoExt::Deployer
+					|| (pTechno && TechnoExt::Deployer && TechnoExt::IsChildOf(pTechno, TechnoExt::Deployer))
+					|| (pTechno && TechnoExt::DoesntOccupyCellAsChild(pTechno))
+					|| (pParent && pParent->GetTechnoType()->DeploysInto == pBuildingType))
 				{
 					skipFlag = true;
 				}
@@ -247,7 +252,12 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (pObject->AbstractFlags & AbstractFlags::Techno)
 			{
-				if (pObject == TechnoExt::Deployer)
+				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+				auto const pParent = pTechno ? TechnoExt::GetTopLevelParent(pTechno) : nullptr;
+				if (pObject == TechnoExt::Deployer
+					|| (pTechno && TechnoExt::Deployer && TechnoExt::IsChildOf(pTechno, TechnoExt::Deployer))
+					|| (pTechno && TechnoExt::DoesntOccupyCellAsChild(pTechno))
+					|| (pParent && pParent->GetTechnoType()->DeploysInto == pBuildingType))
 					skipFlag = true;
 				else
 					return CanNotExistHere;
@@ -268,6 +278,24 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	return CanExistHere; // Continue check the overlays .etc
 }
 
+DEFINE_HOOK(0x7394BE, UnitClass_TryToDeploy_CanCreateHere_Before, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::Deployer = pThis;
+	return 0;
+}
+
+DEFINE_HOOK(0x7394E0, UnitClass_TryToDeploy_CanCreateHere_Success, 0x6)
+{
+	TechnoExt::Deployer = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x73958A, UnitClass_TryToDeploy_CanCreateHere_Failure, 0x6)
+{
+	TechnoExt::Deployer = nullptr;
+	return 0;
+}
 
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
