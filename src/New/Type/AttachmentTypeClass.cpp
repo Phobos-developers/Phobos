@@ -26,6 +26,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
 	this->PassSelection.Read(exINI, section, "PassSelection");
 	this->TransparentToMouse.Read(exINI, section, "TransparentToMouse");
+	this->Targetable.Read(exINI, section, "Targetable");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
 	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
@@ -50,6 +51,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->PassSelection)
 		.Process(this->TransparentToMouse)
+		.Process(this->Targetable)
 		.Process(this->YSortPosition)
 		.Process(this->DestructionWeapon_Child)
 		.Process(this->DestructionWeapon_Parent)
