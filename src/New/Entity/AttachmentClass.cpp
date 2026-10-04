@@ -145,6 +145,68 @@ void AttachmentClass::AI()
 
 		if (pType->InheritOwner)
 			this->Child->SetOwningHouse(this->Parent->GetOwningHouse(), false);
+
+		if (pType->InheritTarget)
+		{
+			AbstractClass* pParentTarget = this->Parent->Target;
+			bool isTargetValid = false;
+
+			if (pParentTarget && pParentTarget != this->Child)
+			{
+				auto const pTargetTechno = abstract_cast<TechnoClass*>(pParentTarget);
+				if (!pTargetTechno || !TechnoExt::AreRelatives(this->Child, pTargetTechno))
+				{
+					if (auto const pTargetObj = abstract_cast<ObjectClass*>(pParentTarget))
+						isTargetValid = pTargetObj->IsAlive && !pTargetObj->InLimbo;
+					else
+						isTargetValid = true;
+				}
+			}
+
+			if (isTargetValid)
+			{
+				bool canAttackTarget = false;
+				for (int i = 0; i < 2; ++i)
+				{
+					auto const pWeaponStruct = this->Child->GetWeapon(i);
+					if (pWeaponStruct && pWeaponStruct->WeaponType)
+					{
+						if (!this->Child->IsCloseEnough(pParentTarget, i))
+							continue;
+
+						auto const err = this->Child->GetFireError(pParentTarget, i, true);
+						if (err == FireError::OK || err == FireError::FACING || err == FireError::REARM || err == FireError::ROTATING)
+						{
+							canAttackTarget = true;
+							break;
+						}
+					}
+				}
+
+				if (canAttackTarget)
+				{
+					if (this->Child->Target != pParentTarget)
+						this->Child->SetTarget(pParentTarget);
+
+					if (this->Child->GetCurrentMission() != Mission::Attack)
+						this->Child->QueueMission(Mission::Attack, false);
+				}
+				else if (this->Parent->GetCurrentMission() == Mission::Attack)
+				{
+					if (this->Child->Target != pParentTarget)
+						this->Child->SetTarget(pParentTarget);
+				}
+			}
+			else if (this->Child->Target && this->Parent->GetCurrentMission() != Mission::Attack)
+			{
+				if (this->Child->Target == pParentTarget || !pParentTarget)
+				{
+					this->Child->SetTarget(nullptr);
+					if (this->Child->GetCurrentMission() == Mission::Attack)
+						this->Child->QueueMission(Mission::Guard, false);
+				}
+			}
+		}
 	}
 }
 
