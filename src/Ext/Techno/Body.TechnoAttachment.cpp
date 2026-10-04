@@ -288,3 +288,25 @@ TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
 		? TechnoExt::GetTopLevelParent(pThisExt->ParentAttachment->Parent)
 		: pThis;
 }
+
+TechnoClass* TechnoExt::GetFirstDamageableParent(TechnoClass* pThis)
+{
+	if (!pThis)
+		return nullptr;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt || !pExt->ParentAttachment)
+		return nullptr;
+
+	auto pParent = pExt->ParentAttachment->Parent;
+	while (pParent)
+	{
+		auto const pParentExt = TechnoExt::ExtMap.Find(pParent);
+		if (!pParentExt || !pParentExt->ParentAttachment || pParentExt->ParentAttachment->GetType()->Damageable)
+			return pParent;
+
+		pParent = pParentExt->ParentAttachment->Parent;
+	}
+
+	return nullptr;
+}
