@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 09:51+0800\n"
+"POT-Creation-Date: 2026-10-04 20:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -645,6 +645,37 @@ msgstr ""
 "对于 ImageShaper 用户，则是需要选择 `Uncompressed` 或 `Uncompressed_Full_Frame` "
 "以外的模式来创建 `*.shp` 文件。"
 
+msgid "Set sidebar tab by selecting factory"
+msgstr "通过选择建筑来切换侧边栏标签"
+
+msgid ""
+"You can choose the corresponding type of factory to switch the sidebar "
+"tab by setting `SetTabBySelectingFactory=true`."
+msgstr "你可以通过设置 `SetTabBySelectingFactory=true` 启用选择对应类型工厂来切换侧边栏标签的效果。"
+
+msgid ""
+"`SetTabBySelecting` can be used to define which tab to switch to when "
+"this building (which need not be a factory) is selected."
+msgstr "`SetTabBySelecting` 可用于定义选中该建筑（可以不是工厂）时切换到哪个标签。"
+
+msgid ""
+"Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 "
+"(vehicle tab)."
+msgstr "常规值：0（建筑栏）、1（防御栏）、2（步兵栏）、3（载具栏）。"
+
+msgid ""
+"Negative values: automatically match according to the selected building's"
+" `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch "
+"to 1; otherwise switch to 0."
+msgstr ""
+"负值：根据选中建筑的 `Factory` 自动匹配。对于 `Factory=BuildingType`，如果当前标签为 0 则切换到 "
+"1，否则切换到 0。"
+
+msgid ""
+"Other values (values greater than or equal to 4): do nothing, i.e., "
+"disable this effect."
+msgstr "其他值（大于等于 4 的值）：什么都不做，即关闭这一效果。"
+
 msgid "Show designator & inhibitor range"
 msgstr "显示指示者和抑制者范围"
 
@@ -712,6 +743,14 @@ msgid ""
 "Observer can't see this timer since they've already gotten one on the top"
 " of sidebar."
 msgstr "观察者无法看到此计时器，因为他们已经有一个在侧边栏顶部的了。"
+
+msgid "Show power plant enhancer range"
+msgstr "显示电厂增幅器的范围"
+
+msgid ""
+"It is possible to show range of power plant enhancer when placing a "
+"building."
+msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
 
 msgid "SuperWeapon ShowTimer sorting"
 msgstr "超级武器计时器优先级"
@@ -911,45 +950,6 @@ msgid ""
 "credits when selling a unit on a repair bay."
 msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
-msgid "Show power plant enhancer range"
-msgstr "显示电厂增幅器的范围"
-
-msgid ""
-"It is possible to show range of power plant enhancer when placing a "
-"building."
-msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
-
-msgid "Set sidebar tab by selecting factory"
-msgstr "通过选择建筑来切换侧边栏标签"
-
-msgid ""
-"You can choose the corresponding type of factory to switch the sidebar "
-"tab by setting `SetTabBySelectingFactory=true`."
-msgstr "你可以通过设置 `SetTabBySelectingFactory=true` 启用选择对应类型工厂来切换侧边栏标签的效果。"
-
-msgid ""
-"`SetTabBySelecting` can be used to define which tab to switch to when "
-"this building (which need not be a factory) is selected."
-msgstr "`SetTabBySelecting` 可用于定义选中该建筑（可以不是工厂）时切换到哪个标签。"
-
-msgid ""
-"Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 "
-"(vehicle tab)."
-msgstr "常规值：0（建筑栏）、1（防御栏）、2（步兵栏）、3（载具栏）。"
-
-msgid ""
-"Negative values: automatically match according to the selected building's"
-" `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch "
-"to 1; otherwise switch to 0."
-msgstr ""
-"负值：根据选中建筑的 `Factory` 自动匹配。对于 `Factory=BuildingType`，如果当前标签为 0 则切换到 "
-"1，否则切换到 0。"
-
-msgid ""
-"Other values (values greater than or equal to 4): do nothing, i.e., "
-"disable this effect."
-msgstr "其他值（大于等于 4 的值）：什么都不做，即关闭这一效果。"
-
 msgid "Hotkey Commands"
 msgstr "快捷键命令"
 
@@ -1109,6 +1109,29 @@ msgid ""
 "QuickSaved`."
 msgstr "保存的文件名应当类似于 `Allied Mission 25: Esther's Money - QuickSaved`。"
 
+msgid "`[ ]` Select Captured Units"
+msgstr "`[ ]` 选取被捕获单位"
+
+msgid ""
+"Select the units within the current screen that are captured by non-"
+"permanent mind-controller."
+msgstr "选取当前屏幕内被非永久心控捕获的单位。"
+
+msgid "Enable the hotkey by setting `SelectCapturedKeyEnabled` to true."
+msgstr "通过 `SelectCapturedKeyEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"If selected any unit, `MSG:SelectCaptured` is logged on the left-top of "
+"the screen, otherwise `MSG:NothingSelected` is logged."
+msgstr "如果选中了任何单位，屏幕左上角会输出 `MSG:SelectCaptured`，否则输出 `MSG:NothingSelected`。"
+
+msgid ""
+"For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and "
+"`TXT_SELECT_CAPTURED_DESC` into your `.csf` file."
+msgstr ""
+"为了本地化请将 `MSG:SelectCaptured`、`TXT_SELECT_CAPTURED` 和 "
+"`TXT_SELECT_CAPTURED_DESC` 添加到你的 `.csf` 文件。"
+
 msgid "`[ ]` Toggle Designator Range"
 msgstr "`[ ]` 切换指示范围"
 
@@ -1159,29 +1182,6 @@ msgid ""
 "into your `.csf` file."
 msgstr "为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC` 添加到你的 `.csf` 文件。"
 
-msgid "`[ ]` Select Captured Units"
-msgstr "`[ ]` 选取被捕获单位"
-
-msgid ""
-"Select the units within the current screen that are captured by non-"
-"permanent mind-controller."
-msgstr "选取当前屏幕内被非永久心控捕获的单位。"
-
-msgid "Enable the hotkey by setting `SelectCapturedKeyEnabled` to true."
-msgstr "通过 `SelectCapturedKeyEnabled` 设为 true 以启用该快捷键。"
-
-msgid ""
-"If selected any unit, `MSG:SelectCaptured` is logged on the left-top of "
-"the screen, otherwise `MSG:NothingSelected` is logged."
-msgstr "如果选中了任何单位，屏幕左上角会输出 `MSG:SelectCaptured`，否则输出 `MSG:NothingSelected`。"
-
-msgid ""
-"For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and "
-"`TXT_SELECT_CAPTURED_DESC` into your `.csf` file."
-msgstr ""
-"为了本地化请将 `MSG:SelectCaptured`、`TXT_SELECT_CAPTURED` 和 "
-"`TXT_SELECT_CAPTURED_DESC` 添加到你的 `.csf` 文件。"
-
 msgid "**Development Hotkey Commands**"
 msgstr "**开发用快捷键命令**"
 
@@ -1223,19 +1223,6 @@ msgstr ""
 "为了本地化请将 `TXT_DUMP_OBJECT_INFO` 和 `TXT_DUMP_OBJECT_INFO_DESC` 添加到你的 `.csf`"
 " 文件。"
 
-msgid "`[ ]` Toggle Frame By Frame Mode"
-msgstr "`[ ]` 开关逐帧模式"
-
-msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
-msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
-
-msgid ""
-"For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` "
-"into your `.csf` file."
-msgstr ""
-"为了本地化，请将 `TXT_FRAME_BY_FRAME` 和 `TXT_FRAME_BY_FRAME_DESC` 添加到你的 `.csf` "
-"文件中。"
-
 msgid "`[ ]` Save Variables"
 msgstr "`[ ]` 保存变量"
 
@@ -1251,6 +1238,19 @@ msgid ""
 "into your `.csf` file."
 msgstr ""
 "为了本地化，请将 `TXT_SAVE_VARIABLES` 和 `TXT_SAVE_VARIABLES_DESC` 添加到你的 `.csf` "
+"文件中。"
+
+msgid "`[ ]` Toggle Frame By Frame Mode"
+msgstr "`[ ]` 开关逐帧模式"
+
+msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
+msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
+
+msgid ""
+"For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` "
+"into your `.csf` file."
+msgstr ""
+"为了本地化，请将 `TXT_FRAME_BY_FRAME` 和 `TXT_FRAME_BY_FRAME_DESC` 添加到你的 `.csf` "
 "文件中。"
 
 msgid "Loading screen"
