@@ -1083,8 +1083,11 @@ msgstr ""
 "[可自定义当前已选中对象的类型循环顺序与选中概要](User-Interface.md#cycle-type-selection)（by "
 "FrozenFog）"
 
-msgid "More convenient vanilla action script target specification (by NetsuNegi)"
-msgstr "更方便的原版动作脚本目标指定（by NetsuNegi）"
+msgid ""
+"[More convenient vanilla action script target specification](AI-"
+"Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-"
+"specification) (by NetsuNegi)"
+msgstr "[更方便的原版动作脚本目标指定](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
