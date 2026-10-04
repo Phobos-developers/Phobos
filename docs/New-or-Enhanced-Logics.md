@@ -229,6 +229,7 @@ TransparentToMouse=false                  ; boolean, can't click on attached tec
 YSortPosition=default                     ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true                   ; boolean
 InheritHeightStatus=true                  ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
+InheritTilt=true                          ; boolean, whether the attached child tilts with the parent (slope / pitch / roll)
 OccupiesCell=true                         ; boolean
 DestructionWeapon.Child=                  ; WeaponType, detonated on child when parent is destroyed
 DestructionWeapon.Parent=                 ; WeaponType, detonated on parent when child is destroyed
