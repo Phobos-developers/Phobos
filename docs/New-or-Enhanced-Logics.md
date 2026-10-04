@@ -60,6 +60,7 @@ This page describes all the engine features that are either new and introduced b
     - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
+    - `Tint.Cumulative` can be used to customize if the tinting stacks with effects that have `Cumulative` set to true.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
     - `ArmorMultiplier.AllowWarheads` and `ArmorMultiplier.DisallowWarheads` can be used to restrict which Warheads the armor multiplier is applied to when dealing damage.
     - `ArmorMultiplier.Chance` can be used to set the chance of whether the armor multiplier will take effect or not when taking damage.
@@ -182,6 +183,7 @@ ExpireWeapon.UseInvokerAsOwner=false               ; boolean
 Tint.Color=                                        ; integer - Red,Green,Blue
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+Tint.Cumulative=true                               ; boolean
 FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
 ArmorMultiplier.AllowWarheads=                     ; List of WarheadTypes

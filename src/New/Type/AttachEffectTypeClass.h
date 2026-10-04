@@ -102,6 +102,7 @@ public:
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	Valueable<bool> Tint_Cumulative;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
@@ -194,6 +195,7 @@ public:
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint_Cumulative { true }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}

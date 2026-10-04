@@ -166,6 +166,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+	this->Tint_Cumulative.Read(exINI, pSection, "Tint.Cumulative");
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
@@ -327,6 +328,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint_Cumulative)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
