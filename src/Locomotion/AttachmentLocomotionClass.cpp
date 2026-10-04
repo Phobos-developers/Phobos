@@ -19,6 +19,11 @@
 #include <cmath>
 
 // TODO maybe some macros for repeated parent function calls?
+AttachmentLocomotionClass::~AttachmentLocomotionClass()
+{
+	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
+}
 
 bool AttachmentLocomotionClass::Is_Moving()
 {
@@ -92,23 +97,31 @@ ZGradient AttachmentLocomotionClass::Z_Gradient()
 
 bool AttachmentLocomotionClass::Process()
 {
+	if (this->Is_Ok_To_End() && this->LinkedTo)
+	{
+		LocomotionClass::End_Piggyback(this->LinkedTo->Locomotor);
+		return true;
+	}
+
 	if (this->LinkedTo->IsAlive)
 	{
 		Layer newLayer = this->In_Which_Layer();
 		Layer oldLayer = this->PreviousLayer;
 
 		bool changedAirborneStatus = false;
+		bool isAirborne = (this->LinkedTo->GetTechnoType()->ConsideredAircraft || Layer::Air <= newLayer);
+		bool wasAirborne = (this->LinkedTo->GetTechnoType()->ConsideredAircraft || (oldLayer >= Layer::Air && oldLayer != Layer::None));
 
 		if (oldLayer != newLayer)
 		{
 			DisplayClass::Instance.Submit(this->LinkedTo);
 
-			if (oldLayer < Layer::Air && Layer::Air <= newLayer)
+			if (!wasAirborne && isAirborne)
 			{
 				AircraftTrackerClass::Instance.Add(this->LinkedTo);
 				changedAirborneStatus = true;
 			}
-			else if (newLayer < Layer::Air && Layer::Air <= oldLayer)
+			else if (wasAirborne && !isAirborne)
 			{
 				AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 				changedAirborneStatus = true;
@@ -116,13 +129,18 @@ bool AttachmentLocomotionClass::Process()
 
 			this->PreviousLayer = newLayer;
 		}
+		else if (isAirborne && this->LinkedTo->GetLastFlightMapCoords() == CellStruct::Empty)
+		{
+			AircraftTrackerClass::Instance.Add(this->LinkedTo);
+			changedAirborneStatus = true;
+		}
 
 		CellStruct oldPos = this->PreviousCell;
 		CellStruct newPos = this->LinkedTo->GetMapCoords();
 
 		if (oldPos != newPos)
 		{
-			if (Layer::Air <= newLayer && !changedAirborneStatus)
+			if (isAirborne && !changedAirborneStatus)
 				AircraftTrackerClass::Instance.Update(this->LinkedTo, oldPos, newPos);
 
 			if (this->LinkedTo->GetTechnoType()->SensorsSight)
@@ -227,7 +245,8 @@ void AttachmentLocomotionClass::Limbo()
 {
 	this->PreviousLayer = Layer::None;
 	this->PreviousCell = CellStruct::Empty;
-	// AircraftTracker is handled by FootClass::Limbo
+	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 }
 
 HRESULT AttachmentLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
@@ -239,7 +258,7 @@ HRESULT AttachmentLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
 		return E_FAIL;
 
 	// since LinkedTo may've been managed by AircraftTracker before we need to remove the AircraftTracker entry
-	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+	if (this->LinkedTo && !this->LinkedTo->GetTechnoType()->ConsideredAircraft && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
 		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 
 	this->Piggybacker = pointer;
@@ -256,7 +275,7 @@ HRESULT AttachmentLocomotionClass::End_Piggyback(ILocomotion** pointer)
 		return S_FALSE;
 
 	// since LinkedTo may no longer be considered airborne we need to remove the AircraftTracker entry
-	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+	if (this->LinkedTo && !this->LinkedTo->GetTechnoType()->ConsideredAircraft && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
 		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 
 	// since pointer is a dumb pointer, we don't need to call Release,
