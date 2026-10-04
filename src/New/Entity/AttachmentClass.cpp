@@ -320,7 +320,10 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 		if (pType->InheritStateEffects)
 		{
 			if (pChild->CloakState != CloakState::Uncloaked && !pChild->GetTechnoType()->Cloakable)
-				pChild->Uncloak(false);
+			{
+				// pChild->Uncloak(false);
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pChild, false);
+			}
 
 			pChild->ForceShielded = false;
 		}
@@ -744,7 +747,10 @@ bool AttachmentClass::DetachChild()
 		if (pType->InheritStateEffects)
 		{
 			if (pChild->CloakState != CloakState::Uncloaked && !pChild->GetTechnoType()->Cloakable)
-				pChild->Uncloak(false);
+			{
+				// pChild->Uncloak(false);
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pChild, false);
+			}
 
 			pChild->ForceShielded = false;
 		}

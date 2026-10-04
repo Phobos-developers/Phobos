@@ -572,7 +572,10 @@ void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
 		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
 		{
 			if (pAttachment->Child->CloakState != CloakState::Uncloaked && pAttachment->Child->CloakState != CloakState::Uncloaking)
-				pAttachment->Child->Uncloak(false);
+			{
+				// pAttachment->Child->Uncloak(false);
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pAttachment->Child, false);
+			}
 		}
 	}
 
@@ -580,7 +583,10 @@ void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
 	{
 		auto const pParent = pExt->ParentAttachment->Parent;
 		if (pParent && pParent->IsAlive && !pParent->InLimbo && pParent->CloakState != CloakState::Uncloaked && pParent->CloakState != CloakState::Uncloaking)
-			pParent->Uncloak(bPlaySound);
+		{
+			// pParent->Uncloak(bPlaySound);
+			reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pParent, bPlaySound);
+		}
 	}
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60CC, TechnoClass_Uncloak) // UnitClass
@@ -598,7 +604,10 @@ void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
 		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
 		{
 			if (pAttachment->Child->CloakState != CloakState::Cloaked && pAttachment->Child->CloakState != CloakState::Cloaking)
+			{
+				// pAttachment->Child->Cloak(false);
 				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pAttachment->Child, false);
+			}
 
 			reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(pAttachment->Child, false);
 		}
