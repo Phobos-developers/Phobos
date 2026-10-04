@@ -1028,6 +1028,9 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
+	R->EDI(pTarget);
+
 	pThis->Target = pTarget;
 
 	if (pThis->LocomotorTarget != pTarget)

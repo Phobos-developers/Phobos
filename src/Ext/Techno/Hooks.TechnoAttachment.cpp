@@ -539,8 +539,20 @@ void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 	}
 }
 
+AbstractClass* TechnoExt::RedirectUntargetableAttachment(AbstractClass* pObj)
+{
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pObj))
+		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTargetTechno)->ParentAttachment)
+			if (!pAttachment->GetType()->Targetable && pAttachment->Parent)
+				return pAttachment->Parent;
+
+	return pObj;
+}
+
 void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* pCell, CellStruct* pSecondCell)
 {
+	pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
+
 	// Rewrite of the original code
 	if (pTarget)
 	{
@@ -577,9 +589,11 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
 	}
 
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x18, +0x4));
+	GET_STACK(ObjectClass*, pTarget, STACK_OFFSET(0x18, +0x4));
 	LEA_STACK(CellStruct* const, pCell, STACK_OFFSET(0x18, +0x8));
 	GET_STACK(Action const, action, STACK_OFFSET(0x18, +0xC));
+
+	pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
 
 	CellStruct invalidCell { -1, -1 };
 	CellStruct* pSecondCell = &invalidCell;
