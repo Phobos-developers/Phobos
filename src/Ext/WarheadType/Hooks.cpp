@@ -193,9 +193,10 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
 
+	const int divider = pWHExt->SplashList_DamageDivider;
 	const int idx = pWHExt->SplashList_PickRandom
 		? ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1)
-		: std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
+		: std::min(animTypes.size() * divider - 1, (size_t)nDamage) / divider;
 
 	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
 	return 0x48A5AD;
@@ -216,18 +217,34 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
 
+	const int divider = pWHExt->Crit_AnimList_DamageDivider;
+
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size()
 		&& !pWHExt->Crit_AnimOnAffectedTargets.Get(RulesExt::Global()->Crit_AnimOnAffectedTargets))
 	{
 		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom)
 			? ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1)
-			: std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+			: std::min(pWHExt->Crit_AnimList.size() * divider - 1, (size_t)nDamage) / divider;
 
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x48A5EB, SelectDamageAnimation_AnimList_CustomCoefficient, 0x7)
+{
+	GET(WarheadTypeClass* const, pThis, ESI);
+	GET(const int, nDamage, EDI);
+
+	auto const pWHExt = WarheadTypeExt::Fetch(pThis);
+
+	const int divider = pWHExt->AnimList_DamageDivider;
+	const int idx = std::min((size_t)(pThis->AnimList.Count * divider - 1), (size_t)nDamage) / divider;
+
+	R->EAX(pThis->AnimList.GetItemOrDefault(idx));
+	return 0x48A5AD;
 }
 
 DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
