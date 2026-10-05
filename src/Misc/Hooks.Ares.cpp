@@ -12,6 +12,7 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -262,10 +263,38 @@ static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares
 
 #pragma region AresDriverKilled
 
+namespace AresDriverKilledTemp
+{
+	WeaponTypeExt::ExtData* Ext = nullptr;
+}
+
+static bool __fastcall ApplyAbductor_Init(WeaponTypeClass** pExt_Ares, void*, TechnoClass* pFirer, FootClass* pTarget)
+{
+	AresDriverKilledTemp::Ext = WeaponTypeExt::Fetch(*pExt_Ares);
+	const bool result = AresFunctions::ApplyAbductor(pExt_Ares, pFirer, pTarget);
+	AresDriverKilledTemp::Ext = nullptr;
+
+	return result;
+}
+
+struct DummyExtHere
+{
+	char _pad0[0x9C];
+	bool DriverKilled;
+};
+
 static bool __fastcall ApplyAbductor_DriverKilled(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
 {
 	if (TechnoExt::DriverKilled(pTechno))
-		return false;
+	{
+		if (AresDriverKilledTemp::Ext->Abductor_ChangeOwner_IgnoreDriverKilled)
+			return false;
+
+		auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pTechno->align_154);
+
+		if (AresDriverKilledTemp::Ext->Abductor_ChangeOwner_ResetDriverKilled)
+			pExt_Ares->DriverKilled = pHouse && pHouse->IsNeutral();
+	}
 
 	return pTechno->SetOwningHouse(pHouse, announce);
 }
@@ -415,6 +444,8 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4C836, GET_OFFSET(AresHouseExt_GetCrew));
 
 	// A unit whose driver has been killed will no longer change sides.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x537CC, GET_OFFSET(ApplyAbductor_Init));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5652E, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x54DC0, GET_OFFSET(ApplyAbductor_DriverKilled));
 }
 
@@ -542,5 +573,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4D496, GET_OFFSET(AresHouseExt_GetCrew));
 
 	// A unit whose driver has been killed will no longer change sides.
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5447C, GET_OFFSET(ApplyAbductor_Init));
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x571DE, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x55A70, GET_OFFSET(ApplyAbductor_DriverKilled));
 }

@@ -3385,6 +3385,19 @@ AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDamage.IgnoreTarget
 ```
 
+### Ares' Abductor Expansion
+
+- When Ares brings a vehicle—whose driver has been killed—into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
+  - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed.
+  - `Abductor.ChangeOwner.IgnoreDriverKilled` prevents the current country of a vehicle whose driver has been killed from being changed; the effect is equivalent to `Abductor.ChangeOwner=no`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                                    ; WeaponType
+Abductor.ChangeOwner.ResetDriverKilled=false    ; boolean
+Abductor.ChangeOwner.IgnoreDriverKilled=false   ; boolean
+```
+
 ### Can attack allies
 
 - Weapons now support `AttackFriendlies` and `AttackCursorOnFriendlies`. They override the firer's `AttackFriendlies` and `AttackCursorOnFriendlies`.
