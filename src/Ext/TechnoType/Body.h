@@ -390,6 +390,7 @@ public:
 			NullableIdx<TechnoTypeClass> TechnoType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
+			Valueable<bool> IsOnBarrel;
 			Valueable<DirType> RotationAdjust;
 			PhobosFixedString<32> ID;
 

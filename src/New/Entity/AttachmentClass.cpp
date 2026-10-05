@@ -27,7 +27,7 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 CoordStruct AttachmentClass::GetChildLocation()
 {
 	auto& flh = this->Data->FLH.Get();
-	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret, this->Data->IsOnBarrel);
 }
 
 AttachmentClass::~AttachmentClass()
@@ -105,13 +105,19 @@ void AttachmentClass::AI()
 
 		this->Child->SetLocation(this->GetChildLocation());
 
-		DirStruct childDir = this->Data->IsOnTurret
+		const bool parentHasTurret = this->Parent->GetTechnoType()->Turret;
+		DirStruct childDir = ((this->Data->IsOnTurret || this->Data->IsOnBarrel) && parentHasTurret)
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
 		this->Child->PrimaryFacing.SetCurrent(childDir);
-		// TODO handle secondary facing in case the turret is idle
+
+		if (this->Data->IsOnBarrel && parentHasTurret)
+			this->Child->AngleRotatedForwards = static_cast<float>(-this->Parent->BarrelFacing.Current().GetRadian<32>());
+
+		if (this->Child->GetTechnoType()->Turret && !this->Child->Target)
+			this->Child->SecondaryFacing.SetCurrent(childDir);
 
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
 		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
@@ -190,9 +196,10 @@ void AttachmentClass::Unlimbo()
 	if (this->Child)
 	{
 		CoordStruct childCoord = TechnoExt::GetFLHAbsoluteCoords(
-			this->Parent, this->Data->FLH, this->Data->IsOnTurret);
+			this->Parent, this->Data->FLH, this->Data->IsOnTurret, this->Data->IsOnBarrel);
 
-		DirStruct childDir = this->Data->IsOnTurret
+		const bool parentHasTurret = this->Parent->GetTechnoType()->Turret;
+		DirStruct childDir = ((this->Data->IsOnTurret || this->Data->IsOnBarrel) && parentHasTurret)
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
@@ -200,6 +207,9 @@ void AttachmentClass::Unlimbo()
 		++Unsorted::ScenarioInit;
 		this->Child->Unlimbo(childCoord, childDir.GetDir());
 		--Unsorted::ScenarioInit;
+
+		if (this->Child->GetTechnoType()->Turret)
+			this->Child->SecondaryFacing.SetCurrent(childDir);
 	}
 }
 

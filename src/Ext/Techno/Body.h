@@ -272,7 +272,7 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 	static bool HasRadioLinkWithDock(TechnoClass* pThis);
 
-	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
+	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false, bool barrelFLH = false);
 	static void InitializeShield(TechnoClass* pThis);
 
 

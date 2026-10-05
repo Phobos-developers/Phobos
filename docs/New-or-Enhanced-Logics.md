@@ -244,6 +244,7 @@ AttachmentX.Type=MNT                      ; AttachmentType (example)
 AttachmentX.TechnoType=                   ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                     ; integer - Forward, Lateral, Height
 AttachmentX.IsOnTurret=false              ; boolean
+AttachmentX.IsOnBarrel=false              ; boolean, whether child is mounted on weapon barrel (tracks barrel elevation & recoil)
 AttachmentX.RotationAdjust=0              ; rotation in DirType, from -255 to 255
 AttachmentX.ID=                           ; string, max 32 chars - ID for child transfer on type conversion; must be unique per TechnoType
 
