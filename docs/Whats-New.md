@@ -682,6 +682,7 @@ HideShakeEffects=false           ; boolean
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
 
 #### Vanilla fixes:
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
@@ -868,6 +869,7 @@ HideShakeEffects=false           ; boolean
 - Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
 
 ##### Vanilla fixes:
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
