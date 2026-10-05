@@ -262,7 +262,7 @@ static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares
 
 #pragma region AresDriverKilled
 
-static bool __fastcall TechnoClass_SetOwningHouse_DriverKilled(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
+static bool __fastcall ApplyAbductor_DriverKilled(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
 {
 	if (TechnoExt::DriverKilled(pTechno))
 		return false;
@@ -415,7 +415,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4C836, GET_OFFSET(AresHouseExt_GetCrew));
 
 	// A unit whose driver has been killed will no longer change sides.
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x54DC0, GET_OFFSET(TechnoClass_SetOwningHouse_DriverKilled));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x54DC0, GET_OFFSET(ApplyAbductor_DriverKilled));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -542,5 +542,5 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4D496, GET_OFFSET(AresHouseExt_GetCrew));
 
 	// A unit whose driver has been killed will no longer change sides.
-	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x55A70, GET_OFFSET(TechnoClass_SetOwningHouse_DriverKilled));
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x55A70, GET_OFFSET(ApplyAbductor_DriverKilled));
 }
