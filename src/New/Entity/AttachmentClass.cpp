@@ -153,20 +153,28 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
-		pChildExt->ParentAttachment = nullptr;
+		auto const pChild = this->Child;
+		this->Child = nullptr;
 
+		auto const pChildExt = TechnoExt::ExtMap.Find(pChild);
 		auto pType = this->GetType();
 
 		if (pType->DestructionWeapon_Child.isset())
-			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+			TechnoExt::FireWeaponAtSelf(pChild, pType->DestructionWeapon_Child);
 
-		if (pType->InheritDestruction && this->Child)
-			TechnoExt::Kill(this->Child, pSource);
-		else if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
-			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+		if (pType->InheritDestruction && pChild)
+			TechnoExt::Kill(pChild, pSource);
+		else if (!pChild->InLimbo && pType->ParentDestructionMission.isset())
+			pChild->QueueMission(pType->ParentDestructionMission.Get(), false);
 
-		this->Child = nullptr;
+		if (pChildExt)
+			pChildExt->ParentAttachment = nullptr;
+
+		if (this->Parent && !this->Parent->InLimbo)
+		{
+			if (auto const pParentUnit = abstract_cast<UnitClass*>(this->Parent))
+				pParentUnit->MarkAllOccupationBits(this->Parent->Location);
+		}
 	}
 }
 
@@ -174,14 +182,21 @@ void AttachmentClass::ChildDestroyed()
 {
 	if (this->Child)
 	{
-		if (auto const pChildExt = TechnoExt::ExtMap.Find(this->Child))
-			pChildExt->ParentAttachment = nullptr;
+		auto const pChild = this->Child;
+		this->Child = nullptr;
 
 		AttachmentTypeClass* pType = this->GetType();
 		if (pType->DestructionWeapon_Parent.isset())
 			TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
-		this->Child = nullptr;
+		if (auto const pChildExt = TechnoExt::ExtMap.Find(pChild))
+			pChildExt->ParentAttachment = nullptr;
+
+		if (this->Parent && !this->Parent->InLimbo)
+		{
+			if (auto const pParentUnit = abstract_cast<UnitClass*>(this->Parent))
+				pParentUnit->MarkAllOccupationBits(this->Parent->Location);
+		}
 	}
 }
 
