@@ -331,6 +331,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 
 ## Fixes / interactions with other extensions
 
