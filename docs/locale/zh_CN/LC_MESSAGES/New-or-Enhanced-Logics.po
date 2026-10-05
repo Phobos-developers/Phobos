@@ -397,6 +397,7 @@ msgid ""
 "than 0, values below 1 will behave as if it was set to 1 and will output "
 "developer warning in the log."
 msgstr ""
+"`CumulativeAnimations.CountIncrement` 用于控制需要多少层 AE 才会切换到列表中的下一个动画。该值必须大于 0，小于 1 的值将视作 1 处理并在日志中输出开发者警告。"
 
 msgid ""
 "Attached effect can fire off a weapon when expired / removed / object "

@@ -1090,6 +1090,7 @@ msgid ""
 "[AttachEffect `CumulativeAnimations` count increment customization](New-"
 "or-Enhanced-Logics.md#attached-effects) (by Starkku)"
 msgstr ""
+"[AE `CumulativeAnimations` 层数增量的自定义](New-or-Enhanced-Logics.md#attached-effects)（by Starkku）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
