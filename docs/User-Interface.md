@@ -378,6 +378,23 @@ EnableSelectBox=false                   ; boolean
 - For ImageShaper users, you need to choose a mode other than `Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files.
 ```
 
+### Set sidebar tab by selecting factory
+
+- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
+  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
+    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
+    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+SetTabBySelecting=-1            ; integer, index of tab
+```
+
 ### Show designator & inhibitor range
 
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
@@ -419,6 +436,22 @@ In `RA2MD.INI`:
 [Phobos]
 ShowGameTime=false             ; boolean
 ShowGameTime.BoardOpacity=40   ; integer
+```
+
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
 ### SuperWeapon ShowTimer sorting
@@ -532,39 +565,6 @@ DisplayIncome.Houses=      ; Affected House Enumeration, defaults to [AudioVisua
 DisplayIncome.Offset=0,0   ; X,Y, pixels relative to default
 ```
 
-### Show power plant enhancer range
-
-- It is possible to show range of power plant enhancer when placing a building.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-ShowPowerPlantEnhancerRange=true   ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowPowerPlantEnhancerRange=false  ; boolean
-```
-
-### Set sidebar tab by selecting factory
-
-- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
-  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
-    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
-    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
-    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
-
-In `rulesmd.ini`:
-```ini
-[General]
-SetTabBySelectingFactory=false  ; boolean
-
-[SOMEBUILDING]                  ; BuildingType
-SetTabBySelecting=-1            ; integer, index of tab
-```
-
 ## Hotkey Commands
 
 ### `[ ]` Cycle Selection
@@ -584,7 +584,7 @@ CycleSelectionKeyEnabled=true    ; boolean
 ### `[ ]` Cycle Type Selection
 
 - Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
-- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares `GroupAs` and Phobos selection group IDs.
+- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares's `GroupAs`.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
 - If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
@@ -650,6 +650,19 @@ In `rulesmd.ini`:
 QuickSaveKeyEnabled=true    ; boolean
 ```
 
+### `[ ]` Select Captured Units
+
+- Select the units within the current screen that are captured by non-permanent mind-controller.
+- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
+- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
+- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SelectCapturedKeyEnabled=false    ; boolean
+```
+
 ### `[ ]` Toggle Designator Range
 
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
@@ -686,19 +699,6 @@ In `rulesmd.ini`:
 ToggleMessageListKeyEnabled=true    ; boolean
 ```
 
-### `[ ]` Select Captured Units
-
-- Select the units within the current screen that are captured by non-permanent mind-controller.
-- Enable the hotkey by setting `SelectCapturedKeyEnabled` to true.
-- If selected any unit, `MSG:SelectCaptured` is logged on the left-top of the screen, otherwise `MSG:NothingSelected` is logged.
-- For localization add `MSG:SelectCaptured`, `TXT_SELECT_CAPTURED` and `TXT_SELECT_CAPTURED_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-SelectCapturedKeyEnabled=false    ; boolean
-```
-
 ```{important}
 **Development Hotkey Commands**
 
@@ -715,15 +715,15 @@ SelectCapturedKeyEnabled=false    ; boolean
 - Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
 - For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Frame By Frame Mode
-
-- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
-- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
-
 ### `[ ]` Save Variables
 
 - Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Frame By Frame Mode
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
 
