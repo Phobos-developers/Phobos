@@ -445,6 +445,7 @@ msgid ""
 "`Tint.Cumulative` can be used to customize if the tinting stacks with "
 "effects that have `Cumulative` set to true."
 msgstr ""
+"`Tint.Cumulative` 可用于自定义染色效果是否会跟着 `Cumulative` 设为 true 的 AE 效果叠加。"
 
 msgid ""
 "`FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and "
