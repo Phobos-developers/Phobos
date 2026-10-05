@@ -192,10 +192,6 @@ void UnitExt::DepletedAmmoActions()
 
 bool UnitExt::CannotMove(UnitClass* pThis)
 {
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return true;
-
 	if (pThis->LocomotorSource)
 		return false;
 

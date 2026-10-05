@@ -2620,4 +2620,15 @@ static void __fastcall UnitClass_ForceMission(UnitClass* pThis, void*, Mission m
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E58, UnitClass_QueueMission)
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
 
+DEFINE_HOOK(0x74197A, UnitClass_Assign_Destination_DriverKilled, 0x7)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	// Once the driver is killed, the vehicle is not allowed to move.
+	if (TechnoExt::DriverKilled(pThis))
+		R->Stack<AbstractClass*>(STACK_OFFSET(0x88, 0x4), nullptr);
+
+	return 0;
+}
+
 #pragma endregion
