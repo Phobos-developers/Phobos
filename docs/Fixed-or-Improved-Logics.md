@@ -3388,7 +3388,7 @@ AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDama
 ### Ares' Abductor Expansion
 
 - When Ares brings a vehicle—whose driver has been killed—into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
-  - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed.
+  - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed. Determine whether to retain the status of a driver who has been killed based on the `MultiplayPassive` setting in the country where the capturing player is currently located.
   - `Abductor.ChangeOwner.IgnoreDriverKilled` prevents the current country of a vehicle whose driver has been killed from being changed; the effect is equivalent to `Abductor.ChangeOwner=no`.
 
 In `rulesmd.ini`:
