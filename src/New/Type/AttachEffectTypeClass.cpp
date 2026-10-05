@@ -151,6 +151,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
 	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
+	this->CumulativeAnimations_CountIncrement.Read(exINI, pSection, "CumulativeAnimations.CountIncrement");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -165,6 +166,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+	this->Tint_Cumulative.Read(exINI, pSection, "Tint.Cumulative");
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
@@ -273,6 +275,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	{
 		this->RestrictedArmorMultiplier = false;
 	}
+
+	if (this->CumulativeAnimations_CountIncrement < 1)
+	{
+		Debug::Log("[Developer warning] [%s] CumulativeAnimations.CountIncrement is invalid value below 1, set to 1 instead.\n", pSection);
+		this->CumulativeAnimations_CountIncrement = 1;
+	}
 }
 
 template <typename T>
@@ -314,6 +322,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)
+		.Process(this->CumulativeAnimations_CountIncrement)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)
@@ -326,6 +335,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint_Cumulative)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
