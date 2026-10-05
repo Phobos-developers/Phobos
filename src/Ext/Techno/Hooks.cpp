@@ -2603,3 +2603,40 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 	return 0;
 }
+
+#pragma region BuildingImmune
+
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
+{
+	enum { PreventInfiltrate = 0x51A03E };
+
+	GET(BuildingClass*, pBuilding, EDI);
+
+	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
+
+	return pAE.HasImmuneToInfiltrate ? PreventInfiltrate : 0;
+}
+
+DEFINE_HOOK(0x519EB2, InfantryClass_UpdatePosition_ImmuneToCapture, 0x7)
+{
+	enum { PreventCapture = 0x519FB9 };
+
+	GET(BuildingClass*, pBuilding, EDI);
+
+	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
+
+	return pAE.HasImmuneToCapture ? PreventCapture : 0;
+}
+
+DEFINE_HOOK(0x519FAF, InfantryClass_UpdatePosition_ImmuneToEngineerRepair, 0x6)
+{
+	enum { PreventEngineerRepair = 0x519FB9 };
+
+	GET(BuildingClass*, pBuilding, EDI);
+
+	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
+
+	return pAE.HasImmuneToEngineerRepair ? PreventEngineerRepair : 0;
+}
+
+#pragma endregion

@@ -1187,6 +1187,9 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		pAE.HasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		pAE.HasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+		pAE.HasImmuneToCapture |= type->Immune_Capture;
+		pAE.HasImmuneToInfiltrate |= type->Immune_Infiltrate;
+		pAE.HasImmuneToEngineerRepair |= type->Immune_EngineerRepair;
 
 		if (type->RestrictedArmorMultiplier)
 			pAE.HasRestrictedArmorMultipliers = true;
@@ -1212,6 +1215,9 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	bool hasOwnerChangeDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
+	bool hasImmuneToCapture = false;
+	bool hasImmuneToInfiltrate = false;
+	bool hasImmuneToEngineerRepair = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1239,6 +1245,9 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
 		hasOwnerChangeDiscardables |= (type->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None;
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
+		hasImmuneToCapture |= type->Immune_Capture;
+		hasImmuneToInfiltrate |= type->Immune_Infiltrate;
+		hasImmuneToEngineerRepair |= type->Immune_EngineerRepair;
 	}
 
 	pAE.FirepowerMultiplier = firepower;
@@ -1257,6 +1266,9 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 	pAE.HasOwnerChangeDiscardables = hasOwnerChangeDiscardables;
 	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	pAE.HasCritModifiers = hasCritModifiers;
+	pAE.HasImmuneToCapture = hasImmuneToCapture;
+	pAE.HasImmuneToInfiltrate = hasImmuneToInfiltrate;
+	pAE.HasImmuneToEngineerRepair = hasImmuneToEngineerRepair;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
