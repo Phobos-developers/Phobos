@@ -550,6 +550,37 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 
 This category is empty for now.
 
+## Teams
+
+### Adjust recruitable status on team member liberate
+
+- In vanilla, when a unit is added to a team, its `RecruitableB` flag is overwritten by the team's `AreTeamMembersRecruitable` setting. When the unit is liberated from the team, the flag is not restored. The following settings allow a team to reset this flag when liberating its members.
+  - If set to a value **greater than 0**, the liberated unit is forcibly marked as recruitable.
+  - If set to **0**, the liberated unit is forcibly marked as not recruitable.
+  - If set to a value **less than 0** (default: `-1`), the original game behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetRecruitableOnLiberate=-1  ; integer
+```
+
+In `aimd.ini`:
+```ini
+[SOMETEAMTYPE]               ; TeamType
+SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
+```
+
+### Customized transport plane for teams
+
+- You can now use `ParaDropAircraft` to specify a new transport aircraft type for teams with `Droppod=yes`, which will override the global settings for `Ares` and `Vanilla`.
+
+In `aimd.ini`:
+```ini
+[SOMETEAMTYPE]      ; TeamType, with Droppod=yes
+ParaDropAircraft=   ; AircraftType
+```
+
 ## Trigger Actions
 
 ### `500` Save Game
@@ -1090,35 +1121,4 @@ In `mycampaign.map`:
 ...
 ID=EventCount,...,606,2,0,[AttachEffectType],...
 ...
-```
-
-## Teams
-
-### Adjust recruitable status on team member liberate
-
-- In vanilla, when a unit is added to a team, its `RecruitableB` flag is overwritten by the team's `AreTeamMembersRecruitable` setting. When the unit is liberated from the team, the flag is not restored. The following settings allow a team to reset this flag when liberating its members.
-  - If set to a value **greater than 0**, the liberated unit is forcibly marked as recruitable.
-  - If set to **0**, the liberated unit is forcibly marked as not recruitable.
-  - If set to a value **less than 0** (default: `-1`), the original game behavior is preserved.
-
-In `rulesmd.ini`:
-```ini
-[General]
-SetRecruitableOnLiberate=-1  ; integer
-```
-
-In `aimd.ini`:
-```ini
-[SOMETEAMTYPE]               ; TeamType
-SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
-```
-
-### Customized transport plane for teams
-
-- You can now use `ParaDropAircraft` to specify a new transport aircraft type for teams with `Droppod=yes`, which will override the global settings for `Ares` and `Vanilla`.
-
-In `aimd.ini`:
-```ini
-[SOMETEAMTYPE]      ; TeamType, with Droppod=yes
-ParaDropAircraft=   ; AircraftType
 ```
