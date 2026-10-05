@@ -2603,3 +2603,19 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
+{
+	enum { SkipGameCode = 0x5F5B36, Continue = 0x5F5B0A };
+
+	GET(ObjectClass* const, pThis, ESI);
+	GET(AnimClass* const, pAnim, EDI);
+
+	pAnim->Owner = pThis->GetOwningHouse();
+
+	if (!pAnim->Type->ShouldUseCellDrawer)
+		return SkipGameCode;
+
+	R->EAX(pThis->WhatAmI());
+	return Continue;
+}
