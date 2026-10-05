@@ -571,9 +571,9 @@ DEFINE_HOOK(0x442290, BuildingClass_ReceiveDamage_Nonprovocative1, 0x6)
 	return pTypeExt->Nonprovocative ? SkipEvents : 0;
 }
 
-DEFINE_HOOK(0x442046, BuildingClass_ReceiveDamage_Immune_FakeEngineer, 0x6)
+DEFINE_HOOK(0x442368, BuildingClass_ReceiveDamage_Immune_FakeEngineer, 0x7)
 {
-	enum { BypassImmuneExit = 0x44204C };
+	enum { BypassImmuneExit = 0x4423A3 };
 
 	GET(BuildingClass*, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
