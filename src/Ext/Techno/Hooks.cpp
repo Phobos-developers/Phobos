@@ -2611,7 +2611,8 @@ DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
 	GET(ObjectClass* const, pThis, ESI);
 	GET(AnimClass* const, pAnim, EDI);
 
-	pAnim->Owner = pThis->GetOwningHouse();
+	if (!pAnim->Owner)
+		pAnim->Owner = pThis->GetOwningHouse();
 
 	if (!pAnim->Type->ShouldUseCellDrawer)
 		return SkipGameCode;

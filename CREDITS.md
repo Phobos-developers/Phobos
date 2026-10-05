@@ -453,7 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
-  - Parachute animations support the use of `ShouldUseCellDrawer` and inherit the owner's current country
+  - The parachute animation supports `ShouldUseCellDrawer` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
