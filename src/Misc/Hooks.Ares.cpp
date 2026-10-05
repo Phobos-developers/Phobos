@@ -260,6 +260,18 @@ static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares
 
 #pragma endregion
 
+#pragma region AresDriverKilled
+
+static bool __fastcall TechnoClass_SetOwningHouse_DriverKilled(TechnoClass* pTechno, void*, HouseClass* pHouse, bool announce)
+{
+	if (TechnoExt::DriverKilled(pTechno))
+		return false;
+
+	return pTechno->SetOwningHouse(pHouse, announce);
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -401,6 +413,9 @@ void Apply_Ares3_0_Patches()
 
 	// Add a new custom crew for a country.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4C836, GET_OFFSET(AresHouseExt_GetCrew));
+
+	// A unit whose driver has been killed will no longer change sides.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x54DC0, GET_OFFSET(TechnoClass_SetOwningHouse_DriverKilled));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -525,4 +540,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// Add a new custom crew for a country.
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4D496, GET_OFFSET(AresHouseExt_GetCrew));
+
+	// A unit whose driver has been killed will no longer change sides.
+	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x55A70, GET_OFFSET(TechnoClass_SetOwningHouse_DriverKilled));
 }
