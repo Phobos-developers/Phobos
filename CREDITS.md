@@ -778,6 +778,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize `IdleActionFrequency`
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - Customize `DefaultToGuardArea` per gunner mode
+  - Global default value for `ShouldUseCellDrawer`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

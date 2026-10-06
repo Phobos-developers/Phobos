@@ -570,14 +570,15 @@ Unless otherwise specified, after removing the last dot and everything before it
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false      ; boolean
+DefaultToGuardArea=false       ; boolean
 
 [CombatDamage]
-Warhead.PreventScatter=false  ; boolean
+Warhead.PreventScatter=false   ; boolean
 
 [AudioVisual]
-LeptonMindControlOffset=70    ; integer, in leptons
-MindControlRingOffset=140     ; integer, in leptons
+LeptonMindControlOffset=70     ; integer, in leptons
+MindControlRingOffset=140      ; integer, in leptons
+Anim.ShouldUseCellDrawer=true  ; boolean
 ```
 
 ### Customize whether mind-controlled `Insignificant` technos can be auto-targeted
