@@ -1462,7 +1462,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 
 	this->FlyingProduction.Read(exINI, pSection, "FlyingProduction");
-	this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
+	if (pThis->WhatAmI() != AbstractType::BuildingType)
+		this->FlyingProduction_SpawnHeight.Read(exINI, pSection, "FlyingProduction.SpawnHeight");
 	this->FlyingProduction_PlayFactoryAnim.Read(exINI, pSection, "FlyingProduction.PlayFactoryAnim");
 	this->FlyingProduction_SpawnAnim.Read(exINI, pSection, "FlyingProduction.SpawnAnim");
 	this->FlyingProduction_SpawnAnim_AttachedToObject.Read(exINI, pSection, "FlyingProduction.SpawnAnim.AttachedToObject");
@@ -1493,6 +1494,10 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 bool TechnoTypeExt::IsFlyingProductionEnabled() const
 {
+	const auto pThis = this->OwnerObject();
+	if (pThis && pThis->WhatAmI() == AbstractType::BuildingType)
+		return false;
+
 	if (this->FlyingProduction.isset())
 		return this->FlyingProduction.Get();
 

@@ -259,6 +259,9 @@ KickOutResult BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, Tec
 	if (!pFactory || !pProduction || pFactory->GetCurrentMission() == Mission::Construction)
 		return KickOutResult::Failed;
 
+	if (pProduction->WhatAmI() == AbstractType::Building)
+		return KickOutResult::Failed;
+
 	auto const pType = pProduction->GetTechnoType();
 	if (!pType)
 		return KickOutResult::Failed;
@@ -564,6 +567,9 @@ DEFINE_HOOK(0x443C60, BuildingClass_KickOutUnit_FlyingProduction, 0x6)
 
 	GET(BuildingClass*, pFactory, ECX);
 	GET_STACK(TechnoClass*, pProduction, 0x4);
+
+	if (!pProduction || pProduction->WhatAmI() == AbstractType::Building)
+		return 0;
 
 	const auto result = BuildingExt::TrySpawnFlyingProduction(pFactory, pProduction);
 	if (result != KickOutResult::Failed)
