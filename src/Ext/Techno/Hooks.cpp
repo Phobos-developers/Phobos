@@ -2624,6 +2624,39 @@ DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
 // After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
 #pragma region DriverKilledFix
 
+DEFINE_HOOK(0x74197A, UnitClass_Assign_Destination_DriverKilled, 0x7)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	if (TechnoExt::DriverKilled(pThis))
+		R->Stack<AbstractClass*>(STACK_OFFSET(0x88, 0x4), nullptr);
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x708412, TechnoClass_BeAttacked_DriverKilled, 0x6)	// Unit
+DEFINE_HOOK(0x7081DC, TechnoClass_BeAttacked_DriverKilled, 0x6)			// Infantry
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (TechnoExt::DriverKilled(pThis))
+	{
+		R->AL(false);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
+static void __fastcall TechnoClass_Guard_DriverKilled(TechnoClass* pThis, void*, Mission mission)
+{
+	pThis->MissionClass::ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x70F87B, TechnoClass_Guard_DriverKilled)
+
+// If you encounter a problem that you really can't solve, you can restore it here.
+/*
 static bool __fastcall UnitClass_QueueMission(UnitClass* pThis, void*, Mission mission, bool start_mission)
 {
 	return pThis->MissionClass::QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
@@ -2636,16 +2669,6 @@ static void __fastcall UnitClass_ForceMission(UnitClass* pThis, void*, Mission m
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E58, UnitClass_QueueMission)
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
-
-DEFINE_HOOK(0x74197A, UnitClass_Assign_Destination_DriverKilled, 0x7)
-{
-	GET(UnitClass*, pThis, EBP);
-
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		R->Stack<AbstractClass*>(STACK_OFFSET(0x88, 0x4), nullptr);
-
-	return 0;
-}
+*/
 
 #pragma endregion
