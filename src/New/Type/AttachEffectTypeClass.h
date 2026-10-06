@@ -3,6 +3,7 @@
 #include <set>
 #include <unordered_map>
 
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
@@ -99,10 +100,7 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
-	Valueable<bool> Tint_Cumulative;
+	std::unique_ptr<TintTypeClass> Tint;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
@@ -196,10 +194,7 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
-		, Tint_Cumulative { true }
+		, Tint {}
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}
@@ -246,11 +241,6 @@ public:
 		, Immune_Infiltrate { false }
 		, Immune_EngineerRepair { false }
 	{};
-
-	bool HasTint() const
-	{
-		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
-	}
 
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
