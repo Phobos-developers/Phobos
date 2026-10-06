@@ -89,6 +89,7 @@ public:
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
+	Valueable<int> CumulativeAnimations_CountIncrement;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
@@ -101,6 +102,7 @@ public:
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	Valueable<bool> Tint_Cumulative;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
@@ -184,6 +186,7 @@ public:
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
+		, CumulativeAnimations_CountIncrement { 1 }
 		, Animation_ResetOnReapply { false }
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
@@ -196,6 +199,7 @@ public:
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint_Cumulative { true }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}
@@ -257,9 +261,10 @@ public:
 		if (cumulativeCount < 0)
 			return nullptr;
 
-		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+		const int index = this->CumulativeAnimations_CountIncrement > 1 ? cumulativeCount / this->CumulativeAnimations_CountIncrement : cumulativeCount - 1;
+		const int finalIndex = static_cast<size_t>(index) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : index;
 
-		return this->CumulativeAnimations.at(index);
+		return this->CumulativeAnimations.at(finalIndex);
 	}
 
 	void LoadFromINI(CCINIClass* pINI);
