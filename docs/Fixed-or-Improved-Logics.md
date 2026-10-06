@@ -3394,7 +3394,7 @@ AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDama
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                                    ; WeaponType
-Abductor.ChangeOwner.ResetDriverKilled=false    ; boolean
+Abductor.ChangeOwner.ResetDriverKilled=true     ; boolean
 Abductor.ChangeOwner.IgnoreDriverKilled=false   ; boolean
 ```
 

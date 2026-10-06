@@ -227,7 +227,7 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
-		, Abductor_ChangeOwner_ResetDriverKilled { false }
+		, Abductor_ChangeOwner_ResetDriverKilled { true }
 		, Abductor_ChangeOwner_IgnoreDriverKilled { false }
 		, CanTarget_DriverKilled { false }
 	{ }
