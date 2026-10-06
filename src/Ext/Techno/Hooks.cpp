@@ -423,7 +423,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())

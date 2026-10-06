@@ -1020,10 +1020,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
 
-	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
-	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
-	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
-
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
 	{
@@ -1423,6 +1419,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			this->TiberiumEaterType->LoadFromINI(pINI, pSection);
 	}
 
+	if (this->Tint == nullptr)
+		this->Tint = std::make_unique<TintTypeClass>();
+
+	this->Tint->LoadFromINI(pINI, pSection);
+
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
 
@@ -1684,9 +1685,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
 
-		.Process(this->Tint_Color)
-		.Process(this->Tint_Intensity)
-		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouse)
