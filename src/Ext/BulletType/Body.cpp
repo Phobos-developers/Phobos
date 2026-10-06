@@ -81,6 +81,7 @@ void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parachuted_MaxFallRate.Read(exINI, pSection, "Parachuted.MaxFallRate");
 	this->BombParachute.Read(exINI, pSection, "BombParachute");
 	this->AU.Read(exINI, pSection, "AU");
+	this->EMPulseCannon_InaccurateRadius.Read(exINI, pSection, "EMPulseCannon.InaccurateRadius");
 	this->MissileKeepTargetCoord.Read(exINI, pSection, "MissileKeepTargetCoord");
 	this->MissileSafetyAltitude.Read(exINI, pSection, "MissileSafetyAltitude");
 
@@ -190,6 +191,7 @@ void BulletTypeExt::Serialize(T& Stm)
 		.Process(this->Parachuted_MaxFallRate)
 		.Process(this->BombParachute)
 		.Process(this->AU)
+		.Process(this->EMPulseCannon_InaccurateRadius)
 		.Process(this->ZAdjust)
 		.Process(this->MissileKeepTargetCoord)
 		.Process(this->MissileSafetyAltitude)
