@@ -423,7 +423,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -2602,4 +2602,21 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
+{
+	enum { SkipGameCode = 0x5F5B36, Continue = 0x5F5B0A };
+
+	GET(ObjectClass* const, pThis, ESI);
+	GET(AnimClass* const, pAnim, EDI);
+
+	if (!pAnim->Owner)
+		pAnim->Owner = pThis->GetOwningHouse();
+
+	if (!pAnim->Type->ShouldUseCellDrawer)
+		return SkipGameCode;
+
+	R->EAX(pThis->WhatAmI());
+	return Continue;
 }
