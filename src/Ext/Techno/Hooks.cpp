@@ -2628,7 +2628,7 @@ DEFINE_HOOK(0x74197A, UnitClass_Assign_Destination_DriverKilled, 0x7)
 {
 	GET(UnitClass*, pThis, EBP);
 
-	if (TechnoExt::DriverKilled(pThis))
+	if (!pThis->LocomotorSource && TechnoExt::DriverKilled(pThis))
 		R->Stack<AbstractClass*>(STACK_OFFSET(0x88, 0x4), nullptr);
 
 	return 0;
