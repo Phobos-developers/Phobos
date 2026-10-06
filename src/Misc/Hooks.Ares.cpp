@@ -265,7 +265,7 @@ static InfantryTypeClass* __fastcall AresHouseExt_GetCrew(HouseClass** pExt_Ares
 
 namespace AresDriverKilledTemp
 {
-	WeaponTypeExt::ExtData* Ext = nullptr;
+	WeaponTypeExt* Ext = nullptr;
 }
 
 static bool __fastcall ApplyAbductor_Init(WeaponTypeClass** pExt_Ares, void*, TechnoClass* pFirer, FootClass* pTarget)
@@ -293,7 +293,7 @@ static bool __fastcall ApplyAbductor_DriverKilled(TechnoClass* pTechno, void*, H
 		auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pTechno->align_154);
 
 		if (AresDriverKilledTemp::Ext->Abductor_ChangeOwner_ResetDriverKilled)
-			pExt_Ares->DriverKilled = pHouse && pHouse->IsNeutral();
+			pExt_Ares->DriverKilled = pHouse->IsNeutral();
 	}
 
 	return pTechno->SetOwningHouse(pHouse, announce);
