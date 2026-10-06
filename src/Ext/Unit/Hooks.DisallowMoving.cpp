@@ -9,10 +9,6 @@ DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return SkipGameCode;
-
 	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
 }
 
