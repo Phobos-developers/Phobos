@@ -454,6 +454,7 @@ This page lists all the individual contributions to the project by their author.
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
+  - New `NoAmmoWeapons` tag supporting multiple weapon types
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

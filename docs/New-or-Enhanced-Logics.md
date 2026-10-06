@@ -2419,6 +2419,32 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### Multi VoiceAttack
+
+- Units can customize the attack voice that plays when using more weapons.
+  - If you need to assign an attack-voice to `Weapon1`, simply set `VoiceWeapon1Attack`. The same applies to other weapons.
+  - `VoiceEliteWeaponNAttack` can also be used to specify attack voices for `EliteWeaponN`. The default is `VoiceWeaponNAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+VoiceWeaponNAttack=         ; Sound entry
+VoiceEliteWeaponNAttack=    ; Sound entry
+```
+
+### No Ammo Weapons
+
+- You can now use multiple weapons with `NoAmmoWeapons` while `NoAmmoAmount` is active.
+ - `NoAmmoWeapons` selects an appropriate weapon based on the weapon's `CanTarget` and other tags, as well as the projectile's `Verses`.
+ - If no suitable weapon is found, it continues to use `NoAmmoWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                        ; TechnoType
+NoAmmoWeapons=                      ; List of integers
+NoAmmoWeapons.IgnoreNeverUse=yes    ; boolean
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
