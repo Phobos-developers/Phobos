@@ -437,6 +437,7 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 		Valueable<int> LeptonMindControlOffset;
 		Valueable<int> MindControlRingOffset;
+		Valueable<bool> Anim_ShouldUseCellDrawer;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
 
@@ -943,6 +944,7 @@ public:
 			, DefaultToGuardArea { false }
 			, LeptonMindControlOffset { 70 }
 			, MindControlRingOffset { 140 }
+			, Anim_ShouldUseCellDrawer { true }
 
 			, CylinderRangefinding { false }
 
