@@ -131,7 +131,8 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 					pEventOwner,
 					pObject,
 					&pThis->Timer,
-					&repeatingFlag
+					&repeatingFlag,
+					pSource
 				);
 
 				if (!occurred)
@@ -214,7 +215,8 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 								pEventOwner,
 								pObject,
 								pTimer,
-								&repeatingFlag
+								&repeatingFlag,
+								pSource
 							);
 
 							if (!occurred)
@@ -231,10 +233,7 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 					}
 
 					if (!blockDone)
-					{
-						// Parallel block incomplete: short-circuit!
 						return false;
-					}
 				}
 				else // Sequential block
 				{
@@ -255,7 +254,8 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 								pEventOwner,
 								pObject,
 								pTimer,
-								&repeatingFlag
+								&repeatingFlag,
+								pSource
 							);
 
 							if (occurred)
