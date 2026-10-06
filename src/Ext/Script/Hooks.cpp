@@ -190,11 +190,13 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 		action = action;
 		strcpy_s(textArgument, Phobos::readBuffer);
 
+		char* pArg = textArgument;
+		while (*pArg == ' ' || *pArg == '\t')
+			++pArg;
+
 		// Action masks: These actions translate IDs into indices while preserving the original action values.
 		// The reason for using these masks is that some ScriptType actions rely on fixed indices rather than ID labels.
 		// When these lists change, there's a high probability of breaking the original index of the pointed element
-		char id[sizeof(AbstractTypeClass::ID)] = { 0 };
-		char bwp[20] = { 0 };
 		int index = 0;
 		int prefixIndex = 0;
 
@@ -202,26 +204,26 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 		{
 		case PhobosScripts::ChangeToScriptByID:
 			action = 17;
-			index = ScriptTypeClass::FindIndex(textArgument);
+			index = ScriptTypeClass::FindIndex(pArg);
 			break;
 		case PhobosScripts::ChangeToTeamTypeByID:
 			action = 18;
-			index = TeamTypeClass::FindIndex(textArgument);
+			index = TeamTypeClass::FindIndex(pArg);
 			break;
 		case PhobosScripts::ChangeToHouseByID:
 			action = 20;
-			index = HouseTypeClass::FindIndexOfName(textArgument);
+			index = HouseTypeClass::FindIndexOfName(pArg);
 
 			if (index < 0)
-				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid Country string [%s]\n", textArgument);
+				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid Country string [%s]\n", pArg);
 			break;
 		case PhobosScripts::PlaySpeechByID:
 			action = static_cast<int>(PhobosScripts::PlaySpeech);
-			index = VoxClass::FindIndex(textArgument);
+			index = VoxClass::FindIndex(pArg);
 			break;
 		case PhobosScripts::PlaySoundByID:
 			action = 25;
-			index = VocClass::FindIndex(textArgument);
+			index = VocClass::FindIndex(pArg);
 			break;
 		case PhobosScripts::PlayMovieByID:
 			// Note: action "26" is currently impossible without an expert Phobos developer declaring the Movies class... in that case I could code the right FindIndex(textArgument) so sadly I'll skip "26" for now :-(
@@ -230,12 +232,16 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			break;
 		case PhobosScripts::PlayThemeByID:
 			action = 27;
-			index = ThemeClass::Instance.FindIndex(textArgument);
+			index = ThemeClass::Instance.FindIndex(pArg);
 			break;
 		case PhobosScripts::PlayAnimationByID:
 			action = 51;
-			index = AnimTypeClass::FindIndex(textArgument);
+			index = AnimTypeClass::FindIndex(pArg);
 			break;
+		case static_cast<PhobosScripts>(46):
+		case static_cast<PhobosScripts>(47):
+		case static_cast<PhobosScripts>(56):
+		case static_cast<PhobosScripts>(58):
 		case PhobosScripts::AttackEnemyStructureByID:
 		case PhobosScripts::MoveToEnemyStructureByID:
 		case PhobosScripts::ChronoshiftTaskForceToStructureByID:
@@ -249,18 +255,38 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			else if (PhobosScripts::MoveToFriendlyStructureByID == static_cast<PhobosScripts>(action))
 				action = 58;
 
-			if (sscanf(textArgument, "%[^,],%s", id, bwp) == 2)
-			{
-				index = BuildingTypeClass::FindIndex(id);
+			prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
 
-				if (index >= 0)
+			{
+				char* scanMode = nullptr;
+				char* targetName = strtok_s(pArg, ",", &scanMode);
+				if (targetName)
 				{
-					if (_strcmpi(bwp, "highestthreat") == 0)
-						prefixIndex = static_cast<int>(BuildingWithProperty::HighestThreat);
-					else if (_strcmpi(bwp, "nearest") == 0)
-						prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
-					else if (_strcmpi(bwp, "farthest") == 0)
-						prefixIndex = static_cast<int>(BuildingWithProperty::Farthest);
+					while (*targetName == ' ' || *targetName == '\t')
+						++targetName;
+					char* end = targetName + strlen(targetName) - 1;
+					while (end > targetName && (*end == ' ' || *end == '\t'))
+						*end-- = '\0';
+
+					index = BuildingTypeClass::FindIndex(targetName);
+
+					if (index >= 0 && scanMode)
+					{
+						while (*scanMode == ' ' || *scanMode == '\t')
+							++scanMode;
+						end = scanMode + strlen(scanMode) - 1;
+						while (end > scanMode && (*end == ' ' || *end == '\t'))
+							*end-- = '\0';
+
+						if (_stricmp(scanMode, "low") == 0 || _stricmp(scanMode, "leastthreat") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::LeastThreat);
+						else if (_stricmp(scanMode, "high") == 0 || _stricmp(scanMode, "hight") == 0 || _stricmp(scanMode, "highestthreat") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::HighestThreat);
+						else if (_stricmp(scanMode, "near") == 0 || _stricmp(scanMode, "nearest") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
+						else if (_stricmp(scanMode, "far") == 0 || _stricmp(scanMode, "farthest") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::Farthest);
+					}
 				}
 			}
 			break;
