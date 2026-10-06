@@ -1,3 +1,4 @@
+#include <array>
 #include <TriggerClass.h>
 #include <TriggerTypeClass.h>
 #include <HouseClass.h>
@@ -59,12 +60,13 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 		return false;
 
 	// Collect all events in original INI order
-	std::vector<TEventClass*> events;
-	for (auto pEvent = pFirstEvent; pEvent; pEvent = pEvent->NextEvent)
-	{
-		events.push_back(pEvent);
-	}
-	std::reverse(events.begin(), events.end());
+	// In YR, OccuredEvents is a 32-bit bitfield, so max 32 events per trigger
+	constexpr size_t MaxEvents = 32;
+	std::array<TEventClass*, MaxEvents> events;
+	size_t eventCount = 0;
+	for (auto pEvent = pFirstEvent; pEvent && eventCount < MaxEvents; pEvent = pEvent->NextEvent)
+		events[eventCount++] = pEvent;
+	std::reverse(events.begin(), events.begin() + eventCount);
 
 	enum class EventBlockType
 	{
@@ -80,45 +82,16 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 		int ControlEventIndex { -1 };
 	};
 
-	// Partition events into alternating blocks (delimited by Event 1000 and Event 1001)
-	std::vector<EventBlock> blocks;
-	EventBlock currentBlock;
-	currentBlock.Type = EventBlockType::Parallel;
-	currentBlock.StartIndex = 0;
-	currentBlock.ControlEventIndex = -1;
-
 	bool hasControlEvents = false;
-
-	for (int i = 0; i < static_cast<int>(events.size()); ++i)
+	for (size_t i = 0; i < eventCount; ++i)
 	{
 		int const kind = static_cast<int>(events[i]->EventKind);
-		if (kind == PhobosTriggerEvent::ForceSequentialEvents)
+		if (kind == PhobosTriggerEvent::ForceSequentialEvents || kind == PhobosTriggerEvent::ForceParallelEvents)
 		{
 			hasControlEvents = true;
-			currentBlock.EndIndex = i - 1;
-			currentBlock.ControlEventIndex = i;
-			blocks.push_back(currentBlock);
-
-			// Start new sequential block
-			currentBlock.Type = EventBlockType::Sequential;
-			currentBlock.StartIndex = i + 1;
-			currentBlock.ControlEventIndex = -1;
-		}
-		else if (kind == PhobosTriggerEvent::ForceParallelEvents)
-		{
-			hasControlEvents = true;
-			currentBlock.EndIndex = i - 1;
-			currentBlock.ControlEventIndex = i;
-			blocks.push_back(currentBlock);
-
-			// Start new parallel block
-			currentBlock.Type = EventBlockType::Parallel;
-			currentBlock.StartIndex = i + 1;
-			currentBlock.ControlEventIndex = -1;
+			break;
 		}
 	}
-	currentBlock.EndIndex = static_cast<int>(events.size()) - 1;
-	blocks.push_back(currentBlock);
 
 	auto const pExt = TriggerExt::Fetch(pThis);
 	HouseClass* pEventOwner = nullptr;
@@ -126,10 +99,13 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 	{
 		if (!SessionClass::IsCampaign())
 		{
-			auto const& triggerOwners = ScenarioExt::Global()->TriggerTypePlayerAtXOwners;
-			auto it = triggerOwners.find(pThis->Type->ArrayIndex);
-			if (it != triggerOwners.end())
-				pEventOwner = HouseClass::FindByPlayerAt(it->second);
+			if (auto const pScenarioExt = ScenarioExt::Global())
+			{
+				auto const& triggerOwners = pScenarioExt->TriggerTypePlayerAtXOwners;
+				auto it = triggerOwners.find(pThis->Type->ArrayIndex);
+				if (it != triggerOwners.end())
+					pEventOwner = HouseClass::FindByPlayerAt(it->second);
+			}
 		}
 
 		if (!pEventOwner && pThis->Type->House)
@@ -141,7 +117,7 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 	if (!hasControlEvents)
 	{
 		// Standard parallel evaluation (vanilla)
-		for (size_t i = 0; i < events.size(); ++i)
+		for (size_t i = 0; i < eventCount; ++i)
 		{
 			auto const pEvent = events[i];
 			const DWORD eventBit = 1u << i;
@@ -175,8 +151,49 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 	else
 	{
 		// Multi-block evaluation (alternating Parallel and Sequential blocks)
-		for (const auto& block : blocks)
+		std::array<EventBlock, MaxEvents> blocks;
+		size_t blockCount = 0;
+
+		EventBlock currentBlock;
+		currentBlock.Type = EventBlockType::Parallel;
+		currentBlock.StartIndex = 0;
+		currentBlock.ControlEventIndex = -1;
+
+		for (size_t i = 0; i < eventCount; ++i)
 		{
+			int const kind = static_cast<int>(events[i]->EventKind);
+			if (kind == PhobosTriggerEvent::ForceSequentialEvents)
+			{
+				currentBlock.EndIndex = static_cast<int>(i) - 1;
+				currentBlock.ControlEventIndex = static_cast<int>(i);
+				if (blockCount < MaxEvents)
+					blocks[blockCount++] = currentBlock;
+
+				// Start new sequential block
+				currentBlock.Type = EventBlockType::Sequential;
+				currentBlock.StartIndex = static_cast<int>(i) + 1;
+				currentBlock.ControlEventIndex = -1;
+			}
+			else if (kind == PhobosTriggerEvent::ForceParallelEvents)
+			{
+				currentBlock.EndIndex = static_cast<int>(i) - 1;
+				currentBlock.ControlEventIndex = static_cast<int>(i);
+				if (blockCount < MaxEvents)
+					blocks[blockCount++] = currentBlock;
+
+				// Start new parallel block
+				currentBlock.Type = EventBlockType::Parallel;
+				currentBlock.StartIndex = static_cast<int>(i) + 1;
+				currentBlock.ControlEventIndex = -1;
+			}
+		}
+		currentBlock.EndIndex = static_cast<int>(eventCount) - 1;
+		if (blockCount < MaxEvents)
+			blocks[blockCount++] = currentBlock;
+
+		for (size_t b = 0; b < blockCount; ++b)
+		{
+			const auto& block = blocks[b];
 			if (block.StartIndex <= block.EndIndex)
 			{
 				if (block.Type == EventBlockType::Parallel)
@@ -263,18 +280,13 @@ static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
 					}
 
 					if (!blockDone)
-					{
-						// Sequential block incomplete: short-circuit!
 						return false;
-					}
 				}
 			}
 
 			// Block fully satisfied! Mark closing control event as passed
 			if (block.ControlEventIndex >= 0)
-			{
 				pThis->OccuredEvents |= (1u << block.ControlEventIndex);
-			}
 		}
 	}
 
