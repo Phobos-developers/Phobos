@@ -2606,7 +2606,13 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 #pragma region BuildingImmune
 
-DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
+namespace ImmuneTemp
+{
+	bool ImmuneToCapture = false;
+	bool ImmuneToEngineerRepair = false;
+};
+
+DEFINE_HOOK(0x519FF8, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
 {
 	enum { PreventInfiltrate = 0x51A03E };
 
@@ -2637,6 +2643,53 @@ DEFINE_HOOK(0x519FAF, InfantryClass_UpdatePosition_ImmuneToEngineerRepair, 0x6)
 	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
 
 	return pAE.HasImmuneToEngineerRepair ? PreventEngineerRepair : 0;
+}
+
+DEFINE_HOOK(0x51E49E, InfantryClass_WhatAction_SetFlag, 0x6)
+{
+	GET(TechnoClass*, pTarget, ESI);
+
+	if(!pTarget || pTarget->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	const auto pBuilding = static_cast<BuildingClass*>(pTarget);
+
+	ImmuneTemp::ImmuneToEngineerRepair = BuildingExt::Fetch(pBuilding)->AE.HasImmuneToEngineerRepair;
+	ImmuneTemp::ImmuneToCapture = BuildingExt::Fetch(pBuilding)->AE.HasImmuneToCapture;
+	
+	return 0;
+}
+
+DEFINE_HOOK(0x51E662, InfantryClass_WhatAction_ImmuneToEngineerRepair, 0x6)
+{
+	if(ImmuneTemp::ImmuneToEngineerRepair)
+		R->EAX(Action::NoMove);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51E5E1, InfantryClass_WhatAction_ImmuneToCapture, 0x7)
+{
+	if(ImmuneTemp::ImmuneToCapture)
+		R->EAX(Action::NoEnter);
+		
+	return 0;
+}
+
+DEFINE_HOOK(0x51F05E, InfantryClass_WhatAction_ImmuneToInfiltrate, 0x6)
+{
+	GET(InfantryClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
+
+	if(!pTarget || pTarget->WhatAmI() != AbstractType::Building || !pThis->Type->Agent)
+		return 0;
+
+	const auto pBuilding = static_cast<BuildingClass*>(pTarget);
+
+	if(BuildingExt::Fetch(pBuilding)->AE.HasImmuneToInfiltrate)
+		R->EBP(Action::NoMove);
+
+	return 0;
 }
 
 #pragma endregion
