@@ -453,6 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
+  - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -583,6 +584,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - More convenient vanilla action script target specification
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

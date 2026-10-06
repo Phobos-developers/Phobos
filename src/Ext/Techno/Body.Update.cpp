@@ -1326,6 +1326,7 @@ void TechnoExt::UpdateTintValues()
 		};
 
 		std::vector<CumulativeTint> cumulativeTints;
+		std::vector<AttachEffectTypeClass*> processedTypes;
 
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
@@ -1336,25 +1337,44 @@ void TechnoExt::UpdateTintValues()
 
 			auto const& color = type->Tint_Color.Get();
 
-			if (type->Cumulative && type->Tint_Cumulative && type->Tint_Color.isset() && color != ColorStruct { 0, 0, 0 })
+			// Case 1: Non-cumulative AE's.
+			if (!type->Cumulative)
 			{
-				auto it = std::find_if(cumulativeTints.begin(), cumulativeTints.end(), [type](auto const& tint)
-					{ return tint.Type == type; }
-				);
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+				continue;
+			}
 
-				if (it != cumulativeTints.end())
-				{
-					it->Color += color;
-					it->Intensity += type->Tint_Intensity;
-				}
-				else
-				{
-					cumulativeTints.push_back({type, color, type->Tint_Intensity});
-				}
+			// Case 2: Cumulative AE's without cumulative tint.
+			if (!type->Tint_Cumulative)
+			{
+				if (std::find(processedTypes.begin(), processedTypes.end(), type) != processedTypes.end())
+					continue;
+
+				processedTypes.push_back(type);
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+				continue;
+			}
+
+			// Case 3: Cumulative AE with cumulative tint but no color tint.
+			if (color == ColorStruct{ 0,0,0 })
+			{
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+				continue;
+			}
+
+			// Case 4: Cumulative AE with cumulative color tint.
+			auto it = std::find_if(cumulativeTints.begin(), cumulativeTints.end(), [type](auto const& tint)
+				{ return tint.Type == type; }
+			);
+
+			if (it != cumulativeTints.end())
+			{
+				it->Color += color;
+				it->Intensity += type->Tint_Intensity;
 			}
 			else
 			{
-				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+				cumulativeTints.push_back({ type, color, type->Tint_Intensity });
 			}
 		}
 
