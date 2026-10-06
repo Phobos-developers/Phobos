@@ -1735,6 +1735,7 @@ msgid ""
 "hard-coded requirement to use the owner's color palette, while inheriting"
 " the animation owner's current country."
 msgstr ""
+"降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
