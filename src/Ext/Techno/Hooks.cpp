@@ -2648,12 +2648,19 @@ DEFINE_HOOK(0x7081DC, TechnoClass_BeAttacked_DriverKilled, 0x6)			// Infantry
 	return 0;
 }
 
-static void __fastcall TechnoClass_Guard_DriverKilled(TechnoClass* pThis, void*, Mission mission)
+static void __fastcall TechnoClass_Guard_ForceMission_DriverKilled(TechnoClass* pThis, void*, Mission mission)
 {
-	pThis->MissionClass::ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+	pThis->ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
 }
 
-DEFINE_FUNCTION_JUMP(CALL6, 0x70F87B, TechnoClass_Guard_DriverKilled)
+DEFINE_FUNCTION_JUMP(CALL6, 0x70F87B, TechnoClass_Guard_ForceMission_DriverKilled)
+
+static bool __fastcall UnitClass_EnterIdleMode_QueueMission_DriverKilled(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x738D1B, UnitClass_EnterIdleMode_QueueMission_DriverKilled)
 
 // If you encounter a problem that you really can't solve, you can restore it here.
 /*
