@@ -333,6 +333,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Observer can see IvanBomb that's attached by any house.
 - Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 
 ## Fixes / interactions with other extensions
 
@@ -569,14 +570,15 @@ Unless otherwise specified, after removing the last dot and everything before it
 In `rulesmd.ini`:
 ```ini
 [General]
-DefaultToGuardArea=false      ; boolean
+DefaultToGuardArea=false       ; boolean
 
 [CombatDamage]
-Warhead.PreventScatter=false  ; boolean
+Warhead.PreventScatter=false   ; boolean
 
 [AudioVisual]
-LeptonMindControlOffset=70    ; integer, in leptons
-MindControlRingOffset=140     ; integer, in leptons
+LeptonMindControlOffset=70     ; integer, in leptons
+MindControlRingOffset=140      ; integer, in leptons
+Anim.ShouldUseCellDrawer=true  ; boolean
 ```
 
 ### Customize whether mind-controlled `Insignificant` technos can be auto-targeted
