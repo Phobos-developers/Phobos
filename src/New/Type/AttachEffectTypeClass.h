@@ -137,7 +137,7 @@ public:
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
-	bool Immune;
+
 	Valueable<bool> Immune_Capture;
 	Valueable<bool> Immune_Infiltrate;
 	Valueable<bool> Immune_EngineerRepair;
@@ -236,7 +236,6 @@ public:
 		, RequiresRecalculation { false }
 		, RequiresAnimUpdate { false }
 		, RestrictedArmorMultiplier { false }
-		, Immune { false }
 		, Immune_Capture { false }
 		, Immune_Infiltrate { false }
 		, Immune_EngineerRepair { false }
