@@ -3665,3 +3665,10 @@ DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
 
 	return pThis->TemporalTargetingMe && !RulesExt::Global()->Temporal_KillPoweredAnim ? ReturnFromFunction : 0;
 }
+
+DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+
+	return (pThis->AbstractFlags & AbstractFlags::Foot && pThis->IsAttackedByLocomotor) ? 0x70F85F : 0;
+}
