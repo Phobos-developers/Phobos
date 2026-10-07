@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 class Matrix3D;
@@ -257,9 +258,7 @@ public:
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Nullable<bool> Convert_ResetMindControl;
 
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
@@ -456,6 +455,9 @@ public:
 
 	ValueableVector<int> DefaultToGuardArea_Modes;
 	ValueableVector<int> DefaultToGuardArea_AIModes;
+	
+	ValueableVector<int> NoAmmoWeapons;
+	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -698,9 +700,7 @@ public:
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl {}
 
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
@@ -886,6 +886,9 @@ public:
 
 		, DefaultToGuardArea_Modes {}
 		, DefaultToGuardArea_AIModes {}
+
+		, NoAmmoWeapons {}
+		, NoAmmoWeapons_IgnoreNeverUse { true }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

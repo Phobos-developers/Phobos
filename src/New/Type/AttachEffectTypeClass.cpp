@@ -163,11 +163,6 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
 
-	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
-	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
-	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
-	this->Tint_Cumulative.Read(exINI, pSection, "Tint.Cumulative");
-
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
 	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
@@ -221,6 +216,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
+	// Tint
+	if (this->Tint == nullptr)
+		this->Tint = std::make_unique<TintTypeClass>();
+
+	this->Tint->LoadFromINI(pINI, pSection);
+
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
@@ -239,7 +240,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
-		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->HasTint()
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->Tint->Enabled
 		|| (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
@@ -325,10 +326,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
-		.Process(this->Tint_Color)
-		.Process(this->Tint_Intensity)
-		.Process(this->Tint_VisibleToHouses)
-		.Process(this->Tint_Cumulative)
+		.Process(this->Tint)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
