@@ -3670,6 +3670,7 @@ DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	return (pThis->AbstractFlags & AbstractFlags::Foot && static_cast<FootClass*>(pThis)->IsAttackedByLocomotor)
+	return ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+		&& static_cast<FootClass*>(pThis)->IsAttackedByLocomotor)
 		? 0x70F85F : 0;
 }
