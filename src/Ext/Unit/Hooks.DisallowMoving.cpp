@@ -5,11 +5,9 @@
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
-	enum { SkipGameCode = 0x740AEF };
-
 	GET(UnitClass*, pThis, ESI);
 
-	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
+	return UnitExt::CannotMove(pThis) ? 0x740AEF : 0;
 }
 
 DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
@@ -28,26 +26,20 @@ DEFINE_HOOK(0x743B4B, UnitClass_Scatter_DisallowMoving, 0x6)
 
 DEFINE_HOOK(0x74038F, UnitClass_What_Action_ObjectClass_DisallowMoving_1, 0x6)
 {
-	enum { SkipGameCode = 0x7403A3 };
-
 	GET(UnitClass*, pThis, ESI);
 	
-	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
+	return UnitExt::CannotMove(pThis) ? 0x7403A3 : 0;
 }
 
 DEFINE_HOOK(0x7403B7, UnitClass_What_Action_ObjectClass_DisallowMoving_2, 0x6)
 {
-	enum { SkipGameCode = 0x7403C1 };
-
 	GET(UnitClass*, pThis, ESI);
 
-	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
+	return UnitExt::CannotMove(pThis) ? 0x7403C1 : 0;
 }
 
 DEFINE_HOOK(0x740709, UnitClass_What_Action_DisallowMoving_1, 0x6)
 {
-	enum { SkipGameCode = 0x740727 };
-
 	GET(UnitClass*, pThis, ESI);
 
 	return UnitExt::CannotMove(pThis) ? 0x740727 : 0;
