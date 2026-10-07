@@ -1634,90 +1634,65 @@ DEFINE_HOOK(0x450885, BuildingClass_Repair_CheckAndSpend, 0x23)
 	return CanRepair;
 }
 
-static void DeductUnitRepairCustomResources(BuildingClass* pDepot)
+DEFINE_HOOK(0x6FA1AE, TechnoClass_ServiceDepot_TakeMoneyAndResources, 0x5)
 {
-	if (!pDepot || !pDepot->Owner)
-		return;
+	GET(TechnoClass*, pUnit, ESI);
+	GET(int, moneyCost, EDI);
 
-	const auto pOwner = pDepot->Owner;
-	const auto pHouseExt = HouseExt::TryFetch(pOwner);
-	if (!pHouseExt)
-		return;
-
-	const signed char unitIdx = *reinterpret_cast<signed char*>(reinterpret_cast<DWORD>(pDepot) + 0x702);
-	if (unitIdx <= 0)
-		return;
-
-	const auto pUnit = *reinterpret_cast<FootClass**>(reinterpret_cast<DWORD>(pDepot) + 0x5E8 + unitIdx * 4);
-	if (!pUnit)
-		return;
-
-	const auto pType = pUnit->GetTechnoType();
-	if (!pType || pType->Strength <= 0)
-		return;
-
-	const auto pTypeExt = TechnoTypeExt::TryFetch(pType);
-	if (!pTypeExt || pTypeExt->ResourceCosts.empty())
-		return;
-
-	const int repairHP = pType->GetRepairStep();
-	if (repairHP <= 0)
-		return;
-
-	const double repairFactor = (RulesClass::Instance && RulesClass::Instance->RepairPercent > 0.0)
-		? RulesClass::Instance->RepairPercent
-		: 0.5;
-
-	for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+	if (pUnit && pUnit->Owner)
 	{
-		const int totalResCost = pTypeExt->ResourceCosts[i];
-		if (totalResCost > 0)
+		const auto pOwner = pUnit->Owner;
+		if (moneyCost > 0)
 		{
-			const double stepCostExact = (static_cast<double>(totalResCost) * repairFactor * repairHP) / static_cast<double>(pType->Strength);
-			const int resCost = std::max(1, static_cast<int>(std::round(stepCostExact)));
+			pOwner->TakeMoney(moneyCost);
+		}
 
-			if (pHouseExt->CanAffordResource(static_cast<int>(i), resCost))
+		if (const auto pHouseExt = HouseExt::TryFetch(pOwner))
+		{
+			const auto pType = pUnit->GetTechnoType();
+			if (pType && pType->Strength > 0)
 			{
-				pHouseExt->UpdateResourceAmount(static_cast<int>(i), -resCost);
+				if (const auto pTypeExt = TechnoTypeExt::TryFetch(pType))
+				{
+					if (!pTypeExt->ResourceCosts.empty())
+					{
+						const int repairHP = pType->GetRepairStep();
+						if (repairHP > 0)
+						{
+							const double repairFactor = (RulesClass::Instance && RulesClass::Instance->RepairPercent > 0.0)
+								? RulesClass::Instance->RepairPercent
+								: 0.5;
+
+							const auto pDepot = *reinterpret_cast<BuildingClass**>(reinterpret_cast<DWORD>(pUnit) + 0x1D0);
+							const auto pDepotOwner = pDepot ? pDepot->Owner : nullptr;
+							const auto pDepotOwnerExt = (pDepotOwner && pDepotOwner != pOwner) ? HouseExt::TryFetch(pDepotOwner) : nullptr;
+
+							for (size_t i = 0; i < pTypeExt->ResourceCosts.size(); ++i)
+							{
+								const int totalResCost = pTypeExt->ResourceCosts[i];
+								if (totalResCost > 0)
+								{
+									const double stepCostExact = (static_cast<double>(totalResCost) * repairFactor * repairHP) / static_cast<double>(pType->Strength);
+									const int resCost = std::max(1, static_cast<int>(std::round(stepCostExact)));
+
+									if (pHouseExt->CanAffordResource(static_cast<int>(i), resCost))
+									{
+										pHouseExt->UpdateResourceAmount(static_cast<int>(i), -resCost);
+										if (pDepotOwnerExt)
+										{
+											pDepotOwnerExt->UpdateResourceAmount(static_cast<int>(i), resCost);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
-}
 
-DEFINE_HOOK(0x4575E4, BuildingClass_ServiceDepot_TakeMoneyAndResources, 0x5)
-{
-	GET(BuildingClass*, pDepot, ESI);
-	GET(int, moneyCost, EAX);
-
-	if (pDepot && pDepot->Owner)
-	{
-		if (moneyCost > 0)
-		{
-			pDepot->Owner->TakeMoney(moneyCost);
-		}
-
-		DeductUnitRepairCustomResources(pDepot);
-	}
-
-	return 0x4575E9;
-}
-
-DEFINE_HOOK(0x44AAEF, BuildingClass_MissionRepair_TakeMoneyAndResources, 0x5)
-{
-	GET(BuildingClass*, pDepot, EBP);
-	GET(int, moneyCost, EAX);
-
-	if (pDepot && pDepot->Owner)
-	{
-		if (moneyCost > 0)
-		{
-			pDepot->Owner->TakeMoney(moneyCost);
-		}
-
-		DeductUnitRepairCustomResources(pDepot);
-	}
-
-	return 0x44AAF4;
+	return 0x6FA1B3;
 }
 
 #pragma endregion
