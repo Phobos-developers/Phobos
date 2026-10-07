@@ -3668,7 +3668,8 @@ DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
 
 DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 {
-	GET(FootClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 
-	return (pThis->AbstractFlags & AbstractFlags::Foot && pThis->IsAttackedByLocomotor) ? 0x70F85F : 0;
+	return (pThis->AbstractFlags & AbstractFlags::Foot && static_cast<FootClass*>(pThis)->IsAttackedByLocomotor)
+		? 0x70F85F : 0;
 }
