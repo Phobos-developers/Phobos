@@ -103,14 +103,15 @@ static void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruc
 	// Rewrite just in case
 	const auto pThis = static_cast<JumpjetLocomotionClass*>(iloco);
 	pThis->LocomotionFacing.SetDesired(dir);
-	pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
+	if (pThis->LinkedTo)
+		pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDB4, JumpjetLocomotionClass_DoTurn)
 
 DEFINE_HOOK(0x54D326, JumpjetLocomotionClass_MovementAI_CrashSpeedFix, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	return pThis->LinkedTo->IsCrashing ? 0x54D350 : 0;
+	return (pThis->LinkedTo && pThis->LinkedTo->IsCrashing) ? 0x54D350 : 0;
 }
 
 DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
@@ -118,7 +119,7 @@ DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
 	enum { ZeroWobble = 0x54D22C };
 
-	if (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP())
+	if (pThis->LinkedTo && (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP()))
 		return ZeroWobble;
 
 	return 0;
@@ -157,8 +158,23 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
+	if (!pThis->LinkedTo)
+		return 0x54CB3E;
+
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData;
 	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
+}
+
+// Bugfix: Prevent crash in JumpjetLocomotionClass State4 (Descending) if unit died, deployed, or unlinked during landing (vt_entry_18C)
+DEFINE_HOOK(0x54C8F6, JumpjetLocomotionClass_State4_CheckLinkedTo, 0x7)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+	enum { ExitFunction = 0x54CA7C };
+
+	if (!pThis->LinkedTo)
+		return ExitFunction;
+
+	return 0;
 }
 
 // We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing
@@ -207,9 +223,12 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 	__assume(iLoco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
 
-	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
-	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
-	pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
+	if (pThis->LinkedTo)
+	{
+		pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
+		pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+		pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
+	}
 
 	return 0;
 }
@@ -220,8 +239,11 @@ static void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 	__assume(pThis != nullptr);
 	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
 
-	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
-	pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+	if (pThisLoco->LinkedTo)
+	{
+		pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
+		pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+	}
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDB8, JumpjetLocomotionClass_Unlimbo)

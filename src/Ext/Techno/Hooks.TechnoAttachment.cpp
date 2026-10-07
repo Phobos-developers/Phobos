@@ -463,29 +463,53 @@ DEFINE_HOOK(0x4733BD, CargoClass_Attach_HandleCurrentAttachMode, 0x6)
 
 bool __fastcall TechnoClass_OnGround(TechnoClass* pThis)
 {
+	if (!pThis || pThis->InLimbo || !pThis->IsAlive)
+		return false;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
-		? pExt->ParentAttachment->Parent->IsOnFloor()
-		: pThis->ObjectClass::IsOnFloor();
+	if (pExt && pExt->ParentAttachment)
+	{
+		auto const pType = pExt->ParentAttachment->GetType();
+		if (pType && pType->InheritHeightStatus && pExt->ParentAttachment->Parent)
+			return pExt->ParentAttachment->Parent->IsOnFloor();
+	}
+
+	return pThis->ObjectClass::IsOnFloor();
 }
 
 bool __fastcall TechnoClass_InAir(TechnoClass* pThis)
 {
+	if (!pThis || pThis->InLimbo || !pThis->IsAlive)
+		return false;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
-		? pExt->ParentAttachment->Parent->IsInAir()
-		: pThis->ObjectClass::IsInAir();
+	if (pExt && pExt->ParentAttachment)
+	{
+		auto const pType = pExt->ParentAttachment->GetType();
+		if (pType && pType->InheritHeightStatus && pExt->ParentAttachment->Parent)
+			return pExt->ParentAttachment->Parent->IsInAir();
+	}
+
+	return pThis->ObjectClass::IsInAir();
 }
 
 bool __fastcall TechnoClass_IsSurfaced(TechnoClass* pThis)
 {
+	if (!pThis || pThis->InLimbo || !pThis->IsAlive)
+		return false;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
-		? pExt->ParentAttachment->Parent->IsSurfaced()
-		: pThis->ObjectClass::IsSurfaced();
+	if (pExt && pExt->ParentAttachment)
+	{
+		auto const pType = pExt->ParentAttachment->GetType();
+		if (pType && pType->InheritHeightStatus && pExt->ParentAttachment->Parent)
+			return pExt->ParentAttachment->Parent->IsSurfaced();
+	}
+
+	return pThis->ObjectClass::IsSurfaced();
 }
 
 // TechnoClass
