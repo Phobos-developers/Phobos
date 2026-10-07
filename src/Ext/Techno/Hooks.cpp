@@ -918,6 +918,27 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				return SkipGameCode;
 			}
 
+			bool hasSolidObstacle = false;
+			for (ObjectClass* pObj = pCell->FirstObject; pObj; pObj = pObj->NextObject)
+			{
+				if (pObj == pTechno)
+					continue;
+
+				if (pObj->WhatAmI() == AbstractType::Unit || pObj->WhatAmI() == AbstractType::Building)
+				{
+					hasSolidObstacle = true;
+					break;
+				}
+			}
+
+			if (hasSolidObstacle)
+			{
+				damage = pThis->Health;
+				pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				return SkipGameCode;
+			}
+
 			const LandType landType = pCell->LandType;
 			const bool inWater = !onBridge && (landType == LandType::Water || landType == LandType::Beach);
 
@@ -979,10 +1000,131 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 
 					if (pObject != pInf)
 						pInf->Scatter(pInf->GetCoords(), true, false);
+
+					AbstractClass* pInheritedTarget = pExt->FallingInheritedTarget;
+					AbstractClass* pInheritedDest = pExt->FallingInheritedDestination;
+					Mission inheritedMission = pExt->FallingInheritedMission;
+
+					pExt->FallingInheritedTarget = nullptr;
+					pExt->FallingInheritedDestination = nullptr;
+					pExt->FallingInheritedMission = Mission::None;
+
+					if (pInheritedTarget)
+					{
+						bool isTargetValid = false;
+						if (auto const pTargetObj = abstract_cast<ObjectClass*>(pInheritedTarget))
+							isTargetValid = pTargetObj->IsAlive && !pTargetObj->InLimbo;
+						else
+							isTargetValid = true;
+
+						if (isTargetValid)
+							pTechno->SetTarget(pInheritedTarget);
+					}
+
+					if (pInheritedDest)
+						pInf->SetDestination(pInheritedDest, true);
+
+					Mission targetMission = inheritedMission;
+					if (targetMission == Mission::None)
+					{
+						targetMission = pTechno->QueuedMission;
+						pTechno->QueuedMission = Mission::None;
+					}
+
+					if (targetMission != Mission::None)
+					{
+						pTechno->QueueMission(targetMission, false);
+						pTechno->ForceMission(targetMission);
+					}
 				}
 				else if (abs == AbstractType::Unit)
 				{
+					for (ObjectClass* pObj = pCell->FirstObject; pObj; pObj = pObj->NextObject)
+					{
+						if (pObj == pTechno)
+							continue;
+
+						if (auto const pInf = abstract_cast<InfantryClass*>(pObj))
+						{
+							if (pInf->IsAlive)
+							{
+								VocClass::PlayAt(pInf->GetType()->CrushSound, pInf->Location);
+								pInf->RegisterDestruction(pTechno);
+								TechnoExt::Kill(pInf, pTechno);
+							}
+						}
+					}
+
 					static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+
+					auto const pFoot = abstract_cast<FootClass*>(pTechno);
+
+					AbstractClass* pInheritedTarget = pExt->FallingInheritedTarget;
+					AbstractClass* pInheritedDest = pExt->FallingInheritedDestination;
+					Mission inheritedMission = pExt->FallingInheritedMission;
+
+					pExt->FallingInheritedTarget = nullptr;
+					pExt->FallingInheritedDestination = nullptr;
+					pExt->FallingInheritedMission = Mission::None;
+
+					if (pInheritedTarget)
+					{
+						bool isTargetValid = false;
+						if (auto const pTargetObj = abstract_cast<ObjectClass*>(pInheritedTarget))
+							isTargetValid = pTargetObj->IsAlive && !pTargetObj->InLimbo;
+						else
+							isTargetValid = true;
+
+						if (isTargetValid)
+							pTechno->SetTarget(pInheritedTarget);
+						else
+							pInheritedTarget = nullptr;
+					}
+
+					if (pInheritedDest && pFoot)
+						pFoot->SetDestination(pInheritedDest, true);
+
+					Mission targetMission = inheritedMission;
+					if (targetMission == Mission::None)
+					{
+						targetMission = pTechno->QueuedMission;
+						pTechno->QueuedMission = Mission::None;
+					}
+
+					if (targetMission == Mission::None)
+					{
+						if (pInheritedTarget || pTechno->Target)
+							targetMission = Mission::Attack;
+						else if (pInheritedDest || (pFoot && (pFoot->Destination || pFoot->MegaDestination || pFoot->LastDestination)))
+							targetMission = Mission::Move;
+						else
+							targetMission = Mission::Guard;
+					}
+
+					if (targetMission == Mission::Attack && pTechno->Target)
+					{
+						pTechno->QueueMission(Mission::Attack, false);
+						pTechno->ForceMission(Mission::Attack);
+					}
+					else if (targetMission == Mission::Move || targetMission == Mission::AttackMove || targetMission == Mission::QMove || targetMission == Mission::Patrol || targetMission == Mission::Hunt)
+					{
+						if (pFoot)
+						{
+							AbstractClass* pDest = pInheritedDest ? pInheritedDest : (pFoot->Destination ? pFoot->Destination : pFoot->MegaDestination);
+							if (!pDest)
+								pDest = pFoot->LastDestination;
+
+							if (pDest)
+								pFoot->SetDestination(pDest, true);
+						}
+						pTechno->QueueMission(targetMission, false);
+						pTechno->ForceMission(targetMission);
+					}
+					else
+					{
+						pTechno->QueueMission(targetMission, false);
+						pTechno->ForceMission(targetMission);
+					}
 				}
 			}
 		}
@@ -1027,6 +1169,15 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
+
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (pThis == pTargetTechno || TechnoExt::AreRelatives(pThis, pTargetTechno))
+			pTarget = nullptr;
+	}
+
+	pTarget = TechnoExt::RedirectUntargetableAttachment(pTarget);
+	R->EDI(pTarget);
 
 	pThis->Target = pTarget;
 

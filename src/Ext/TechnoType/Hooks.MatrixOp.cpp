@@ -4,6 +4,8 @@
 #include <TunnelLocomotionClass.h>
 #include <Utilities/AresHelper.h>
 #include <Ext/Techno/Body.h>
+#include <New/Entity/AttachmentClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
@@ -422,10 +424,26 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
 DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 {
+	GET(UnitClass* const, pThis, EBP);
 	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
 
+	bool isTunnelTilted = false;
+	auto const pTop = TechnoExt::GetTopLevelParent(pThis);
+	auto const pFoot = abstract_cast<FootClass*>(pTop ? pTop : pThis);
+	if (pFoot)
+	{
+		if (auto const pTunnel = locomotion_cast<TunnelLocomotionClass*>(pFoot->Locomotor))
+			isTunnelTilted = (pTunnel->State != TunnelLocomotionClass::State::Idle);
+	}
+
+	const bool isTilted = isTunnelTilted || key.IsJumpjetKey()
+		|| std::abs(pThis->AngleRotatedForwards) >= 0.005f
+		|| std::abs(pThis->AngleRotatedSideways) >= 0.005f;
+
+	const bool isAttached = TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis);
+
 	// Main body drawing completed, then enable accurate drawing of turrets and barrels
-	if (key.Base.Is_Valid_Key() && key.IsJumpjetKey())
+	if (key.Base.Is_Valid_Key() && (isTilted || isAttached))
 		key.Base.Invalidate();
 
 	return 0;
@@ -560,9 +578,34 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// This is the very reason I need to do this here, there's no less hacky way to get this Type from those inner calls
 
 	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
-	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
+	auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
+	TechnoClass* pParentTechno = nullptr;
+	TechnoTypeClass* pParentType = nullptr;
+	TechnoTypeExt::ExtData* pParentTypeExt = nullptr;
+
+	if (!jjloco)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->ParentAttachment && pExt->ParentAttachment->Parent)
+			{
+				pParentTechno = pExt->ParentAttachment->Parent;
+				pParentType = pParentTechno->GetTechnoType();
+				pParentTypeExt = TechnoTypeExt::ExtMap.Find(pParentType);
+
+				if (auto const pParentFoot = abstract_cast<FootClass*>(pParentTechno))
+				{
+					if (pParentFoot->Locomotor)
+						jjloco = locomotion_cast<JumpjetLocomotionClass*>(pParentFoot->Locomotor);
+				}
+			}
+		}
+	}
+
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+	const bool isAircraft = pThis->Type->ConsideredAircraft
+		|| (pParentType && pParentType->ConsideredAircraft);
 
 	double currentScale = 1.0;
 
@@ -571,33 +614,53 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 		if (jjloco)
 		{
-			const float cHeight = (float)pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
+			const int defaultHeight = pParentTypeExt
+				? pParentTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height)
+				: jjloco->Height;
+			const float cHeight = static_cast<float>(pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(defaultHeight));
 
 			if (cHeight > 0)
 			{
 				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
-				shadowMatrix.Scale((float)currentScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxlIndexKey.Invalidate();
 			}
 		}
+		else if (pParentType && (pParentType->WhatAmI() == AbstractType::AircraftType || pParentType->ConsideredAircraft))
+		{
+			const int defaultHeight = pParentTypeExt
+				? pParentTypeExt->ShadowSizeCharacteristicHeight.Get(pParentType->GetFlightLevel())
+				: pParentType->GetFlightLevel();
+			const float cHeight = static_cast<float>(pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(defaultHeight));
+
+			if (cHeight > 0)
+			{
+				currentScale = std::max(Pade2_2(baseScale_log * height / cHeight), minScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
+				vxlIndexKey.Invalidate();
+			}
+		}
 		else
 		{
-			const float cHeight = (float)pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
+			const float cHeight = static_cast<float>(pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight));
 
 			if (cHeight > 0 && height > 208)
 			{
 				currentScale = std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale);
-				shadowMatrix.Scale((float)currentScale);
+				shadowMatrix.Scale(static_cast<float>(currentScale));
 				vxlIndexKey.Invalidate();
 			}
 		}
 	}
-	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
+	else if (!RulesExt::Global()->HeightShadowScaling && isAircraft)
 	{
 		currentScale = Pade2_2(baseScale_log);
-		shadowMatrix.Scale((float)currentScale);
+		shadowMatrix.Scale(static_cast<float>(currentScale));
+
+		if (pParentType && pParentType->ConsideredAircraft)
+			vxlIndexKey.Invalidate();
 	}
 
 	auto GetMainVoxel = [&]()
@@ -621,6 +684,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	float arf = pThis->AngleRotatedForwards;
 	float ars = pThis->AngleRotatedSideways;
+	const bool hasJumpjetTilt = pDrawTypeExt->JumpjetTilt
+		|| (pParentTypeExt && pParentTypeExt->JumpjetTilt);
+
 	// lazy, don't want to hook inside Shadow_Matrix
 	if (std::abs(ars) >= 0.005f || std::abs(arf) >= 0.005f)
 	{
@@ -632,15 +698,16 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadowMatrix.RotateX(ars);
 	}
 	else if (jjloco
-		&& pDrawTypeExt->JumpjetTilt
+		&& hasJumpjetTilt
 		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
 		&& jjloco->CurrentSpeed > 0.0
 		&& pThis->IsAlive
 		&& pThis->Health > 0
 		&& !pThis->IsAttackedByLocomotor)
 	{
-		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_ForwardSpeedFactor);
-		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * pDrawTypeExt->JumpjetTilt_ForwardAccelFactor);
+		auto const pTiltExt = pDrawTypeExt->JumpjetTilt ? pDrawTypeExt : pParentTypeExt;
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pTiltExt->JumpjetTilt_ForwardSpeedFactor);
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * pTiltExt->JumpjetTilt_ForwardAccelFactor);
 
 		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
 			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -649,9 +716,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		if (locoFace.IsRotating())
 		{
-			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pTiltExt->JumpjetTilt_SidewaysSpeedFactor);
 			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
-				* pDrawTypeExt->JumpjetTilt_SidewaysRotationFactor);
+				* pTiltExt->JumpjetTilt_SidewaysRotationFactor);
 
 			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);

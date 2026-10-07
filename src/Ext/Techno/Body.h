@@ -109,6 +109,11 @@ public:
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
+		TechnoClass* LastAttacker;
+
+		AbstractClass* FallingInheritedTarget;
+		AbstractClass* FallingInheritedDestination;
+		Mission FallingInheritedMission;
 
 		// Ares
 		std::optional<bool> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
@@ -184,6 +189,10 @@ public:
 			, ParentAttachment {}
 			, ChildAttachments {}
 			, DormantAttachments {}
+			, LastAttacker { nullptr }
+			, FallingInheritedTarget { nullptr }
+			, FallingInheritedDestination { nullptr }
+			, FallingInheritedMission { Mission::None }
 			, AltOccupation {}
 		{ }
 
@@ -272,7 +281,7 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 	static bool HasRadioLinkWithDock(TechnoClass* pThis);
 
-	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
+	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false, bool barrelFLH = false);
 	static void InitializeShield(TechnoClass* pThis);
 
 
@@ -297,6 +306,13 @@ public:
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static bool AreRelatives(TechnoClass* pThis, TechnoClass* pThat);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
+	static TechnoClass* GetFirstDamageableParent(TechnoClass* pThis);
+	static AbstractClass* RedirectUntargetableAttachment(AbstractClass* pObj);
+	template <typename T>
+	static T* RedirectUntargetableAttachment(T* pObj)
+	{
+		return static_cast<T*>(RedirectUntargetableAttachment(static_cast<AbstractClass*>(pObj)));
+	}
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);

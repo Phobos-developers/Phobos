@@ -31,7 +31,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 }
 
 // reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, bool isOnBarrel)
 {
 	auto const pType = pThis->GetTechnoType();
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
@@ -44,7 +44,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.MakeIdentity();
 
 	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
+	if ((isOnTurret || isOnBarrel) && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
@@ -53,6 +53,15 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		const float angle = pFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
 
 		mtx.RotateZ(angle);
+
+		// Step 3.5: barrel elevation and recoil if on barrel
+		if (isOnBarrel)
+		{
+			mtx.RotateY(static_cast<float>(-pThis->BarrelFacing.Current().GetRadian<32>()));
+
+			if (pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive)
+				mtx.TranslateX(-pThis->BarrelRecoil.TravelSoFar);
+		}
 	}
 
 	// Step 4: apply FLH offset
