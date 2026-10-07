@@ -2612,7 +2612,7 @@ namespace ImmuneTemp
 	bool ImmuneToEngineerRepair = false;
 };
 
-DEFINE_HOOK(0x519FF8, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
 {
 	enum { PreventInfiltrate = 0x51A03E };
 
