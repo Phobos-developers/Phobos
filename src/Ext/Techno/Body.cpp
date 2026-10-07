@@ -1440,6 +1440,26 @@ int TechnoExt::GetResourceRefund(TechnoClass* pTechno, int resourceIdx, bool isG
 	return static_cast<int>(std::round(baseRefund * healthRatio));
 }
 
+int TechnoExt::GetResourceRefund(TechnoTypeClass* pType, int resourceIdx)
+{
+	if (!pType || resourceIdx < 0 || resourceIdx >= static_cast<int>(ResourceTypeClass::Array.size()))
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	if (!pTypeExt)
+		return 0;
+
+	const int resourceCost = (resourceIdx < static_cast<int>(pTypeExt->ResourceCosts.size())) ? pTypeExt->ResourceCosts[resourceIdx] : 0;
+	if (resourceCost <= 0)
+		return 0;
+
+	const double refundPercent = (RulesClass::Instance && RulesClass::Instance->RefundPercent > 0.0)
+		? RulesClass::Instance->RefundPercent
+		: 0.5;
+
+	return static_cast<int>(std::round(static_cast<double>(resourceCost) * refundPercent));
+}
+
 void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
 {
 	if (removed)

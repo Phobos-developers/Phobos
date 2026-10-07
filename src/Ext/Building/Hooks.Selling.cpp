@@ -94,11 +94,16 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 			const size_t resCount = ResourceTypeClass::Array.size();
 			for (size_t i = 0; i < resCount; ++i)
 			{
-				const int resRefund = TechnoExt::GetResourceRefund(pThis, static_cast<int>(i), false);
-				if (resRefund > 0)
+				int resRefund = TechnoExt::GetResourceRefund(pThis, static_cast<int>(i), false);
+
+				for (const auto pUpgradeType : pThis->Upgrades)
 				{
-					pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
+					if (pUpgradeType)
+						resRefund += TechnoExt::GetResourceRefund(pUpgradeType, static_cast<int>(i));
 				}
+
+				if (resRefund > 0)
+					pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
 			}
 		}
 	}
@@ -144,3 +149,38 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mi_Selling_EVASold_Plug, 0x6)
 #endif
 	return SkipVoxPlay;
 }
+
+DEFINE_HOOK(0x4575E4, BuildingClass_Sell_Upgrades_RefundResources, 0x5)
+{
+	enum { ReturnOriginal = 0x4575E9 };
+
+	GET(BuildingClass*, pBuilding, ESI);
+	GET(int, moneyRefund, EAX);
+
+	if (pBuilding && pBuilding->Owner)
+	{
+		if (moneyRefund > 0)
+			pBuilding->Owner->GiveMoney(moneyRefund);
+
+		const signed char upgradeSlot = static_cast<signed char>(pBuilding->UpgradeLevel) - 1;
+		if (upgradeSlot >= 0 && upgradeSlot < 3)
+		{
+			if (const auto pUpgradeType = pBuilding->Upgrades[upgradeSlot])
+			{
+				if (const auto pHouseExt = HouseExt::TryFetch(pBuilding->Owner))
+				{
+					const size_t resCount = ResourceTypeClass::Array.size();
+					for (size_t i = 0; i < resCount; ++i)
+					{
+						const int resRefund = TechnoExt::GetResourceRefund(pUpgradeType, static_cast<int>(i));
+						if (resRefund > 0)
+							pHouseExt->UpdateResourceAmount(static_cast<int>(i), resRefund);
+					}
+				}
+			}
+		}
+	}
+
+	return ReturnOriginal;
+}
+
