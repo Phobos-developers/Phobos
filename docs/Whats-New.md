@@ -2050,6 +2050,7 @@ HideShakeEffects=false           ; boolean
 - [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
+- New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -2080,6 +2081,7 @@ HideShakeEffects=false           ; boolean
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
+- Ares' Chrono Prisons / Abductors Expansion (by FlyStar)
 ```
 
 ### 0.5
