@@ -9,9 +9,6 @@ DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	if (!pThis->LocomotorSource && TechnoExt::DriverKilled(pThis))
-		return SkipGameCode;
-
 	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
 }
 
@@ -34,11 +31,7 @@ DEFINE_HOOK(0x74038F, UnitClass_What_Action_ObjectClass_DisallowMoving_1, 0x6)
 	enum { SkipGameCode = 0x7403A3 };
 
 	GET(UnitClass*, pThis, ESI);
-
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return SkipGameCode;
-
+	
 	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
 }
 
@@ -47,10 +40,6 @@ DEFINE_HOOK(0x7403B7, UnitClass_What_Action_ObjectClass_DisallowMoving_2, 0x6)
 	enum { SkipGameCode = 0x7403C1 };
 
 	GET(UnitClass*, pThis, ESI);
-
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return SkipGameCode;
 
 	return UnitExt::CannotMove(pThis) ? SkipGameCode : 0;
 }
@@ -61,10 +50,6 @@ DEFINE_HOOK(0x740709, UnitClass_What_Action_DisallowMoving_1, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return SkipGameCode;
-
 	return UnitExt::CannotMove(pThis) ? 0x740727 : 0;
 }
 
@@ -74,10 +59,6 @@ DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 	GET_STACK(const Action, result, 0x30);
-
-	// Once the driver is killed, the vehicle is not allowed to move.
-	if (TechnoExt::DriverKilled(pThis))
-		return ReturnNoMove;
 
 	if (UnitExt::CannotMove(pThis))
 	{

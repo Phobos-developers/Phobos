@@ -1077,6 +1077,10 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 	pThis->SetTarget(nullptr);
 	pThis->SetDestination(nullptr, false);
 
+	// Thank you to NetsuNegi for the guidance.
+	if (!pThis->IsAttackedByLocomotor)
+		pThis->StopMoving();
+
 	auto pTag = pThis->AttachedTag;
 
 	if (pTag)

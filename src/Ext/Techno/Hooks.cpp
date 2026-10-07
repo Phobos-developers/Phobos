@@ -2624,16 +2624,6 @@ DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
 // After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
 #pragma region DriverKilledFix
 
-DEFINE_HOOK(0x74197A, UnitClass_Assign_Destination_DriverKilled, 0x7)
-{
-	GET(UnitClass*, pThis, EBP);
-
-	if (!pThis->LocomotorSource && TechnoExt::DriverKilled(pThis))
-		R->Stack<AbstractClass*>(STACK_OFFSET(0x88, 0x4), nullptr);
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x708412, TechnoClass_BeAttacked_DriverKilled, 0x6)	// Unit
 DEFINE_HOOK(0x7081DC, TechnoClass_BeAttacked_DriverKilled, 0x6)			// Infantry
 {
