@@ -2053,6 +2053,7 @@ HideShakeEffects=false           ; boolean
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
 
 #### Vanilla fixes:
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
