@@ -224,6 +224,7 @@ public:
 	Valueable<Leptons> MaxGuardRange;
 
 	Promotable<SHPStruct*> Insignia;
+	Promotable<CustomPalette*> InsigniaPalette;
 	Valueable<Vector3D<int>> InsigniaFrames;
 	Promotable<int> InsigniaFrame;
 	Nullable<bool> Insignia_ShowEnemy;
@@ -662,6 +663,7 @@ public:
 		, MaxGuardRange { Leptons(4096) }
 
 		, Insignia {}
+		, InsigniaPalette {}
 		, InsigniaFrames { { -1, -1, -1 } }
 		, InsigniaFrame { -1 }
 		, Insignia_ShowEnemy {}

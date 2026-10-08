@@ -17,4 +17,5 @@ void InsigniaTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Insignia.Read(exINI, section, "Insignia.%s");
 	this->InsigniaFrame.Read(exINI, section, "InsigniaFrame.%s");
+	this->InsigniaPalette.Read(exINI, section, "InsigniaPalette.%s");
 }
