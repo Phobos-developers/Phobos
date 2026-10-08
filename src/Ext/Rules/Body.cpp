@@ -991,7 +991,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->UseRetintFix)
-		.Process(this->UseSidebarRadarOffsetFix)
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)
 		.Process(this->AIGuardAreaTargetingDelay)
@@ -1176,6 +1175,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomSequenceNormalized)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
+		.Process(this->UseSidebarRadarOffsetFix)
     ;
 }
 
