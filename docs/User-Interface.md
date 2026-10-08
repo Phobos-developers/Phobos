@@ -944,6 +944,14 @@ In `rulesmd.ini`:
 Sidebar.GDIPositions=  ; boolean
 ```
 
+- `Sidebar.RadarOffsetFix` overrides the radar horizontal correction for this side. If unset, it defaults to `-3` for GDI-style and `-2` for NOD-style sidebars; `0` disables the correction for this side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                 ; Side
+Sidebar.RadarOffsetFix=-3  ; integer, pixels
+```
+
 ### SuperWeapon Sidebar
 
 ![image](_static/images/sw_sidebar.png)

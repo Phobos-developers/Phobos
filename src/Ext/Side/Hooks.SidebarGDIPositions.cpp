@@ -4,6 +4,7 @@
 #include <RadarClass.h>
 
 bool isNODSidebar = false;
+SideExt* activeSideExt = nullptr;
 
 DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 {
@@ -11,6 +12,7 @@ DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 	const auto pSide = SideClass::Array.GetItemOrDefault(sideIndex);
 	const auto pSideExt = SideExt::TryFetch(pSide);
 	isNODSidebar = pSideExt ? !pSideExt->Sidebar_GDIPositions : sideIndex;
+	activeSideExt = pSideExt;
 
 	return 0;
 }
@@ -27,7 +29,13 @@ DEFINE_HOOK(0x652F4F, RadarClass_InitForHouse_RadarOffset, 0x6)
 	// 13 for GDI and 14 for NOD sidebars.
 	GET(RadarClass*, pThis, ESI);
 	if (RulesExt::Global()->UseSidebarRadarOffsetFix)
-		pThis->RadarX -= isNODSidebar ? 2 : 3;
+	{
+		const int defaultOffset = isNODSidebar ? -2 : -3;
+		const int radarOffset = activeSideExt
+			? activeSideExt->Sidebar_RadarOffsetFix.Get(defaultOffset)
+			: defaultOffset;
+		pThis->RadarX += radarOffset;
+	}
 	R->EDX(pThis->RadarX);
 
 	return 0x652F55;
