@@ -3617,6 +3617,33 @@ In `rulesmd.ini`:
 CanKill=true   ; boolean
 ```
 
+
+### Detonate ivan bomb on impact
+
+![image](_static/images/IvanBombDetonate.gif)
+
+- Now you can detonate planted Ivan bombs using custom werhead. The bomb attached to the targeted unit will explode immediately, provided that it was planted by the attacker.
+- Use `IvanBomb.Detonate.AffectsInvokerOnly` to configure whether the warhead can detonate Ivan bombs from other sources.
+- Use `IvanBomb.Detonate.PenetratesTransport` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a transport. The bomb will explode after the unit is unloaded.
+- Use `IvanBomb.Detonate.PenetratesGarrison` to configure whether the warhead can detonate Ivan bombs on a unit that is inside a building. The bomb will explode after the unit leaves the building.
+- Use `IvanBomb.Detonate.AffectsParasite` to configure whether the warhead can detonate IvanBombs on a parasite. the bomb will explode after the parasite leave the victim.
+- Use `IvanBomb.Detonate.AffectTypes` to configure Ivan bombs from which TechnoType can be detonated by warhead, use empty for all types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                               ; WarheadType
+IvanBomb.Detonate=false                     ; boolean
+IvanBomb.Detonate.SameInvokerOnly=true      ; boolean
+IvanBomb.Detonate.PenetratesTransport=false ; boolean
+IvanBomb.Detonate.PenetratesGarrison=false  ; boolean
+IvanBomb.Detonate.AffectsParasite=false     ; boolean
+IvanBomb.Detonate.AffectTypes=              ; List of TechnoTypes
+```
+
+```{note}
+`IvanBomb.Detonate.AffectTypes` doesn't work if the owner of the Ivan bomb is dead. Might be adjusted later on.
+```
+
 ## Weapons
 
 ### Allow Laser drawing position update
@@ -3964,4 +3991,22 @@ CanTargetVeterancy=all      ; List of Affected Veterancy Enumeration (none|rooki
 
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+```
+
+### Money switch building active animation
+
+- Now you can use `ActiveAnim.MoneyAmount`, `ActiveAnimTwo.MoneyAmount`, `ActiveAnimThree.MoneyAmount`, `ActiveAnimFour.MoneyAmount` to switch active animation of building.
+- When funds are greater than `ActiveAnimFour.MoneyAmount`, `ActiveAnimFour` is played; when funds are greater than `ActiveAnimThree.MoneyAmount` but less than `ActiveAnimFour.MoneyAmount`, ActiveAnimThree is played, and so on. If the corresponding animation does not exist, no switch will occur.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                   ; BuildingType
+ActiveAnim.MoneyAmount=1000      ; integar
+ActiveAnimTwo.MoneyAmount=2000   ; integar
+ActiveAnimThree.MoneyAmount=3000 ; integar
+ActiveAnimFour.MoneyAmount=4000  ; integar
+```
+
+```{note}
+All four configuration entries default to `-1`. The feature will only be enabled when all entries have been configured.
 ```
