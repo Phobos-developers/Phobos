@@ -30,6 +30,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			pTargetCell = pCell;
 	}
 
+	const bool targetIsDriverKiiled = pTargetTechno && TechnoExt::DriverKilled(pTargetTechno);
+
 	if (!pSecondExt->SkipWeaponPicking)
 	{
 		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true))
@@ -41,7 +43,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pSecondExt->IsHealthInThreshold(pTargetTechno)
 				|| !pSecondExt->IsVeterancyInThreshold(pTargetTechno)
-				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
+				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
+				|| (pSecondExt->CanTarget_DriverKilled && !targetIsDriverKiiled))
 			{
 				return weaponIndexOne;
 			}
@@ -72,7 +75,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pFirstExt->IsHealthInThreshold(pTargetTechno)
 				|| !pFirstExt->IsVeterancyInThreshold(pTargetTechno)
-				|| !firstAllowedAE)
+				|| !firstAllowedAE
+				|| (pFirstExt->CanTarget_DriverKilled && !targetIsDriverKiiled))
 			{
 				return weaponIndexTwo;
 			}
