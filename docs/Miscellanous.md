@@ -86,6 +86,7 @@ InsigniaFrame=-1                         ; int, frame of insignia shp (zero-base
 InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaPalette=palette.pal              ; filename - including the .pal extension
 
 [SOMETECHNO]                             ; TechnoType
 InsigniaType=                            ; InsigniaType

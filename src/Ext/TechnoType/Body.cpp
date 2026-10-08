@@ -985,7 +985,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (InsigniaType.isset())
 	{
 		this->Insignia = InsigniaType.Get()->Insignia;
-		this->InsigniaPalette = std::move(InsigniaType.Get()->InsigniaPalette);
+		this->InsigniaPalette.LoadFromINI(pINI, InsigniaType->Name, "InsigniaPalette");
 		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
 		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
 	}

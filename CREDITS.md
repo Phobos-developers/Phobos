@@ -924,6 +924,7 @@ This page lists all the individual contributions to the project by their author.
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
   - Add new AutoDeath conditions based on the owner's power status and the player's credits
+  - Add custom palette for insignias
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

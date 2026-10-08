@@ -3319,6 +3319,7 @@ HideShakeEffects=false           ; boolean
 - Ability to specify applicable building owner for building upgrades (by Kerbiter)
 - Customizable disk laser radius (by Belonit & Kerbiter)
 - Ability to switch to GDI sidebar layout for any side (by Belonit)
+- Custom palette for insignias (by Flactine)
 
 #### Vanilla fixes:
 - Deploying mind-controlled TechnoTypes won't make them permanently mind-controlled anymore (unfinished fix by DCoder)
