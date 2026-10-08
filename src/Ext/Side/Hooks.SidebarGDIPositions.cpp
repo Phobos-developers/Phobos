@@ -2,9 +2,9 @@
 
 #include <Ext/Rules/Body.h>
 #include <RadarClass.h>
+#include <ScenarioClass.h>
 
 bool isNODSidebar = false;
-SideExt* activeSideExt = nullptr;
 
 DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 {
@@ -12,7 +12,6 @@ DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 	const auto pSide = SideClass::Array.GetItemOrDefault(sideIndex);
 	const auto pSideExt = SideExt::TryFetch(pSide);
 	isNODSidebar = pSideExt ? !pSideExt->Sidebar_GDIPositions : sideIndex;
-	activeSideExt = pSideExt;
 
 	return 0;
 }
@@ -30,9 +29,14 @@ DEFINE_HOOK(0x652F4F, RadarClass_InitForHouse_RadarOffset, 0x6)
 	GET(RadarClass*, pThis, ESI);
 	if (RulesExt::Global()->UseSidebarRadarOffsetFix)
 	{
-		const int defaultOffset = isNODSidebar ? -2 : -3;
-		const int radarOffset = activeSideExt
-			? activeSideExt->Sidebar_RadarOffsetFix.Get(defaultOffset)
+		const auto pSideExt = SideExt::TryFetch(
+			SideClass::Array.GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex));
+		const bool isNOD = pSideExt
+			? !pSideExt->Sidebar_GDIPositions
+			: ScenarioClass::Instance->PlayerSideIndex;
+		const int defaultOffset = isNOD ? -2 : -3;
+		const int radarOffset = pSideExt
+			? pSideExt->Sidebar_RadarOffsetFix.Get(defaultOffset)
 			: defaultOffset;
 		pThis->RadarX += radarOffset;
 	}
