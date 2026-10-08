@@ -408,6 +408,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
 	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
+	this->UseSidebarRadarOffsetFix.Read(exINI, GameStrings::AudioVisual, "UseSidebarRadarOffsetFix");
 
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
@@ -990,6 +991,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->UseRetintFix)
+		.Process(this->UseSidebarRadarOffsetFix)
 		.Process(this->AINormalTargetingDelay)
 		.Process(this->PlayerNormalTargetingDelay)
 		.Process(this->AIGuardAreaTargetingDelay)

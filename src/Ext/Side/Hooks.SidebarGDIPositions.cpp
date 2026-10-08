@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
 #include <RadarClass.h>
 
 bool isNODSidebar = false;
@@ -22,10 +23,11 @@ DEFINE_HOOK(0x652EAB, RadarClass_InitForHouse, 0x6)
 
 DEFINE_HOOK(0x652F4F, RadarClass_InitForHouse_RadarOffset, 0x6)
 {
-	// Vanilla uses 16 as the radar X origin, while the visible aperture in
-	// the sidebar shape starts at 13, causing a 3 pixel horizontal offset.
+	// Vanilla uses 16 as the radar X origin. The visible aperture starts at
+	// 13 for GDI and 14 for NOD sidebars.
 	GET(RadarClass*, pThis, ESI);
-	pThis->RadarX -= 3;
+	if (RulesExt::Global()->UseSidebarRadarOffsetFix)
+		pThis->RadarX -= isNODSidebar ? 2 : 3;
 	R->EDX(pThis->RadarX);
 
 	return 0x652F55;

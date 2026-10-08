@@ -936,7 +936,7 @@ Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPositions`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini

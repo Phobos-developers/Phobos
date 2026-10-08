@@ -334,7 +334,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
-- The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right.
+- The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right for GDI and 2 pixels to the right for NOD sidebars.
+  - This fix may be disabled by setting `[AudioVisual] -> UseSidebarRadarOffsetFix=no` in `rulesmd.ini`.
 
 ## Fixes / interactions with other extensions
 
