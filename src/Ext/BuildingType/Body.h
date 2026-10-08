@@ -292,7 +292,6 @@ private:
 	void Serialize(T& Stm);
 
 public:
-
 	class ExtContainer final : public Container<BuildingTypeExt>
 	{
 	public:

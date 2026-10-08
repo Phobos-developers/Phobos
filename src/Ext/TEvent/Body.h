@@ -52,6 +52,8 @@ enum PhobosTriggerEvent
 	CellHasTechnoType = 604,
 	CellHasAnyTechnoTypeFromList = 605,
 	AttachedIsUnderAttachedEffect = 606,
+	HouseHasCustomResourceGreaterThan = 610,
+	HouseHasCustomResourceLessThan = 611,
 
 	_DummyMaximum,
 };
@@ -104,6 +106,7 @@ public:
 	static bool CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
 
 	static bool AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject);
+	static bool HouseHasCustomResource(TEventClass* pThis, HouseClass* pHouse, bool isGreaterThan);
 
 
 public:
