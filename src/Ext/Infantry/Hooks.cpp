@@ -282,8 +282,9 @@ DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
 	GET(InfantryClass* const, pThis, ESI);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	if (auto const pRange = pTypeExt->IdleActionFrequency.GetEx())
+	if (pTypeExt->IdleActionFrequency.isset())
 	{
+		auto const pRange = pTypeExt->IdleActionFrequency.GetEx();
 		const bool isUpperBound = R->Origin() == 0x51CDD9;
 		double value;
 

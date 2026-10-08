@@ -16,6 +16,8 @@
 #include "DeselectObject.h"
 #include "DeselectObject5.h"
 #include "DistributionMode.h"
+#include "CycleSelection.h"
+#include "CycleTypeSelection.h"
 
 #include <CCINIClass.h>
 #include <ShapeButtonClass.h>
@@ -52,6 +54,12 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		MakeCommand<DeselectObjectCommandClass>();
 		MakeCommand<DeselectObject5CommandClass>();
 	}
+
+	if (Phobos::Config::CycleSelectionCommand)
+		MakeCommand<CycleSelectionCommandClass>();
+
+	if (Phobos::Config::CycleTypeSelectionCommand)
+		MakeCommand<CycleTypeSelectionCommandClass>();
 
 	if (Phobos::Config::SelectCapturedCommand)
 		MakeCommand<SelectCapturedCommandClass>();
@@ -107,7 +115,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 
 static void MouseWheelDownCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (MessageColumnClass::Instance.IsHovering() && !ScenarioClass::Instance->UserInputLocked)
 		MessageColumnClass::Instance.ScrollDown();
 
 	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionSpreadScroll)
@@ -116,7 +124,7 @@ static void MouseWheelDownCommand()
 
 static void MouseWheelUpCommand()
 {
-	if (MessageColumnClass::Instance.IsHovering())
+	if (MessageColumnClass::Instance.IsHovering() && !ScenarioClass::Instance->UserInputLocked)
 		MessageColumnClass::Instance.ScrollUp();
 
 	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionSpreadScroll)

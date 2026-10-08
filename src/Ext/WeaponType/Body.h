@@ -24,7 +24,6 @@ public:
 		return static_cast<WeaponTypeClass*>(this->GetAttachedObject());
 	}
 
-
 	Valueable<double> DiskLaser_Radius;
 	Valueable<Leptons> ProjectileRange;
 	Nullable<bool> ProjectileRange_ApplyModifiers;
@@ -74,16 +73,23 @@ public:
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
 	Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 	Nullable<bool> AmbientDamage_IgnoreTarget;
+	AEAttachInfoTypeClass AttachEffects;
+	Valueable<bool> AttachEffect_Enable;
 	ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 	std::vector<std::string> AttachEffect_RequiredGroups;
 	std::vector<std::string> AttachEffect_DisallowedGroups;
 	ValueableVector<int> AttachEffect_RequiredMinCounts;
 	ValueableVector<int> AttachEffect_RequiredMaxCounts;
+	Valueable<bool> AttachEffect_Required_Any;
+	Valueable<AffectedHouse> AttachEffect_Required_Houses;
 	ValueableVector<int> AttachEffect_DisallowedMinCounts;
 	ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+	Valueable<bool> AttachEffect_Disallowed_Any;
+	Valueable<AffectedHouse> AttachEffect_Disallowed_Houses;
 	Valueable<bool> AttachEffect_CheckOnFirer;
 	Valueable<bool> AttachEffect_IgnoreFromSameSource;
+	Valueable<bool> AttachEffect_SameSourceOnly;
 	Valueable<Leptons> KeepRange;
 	Nullable<bool> KeepRange_AllowAI;
 	Nullable<bool> KeepRange_AllowPlayer;
@@ -118,6 +124,10 @@ public:
 	bool SkipWeaponPicking;
 
 	Nullable<bool> CylinderRangefinding;
+
+	Valueable<bool> Abductor_ChangeOwner_ResetDriverKilled;
+	Valueable<bool> Abductor_ChangeOwner_IgnoreDriverKilled;
+	Valueable<bool> CanTarget_DriverKilled;
 
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -169,16 +179,23 @@ public:
 		, ExtraWarheads_FullDetonation {}
 		, AmbientDamage_Warhead {}
 		, AmbientDamage_IgnoreTarget {}
+		, AttachEffects {}
+		, AttachEffect_Enable { false }
 		, AttachEffect_RequiredTypes {}
 		, AttachEffect_DisallowedTypes {}
 		, AttachEffect_RequiredGroups {}
 		, AttachEffect_DisallowedGroups {}
 		, AttachEffect_RequiredMinCounts {}
 		, AttachEffect_RequiredMaxCounts {}
+		, AttachEffect_Required_Any { false }
+		, AttachEffect_Required_Houses { AffectedHouse::All }
 		, AttachEffect_DisallowedMinCounts {}
 		, AttachEffect_DisallowedMaxCounts {}
+		, AttachEffect_Disallowed_Any { true }
+		, AttachEffect_Disallowed_Houses { AffectedHouse::All }
 		, AttachEffect_CheckOnFirer { false }
 		, AttachEffect_IgnoreFromSameSource { false }
+		, AttachEffect_SameSourceOnly { false }
 		, KeepRange { Leptons(0) }
 		, KeepRange_AllowAI {}
 		, KeepRange_AllowPlayer {}
@@ -210,6 +227,9 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
+		, Abductor_ChangeOwner_ResetDriverKilled { true }
+		, Abductor_ChangeOwner_IgnoreDriverKilled { false }
+		, CanTarget_DriverKilled { false }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;
