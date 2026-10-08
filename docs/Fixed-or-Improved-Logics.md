@@ -328,6 +328,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time.
 - `(Pre)ProductionAnim` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 
 ## Fixes / interactions with other extensions
 
