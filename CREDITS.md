@@ -458,6 +458,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
+  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
