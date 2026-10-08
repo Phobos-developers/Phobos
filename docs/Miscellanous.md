@@ -28,6 +28,31 @@ This page describes every change in Phobos that wasn't categorized into a proper
 - There's a [new hotkey](User-Interface.md#toggle-frame-by-frame-mode) to execute the game frame by frame for development usage.
   - You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
 
+### Insignia Type
+
+- It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
+
+In `rulesmd.ini`:
+```ini
+[InsigniaTypes]
+0=SOMEINSIGNIATYPE
+
+[SOMEINSIGNIATYPE]                       ; InsigniaType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+
+[SOMETECHNO]                             ; TechnoType
+InsigniaType=                            ; InsigniaType
+InsigniaType.WeaponN=                    ; InsigniaType
+InsigniaType.PassengersN=                ; InsigniaType
+```
+
 ### Logging missing audio files (samples)
 
 - While parsing `soundmd.ini`, Phobos prints information in debug log about any missing audio files (samples).
@@ -188,29 +213,6 @@ function onInput() {
 
 ## INI
 
-### Keyframe animations
-
-- Some features use keyframe-based animation system to define animations in INI. Defined in INI it looks something like following.
-
-```ini
-[SOMESECTION]
-BASEKEY.KeyframeN.Value=            ; Key-dependant value type
-BASEKEY.KeyframeN.Percentage=       ; floating point value, percents or absolute
-BASEKEY.KeyframeN.Absolute=         ; integer, zero-based frame index
-BASEKEY.Keyframe.ResetValues=false  ; boolean
-BASEKEY.Interpolation=none          ; Interpolation mode (none|linear)
-```
-
-- `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index. If no keyframes are defined, a single value from `BASEKEY` is attempted to be parsed instead.
-  - `Value` is a key/feature-dependant value type associated with that keyframe.
-  - `Percentage` is the percentage through the animation's frames where the keyframe becomes active. It is also possible to instead use zero-based frame index via `Absolute` which takes precedence over percentage, albeit it is internally converted to a percentage value. Has to be 0.0 or above, values below this are not valid.
-  - `ResetValues` if set to true makes it so that all existing keyframe data is reset before parsing. Can be used to reset keyframes when redefining them in map files etc.
-  - `Interpolation` controls interpolation of values between animation keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.
-
-```{note}
-Keyframes are expected to be defined with no duplicates for Percentage or Absolute. Failure to do so will crash the game and output developer warnings about offending keys to the log.
-```
-
 ### Include files
 
 ```{note}
@@ -236,6 +238,29 @@ Due to a technical issue, there is a chance that ***the first line of a included
 
 ```{warning}
 When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
+```
+
+### Keyframe animations
+
+- Some features use keyframe-based animation system to define animations in INI. Defined in INI it looks something like following.
+
+```ini
+[SOMESECTION]
+BASEKEY.KeyframeN.Value=            ; Key-dependant value type
+BASEKEY.KeyframeN.Percentage=       ; floating point value, percents or absolute
+BASEKEY.KeyframeN.Absolute=         ; integer, zero-based frame index
+BASEKEY.Keyframe.ResetValues=false  ; boolean
+BASEKEY.Interpolation=none          ; Interpolation mode (none|linear)
+```
+
+- `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index. If no keyframes are defined, a single value from `BASEKEY` is attempted to be parsed instead.
+  - `Value` is a key/feature-dependant value type associated with that keyframe.
+  - `Percentage` is the percentage through the animation's frames where the keyframe becomes active. It is also possible to instead use zero-based frame index via `Absolute` which takes precedence over percentage, albeit it is internally converted to a percentage value. Has to be 0.0 or above, values below this are not valid.
+  - `ResetValues` if set to true makes it so that all existing keyframe data is reset before parsing. Can be used to reset keyframes when redefining them in map files etc.
+  - `Interpolation` controls interpolation of values between animation keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.
+
+```{note}
+Keyframes are expected to be defined with no duplicates for Percentage or Absolute. Failure to do so will crash the game and output developer warnings about offending keys to the log.
 ```
 
 ### Section inheritance
