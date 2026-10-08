@@ -135,6 +135,7 @@ public:
 		static bool AllowDistributionCommandOnAllies;
 		static bool AllowDistributionCommandOnEnemies;
 		static bool AllowDistributionCommandOnNeutral;
+		static bool AllowDistributionCommandOnTerrain;
 		static bool AllowDistributionFilterCommand;
 		static bool AllowDistributionSpreadCommand;
 		static bool AllowDistributionSpreadScroll;

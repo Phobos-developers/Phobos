@@ -90,10 +90,11 @@ bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::DevelopmentCommands = true;
 // Distribution mode
 bool Phobos::Config::AllowDistributionCommand = false;
-bool Phobos::Config::AllowDistributionCommandOnOwner = false;
-bool Phobos::Config::AllowDistributionCommandOnAllies = false;
-bool Phobos::Config::AllowDistributionCommandOnEnemies = false;
-bool Phobos::Config::AllowDistributionCommandOnNeutral = false;
+bool Phobos::Config::AllowDistributionCommandOnOwner = true;
+bool Phobos::Config::AllowDistributionCommandOnAllies = true;
+bool Phobos::Config::AllowDistributionCommandOnEnemies = true;
+bool Phobos::Config::AllowDistributionCommandOnNeutral = true;
+bool Phobos::Config::AllowDistributionCommandOnTerrain = true;
 bool Phobos::Config::AllowDistributionFilterCommand = false;
 bool Phobos::Config::AllowDistributionSpreadCommand = true;
 bool Phobos::Config::AllowDistributionSpreadScroll = true;
@@ -344,6 +345,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::AllowDistributionCommandOnAllies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnAllies", Phobos::Config::AllowDistributionCommandOnAllies);
 	Phobos::Config::AllowDistributionCommandOnEnemies = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnEnemies", Phobos::Config::AllowDistributionCommandOnEnemies);
 	Phobos::Config::AllowDistributionCommandOnNeutral = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnNeutral", Phobos::Config::AllowDistributionCommandOnNeutral);
+	Phobos::Config::AllowDistributionCommandOnTerrain = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionCommandOnTerrain", Phobos::Config::AllowDistributionCommandOnTerrain);
 	Phobos::Config::AllowDistributionSpreadCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionSpreadKeyEnabled", Phobos::Config::AllowDistributionSpreadCommand);
 	Phobos::Config::AllowDistributionFilterCommand = pINI_RULESMD->ReadBool("GlobalControls", "AllowDistributionFilterKeyEnabled", Phobos::Config::AllowDistributionFilterCommand);
 

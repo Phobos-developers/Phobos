@@ -687,6 +687,7 @@ DefaultApplyNoMoveCommand=true                      ; boolean
 - You can also adjust spread range by using the mouse wheel while holding down the specific hotkey if `AllowDistributionSpreadScroll` set to true. This allows a more precise control of spread range that each step will increase/decrease it by `DistributionSpreadScrollStep`, with 20 cells as its maximum value.
 - `AllowDistributionSpreadDrag` allows you to adjust the spread range by pressing and dragging the mouse while holding down the specific hotkey. The drag distance from the starting point determines the spread range. This can naturally co-exist with `AllowDistributionSpreadScroll`.
 - `AllowDistributionCommandOnOwner`, `AllowDistributionCommandOnAllies`, `AllowDistributionCommandOnEnemies` & `AllowDistributionCommandOnNeutral` allow the distribution command to work on owner, allies, enemies or neutral target. If picking a target that's not eligible, it'll fallback to vanilla command.
+- `AllowDistributionCommandOnTerrain` allow the distribution command to work on attacking terrain. This will pick up all terrains without `Immune=yes` in the radius and won't respect any filter mode. 
 - It's possible to add a button for distribution mode in the bottom bar by adding `DistributionMode` in the `ButtonList` of `AdvancedCommandBar` and `MultiplayerAdvancedCommandBar`.
   - The positions of each button are hardcoded, so it'll only decide whether enable this button or not. Distribute Mode button is now always listed after all the vanilla ones.
   - The asset of these buttons should be added in `sidec0x.mix` files which correspond to different sides, with the name `button12.shp`.
@@ -702,6 +703,7 @@ AllowDistributionCommandOnOwner=true                ; boolean
 AllowDistributionCommandOnAllies=true               ; boolean
 AllowDistributionCommandOnEnemies=true              ; boolean
 AllowDistributionCommandOnNeutral=true              ; boolean
+AllowDistributionCommandOnTerrain=true              ; boolean
 AllowDistributionSpreadKeyEnabled=true              ; boolean
 AllowDistributionFilterKeyEnabled=false             ; boolean
 DefaultDistributionSpreadRange=2048                 ; integer between 0 and 5120

@@ -13,9 +13,10 @@ bool DistributionModeHoldDownCommandClass::OnMessageShowed = false;
 bool DistributionModeHoldDownCommandClass::OffMessageShowed = false;
 int DistributionModeHoldDownCommandClass::ShowTime = 0;
 
-bool DistributionModeHoldDownCommandClass::IsDragDistributing = false;
+int DistributionModeHoldDownCommandClass::DragDistributingType = 0; // 0 - None, 1 - Techno, 2 - Terrain
 CoordStruct DistributionModeHoldDownCommandClass::DragStartCenter = {};
-DistributionTargetInfo DistributionModeHoldDownCommandClass::DragInfo = {};
+DistributionTargetInfo DistributionModeHoldDownCommandClass::DragTechnoInfo = {};
+DistributionTerrainInfo DistributionModeHoldDownCommandClass::DragTerrainInfo = {};
 
 namespace
 {
@@ -296,6 +297,17 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(pTechno->Owner, action);
 }
 
+bool DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(unsigned int range, int count, Action action, TerrainClass* pTerrain)
+{
+	return Enabled
+		&& range > 0
+		&& count > 1
+		&& action == Action::Attack // only for destroying terrains
+		&& !PlanningNodeClass::PlanningModeActive
+		&& pTerrain
+		&& !pTerrain->Type->Immune;
+}
+
 std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
@@ -352,6 +364,57 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 
 			const auto coordsB = recordB.Center;
 			const double distanceB = Point2D{coordsB.X, coordsB.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
+
+			return distanceA < distanceB;
+		});
+
+	return record;
+}
+
+std::vector<DistributionTerrainInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargetsForTerrain(CoordStruct center, double range)
+{
+	// Flatten the center to the ground so the spread range is measured horizontally
+	// and in-air targets are within the same distance check.
+	center.Z = MapClass::Instance.GetCellFloorHeight(center);
+
+	if (MapClass::Instance.GetCellAt(center)->ContainsBridge())
+		center.Z += CellClass::BridgeHeight;
+
+	const auto pItems = Helpers::Alex::getCellSpreadTerrainsExt(center, range);
+
+	std::vector<DistributionTerrainInfo> record;
+	record.reserve(pItems.size());
+
+	for (const auto& pItem : pItems)
+	{
+		const auto itemCenter = pItem->GetCoords();
+		auto coords = itemCenter;
+
+		if (!MapClass::Instance.IsWithinUsableArea(coords))
+			continue;
+
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		if (MapClass::Instance.GetCellAt(coords)->ContainsBridge())
+			coords.Z += CellClass::BridgeHeight;
+
+		if (!MapClass::Instance.IsLocationShrouded(coords))
+		{
+			DistributionTerrainInfo info;
+			info.pTerrain = pItem;
+			info.Num = 0;
+			info.Center = itemCenter;
+			record.emplace_back(info);
+		}
+	}
+
+	std::sort(record.begin(), record.end(), [&center](const auto& recordA, const auto& recordB)
+		{
+			const auto coordsA = recordA.Center;
+			const double distanceA = Point2D { coordsA.X, coordsA.Y }.DistanceFromSquared(Point2D { center.X, center.Y });
+
+			const auto coordsB = recordB.Center;
+			const double distanceB = Point2D { coordsB.X, coordsB.Y }.DistanceFromSquared(Point2D { center.X, center.Y });
 
 			return distanceA < distanceB;
 		});
@@ -492,7 +555,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		if ((handlePassenger || handleOccupant) && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 		{
 			const auto pSelectType = static_cast<TechnoClass*>(pSelect)->GetTechnoType();
-			selectInfo.ID = pSelectType->get_ID();
+			selectInfo.ID = TechnoTypeClass::Array.FindItemIndex(pSelectType);
 			selectInfo.Size = (int)pSelectType->Size;
 			
 			if (handleOccupant)
@@ -510,7 +573,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
 				if (objectA.Size == objectB.Size)
-					return strcmp(objectA.ID, objectB.ID) < 0;
+					return objectA.ID < objectB.ID;
 
 				return objectA.Size > objectB.Size;
 			});
@@ -519,7 +582,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	{
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
-				return strcmp(objectA.ID, objectB.ID) < 0;
+				return objectA.ID < objectB.ID;
 			});
 	}
 
@@ -619,6 +682,81 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	}
 }
 
+void DistributionModeHoldDownCommandClass::ProcessDistributionModeForTerrain(DistributionTerrainInfo& info, ObjectClass* pTarget, bool noMove)
+{
+	VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
+	const auto spreadRange = Phobos::Config::DistributionSpreadRange;
+	auto record = CollectAndSortTargetsForTerrain(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell);
+
+	const size_t recordSize = record.size();
+	const size_t maxSize = recordSize;
+
+	std::vector<DistributionSelectInfo> selectedObjects;
+	selectedObjects.reserve(ObjectClass::CurrentObjects.Count);
+
+	for (const auto pSelect : ObjectClass::CurrentObjects)
+	{
+		DistributionSelectInfo selectInfo;
+		selectInfo.pTechno = pSelect;
+		selectedObjects.emplace_back(selectInfo);
+	}
+
+	std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
+		{
+			return objectA.ID < objectB.ID;
+		});
+
+	int current = 1;
+
+	for (const auto& selectInfo : selectedObjects)
+	{
+		size_t canTargetIndex = maxSize;
+		size_t newTargetIndex = maxSize;
+
+		for (size_t i = 0; i < recordSize; ++i)
+		{
+			auto& item = record[i];
+
+			if (selectInfo.pTechno->MouseOverObject(item.pTerrain) != info.Action)
+				continue;
+
+			if (item.pTerrain->Type->Immune)
+				continue;
+
+			canTargetIndex = i;
+
+			if (item.Num < current)
+			{
+				newTargetIndex = i;
+				break;
+			}
+		}
+
+		if (newTargetIndex == maxSize && canTargetIndex != maxSize)
+		{
+			++current;
+			newTargetIndex = canTargetIndex;
+		}
+
+		if (newTargetIndex != maxSize)
+		{
+			auto& clickedItem = record[newTargetIndex];
+
+			ClickedTargetAction(selectInfo.pTechno, info.Action, clickedItem.pTerrain);
+
+			++clickedItem.Num;
+			continue;
+		}
+
+		const auto currentAction = pTarget ? selectInfo.pTechno->MouseOverObject(pTarget) : Action::NoMove;
+
+		if ((noMove && currentAction == Action::NoMove && (selectInfo.pTechno->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None))
+			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pTechno));
+		else if (pTarget)
+			ClickedTargetAction(selectInfo.pTechno, currentAction, pTarget);
+	}
+}
+
 void DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(ObjectClass* pTarget, Action action, bool noMove)
 {
 	for (const auto& pSelect : ObjectClass::CurrentObjects)
@@ -656,8 +794,8 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 	if (count > 0)
 	{
-		GET_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
-		GET_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
+		GET_STACK(const int, idxPath, STACK_OFFSET(0x18, -0x8));
+		GET_STACK(const unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
 		DistributionModeHoldDownCommandClass::ProcessWaypointCommand(idxPath, idxWP);
 
 		GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x18, 0x4));
@@ -666,15 +804,39 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 		if (pTarget)
 		{
 			const bool noMove = !Phobos::Config::ApplyNoMoveCommand;
-			const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
 
-			if (DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, action, pTechno))
+			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget))
 			{
-				auto info = DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, action);
-				DistributionModeHoldDownCommandClass::ProcessDistributionMode(info, pTarget, Phobos::Config::DistributionFilterMode, noMove);
+				if (DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, action, pTechno))
+				{
+					auto info = DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, action);
+					DistributionModeHoldDownCommandClass::ProcessDistributionMode(info, pTarget, Phobos::Config::DistributionFilterMode, noMove);
+				}
+				else
+				{
+					DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, action, noMove);
+				}
+			}
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
+			{
+				if (Phobos::Config::AllowDistributionCommandOnTerrain
+					&& DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(Phobos::Config::DistributionSpreadRange, count, action, pTerrain))
+				{
+					DistributionTerrainInfo info;
+					info.pTerrain = pTerrain;
+					info.Center = pTerrain->GetCoords();
+					info.Action = action;
+					DistributionModeHoldDownCommandClass::ProcessDistributionModeForTerrain(info, pTarget, noMove);
+				}
+				else
+				{
+					DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, action, noMove);
+				}
 			}
 			else
+			{
 				DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, action, noMove);
+			}
 		}
 		else // Vanilla
 		{
@@ -690,7 +852,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
-	if (!DistributionModeHoldDownCommandClass::IsDragDistributing
+	if (!DistributionModeHoldDownCommandClass::DragDistributingType
 		&& (!Phobos::Config::AllowDistributionUseClick
 			|| (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)))
 	{
@@ -702,7 +864,7 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 
 	if (spreadRange || filterMode)
 	{
-		const auto center = DistributionModeHoldDownCommandClass::IsDragDistributing
+		const auto center = DistributionModeHoldDownCommandClass::DragDistributingType
 			? DistributionModeHoldDownCommandClass::DragStartCenter
 			: MapClass::Instance.GetCellAt(DisplayClass::Instance.CurrentFoundation_CenterCell)->GetCoords();
 		const auto color = (filterMode > 1)
@@ -758,21 +920,35 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 	if (!DisplayClass::Instance.ProcessClickCoords(&screenPos, &cell, &coords, &pTarget, &a5, &a6))
 		return 0;
 
-	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		const auto action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
 
-	if (!pTechno)
-		return 0;
+		if (!DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, action, pTechno))
+			return 0;
 
-	const auto action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
+		DistributionModeHoldDownCommandClass::DragTechnoInfo = DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, action);
+		DistributionModeHoldDownCommandClass::DragStartCenter = coords;
+		DistributionModeHoldDownCommandClass::DragDistributingType = 1;
+	}
+	else if (const auto pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	{
+		if (!Phobos::Config::AllowDistributionCommandOnTerrain)
+			return 0;
 
-	if (!DistributionModeHoldDownCommandClass::IsDistributionModeEligible(
-		Phobos::Config::DistributionSpreadRange, count, action, pTechno))
-		return 0;
+		const auto action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
 
-	DistributionModeHoldDownCommandClass::DragInfo =
-		DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, action);
-	DistributionModeHoldDownCommandClass::DragStartCenter = coords;
-	DistributionModeHoldDownCommandClass::IsDragDistributing = true;
+		if (!DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(Phobos::Config::DistributionSpreadRange, count, action, pTerrain))
+			return 0;
+
+		DistributionTerrainInfo info;
+		info.pTerrain = pTerrain;
+		info.Center = pTerrain->GetCoords();
+		info.Action = action;
+		DistributionModeHoldDownCommandClass::DragTerrainInfo = info;
+		DistributionModeHoldDownCommandClass::DragStartCenter = coords;
+		DistributionModeHoldDownCommandClass::DragDistributingType = 2;
+	}
 
 	return SkipGameCode;
 }
@@ -781,7 +957,7 @@ DEFINE_HOOK(0x4AC411, DisplayClass_LeftPressAndDragging_DistributionDragUpdate, 
 {
 	enum { SkipGameCode = 0x4AC42E };
 
-	if (!DistributionModeHoldDownCommandClass::IsDragDistributing)
+	if (!DistributionModeHoldDownCommandClass::DragDistributingType)
 		return 0;
 
 	GET_STACK(Point2D, currentScreen, STACK_OFFSET(0x18, -0x10));
@@ -803,16 +979,18 @@ DEFINE_HOOK(0x4ABCA7, DisplayClass_LeftPressAndDragging_DistributionDragEnd, 0x6
 {
 	enum { SkipGameCode = 0x4ABD07 };
 
-	if (!DistributionModeHoldDownCommandClass::IsDragDistributing)
+	if (!DistributionModeHoldDownCommandClass::DragDistributingType)
 		return 0;
 
 	const bool noMove = !Phobos::Config::ApplyNoMoveCommand;
-	DistributionModeHoldDownCommandClass::ProcessDistributionMode(
-		DistributionModeHoldDownCommandClass::DragInfo, nullptr,
-		Phobos::Config::DistributionFilterMode, noMove);
+
+	if (DistributionModeHoldDownCommandClass::DragDistributingType == 1)
+		DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionModeHoldDownCommandClass::DragTechnoInfo, nullptr, Phobos::Config::DistributionFilterMode, noMove);
+	else if (DistributionModeHoldDownCommandClass::DragDistributingType == 2)
+		DistributionModeHoldDownCommandClass::ProcessDistributionModeForTerrain(DistributionModeHoldDownCommandClass::DragTerrainInfo, nullptr, noMove);
 
 	DisplayClass::Instance.LeftPressAndDraggingRectangle = false;
-	DistributionModeHoldDownCommandClass::IsDragDistributing = false;
+	DistributionModeHoldDownCommandClass::DragDistributingType = 0;
 	TacticalClass::StartDrawActionLineTimer();
 
 	return SkipGameCode;

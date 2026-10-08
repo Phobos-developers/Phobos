@@ -4,6 +4,7 @@
 #include "AdvancedCommandBarButtons.h"
 
 #include <HouseClass.h>
+#include <TerrainClass.h>
 
 class ObjectClass;
 class TechnoClass;
@@ -27,10 +28,18 @@ struct DistributionTargetInfo
 	bool CanBeOccupied;
 };
 
+struct DistributionTerrainInfo
+{
+	TerrainClass* pTerrain;
+	CoordStruct Center;
+	Action Action;
+	int Num;
+};
+
 struct DistributionSelectInfo
 {
 	ObjectClass* pTechno;
-	const char* ID;
+	int ID;
 	int Size;
 	bool CanOccupy;
 };
@@ -73,9 +82,10 @@ public:
 	static bool OffMessageShowed;
 	static int ShowTime;
 
-	static bool IsDragDistributing;
+	static int DragDistributingType;
 	static CoordStruct DragStartCenter;
-	static DistributionTargetInfo DragInfo;
+	static DistributionTargetInfo DragTechnoInfo;
+	static DistributionTerrainInfo DragTerrainInfo;
 
 	virtual const char* GetName() const override;
 	virtual const wchar_t* GetUIName() const override;
@@ -97,10 +107,13 @@ public:
 
 	static void ProcessWaypointCommand(int idxPath, unsigned char idxWP);
 	static bool IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno);
+	static bool IsDistributionModeEligibleForTerrain(unsigned int range, int count, Action action, TerrainClass* pTerrain);
 	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
 	static std::vector<DistributionTargetInfo> CollectAndSortTargets(CoordStruct center, double range);
+	static std::vector<DistributionTerrainInfo> CollectAndSortTargetsForTerrain(CoordStruct center, double range);
 	static void ProcessDistributionMode(DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);
+	static void ProcessDistributionModeForTerrain(DistributionTerrainInfo& info, ObjectClass* pTarget, bool noMove);
 	static void ProcessNormalTargetClick(ObjectClass* pTarget, Action action, bool noMove);
 	static void ProcessCellClick(CellStruct* pCell, Action action);
 };
