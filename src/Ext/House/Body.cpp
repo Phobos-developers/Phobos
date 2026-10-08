@@ -1300,7 +1300,7 @@ int HouseExt::CalculateResourceBounty(int resourceIdx, TechnoClass* pVictim) con
 		return 0;
 
 	const auto pResource = ResourceTypeClass::Array[resourceIdx].get();
-	if (!pResource || !this->IsResourceEnabled(resourceIdx))
+	if (!pResource || !this->IsResourceEnabled(resourceIdx) || !pResource->Bounty_Enabled.Get())
 		return 0;
 
 	const auto pThis = this->OwnerObject();

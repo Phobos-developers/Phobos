@@ -10,6 +10,7 @@
 #include <Ext/HouseType/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <BitFont.h>
 #include <New/Type/ResourceTypeClass.h>
 
 // Unsorted methods
@@ -54,6 +55,10 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, House
 	{
 		if (auto pHouseExt = HouseExt::TryFetch(pHouse))
 		{
+			std::wstring combinedStr;
+			ColorStruct displayColor = ColorStruct { 0, 255, 0 };
+			bool hasCustomColor = false;
+
 			const size_t resourceCount = ResourceTypeClass::Array.size();
 			for (size_t i = 0; i < resourceCount; ++i)
 			{
@@ -63,15 +68,55 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, House
 					pHouseExt->UpdateResourceAmount(static_cast<int>(i), bounty);
 					if (const auto pResource = ResourceTypeClass::Array[i].get())
 					{
-						FlyingStrings::AddResourceString(
-							pResource,
-							bounty,
-							pVictim,
-							pHouse,
-							AffectedHouse::All,
-							pVictim->GetRenderCoords()
-						);
+						if (!combinedStr.empty())
+							combinedStr += L" ";
+
+						const bool isPositive = bounty > 0;
+						wchar_t resBuf[32];
+						const wchar_t* label = pResource->Display_Label.Get();
+						const bool useSpace = pResource->Display_Label_UseSpace.Get();
+						if (label && *label)
+						{
+							if (pResource->Display_Label_InvertPosition.Get())
+								swprintf_s(resBuf, useSpace ? L"%ls%d %ls" : L"%ls%d%ls", isPositive ? L"+" : L"-", std::abs(bounty), label);
+							else
+								swprintf_s(resBuf, useSpace ? L"%ls%ls %d" : L"%ls%ls%d", isPositive ? L"+" : L"-", label, std::abs(bounty));
+						}
+						else
+						{
+							swprintf_s(resBuf, L"%ls%d", isPositive ? L"+" : L"-", std::abs(bounty));
+						}
+						combinedStr += resBuf;
+
+						if (!hasCustomColor)
+						{
+							const ColorStruct resColor = pResource->Display_Color.Get();
+							if (resColor != ColorStruct { 0, 0, 0 })
+							{
+								displayColor = resColor;
+								hasCustomColor = true;
+							}
+							else if (!isPositive)
+							{
+								displayColor = ColorStruct { 255, 0, 0 };
+							}
+						}
 					}
+				}
+			}
+
+			if (!combinedStr.empty() && !MapClass::Instance.IsLocationShrouded(pVictim->GetRenderCoords()))
+			{
+				if (pVictim->VisualCharacter(false, nullptr) != VisualType::Hidden)
+				{
+					Point2D pixelOffset = Point2D::Empty;
+					int width = 0, height = 0;
+					if (BitFont::Instance)
+					{
+						BitFont::Instance->GetTextDimension(combinedStr.c_str(), &width, &height, 120);
+						pixelOffset.X -= (width / 2);
+					}
+					FlyingStrings::Add(combinedStr.c_str(), pVictim->GetRenderCoords(), displayColor, pixelOffset);
 				}
 			}
 		}
