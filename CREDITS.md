@@ -455,6 +455,9 @@ This page lists all the individual contributions to the project by their author.
   - Customize the country displayed in `Sight`
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
   - New `NoAmmoWeapons` tag supporting multiple weapon types
+  - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
+  - New weapon filter tag `CanTarget.DriverKilled`
+  - Ares' Chrono Prisons / Abductors Expansion
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

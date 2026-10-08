@@ -233,7 +233,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->PenetratesTransport_Level > 0 && damage)
 		this->ApplyPenetratesTransport(pTarget, pOwner, pHouse, coords, damage, distance);
 
-	if (this->Taunt && pOwner)
+	if (this->Taunt && pOwner && !TechnoExt::DriverKilled(pTarget))
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
 	if (this->IvanBomb_Detonate)

@@ -1077,6 +1077,10 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 	pThis->SetTarget(nullptr);
 	pThis->SetDestination(nullptr, false);
 
+	// Thank you to NetsuNegi for the guidance.
+	if (!pThis->IsAttackedByLocomotor)
+		pThis->StopMoving();
+
 	auto pTag = pThis->AttachedTag;
 
 	if (pTag)
@@ -1161,6 +1165,18 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 		pExt_Ares->DisableWeaponsTimer.Start(timeLeft);
 
 	return fireError;
+}
+
+bool TechnoExt::DriverKilled(TechnoClass* pThis)
+{
+	// Determine whether the driver was killed.
+	return AresHelper::CanUseAres && reinterpret_cast<DummyExtHere*>(pThis->align_154)->DriverKilled;
+}
+
+Mission TechnoExt::DriverKilledMission(TechnoClass* pThis, Mission mission)
+{
+	// After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
+	return TechnoExt::DriverKilled(pThis) ? Mission::Harmless : mission;
 }
 
 // =============================
