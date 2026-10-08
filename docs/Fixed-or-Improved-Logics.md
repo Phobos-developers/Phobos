@@ -330,6 +330,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving; `WalkRate=0` is now treated like `IdleRate=0`: the walk animation/footstep tick never fires, so a moving unit behaves as if standing still.
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building.
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
 
 ## Fixes / interactions with other extensions
 
