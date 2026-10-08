@@ -224,7 +224,7 @@ public:
 	Valueable<Leptons> MaxGuardRange;
 
 	Promotable<SHPStruct*> Insignia;
-	Promotable<CustomPalette*> InsigniaPalette;
+	CustomPalette InsigniaPalette;
 	Valueable<Vector3D<int>> InsigniaFrames;
 	Promotable<int> InsigniaFrame;
 	Nullable<bool> Insignia_ShowEnemy;

@@ -8,7 +8,7 @@ class InsigniaTypeClass final : public Enumerable<InsigniaTypeClass>
 public:
 	Promotable<SHPStruct*> Insignia;
 	Promotable<int> InsigniaFrame;
-	Promotable<CustomPalette*> InsigniaPalette;
+	CustomPalette InsigniaPalette;
 
 	InsigniaTypeClass(const char* const pTitle) : Enumerable<InsigniaTypeClass>(pTitle)
 		, Insignia { }

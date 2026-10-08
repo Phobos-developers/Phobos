@@ -155,14 +155,12 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	Point2D offset = *pLocation;
 	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
-	auto pPalette = FileSystem::PALETTE_PAL;
 	int defaultFrameIndex = -1;
 	bool isCustomInsignia = false;
 
 	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
 	{
 		pShapeFile = pCustomShapeFile;
-		pPalette = pTechnoTypeExt->InsigniaPalette.Get(pThis)->GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 		defaultFrameIndex = 0;
 		isCustomInsignia = true;
 	}
@@ -253,6 +251,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		}
 
 		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
+
+		auto pPalette = pTechnoTypeExt->InsigniaPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 		DSurface::Temp->DrawSHP(
 			pPalette, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
