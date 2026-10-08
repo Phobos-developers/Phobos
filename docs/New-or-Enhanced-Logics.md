@@ -3721,6 +3721,17 @@ CanTarget.IronCurtained=            ; boolean, default to [CombatDamage] -> CanT
 AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> AutoTarget.IronCurtained
 ```
 
+### Customize whether weapon can target driver-killed vehicles
+
+- In Ares, you cannot skip certain objectives based on whether a unit's driver is dead; this feature has now been added (requires at least Ares 3.0).
+  - `CanTarget.DriverKilled` allows attacks only against units whose drivers have been killed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                        ; WeaponType
+CanTarget.DriverKilled=false        ; boolean
+```
+
 ### Delayed firing
 
 - It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.

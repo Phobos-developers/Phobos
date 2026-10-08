@@ -393,6 +393,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
+- Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
 
 ## Newly added global settings
 
@@ -3385,6 +3386,19 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDamage.IgnoreTarget
+```
+
+### Ares' Chrono Prisons / Abductors Expansion
+
+- When Ares brings a vehicle—whose driver has been killed—into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
+  - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed. Determine whether to retain the status of a driver who has been killed based on the `MultiplayPassive` setting in the country where the capturing player is currently located.
+  - `Abductor.ChangeOwner.IgnoreDriverKilled` prevents the current country of a vehicle whose driver has been killed from being changed; the effect is equivalent to `Abductor.ChangeOwner=no`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                                    ; WeaponType
+Abductor.ChangeOwner.ResetDriverKilled=true     ; boolean
+Abductor.ChangeOwner.IgnoreDriverKilled=false   ; boolean
 ```
 
 ### Can attack allies
