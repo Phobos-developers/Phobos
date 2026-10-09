@@ -2053,7 +2053,7 @@ HideShakeEffects=false           ; boolean
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
-- AttachEffect `Immune.Capture`, `Immune.Infiltrate` and `Immune.EngineerRepair` only apply to buildings, respectively preventing capture, infiltration by enemy, and repair by friendly engineers while AE is active (by dh381)
+- Added dynamic immunity effects to AE for `Capture`, `Infiltrate`, and `EngineerRepair` (by dh381)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
