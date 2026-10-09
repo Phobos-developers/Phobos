@@ -454,6 +454,11 @@ This page lists all the individual contributions to the project by their author.
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
+  - New `NoAmmoWeapons` tag supporting multiple weapon types
+  - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
+  - New weapon filter tag `CanTarget.DriverKilled`
+  - Ares' Chrono Prisons / Abductors Expansion
+  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -605,6 +610,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial effort on optimization for crates' random distribution
   - Customizable spawns queue
   - Initial spawns number
+  - Sidebar radar horizontal offset fix
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -989,3 +995,4 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**
   - Detonate ivan bomb on impact
   - Add `Immune.Capture`, `Immune.Infiltrate`, `Immune.EngineerRepair` for AttachEffect
+- **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
