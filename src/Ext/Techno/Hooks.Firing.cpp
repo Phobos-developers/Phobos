@@ -421,7 +421,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
 				|| !pWeaponExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
-				|| (pWeaponExt->CanTarget_DriverKilled && !TechnoExt::DriverKilled(pTargetTechno)))
+				|| (!pWeaponExt->CanTarget_DriverKilled && TechnoExt::DriverKilled(pTargetTechno)))
 			{
 				return CannotFire;
 			}
