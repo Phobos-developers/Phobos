@@ -88,6 +88,46 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	return 0;
 }
 
+// Disable Ares NoAmmoWeapon hook.
+DEFINE_PATCH(0x6F3410, 0x8A, 0x4F, 0x14);
+DEFINE_PATCH(0x6F3413, 0x8B, 0x16);
+
+DEFINE_HOOK(0x6F3415, TechnoClass_WhatWeaponShouldIUse_NoAmmoWeapon, 0x5)
+{
+	enum { UseWeaponIndex = 0x6F3406 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EDI);
+
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+
+	if (pType->Ammo >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount)
+	{
+		const auto& noAmmoWeapons = pTypeExt->NoAmmoWeapons;
+		const bool ignoreNeverUse = pTypeExt->NoAmmoWeapons_IgnoreNeverUse;
+
+		for (int weaponIndex : noAmmoWeapons)
+		{
+			if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, pThis->GetWeapon(weaponIndex)->WeaponType), ignoreNeverUse)
+			{
+				R->EAX(weaponIndex);
+				return UseWeaponIndex;
+			}
+		}
+
+		const int noAmmoWeapon = pTypeExt->NoAmmoWeapon;
+
+		if (noAmmoWeapon >= 0)
+		{
+			R->EAX(noAmmoWeapon);
+			return UseWeaponIndex;
+		}
+	}
+	
+	return 0;
+}
+
 DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 {
 	enum { UseWeaponIndex = 0x6F37AF };
@@ -319,6 +359,10 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	GET(TechnoClass*, pTargetTechno, EBP);
 
+	// Drivers are prohibited from continuing to fire after being killed.
+	if (TechnoExt::DriverKilled(pThis))
+		return CannotFire;
+
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::Fetch(pWH);
@@ -376,7 +420,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
 				|| !pWeaponExt->IsVeterancyInThreshold(pTargetTechno)
-				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
+				|| (!pWeaponExt->CanTarget_DriverKilled && TechnoExt::DriverKilled(pTargetTechno)))
 			{
 				return CannotFire;
 			}
@@ -466,7 +511,12 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 			|| !TechnoExt::Fetch(pThis)->TypeExtData->OpenTransport_FireWhileMoving.Get(RulesExt::Global()->OpenTransport_FireWhileMoving)
 			|| (pWeapon && !pWeapon->FireWhileMoving))
 		{
-			if (pTypeExt->OwnerObject()->BalloonHover)
+			if (!pTypeExt->OpenTopped_FireWhileMoving_BasedOnDestination.Get(RulesExt::Global()->OpenTopped_FireWhileMoving_BasedOnDestination))
+			{
+				if (pTransportFoot->Locomotor->Is_Really_Moving_Now())
+					return Illegal;
+			}
+			else if (pTypeExt->OwnerObject()->BalloonHover)
 			{
 				if (pTransportFoot->Locomotor->Is_Moving_Now())
 					return Illegal;
@@ -640,7 +690,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	enum { SkipFiring = 0x6FDE03 };
 
 	GET(TechnoClass* const, pThis, ESI);
-//	GET(AbstractClass* const, pTarget, EDI);
+	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(const int, weaponIndex, 0xC);
 
@@ -705,6 +755,17 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 				if (attachEffect->FiringCount >= pType->DiscardOn_Firing_Count)
 					attachEffect->ShouldBeDiscarded = true;
 			}
+		}
+	}
+
+	if (pWeaponExt->AttachEffect_Enable)
+	{
+		if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			auto const& info = pWeaponExt->AttachEffects;
+			AttachEffectClass::Attach(pTargetTechno, pThis->Owner, pThis, pWeapon->Warhead, info);
+			AttachEffectClass::Detach(pTargetTechno, info);
+			AttachEffectClass::DetachByGroups(pTargetTechno, info);
 		}
 	}
 

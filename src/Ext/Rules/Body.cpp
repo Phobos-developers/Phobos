@@ -100,6 +100,7 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
 	this->LeptonMindControlOffset.Read(exINI, GameStrings::AudioVisual, "LeptonMindControlOffset");
 	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
+	this->Anim_ShouldUseCellDrawer.Read(exINI, GameStrings::AudioVisual, "Anim.ShouldUseCellDrawer");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -407,6 +408,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
 	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
+	this->UseSidebarRadarOffsetFix.Read(exINI, GameStrings::AudioVisual, "UseSidebarRadarOffsetFix");
 
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
@@ -460,6 +462,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, GameStrings::General, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, GameStrings::General, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, GameStrings::General, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, GameStrings::CombatDamage, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, GameStrings::CombatDamage, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, GameStrings::General, "OpenTransport.FireWhileMoving");
@@ -1030,6 +1033,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1077,6 +1081,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->LeptonMindControlOffset)
 		.Process(this->MindControlRingOffset)
+		.Process(this->Anim_ShouldUseCellDrawer)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
@@ -1170,6 +1175,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomSequenceNormalized)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
+		.Process(this->UseSidebarRadarOffsetFix)
     ;
 }
 

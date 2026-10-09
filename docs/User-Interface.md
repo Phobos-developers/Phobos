@@ -378,6 +378,23 @@ EnableSelectBox=false                   ; boolean
 - For ImageShaper users, you need to choose a mode other than `Uncompressed` or `Uncompressed_Full_Frame` to create `*.shp` files.
 ```
 
+### Set sidebar tab by selecting factory
+
+- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
+  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
+    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
+    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+SetTabBySelecting=-1            ; integer, index of tab
+```
+
 ### Show designator & inhibitor range
 
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
@@ -419,6 +436,22 @@ In `RA2MD.INI`:
 [Phobos]
 ShowGameTime=false             ; boolean
 ShowGameTime.BoardOpacity=40   ; integer
+```
+
+### Show power plant enhancer range
+
+- It is possible to show range of power plant enhancer when placing a building.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowPowerPlantEnhancerRange=true   ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowPowerPlantEnhancerRange=false  ; boolean
 ```
 
 ### SuperWeapon ShowTimer sorting
@@ -532,63 +565,58 @@ DisplayIncome.Houses=      ; Affected House Enumeration, defaults to [AudioVisua
 DisplayIncome.Offset=0,0   ; X,Y, pixels relative to default
 ```
 
-### Show power plant enhancer range
-
-- It is possible to show range of power plant enhancer when placing a building.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-ShowPowerPlantEnhancerRange=true   ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowPowerPlantEnhancerRange=false  ; boolean
-```
-
-### Set sidebar tab by selecting factory
-
-- You can choose the corresponding type of factory to switch the sidebar tab by setting `SetTabBySelectingFactory=true`.
-  - `SetTabBySelecting` can be used to define which tab to switch to when this building (which need not be a factory) is selected.
-    - Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
-    - Negative values: automatically match according to the selected building's `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch to 1; otherwise switch to 0.
-    - Other values (values greater than or equal to 4): do nothing, i.e., disable this effect.
-
-In `rulesmd.ini`:
-```ini
-[General]
-SetTabBySelectingFactory=false  ; boolean
-
-[SOMEBUILDING]                  ; BuildingType
-SetTabBySelecting=-1            ; integer, index of tab
-```
-
 ## Hotkey Commands
 
-### `[ ]` Toggle Designator Range
+### `[ ]` Cycle Selection
 
-- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
-- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
-- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+- Cycles through the objects that were selected when the cycle was started, selecting one of them at a time and wrapping around at the end of the list.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- Enable the hotkey by setting `CycleSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_SELECTION` and `TXT_CYCLE_SELECTION_DESC` into your `.csf` file.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-ToggleDesignatorRangeKeyEnabled=true    ; boolean
+CycleSelectionKeyEnabled=true    ; boolean
 ```
 
-### `[ ]` Toggle Digital Display
+### `[ ]` Cycle Type Selection
 
-- Switches on/off [digital display types](#digital-display).
-- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
-- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+- Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
+- Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares's `GroupAs`.
+- The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
+- If nothing is selected, `MSG:NothingSelected` is logged.
+- If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
+- Enable the hotkey by setting `CycleTypeSelectionKeyEnabled` to true.
+- For localization add `TXT_CYCLE_TYPE_SELECTION` and `TXT_CYCLE_TYPE_SELECTION_DESC` into your `.csf` file.
+
+The order in which the types are cycled to is customizable, and is decided by the following rules, in order:
+
+1. Higher `TypeCyclePriority` wins.
+2. Ties are broken by the type's `Cost`, from the highest to the lowest. The raw cost registered in the INI is used - never the cost the type currently has for the selecting player - so cost multipliers of the owning house do not affect the order.
+3. Remaining ties are broken by the reversed INI load order: the type written further down in the INI is cycled to first.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-ToggleDigitalDisplayKeyEnabled=true    ; boolean
+CycleTypeSelectionKeyEnabled=true    ; boolean
+CycleTypeSelectionPrintSummary=true  ; boolean
+
+[SOMETECHNO]                         ; TechnoType
+TypeCyclePriority=0                  ; integer
+```
+
+### `[ ]` Deselect Object(s)
+
+- Deselect 1 or 5 object(s) from current selected objects.
+- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
+- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+DeselectObjectKeysEnabled=true    ; boolean
 ```
 
 ### `[ ]` Next Idle Harvester
@@ -622,30 +650,6 @@ In `rulesmd.ini`:
 QuickSaveKeyEnabled=true    ; boolean
 ```
 
-### `[ ]` Toggle Message Label
-
-- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
-- Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true.
-- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-ToggleMessageListKeyEnabled=true    ; boolean
-```
-
-### `[ ]` Deselect Object(s)
-
-- Deselect 1 or 5 object(s) from current selected objects.
-- Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true.
-- For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5` and `TXT_DESELECT5_DESC` into your `.csf` file.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-DeselectObjectKeysEnabled=true    ; boolean
-```
-
 ### `[ ]` Select Captured Units
 
 - Select the units within the current screen that are captured by non-permanent mind-controller.
@@ -659,14 +663,46 @@ In `rulesmd.ini`:
 SelectCapturedKeyEnabled=false    ; boolean
 ```
 
-### `[ ]` Development Hotkey Commands
+### `[ ]` Toggle Designator Range
 
-- The following hotkeys are for debug purpose and require setting `DebugKeysEnabled` to true to enable.
+- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true.
+- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-DebugKeysEnabled=false    ; boolean
+ToggleDesignatorRangeKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Digital Display
+
+- Switches on/off [digital display types](#digital-display).
+- Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true.
+- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleDigitalDisplayKeyEnabled=true    ; boolean
+```
+
+### `[ ]` Toggle Message Label
+
+- Switches on/off [Task subtitles' label in the middle of the screen](#task-subtitles-display-in-the-middle-of-the-screen).
+- Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true.
+- For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+ToggleMessageListKeyEnabled=true    ; boolean
+```
+
+```{important}
+**Development Hotkey Commands**
+
+- The following hotkeys are for debug purpose and require setting [`DebugKeysEnabled`](https://ares-developers.github.io/Ares-docs/ui-features/keyboardcommandshotkeys.html#disabling-keyboard-commands) to true to enable.
 ```
 
 ### `[ ]` Display Damage Numbers
@@ -679,15 +715,15 @@ DebugKeysEnabled=false    ; boolean
 - Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
 - For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
-### `[ ]` Toggle Frame By Frame Mode
-
-- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
-- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
-
 ### `[ ]` Save Variables
 
 - Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Frame By Frame Mode
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
 
@@ -900,12 +936,20 @@ Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPositions`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
+```
+
+- `Sidebar.RadarOffsetFix` overrides the radar horizontal correction for this side. `0` disables the correction for this side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                 ; Side
+Sidebar.RadarOffsetFix=    ; integer, pixels, defaults to `-3` for GDI-style and `-2` for NOD-style sidebars
 ```
 
 ### SuperWeapon Sidebar

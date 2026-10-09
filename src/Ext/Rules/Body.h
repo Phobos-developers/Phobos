@@ -309,6 +309,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
+		Valueable<bool> UseSidebarRadarOffsetFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -370,6 +371,7 @@ public:
 		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 		Valueable<bool> OpenTopped_DecloakToFire;
 		Valueable<bool> OpenTopped_FireWhileMoving;
+		Valueable<bool> OpenTopped_FireWhileMoving_BasedOnDestination;
 		Valueable<int> OpenTransport_RangeBonus;
 		Valueable<float> OpenTransport_DamageMultiplier;
 		Valueable<bool> OpenTransport_FireWhileMoving;
@@ -436,6 +438,7 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 		Valueable<int> LeptonMindControlOffset;
 		Valueable<int> MindControlRingOffset;
+		Valueable<bool> Anim_ShouldUseCellDrawer;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
 
@@ -823,6 +826,7 @@ public:
 			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
+			, UseSidebarRadarOffsetFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -877,6 +881,7 @@ public:
 			, OpenTopped_CheckTransportDisableWeapons { false }
 			, OpenTopped_DecloakToFire { false }
 			, OpenTopped_FireWhileMoving { true }
+			, OpenTopped_FireWhileMoving_BasedOnDestination{ false }
 			, OpenTransport_RangeBonus { 0 }
 			, OpenTransport_DamageMultiplier { 1.0f }
 			, OpenTransport_FireWhileMoving { true }
@@ -941,6 +946,7 @@ public:
 			, DefaultToGuardArea { false }
 			, LeptonMindControlOffset { 70 }
 			, MindControlRingOffset { 140 }
+			, Anim_ShouldUseCellDrawer { true }
 
 			, CylinderRangefinding { false }
 
