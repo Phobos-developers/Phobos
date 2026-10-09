@@ -60,6 +60,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
@@ -334,6 +335,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
+- The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right for GDI and 2 pixels to the right for NOD sidebars.
+  - This fix may be disabled by setting `[AudioVisual] -> UseSidebarRadarOffsetFix=no` in `rulesmd.ini`. `Sidebar.RadarOffsetFix` can override the correction per side; negative values move the radar left and `0` disables it for that side.
 
 ## Fixes / interactions with other extensions
 
@@ -392,6 +396,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`.
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
+- Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
 
 ## Newly added global settings
 
@@ -2424,6 +2429,7 @@ RotateOnCrash=true         ; boolean
 
 [SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRotateOnCrash
+CrashROT=-1                ; integer, negative means no effects
 ```
 
 ```{warning}
@@ -3384,6 +3390,19 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDamage.IgnoreTarget
+```
+
+### Ares' Chrono Prisons / Abductors Expansion
+
+- When Ares brings a vehicle—whose driver has been killed—into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
+  - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed. Determine whether to retain the status of a driver who has been killed based on the `MultiplayPassive` setting in the country where the capturing player is currently located.
+  - `Abductor.ChangeOwner.IgnoreDriverKilled` prevents the current country of a vehicle whose driver has been killed from being changed; the effect is equivalent to `Abductor.ChangeOwner=no`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                                    ; WeaponType
+Abductor.ChangeOwner.ResetDriverKilled=true     ; boolean
+Abductor.ChangeOwner.IgnoreDriverKilled=false   ; boolean
 ```
 
 ### Can attack allies

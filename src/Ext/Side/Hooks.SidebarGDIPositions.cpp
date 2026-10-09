@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Ext/Rules/Body.h>
+#include <RadarClass.h>
+#include <ScenarioClass.h>
+
 bool isNODSidebar = false;
 
 DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
@@ -16,6 +20,29 @@ DEFINE_HOOK(0x652EAB, RadarClass_InitForHouse, 0x6)
 {
 	R->EAX(isNODSidebar);
 	return 0x652EB7;
+}
+
+DEFINE_HOOK(0x652F4F, RadarClass_InitForHouse_RadarOffset, 0x6)
+{
+	// Vanilla uses 16 as the radar X origin. The visible aperture starts at
+	// 13 for GDI and 14 for NOD sidebars.
+	GET(RadarClass*, pThis, ESI);
+	if (RulesExt::Global()->UseSidebarRadarOffsetFix)
+	{
+		const auto pSideExt = SideExt::TryFetch(
+			SideClass::Array.GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex));
+		const bool isGDI = pSideExt
+			? pSideExt->Sidebar_GDIPositions
+			: ScenarioClass::Instance->PlayerSideIndex == 0;
+		const int defaultOffset = isGDI ? -3 : -2;
+		const int radarOffset = pSideExt
+			? pSideExt->Sidebar_RadarOffsetFix.Get(defaultOffset)
+			: defaultOffset;
+		pThis->RadarX += radarOffset;
+	}
+	R->EDX(pThis->RadarX);
+
+	return 0x652F55;
 }
 
 DEFINE_HOOK(0x6A5090, SidebarClass_InitPositions, 0x5)

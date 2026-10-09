@@ -9,10 +9,11 @@ public:
 	Nullable<TechnoTypeClass*> ToType;
 	Nullable<AffectedHouse> AppliedTo;
 
+	// Called by MultiflagValueableVector, do not call directly.
+	bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, AffectedHouse& defaultAffectsHouse);
+
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
-
-	static void Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* section, AffectedHouse defaultAffectHouse);
 
 	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
 	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
@@ -20,4 +21,13 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+};
+
+// Declared after TypeConvertGroup is complete, so the MultiflagValueableVector
+// constraint (which requires TypeConvertGroup::Read) can be evaluated.
+// Read() also handles the un-numbered legacy tags for backward compatibility.
+class TypeConvertGroupList : public MultiflagValueableVector<TypeConvertGroup, AffectedHouse>
+{
+public:
+	void Read(INI_EX& parser, const char* const pSection, AffectedHouse defaultAffectsHouse);
 };

@@ -913,6 +913,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowWeaponSelectAgainstWalls.Read(exINI, pSection, "AllowWeaponSelectAgainstWalls");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
+	this->CrashROT.Read(exINI, pSection, "CrashROT");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
@@ -1216,6 +1217,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
 	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
+
+	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
+	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1599,6 +1603,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->AllowWeaponSelectAgainstWalls)
 		.Process(this->JumpjetRotateOnCrash)
+		.Process(this->CrashROT)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
 		.Process(this->EnemyUIName)
@@ -1869,6 +1874,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->DefaultToGuardArea_Modes)
 		.Process(this->DefaultToGuardArea_AIModes)
+
+		.Process(this->NoAmmoWeapons)
+		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

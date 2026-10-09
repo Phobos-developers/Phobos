@@ -176,6 +176,7 @@ public:
 	Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 	Nullable<bool> JumpjetRotateOnCrash;
+	Valueable<int> CrashROT;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
 	Valueable<CSFText> EnemyUIName;
@@ -455,6 +456,9 @@ public:
 
 	ValueableVector<int> DefaultToGuardArea_Modes;
 	ValueableVector<int> DefaultToGuardArea_AIModes;
+	
+	ValueableVector<int> NoAmmoWeapons;
+	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -578,6 +582,7 @@ public:
 		, NoSecondaryWeaponFallback_AllowAA { false }
 		, AllowWeaponSelectAgainstWalls {}
 		, JumpjetRotateOnCrash {}
+		, CrashROT { -1 }
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }
@@ -883,6 +888,9 @@ public:
 
 		, DefaultToGuardArea_Modes {}
 		, DefaultToGuardArea_AIModes {}
+
+		, NoAmmoWeapons {}
+		, NoAmmoWeapons_IgnoreNeverUse { true }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

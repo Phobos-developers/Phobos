@@ -2423,6 +2423,19 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### No Ammo Weapons
+
+- You can now use multiple weapons with `NoAmmoWeapons` while `NoAmmoAmount` is active.
+ - `NoAmmoWeapons` selects an appropriate weapon based on the weapon's `CanTarget` and other tags, as well as the projectile's `Verses`.
+ - If no suitable weapon is found, it continues to use `NoAmmoWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                        ; TechnoType
+NoAmmoWeapons=                      ; List of integers
+NoAmmoWeapons.IgnoreNeverUse=yes    ; boolean
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
@@ -3710,6 +3723,17 @@ AutoTarget.IronCurtained=true       ; boolean
 [SOMEWEAPON]                        ; WeaponType
 CanTarget.IronCurtained=            ; boolean, default to [CombatDamage] -> CanTarget.IronCurtained for human player and CanTargetAI.IronCurtained for computer
 AutoTarget.IronCurtained=           ; boolean, default to [CombatDamage] -> AutoTarget.IronCurtained
+```
+
+### Customize whether weapon can target driver-killed vehicles
+
+- In Ares, you cannot skip certain objectives based on whether a unit's driver is dead; this feature has now been added (requires at least Ares 3.0).
+  - `CanTarget.DriverKilled` allows to attack units whose drivers have been killed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                       ; WeaponType
+CanTarget.DriverKilled=true        ; boolean
 ```
 
 ### Delayed firing
