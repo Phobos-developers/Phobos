@@ -8,7 +8,6 @@
 #include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/AresHelper.h>
 
@@ -1202,7 +1201,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
-	
+
 	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
 
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
@@ -1853,7 +1852,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
-			
+
 		.Process(this->RevealHouses)
 
 		.Process(this->SubterraneanSpeed)
@@ -1876,7 +1875,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		// Ares 0.A
 		.Process(this->GroupAs)
-			
+
 		// Ares 0.C
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
