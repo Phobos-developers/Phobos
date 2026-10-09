@@ -2046,12 +2046,12 @@ HideShakeEffects=false           ; boolean
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
-- AttachEffect `Immune.Capture`, `Immune.Infiltrate` and `Immune.EngineerRepair` only apply to buildings, respectively preventing capture, infiltration by enemy, and repair by friendly engineers while AE is active (by dh381)
 - [AttachEffect `CumulativeAnimations` count increment customization](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
+- AttachEffect `Immune.Capture`, `Immune.Infiltrate` and `Immune.EngineerRepair` only apply to buildings, respectively preventing capture, infiltration by enemy, and repair by friendly engineers while AE is active (by dh381)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
