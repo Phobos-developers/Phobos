@@ -160,7 +160,7 @@ public:
 	ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 	ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-	std::vector<TypeConvertGroup> Convert_Pairs;
+	TypeConvertGroupList Convert_Pairs;
 	AEAttachInfoTypeClass AttachEffects;
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	Valueable<bool> InflictLocomotor;

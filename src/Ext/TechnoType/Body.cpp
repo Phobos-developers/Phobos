@@ -828,6 +828,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->LowDeployPriority.Read(exINI, pSection, "LowDeployPriority");
+	this->TypeCyclePriority.Read(exINI, pSection, "TypeCyclePriority");
+	this->HighDeployPriority.Read(exINI, pSection, "HighDeployPriority");
+	this->DeployForbidTypes.Read(exINI, pSection, "DeployForbidTypes");
 
 	if (pThis->Gunner)
 	{
@@ -950,6 +953,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
 	this->OpenTopped_DecloakToFire.Read(exINI, pSection, "OpenTopped.DecloakToFire");
 	this->OpenTopped_FireWhileMoving.Read(exINI, pSection, "OpenTopped.FireWhileMoving");
+	this->OpenTopped_FireWhileMoving_BasedOnDestination.Read(exINI, pSection, "OpenTopped.FireWhileMoving.BasedOnDestination");
 	this->OpenTransport_RangeBonus.Read(exINI, pSection, "OpenTransport.RangeBonus");
 	this->OpenTransport_DamageMultiplier.Read(exINI, pSection, "OpenTransport.DamageMultiplier");
 	this->OpenTransport_FireWhileMoving.Read(exINI, pSection, "OpenTransport.FireWhileMoving");
@@ -972,6 +976,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowWeaponSelectAgainstWalls.Read(exINI, pSection, "AllowWeaponSelectAgainstWalls");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
+	this->CrashROT.Read(exINI, pSection, "CrashROT");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
@@ -1097,10 +1102,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
-
-	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
-	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
-	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
@@ -1298,6 +1299,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
 	this->DefaultToGuardArea_AIModes.Read(exINI, pSection, "DefaultToGuardArea.AIModes");
+
+	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
+	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1501,6 +1505,11 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			this->TiberiumEaterType->LoadFromINI(pINI, pSection);
 	}
 
+	if (this->Tint == nullptr)
+		this->Tint = std::make_unique<TintTypeClass>();
+
+	this->Tint->LoadFromINI(pINI, pSection);
+
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
 
@@ -1551,6 +1560,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->LowDeployPriority)
+		.Process(this->TypeCyclePriority)
+		.Process(this->HighDeployPriority)
+		.Process(this->DeployForbidTypes)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->MindControl_IgnoreSize)
 		.Process(this->MindControlSize)
@@ -1662,6 +1674,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 		.Process(this->OpenTopped_DecloakToFire)
 		.Process(this->OpenTopped_FireWhileMoving)
+		.Process(this->OpenTopped_FireWhileMoving_BasedOnDestination)
 		.Process(this->OpenTransport_RangeBonus)
 		.Process(this->OpenTransport_DamageMultiplier)
 		.Process(this->OpenTransport_FireWhileMoving)
@@ -1672,6 +1685,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->AllowWeaponSelectAgainstWalls)
 		.Process(this->JumpjetRotateOnCrash)
+		.Process(this->CrashROT)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
 		.Process(this->EnemyUIName)
@@ -1771,9 +1785,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
 
-		.Process(this->Tint_Color)
-		.Process(this->Tint_Intensity)
-		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouse)
@@ -1957,6 +1969,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->DefaultToGuardArea_Modes)
 		.Process(this->DefaultToGuardArea_AIModes)
+
+		.Process(this->NoAmmoWeapons)
+		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

@@ -33,6 +33,8 @@
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <!-- src\Commands -->
     <ClCompile Include="src\Commands\Commands.cpp" />
+    <ClCompile Include="src\Commands\CycleSelection.cpp" />
+    <ClCompile Include="src\Commands\CycleTypeSelection.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\DeselectObject.cpp" />
     <ClCompile Include="src\Commands\DeselectObject5.cpp" />
@@ -281,6 +283,7 @@
     <ClCompile Include="src\New\Type\Affiliated\InterceptorTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\TintTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <!-- src\Utilities -->
     <ClCompile Include="src\Utilities\Anchor.cpp" />
@@ -309,6 +312,8 @@
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <!-- src\Commands\ -->
     <ClInclude Include="src\Commands\Commands.h" />
+    <ClInclude Include="src\Commands\CycleSelection.h" />
+    <ClInclude Include="src\Commands\CycleTypeSelection.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\DeselectObject.h" />
     <ClInclude Include="src\Commands\DeselectObject5.h" />
@@ -422,6 +427,7 @@
     <ClInclude Include="src\New\Type\Affiliated\InterceptorTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
+    <ClInclude Include="src\New\Type\Affiliated\TintTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <!-- src\Utilities -->
     <ClInclude Include="src\Utilities\Anchor.h" />

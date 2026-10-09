@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 class Matrix3D;
@@ -42,6 +43,9 @@ public:
 	Valueable<CSFText> UIDescription;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> LowDeployPriority;
+	Valueable<int> TypeCyclePriority;
+	Valueable<bool> HighDeployPriority;
+	ValueableVector<TechnoTypeClass*> DeployForbidTypes;
 	std::vector<PhobosFixedString<0x20>> WeaponGroupAs;
 	Nullable<AffectedHouse> RadarJamHouses;
 	Nullable<int> RadarJamDelay;
@@ -159,6 +163,7 @@ public:
 	Nullable<bool> OpenTopped_CheckTransportDisableWeapons;
 	Nullable<bool> OpenTopped_DecloakToFire;
 	Nullable<bool> OpenTopped_FireWhileMoving;
+	Nullable<bool> OpenTopped_FireWhileMoving_BasedOnDestination;
 	Nullable<int> OpenTransport_RangeBonus;
 	Nullable<float> OpenTransport_DamageMultiplier;
 	Nullable<bool> OpenTransport_FireWhileMoving;
@@ -171,6 +176,7 @@ public:
 	Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 	Nullable<bool> JumpjetRotateOnCrash;
+	Valueable<int> CrashROT;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
 	Valueable<CSFText> EnemyUIName;
@@ -266,9 +272,7 @@ public:
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Nullable<bool> Convert_ResetMindControl;
 
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouse;
@@ -465,6 +469,9 @@ public:
 
 	ValueableVector<int> DefaultToGuardArea_Modes;
 	ValueableVector<int> DefaultToGuardArea_AIModes;
+	
+	ValueableVector<int> NoAmmoWeapons;
+	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -498,6 +505,9 @@ public:
 		, UIDescription {}
 		, LowSelectionPriority { false }
 		, LowDeployPriority { false }
+		, TypeCyclePriority { 0 }
+		, HighDeployPriority { false }
+		, DeployForbidTypes {}
 		, WeaponGroupAs {}
 		, RadarJamHouses {}
 		, RadarJamDelay {}
@@ -574,6 +584,7 @@ public:
 		, OpenTopped_CheckTransportDisableWeapons {}
 		, OpenTopped_DecloakToFire {}
 		, OpenTopped_FireWhileMoving {}
+		, OpenTopped_FireWhileMoving_BasedOnDestination {}
 		, OpenTransport_RangeBonus {}
 		, OpenTransport_DamageMultiplier {}
 		, OpenTransport_FireWhileMoving {}
@@ -584,6 +595,7 @@ public:
 		, NoSecondaryWeaponFallback_AllowAA { false }
 		, AllowWeaponSelectAgainstWalls {}
 		, JumpjetRotateOnCrash {}
+		, CrashROT { -1 }
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }
@@ -716,9 +728,7 @@ public:
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl {}
 
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouse { AffectedHouse::All }
@@ -904,6 +914,9 @@ public:
 
 		, DefaultToGuardArea_Modes {}
 		, DefaultToGuardArea_AIModes {}
+
+		, NoAmmoWeapons {}
+		, NoAmmoWeapons_IgnoreNeverUse { true }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

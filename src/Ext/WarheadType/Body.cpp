@@ -466,7 +466,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
 
 	// Convert.From & Convert.To
-	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+	this->Convert_Pairs.Read(exINI, pSection, AffectedHouse::All);
 
 	// AttachEffect
 	this->AttachEffects.LoadFromINI(pINI, pSection);

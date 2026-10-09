@@ -453,6 +453,12 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
   - Customize the country displayed in `Sight`
+  - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
+  - New `NoAmmoWeapons` tag supporting multiple weapon types
+  - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
+  - New weapon filter tag `CanTarget.DriverKilled`
+  - Ares' Chrono Prisons / Abductors Expansion
+  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -582,6 +588,8 @@ This page lists all the individual contributions to the project by their author.
   - Allow customize that whether `Temporal=yes` warhead will cause target building animation poweroff
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
+  - More convenient vanilla action script target specification
+  - Customize turn rate when jumpjet vehicle crashing
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -603,6 +611,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial effort on optimization for crates' random distribution
   - Customizable spawns queue
   - Initial spawns number
+  - Sidebar radar horizontal offset fix
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -776,6 +785,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize `IdleActionFrequency`
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - Customize `DefaultToGuardArea` per gunner mode
+  - Global default value for `ShouldUseCellDrawer`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -928,7 +938,10 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
-- **FrozenFog** - Hotkey for deselect object from current selection
+- **FrozenFog**:
+  - Hotkey for deselect object from current selection
+  - Hotkey for cycling through the current selection
+  - Hotkey for cycling through the types in the current selection
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -982,3 +995,4 @@ This page lists all the individual contributions to the project by their author.
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
+- **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
