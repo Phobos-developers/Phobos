@@ -993,3 +993,4 @@ This page lists all the individual contributions to the project by their author.
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **Deathreaperz** - IsSimpleDeployer Deploy Fix when using Deploy Script (9,0)
