@@ -140,7 +140,8 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_RightClickCommand, 0x6)
 {
 	if (Phobos::Config::RightClickCommand
 		&& ObjectClass::CurrentObjects.Count > 0
-		&& !RightClickCommand::InSpecialLeftClickMode())
+		&& !RightClickCommand::InSpecialLeftClickMode()
+		&& *reinterpret_cast<BYTE*>(0x884D40) == 0)
 	{
 		// Raw packed window xy stashed by the RMB prologue at [esp+0x34].
 		const int packed = R->Stack<int>(0x34);
@@ -203,7 +204,14 @@ DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 	// If we arrived here via the RMB command redirect (0x69323E), let the order stand. The
 	// flag is cleared further along the same path, at 0x693290 in MultiClickTypeSelect.cpp.
 	if (RightClickCommand::RmbCommandInProgress)
+	{
+		const auto action = static_cast<Action>(R->EAX());
+
+		if (action == Action::Select || action == Action::ToggleSelect)
+			R->EAX(static_cast<DWORD>(Action::None));
+
 		return 0;
+	}
 
 	// A held-off deploy leaves the unit selected, so no deselect here.
 	if (RightClickCommand::ApplyDeployHoldOff(R))
