@@ -217,12 +217,17 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
 
+	this->Abductor_ChangeOwner_ResetDriverKilled.Read(exINI, pSection, "Abductor.ChangeOwner.ResetDriverKilled");
+	this->Abductor_ChangeOwner_IgnoreDriverKilled.Read(exINI, pSection, "Abductor.ChangeOwner.IgnoreDriverKilled");
+	this->CanTarget_DriverKilled.Read(exINI, pSection, "CanTarget.DriverKilled");
+
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
 		|| this->CanTargetVeterancy != AffectedVeterancy::All
 		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
-		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
+		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size()
+		|| this->CanTarget_DriverKilled)
 	{
 		this->SkipWeaponPicking = false;
 	}
@@ -333,6 +338,9 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
+		.Process(this->Abductor_ChangeOwner_ResetDriverKilled)
+		.Process(this->Abductor_ChangeOwner_IgnoreDriverKilled)
+		.Process(this->CanTarget_DriverKilled)
 		;
 };
 
