@@ -2051,6 +2051,7 @@ HideShakeEffects=false           ; boolean
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
+- Custom palette for insignias (by Flactine)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
@@ -3334,7 +3335,6 @@ HideShakeEffects=false           ; boolean
 - Ability to specify applicable building owner for building upgrades (by Kerbiter)
 - Customizable disk laser radius (by Belonit & Kerbiter)
 - Ability to switch to GDI sidebar layout for any side (by Belonit)
-- Custom palette for insignias (by Flactine)
 
 #### Vanilla fixes:
 - Deploying mind-controlled TechnoTypes won't make them permanently mind-controlled anymore (unfinished fix by DCoder)
