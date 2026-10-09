@@ -589,6 +589,7 @@ This page lists all the individual contributions to the project by their author.
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - More convenient vanilla action script target specification
+  - Customize turn rate when jumpjet vehicle crashing
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -1056,6 +1056,9 @@ msgstr ""
 "Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-"
 "the-target-or-climb-when-losing-target)（by NetsuNegi 与 Noble_Fish）"
 
+msgid "Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)"
+msgstr "自定义 Jumpjet 载具坠毁时的转向速率（by NetsuNegi）"
+
 msgid ""
 "[Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-"
 "Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)"
