@@ -3330,8 +3330,8 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 	GET(FootClass*, pThis, ESI);
 	bool result = false;
 
-	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || (!pThis->Owner->IsControlledByHuman()
-		&& (pThis->CurrentMission == Mission::Enter || pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)))
+	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || pThis->CurrentMission == Mission::Enter
+		|| pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)
 	{
 		result = pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now();
 	}
@@ -3664,4 +3664,12 @@ DEFINE_HOOK(0x454BF1, BuildingClass_UpdatePoweredAnim_Temporal, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 
 	return pThis->TemporalTargetingMe && !RulesExt::Global()->Temporal_KillPoweredAnim ? ReturnFromFunction : 0;
+}
+
+DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
+	return pFoot && pFoot->IsAttackedByLocomotor ? 0x70F85F : 0;
 }
