@@ -978,25 +978,14 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
 	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
-	// insignia type
-	Nullable<InsigniaTypeClass*> InsigniaType;
-	InsigniaType.Read(exINI, pSection, "InsigniaType");
-
-	if (InsigniaType.isset())
-	{
-		this->Insignia = InsigniaType.Get()->Insignia;
-		this->InsigniaPalette.LoadFromINI(pINI, InsigniaType->Name, "InsigniaPalette");
-		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
-		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
-	}
-	else
-	{
-		this->Insignia.Read(exINI, pSection, "Insignia.%s");
-		this->InsigniaPalette.LoadFromINI(pINI, pSection, "InsigniaPalette");
-		this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
-		this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
-	}
-
+	this->InsigniaType.Read(exINI, pSection, "InsigniaType");
+	this->Insignia.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaPalette.LoadFromINI(pINI, pSection, "InsigniaPalette");
+	this->InsigniaPalette_Rookie.LoadFromINI(pINI, pSection, "InsigniaPalette.Rookie");
+	this->InsigniaPalette_Veteran.LoadFromINI(pINI, pSection, "InsigniaPalette.Veteran");
+	this->InsigniaPalette_Elite.LoadFromINI(pINI, pSection, "InsigniaPalette.Elite");
+	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
+	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");

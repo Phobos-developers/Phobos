@@ -153,21 +153,24 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (!isVisibleToPlayer)
 		return;
 
+	const auto pInsigniaType = pTechnoTypeExt->InsigniaType.Get();
 	Point2D offset = *pLocation;
 	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
 	int defaultFrameIndex = -1;
 	bool isCustomInsignia = false;
 
-	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
+	if (const auto pCustomShapeFile = (pInsigniaType ? pInsigniaType->Insignia : pTechnoTypeExt->Insignia).Get(pThis))
 	{
 		pShapeFile = pCustomShapeFile;
 		defaultFrameIndex = 0;
 		isCustomInsignia = true;
 	}
 
-	VeterancyStruct* pVeterancy = &pThis->Veterancy;
-	auto insigniaFrames = pTechnoTypeExt->InsigniaFrames.Get();
-	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
+	const auto rank = pThis->Veterancy.GetRemainingLevel();
+	Vector3D<int> insigniaFrames = pInsigniaType
+		? Vector3D<int> {-1, -1, -1} // override it so only InsigniaFrame will be used
+		: pTechnoTypeExt->InsigniaFrames.Get();
+	int frameIndex = (pInsigniaType ? pInsigniaType->InsigniaFrame : pTechnoTypeExt->InsigniaFrame).Get(pThis);
 
 	if (pTechnoType->Passengers > 0 && pTechnoTypeExt->Insignia_Passengers.size() > 0)
 	{
@@ -216,15 +219,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	int insigniaFrame = insigniaFrames.X;
 
-	if (pVeterancy->IsVeteran())
+	switch (rank)
 	{
-		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
-		insigniaFrame = insigniaFrames.Y;
-	}
-	else if (pVeterancy->IsElite())
-	{
+	case Rank::Elite:
 		defaultFrameIndex = !isCustomInsignia ? 15 : defaultFrameIndex;
 		insigniaFrame = insigniaFrames.Z;
+		break;
+
+	case Rank::Veteran:
+		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Y;
+		break;
+
+	default:
+		break;
 	}
 
 	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
@@ -252,7 +260,33 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
 
-		auto pPalette = pTechnoTypeExt->InsigniaPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		ConvertClass* pPalette = nullptr;
+
+		switch (rank)
+		{
+		case Rank::Elite:
+			if (const auto pal = (pInsigniaType ? pInsigniaType->InsigniaPalette_Elite : pTechnoTypeExt->InsigniaPalette_Elite).GetConvert())
+			{
+				pPalette = pal;
+				break;
+			}
+
+		case Rank::Veteran:
+			if (const auto pal = (pInsigniaType ? pInsigniaType->InsigniaPalette_Veteran : pTechnoTypeExt->InsigniaPalette_Veteran).GetConvert())
+			{
+				pPalette = pal;
+				break;
+			}
+
+		default:
+			if (const auto pal = (pInsigniaType ? pInsigniaType->InsigniaPalette_Rookie : pTechnoTypeExt->InsigniaPalette_Rookie).GetConvert())
+			{
+				pPalette = pal;
+				break;
+			}
+
+			pPalette = (pInsigniaType ? pInsigniaType->InsigniaPalette : pTechnoTypeExt->InsigniaPalette).GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		}
 
 		DSurface::Temp->DrawSHP(
 			pPalette, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

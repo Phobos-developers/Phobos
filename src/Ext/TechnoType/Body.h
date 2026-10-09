@@ -8,6 +8,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
@@ -224,8 +225,12 @@ public:
 	Nullable<Leptons> AreaGuardRange;
 	Valueable<Leptons> MaxGuardRange;
 
+	Valueable<InsigniaTypeClass*> InsigniaType;
 	Promotable<SHPStruct*> Insignia;
 	CustomPalette InsigniaPalette;
+	CustomPalette InsigniaPalette_Rookie;
+	CustomPalette InsigniaPalette_Veteran;
+	CustomPalette InsigniaPalette_Elite;
 	Valueable<Vector3D<int>> InsigniaFrames;
 	Promotable<int> InsigniaFrame;
 	Nullable<bool> Insignia_ShowEnemy;
@@ -664,8 +669,12 @@ public:
 		, AreaGuardRange {}
 		, MaxGuardRange { Leptons(4096) }
 
+		, InsigniaType { nullptr }
 		, Insignia {}
 		, InsigniaPalette {}
+		, InsigniaPalette_Rookie {}
+		, InsigniaPalette_Veteran {}
+		, InsigniaPalette_Elite {}
 		, InsigniaFrames { { -1, -1, -1 } }
 		, InsigniaFrame { -1 }
 		, Insignia_ShowEnemy {}
