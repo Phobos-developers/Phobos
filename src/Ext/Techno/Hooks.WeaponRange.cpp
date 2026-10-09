@@ -290,11 +290,11 @@ DEFINE_HOOK(0x4D5FBD, FootClass_ApproachTarget_BeforeSearching, 0xA)
 	if (searchRange <= 204)
 		return WantAggressiveCrush;
 
+	GET(FootClass*, pThis, EBX);
 	GET_STACK(const bool, inRange, STACK_OFFSET(0x158, -0x146));
 
-	if (!inRange)
+	if (!inRange && !abstract_cast<FootClass*, true>(pThis->Target))
 	{
-		GET(FootClass*, pThis, EBX);
 		GET_STACK(const int, weaponIdx, STACK_OFFSET(0x158, -0xAC));
 		const auto pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
 
