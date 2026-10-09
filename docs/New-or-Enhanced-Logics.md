@@ -2230,6 +2230,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
     - `ForceWeapon.BombAttached.SameInvokerOnly` can be used to configure whether the weapon will be forced to a target with ivan bombs only if they come from the same invoker.
     - `ForceWeapon.BombAttached.AffectsHouse` can be used to configure Ivan bombs from which house can force the weapon.
     - `ForceWeapon.BombAttached.AffectTypes` can be used to configure Ivan bombs from which TechnoType can force the weapon, use empty for all types.
+  - `ForceWeapon.DriverKilled` forces specified weapon to be used if the target's driver is killed.
   - `ForceWeapon.MindControlled` forces specified weapon to be used if the target is mind controlled. Doesn't work for perma control.
     - `ForceWeapon.MindControlled.AffectsOriginalHouse` can be used to configure whether the weapon will be forced to a mind controlled target based on the target's original owner.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` set to true, it'll only be forced on TechnoTypes like other forced weapons, otherwise it'll also be forced when attacking empty grounds. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
@@ -2265,6 +2266,7 @@ ForceWeapon.BombAttached=-1                           ; integer, -1 to disable
 ForceWeapon.BombAttached.SameInvokerOnly=true         ; boolean
 ForceWeapon.BombAttached.AffectsHouse=all             ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ForceWeapon.BombAttached.AffectTypes=                 ; List of TechnoTypes
+ForceWeapon.DriverKilled=-1                           ; integer, -1 to disable
 ForceWeapon.MindControlled=-1                         ; integer, -1 to disable
 ForceWeapon.MindControlled.AffectsOriginalHouse=all   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
 ForceWeapon.InRange=                                  ; List of integers
