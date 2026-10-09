@@ -176,6 +176,7 @@ public:
 	Nullable<bool> AllowWeaponSelectAgainstWalls;
 
 	Nullable<bool> JumpjetRotateOnCrash;
+	Valueable<int> CrashROT;
 	Nullable<int> ShadowSizeCharacteristicHeight;
 
 	Valueable<CSFText> EnemyUIName;
@@ -581,6 +582,7 @@ public:
 		, NoSecondaryWeaponFallback_AllowAA { false }
 		, AllowWeaponSelectAgainstWalls {}
 		, JumpjetRotateOnCrash {}
+		, CrashROT { -1 }
 		, ShadowSizeCharacteristicHeight { }
 
 		, AutoDeath_Behavior { }

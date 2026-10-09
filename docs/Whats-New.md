@@ -2051,6 +2051,7 @@ HideShakeEffects=false           ; boolean
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
+- Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
