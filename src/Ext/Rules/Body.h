@@ -203,6 +203,7 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<int> UnitCrateVehicleCap;
+		Valueable<bool> HealBaseNoScatter;
 		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
@@ -737,6 +738,7 @@ public:
 			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
+			, HealBaseNoScatter { true }
 			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }

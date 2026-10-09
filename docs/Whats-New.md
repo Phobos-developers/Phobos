@@ -2066,6 +2066,7 @@ HideShakeEffects=false           ; boolean
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed the vanilla sidebar radar horizontal offset for GDI and NOD sidebars (by TwinkleStar)
+- Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
