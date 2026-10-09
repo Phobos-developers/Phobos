@@ -2,6 +2,8 @@
 
 #include <Utilities/TemplateDef.h>
 
+class AnimTypeClass;
+
 class TypeConvertGroup
 {
 public:
@@ -14,8 +16,8 @@ public:
 
 	static void Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* section, AffectedHouse defaultAffectHouse);
 
-	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
-	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
+	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType = nullptr);
+	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType = nullptr);
 
 private:
 	template <typename T>

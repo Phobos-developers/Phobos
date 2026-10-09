@@ -462,6 +462,8 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
+	Convert_Anim.Read(exINI, pSection, "Convert.Anim");
+
 	// AttachEffect
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 
@@ -702,6 +704,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
+		.Process(this->Convert_Anim)
 		.Process(this->AttachEffects)
 
 		.Process(this->SuppressRevengeWeapons)

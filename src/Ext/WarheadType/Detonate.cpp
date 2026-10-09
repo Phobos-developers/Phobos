@@ -676,7 +676,7 @@ void WarheadTypeExt::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 	if (!pTargetFoot)
 		return;
 
-	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse, this->Convert_Anim);
 }
 
 void WarheadTypeExt::ApplyLocomotorInfliction(TechnoClass* pTarget)
