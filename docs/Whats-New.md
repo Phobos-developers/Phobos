@@ -2064,6 +2064,7 @@ HideShakeEffects=false           ; boolean
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
+- Fixed the vanilla sidebar radar horizontal offset for GDI and NOD sidebars (by TwinkleStar)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
