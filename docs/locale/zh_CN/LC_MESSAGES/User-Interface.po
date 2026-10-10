@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-21 22:27+0800\n"
+"POT-Creation-Date: 2026-10-04 20:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -645,6 +645,37 @@ msgstr ""
 "对于 ImageShaper 用户，则是需要选择 `Uncompressed` 或 `Uncompressed_Full_Frame` "
 "以外的模式来创建 `*.shp` 文件。"
 
+msgid "Set sidebar tab by selecting factory"
+msgstr "通过选择建筑来切换侧边栏标签"
+
+msgid ""
+"You can choose the corresponding type of factory to switch the sidebar "
+"tab by setting `SetTabBySelectingFactory=true`."
+msgstr "你可以通过设置 `SetTabBySelectingFactory=true` 启用选择对应类型工厂来切换侧边栏标签的效果。"
+
+msgid ""
+"`SetTabBySelecting` can be used to define which tab to switch to when "
+"this building (which need not be a factory) is selected."
+msgstr "`SetTabBySelecting` 可用于定义选中该建筑（可以不是工厂）时切换到哪个标签。"
+
+msgid ""
+"Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 "
+"(vehicle tab)."
+msgstr "常规值：0（建筑栏）、1（防御栏）、2（步兵栏）、3（载具栏）。"
+
+msgid ""
+"Negative values: automatically match according to the selected building's"
+" `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch "
+"to 1; otherwise switch to 0."
+msgstr ""
+"负值：根据选中建筑的 `Factory` 自动匹配。对于 `Factory=BuildingType`，如果当前标签为 0 则切换到 "
+"1，否则切换到 0。"
+
+msgid ""
+"Other values (values greater than or equal to 4): do nothing, i.e., "
+"disable this effect."
+msgstr "其他值（大于等于 4 的值）：什么都不做，即关闭这一效果。"
+
 msgid "Show designator & inhibitor range"
 msgstr "显示指示者和抑制者范围"
 
@@ -712,6 +743,14 @@ msgid ""
 "Observer can't see this timer since they've already gotten one on the top"
 " of sidebar."
 msgstr "观察者无法看到此计时器，因为他们已经有一个在侧边栏顶部的了。"
+
+msgid "Show power plant enhancer range"
+msgstr "显示电厂增幅器的范围"
+
+msgid ""
+"It is possible to show range of power plant enhancer when placing a "
+"building."
+msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
 
 msgid "SuperWeapon ShowTimer sorting"
 msgstr "超级武器计时器优先级"
@@ -911,81 +950,109 @@ msgid ""
 "credits when selling a unit on a repair bay."
 msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
-msgid "Show power plant enhancer range"
-msgstr "显示电厂增幅器的范围"
-
-msgid ""
-"It is possible to show range of power plant enhancer when placing a "
-"building."
-msgstr "现在可以在摆放建筑物时显示电厂增幅器的作用范围了。"
-
-msgid "Set sidebar tab by selecting factory"
-msgstr "通过选择建筑来切换侧边栏标签"
-
-msgid ""
-"You can choose the corresponding type of factory to switch the sidebar "
-"tab by setting `SetTabBySelectingFactory=true`."
-msgstr "你可以通过设置 `SetTabBySelectingFactory=true` 启用选择对应类型工厂来切换侧边栏标签的效果。"
-
-msgid ""
-"`SetTabBySelecting` can be used to define which tab to switch to when "
-"this building (which need not be a factory) is selected."
-msgstr "`SetTabBySelecting` 可用于定义选中该建筑（可以不是工厂）时切换到哪个标签。"
-
-msgid ""
-"Normal values: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 "
-"(vehicle tab)."
-msgstr "常规值：0（建筑栏）、1（防御栏）、2（步兵栏）、3（载具栏）。"
-
-msgid ""
-"Negative values: automatically match according to the selected building's"
-" `Factory`. For `Factory=BuildingType`, if the current tab is 0, switch "
-"to 1; otherwise switch to 0."
-msgstr ""
-"负值：根据选中建筑的 `Factory` 自动匹配。对于 `Factory=BuildingType`，如果当前标签为 0 则切换到 "
-"1，否则切换到 0。"
-
-msgid ""
-"Other values (values greater than or equal to 4): do nothing, i.e., "
-"disable this effect."
-msgstr "其他值（大于等于 4 的值）：什么都不做，即关闭这一效果。"
-
 msgid "Hotkey Commands"
 msgstr "快捷键命令"
 
-msgid "`[ ]` Toggle Designator Range"
-msgstr "`[ ]` 切换指示范围"
+msgid "`[ ]` Cycle Selection"
+msgstr "`[ ]` 循环切换选中对象"
 
 msgid ""
-"Switches on/off super weapon designator range indicator. See [this"
-"](#show-designator--inhibitor-range) for details."
-msgstr "切换超级武器指示者范围指示器开关。参见 [此处](#show-designator--inhibitor-range) 以了解。"
-
-msgid "Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true."
-msgstr "通过 `ToggleDesignatorRangeKeyEnabled` 设为 true 以启用该快捷键。"
+"Cycles through the objects that were selected when the cycle was started,"
+" selecting one of them at a time and wrapping around at the end of the "
+"list."
+msgstr "在循环开始时已选中的对象之间循环切换，每次选中其中一个并在到达列表末尾时回到开头。"
 
 msgid ""
-"For localization add `TXT_DESIGNATOR_RANGE` and "
-"`TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file."
-msgstr ""
-"为了本地化，请将 `TXT_DESIGNATOR_RANGE` 和 `TXT_DESIGNATOR_RANGE_DESC` 添加到你的 "
-"`.csf` 文件中。"
+"The cycle is restarted from the beginning whenever the current selection "
+"changes, e.g. when another object is selected or the selection is "
+"cleared."
+msgstr "每当当前已选中对象发生变化（例如选中了其它对象或清空了选择）时循环都会从头重新开始。"
 
-msgid "`[ ]` Toggle Digital Display"
-msgstr "`[ ]` 开关数字化显示"
+msgid "If nothing is selected, `MSG:NothingSelected` is logged."
+msgstr "如果没有选中任何对象，则输出 `MSG:NothingSelected`。"
 
-msgid "Switches on/off [digital display types](#digital-display)."
-msgstr "开关 [数字化显示类型](#digital-display)。"
-
-msgid "Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true."
-msgstr "通过 `ToggleDigitalDisplayKeyEnabled` 设为 true 以启用该快捷键。"
+msgid "Enable the hotkey by setting `CycleSelectionKeyEnabled` to true."
+msgstr "通过 `CycleSelectionKeyEnabled` 设为 true 以启用该快捷键。"
 
 msgid ""
-"For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC`"
+"For localization add `TXT_CYCLE_SELECTION` and `TXT_CYCLE_SELECTION_DESC`"
 " into your `.csf` file."
 msgstr ""
-"为了本地化，请将 `TXT_DIGITAL_DISPLAY` 和 `TXT_DIGITAL_DISPLAY_DESC` 添加到你的 `.csf` "
-"文件中。"
+"为了本地化请将 `TXT_CYCLE_SELECTION` 和 `TXT_CYCLE_SELECTION_DESC` 添加到你的 `.csf` "
+"文件。"
+
+msgid "`[ ]` Cycle Type Selection"
+msgstr "`[ ]` 循环切换选中类型"
+
+msgid ""
+"Cycles through the types present in the selection the cycle was started "
+"with, selecting every object of one type at a time and wrapping around at"
+" the end of the type list."
+msgstr "在循环开始时已选中的对象所包含的类型之间循环切换，每次选中某一类型的全部对象并在到达类型列表末尾时回到开头。"
+
+msgid ""
+"Type identity follows the game's own type selection: vanilla's Type ID, "
+"as extended by Ares's `GroupAs`."
+msgstr "类型判定遵循游戏自身的类型选择：原版的类型 ID，以及 Ares 的 `GroupAs` 扩展。"
+
+msgid ""
+"If `CycleTypeSelectionPrintSummary` is set to true, every step prints the"
+" same kind of selection summary the game's own type selection prints: the"
+" type's name, followed by the number of selected objects of that type and"
+" their total cost, formatted into the vanilla `MSG:UnitsWorth` string. "
+"The total cost is what the game itself adds up for that summary."
+msgstr ""
+"如果 `CycleTypeSelectionPrintSummary` 设为 "
+"true，则每一步都会输出与游戏自身类型选择相同形式的选中概要：先是类型名称，然后是该类型已选中对象的数量及其总造价，并按原版 "
+"`MSG:UnitsWorth` 字符串格式化。总造价即游戏自身为该概要累加的结果。"
+
+msgid "Enable the hotkey by setting `CycleTypeSelectionKeyEnabled` to true."
+msgstr "通过 `CycleTypeSelectionKeyEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"For localization add `TXT_CYCLE_TYPE_SELECTION` and "
+"`TXT_CYCLE_TYPE_SELECTION_DESC` into your `.csf` file."
+msgstr ""
+"为了本地化请将 `TXT_CYCLE_TYPE_SELECTION` 和 `TXT_CYCLE_TYPE_SELECTION_DESC` "
+"添加到你的 `.csf` 文件。"
+
+msgid ""
+"The order in which the types are cycled to is customizable, and is "
+"decided by the following rules, in order:"
+msgstr "循环切换类型的顺序是可自定义的，它按以下规则依次决定："
+
+msgid "Higher `TypeCyclePriority` wins."
+msgstr "`TypeCyclePriority` 较高者优先。"
+
+msgid ""
+"Ties are broken by the type's `Cost`, from the highest to the lowest. The"
+" raw cost registered in the INI is used - never the cost the type "
+"currently has for the selecting player - so cost multipliers of the "
+"owning house do not affect the order."
+msgstr ""
+"若相同，则按类型的 `Cost` 从高到低排序。这里使用 INI "
+"中登记的原始造价——而非该类型对当前选择方而言的实际造价——因此所属方的造价倍率不会影响顺序。"
+
+msgid ""
+"Remaining ties are broken by the reversed INI load order: the type "
+"written further down in the INI is cycled to first."
+msgstr "仍然相同则按相反的 INI 加载顺序排序：在 INI 中写得更靠后的类型会先被循环到。"
+
+msgid "`[ ]` Deselect Object(s)"
+msgstr "`[ ]` 取消选中对象"
+
+msgid "Deselect 1 or 5 object(s) from current selected objects."
+msgstr "从当前已选中对象中取消选中 1 或 5 个对象"
+
+msgid "Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true."
+msgstr "通过 `DeselectObjectKeysEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5`"
+" and `TXT_DESELECT5_DESC` into your `.csf` file."
+msgstr ""
+"为了本地化请将 `TXT_DESELECT`、`TXT_DESELECT_DESC`、`TXT_DESELECT5` 和 "
+"`TXT_DESELECT5_DESC` 添加到你的 `.csf` 文件。"
 
 msgid "`[ ]` Next Idle Harvester"
 msgstr "`[ ]` 下一个空闲矿车"
@@ -1042,38 +1109,6 @@ msgid ""
 "QuickSaved`."
 msgstr "保存的文件名应当类似于 `Allied Mission 25: Esther's Money - QuickSaved`。"
 
-msgid "`[ ]` Toggle Message Label"
-msgstr "`[ ]` 开关字幕居中"
-
-msgid ""
-"Switches on/off [Task subtitles' label in the middle of the screen"
-"](#task-subtitles-display-in-the-middle-of-the-screen)."
-msgstr "开关 [字幕居中](#task-subtitles-display-in-the-middle-of-the-screen) 显示。"
-
-msgid "Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true."
-msgstr "通过 `ToggleMessageListKeyEnabled` 设为 true 以启用该快捷键。"
-
-msgid ""
-"For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` "
-"into your `.csf` file."
-msgstr "为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC` 添加到你的 `.csf` 文件。"
-
-msgid "`[ ]` Deselect Object(s)"
-msgstr "`[ ]` 取消选中对象"
-
-msgid "Deselect 1 or 5 object(s) from current selected objects."
-msgstr "从当前已选中对象中取消选中 1 或 5 个对象"
-
-msgid "Enable these hotkeys by setting `DeselectObjectKeysEnabled` to true."
-msgstr "通过 `DeselectObjectKeysEnabled` 设为 true 以启用该快捷键。"
-
-msgid ""
-"For localization add `TXT_DESELECT`, `TXT_DESELECT_DESC`, `TXT_DESELECT5`"
-" and `TXT_DESELECT5_DESC` into your `.csf` file."
-msgstr ""
-"为了本地化请将 `TXT_DESELECT`、`TXT_DESELECT_DESC`、`TXT_DESELECT5` 和 "
-"`TXT_DESELECT5_DESC` 添加到你的 `.csf` 文件。"
-
 msgid "`[ ]` Select Captured Units"
 msgstr "`[ ]` 选取被捕获单位"
 
@@ -1097,14 +1132,68 @@ msgstr ""
 "为了本地化请将 `MSG:SelectCaptured`、`TXT_SELECT_CAPTURED` 和 "
 "`TXT_SELECT_CAPTURED_DESC` 添加到你的 `.csf` 文件。"
 
+msgid "`[ ]` Toggle Designator Range"
+msgstr "`[ ]` 切换指示范围"
+
+msgid ""
+"Switches on/off super weapon designator range indicator. See [this"
+"](#show-designator--inhibitor-range) for details."
+msgstr "切换超级武器指示者范围指示器开关。参见 [此处](#show-designator--inhibitor-range) 以了解。"
+
+msgid "Enable the hotkey by setting `ToggleDesignatorRangeKeyEnabled` to true."
+msgstr "通过 `ToggleDesignatorRangeKeyEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"For localization add `TXT_DESIGNATOR_RANGE` and "
+"`TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file."
+msgstr ""
+"为了本地化，请将 `TXT_DESIGNATOR_RANGE` 和 `TXT_DESIGNATOR_RANGE_DESC` 添加到你的 "
+"`.csf` 文件中。"
+
+msgid "`[ ]` Toggle Digital Display"
+msgstr "`[ ]` 开关数字化显示"
+
+msgid "Switches on/off [digital display types](#digital-display)."
+msgstr "开关 [数字化显示类型](#digital-display)。"
+
+msgid "Enable the hotkey by setting `ToggleDigitalDisplayKeyEnabled` to true."
+msgstr "通过 `ToggleDigitalDisplayKeyEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC`"
+" into your `.csf` file."
+msgstr ""
+"为了本地化，请将 `TXT_DIGITAL_DISPLAY` 和 `TXT_DIGITAL_DISPLAY_DESC` 添加到你的 `.csf` "
+"文件中。"
+
+msgid "`[ ]` Toggle Message Label"
+msgstr "`[ ]` 开关字幕居中"
+
+msgid ""
+"Switches on/off [Task subtitles' label in the middle of the screen"
+"](#task-subtitles-display-in-the-middle-of-the-screen)."
+msgstr "开关 [字幕居中](#task-subtitles-display-in-the-middle-of-the-screen) 显示。"
+
+msgid "Enable the hotkey by setting `ToggleMessageListKeyEnabled` to true."
+msgstr "通过 `ToggleMessageListKeyEnabled` 设为 true 以启用该快捷键。"
+
+msgid ""
+"For localization add `TXT_TOGGLE_MESSAGE` and `TXT_TOGGLE_MESSAGE_DESC` "
+"into your `.csf` file."
+msgstr "为了本地化请将 `TXT_TOGGLE_MESSAGE` 和 `TXT_TOGGLE_MESSAGE_DESC` 添加到你的 `.csf` 文件。"
+
 msgid "**Development Hotkey Commands**"
 msgstr "**开发用快捷键命令**"
 
 msgid ""
 "The following hotkeys are for debug purpose and require setting "
-"[`DebugKeysEnabled`](https://ares-developers.github.io/Ares-docs/ui-features/keyboardcommandshotkeys.html#disabling-keyboard-commands) to true to enable."
+"[`DebugKeysEnabled`](https://ares-developers.github.io/Ares-docs/ui-"
+"features/keyboardcommandshotkeys.html#disabling-keyboard-commands) to "
+"true to enable."
 msgstr ""
-"以下键盘命令用于 debug 目的，需要将 [`DebugKeysEnabled`](https://ares-developers.github.io/Ares-docs/ui-features/keyboardcommandshotkeys.html#disabling-keyboard-commands) 设为 true 以启用。"
+"以下键盘命令用于 debug 目的，需要将 [`DebugKeysEnabled`](https://ares-"
+"developers.github.io/Ares-docs/ui-features/keyboardcommandshotkeys.html"
+"#disabling-keyboard-commands) 设为 true 以启用。"
 
 msgid "`[ ]` Display Damage Numbers"
 msgstr "`[ ]` 显示伤害数字"
@@ -1134,19 +1223,6 @@ msgstr ""
 "为了本地化请将 `TXT_DUMP_OBJECT_INFO` 和 `TXT_DUMP_OBJECT_INFO_DESC` 添加到你的 `.csf`"
 " 文件。"
 
-msgid "`[ ]` Toggle Frame By Frame Mode"
-msgstr "`[ ]` 开关逐帧模式"
-
-msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
-msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
-
-msgid ""
-"For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` "
-"into your `.csf` file."
-msgstr ""
-"为了本地化，请将 `TXT_FRAME_BY_FRAME` 和 `TXT_FRAME_BY_FRAME_DESC` 添加到你的 `.csf` "
-"文件中。"
-
 msgid "`[ ]` Save Variables"
 msgstr "`[ ]` 保存变量"
 
@@ -1162,6 +1238,19 @@ msgid ""
 "into your `.csf` file."
 msgstr ""
 "为了本地化，请将 `TXT_SAVE_VARIABLES` 和 `TXT_SAVE_VARIABLES_DESC` 添加到你的 `.csf` "
+"文件中。"
+
+msgid "`[ ]` Toggle Frame By Frame Mode"
+msgstr "`[ ]` 开关逐帧模式"
+
+msgid "Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in)."
+msgstr "开关 [逐帧模式](Miscellanous.md#frame-step-in)。"
+
+msgid ""
+"For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` "
+"into your `.csf` file."
+msgstr ""
+"为了本地化，请将 `TXT_FRAME_BY_FRAME` 和 `TXT_FRAME_BY_FRAME_DESC` 添加到你的 `.csf` "
 "文件中。"
 
 msgid "Loading screen"

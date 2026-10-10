@@ -309,6 +309,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
+		Valueable<bool> UseSidebarRadarOffsetFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -437,6 +438,7 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 		Valueable<int> LeptonMindControlOffset;
 		Valueable<int> MindControlRingOffset;
+		Valueable<bool> Anim_ShouldUseCellDrawer;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
 
@@ -824,6 +826,7 @@ public:
 			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
+			, UseSidebarRadarOffsetFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -943,6 +946,7 @@ public:
 			, DefaultToGuardArea { false }
 			, LeptonMindControlOffset { 70 }
 			, MindControlRingOffset { 140 }
+			, Anim_ShouldUseCellDrawer { true }
 
 			, CylinderRangefinding { false }
 

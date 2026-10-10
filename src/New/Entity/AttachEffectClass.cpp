@@ -77,6 +77,9 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 			&& (!pInvokerHouse || EnumFunctions::CanTargetHouse(pType->ArmorMultiplier_AffectsHouse, pTechno->Owner, pInvokerHouse))))
 		{
 			armorMultiplier *= pType->ArmorMultiplier;
+
+			if (pType->ArmorMultiplier_Delay > 0)
+				this->ArmorMultiplierTimer.Start(pType->ArmorMultiplier_Delay);
 		}
 
 		duration = Math::max(static_cast<int>(duration / armorMultiplier), 0);
@@ -213,7 +216,7 @@ void AttachEffectClass::AI()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (pType->HasTint())
+		if (pType->Tint->Enabled)
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -246,7 +249,7 @@ void AttachEffectClass::AI()
 
 			this->ShouldRefreshDuration = false;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 			{
 				pTechno->MarkForRedraw();
 				pExt->UpdateTintValues();
@@ -345,7 +348,7 @@ void AttachEffectClass::UpdateConditionalAnimDrawingLogic()
 	{
 		auto const pTechnoExt = TechnoExt::Fetch(this->Techno);
 
-		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, nullptr, nullptr, nullptr, nullptr))
+		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, false, nullptr, nullptr, nullptr, nullptr))
 		{
 			// Inlined because calling KillAnim() would cause recursive calls to this function.
 			if (this->Animation)
@@ -369,7 +372,7 @@ void AttachEffectClass::UpdateConditionalAnimDrawingLogic()
 
 		for (auto const& drawOffset : this->Type->Animation_DrawOffsets)
 		{
-			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, nullptr, nullptr, nullptr, nullptr, true))
+			if (drawOffset.RequiredTypes.size() < 1 || pTechnoExt->HasAttachedEffects(drawOffset.RequiredTypes, false, false, false, nullptr, nullptr, nullptr, nullptr, true))
 				pAnimExt->AEDrawOffset += drawOffset.Offset;
 		}
 	}
@@ -398,7 +401,7 @@ void AttachEffectClass::OnlineCheck()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (this->Type->HasTint())
+		if (this->Type->Tint->Enabled)
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -819,7 +822,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
-				if (pType->HasTint())
+				if (pType->Tint->Enabled)
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1092,7 +1095,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 			if (pType->RequiresAnimUpdate)
 				requiresAnimUpdate = true;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 		}
 
@@ -1244,7 +1247,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			if (type->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (type->HasTint())
+			if (type->Tint->Enabled)
 				markForRedraw = true;
 
 			continue;
@@ -1313,13 +1316,20 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 				// discard count
 				pAE->FiringCount = attachEffect->FiringCount;
 				pAE->ReceivedDamageCount = attachEffect->ReceivedDamageCount;
+
+				// delay
+				if (type->ArmorMultiplier_Delay > 0 && attachEffect->ArmorMultiplierTimer.HasTimeLeft())
+					pAE->ArmorMultiplierTimer.Start(attachEffect->ArmorMultiplierTimer.GetTimeLeft());
+
+				if (type->ReflectDamage_Delay > 0 && attachEffect->ReflectDamageTimer.HasTimeLeft())
+					pAE->ReflectDamageTimer.Start(attachEffect->ReflectDamageTimer.GetTimeLeft());
 			}
 		}
 
 		if (type->RequiresRecalculation)
 			requiresRecalc = true;
 
-		if (type->HasTint())
+		if (type->Tint->Enabled)
 			markForRedraw = true;
 
 		it = pSourceExt->AttachedEffects.erase(it);
@@ -1405,6 +1415,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->LastSequenceCheck)
 		.Process(this->FiringCount)
 		.Process(this->ReceivedDamageCount)
+		.Process(this->ArmorMultiplierTimer)
+		.Process(this->ReflectDamageTimer)
 		.Success();
 }
 
