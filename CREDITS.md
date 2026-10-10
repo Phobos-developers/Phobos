@@ -990,12 +990,12 @@ This page lists all the individual contributions to the project by their author.
 - **Chang_zhi**:
   - Interop export interface for accessing scenario local/global variables
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
-- **Igor Kolchinskii (leosnake2208)**:
-  - Right-click to command
-  - Type selection by double/triple-click
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
+- **Igor Kolchinskii (leosnake2208)**:
+  - Right-click to command
+  - Type selection by double/triple-click
 - **dh381-1** - Detonate ivan bomb on impact
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
