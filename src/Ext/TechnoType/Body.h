@@ -248,6 +248,41 @@ public:
 			, Frames { { -1, -1, -1 } }
 		{ }
 
+		SHPStruct* GetShape(TechnoClass* pTechno) const
+		{
+			const auto pType = this->Type.Get();
+			return (pType ? pType->Shape : this->Shape).Get(pTechno);
+		}
+
+		ConvertClass* GetPalette(Rank rank) const
+		{
+			const auto pType = this->Type.Get();
+			const auto pDefault = (pType ? pType->Palette : this->Palette).GetConvert();
+
+			switch (rank)
+			{
+			case Rank::Elite:
+				return (pType ? pType->Palette_Elite : this->Palette_Elite).GetOrDefaultConvert(pDefault);
+
+			case Rank::Veteran:
+				return (pType ? pType->Palette_Veteran : this->Palette_Veteran).GetOrDefaultConvert(pDefault);
+
+			default:
+				return (pType ? pType->Palette_Rookie : this->Palette_Rookie).GetOrDefaultConvert(pDefault);
+			}
+		}
+
+		int GetFrame(TechnoClass* pTechno) const
+		{
+			const auto pType = this->Type.Get();
+			return (pType ? pType->Frame : this->Frame).Get(pTechno);
+		}
+
+		Vector3D<int> GetFrames() const
+		{
+			return this->Type ? Vector3D<int> {-1, -1, -1} : this->Frames;
+		}
+
 		bool Load(PhobosStreamReader& stm, bool registerForChange);
 		bool Save(PhobosStreamWriter& stm) const;
 
