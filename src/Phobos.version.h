@@ -21,7 +21,7 @@
 // The current pre-release being prepared, spelled out in full rather than as a number, so that
 // it can be anything semantic versioning allows - "alpha5", "beta1", "rc3", etc. Its presence is
 // what makes a release build a pre-release; comment it out for a stable release.
-#define PRERELEASE_SUFFIX "alpha1"
+#define PRERELEASE_SUFFIX "alpha2"
 
 #pragma endregion
 
