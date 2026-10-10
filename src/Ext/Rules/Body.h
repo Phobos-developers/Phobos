@@ -309,6 +309,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
+		Valueable<bool> UseSidebarRadarOffsetFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -825,6 +826,7 @@ public:
 			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
+			, UseSidebarRadarOffsetFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}

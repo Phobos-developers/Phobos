@@ -589,6 +589,7 @@ This page lists all the individual contributions to the project by their author.
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - More convenient vanilla action script target specification
+  - Customize turn rate when jumpjet vehicle crashing
   - Customize insignias palette
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -611,6 +612,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial effort on optimization for crates' random distribution
   - Customizable spawns queue
   - Initial spawns number
+  - Sidebar radar horizontal offset fix
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation

@@ -3330,8 +3330,8 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 	GET(FootClass*, pThis, ESI);
 	bool result = false;
 
-	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || (!pThis->Owner->IsControlledByHuman()
-		&& (pThis->CurrentMission == Mission::Enter || pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)))
+	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || pThis->CurrentMission == Mission::Enter
+		|| pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)
 	{
 		result = pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now();
 	}

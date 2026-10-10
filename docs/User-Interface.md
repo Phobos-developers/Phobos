@@ -936,12 +936,20 @@ Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPositions`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
+```
+
+- `Sidebar.RadarOffsetFix` overrides the radar horizontal correction for this side. `0` disables the correction for this side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                 ; Side
+Sidebar.RadarOffsetFix=    ; integer, pixels, defaults to `-3` for GDI-style and `-2` for NOD-style sidebars
 ```
 
 ### SuperWeapon Sidebar

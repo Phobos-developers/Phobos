@@ -912,6 +912,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowWeaponSelectAgainstWalls.Read(exINI, pSection, "AllowWeaponSelectAgainstWalls");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
+	this->CrashROT.Read(exINI, pSection, "CrashROT");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
@@ -1585,6 +1586,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->AllowWeaponSelectAgainstWalls)
 		.Process(this->JumpjetRotateOnCrash)
+		.Process(this->CrashROT)
 		.Process(this->ShadowSizeCharacteristicHeight)
 
 		.Process(this->EnemyUIName)

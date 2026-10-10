@@ -1936,6 +1936,9 @@ msgstr "自定义 `MissileSafetyAltitude` 以及导弹在丢失目标后应飞�
 msgid "More convenient vanilla action script target specification"
 msgstr "更方便的原版动作脚本目标指定"
 
+msgid "Customize turn rate when jumpjet vehicle crashing"
+msgstr "自定义 Jumpjet 载具坠毁时的转向速率"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
