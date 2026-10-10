@@ -336,6 +336,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
+- The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right for GDI and 2 pixels to the right for NOD sidebars.
+  - This fix may be disabled by setting `[AudioVisual] -> UseSidebarRadarOffsetFix=no` in `rulesmd.ini`. `Sidebar.RadarOffsetFix` can override the correction per side; negative values move the radar left and `0` disables it for that side.
 
 ## Fixes / interactions with other extensions
 
@@ -2429,6 +2431,7 @@ RotateOnCrash=true         ; boolean
 
 [SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=      ; boolean, default to [JumpjetControls] -> JumpjetRotateOnCrash
+CrashROT=-1                ; integer, negative means no effects
 ```
 
 ```{warning}

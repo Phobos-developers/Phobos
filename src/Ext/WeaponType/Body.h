@@ -229,7 +229,7 @@ public:
 		, Anim_Update {}
 		, Abductor_ChangeOwner_ResetDriverKilled { true }
 		, Abductor_ChangeOwner_IgnoreDriverKilled { false }
-		, CanTarget_DriverKilled { false }
+		, CanTarget_DriverKilled { true }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;
