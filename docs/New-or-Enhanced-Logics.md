@@ -86,6 +86,7 @@ This page describes all the engine features that are either new and introduced b
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
+  - `Immune.Capture`, `Immune.Infiltrate` and `Immune.EngineerRepair` only apply to buildings, respectively preventing capture, infiltration by enemy, and repair by friendly engineers while AE is active.
 
 - AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -221,6 +222,9 @@ DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 LaserTrail.Type=                                   ; LaserTrailType
 Groups=                                            ; comma-separated list of strings (group IDs)
+Immune.Capture=false                               ; boolean
+Immune.Infiltrate=false                            ; boolean
+Immune.EngineerRepair=false                        ; boolean
 
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
