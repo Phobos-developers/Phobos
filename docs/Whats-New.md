@@ -1924,6 +1924,13 @@ HideShakeEffects=false           ; boolean
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
   14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
+  16006=Set House Index For Managing AI Triggers,20,0,1,[LONG DESC]
+  16007=Enable Or Disable All AI Triggers,21,0,1,[LONG DESC]
+  16008=Enable AI Triggers From List,28,0,1,[LONG DESC]
+  16009=Disable AI Triggers From List,28,0,1,[LONG DESC]
+  16010=Disable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16011=Enable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16012=Set Side Index For Managing AI Triggers,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -2004,6 +2011,12 @@ HideShakeEffects=false           ; boolean
   25=Local variables,-4
   26=Global variables,-5
   27=Global variables,-6
+  28=AI Scripts List, -7
+  29=AI Target Type,-8
+
+  [ScriptParamTypes]
+  7=AIScriptsList,1,1,0
+  8=AITargetTypes,1,1,0
   ```
 ````
 
@@ -2019,6 +2032,7 @@ HideShakeEffects=false           ; boolean
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)
 - [Customize whether mind-controlled `Insignificant` technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
+- [Script actions for managing AI Triggers](AI-Scripting-and-Mapping.md#script-actions-for-managing-ai-triggers) (by FS-21)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
 - [Customize whether the unit exits from the roof](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)
@@ -2631,6 +2645,7 @@ HideShakeEffects=false           ; boolean
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display optionally centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Script action for enabling & disabling AI Triggers (by FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable `DieSound` when grinding (by Trsdy)
