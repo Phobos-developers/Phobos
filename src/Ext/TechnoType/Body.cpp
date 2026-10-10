@@ -985,7 +985,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaData.Palette_Elite.LoadFromINI(pINI, pSection, "InsigniaPalette.Elite");
 	this->InsigniaData.Frame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->InsigniaData.Frames.Read(exINI, pSection, "InsigniaFrames");
-	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	if (pThis->Gunner)
 	{
@@ -1056,6 +1055,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 			data.Frames.Read(exINI, pSection, tempBuffer);
 		}
 	}
+
+	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
@@ -1633,9 +1634,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->MaxGuardRange)
 
 		.Process(this->InsigniaData)
-		.Process(this->Insignia_ShowEnemy)
 		.Process(this->Insignia_WeaponData)
 		.Process(this->Insignia_PassengersData)
+		.Process(this->Insignia_ShowEnemy)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)

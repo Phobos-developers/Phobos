@@ -256,9 +256,9 @@ public:
 	};
 
 	InsigniaDataEntry InsigniaData;
-	Nullable<bool> Insignia_ShowEnemy;
 	std::vector<InsigniaDataEntry> Insignia_WeaponData;
 	std::vector<InsigniaDataEntry> Insignia_PassengersData;
+	Nullable<bool> Insignia_ShowEnemy;
 
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -689,9 +689,9 @@ public:
 		, MaxGuardRange { Leptons(4096) }
 
 		, InsigniaData {}
-		, Insignia_ShowEnemy {}
 		, Insignia_WeaponData {}
 		, Insignia_PassengersData {}
+		, Insignia_ShowEnemy {}
 
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}
