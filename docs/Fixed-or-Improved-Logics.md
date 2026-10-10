@@ -502,12 +502,15 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
   - The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
   - `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
     - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+  - `HealBase` no longer scatters units that are already at full health.
+    - This fix is enabled by default and can be disabled by setting `HealBaseNoScatter` to `false`.
 
 In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=false          ; boolean
 UnitCrateVehicleCap=50         ; integer
+HealBaseNoScatter=true         ; boolean
 FreeMCV=true                   ; boolean
 FreeMCV.CreditsThreshold=1500  ; integer
 ```

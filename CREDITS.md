@@ -787,6 +787,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize `DefaultToGuardArea` per gunner mode
   - Global default value for `ShouldUseCellDrawer`
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
+  - Fix `HealBase` crates causing full-health objects to scatter
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
