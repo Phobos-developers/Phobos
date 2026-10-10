@@ -1020,6 +1020,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
+	this->Convert_SpawnsConversion.Read(exINI, pSection, "Convert.SpawnsConversion");
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	if (exINI.ReadString(pSection, "RevengeWeapon.AffectsHouses") > 0)
@@ -1689,6 +1690,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
+		.Process(this->Convert_SpawnsConversion)
 
 		.Process(this->Tint)
 
