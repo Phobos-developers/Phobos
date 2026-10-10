@@ -119,6 +119,13 @@ public:
 	Nullable<bool> AttackCursorOnFriendlies;
 	Nullable<bool> AttackNoThreatBuildings;
 
+	Valueable<double> RandomTarget;
+	Valueable<bool> RandomTarget_Spawners_MultipleTargets;
+	Valueable<bool> RandomTarget_Spawners_RememberTargets;
+	Valueable<double> RandomTarget_MissChance;
+	Valueable<double> RandomTarget_FriendlyFireChance;
+	ValueableVector<TechnoTypeClass*> OnlyTargetTechnos;
+
 	Nullable<bool> Anim_Update;
 
 	bool SkipWeaponPicking;
@@ -225,12 +232,19 @@ public:
 		, AttackFriendlies {}
 		, AttackCursorOnFriendlies {}
 		, AttackNoThreatBuildings {}
-		, CylinderRangefinding {}
+		, RandomTarget { 0.0 }
+		, RandomTarget_Spawners_MultipleTargets { false }
+		, RandomTarget_Spawners_RememberTargets { true }
+		, RandomTarget_MissChance { 0.0 }
+		, RandomTarget_FriendlyFireChance { 0.0 }
+		, OnlyTargetTechnos {}
 		, Anim_Update {}
 		, Abductor_ChangeOwner_ResetDriverKilled { true }
 		, Abductor_ChangeOwner_IgnoreDriverKilled { false }
 		, CanTarget_DriverKilled { true }
 	{ }
+
+	bool CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const;
 
 	int GetBurstDelay(int burstIndex) const;
 	bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;

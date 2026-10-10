@@ -1,4 +1,3 @@
-
 #include "Body.h"
 
 #include <Ext/House/Body.h>
@@ -192,4 +191,3 @@ DEFINE_HOOK(0x64C30E, sub_64BDD0_GetEventSize2, 0x6)
 
 	return 0;
 }
-

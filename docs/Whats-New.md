@@ -2019,6 +2019,7 @@ HideShakeEffects=false           ; boolean
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)
 - [Customize whether mind-controlled `Insignificant` technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
+- [Weapon random target](New-or-Enhanced-Logics.md#weapon-random-target) (by FS-21)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
 - [Roof production anim](New-or-Enhanced-Logics.md#roof-production-anim) (by Noble_Fish)
 - [Customize whether the unit exits from the roof](Fixed-or-Improved-Logics.md#customize-whether-the-unit-exits-from-the-roof) (by Noble_Fish)
