@@ -89,6 +89,8 @@ public:
 
 	bool PreventCrewEscape;
 
+	double OriginVeterancy;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -139,6 +141,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, OriginVeterancy { 0.0 }
 	{ }
 
 	void OnEarlyUpdate();

@@ -731,6 +731,21 @@ DetachedReport=  ; Sound entry
 
 ## Buildings
 
+### Allow Ares Academy add country-level filters
+
+- Ares' Academy feature could previously only add `Academy.Types` and `Academy.Ignore` to buildings. Now, countries for which `Academy.AllowCountryFilter` is set to `true` will use the academy's `Academy.Country.Types.*` and `Academy.Country.Ignore.*` settings instead of `Academy.Types` and `Academy.Ignore`.
+
+In `rulesmd.ini`:
+```ini
+[SOMECOUNTRY]                       ; Country
+Academy.AllowCountryFilter=false    ; boolean
+
+[SOMEBUILDING]                      ; BuildingType, belonging to a house with Academy.AllowCountryFilter=true
+Academy.Country.Types.N=            ; List of TechnoType, empty for all types
+Academy.Country.Ignore.N=           ; List of TechnoType
+; Where N is 0,1,2...15.
+```
+
 ### Build area customizations
 
 - There are now additional customizations available for building placement next to other buildings.
