@@ -2006,6 +2006,54 @@ inline void ValueableVector<BuildingTypeClass*>::Read(INI_EX& parser, const char
 }
 
 template <>
+inline void ValueableVector<InfantryTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pInfantry = InfantryTypeClass::FindOrAllocate(cur))
+				this->push_back(pInfantry);
+		}
+	}
+}
+
+template <>
+inline void ValueableVector<UnitTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pUnit = UnitTypeClass::FindOrAllocate(cur))
+				this->push_back(pUnit);
+		}
+	}
+}
+
+template <>
+inline void ValueableVector<AircraftTypeClass*>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		this->clear();
+		char* str = parser.value();
+		char* context = nullptr;
+		for (char* cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			if (auto pAircraft = AircraftTypeClass::FindOrAllocate(cur))
+				this->push_back(pAircraft);
+		}
+	}
+}
+
+template <>
 inline void ValueableVector<Mission>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
 	if (parser.ReadString(pSection, pKey))
