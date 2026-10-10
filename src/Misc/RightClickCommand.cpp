@@ -151,6 +151,26 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_RightClickCommand, 0x6)
 		const int originX = *reinterpret_cast<int*>(0x886FA0);
 		const int originY = *reinterpret_cast<int*>(0x886FA4);
 
+		const int relX = rawX - originX;
+		const int relY = rawY - originY;
+
+		// Bail out if the action is Select/ToggleSelect
+		{
+			Point2D screenPos { relX, relY };
+			CellStruct cell { };
+			CoordStruct coords { };
+			ObjectClass* pTarget = nullptr;
+			BYTE a5 = 0, a6 = 0;
+
+			if (DisplayClass::Instance.ProcessClickCoords(&screenPos, &cell, &coords, &pTarget, &a5, &a6))
+			{
+				const auto action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
+
+				if (action == Action::Select || action == Action::ToggleSelect)
+					return 0;
+			}
+		}
+
 		// Feed the LMB-up command dispatch the view-relative click point.
 		R->Stack(0x10, rawX - originX);
 		R->Stack(0x14, rawY - originY);
@@ -204,14 +224,7 @@ DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 	// If we arrived here via the RMB command redirect (0x69323E), let the order stand. The
 	// flag is cleared further along the same path, at 0x693290 in MultiClickTypeSelect.cpp.
 	if (RightClickCommand::RmbCommandInProgress)
-	{
-		const auto action = static_cast<Action>(R->EAX());
-
-		if (action == Action::Select || action == Action::ToggleSelect)
-			R->EAX(static_cast<DWORD>(Action::None));
-
 		return 0;
-	}
 
 	// A held-off deploy leaves the unit selected, so no deselect here.
 	if (RightClickCommand::ApplyDeployHoldOff(R))
