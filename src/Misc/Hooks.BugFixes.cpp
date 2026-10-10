@@ -2107,7 +2107,14 @@ DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_BridgeOrHeight, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	return pThis->OnBridge || pThis->GetHeight() > 0 ? Explode : 0;
+	if (pThis->OnBridge)
+		return Explode;
+
+	auto const pLoco = pThis->Locomotor.GetInterfacePtr();
+	const bool isHover = pLoco && locomotion_cast<HoverLocomotionClass*>(pLoco);
+	const bool isHeldInAir = isHover ? pThis->IsAttackedByLocomotor : pThis->GetHeight() > 0;
+
+	return isHeldInAir ? Explode : 0;
 }
 
 // These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
