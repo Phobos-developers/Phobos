@@ -1799,6 +1799,7 @@ HideShakeEffects=false           ; boolean
   73=Unit Index,0
   74=Mission Timer Type,0
   75=Reverse Mission Timer,0
+  76=AIHousesList index,501
   101=BannerType,0
   102=Horizontal position,0
   103=Vertical position,0
@@ -1845,6 +1846,7 @@ HideShakeEffects=false           ; boolean
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type...,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type...,68,46,0,0,[LONG DESC],0,1,602,1
+  603=There are no technos of the specified houses list...,0,76,0,0,[LONG DESC],0,1,603,1
   604=Techno Type Entered Cell...,68,46,0,0,[LONG DESC],0,1,604,1
   605=AI Target Type Entered Cell...,68,70,0,0,[LONG DESC],0,1,605,1
   606=AttachEffect is attaching to a Techno...,-2,71,0,0,[LONG DESC],0,1,606,1
@@ -1873,6 +1875,9 @@ HideShakeEffects=false           ; boolean
   800=Display banner and local variable... (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID.,0,1,800
   801=Display banner and global variable... (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID.,0,1,801
   802=Delete banner... (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID.,0,1,802
+
+  [TriggerParamTypes]
+  501=AIHousesList,1,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -2017,6 +2022,7 @@ HideShakeEffects=false           ; boolean
 #### New:
 - [Customized transport plane for teams](AI-Scripting-and-Mapping.md#customized-transport-plane-for-teams) (by FlyStar)
 - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact) (by FS-21)
+- [There are no technos of the specified houses list](AI-Scripting-and-Mapping.md#603-there-are-no-technos-of-the-specified-houses-list) (by FS-21)
 - [Customize ivan bomb visibility](Fixed-or-Improved-Logics.md#customize-ivan-bomb-visibility) (by NetsuNegi)
 - [Customize whether mind-controlled `Insignificant` technos can be auto-targeted](Fixed-or-Improved-Logics.md#customize-whether-mind-controlled-insignificant-technos-can-be-auto-targeted) (by Noble_Fish)
 - [AutoDeath based on player power status and player credits](New-or-Enhanced-Logics.md#kill-object-automatically) (by Flactine)
