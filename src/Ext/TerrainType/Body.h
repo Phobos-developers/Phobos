@@ -1,5 +1,6 @@
 #pragma once
 #include <TerrainTypeClass.h>
+#include <TiberiumClass.h>
 
 #include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>

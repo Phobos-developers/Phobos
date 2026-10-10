@@ -2046,6 +2046,7 @@ HideShakeEffects=false           ; boolean
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- [New Tiberium types](New-or-Enhanced-Logics.md#new-tiberium-types) (by ZivDero & FS-21)
 - [AttachEffect `CumulativeAnimations` count increment customization](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)

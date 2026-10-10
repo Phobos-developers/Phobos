@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/Techno/Body.h>
 
 #pragma region EnterRefineryFix
 
@@ -112,6 +113,87 @@ DEFINE_HOOK(0x73E361, UnitClass_Harvesting_HarvesterDumpRate, 6)
 	return 0x73E367;
 }
 
+DEFINE_HOOK(0x73D560, UnitClass_Harvesting_GetTotalAmount1, 0x5)
+{
+	enum { Done = 0x73D565 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	float total = 0.0f;
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+		total = pExt->GetTotalTiberium();
+	else
+		total = pThis->Tiberium.GetTotalAmount();
+
+	__asm fld total;
+
+	return Done;
+}
+
+DEFINE_HOOK(0x73D590, UnitClass_Harvesting_GetTotalAmount2, 0x5)
+{
+	enum { Done = 0x73D595 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	float total = 0.0f;
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+		total = pExt->GetTotalTiberium();
+	else
+		total = pThis->Tiberium.GetTotalAmount();
+
+	__asm fld total;
+
+	return Done;
+}
+
+DEFINE_HOOK(0x73D5B2, UnitClass_Harvesting_AddTiberium, 0xC)
+{
+	enum { Continue = 0x73D5BE };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(const int, tiberiumType, EBX);
+
+	float amount = 0.0f;
+	__asm fstp amount;
+
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+		pExt->AddTiberium(amount, tiberiumType);
+
+	if (tiberiumType < 4)
+		pThis->Tiberium.AddAmount(amount, tiberiumType);
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x73E3BF, UnitClass_Mission_Unload_FirstUsedSlot, 0xB)
+{
+	enum { Done = 0x73E3CA };
+
+	GET(UnitClass*, pThis, ESI);
+
+	int slot = -1;
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+	{
+		slot = pExt->FirstUsedTiberiumSlot();
+	}
+	else
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (pThis->Tiberium.GetAmount(i) > 0.0f)
+			{
+				slot = i;
+				break;
+			}
+		}
+	}
+
+	R->EAX(slot);
+
+	return Done;
+}
+
 DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 {
 	enum { SkipGameCode = 0x73E41D };
@@ -119,7 +201,8 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 	GET(UnitClass*, pThis, ESI);
 	GET(const int, tiberiumIdx, EBP);
 	const auto pTypeExt = UnitTypeExt::Fetch(pThis->Type);
-	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const float totalAmount = pExt ? pExt->GetTiberium(tiberiumIdx) : pThis->Tiberium.GetAmount(tiberiumIdx);
 	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
 
 	if (dumpAmount <= 0.0f || totalAmount < dumpAmount)
@@ -128,6 +211,48 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 	__asm fld dumpAmount;
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73E44F, UnitClass_Mission_Unload_RemoveAmount, 0xD)
+{
+	enum { Continue = 0x73E45C };
+
+	GET(UnitClass*, pThis, ESI);
+	GET(const int, slot, EBP);
+	float dumpAmount = 0.0f;
+	const DWORD dwVal = R->ECX();
+	memcpy(&dumpAmount, &dwVal, sizeof(float));
+
+	float removed = 0.0f;
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+		removed = pExt->RemoveTiberium(dumpAmount, slot);
+
+	if (slot < 4)
+		pThis->Tiberium.RemoveAmount(dumpAmount, slot);
+
+	if (removed <= 0.0f && dumpAmount > 0.0f)
+		removed = dumpAmount;
+
+	__asm fld removed;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x7414C5, UnitClass_GetPipFillLevel_Tiberium, 0xB)
+{
+	enum { Done = 0x7414D0 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	float total = 0.0f;
+	if (auto const pExt = TechnoExt::Fetch(pThis))
+		total = pExt->GetTotalTiberium();
+	else
+		total = pThis->Tiberium.GetTotalAmount();
+
+	__asm fld total;
+
+	return Done;
 }
 
 DEFINE_HOOK(0x73E951, UnitClass_Harvest_HarvesterLoadRate, 6)
