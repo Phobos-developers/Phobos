@@ -703,6 +703,7 @@ This page lists all the individual contributions to the project by their author.
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
   - Attach effect when weapon fire
+  - Distribution click action mode
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
