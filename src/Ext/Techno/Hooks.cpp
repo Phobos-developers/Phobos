@@ -2670,9 +2670,19 @@ DEFINE_HOOK(0x51E662, InfantryClass_WhatAction_ImmuneToEngineerRepair, 0x6)
 
 DEFINE_HOOK(0x51E5E1, InfantryClass_WhatAction_ImmuneToCapture, 0x7)
 {
+	GET(Action, action, EAX);
+
+	const auto gameMode = SessionClass::Instance.GameMode;
+	bool multiEngineer = gameMode != GameMode::Skirmish || GameModeOptionsClass::Instance.MultiEngineer;
+
+	if(gameMode == GameMode::Campaign)
+		multiEngineer = false;
+
 	if(ImmuneTemp::ImmuneToCapture)
-		R->EAX(Action::NoEnter);
-		
+	{
+		if(!multiEngineer || action != Action::Damage)
+			R->EAX(Action::NoEnter);
+	}
 	return 0;
 }
 
