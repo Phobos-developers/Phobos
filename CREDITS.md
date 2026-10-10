@@ -160,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - New map actions in the 19000 range that are copies of the original actions but with ID entries instead of indexes
   - Modify ammo on impact
   - Tiberium ramp expansion support
   - Fix crashes and freezes caused by Tiberium growth and spread
