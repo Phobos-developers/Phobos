@@ -329,3 +329,76 @@ int GeneralUtils::SafeMultiply(int value, double mult)
 
 	return static_cast<int>(product);
 }
+
+std::unique_ptr<std::vector<PhobosPCXFile>> GeneralUtils::GetAnimationPCX(const std::string& baseFilename)
+{
+	auto animationFrames = std::make_unique<std::vector<PhobosPCXFile>>();
+
+	std::string filenameBase = baseFilename;
+	std::string extension = ".PCX";
+
+	// Find the position of the last dot to separate the extension
+	size_t lastDot = baseFilename.find_last_of('.');
+	if (lastDot != std::string::npos)
+	{
+		filenameBase = baseFilename.substr(0, lastDot);
+		extension = baseFilename.substr(lastDot);
+	}
+
+	// Check if the part before the extension was a frame number and remove it if so
+	if (filenameBase.length() > 5 && filenameBase[filenameBase.length() - 5] == ' ')
+	{
+		std::string frameNumberStr = filenameBase.substr(filenameBase.length() - 4);
+		bool isNumeric = true;
+		for (char c : frameNumberStr)
+		{
+			if (!isdigit(c))
+			{
+				isNumeric = false;
+				break;
+			}
+		}
+		if (isNumeric)
+		{
+			filenameBase = filenameBase.substr(0, filenameBase.length() - 5);
+		}
+	}
+
+	// Try loading frame 0 as "<base> 0000.<ext>" first
+	char frame0Filename[256];
+	_snprintf_s(frame0Filename, sizeof(frame0Filename), "%s 0000%s", filenameBase.c_str(), extension.c_str());
+	PhobosPCXFile frame0(frame0Filename);
+	if (frame0.Exists())
+	{
+		animationFrames->emplace_back(std::move(frame0));
+	}
+	else
+	{
+		// If "<base> 0000.<ext>" doesn't exist, try loading the exact filename as provided (e.g. "TARGET1.PCX")
+		PhobosPCXFile exactFile(baseFilename.c_str());
+		if (exactFile.Exists())
+		{
+			animationFrames->emplace_back(std::move(exactFile));
+		}
+		else
+		{
+			return animationFrames;
+		}
+	}
+
+	// Loop to find and load the subsequent frames, starting from frame 1
+	for (int i = 1; i < 10000; ++i)
+	{
+		char currentFilename[256];
+		_snprintf_s(currentFilename, sizeof(currentFilename), "%s %04d%s", filenameBase.c_str(), i, extension.c_str());
+
+		PhobosPCXFile filePCX(currentFilename);
+		if (filePCX.Exists())
+			animationFrames->emplace_back(std::move(filePCX));
+		else
+			break;
+	}
+
+	return animationFrames;
+}
+
