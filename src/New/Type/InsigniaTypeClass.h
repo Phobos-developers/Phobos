@@ -6,20 +6,20 @@
 class InsigniaTypeClass final : public Enumerable<InsigniaTypeClass>
 {
 public:
-	Promotable<SHPStruct*> Insignia;
-	Promotable<int> InsigniaFrame;
-	CustomPalette InsigniaPalette;
-	CustomPalette InsigniaPalette_Rookie;
-	CustomPalette InsigniaPalette_Veteran;
-	CustomPalette InsigniaPalette_Elite;
+	Promotable<SHPStruct*> Shape;
+	CustomPalette Palette;
+	CustomPalette Palette_Rookie;
+	CustomPalette Palette_Veteran;
+	CustomPalette Palette_Elite;
+	Promotable<int> Frame;
 
 	InsigniaTypeClass(const char* const pTitle) : Enumerable<InsigniaTypeClass>(pTitle)
-		, Insignia {}
-		, InsigniaFrame { -1 }
-		, InsigniaPalette {}
-		, InsigniaPalette_Rookie {}
-		, InsigniaPalette_Veteran {}
-		, InsigniaPalette_Elite {}
+		, Shape {}
+		, Palette {}
+		, Palette_Rookie {}
+		, Palette_Veteran {}
+		, Palette_Elite {}
+		, Frame { -1 }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

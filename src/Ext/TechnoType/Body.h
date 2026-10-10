@@ -225,21 +225,40 @@ public:
 	Nullable<Leptons> AreaGuardRange;
 	Valueable<Leptons> MaxGuardRange;
 
-	Valueable<InsigniaTypeClass*> InsigniaType;
-	Promotable<SHPStruct*> Insignia;
-	CustomPalette InsigniaPalette;
-	CustomPalette InsigniaPalette_Rookie;
-	CustomPalette InsigniaPalette_Veteran;
-	CustomPalette InsigniaPalette_Elite;
-	Valueable<Vector3D<int>> InsigniaFrames;
-	Promotable<int> InsigniaFrame;
+	struct InsigniaDataEntry
+	{
+		Valueable<InsigniaTypeClass*> Type;
+		Promotable<SHPStruct*> Shape;
+		CustomPalette Palette;
+		CustomPalette Palette_Rookie;
+		CustomPalette Palette_Veteran;
+		CustomPalette Palette_Elite;
+		Promotable<int> Frame;
+		Valueable<Vector3D<int>> Frames;
+
+		InsigniaDataEntry()
+			: Type { nullptr }
+			, Shape { nullptr }
+			, Palette {}
+			, Palette_Rookie {}
+			, Palette_Veteran {}
+			, Palette_Elite {}
+			, Frame { -1 }
+			, Frames { { -1, -1, -1 } }
+		{ }
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
+	InsigniaDataEntry InsigniaData;
 	Nullable<bool> Insignia_ShowEnemy;
-	std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
-	std::vector<Promotable<int>> InsigniaFrame_Weapon;
-	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
-	std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
-	std::vector<Promotable<int>> InsigniaFrame_Passengers;
-	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
+	std::vector<InsigniaDataEntry> Insignia_WeaponData;
+	std::vector<InsigniaDataEntry> Insignia_PassengersData;
 
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -669,21 +688,10 @@ public:
 		, AreaGuardRange {}
 		, MaxGuardRange { Leptons(4096) }
 
-		, InsigniaType { nullptr }
-		, Insignia {}
-		, InsigniaPalette {}
-		, InsigniaPalette_Rookie {}
-		, InsigniaPalette_Veteran {}
-		, InsigniaPalette_Elite {}
-		, InsigniaFrames { { -1, -1, -1 } }
-		, InsigniaFrame { -1 }
+		, InsigniaData {}
 		, Insignia_ShowEnemy {}
-		, Insignia_Weapon {}
-		, InsigniaFrame_Weapon {}
-		, InsigniaFrames_Weapon {}
-		, Insignia_Passengers {}
-		, InsigniaFrame_Passengers {}
-		, InsigniaFrames_Passengers {}
+		, Insignia_WeaponData {}
+		, Insignia_PassengersData {}
 
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}

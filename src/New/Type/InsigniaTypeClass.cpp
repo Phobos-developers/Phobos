@@ -15,24 +15,24 @@ void InsigniaTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Insignia.Read(exINI, section, "Insignia.%s");
-	this->InsigniaFrame.Read(exINI, section, "InsigniaFrame.%s");
-	this->InsigniaPalette.LoadFromINI(pINI, section, "InsigniaPalette");
-	this->InsigniaPalette_Rookie.LoadFromINI(pINI, section, "InsigniaPalette.Rookie");
-	this->InsigniaPalette_Veteran.LoadFromINI(pINI, section, "InsigniaPalette.Veteran");
-	this->InsigniaPalette_Elite.LoadFromINI(pINI, section, "InsigniaPalette.Elite");
+	this->Shape.Read(exINI, section, "Insignia.%s");
+	this->Palette.LoadFromINI(pINI, section, "InsigniaPalette");
+	this->Palette_Rookie.LoadFromINI(pINI, section, "InsigniaPalette.Rookie");
+	this->Palette_Veteran.LoadFromINI(pINI, section, "InsigniaPalette.Veteran");
+	this->Palette_Elite.LoadFromINI(pINI, section, "InsigniaPalette.Elite");
+	this->Frame.Read(exINI, section, "InsigniaFrame.%s");
 }
 
 template <typename T>
 void InsigniaTypeClass::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Insignia)
-		.Process(this->InsigniaFrame)
-		.Process(this->InsigniaPalette)
-		.Process(this->InsigniaPalette_Rookie)
-		.Process(this->InsigniaPalette_Veteran)
-		.Process(this->InsigniaPalette_Elite)
+		.Process(this->Shape)
+		.Process(this->Palette)
+		.Process(this->Palette_Rookie)
+		.Process(this->Palette_Veteran)
+		.Process(this->Palette_Elite)
+		.Process(this->Frame)
 		;
 };
 
