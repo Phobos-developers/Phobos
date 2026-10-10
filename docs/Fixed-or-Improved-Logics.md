@@ -24,6 +24,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed the bug where jumpjet units that are `Crashable` do not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed the bug where converting a TechnoType (via `Convert` warhead or superweapon) while an affected unit is in production or queued inside a factory corrupted the factory queue, broke sidebar cameos, and permanently froze production upon completion.
 - Fixed the bug that prevents jumpjet units from turn to the target when firing from a different direction.
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
