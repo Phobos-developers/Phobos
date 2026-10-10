@@ -741,6 +741,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
+  - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
