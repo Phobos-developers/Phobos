@@ -597,6 +597,7 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 		return Skip;
 
 	GET(FootClass*, pParasite, EDX);
+	// TODO: RemoveParasite.AffectsHouse
 	const auto pParasiteType = pParasite->GetTechnoType();
 
 	if (pTypeExt->RemoveParasite_Disallow.Contains(pParasiteType)
