@@ -87,15 +87,19 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (inactive)
 	{
-		if (auto pAlpha = alphaExt.get_or_default(pSource))
+		if (const auto pAlpha = alphaExt.get_or_default(pSource))
+		{
+			const RectangleStruct dirty = { pAlpha->Rect.X - tacticalPos->X, pAlpha->Rect.Y - tacticalPos->Y, pAlpha->Rect.Width, pAlpha->Rect.Height };
+			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 			GameDelete(pAlpha);
+		}
 
 		return;
 	}
 
 	if (Unsorted::CurrentFrame % 2) // lag reduction - don't draw a new alpha every frame
 	{
-		if (alphaExt.get_or_default(pSource) && pBuilding && (pImage->Frames <= 1 || !pBuilding->HasTurret()))
+		if (alphaExt.get_or_default(pSource) && pBuilding && pImage->Frames <= 1)
 			return;
 
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;

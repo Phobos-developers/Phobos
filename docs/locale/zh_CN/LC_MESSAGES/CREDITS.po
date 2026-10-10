@@ -1751,3 +1751,6 @@ msgstr "**RAZER**："
 msgid "Multiplayer gamespeed fix for RealTimeTimers"
 msgstr "多人联机所用游戏速度下的实时计时器修复"
 
+msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+
