@@ -589,6 +589,7 @@ This page lists all the individual contributions to the project by their author.
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - More convenient vanilla action script target specification
+  - Customize insignias palette
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -932,7 +933,7 @@ This page lists all the individual contributions to the project by their author.
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
   - Add new AutoDeath conditions based on the owner's power status and the player's credits
-  - Add custom palette for insignias
+  - Customize insignias palette
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
