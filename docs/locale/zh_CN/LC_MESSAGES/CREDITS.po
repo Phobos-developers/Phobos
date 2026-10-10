@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 06:05+0800\n"
+"POT-Creation-Date: 2026-10-06 16:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1399,6 +1399,13 @@ msgstr "赴部队回收站语音"
 msgid "Customize the country displayed in `Sight`"
 msgstr "自定义 `Sight` 可见性"
 
+msgid ""
+"The parachute animation supports `ShouldUseCellDrawer=no` to remove the "
+"hard-coded requirement to use the owner's color palette, while inheriting"
+" the animation owner's current country"
+msgstr ""
+"降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家"
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -2664,6 +2671,9 @@ msgstr "自定义 `IdleActionFrequency`"
 msgid "Customize `DefaultToGuardArea` per gunner mode"
 msgstr "为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
+msgid "Global default value for `ShouldUseCellDrawer`"
+msgstr "`KeepAlive` 添加全局默认值"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
@@ -3178,12 +3188,10 @@ msgid "Hotkey for deselect object from current selection"
 msgstr "从当前已选中对象中取消选中的快捷键"
 
 msgid "Hotkey for cycling through the current selection"
-msgstr ""
-"循环切换当前已选中对象的快捷键"
+msgstr "循环切换当前已选中对象的快捷键"
 
 msgid "Hotkey for cycling through the types in the current selection"
-msgstr ""
-"循环切换当前已选中类型的快捷键"
+msgstr "循环切换当前已选中类型的快捷键"
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
