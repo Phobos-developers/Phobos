@@ -15,10 +15,10 @@ public:
 
 	InsigniaTypeClass(const char* const pTitle) : Enumerable<InsigniaTypeClass>(pTitle)
 		, Shape {}
-		, Palette {}
-		, Palette_Rookie {}
-		, Palette_Veteran {}
-		, Palette_Elite {}
+		, Palette { CustomPalette::PaletteMode::Temperate }
+		, Palette_Rookie { CustomPalette::PaletteMode::Temperate }
+		, Palette_Veteran { CustomPalette::PaletteMode::Temperate }
+		, Palette_Elite { CustomPalette::PaletteMode::Temperate }
 		, Frame { -1 }
 	{ }
 

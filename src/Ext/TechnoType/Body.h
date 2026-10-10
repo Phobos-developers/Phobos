@@ -240,10 +240,10 @@ public:
 		InsigniaDataEntry()
 			: Type { nullptr }
 			, Shape { nullptr }
-			, Palette {}
-			, Palette_Rookie {}
-			, Palette_Veteran {}
-			, Palette_Elite {}
+			, Palette { CustomPalette::PaletteMode::Temperate }
+			, Palette_Rookie { CustomPalette::PaletteMode::Temperate }
+			, Palette_Veteran { CustomPalette::PaletteMode::Temperate }
+			, Palette_Elite { CustomPalette::PaletteMode::Temperate }
 			, Frame { -1 }
 			, Frames { { -1, -1, -1 } }
 		{ }
