@@ -37,6 +37,9 @@ public:
 	bool ForceJump_RepeatMode;
 	FootClass* TeamLeader;
 	std::vector<ScriptClass*> PreviousScriptList;
+	int AngerNodeModifier;
+	bool OnlyTargetHouseEnemy;
+	int OnlyTargetHouseEnemyMode;
 
 	TeamExt(TeamClass* OwnerObject) : AbstractExt(OwnerObject)
 		, WaitNoTargetAttempts { 0 }
@@ -52,6 +55,9 @@ public:
 		, ForceJump_RepeatMode { false }
 		, TeamLeader { nullptr }
 		, PreviousScriptList { }
+		, AngerNodeModifier { 5000 }
+		, OnlyTargetHouseEnemy { false }
+		, OnlyTargetHouseEnemyMode { -1 }
 	{ }
 
 	virtual ~TeamExt() = default;
