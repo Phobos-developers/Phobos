@@ -2392,7 +2392,7 @@ HideShakeEffects=false           ; boolean
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
 - Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
 - Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
-- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
+- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi & Noble_Fish)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
