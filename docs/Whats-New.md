@@ -2520,6 +2520,35 @@ HideShakeEffects=false           ; boolean
 
 ```{dropdown} Pre-release changes
 
+#### 0.5-alpha2
+
+##### Vanilla fixes:
+- Fixed units approaching target not taking weapon `MinimumRange` correctly into accord (by NetsuNegi)
+
+##### Phobos fixes:
+- Fixed an issue with `ApproachTarget.StopWhenInRange` (by NetsuNegi)
+- Units on `Unload` mission now ignore `ReadyToNextMission.MovingCheck` (by Ollerus)
+- Fixed an issue with WeaponType parsing from special global weapon keys (by Noble_Fish)
+- Fixed an issue causing upgrade animations on pre-placed buildings on maps to not play correctly (by CrimRecya & Ollerus)
+- Fixed `JumpjetSpeed` not updating after type conversion (by Noble_Fish)
+- Fixed `AIBiasSpawnCell` to only apply if more than one Construction Yard is owned (by Ollerus)
+- Fixed a bug in recalculating AttachEffect effects during transfer between technos (by Ollerus)
+- Fixed display of percentage-based superweapon timers for short recharge times (by NetsuNegi)
+- Fixed an issue with `TypeSelectUseIFVMode` not working correctly (by NetsuNegi)
+- Fixed a bug in building start facing logic with a variable not using a correct default value (by Noble_Fish)
+- Fixed `Slaved.OwnerWhenMasterKilled` not correctly applying in all cases (by Noble_Fish)
+- Fixed `EnemyUIName` to work on units disguised as the enemy (by Ollerus)
+- Fixed fallback of order of damage source house in damage calculations (by Ollerus)
+- Fixed a bug in sync checks causing freezes in multiplayer games if `Next` was used to create loop between animation types (by NetsuNegi)
+- Reverted a previous, incorrectly working bugfix for AI trying to produce aircraft without free docks (by NetsuNegi)
+- Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
+- Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
+
+##### Fixes / interactions with other extensions:
+- Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
+- Fixed an issue causing east-west facing laser fences to function incorrectly (by CrimRecya)
+- Fixed a bug caused by spotlights and transports interacting (by Noble_Fish)
+
 #### 0.5-alpha1
 
 ```
