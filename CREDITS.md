@@ -161,6 +161,7 @@ This page lists all the individual contributions to the project by their author.
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
   - Modify ammo on impact
+  - New AI teams selector
   - Tiberium ramp expansion support
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
