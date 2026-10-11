@@ -1180,6 +1180,7 @@ msgid ""
 " would have their effects interrupted when deactivated or reactivated (by"
 " FlyStar)"
 msgstr ""
+"修复了受 `IsLocomotor=yes` 弹头影响的载具在失灵或重新激活时其效果会被中断的问题（by FlyStar）"
 
 msgid ""
 "Fixed crashes when restarting missions that use TerrainTypes with cached "

@@ -1745,6 +1745,7 @@ msgid ""
 "Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes`"
 " would have their effects interrupted when deactivated or reactivated."
 msgstr ""
+"修复了受 `IsLocomotor=yes` 弹头影响的载具在失灵或重新激活时其效果会被中断的问题。"
 
 msgid ""
 "Fixed the bug that units keep attacking ground after target wall has been"
