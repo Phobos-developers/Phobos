@@ -1205,6 +1205,7 @@ msgid ""
 "Fixed the bug that units keep attacking ground after target wall has been"
 " destroyed by adjacent damage/crush/wave damage (by NetsuNegi)"
 msgstr ""
+"修复了目标墙壁被相邻伤害／碾压／声波伤害摧毁后单位仍持续攻击地面的 Bug（by NetsuNegi）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："

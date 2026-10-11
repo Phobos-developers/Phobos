@@ -1752,6 +1752,7 @@ msgid ""
 "Fixed the bug that units keep attacking ground after target wall has been"
 " destroyed by adjacent damage/crush/wave damage."
 msgstr ""
+"修复了目标墙壁被相邻伤害／碾压／声波伤害摧毁后单位仍持续攻击地面的 Bug。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
