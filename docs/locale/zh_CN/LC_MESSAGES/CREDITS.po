@@ -1137,9 +1137,6 @@ msgstr "读档后重置超时空计时器修复"
 msgid "Teleport, Tunnel and Fly loco visual tilt fix"
 msgstr "Teleport、Tunnel 和 Fly 运动模式视觉倾斜的修复"
 
-msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
-msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
-
 msgid "Skip units' turret rotation and jumpjets' wobbling under EMP"
 msgstr "在 EMP 状态下跳过单位的炮塔旋转和 Jumpjet 浮动"
 
@@ -1155,11 +1152,14 @@ msgstr "工程师／间谍路径点自偷 Bug 的修复"
 msgid "Skippable game save on scenario start"
 msgstr "可跳过的场景开始时自动存档"
 
-msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
-msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
+msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
+msgstr "炮塔、炮管、`NoSpawnAlt`、多组件 Voxel 阴影、动态 Voxel 阴影"
 
 msgid "Skip rally point line drawing when undeploying a building"
 msgstr "跳过建筑反部署时的集结线绘制"
+
+msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
+msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
 
 msgid "Ares' `SW.Shots` hint on extended tooltips"
 msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
@@ -2514,14 +2514,14 @@ msgid ""
 msgstr "为 `DiscardOn` 添加 `ammo`、`health`、`mission`、`landtype` 和 `sequence` 条件"
 
 msgid "Disable AlphaImage during Buildup"
-msgstr ""
-"建筑拔起期间关闭 AlphaImage"
+msgstr "建筑拔起期间关闭 AlphaImage"
 
 msgid ""
 "Allow customizing the default value of `[Warhead] -> PreventScatter` via "
 "`[CombatDamage] -> Warhead.PreventScatter`"
 msgstr ""
-"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> PreventScatter` 的默认值"
+"允许了通过 `[CombatDamage] -> Warhead.PreventScatter` 自定义 `[Warhead] -> "
+"PreventScatter` 的默认值"
 
 msgid ""
 "Allow `(Pre)ProductionAnim` animations to use `Powered` & "
@@ -2529,6 +2529,24 @@ msgid ""
 msgstr ""
 "允许 `(Pre)ProductionAnim` 动画使用 `Powered` 与 `PoweredLight/Effect/Special` "
 "类的标签"
+
+msgid ""
+"Fix the Spotlight-transport interaction bug caused by the incorrect "
+"reference removal fix"
+msgstr ""
+"修复了错误脱引用修复导致的探照灯运输工具交互 Bug"
+
+msgid ""
+"Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
+"crash as soon as they move"
+msgstr ""
+"修复了带有 `Locomotor=Tunnel` 的步兵和战机一旦移动就会崩溃的 Phobos bug"
+
+msgid ""
+"Fix the bug where the fix for airborne objects triggering sinking "
+"misjudged units with `Locomotor=Hover`"
+msgstr ""
+"修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover` 的单位误判的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -3196,6 +3214,10 @@ msgstr "**obsidianus** - 自动根据血量变形"
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
 
-msgid "**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
-msgstr "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being "
+"respected when the master is sold or self-destructed"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
+"不被遵守的问题"
 
