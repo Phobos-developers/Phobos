@@ -177,8 +177,10 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->RemoveMindControl_AffectsOriginalHouse.Read(exINI, pSection, "RemoveMindControl.AffectsOriginalHouse");
 	this->RemoveMindControl_Silent.Read(exINI, pSection, "RemoveMindControl.Silent");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
+	this->RemoveParasite_AffectsHouse.Read(exINI, pSection, "RemoveParasite.AffectsHouse");
 	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
 	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
@@ -351,8 +353,12 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageOwnerMultiplier_Berzerk.Read(exINI, pSection, "DamageOwnerMultiplier.Berzerk");
 	this->DamageAlliesMultiplier_Berzerk.Read(exINI, pSection, "DamageAlliesMultiplier.Berzerk");
 	this->DamageEnemiesMultiplier_Berzerk.Read(exINI, pSection, "DamageEnemiesMultiplier.Berzerk");
+	this->DamageOriginalOwnerMultiplier_Owner.Read(exINI, pSection, "DamageOriginalOwnerMultiplier.Owner");
+	this->DamageOriginalOwnerMultiplier_Allies.Read(exINI, pSection, "DamageOriginalOwnerMultiplier.Allies");
+	this->DamageOriginalOwnerMultiplier_Enemies.Read(exINI, pSection, "DamageOriginalOwnerMultiplier.Enemies");
 	this->DamageSourceHealthMultiplier.Read(exINI, pSection, "DamageSourceHealthMultiplier");
 	this->DamageTargetHealthMultiplier.Read(exINI, pSection, "DamageTargetHealthMultiplier");
+	this->DamageRandomMultiplier.Read(exINI, pSection, "DamageRandomMultiplier");
 
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
@@ -593,8 +599,10 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+		.Process(this->RemoveMindControl_AffectsOriginalHouse)
 		.Process(this->RemoveMindControl_Silent)
 		.Process(this->RemoveParasite)
+		.Process(this->RemoveParasite_AffectsHouse)
 		.Process(this->RemoveParasite_Allow)
 		.Process(this->RemoveParasite_Disallow)
 		.Process(this->DecloakDamagedTargets)
@@ -739,8 +747,12 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->DamageOwnerMultiplier_Berzerk)
 		.Process(this->DamageAlliesMultiplier_Berzerk)
 		.Process(this->DamageEnemiesMultiplier_Berzerk)
+		.Process(this->DamageOriginalOwnerMultiplier_Owner)
+		.Process(this->DamageOriginalOwnerMultiplier_Allies)
+		.Process(this->DamageOriginalOwnerMultiplier_Enemies)
 		.Process(this->DamageSourceHealthMultiplier)
 		.Process(this->DamageTargetHealthMultiplier)
+		.Process(this->DamageRandomMultiplier)
 
 		.Process(this->Parasite_ParticleSystem)
 		.Process(this->Parasite_DisableParticleSystem)

@@ -47,8 +47,10 @@ public:
 	Nullable<bool> Conventional_IgnoreUnits;
 	Valueable<bool> RemoveDisguise;
 	Valueable<bool> RemoveMindControl;
+	Valueable<AffectedHouse> RemoveMindControl_AffectsOriginalHouse;
 	Nullable<bool> RemoveMindControl_Silent;
 	Nullable<bool> RemoveParasite;
+	Valueable<AffectedHouse> RemoveParasite_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Allow;
 	ValueableVector<TechnoTypeClass*> RemoveParasite_Disallow;
 	Nullable<bool> DecloakDamagedTargets;
@@ -195,8 +197,12 @@ public:
 	Nullable<double> DamageOwnerMultiplier_Berzerk;
 	Nullable<double> DamageAlliesMultiplier_Berzerk;
 	Nullable<double> DamageEnemiesMultiplier_Berzerk;
+	Nullable<double> DamageOriginalOwnerMultiplier_Owner;
+	Nullable<double> DamageOriginalOwnerMultiplier_Allies;
+	Nullable<double> DamageOriginalOwnerMultiplier_Enemies;
 	Valueable<double> DamageSourceHealthMultiplier;
 	Valueable<double> DamageTargetHealthMultiplier;
+	Nullable<PartialVector2D<double>> DamageRandomMultiplier;
 
 	Valueable<bool> SuppressRevengeWeapons;
 	ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
@@ -277,6 +283,7 @@ public:
 	Valueable<bool> IvanBomb_Detonate_PenetratesTransport;
 	Valueable<bool> IvanBomb_Detonate_PenetratesGarrison;
 	Valueable<bool> IvanBomb_Detonate_AffectsParasite;
+	Valueable<AffectedHouse> IvanBomb_Detonate_AffectsHouse;
 	ValueableVector<TechnoTypeClass*> IvanBomb_Detonate_AffectTypes;
 
 	// Ares tags
@@ -333,8 +340,10 @@ public:
 		, Conventional_IgnoreUnits {}
 		, RemoveDisguise { false }
 		, RemoveMindControl { false }
+		, RemoveMindControl_AffectsOriginalHouse { AffectedHouse::All }
 		, RemoveMindControl_Silent {}
 		, RemoveParasite {}
+		, RemoveParasite_AffectsHouse { AffectedHouse::All }
 		, RemoveParasite_Allow {}
 		, RemoveParasite_Disallow {}
 		, DecloakDamagedTargets {}
@@ -481,8 +490,12 @@ public:
 		, DamageOwnerMultiplier_Berzerk {}
 		, DamageAlliesMultiplier_Berzerk {}
 		, DamageEnemiesMultiplier_Berzerk {}
+		, DamageOriginalOwnerMultiplier_Owner {}
+		, DamageOriginalOwnerMultiplier_Allies {}
+		, DamageOriginalOwnerMultiplier_Enemies {}
 		, DamageSourceHealthMultiplier { 0.0 }
 		, DamageTargetHealthMultiplier { 0.0 }
+		, DamageRandomMultiplier {}
 
 		, SuppressRevengeWeapons { false }
 		, SuppressRevengeWeapons_Types {}
@@ -629,7 +642,7 @@ private:
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
 	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
-	void IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget);
+	void IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget, HouseClass* pHouse);
 
 public:
 	class ExtContainer final : public Container<WarheadTypeExt>

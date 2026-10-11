@@ -237,7 +237,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
 	if (this->IvanBomb_Detonate)
-		this->IvanBombDetonate(pOwner, pTarget);
+		this->IvanBombDetonate(pOwner, pTarget, pHouse);
 
 	// This might change the target's armor type
 	this->ApplyShieldModifiers(pTarget);
@@ -481,8 +481,29 @@ HouseClass* WarheadTypeExt::ApplyRemoveMindControl(HouseClass* pHouse, TechnoCla
 {
 	if (const auto pController = pTarget->MindControlledBy)
 	{
-		CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
-		return pTarget->Owner;
+		if (this->RemoveMindControl_AffectsOriginalHouse == AffectedHouse::All)
+		{
+			CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
+			return pTarget->Owner;
+		}
+
+		const auto pManager = pController->CaptureManager;
+		HouseClass* pOldOwner = nullptr;
+
+		for (const auto pNode : pManager->ControlNodes)
+		{
+			if (pNode->Unit == pTarget)
+			{
+				pOldOwner = pNode->OriginalOwner;
+				break;
+			}
+		}
+
+		if (EnumFunctions::CanTargetHouse(this->RemoveMindControl_AffectsOriginalHouse, pHouse, pOldOwner))
+		{
+			CaptureManagerExt::FreeUnit(pController->CaptureManager, pTarget, this->RemoveMindControl_Silent.Get(RulesExt::Global()->RemoveMindControl_Silent));
+			return pTarget->Owner;
+		}
 	}
 
 	return pHouse;
@@ -932,18 +953,21 @@ void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget)
 	pTarget->Ammo = newCurrentAmmo > maxAmmo ? maxAmmo : newCurrentAmmo;
 }
 
-void WarheadTypeExt::ExtData::IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget, HouseClass* pHouse)
 {
+	const auto affectsHouse = this->IvanBomb_Detonate_AffectsHouse;
 	const auto& affectTypes = this->IvanBomb_Detonate_AffectTypes;
 	const bool sameInvokerOnly = this->IvanBomb_Detonate_SameInvokerOnly;
 
 	auto needsDetonate = [&](BombClass* pBomb)
 	{
 		// TODO: handle the case when the owner of IvanBomb is dead
-		if (pBomb && (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
+		if (pBomb
+			&& (!sameInvokerOnly || (pOwner && pBomb->Owner == pOwner))
+			&& (!pHouse || EnumFunctions::CanTargetHouse(affectsHouse, pHouse, pBomb->Owner ? pBomb->Owner->Owner : pBomb->OwnerHouse))
+			&& (affectTypes.empty() || (pBomb->Owner && affectTypes.Contains(pBomb->Owner->GetTechnoType()))))
 		{
-			if (!sameInvokerOnly || (pOwner && pBomb->Owner == pOwner))
-				pBomb->DetonationFrame = Unsorted::CurrentFrame;
+			pBomb->DetonationFrame = Unsorted::CurrentFrame;
 		}
 	};
 
