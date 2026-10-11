@@ -2546,6 +2546,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug in sync checks causing freezes in multiplayer games if `Next` was used to create loop between animation types (by NetsuNegi)
 - Reverted a previous, incorrectly working bugfix for AI trying to produce aircraft without free docks (by NetsuNegi)
 - Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
+- Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
 - Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
 
 ##### Fixes / interactions with other extensions:

@@ -3890,6 +3890,7 @@ msgid ""
 "Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
 "crash as soon as they move (by Noble_Fish)"
 msgstr ""
+"修复了带有 `Locomotor=Tunnel` 的步兵和战机一旦移动就会崩溃的 Phobos bug（by Noble_Fish）"
 
 msgid ""
 "Fixed an issue preventing hover units from sinking in water even if "
