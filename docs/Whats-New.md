@@ -2540,7 +2540,6 @@ HideShakeEffects=false           ; boolean
 - Fixed display of percentage-based superweapon timers for short recharge times (by NetsuNegi)
 - Fixed an issue with `TypeSelectUseIFVMode` not working correctly (by NetsuNegi)
 - Fixed a bug in building start facing logic with a variable not using a correct default value (by Noble_Fish)
-- Fixed `Slaved.OwnerWhenMasterKilled` not correctly applying in all cases (by Noble_Fish)
 - Fixed `EnemyUIName` to work on units disguised as the enemy (by Ollerus)
 - Fixed fallback of order of damage source house in damage calculations (by Ollerus)
 - Fixed a bug in sync checks causing freezes in multiplayer games if `Next` was used to create loop between animation types (by NetsuNegi)
