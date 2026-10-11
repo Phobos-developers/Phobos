@@ -4038,7 +4038,7 @@ msgstr ""
 msgid ""
 "Setting this to values below 0 results in no cells being considered as "
 "targets at all - only technos will be targeted."
-msgstr "将此值设为 0 将会导致没有任何单位被视为目标——仅单位实体将会被瞄准。"
+msgstr "将此值设为小于 0 的值将会导致没有任何单位被视为目标——仅单位实体将会被瞄准。"
 
 msgid ""
 "`Splits.AllowRepeatTargets` allows same techno selected as target be "
