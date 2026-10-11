@@ -233,6 +233,20 @@ DEFINE_HOOK(0x693276, TacticalMsgHandler_LButtonUp_RightClickSelectOnly, 0x5)
 		return 0;
 	}
 
+	// Handle left click deselect
+	if (Phobos::Config::RightClickCommand && !RightClickCommand::InSpecialLeftClickMode())
+	{
+		const auto action = static_cast<Action>(R->EAX());
+		const auto pClicked = R->Stack<ObjectClass*>(0x30);
+
+		if (action == Action::None && !pClicked)
+		{
+			MapClass::UnselectAll();
+			return 0;
+		}
+	}
+
+	// Other cases
 	if (RightClickCommand::NeutraliseLeftCommand(R))
 		MapClass::UnselectAll();
 
