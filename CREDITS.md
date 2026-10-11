@@ -591,6 +591,7 @@ This page lists all the individual contributions to the project by their author.
   - More convenient vanilla action script target specification
   - Customize turn rate when jumpjet vehicle crashing
   - Customize insignias palette
+  - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

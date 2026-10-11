@@ -2068,6 +2068,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed the vanilla sidebar radar horizontal offset for GDI and NOD sidebars (by TwinkleStar)
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
