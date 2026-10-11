@@ -281,6 +281,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->HealBaseNoScatter.Read(exINI, GameStrings::CrateRules, "HealBaseNoScatter");
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
@@ -408,6 +409,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
 	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
+	this->UseSidebarRadarOffsetFix.Read(exINI, GameStrings::AudioVisual, "UseSidebarRadarOffsetFix");
 
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
@@ -902,6 +904,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
+		.Process(this->HealBaseNoScatter)
 		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
@@ -1174,6 +1177,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomSequenceNormalized)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
+		.Process(this->UseSidebarRadarOffsetFix)
     ;
 }
 

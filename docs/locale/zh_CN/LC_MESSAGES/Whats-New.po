@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06 16:33+0800\n"
+"POT-Creation-Date: 2026-10-12 03:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1104,6 +1104,23 @@ msgstr ""
 msgid "Global default value for `ShouldUseCellDrawer` (by Noble_Fish)"
 msgstr "`ShouldUseCellDrawer` 的全局默认值（by Noble_Fish）"
 
+msgid ""
+"[New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-"
+"Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)"
+msgstr ""
+
+msgid ""
+"[New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-"
+"Logics.md#customize-whether-weapon-can-target-driver-killed-vehicles) (by"
+" FlyStar)"
+msgstr ""
+
+msgid "Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)"
+msgstr "自定义 Jumpjet 载具坠毁时的转向速率（by NetsuNegi）"
+
+msgid "Customize insignias palette (by Flactine & NetsuNegi)"
+msgstr ""
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
@@ -1153,7 +1170,34 @@ msgid ""
 "hard-coded requirement to use the owner's color palette, while inheriting"
 " the animation owner's current country (by FlyStar)"
 msgstr ""
-"降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家（by FlyStar）"
+"降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家（by "
+"FlyStar）"
+
+msgid ""
+"Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes`"
+" would have their effects interrupted when deactivated or reactivated (by"
+" FlyStar)"
+msgstr ""
+
+msgid ""
+"Fixed crashes when restarting missions that use TerrainTypes with cached "
+"SHP images (by Krisztiaan)"
+msgstr ""
+
+msgid ""
+"[Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-"
+"horizontal-offset) (by TwinkleStar)"
+msgstr ""
+
+msgid ""
+"Fixed `HealBase` crates causing full-health objects to scatter (by "
+"Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed the bug that units keep attacking ground after target wall has been"
+" destroyed by adjacent damage/crush/wave damage (by NetsuNegi)"
+msgstr ""
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
@@ -1234,6 +1278,19 @@ msgid ""
 "Fixed the bug that Ares tunnel-type buildings cannot unload via the "
 "Deploy hotkey or command bar button (by Noble_Fish)"
 msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug（by Noble_Fish）"
+
+msgid ""
+"Fixed an issue in Ares where vehicles would occasionally continue to fire"
+" and move even after the driver had been killed (by FlyStar)"
+msgstr ""
+
+msgid "Ares' Chrono Prisons / Abductors Expansion (by FlyStar)"
+msgstr ""
+
+msgid ""
+"[Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md"
+"#allow-ares-academy-add-country-level-filters) (by dh381)"
+msgstr ""
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
@@ -3081,9 +3138,10 @@ msgid ""
 "triggers would be activated unconditionally after activation (by FlyStar)"
 msgstr "修复 2、53 和 54 号触发条件在重复类触发器中只要激活过就会被无条件激活的问题（by FlyStar）"
 
+#, fuzzy
 msgid ""
 "Fixed the bug that naval ship will sink even they destroyed in air (by "
-"NetsuNegi)"
+"NetsuNegi & Noble_Fish)"
 msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug（by NetsuNegi）"
 
 msgid ""
@@ -3750,6 +3808,108 @@ msgstr ""
 
 msgid "Pre-release changes"
 msgstr "预发布版本改动"
+
+msgid "0.5-alpha2"
+msgstr "0.5-alpha2"
+
+msgid ""
+"Fixed units approaching target not taking weapon `MinimumRange` correctly"
+" into accord (by NetsuNegi)"
+msgstr ""
+
+msgid "Fixed an issue with `ApproachTarget.StopWhenInRange` (by NetsuNegi)"
+msgstr ""
+
+msgid ""
+"Units on `Unload` mission now ignore `ReadyToNextMission.MovingCheck` (by"
+" Ollerus)"
+msgstr ""
+
+msgid ""
+"Fixed an issue with WeaponType parsing from special global weapon keys "
+"(by Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed an issue causing upgrade animations on pre-placed buildings on maps"
+" to not play correctly (by CrimRecya & Ollerus)"
+msgstr ""
+
+msgid "Fixed `JumpjetSpeed` not updating after type conversion (by Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed `AIBiasSpawnCell` to only apply if more than one Construction Yard "
+"is owned (by Ollerus)"
+msgstr ""
+
+msgid ""
+"Fixed a bug in recalculating AttachEffect effects during transfer between"
+" technos (by Ollerus)"
+msgstr ""
+
+msgid ""
+"Fixed display of percentage-based superweapon timers for short recharge "
+"times (by NetsuNegi)"
+msgstr ""
+
+msgid ""
+"Fixed an issue with `TypeSelectUseIFVMode` not working correctly (by "
+"NetsuNegi)"
+msgstr ""
+
+msgid ""
+"Fixed a bug in building start facing logic with a variable not using a "
+"correct default value (by Noble_Fish)"
+msgstr ""
+
+msgid "Fixed `EnemyUIName` to work on units disguised as the enemy (by Ollerus)"
+msgstr ""
+
+msgid ""
+"Fixed fallback of order of damage source house in damage calculations (by"
+" Ollerus)"
+msgstr ""
+
+msgid ""
+"Fixed a bug in sync checks causing freezes in multiplayer games if `Next`"
+" was used to create loop between animation types (by NetsuNegi)"
+msgstr ""
+
+msgid ""
+"Reverted a previous, incorrectly working bugfix for AI trying to produce "
+"aircraft without free docks (by NetsuNegi)"
+msgstr ""
+
+msgid ""
+"Fixed the battle screen message box overlay incorrectly accepting mouse "
+"cursor inputs when user input is locked (by Trsdy)"
+msgstr ""
+
+msgid ""
+"Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
+"crash as soon as they move (by Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed an issue preventing hover units from sinking in water even if "
+"otherwise allowed (by Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed `IvanBomb.Detachable` not being taken into accord correctly (by "
+"Noble_Fish)"
+msgstr ""
+
+msgid ""
+"Fixed an issue causing east-west facing laser fences to function "
+"incorrectly (by CrimRecya)"
+msgstr ""
+
+msgid ""
+"Fixed a bug caused by spotlights and transports interacting (by "
+"Noble_Fish)"
+msgstr ""
 
 msgid "0.5-alpha1"
 msgstr "0.5-alpha1"
