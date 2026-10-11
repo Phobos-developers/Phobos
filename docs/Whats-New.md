@@ -2052,6 +2052,8 @@ HideShakeEffects=false           ; boolean
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
+- [Custom animation when selling TechnoTypes](New-or-Enhanced-Logics.md#custom-animation-when-selling-technotypes) via `SellingAnim` in `artmd.ini` (by frg2089)
+- [Directly sellable TechnoTypes](New-or-Enhanced-Logics.md#directly-sellable-technotypes) via `Unsellable.Direct` (by frg2089)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)

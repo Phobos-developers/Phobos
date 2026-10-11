@@ -993,7 +993,10 @@ This page lists all the individual contributions to the project by their author.
   - Add `ClampToScreen` tag for `BannerType` to control whether banner position is clamped to the visible area
 - **obsidianus** - Automatic conversion based on health
 - **Nuke** - Reload speed adjustment on promotion
-- **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+- **frg2089 (舰队的偶像-岛风酱!)** 
+  - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
+  - Directly sellable TechnoTypes
+  - Custom animation when selling TechnoTypes
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images

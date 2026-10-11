@@ -3387,3 +3387,6 @@ msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属�
 msgid "**dh381-1** - Detonate ivan bomb on impact"
 msgstr "**dh381-1** - 引爆伊文炸弹弹头"
 
+msgid "Custom animation when selling TechnoTypes"
+msgstr "出售 TechnoType 时播放自定义动画"
+
