@@ -2735,9 +2735,8 @@ msgstr "`Trajectory.Parabola.OpenFireMode` 控制抛射体应该如何发射，�
 
 msgid ""
 "Speed - Automatic calculation mode with fixed horizontal velocity, using "
-"`Trajectory.Speed` and target coordinates as calculation conditions, i.e."
-" the flight time of the projectile is permanently fixed."
-msgstr "Speed - 固定水平速度的自动计算模式，使用 `Trajectory.Speed` 和目标坐标作为计算条件，即抛射体的飞行时间将永久固定。"
+"`Trajectory.Speed` and target coordinates as calculation conditions."
+msgstr "Speed - 固定水平速度的自动计算模式，使用 `Trajectory.Speed` 和目标坐标作为计算条件。"
 
 msgid ""
 "Height - Automatic calculation mode with fixed maximum height, useing "
