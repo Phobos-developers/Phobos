@@ -521,10 +521,11 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 {
 	enum { SkipGameCode = 0x72900C };
 
-	GET(TechnoClass*, pLinkedTo, ECX);
+	GET(ILocomotion*, pThis, ESI);
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
+	auto const pLinkedTo = static_cast<TunnelLocomotionClass*>(pThis)->LinkedTo;
 	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
@@ -929,28 +930,62 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 
-DEFINE_HOOK(0x730D0F, ProcessDeployCommand_LowDeployPriority, 0x6)
+// Update it only once per frame, should be enough for the command
+namespace DeployPriorityTemp
+{
+	int Frame;
+	int DeployPriority;
+	std::vector<TechnoTypeClass*> SelectType;
+}
+
+DEFINE_HOOK(0x730D0F, ProcessDeployCommand_DeployFilter, 0x6)
 {
 	enum { SkipDeploy = 0x730D24 };
 
 	GET_STACK(const int, selectedObjectCount, STACK_OFFSET(0x18, -0x4));
 
-	if (Phobos::Config::PriorityDeployFiltering && selectedObjectCount > 1)
+	if (selectedObjectCount > 1)
 	{
-		GET(TechnoClass* const, pTechno, ESI);
-
-		auto const pExt = TechnoExt::Fetch(pTechno);
-
-		if (pExt->TypeExtData->LowDeployPriority)
+		if (DeployPriorityTemp::Frame != Unsorted::CurrentFrame)
 		{
+			DeployPriorityTemp::Frame = Unsorted::CurrentFrame;
+			DeployPriorityTemp::DeployPriority = -1;
+			DeployPriorityTemp::SelectType.clear();
+
 			for (const auto pObject : ObjectClass::CurrentObjects)
 			{
 				if ((pObject->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 				{
-					if (!TechnoExt::Fetch(static_cast<TechnoClass*>(pObject))->TypeExtData->LowDeployPriority)
-						return SkipDeploy;
+					const auto pObjTypeExt = TechnoExt::Fetch(static_cast<TechnoClass*>(pObject))->TypeExtData;
+					const auto pObjType = pObjTypeExt->OwnerObject();
+
+					if (std::ranges::find(DeployPriorityTemp::SelectType, pObjType) == DeployPriorityTemp::SelectType.cend())
+						DeployPriorityTemp::SelectType.push_back(pObjType);
+
+					if (pObjTypeExt->HighDeployPriority)
+						DeployPriorityTemp::DeployPriority = 1;
+					else if (DeployPriorityTemp::DeployPriority < 0 && !pObjTypeExt->LowDeployPriority)
+						DeployPriorityTemp::DeployPriority = 0;
 				}
 			}
+		}
+
+		GET(TechnoClass* const, pTechno, ESI);
+		const auto pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
+
+		for (const auto pForbidType : pTypeExt->DeployForbidTypes)
+		{
+			if (std::ranges::find(DeployPriorityTemp::SelectType, pForbidType) != DeployPriorityTemp::SelectType.cend())
+				return SkipDeploy;
+		}
+
+		if (Phobos::Config::PriorityDeployFiltering)
+		{
+			if (DeployPriorityTemp::DeployPriority > 0 && !pTypeExt->HighDeployPriority)
+				return SkipDeploy;
+
+			if (pTypeExt->LowDeployPriority && DeployPriorityTemp::DeployPriority >= 0)
+				return SkipDeploy;
 		}
 	}
 

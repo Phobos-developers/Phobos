@@ -66,14 +66,7 @@ DEFINE_HOOK(0x442D1B, BuildingClass_Init_CountryBuildingVeteran, 0x6)
 	if (!pType)
 		return 0;
 
-	const auto pCountryExt = HouseTypeExt::Fetch(pOwner->Type);
-
-	const bool isDefense = pType->BuildCat == BuildCat::Combat;
-	const auto& pVeteranList = isDefense
-		? pCountryExt->VeteranDefenses
-		: pCountryExt->VeteranBuildings;
-
-	if (pVeteranList.Contains(pType))
+	if (HouseTypeExt::Fetch(pOwner->Type)->VeteranBuildings.Contains(pType))
 		pThis->Veterancy.SetVeteran();
 
 	return 0;
