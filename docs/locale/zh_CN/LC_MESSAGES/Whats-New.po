@@ -1122,6 +1122,7 @@ msgstr "自定义 Jumpjet 载具坠毁时的转向速率（by NetsuNegi）"
 
 msgid "Customize insignias palette (by Flactine & NetsuNegi)"
 msgstr ""
+"自定义军衔色盘（by Flactine 与 NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

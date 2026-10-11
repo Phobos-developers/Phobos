@@ -1971,6 +1971,7 @@ msgstr "自定义 Jumpjet 载具坠毁时的转向速率"
 
 msgid "Customize insignias palette"
 msgstr ""
+"自定义军衔色盘"
 
 msgid ""
 "Fix the bug that units keep attacking ground after target wall has been "

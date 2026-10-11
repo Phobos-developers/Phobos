@@ -4604,7 +4604,6 @@ msgstr "自定义等级军衔"
 msgid "You can now customize veterancy insignia of TechnoTypes."
 msgstr "现在可以自定义科技类型的等级军衔。"
 
-#, fuzzy
 msgid ""
 "`Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia "
 "file, optionally for each veterancy stage. Like the original / default "
@@ -4612,7 +4611,7 @@ msgid ""
 "`InsigniaPalette`."
 msgstr ""
 "`Insignia.(Rookie|Veteran|Elite)` 可用于为每个等级设置一个自定义军衔文件。与原本／默认的文件 "
-"`pips.shp` 一样，它们使用 `palette.pal` 作为色盘进行绘制。"
+"`pips.shp` 一样，在未设置 `InsigniaPalette` 时它们使用 `palette.pal` 作为色盘进行绘制。"
 
 msgid ""
 "`InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) "
@@ -4682,6 +4681,7 @@ msgstr "`Insignia.ShowEnemy` 控制军衔是否对敌方玩家可见。"
 
 msgid "`InsigniaPalette` specify custom palette for insignia of TechnoType."
 msgstr ""
+"`InsigniaPalette` 可为科技类型的军衔指定自定义色盘。"
 
 msgid ""
 "You can make insignias appear only on selected units using "
