@@ -292,6 +292,7 @@ msgid ""
 "Fixed crashes when restarting missions that use TerrainTypes with cached "
 "SHP images."
 msgstr ""
+"修复了重开使用了带缓存 SHP 图像的地形对象的任务时会崩溃的问题。"
 
 msgid ""
 "Mind control indicator animations will now correctly restore on mind "

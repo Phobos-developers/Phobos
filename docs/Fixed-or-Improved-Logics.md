@@ -60,7 +60,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
-- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
@@ -336,6 +335,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right for GDI and 2 pixels to the right for NOD sidebars.
   - This fix may be disabled by setting `[AudioVisual] -> UseSidebarRadarOffsetFix=no` in `rulesmd.ini`. `Sidebar.RadarOffsetFix` can override the correction per side; negative values move the radar left and `0` disables it for that side.
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.

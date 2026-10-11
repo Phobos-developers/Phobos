@@ -3453,4 +3453,5 @@ msgid ""
 "**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
 "TerrainType SHP images"
 msgstr ""
+"**Krisztiaan** - 修复释放缓存的地形对象 SHP 图像所导致的任务重开崩溃"
 
