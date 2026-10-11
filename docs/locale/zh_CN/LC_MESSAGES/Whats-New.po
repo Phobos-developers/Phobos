@@ -1108,6 +1108,7 @@ msgid ""
 "[New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-"
 "Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)"
 msgstr ""
+"[新增支持多个武器的 `NoAmmoWeapons` 标签](New-or-Enhanced-Logics.md#no-ammo-weapons)（by FlyStar）"
 
 msgid ""
 "[New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-"

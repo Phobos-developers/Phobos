@@ -1407,6 +1407,7 @@ msgstr "降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用�
 
 msgid "New `NoAmmoWeapons` tag supporting multiple weapon types"
 msgstr ""
+"新增支持多个武器的 `NoAmmoWeapons` 标签"
 
 msgid ""
 "Fix an issue in Ares where vehicles would occasionally continue to fire "

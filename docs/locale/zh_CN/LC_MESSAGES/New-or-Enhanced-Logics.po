@@ -5204,19 +5204,23 @@ msgstr ""
 
 msgid "No Ammo Weapons"
 msgstr ""
+"无弹药武器"
 
 msgid ""
 "You can now use multiple weapons with `NoAmmoWeapons` while "
 "`NoAmmoAmount` is active."
 msgstr ""
+"现在你可以在 `NoAmmoAmount` 生效时使用 `NoAmmoWeapons` 指定多个武器。"
 
 msgid ""
 "`NoAmmoWeapons` selects an appropriate weapon based on the weapon's "
 "`CanTarget` and other tags, as well as the projectile's `Verses`."
 msgstr ""
+"`NoAmmoWeapons` 会根据武器的 `CanTarget` 等各项标签以及弹头的 `Verses` 来检查当前武器是否可用。"
 
 msgid "If no suitable weapon is found, it continues to use `NoAmmoWeapon`."
 msgstr ""
+"未能搜寻到合适的武器则继续使用 `NoAmmoWeapon`。"
 
 msgid "No Manual Move"
 msgstr "禁止手动移动"
