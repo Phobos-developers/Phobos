@@ -56,6 +56,7 @@ public:
 		long DropshipLoadout_Money;
 		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
 		int DropshipLoadout_StartingDropships;
+		bool DropshipLoadout_OpenAtStart;
 		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
 		std::vector<int> DropshipLoadout_Carriers_SizeLimit;
 		bool DropshipLoadout_AddUnusedMoneyToPlayer;
@@ -123,6 +124,7 @@ public:
 			, DropshipLoadout_Money { -1 }
 			, DropshipLoadout_StartEVA {}
 			, DropshipLoadout_StartingDropships { 0 }
+			, DropshipLoadout_OpenAtStart { true }
 			, DropshipLoadout_Carriers {}
 			, DropshipLoadout_Carriers_SizeLimit {}
 			, DropshipLoadout_AddUnusedMoneyToPlayer { false }

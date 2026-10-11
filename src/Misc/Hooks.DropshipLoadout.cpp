@@ -4201,6 +4201,10 @@ DEFINE_HOOK(0x683D89, Dropship_Loadout_Remake, 0x6)
 	if (!pHouseTypeExt)
 		return EndFunction;
 
+	bool const bOpenAtStart = pHouseTypeExt->DropshipLoadout_OpenAtStart.Get(ScenarioExt::Global()->DropshipLoadout_OpenAtStart);
+	if (!bOpenAtStart)
+		return EndFunction;
+
 	int nStartingDropships = pHouseTypeExt->DropshipLoadout_StartingDropships.isset() ? pHouseTypeExt->DropshipLoadout_StartingDropships.Get() : ScenarioExt::Global()->DropshipLoadout_StartingDropships;
 
 	if (nStartingDropships <= 0)

@@ -177,6 +177,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
 	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
 	this->DropshipLoadout_RememberPurchasedCargo = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.RememberPurchasedCargo", this->DropshipLoadout_RememberPurchasedCargo);
+	this->DropshipLoadout_OpenAtStart = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.OpenAtStart", this->DropshipLoadout_OpenAtStart);
 	this->DropshipLoadout_StartingDropships = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.StartingDropships", ScenarioClass::Instance->StartingDropships);
 
 	// Custom Dropship loadout images, in SHP format
@@ -676,6 +677,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_Carriers_SizeLimit)
 		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
 		.Process(this->DropshipLoadout_RememberPurchasedCargo)
+		.Process(this->DropshipLoadout_OpenAtStart)
 		.Process(this->DropshipLoadout_Palette)
 		.Process(this->DropshipLoadout_Background)
 		.Process(this->DropshipLoadout_UpArrow)

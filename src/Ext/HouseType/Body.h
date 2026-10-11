@@ -40,6 +40,7 @@ public:
 	ValueableVector<int> DropshipLoadout_Carriers_SizeLimit;
 	Nullable<bool> DropshipLoadout_AddUnusedMoneyToPlayer;
 	Nullable<bool> DropshipLoadout_RememberPurchasedCargo;
+	Nullable<bool> DropshipLoadout_OpenAtStart;
 	ConvertClass* DropshipLoadout_Palette;
 
 	Nullable<PhobosPCXFile> DropshipLoadout_BackgroundPCX;
@@ -90,6 +91,7 @@ public:
 		, DropshipLoadout_Carriers_SizeLimit {}
 		, DropshipLoadout_AddUnusedMoneyToPlayer {}
 		, DropshipLoadout_RememberPurchasedCargo {}
+		, DropshipLoadout_OpenAtStart {}
 		, DropshipLoadout_Palette { nullptr }
 		, DropshipLoadout_BackgroundPCX {}
 		, DropshipLoadout_UpArrowPCX {}

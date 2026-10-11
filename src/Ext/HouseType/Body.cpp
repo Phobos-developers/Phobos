@@ -173,6 +173,7 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->DropshipLoadout_Carriers_SizeLimit.Read(exINI, pSection, "DropshipLoadout.Carriers.SizeLimit");
 	this->DropshipLoadout_AddUnusedMoneyToPlayer.Read(exINI, pSection, "DropshipLoadout.AddUnusedMoneyToPlayer");
 	this->DropshipLoadout_RememberPurchasedCargo.Read(exINI, pSection, "DropshipLoadout.RememberPurchasedCargo");
+	this->DropshipLoadout_OpenAtStart.Read(exINI, pSection, "DropshipLoadout.OpenAtStart");
 
 	if (pINI->ReadString(pSection, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
 		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
@@ -473,6 +474,7 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_Carriers_SizeLimit)
 		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
 		.Process(this->DropshipLoadout_RememberPurchasedCargo)
+		.Process(this->DropshipLoadout_OpenAtStart)
 		.Process(this->DropshipLoadout_Palette)
 		.Process(this->DropshipLoadout_BackgroundPCX)
 		.Process(this->DropshipLoadout_UpArrowPCX)
