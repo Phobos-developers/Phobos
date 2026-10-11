@@ -2066,7 +2066,7 @@ HideShakeEffects=false           ; boolean
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
-- Fixed the vanilla sidebar radar horizontal offset for GDI and NOD sidebars (by TwinkleStar)
+- [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 

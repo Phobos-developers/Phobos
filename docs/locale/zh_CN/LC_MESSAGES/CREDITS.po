@@ -2036,6 +2036,7 @@ msgstr "初始子机数量"
 
 msgid "Sidebar radar horizontal offset fix"
 msgstr ""
+"侧边栏雷达水平偏移的修复"
 
 msgid "**Fryone**:"
 msgstr "**Fryone**："
