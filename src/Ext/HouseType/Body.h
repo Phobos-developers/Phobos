@@ -40,9 +40,10 @@ public:
 	Valueable<bool> Elite_AffectsAll;
 
 	ValueableVector<BuildingTypeClass*> VeteranBuildings;
-	ValueableVector<BuildingTypeClass*> VeteranDefenses;
 
 	Nullable<AffectedHouse> RevealHouses;
+
+	Valueable<bool> Academy_AllowCountryFilter;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
@@ -56,8 +57,8 @@ public:
 		, EliteDefenses {}
 		, Elite_AffectsAll { true }
 		, VeteranBuildings {}
-		, VeteranDefenses {}
 		, RevealHouses {}
+		, Academy_AllowCountryFilter { false }
 	{ }
 
 	virtual ~HouseTypeExt() = default;

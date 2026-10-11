@@ -70,12 +70,18 @@ void HouseExt::UpdateVehicleProduction()
 		}
 	}
 
-	for (auto const unit : UnitClass::Array)
+	for (auto const type : UnitTypeClass::Array)
 	{
-		auto const index = static_cast<unsigned int>(unit->Type->GetArrayIndex());
+		auto const index = static_cast<unsigned int>(type->GetArrayIndex());
 
-		if (values[index] > 0 && unit->CanBeRecruited(pThis))
-			--values[index];
+		if (values[index] > 0)
+		{
+			for (auto const unit : TechnoTypeExt::Fetch(type)->Array)
+			{
+				if (static_cast<UnitClass*>(unit)->CanBeRecruited(pThis))
+					--values[index];
+			}
+		}
 	}
 
 	bestChoices.clear();
@@ -712,6 +718,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->Academies)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		.Process(this->TechnoPCX_IsLoad)
 		;

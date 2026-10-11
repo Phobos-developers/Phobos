@@ -338,7 +338,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 {
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit->InLimbo && pUnit->Health > 0)
+		if (!pUnit->InLimbo && pUnit->Health > 0 && pUnit->IsAlive && !pUnit->IsSinking)
 		{
 			auto const pUnitType = pUnit->GetTechnoType();
 
@@ -744,7 +744,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	{
 		if (ScriptExt::IsUnitAvailable(pUnit, true)
 			&& !pUnit->TemporalTargetingMe
-			&& !pUnit->BeingWarpedOut)
+			&& !pUnit->IsBeingWarpedOut())
 		{
 			if (mode == 2)
 			{
@@ -1077,7 +1077,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 bool ScriptExt::IsExtVariableAction(int action)
 {
 	auto const eAction = static_cast<PhobosScripts>(action);
-	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
+	return eAction >= PhobosScripts::LocalVariableSet && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
 
 void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count)
@@ -1247,7 +1247,7 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 	if (!pTechno)
 		return false;
 
-	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap && !pTechno->IsSinking;
 
 	if (checkIfInTransportOrAbsorbed)
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;

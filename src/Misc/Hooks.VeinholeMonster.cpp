@@ -1,10 +1,38 @@
 #include <Ext/Anim/Body.h>
 
+#include <CellClass.h>
+#include <ColorScheme.h>
+#include <HouseClass.h>
+#include <OverlayTypeClass.h>
 #include <VeinholeMonsterClass.h>
 
 ///
 /// Veinhole Monster
 ///
+
+// Sets the drawer for veins overlay to match OpenTS and the Veinhole Monster
+DEFINE_HOOK_AGAIN(0x47FA5C, CellClass_Draw_Overlay_VeinsPalette, 0x6)
+DEFINE_HOOK(0x47FA1F, CellClass_Draw_Overlay_VeinsPalette, 0x6)
+{
+	GET(CellClass* const, pCell, ESI);
+
+	if (pCell)
+	{
+		auto const pOverlay = OverlayTypeClass::Array.GetItemOrDefault(pCell->OverlayTypeIndex);
+		auto const pPlayer = HouseClass::CurrentPlayer;
+
+		if (pOverlay && pOverlay->IsVeins && pPlayer)
+		{
+			if (auto const pScheme = ColorScheme::Array.GetItemOrDefault(pPlayer->ColorSchemeIndex))
+			{
+				R->EDX(pScheme->LightConvert);
+				return R->Origin() + 0x6;
+			}
+		}
+	}
+
+	return 0;
+}
 
 // Loads the veinhole monster art
 // Call removed from YR by WW

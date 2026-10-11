@@ -28,16 +28,16 @@ bool WeaponTypeExt::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass
 		auto const pTechnoExt = TechnoExt::Fetch(pTechno);
 		auto const pWH = this->OwnerObject()->Warhead;
 
-		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, !this->AttachEffect_Disallowed_Any, this->AttachEffect_IgnoreFromSameSource, this->AttachEffect_SameSourceOnly, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts, false, this->AttachEffect_Disallowed_Houses))
 			return false;
 
-		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), !this->AttachEffect_Disallowed_Any, this->AttachEffect_IgnoreFromSameSource, this->AttachEffect_SameSourceOnly, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts, false, this->AttachEffect_Disallowed_Houses))
 			return false;
 
-		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, !this->AttachEffect_Required_Any, this->AttachEffect_IgnoreFromSameSource, this->AttachEffect_SameSourceOnly, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts, false, this->AttachEffect_Required_Houses))
 			return false;
 
-		if (hasRequiredGroups && !pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
+		if (hasRequiredGroups && !pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), !this->AttachEffect_Required_Any, this->AttachEffect_IgnoreFromSameSource, this->AttachEffect_SameSourceOnly, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts, false, this->AttachEffect_Required_Houses))
 			return false;
 	}
 
@@ -166,16 +166,26 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
+
+	// AttachEffect
+	this->AttachEffects.LoadFromINI(pINI, pSection);
+	this->AttachEffect_Enable = (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0);
+
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
 	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
 	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
 	exINI.ParseStringList(this->AttachEffect_DisallowedGroups, pSection, "AttachEffect.DisallowedGroups");
 	this->AttachEffect_RequiredMinCounts.Read(exINI, pSection, "AttachEffect.RequiredMinCounts");
 	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");
+	this->AttachEffect_Required_Any.Read(exINI, pSection, "AttachEffect.Required.Any");
+	this->AttachEffect_Required_Houses.Read(exINI, pSection, "AttachEffect.Required.Houses");
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
+	this->AttachEffect_Disallowed_Any.Read(exINI, pSection, "AttachEffect.Disallowed.Any");
+	this->AttachEffect_Disallowed_Houses.Read(exINI, pSection, "AttachEffect.Disallowed.Houses");
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
+	this->AttachEffect_SameSourceOnly.Read(exINI, pSection, "AttachEffect.SameSourceOnly");
 	this->KeepRange.Read(exINI, pSection, "KeepRange");
 	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
 	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
@@ -207,12 +217,17 @@ void WeaponTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->CylinderRangefinding.Read(exINI, pSection, "CylinderRangefinding");
 	this->Anim_Update.Read(exINI, pSection, "Anim.Update");
 
+	this->Abductor_ChangeOwner_ResetDriverKilled.Read(exINI, pSection, "Abductor.ChangeOwner.ResetDriverKilled");
+	this->Abductor_ChangeOwner_IgnoreDriverKilled.Read(exINI, pSection, "Abductor.ChangeOwner.IgnoreDriverKilled");
+	this->CanTarget_DriverKilled.Read(exINI, pSection, "CanTarget.DriverKilled");
+
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
 		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
 		|| this->CanTargetVeterancy != AffectedVeterancy::All
 		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
-		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
+		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size()
+		|| !this->CanTarget_DriverKilled)
 	{
 		this->SkipWeaponPicking = false;
 	}
@@ -275,16 +290,23 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_FullDetonation)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffect_Enable)
 		.Process(this->AttachEffect_RequiredTypes)
 		.Process(this->AttachEffect_DisallowedTypes)
 		.Process(this->AttachEffect_RequiredGroups)
 		.Process(this->AttachEffect_DisallowedGroups)
 		.Process(this->AttachEffect_RequiredMinCounts)
 		.Process(this->AttachEffect_RequiredMaxCounts)
+		.Process(this->AttachEffect_Required_Any)
+		.Process(this->AttachEffect_Required_Houses)
 		.Process(this->AttachEffect_DisallowedMinCounts)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
+		.Process(this->AttachEffect_Disallowed_Any)
+		.Process(this->AttachEffect_Disallowed_Houses)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
+		.Process(this->AttachEffect_SameSourceOnly)
 		.Process(this->KeepRange)
 		.Process(this->KeepRange_AllowAI)
 		.Process(this->KeepRange_AllowPlayer)
@@ -316,6 +338,9 @@ void WeaponTypeExt::Serialize(T& Stm)
 		.Process(this->AttackNoThreatBuildings)
 		.Process(this->CylinderRangefinding)
 		.Process(this->Anim_Update)
+		.Process(this->Abductor_ChangeOwner_ResetDriverKilled)
+		.Process(this->Abductor_ChangeOwner_IgnoreDriverKilled)
+		.Process(this->CanTarget_DriverKilled)
 		;
 };
 

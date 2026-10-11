@@ -235,26 +235,26 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 		if (pTypeExt->AutoDeath_OnOwnerChange_IgnoreRevertOnExit.Get(RulesExt::Global()->AutoDeath_OnOwnerChange_IgnoreRevertOnExit) && IgnoreRevertOnExit)
 		{
-			pExt->ShouldBeDead = false;
+			pExt->AutoDeathFlag = 0;
 		}
 		else if (humanToComputer && computerToHuman)
 		{
-			pExt->ShouldBeDead = true;
+			pExt->AutoDeathFlag = 1;
 		}
 		else if (humanToComputer || computerToHuman)
 		{
 			if (humanAndComputer)
 			{
 				if ((I_am_human && humanToComputer) || (!I_am_human && computerToHuman))
-					pExt->ShouldBeDead = true;
+					pExt->AutoDeathFlag = 1;
 			}
 		}
 
-		if (pExt->ShouldBeDead && hasTransporter
+		if (pExt->AutoDeathFlag == 1 && hasTransporter
 			&& !IgnoreRevertOnExit
 			&& !pTypeExt->AutoDeath_AllowLimboed.Get(RulesExt::Global()->AutoDeath_AllowLimboed))
 		{
-			pExt->ShouldBeDead = false;
+			pExt->AutoDeathFlag = 0;
 		}
 	}
 

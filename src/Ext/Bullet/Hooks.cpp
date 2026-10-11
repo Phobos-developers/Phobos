@@ -175,6 +175,53 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x466B51, BulletClass_AI_GetTargetCoords, 0xB)
+{
+	enum { SkipGameCode = 0x466B67 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
+		return 0;
+
+	GET(AbstractClass*, pTarget, ECX);
+	LEA_STACK(CoordStruct*, outBuffer, STACK_OFFSET(0x1A8, -0x100));
+
+	if (!pTarget)
+		*outBuffer = pThis->TargetCoords;
+	else if (const auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+		*outBuffer = pThis->TargetCoords = pTargetObject->GetTargetCoords();
+	else
+		*outBuffer = pThis->TargetCoords = pTarget->GetCenterCoords();
+
+	R->EAX(outBuffer);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x466B83, BulletClass_AI_GetTargetCoords2, 0x6)
+{
+	enum { SkipGameCode = 0x466BAF };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (!BulletTypeExt::Fetch(pThis->Type)->MissileKeepTargetCoord.Get(RulesExt::Global()->MissileKeepTargetCoord))
+		return 0;
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x466EA5, BulletClass_AI_MissileSafetyAltitude, 0x6)
+{
+	enum { SkipDestroy = 0x466EB6, SetDestroy = 0x466EAD };
+
+	GET(const int, height, EAX);
+	GET(BulletClass*, pThis, EBP);
+
+	const auto altitude = BulletTypeExt::Fetch(pThis->Type)->MissileSafetyAltitude.Get(RulesClass::Instance->MissileSafetyAltitude);
+
+	return height < altitude ? SkipDestroy : SetDestroy;
+}
+
 #pragma region Gravity
 
 #define APPLYGRAVITY(pType)\
@@ -598,9 +645,13 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 	{
 		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
 		pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletExt::Fetch(pThis)->FirerHouse;
-		const int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
-		pAnim->LightConvert = ColorScheme::Array[schemeIndex]->LightConvert;
 		pThis->Parachute = pAnim;
+		
+		if (pAnimType->ShouldUseCellDrawer)
+		{
+			const int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
+			pAnim->LightConvert = ColorScheme::Array[schemeIndex]->LightConvert;
+		}
 	}
 
 	R->EAX(pAnim);

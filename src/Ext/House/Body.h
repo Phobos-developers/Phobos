@@ -81,8 +81,10 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
-	ValueableVector<TechnoTypeClass*> TechnoPCX_IsLoad;
+	std::vector<BuildingClass*> Academies;
 
+	ValueableVector<TechnoTypeClass*> TechnoPCX_IsLoad;
+  
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -118,6 +120,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, Academies {}
 		, TechnoPCX_IsLoad {}
 	{ }
 

@@ -156,7 +156,7 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 
 	// Death by conditions out of this function
-	if (this->ShouldBeDead)
+	if (this->AutoDeathFlag == 1)
 	{
 		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 		return true;
@@ -183,7 +183,63 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
+	// Already checked and no need to be killed by owner conditions
+	if (this->AutoDeathFlag == -1)
+	{
+		this->AutoDeathFlag = 0;
+		return false;
+	}
+
 	auto const pOwner = pThis->Owner;
+	bool needUpdate = false;
+
+	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
+	{
+		const bool isLowPower = pOwner->HasLowPower();
+		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
+		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
+
+		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
+			}
+
+			return true;
+		}
+
+		needUpdate = true;
+	}
+
+	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
+	{
+		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
+		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
+		const int currentMoney = pOwner->Available_Money();
+
+		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
+		{
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
+
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
+			}
+
+			return true;
+		}
+
+		needUpdate = true;
+	}
 
 	auto existTechnoTypes = [pOwner](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 		{
@@ -207,32 +263,6 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
 
-	if (pTypeExt->AutoDeath_PlayerPowerState != PowerStatus::None)
-	{
-		const bool isLowPower = pOwner->HasLowPower();
-		const auto status = pTypeExt->AutoDeath_PlayerPowerState;
-		const auto isFirstFrame = (Unsorted::CurrentFrame == 0);
-
-		if ((status == PowerStatus::Full && !isLowPower) || (status == PowerStatus::Low && isLowPower) && !isFirstFrame)
-		{
-			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-			return true;
-		}
-	}
-
-	if (pTypeExt->AutoDeath_PlayerMoney_Max != -1 || pTypeExt->AutoDeath_PlayerMoney_Min != -1)
-	{
-		const int maxMoney = pTypeExt->AutoDeath_PlayerMoney_Max;
-		const int minMoney = pTypeExt->AutoDeath_PlayerMoney_Min;
-		const int currentMoney = pOwner->Available_Money();
-
-		if ((maxMoney == -1 || currentMoney <= maxMoney) && (minMoney == -1 || currentMoney >= minMoney))
-		{
-			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
-			return true;
-		}
-	}
-
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
@@ -240,8 +270,18 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
 	}
 
 	// death if listed technos exist
@@ -251,8 +291,31 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
+			for (const auto pTarget : pTypeExt->Array)
+			{
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
+			}
+
 			return true;
 		}
+
+		needUpdate = true;
+	}
+
+	if (needUpdate)
+	{
+		for (const auto pTarget : pTypeExt->Array)
+		{
+			const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+			if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+				pTargetExt->AutoDeathFlag = -1;
+		}
+
+		this->AutoDeathFlag = 0;
 	}
 
 	return false;
@@ -597,7 +660,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
-	if (pThis->Health && healthDeficit > 0)
+	if (pThis->Health > 0 && healthDeficit > 0)
 	{
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
 		auto const whatAmI = pThis->WhatAmI();
@@ -926,7 +989,7 @@ void TechnoExt::UpdateAttachEffects()
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 		}
 
@@ -949,7 +1012,7 @@ void TechnoExt::UpdateAttachEffects()
 			if (pType->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1137,7 +1200,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.DisableWeapons |= type->DisableWeapons;
 		pAE.Unkillable |= type->Unkillable;
 		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		pAE.HasTint |= type->HasTint();
+		pAE.HasTint |= type->Tint->Enabled;
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1189,7 +1252,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		disableWeapons |= type->DisableWeapons;
 		unkillable |= type->Unkillable;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		hasTint |= type->HasTint();
+		hasTint |= type->Tint->Enabled;
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1232,8 +1295,8 @@ void TechnoExt::UpdateTintValues()
 	this->TintIntensityEnemies = 0;
 
 	auto const pTypeExt = this->TypeExtData;
-	const bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
-	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->HasTint();
+	const bool hasTechnoTint = pTypeExt->Tint->Enabled;
+	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->Tint->Enabled;
 
 	// bail out early if no custom tint is applied.
 	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
@@ -1261,25 +1324,85 @@ void TechnoExt::UpdateTintValues()
 		};
 
 	if (hasTechnoTint)
-		calculateTint(Drawing::RGB_To_Int(pTypeExt->Tint_Color), static_cast<int>(pTypeExt->Tint_Intensity * 1000), pTypeExt->Tint_VisibleToHouses);
+	{
+		auto const tint = pTypeExt->Tint.get();
+		calculateTint(Drawing::RGB_To_Int(tint->Color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
+	}
 
 	if (this->AE.HasTint)
 	{
+		struct CumulativeTint
+		{
+			TintTypeClass* Type;
+			ColorStruct Color { 0, 0, 0 };
+			double Intensity = 0.0;
+		};
+
+		std::vector<CumulativeTint> cumulativeTints;
+		std::vector<AttachEffectTypeClass*> processedTypes;
+
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
 			auto const type = attachEffect->GetType();
+			auto const tint = type->Tint.get();
 
-			if (!attachEffect->IsActive() || !type->HasTint())
+			if (!attachEffect->IsActive() || !tint->Enabled)
 				continue;
 
-			calculateTint(Drawing::RGB_To_Int(type->Tint_Color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+			auto const& color = tint->Color.Get();
+
+			// Case 1: Non-cumulative AE's.
+			if (!type->Cumulative)
+			{
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
+				continue;
+			}
+
+			// Case 2: Cumulative AE's without cumulative tint.
+			if (!tint->Cumulative)
+			{
+				if (std::find(processedTypes.begin(), processedTypes.end(), type) != processedTypes.end())
+					continue;
+
+				processedTypes.push_back(type);
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
+				continue;
+			}
+
+			// Case 3: Cumulative AE with cumulative tint but no color tint.
+			if (color == ColorStruct { 0,0,0 })
+			{
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
+				continue;
+			}
+
+			// Case 4: Cumulative AE with cumulative color tint.
+			auto it = std::find_if(cumulativeTints.begin(), cumulativeTints.end(), [tint](auto const& cTint)
+				{ return cTint.Type == tint; }
+			);
+
+			if (it != cumulativeTints.end())
+			{
+				it->Color += color;
+				it->Intensity += tint->Intensity;
+			}
+			else
+			{
+				cumulativeTints.push_back({ tint, color, tint->Intensity });
+			}
+		}
+
+		for (auto const& cTint : cumulativeTints)
+		{
+			calculateTint(Drawing::RGB_To_Int(cTint.Color), static_cast<int>(cTint.Intensity * 1000), cTint.Type->VisibleToHouses);
 		}
 	}
 
 	if (hasShieldTint)
 	{
 		auto const pShieldType = this->Shield->GetType();
-		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+		auto const tint = pShieldType->Tint.get();
+		calculateTint(Drawing::RGB_To_Int(tint->Color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
 	}
 }
 

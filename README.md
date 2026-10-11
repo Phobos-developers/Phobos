@@ -123,7 +123,7 @@ Every maintenance crew member is welcome to put a donation link to their entry i
   - [Alipay](https://www.phoboscn.top/t/topic/45#netsunegi)
 - **[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer
   - [WeChatPay](https://www.phoboscn.top/t/topic/45#tarandahl)
-- **Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer
+- **Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer, T1 maintainer
   - [Alipay](https://www.phoboscn.top/t/topic/45#noble_fish)
 - **FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage
 - **[@Fryone](https://github.com/Fryone)** - triage

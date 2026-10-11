@@ -197,7 +197,7 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 
 void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt* pBulletExt, bool bulletWasIntercepted, int distance)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || pTarget->Health <= 0 || pTarget->IsSinking || pTarget->IsBeingWarpedOut())
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
@@ -233,7 +233,7 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 	if (this->PenetratesTransport_Level > 0 && damage)
 		this->ApplyPenetratesTransport(pTarget, pOwner, pHouse, coords, damage, distance);
 
-	if (this->Taunt && pOwner)
+	if (this->Taunt && pOwner && !TechnoExt::DriverKilled(pTarget))
 		pTarget->Override_Mission(Mission::Attack, pOwner, nullptr);
 
 	if (this->IvanBomb_Detonate)

@@ -194,7 +194,7 @@ inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 		return;
 
 	const auto pFirer = pBullet->Owner;
-	const auto reportIndex = pWeapon->Report[(pFirer ? pFirer->unknown_short_3C8 : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count];
+	const auto reportIndex = pWeapon->Report[(pFirer ? pFirer->ReportRandomSeed : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count];
 	VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
 }
 
