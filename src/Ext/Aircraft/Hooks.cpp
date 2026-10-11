@@ -738,7 +738,7 @@ DEFINE_HOOK(0x414DA8, AircraftClass_Update_UnlandableDamage, 0x6) // After FootC
 
 	const auto pType = pThis->Type;
 
-	if (pThis->IsAlive && pType->AirportBound && !pThis->Airstrike && !pThis->IsALoaner)
+	if (pThis->IsAlive && pThis->Health > 0 && pType->AirportBound && !pThis->Airstrike && !pThis->IsALoaner)
 	{
 		const bool extendedMissions = AircraftTypeExt::Fetch(pType)->ExtendedAircraftMissions.Get(RulesExt::Global()->ExtendedAircraftMissions);
 
@@ -889,7 +889,7 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 				hoverOverArchive(coords, pArchive);
 			}
 		}
-		else if (!enterIdleMode() && pThis->IsAlive)
+		else if (!enterIdleMode() && pThis->IsAlive && pThis->Health > 0)
 		{
 			// continue circling
 			hoverOverArchive(pArchive->GetCoords(), pArchive);

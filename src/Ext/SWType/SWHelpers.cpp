@@ -45,7 +45,7 @@ std::vector<int> SWTypeExt::WeightedRollsHandler(ValueableVector<float>* rolls, 
 // Inhibitors check
 bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const
 {
-	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	if (pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
@@ -115,7 +115,7 @@ bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 // Designators check
 bool SWTypeExt::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const
 {
-	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->Deactivated)
 		return true;
 
 	return false;
@@ -195,7 +195,7 @@ bool SWTypeExt::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pB
 
 bool SWTypeExt::IsLaunchSite(BuildingClass* pBuilding) const
 {
-	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+	if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
 		auto const pExt = BuildingExt::Fetch(pBuilding);
 		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
@@ -280,7 +280,7 @@ std::vector<BuildingClass*> SWTypeExt::GetEMPulseCannons(HouseClass* pOwner, con
 		auto const pType = pBuilding->Type;
 
 		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pType) && pBuilding->IsAlive
-			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+			&& pBuilding->Health > 0 && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 		{
 			eligible = true;
 		}

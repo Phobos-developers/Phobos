@@ -476,7 +476,7 @@ void BuildingExt::UpdateFactoryQueues(BuildingClass* pThis)
 
 void BuildingExt::KickOutClone(std::pair<TechnoTypeClass*, HouseClass*>& info, void*, BuildingClass* pFactory)
 {
-	if (!pFactory->IsAlive || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
+	if (!pFactory->IsAlive || pFactory->Health <= 0 || pFactory->InLimbo || (BuildingTypeExt::Fetch(pFactory->Type)->Cloning_Powered && !pFactory->IsPowerOnline()) || pFactory->IsBeingWarpedOut())
 		return;
 
 	const auto pClone = static_cast<TechnoClass*>(info.first->CreateObject(info.second));

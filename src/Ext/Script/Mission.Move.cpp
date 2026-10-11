@@ -31,7 +31,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 
 	for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		if (pFoot && pFoot->IsAlive && !pFoot->InLimbo)
+		if (pFoot && pFoot->IsAlive && pFoot->Health > 0 && !pFoot->InLimbo && !pFoot->IsSinking)
 		{
 			const auto pTechnoType = pFoot->GetTechnoType();
 

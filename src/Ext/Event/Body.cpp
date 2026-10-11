@@ -66,14 +66,14 @@ void EventExt::RespondApproachObject()
 
 	pSource->ClearPlanningTokens(nullptr);
 
-	if (!pSource->IsAlive || pSource->Health <= 0 || pSource->InLimbo)
+	if (!pSource->IsAlive || pSource->Health <= 0 || pSource->InLimbo || pSource->IsSinking)
 		return;
 
 	if (pSource->IsTether)
 	{
 		const auto pLink = abstract_cast<BuildingClass*>(pSource->GetNthLink());
 
-		if (pLink && pLink->IsAlive && pLink->Type->DockUnload)
+		if (pLink && pLink->IsAlive && pLink->Health > 0 && pLink->Type->DockUnload)
 		{
 			pSource->SendToFirstLink(RadioCommand::NotifyUnlink);
 			pSource->IsTether = false;

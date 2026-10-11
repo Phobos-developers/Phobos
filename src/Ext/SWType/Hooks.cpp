@@ -80,7 +80,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		{
 			for (const auto pCurrentTechno : pTechnoTypeExt->Array)
 			{
-				if (!pCurrentTechno->IsAlive || pCurrentTechno->InLimbo)
+				if (!pCurrentTechno->IsAlive || pCurrentTechno->Health <= 0 || pCurrentTechno->InLimbo)
 					continue;
 
 				const auto pOwner = pCurrentTechno->Owner;

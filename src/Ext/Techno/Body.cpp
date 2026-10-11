@@ -71,7 +71,7 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		&& pThis->Health > 0
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
-		&& !pThis->BeingWarpedOut
+		&& !pThis->IsBeingWarpedOut()
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
@@ -767,7 +767,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 
 bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
 {
-	if (!pObject->Health && !pObject->GetType()->Strength)
+	if (pObject->Health <= 0 && !pObject->GetType()->Strength)
 		return true;
 
 	const double hp = pObject->GetHealthPercentage();
@@ -794,6 +794,7 @@ bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
         !pThis->IsAlive ||
         pThis->Health <= 0 ||
         pThis->InLimbo ||
+		pThis->IsSinking ||
         pThis->Owner != pHouse)
     {
         return false;

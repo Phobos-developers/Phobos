@@ -111,7 +111,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 
 bool WarheadTypeExt::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const
 {
-	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
+	if (!pTechno || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking || !pTechno->IsOnMap || !pTechno->IsInPlayfield)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
