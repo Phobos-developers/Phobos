@@ -8,6 +8,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
@@ -225,16 +226,75 @@ public:
 	Nullable<Leptons> AreaGuardRange;
 	Valueable<Leptons> MaxGuardRange;
 
-	Promotable<SHPStruct*> Insignia;
-	Valueable<Vector3D<int>> InsigniaFrames;
-	Promotable<int> InsigniaFrame;
+	struct InsigniaDataEntry
+	{
+		Valueable<InsigniaTypeClass*> Type;
+		Promotable<SHPStruct*> Shape;
+		CustomPalette Palette;
+		CustomPalette Palette_Rookie;
+		CustomPalette Palette_Veteran;
+		CustomPalette Palette_Elite;
+		Promotable<int> Frame;
+		Valueable<Vector3D<int>> Frames;
+
+		InsigniaDataEntry()
+			: Type { nullptr }
+			, Shape { nullptr }
+			, Palette { CustomPalette::PaletteMode::Temperate }
+			, Palette_Rookie { CustomPalette::PaletteMode::Temperate }
+			, Palette_Veteran { CustomPalette::PaletteMode::Temperate }
+			, Palette_Elite { CustomPalette::PaletteMode::Temperate }
+			, Frame { -1 }
+			, Frames { { -1, -1, -1 } }
+		{ }
+
+		SHPStruct* GetShape(TechnoClass* pTechno) const
+		{
+			const auto pType = this->Type.Get();
+			return (pType ? pType->Shape : this->Shape).Get(pTechno);
+		}
+
+		ConvertClass* GetPalette(Rank rank) const
+		{
+			const auto pType = this->Type.Get();
+			const auto pDefault = (pType ? pType->Palette : this->Palette).GetConvert();
+
+			switch (rank)
+			{
+			case Rank::Elite:
+				return (pType ? pType->Palette_Elite : this->Palette_Elite).GetOrDefaultConvert(pDefault);
+
+			case Rank::Veteran:
+				return (pType ? pType->Palette_Veteran : this->Palette_Veteran).GetOrDefaultConvert(pDefault);
+
+			default:
+				return (pType ? pType->Palette_Rookie : this->Palette_Rookie).GetOrDefaultConvert(pDefault);
+			}
+		}
+
+		int GetFrame(TechnoClass* pTechno) const
+		{
+			const auto pType = this->Type.Get();
+			return (pType ? pType->Frame : this->Frame).Get(pTechno);
+		}
+
+		Vector3D<int> GetFrames() const
+		{
+			return this->Type ? Vector3D<int> {-1, -1, -1} : this->Frames;
+		}
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
+	InsigniaDataEntry InsigniaData;
+	std::vector<InsigniaDataEntry> Insignia_WeaponData;
+	std::vector<InsigniaDataEntry> Insignia_PassengersData;
 	Nullable<bool> Insignia_ShowEnemy;
-	std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
-	std::vector<Promotable<int>> InsigniaFrame_Weapon;
-	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
-	std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
-	std::vector<Promotable<int>> InsigniaFrame_Passengers;
-	std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 	Valueable<bool> DigitalDisplay_Disable;
 	ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -665,16 +725,10 @@ public:
 		, AreaGuardRange {}
 		, MaxGuardRange { Leptons(4096) }
 
-		, Insignia {}
-		, InsigniaFrames { { -1, -1, -1 } }
-		, InsigniaFrame { -1 }
+		, InsigniaData {}
+		, Insignia_WeaponData {}
+		, Insignia_PassengersData {}
 		, Insignia_ShowEnemy {}
-		, Insignia_Weapon {}
-		, InsigniaFrame_Weapon {}
-		, InsigniaFrames_Weapon {}
-		, Insignia_Passengers {}
-		, InsigniaFrame_Passengers {}
-		, InsigniaFrames_Passengers {}
 
 		, DigitalDisplay_Disable { false }
 		, DigitalDisplayTypes {}
