@@ -276,24 +276,21 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (pFoot)
+	if (humanAndComputer)
 	{
-		if (humanAndComputer)
+		if (const auto pConvertTo = I_am_human
+			? pTypeExt->Convert_HumanToComputer.Get()
+			: pTypeExt->Convert_ComputerToHuman.Get())
 		{
-			if (const auto pConvertTo = I_am_human
-				? pTypeExt->Convert_HumanToComputer.Get()
-				: pTypeExt->Convert_ComputerToHuman.Get())
-			{
-				TechnoExt::ConvertToType(pFoot, pConvertTo);
-			}
-
-			if (!I_am_human)
-				TechnoExt::ChangeOwnerMissionFix(pFoot, pType);
+			TechnoExt::ConvertToType(pThis, pConvertTo);
 		}
 
-		pThis->Owner->RecheckTechTree = true;
-		pNewOwner->RecheckTechTree = true;
+		if (pFoot && !I_am_human)
+			TechnoExt::ChangeOwnerMissionFix(pFoot, pType);
 	}
+
+	pThis->Owner->RecheckTechTree = true;
+	pNewOwner->RecheckTechTree = true;
 
 	for (const auto& pTrail : pExt->LaserTrails)
 	{

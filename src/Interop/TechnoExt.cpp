@@ -5,7 +5,7 @@
 std::vector<CalculateExtraThreatCallback> TechnoExtInterop::CalculateExtraThreatCallbacks = {};
 std::vector<CalculateSightCallback> TechnoExtInterop::CalculateSightCallbacks = {};
 
-DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, FootClass* pThis, TechnoTypeClass* toType)
+DEFINE_EXPORT(HRESULT, ConvertToType_Phobos, TechnoClass* pThis, TechnoTypeClass* toType)
 {
 	if (!pThis || !toType)
 		return E_POINTER;

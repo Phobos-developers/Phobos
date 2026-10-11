@@ -15,7 +15,7 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
+	static void Convert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
 	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
 
 private:
