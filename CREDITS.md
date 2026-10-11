@@ -458,7 +458,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
-  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -788,6 +788,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - Customize `DefaultToGuardArea` per gunner mode
   - Global default value for `ShouldUseCellDrawer`
+  - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
 - **Ollerus**:
