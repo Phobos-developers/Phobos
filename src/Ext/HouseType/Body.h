@@ -37,6 +37,8 @@ public:
 
 	Nullable<AffectedHouse> RevealHouses;
 
+	Valueable<bool> Academy_AllowCountryFilter;
+
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
 		, AttachEffects {}
@@ -45,6 +47,7 @@ public:
 		, VeteranBuildings {}
 		, VeteranDefenses {}
 		, RevealHouses {}
+		, Academy_AllowCountryFilter { false }
 	{ }
 
 	virtual ~HouseTypeExt() = default;
