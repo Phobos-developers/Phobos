@@ -3846,7 +3846,7 @@ msgid ""
 "Fixed an issue causing upgrade animations on pre-placed buildings on maps"
 " to not play correctly (by CrimRecya & Ollerus)"
 msgstr ""
-"修复了导致地图上预置建筑的升级动画无法正确播放的问题（by CrimRecya 与 Ollerus）"
+"修复了导致地图上预置建筑的加载物动画无法正确播放的问题（by CrimRecya 与 Ollerus）"
 
 msgid "Fixed `JumpjetSpeed` not updating after type conversion (by Noble_Fish)"
 msgstr ""
