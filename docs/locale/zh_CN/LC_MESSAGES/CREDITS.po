@@ -2719,6 +2719,7 @@ msgid ""
 "Fix the bug where the fix for airborne objects triggering sinking "
 "misjudged units with `Locomotor=Hover`"
 msgstr ""
+"修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover` 的单位误判的 Bug"
 
 msgid "Fix `HealBase` crates causing full-health objects to scatter"
 msgstr ""

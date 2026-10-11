@@ -3144,11 +3144,10 @@ msgid ""
 "triggers would be activated unconditionally after activation (by FlyStar)"
 msgstr "修复 2、53 和 54 号触发条件在重复类触发器中只要激活过就会被无条件激活的问题（by FlyStar）"
 
-#, fuzzy
 msgid ""
 "Fixed the bug that naval ship will sink even they destroyed in air (by "
 "NetsuNegi & Noble_Fish)"
-msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug（by NetsuNegi）"
+msgstr "修复了海军舰船即便在空中被摧毁也会在天上沉没的 Bug（by NetsuNegi 与 Noble_Fish）"
 
 msgid ""
 "Fixed MPDebug timer displaying when debug's visibility is off (by "
