@@ -2208,11 +2208,13 @@ msgstr "现在可以通过 `FreeMCV.CreditsThreshold` 自定义先前硬编码�
 
 msgid "`HealBase` no longer scatters units that are already at full health."
 msgstr ""
+"`HealBase` 不再使已处于满生命值的单位散开。"
 
 msgid ""
 "This fix is enabled by default and can be disabled by setting "
 "`HealBaseNoScatter` to `false`."
 msgstr ""
+"此修复默认启用，可通过将 `HealBaseNoScatter` 设为 `false` 来禁用。"
 
 msgid "Customizable unit image in art"
 msgstr "在 art 中自定义单位图像"

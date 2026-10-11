@@ -1198,6 +1198,7 @@ msgid ""
 "Fixed `HealBase` crates causing full-health objects to scatter (by "
 "Noble_Fish)"
 msgstr ""
+"修复了 `HealBase` 补给箱导致满生命值对象散开的问题（by Noble_Fish）"
 
 msgid ""
 "Fixed the bug that units keep attacking ground after target wall has been"
