@@ -1221,6 +1221,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
 	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
+	this->Unsellable_Direct.Read(exINI, pSection, "Unsellable.Direct");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1328,6 +1330,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	const auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exArtINI(pArtINI);
 	auto pArtSection = pThis->ImageFile;
+
+	this->SellingAnim.Read(exArtINI, pArtSection, "SellingAnim");
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
@@ -1736,6 +1740,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Wake_Sinking)
 		.Process(this->MakesWake)
 
+		.Process(this->SellingAnim)
+
 		.Process(this->CrashSpin_Multiplier)
 
 		.Process(this->AINormalTargetingDelay)
@@ -1877,6 +1883,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->NoAmmoWeapons)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
+
+		.Process(this->Unsellable_Direct)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

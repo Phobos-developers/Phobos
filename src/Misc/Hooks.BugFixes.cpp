@@ -3154,10 +3154,17 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	if (rtti == AbstractType::Building)
 		return true;
 
+	auto const pType = pTechno->GetTechnoType();
+	if (!pType)
+		return false;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+	if (pTypeExt->Unsellable_Direct.Get(false))
+		return true;
+
 	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
 	{
-		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
-
 		if (pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
 			return false;
 
@@ -3165,15 +3172,16 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 
 		if (auto const pBuilding = pCell->GetBuilding())
 		{
-			auto const pType = pBuilding->Type;
+			auto const pBuildingType = pBuilding->Type;
 
-			if (BuildingTypeExt::Fetch(pType)->UnitSell.Get(pType->UnitRepair))
+			if (BuildingTypeExt::Fetch(pBuildingType)->UnitSell.Get(pBuildingType->UnitRepair))
 				return true;
 		}
 	}
 
 	return false;
 }
+
 
 // Verify if object can be sold at event level.
 DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
@@ -3184,7 +3192,35 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
+	{
+		if (auto const pAnimType = TechnoTypeExt::Fetch(pTechno->GetTechnoType())->SellingAnim.Get())
+		{
+				auto colorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
+				auto location = pTechno->Location;
+				if (rtti == AbstractType::Infantry)
+				{
+					location.X -= 128;
+					location.Y -= 128;
+				}
+				else
+				{
+					location.X &= ~0xFF;
+					location.Y &= ~0xFF;
+				}
+
+				auto anim = GameCreate<AnimClass>(pAnimType, location);
+				// Note: When anim does not make infantry or create unit, 
+				// AnimExt::SetAnimOwnerHouseKind will not set the color scheme, 
+				// so we manually set the color scheme here.
+				//
+				// I sell my own unit but it draws in someone else's color?
+				anim->LightConvertIndex = colorScheme->ArrayIndex;
+				anim->LightConvert = colorScheme->LightConvert;
+				AnimExt::SetAnimOwnerHouseKind(anim, pTechno->Owner, pTechno->Owner, false, true);
+			}
+		
 		pTechno->Sell(-1);
+	}
 
 	return SkipGameCode;
 }
