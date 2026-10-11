@@ -1,7 +1,7 @@
 #include <Ext/Techno/Body.h>
 #include "TypeConvertGroup.h"
 
-void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+void TypeConvertGroup::Convert(TechnoClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
@@ -57,20 +57,18 @@ void TypeConvertGroup::ConvertSW(const std::vector<TypeConvertGroup>& convertPai
 
 				for (const auto pTarget : items)
 				{
-					const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
-
-					if (!pTargetFoot || (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner)))
+					if (!pTarget || (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner)))
 						continue;
 
-					TechnoExt::ConvertToType(pTargetFoot, toType);
+					TechnoExt::ConvertToType(pTarget, toType);
 				}
 			}
 		}
 		else
 		{
-			for (auto const pTargetFoot : FootClass::Array)
+			for (auto const pTarget : TechnoClass::Array)
 			{
-				TypeConvertGroup::Convert(pTargetFoot, convertPairs, pOwner);
+				TypeConvertGroup::Convert(pTarget, convertPairs, pOwner);
 			}
 		}
 	}
