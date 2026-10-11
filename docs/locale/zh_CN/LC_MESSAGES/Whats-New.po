@@ -1298,6 +1298,7 @@ msgid ""
 "[Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md"
 "#allow-ares-academy-add-country-level-filters) (by dh381)"
 msgstr ""
+"[允许 Ares 训练所添加国家级别的过滤器](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters)（by dh381）"
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"

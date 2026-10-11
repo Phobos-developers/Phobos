@@ -1944,6 +1944,7 @@ msgstr "建筑"
 
 msgid "Allow Ares Academy add country-level filters"
 msgstr ""
+"允许 Ares 训练所添加国家级别的过滤器"
 
 msgid ""
 "Ares' Academy feature could previously only add `Academy.Types` and "
@@ -1952,6 +1953,10 @@ msgid ""
 "`Academy.Country.Types.*` and `Academy.Country.Ignore.*` settings instead"
 " of `Academy.Types` and `Academy.Ignore`."
 msgstr ""
+"Ares 的训练所功能此前只能为建筑添加 `Academy.Types` 和 `Academy.Ignore`。现在，将 "
+"`Academy.AllowCountryFilter` 设为 `true` 的国家会改用训练所的 "
+"`Academy.Country.Types.*` 和 `Academy.Country.Ignore.*` 设置，而非 "
+"`Academy.Types` 和 `Academy.Ignore`。"
 
 msgid "Build area customizations"
 msgstr "自定义建造区域"

@@ -3451,6 +3451,7 @@ msgstr "引爆伊文炸弹弹头"
 
 msgid "Allow Ares Academy add country-level filters"
 msgstr ""
+"允许 Ares 训练所添加国家级别的过滤器"
 
 msgid ""
 "**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
