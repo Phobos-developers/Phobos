@@ -997,3 +997,6 @@ This page lists all the individual contributions to the project by their author.
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1** - Detonate ivan bomb on impact
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **Igor Kolchinskii (leosnake2208)**:
+  - Right-click to command
+  - Type selection by double/triple-click

@@ -173,6 +173,8 @@ ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
+RightClickCommand=false          ; boolean
+TypeSelectByMultiClick=false     ; boolean
 PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
@@ -2052,6 +2054,8 @@ HideShakeEffects=false           ; boolean
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
+- [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 
 #### Vanilla fixes:
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
