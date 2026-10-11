@@ -2050,7 +2050,7 @@ HideShakeEffects=false           ; boolean
 - [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
-- New weapon filter tag `CanTarget.DriverKilled` (by FlyStar)
+- [New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-driver-killed-vehicles) (by FlyStar)
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 - Customize insignias palette (by Flactine & NetsuNegi)
 
@@ -2088,7 +2088,7 @@ HideShakeEffects=false           ; boolean
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
-- Ares' Chrono Prisons / Abductors Expansion (by FlyStar)
+- [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
 ```
 

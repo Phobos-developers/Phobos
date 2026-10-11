@@ -1413,12 +1413,15 @@ msgid ""
 "Fix an issue in Ares where vehicles would occasionally continue to fire "
 "and move even after the driver had been killed"
 msgstr ""
+"修复 Ares 中载具在驾驶员被击杀后偶尔仍会继续开火和移动的问题"
 
 msgid "New weapon filter tag `CanTarget.DriverKilled`"
 msgstr ""
+"新增武器过滤标签 `CanTarget.DriverKilled`"
 
 msgid "Ares' Chrono Prisons / Abductors Expansion"
 msgstr ""
+"Ares 超时空监狱／吸取武器扩展"
 
 msgid ""
 "Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes`"

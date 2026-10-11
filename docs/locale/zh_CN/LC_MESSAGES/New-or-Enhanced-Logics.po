@@ -7321,17 +7321,20 @@ msgstr ""
 
 msgid "Customize whether weapon can target driver-killed vehicles"
 msgstr ""
+"自定义武器能否瞄准被击杀驾驶员的对象"
 
 msgid ""
 "In Ares, you cannot skip certain objectives based on whether a unit's "
 "driver is dead; this feature has now been added (requires at least Ares "
 "3.0)."
 msgstr ""
+"在 Ares 中，你无法根据单位的驾驶员是否已死亡来跳过某些目标；此功能现已添加（需要至少 Ares 3.0）。"
 
 msgid ""
 "`CanTarget.DriverKilled` allows to attack units whose drivers have been "
 "killed."
 msgstr ""
+"`CanTarget.DriverKilled` 允许攻击驾驶员已被击杀的单位。"
 
 msgid "Delayed firing"
 msgstr "延迟开火"
