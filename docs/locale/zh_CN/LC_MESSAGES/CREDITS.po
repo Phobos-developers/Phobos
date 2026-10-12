@@ -2689,9 +2689,6 @@ msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTime
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
 
-msgid "Country-specific veteran buildings"
-msgstr "国家专属老兵建筑"
-
 msgid ""
 "Fix the Spotlight-transport interaction bug caused by the incorrect "
 "reference removal fix"

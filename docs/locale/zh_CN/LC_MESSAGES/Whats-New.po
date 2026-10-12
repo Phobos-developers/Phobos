@@ -1008,13 +1008,6 @@ msgstr ""
 "country)（by Sovietianqi、FlyStar、Noble_Fish）"
 
 msgid ""
-"[Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-"
-"specific-veteran-buildings) (by Noble_Fish)"
-msgstr ""
-"[国家专属老兵建筑](Fixed-or-Improved-Logics.md#country-specific-veteran-"
-"buildings)（by Noble_Fish）"
-
-msgid ""
 "[Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md"
 "#grow-and-spread-on-slopes) (by FS-21)"
 msgstr ""
