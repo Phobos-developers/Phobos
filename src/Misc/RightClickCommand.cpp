@@ -143,6 +143,26 @@ DEFINE_HOOK(0x693397, TacticalMsgHandler_RButtonUp_RightClickCommand, 0x6)
 		&& !RightClickCommand::InSpecialLeftClickMode()
 		&& *reinterpret_cast<BYTE*>(0x884D40) == 0)
 	{
+		if (PlanningNodeClass::PlanningModeActive && !RulesExt::Global()->BuildingWaypoints)
+		{
+			for (const auto pObject : ObjectClass::CurrentObjects)
+			{
+				if (pObject->WhatAmI() == AbstractType::Building)
+				{
+					constexpr const char* pKeyName = "MSG:PlanningModeNoBuildings";
+					const wchar_t* pString = StringTable::LoadString(pKeyName);
+
+					if (pString)
+					{
+						MessageListClass::Instance.PrintMessage(pString, RulesClass::Instance->MessageDelay,
+							HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+					}
+
+					return 0;
+				}
+			}
+		}
+
 		// Raw packed window xy stashed by the RMB prologue at [esp+0x34].
 		const int packed = R->Stack<int>(0x34);
 		const int rawX = static_cast<short>(packed & 0xFFFF);

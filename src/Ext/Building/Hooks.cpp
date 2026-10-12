@@ -881,7 +881,7 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 
 static bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
-	return RulesExt::Global()->BuildingWaypoints;
+	return RulesExt::Global()->BuildingWaypoints || Phobos::Config::RightClickCommand; // process it later if right click command is enabled
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4610, BuildingTypeClass_CanUseWaypoint)
 
