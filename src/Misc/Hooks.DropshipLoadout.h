@@ -60,6 +60,7 @@ private:
 	Nullable<bool> bRememberPurchasedCargo {};
 	int allowableUnitsIndex { 0 };
 	int startingMoney { 0 };
+	bool bUsesPlayerWallet { false };
 
 	// Assets (Palette, surfaces, SHPs)
 	ConvertClass* dropshipLoadout_Palette { nullptr };

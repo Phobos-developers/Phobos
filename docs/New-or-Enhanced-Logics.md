@@ -1457,7 +1457,7 @@ These parameters configure the interactive Dropship Loadout purchase window that
 - `DropshipLoadout.Money`: Overrides the starting budget allocated for purchasing units. If set to `-1`, uses the player's current treasury money.
 - `DropshipLoadout.PreloadCargo`: If set to `true`, the window preloads the cargo configuration selected in the previous invocation.
 - `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased" (free, does not deduct cost from the new starting money pool, and selling it refunds the cost). If set to `false`, the cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
-- `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money in the loadout screen will be added back to the player's main funds.
+- `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money from an allocated budget in the loadout screen will be added back to the player's main funds. Ignored if `DropshipLoadout.Money` is negative (using player treasury).
 - `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`: A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
 - `DropshipLoadout.AllowableUnitMaximums` / `DropshipLoadout.AllowableUnitMaximumsN`: The maximum allowed quantity that can be purchased for each unit in `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`. Use `-1` for unlimited.
 - `DropshipLoadout.FixedUnits`: Locked units pre-placed in the dropship cargo slots that cannot be sold or moved.

@@ -756,7 +756,7 @@ DisableEmptySpawnPositions=false  ; boolean
 - `DropshipLoadout.Palette`: Custom PAL file used for rendering the dialog and cameos.
 - `DropshipLoadout.Carriers`: Comma-separated list of TechnoTypes used as the carrier units for each dropship index.
 - `DropshipLoadout.Carriers.SizeLimit`: Comma-separated list of passenger capacity/size limits for each carrier. Each unit's `Size=` tag dictates its space usage.
-- `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money in the loadout screen will be added back to the player's main funds.
+- `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money from an allocated budget in the loadout screen will be added back to the player's main funds. Ignored if `DropshipLoadout.Money` is negative (using player treasury).
 - `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased". Its cost is not deducted from the starting budget when reopening the window (so the preload can succeed even with a $0 budget), and selling it refunds its cost. If set to `false`, preloaded cargo is treated as "pending", and its cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
 - `DropshipLoadout.Background`: The SHP file used for the window background graphic.
 - `DropshipLoadout.BackgroundPCX`: The PCX file used for the window background graphic. Takes precedence over `DropshipLoadout.Background`. Can contain `%d` which will be replaced by the current dropship index.

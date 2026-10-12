@@ -959,7 +959,7 @@ ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 - `AllowableUnitsIndex` - The index of the allowable units list (0-based) to use for unit selection. If set to `0`, the default allowable units are used. The lists must be declared under `DropshipLoadout.AllowableUnitsN` (where `N` is the index).
 - `IgnoreFixedUnits` - A boolean (`0` or `1`). If set to `1`, any fixed units defined for the dropship loadout are ignored and will not be preloaded/enforced in the loadout window.
 - `PreloadCargo` - A boolean (`0` or `1`). If set to `1`, the window will load the previous cargo configuration if available. If set to `0`, the window starts empty.
-- `AddUnusedMoneyToPlayer` - A boolean (`0` or `1`). If set to `1`, any leftover money from the loadout screen is added back to the player's main funds. If set to `0`, the unused money is lost.
+- `AddUnusedMoneyToPlayer` - A boolean (`0` or `1`). If set to `1`, any leftover money from an allocated loadout budget is added back to the player's main funds. If set to `0`, the unused money is lost. Ignored if using player treasury (`StartingMoney < 0` or defaulting to negative budget).
 - `StartingMoney` - The amount of money allocated for selecting units in this loadout window.
 
 In `mycampaign.map`:

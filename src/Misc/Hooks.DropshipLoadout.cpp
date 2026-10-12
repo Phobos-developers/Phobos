@@ -159,6 +159,7 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 	this->bRememberPurchasedCargo = bRememberPurchasedCargo;
 	this->allowableUnitsIndex = allowableUnitsIndex;
 	this->startingMoney = startingMoney;
+	this->bUsesPlayerWallet = false;
 	this->pSWType = pSWType;
 	this->pSWTypeExt = SWTypeExt::TryFetch(pSWType);
 
@@ -316,7 +317,6 @@ void DropshipLoadoutClass::LoadAssets()
 		endingDragDropSoundIdx = pSWTypeExt->DropshipLoadout_EndingDragDropSound.isset() ? pSWTypeExt->DropshipLoadout_EndingDragDropSound : -1;
 
 		// Money
-		bool usesPlayerWallet = false;
 		long dropshipLoadout_InitialMoney = -1;
 		if (this->startingMoney > 0)
 		{
@@ -331,7 +331,7 @@ void DropshipLoadoutClass::LoadAssets()
 		if (dropshipLoadout_InitialMoney < 0)
 		{
 			dropshipLoadout_InitialMoney = HouseClass::CurrentPlayer->Available_Money();
-			usesPlayerWallet = true;
+			this->bUsesPlayerWallet = true;
 		}
 
 		this->initialMoney = dropshipLoadout_InitialMoney;
@@ -402,14 +402,14 @@ void DropshipLoadoutClass::LoadAssets()
 					}
 				}
 
-				if (usesPlayerWallet || rememberPurchasedCargo || currentMoney >= totalPreloadedCost)
+				if (this->bUsesPlayerWallet || rememberPurchasedCargo || currentMoney >= totalPreloadedCost)
 					canPreload = true;
 			}
 		}
 
 		if (canPreload)
 		{
-			if (!usesPlayerWallet && !rememberPurchasedCargo)
+			if (!this->bUsesPlayerWallet && !rememberPurchasedCargo)
 				currentMoney -= totalPreloadedCost;
 		}
 		else
@@ -673,7 +673,6 @@ void DropshipLoadoutClass::LoadAssets()
 		else if (pGlobal && pGlobal->DropshipLoadout_EndingDragDropSound.isset())
 			endingDragDropSoundIdx = pGlobal->DropshipLoadout_EndingDragDropSound;
 
-		bool usesPlayerWallet = false;
 		long dropshipLoadout_InitialMoney = -1;
 		if (this->startingMoney > 0)
 		{
@@ -690,7 +689,7 @@ void DropshipLoadoutClass::LoadAssets()
 		if (dropshipLoadout_InitialMoney < 0)
 		{
 			dropshipLoadout_InitialMoney = HouseClass::CurrentPlayer->Available_Money();
-			usesPlayerWallet = true;
+			this->bUsesPlayerWallet = true;
 		}
 		this->initialMoney = dropshipLoadout_InitialMoney;
 		this->currentMoney = dropshipLoadout_InitialMoney;
@@ -799,19 +798,15 @@ void DropshipLoadoutClass::LoadAssets()
 					}
 				}
 
-				if (usesPlayerWallet || rememberPurchasedCargo || currentMoney >= totalPreloadedCost)
-				{
+				if (this->bUsesPlayerWallet || rememberPurchasedCargo || currentMoney >= totalPreloadedCost)
 					canPreload = true;
-				}
 			}
 		}
 
 		if (canPreload)
 		{
-			if (!usesPlayerWallet && !rememberPurchasedCargo)
-			{
+			if (!this->bUsesPlayerWallet && !rememberPurchasedCargo)
 				currentMoney -= totalPreloadedCost;
-			}
 		}
 		else
 		{
@@ -4057,25 +4052,14 @@ void DropshipLoadoutClass::SaveCargo()
 
 		bool addUnusedMoneyToPlayer = this->bAddUnusedMoneyToPlayer.Get(false);
 
-		if (this->startingMoney == -1)
+		if (this->bUsesPlayerWallet)
 		{
 			long spent = HouseClass::CurrentPlayer->Available_Money() - currentMoney;
 			HouseClass::CurrentPlayer->TransactMoney(-spent);
 		}
-		else
+		else if (addUnusedMoneyToPlayer)
 		{
-			if (addUnusedMoneyToPlayer)
-			{
-				HouseClass::CurrentPlayer->TransactMoney(currentMoney);
-			}
-			else
-			{
-				if (this->startingMoney == 0 && !pSWTypeExt->DropshipLoadout_Money.isset())
-				{
-					long spent = HouseClass::CurrentPlayer->Available_Money() - currentMoney;
-					HouseClass::CurrentPlayer->TransactMoney(-spent);
-				}
-			}
+			HouseClass::CurrentPlayer->TransactMoney(currentMoney);
 		}
 	}
 	else
@@ -4156,35 +4140,16 @@ void DropshipLoadoutClass::SaveCargo()
 		else if (ScenarioExt::Global())
 			addUnusedMoneyToPlayer = ScenarioExt::Global()->DropshipLoadout_AddUnusedMoneyToPlayer;
 
-		if (this->startingMoney == -1)
+		if (this->bUsesPlayerWallet)
 		{
 			// Using player's own money: just deduct what was spent
 			long spent = HouseClass::CurrentPlayer->Available_Money() - currentMoney;
 			HouseClass::CurrentPlayer->TransactMoney(-spent);
 		}
-		else
+		else if (addUnusedMoneyToPlayer)
 		{
 			// Using a separate budget (either from rules, global, or a custom amount > 0)
-			if (addUnusedMoneyToPlayer)
-			{
-				HouseClass::CurrentPlayer->TransactMoney(currentMoney);
-			}
-			else
-			{
-				long dropshipLoadout_InitialMoney = -1;
-
-				if (pHouseTypeExt->DropshipLoadout_Money.isset())
-					dropshipLoadout_InitialMoney = pHouseTypeExt->DropshipLoadout_Money;
-				else if (ScenarioExt::Global())
-					dropshipLoadout_InitialMoney = ScenarioExt::Global()->DropshipLoadout_Money;
-
-				if (this->startingMoney == 0 && dropshipLoadout_InitialMoney < 0)
-				{
-					// Fallback to player's own money in default rules
-					long spent = HouseClass::CurrentPlayer->Available_Money() - currentMoney;
-					HouseClass::CurrentPlayer->TransactMoney(-spent);
-				}
-			}
+			HouseClass::CurrentPlayer->TransactMoney(currentMoney);
 		}
 	}
 }
