@@ -3,6 +3,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/Cell/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
@@ -352,6 +353,23 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 {
+	if (const auto pFromInfantry = abstract_cast<InfantryClass*>(pFromTechno);
+		pFromInfantry
+		&& pToType->WhatAmI() != AbstractType::InfantryType)
+	{
+		const auto location = pFromTechno->Location;
+		const auto pCell = MapClass::Instance.TryGetCellAt(location);
+		const auto center = pCell->GetCenterCoords();
+
+		if (center != location)
+		{
+			auto const pFromInfantryExt = InfantryExt::Fetch(pFromInfantry);
+			pFromInfantryExt->PendingConvertToTypeAtCenter = pToType;
+			InfantryExt::MoveToCellCenter(pFromInfantry, location);
+			return false;
+		}
+	}
+
 	auto const pToObject = pToType->CreateObject(pFromTechno->Owner);
 	auto const pToTechno = static_cast<TechnoClass*>(pToObject);
 	if (!pToTechno)

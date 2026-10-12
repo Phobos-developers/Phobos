@@ -4,6 +4,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Foot/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Infantry/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresFunctions.h>
@@ -27,6 +28,9 @@ void TechnoExt::OnEarlyUpdate()
 		return;
 
 	this->ApplyInterceptor();
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*>(this->OwnerObject()))
+		InfantryExt::HandlePendingConvertToTypeAtCenter(pInfantry);
 }
 
 void TechnoExt::ApplyInterceptor()
