@@ -54,6 +54,7 @@ public:
 
 		int DropshipLoadout_Theme;
 		long DropshipLoadout_Money;
+		Valueable<double> DropshipLoadout_CostMultiplier;
 		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
 		int DropshipLoadout_StartingDropships;
 		bool DropshipLoadout_OpenAtStart;
@@ -122,6 +123,7 @@ public:
 			, EVAIndex { -2 }
 			, DropshipLoadout_Theme { -1 }
 			, DropshipLoadout_Money { -1 }
+			, DropshipLoadout_CostMultiplier { 1.0 }
 			, DropshipLoadout_StartEVA {}
 			, DropshipLoadout_StartingDropships { 0 }
 			, DropshipLoadout_OpenAtStart { true }

@@ -20,10 +20,10 @@ public:
 	DropshipLoadoutClass();
 	~DropshipLoadoutClass();
 
-	bool Initialize(bool bIgnoreFixedUnits = false, bool bPreloadCargo = false, int allowableUnitsIndex = 0, int startingMoney = 0, Nullable<bool> bAddUnusedMoneyToPlayer = {}, Nullable<bool> bRememberPurchasedCargo = {}, SuperWeaponTypeClass* pSWType = nullptr);
+	bool Initialize(bool bIgnoreFixedUnits = false, bool bPreloadCargo = false, int allowableUnitsIndex = 0, int startingMoney = 0, Nullable<bool> bAddUnusedMoneyToPlayer = {}, Nullable<bool> bRememberPurchasedCargo = {}, SuperWeaponTypeClass* pSWType = nullptr, Nullable<double> costMultiplier = {});
 	void Run();
 
-	static void OpenInGameWindow(bool bIgnoreFixedUnits = false, bool bPreloadCargo = false, int allowableUnitsIndex = 0, int startingMoney = 0, Nullable<bool> bAddUnusedMoneyToPlayer = {}, Nullable<bool> bRememberPurchasedCargo = {}, SuperWeaponTypeClass* pSWType = nullptr);
+	static void OpenInGameWindow(bool bIgnoreFixedUnits = false, bool bPreloadCargo = false, int allowableUnitsIndex = 0, int startingMoney = 0, Nullable<bool> bAddUnusedMoneyToPlayer = {}, Nullable<bool> bRememberPurchasedCargo = {}, SuperWeaponTypeClass* pSWType = nullptr, Nullable<double> costMultiplier = {});
 
 private:
 	void LoadAssets();
@@ -36,6 +36,7 @@ private:
 	void SaveCargo();
 	int GetCarrierSizeLimit(int carrierIdx);
 	bool CanCarrierHoldUnit(int carrierIdx, TechnoTypeClass* pUnitType);
+	int GetUnitCost(TechnoTypeClass* pType) const;
 
 	// Extensions
 	HouseTypeExt* pHouseTypeExt { nullptr };
@@ -61,6 +62,7 @@ private:
 	int allowableUnitsIndex { 0 };
 	int startingMoney { 0 };
 	bool bUsesPlayerWallet { false };
+	double CostMultiplier { 1.0 };
 
 	// Assets (Palette, surfaces, SHPs)
 	ConvertClass* dropshipLoadout_Palette { nullptr };

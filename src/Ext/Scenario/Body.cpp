@@ -174,6 +174,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	const int keyCount = pINI->GetKeyCount(GameStrings::Basic);
 	this->DropshipLoadout_Theme = pINI->ReadTheme(GameStrings::Basic, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
 	this->DropshipLoadout_Money = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.Money", this->DropshipLoadout_Money);
+	this->DropshipLoadout_CostMultiplier = pINI->ReadDouble(GameStrings::Basic, "DropshipLoadout.CostMultiplier", this->DropshipLoadout_CostMultiplier);
 	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
 	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
 	this->DropshipLoadout_RememberPurchasedCargo = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.RememberPurchasedCargo", this->DropshipLoadout_RememberPurchasedCargo);
@@ -671,6 +672,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->EVAIndex)
 		.Process(this->DropshipLoadout_Theme)
 		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_CostMultiplier)
 		.Process(this->DropshipLoadout_StartEVA)
 		.Process(this->DropshipLoadout_StartingDropships)
 		.Process(this->DropshipLoadout_Carriers)

@@ -56,9 +56,12 @@ public:
 	}
 
 	TActionExt(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
+		, DropshipLoadout_CostMultiplier {}
 	{ }
 
 	virtual ~TActionExt() = default;
+
+	Nullable<double> DropshipLoadout_CostMultiplier;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -117,6 +117,7 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_AllowableUnits)
 		.Process(this->DropshipLoadout_AllowableUnitMaximums)
 		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_CostMultiplier)
 		.Process(this->DropshipLoadout_Theme)
 		.Process(this->DropshipLoadout_StartEVA)
 		.Process(this->DropshipLoadout_SizeLimit)
@@ -365,6 +366,7 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_AllowableUnits.Read(exINI, pSection, "DropshipLoadout.AllowableUnits");
 	this->DropshipLoadout_AllowableUnitMaximums.Read(exINI, pSection, "DropshipLoadout.AllowableUnitMaximums");
 	this->DropshipLoadout_Money.Read(exINI, pSection, "DropshipLoadout.Money");
+	this->DropshipLoadout_CostMultiplier.Read(exINI, pSection, "DropshipLoadout.CostMultiplier");
 	this->DropshipLoadout_VeteranLevel.Read(exINI, pSection, "DropshipLoadout.VeteranLevel");
 	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
 	this->DropshipLoadout_SizeLimit.Read(exINI, pSection, "DropshipLoadout.SizeLimit");

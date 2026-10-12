@@ -122,6 +122,7 @@ public:
 	ValueableVector<TechnoTypeClass*> DropshipLoadout_AllowableUnits;
 	ValueableVector<int> DropshipLoadout_AllowableUnitMaximums;
 	Nullable<int> DropshipLoadout_Money;
+	Nullable<double> DropshipLoadout_CostMultiplier;
 	Nullable<int> DropshipLoadout_Theme;
 	NullableIdx<VoxClass> DropshipLoadout_StartEVA;
 	Nullable<int> DropshipLoadout_SizeLimit;
@@ -270,6 +271,7 @@ public:
 		, DropshipLoadout_AllowableUnits {}
 		, DropshipLoadout_AllowableUnitMaximums {}
 		, DropshipLoadout_Money {}
+		, DropshipLoadout_CostMultiplier {}
 		, DropshipLoadout_Theme {}
 		, DropshipLoadout_StartEVA {}
 		, DropshipLoadout_SizeLimit {}

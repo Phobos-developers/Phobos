@@ -57,7 +57,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 			pTypeExt->DropshipLoadout_Money.Get(-1), // startingMoney
 			pTypeExt->DropshipLoadout_AddUnusedMoneyToPlayer,
 			Nullable<bool>(pTypeExt->DropshipLoadout_RememberPurchasedCargo.Get()),
-			pType
+			pType,
+			pTypeExt->DropshipLoadout_CostMultiplier
 		);
 	}
 

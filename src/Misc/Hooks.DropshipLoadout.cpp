@@ -148,7 +148,7 @@ DropshipLoadoutClass::~DropshipLoadoutClass()
 	dropshipLoadout_DGreenList.clear();
 }
 
-bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo, int allowableUnitsIndex, int startingMoney, Nullable<bool> bAddUnusedMoneyToPlayer, Nullable<bool> bRememberPurchasedCargo, SuperWeaponTypeClass* pSWType)
+bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo, int allowableUnitsIndex, int startingMoney, Nullable<bool> bAddUnusedMoneyToPlayer, Nullable<bool> bRememberPurchasedCargo, SuperWeaponTypeClass* pSWType, Nullable<double> costMultiplier)
 {
 	if (!HouseClass::CurrentPlayer)
 		return false;
@@ -164,6 +164,30 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 	this->pSWTypeExt = SWTypeExt::TryFetch(pSWType);
 
 	pHouseTypeExt = HouseTypeExt::Fetch(HouseClass::CurrentPlayer->Type);
+
+	if (costMultiplier.isset())
+	{
+		this->CostMultiplier = costMultiplier.Get();
+	}
+	else if (this->pSWTypeExt && this->pSWTypeExt->DropshipLoadout_CostMultiplier.isset())
+	{
+		this->CostMultiplier = this->pSWTypeExt->DropshipLoadout_CostMultiplier.Get();
+	}
+	else if (pHouseTypeExt && pHouseTypeExt->DropshipLoadout_CostMultiplier.isset())
+	{
+		this->CostMultiplier = pHouseTypeExt->DropshipLoadout_CostMultiplier.Get();
+	}
+	else if (ScenarioExt::Global())
+	{
+		this->CostMultiplier = ScenarioExt::Global()->DropshipLoadout_CostMultiplier;
+	}
+	else
+	{
+		this->CostMultiplier = 1.0;
+	}
+
+	if (this->CostMultiplier < 0.0)
+		this->CostMultiplier = 0.0;
 
 	if (!ScenarioClass::Instance)
 		return false;
@@ -398,7 +422,7 @@ void DropshipLoadoutClass::LoadAssets()
 						if (itInitial != initialUnitsRemaining.end())
 							initialUnitsRemaining.erase(itInitial);
 						else
-							totalPreloadedCost += pUnit->Cost;
+							totalPreloadedCost += this->GetUnitCost(pUnit);
 					}
 				}
 
@@ -792,7 +816,7 @@ void DropshipLoadoutClass::LoadAssets()
 							}
 							else
 							{
-								totalPreloadedCost += pUnit->Cost;
+								totalPreloadedCost += this->GetUnitCost(pUnit);
 							}
 						}
 					}
@@ -2135,7 +2159,7 @@ void DropshipLoadoutClass::Run()
 
 						if (!bDraggedIsFixed)
 						{
-							currentMoney += pDraggedUnitType->Cost;
+							currentMoney += this->GetUnitCost(pDraggedUnitType);
 
 							if (dropshipBayChosenUnitsCount.count(pDraggedUnitType) > 0)
 								--dropshipBayChosenUnitsCount[pDraggedUnitType];
@@ -2196,7 +2220,7 @@ void DropshipLoadoutClass::Run()
 						}
 
 						if (nInstances < maxInstances
-							&& pDraggedUnitType->Cost <= currentMoney
+							&& this->GetUnitCost(pDraggedUnitType) <= currentMoney
 							&& hasCompatibleFreeSlot)
 						{
 							bool foundFreeSlot = false;
@@ -2212,7 +2236,7 @@ void DropshipLoadoutClass::Run()
 									{
 										dropshipBayChosenUnitsLists[i][j] = pDraggedUnitType;
 										dropshipBayFixedUnitsLists[i][j] = false;
-										currentMoney -= pDraggedUnitType->Cost;
+										currentMoney -= this->GetUnitCost(pDraggedUnitType);
 										foundFreeSlot = true;
 										lastSelected = pDraggedUnitType;
 										++dropshipBayChosenUnitsCount[pDraggedUnitType];
@@ -2282,7 +2306,7 @@ void DropshipLoadoutClass::Run()
 
 								if (!bDraggedIsFixed)
 								{
-									currentMoney -= pDraggedUnitType->Cost;
+									currentMoney -= this->GetUnitCost(pDraggedUnitType);
 									++dropshipBayChosenUnitsCount[pDraggedUnitType];
 								}
 
@@ -2337,7 +2361,7 @@ void DropshipLoadoutClass::Run()
 									}
 									else
 									{
-										long targetCost = pDraggedUnitType->Cost;
+										long targetCost = this->GetUnitCost(pDraggedUnitType);
 
 										if (nInstances < maxInstances && targetCost <= currentMoney)
 										{
@@ -2384,7 +2408,7 @@ void DropshipLoadoutClass::Run()
 
 												if (!bDraggedIsFixed)
 												{
-													currentMoney -= pDraggedUnitType->Cost;
+													currentMoney -= this->GetUnitCost(pDraggedUnitType);
 													++dropshipBayChosenUnitsCount[pDraggedUnitType];
 												}
 
@@ -2416,7 +2440,7 @@ void DropshipLoadoutClass::Run()
 
 											if (hasFreeSlot)
 											{
-												if (nInstances < maxInstances && pDraggedUnitType->Cost <= currentMoney)
+												if (nInstances < maxInstances && this->GetUnitCost(pDraggedUnitType) <= currentMoney)
 												{
 													int nullIdx = -1;
 
@@ -2443,7 +2467,7 @@ void DropshipLoadoutClass::Run()
 														dropshipBayFixedUnitsLists[dropshipIndex].insert(dropshipBayFixedUnitsLists[dropshipIndex].begin() + slotIndex, false);
 													}
 
-													currentMoney -= pDraggedUnitType->Cost;
+													currentMoney -= this->GetUnitCost(pDraggedUnitType);
 													++dropshipBayChosenUnitsCount[pDraggedUnitType];
 													lastSelected = pDraggedUnitType;
 
@@ -2453,8 +2477,8 @@ void DropshipLoadoutClass::Run()
 												else
 												{
 													// Can't afford shift, try replacement!
-													long targetRefund = pTargetUnit->Cost;
-													long netCost = pDraggedUnitType->Cost - targetRefund;
+													long targetRefund = this->GetUnitCost(pTargetUnit);
+													long netCost = this->GetUnitCost(pDraggedUnitType) - targetRefund;
 													bool limitOk = (pDraggedUnitType == pTargetUnit) || (nInstances < maxInstances);
 
 													if (limitOk && netCost <= currentMoney)
@@ -2466,7 +2490,7 @@ void DropshipLoadoutClass::Run()
 
 														dropshipBayChosenUnitsLists[dropshipIndex][slotIndex] = pDraggedUnitType;
 														dropshipBayFixedUnitsLists[dropshipIndex][slotIndex] = false;
-														currentMoney -= pDraggedUnitType->Cost;
+														currentMoney -= this->GetUnitCost(pDraggedUnitType);
 														++dropshipBayChosenUnitsCount[pDraggedUnitType];
 														lastSelected = pDraggedUnitType;
 
@@ -2481,8 +2505,8 @@ void DropshipLoadoutClass::Run()
 											}
 											else
 											{
-												long targetRefund = pTargetUnit->Cost;
-												long netCost = pDraggedUnitType->Cost - targetRefund;
+												long targetRefund = this->GetUnitCost(pTargetUnit);
+												long netCost = this->GetUnitCost(pDraggedUnitType) - targetRefund;
 												bool limitOk = (pDraggedUnitType == pTargetUnit) || (nInstances < maxInstances);
 
 												if (limitOk && netCost <= currentMoney)
@@ -2494,7 +2518,7 @@ void DropshipLoadoutClass::Run()
 
 													dropshipBayChosenUnitsLists[dropshipIndex][slotIndex] = pDraggedUnitType;
 													dropshipBayFixedUnitsLists[dropshipIndex][slotIndex] = false;
-													currentMoney -= pDraggedUnitType->Cost;
+													currentMoney -= this->GetUnitCost(pDraggedUnitType);
 													++dropshipBayChosenUnitsCount[pDraggedUnitType];
 													lastSelected = pDraggedUnitType;
 
@@ -2745,7 +2769,7 @@ void DropshipLoadoutClass::HandleInput(int command, int buttonID)
 				}
 
 				if (nInstances < maxInstances
-					&& pType->Cost <= currentMoney
+					&& this->GetUnitCost(pType) <= currentMoney
 					&& hasCompatibleFreeSlot)
 				{
 					validSidebarCameoPurchase = true;
@@ -2817,7 +2841,7 @@ void DropshipLoadoutClass::HandleInput(int command, int buttonID)
 					{
 						if (dropshipBay[j] == pType && !dropshipBayFixedUnitsLists[i][j])
 						{
-							currentMoney += pType->Cost;
+							currentMoney += this->GetUnitCost(pType);
 							dropshipBay.erase(dropshipBay.begin() + j);
 							dropshipBay.push_back(nullptr);
 							dropshipBayFixedUnitsLists[i].erase(dropshipBayFixedUnitsLists[i].begin() + j);
@@ -2868,7 +2892,7 @@ void DropshipLoadoutClass::HandleInput(int command, int buttonID)
 								continue;
 
 							dropshipBayChosenUnitsLists[i][j] = pType;
-							currentMoney -= pType->Cost;
+							currentMoney -= this->GetUnitCost(pType);
 							foundFreeSlot = true;
 							lastSelected = pType;
 
@@ -2923,7 +2947,7 @@ void DropshipLoadoutClass::HandleInput(int command, int buttonID)
 
 					if (pType && !dropshipBayFixedUnitsLists[nDropship][index])
 					{
-						currentMoney += pType->Cost;
+						currentMoney += this->GetUnitCost(pType);
 						auto& affectedDropship = dropshipBayChosenUnitsLists[nDropship];
 						affectedDropship.erase(affectedDropship.begin() + index);
 						affectedDropship.push_back(nullptr);
@@ -3184,7 +3208,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 		{
 			showHighlight = true;
 			bool limitReached = (nInstances >= maxInstances);
-			bool canBuyDirectly = (!limitReached && pType->Cost <= currentMoney && hasCompatibleFreeSlot);
+			bool canBuyDirectly = (!limitReached && this->GetUnitCost(pType) <= currentMoney && hasCompatibleFreeSlot);
 			bool canReplaceAny = false;
 
 			if (!limitReached)
@@ -3195,7 +3219,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 					{
 						if (pTarget && pType != pTarget)
 						{
-							long netCost = pType->Cost - pTarget->Cost;
+							long netCost = this->GetUnitCost(pType) - this->GetUnitCost(pTarget);
 							if (netCost <= currentMoney)
 							{
 								canReplaceAny = true;
@@ -3312,7 +3336,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 					}
 					else if (!pType)
 					{
-						if (bDraggedIsFixed || pDraggedUnitType->Cost <= currentMoney)
+						if (bDraggedIsFixed || this->GetUnitCost(pDraggedUnitType) <= currentMoney)
 							foreColor = ColorStruct { 0, 0, 255 }; // Blue (empty slot valid drop)
 						else
 							showHighlight = false; // Cannot afford: no highlight
@@ -3350,10 +3374,10 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 								}
 
 								// Can we afford a shift?
-								bool canAffordShift = pDraggedUnitType->Cost <= currentMoney;
+								bool canAffordShift = this->GetUnitCost(pDraggedUnitType) <= currentMoney;
 
 								// Can we afford a replacement?
-								long netCost = pDraggedUnitType->Cost - pType->Cost;
+								long netCost = this->GetUnitCost(pDraggedUnitType) - this->GetUnitCost(pType);
 								bool canAffordReplacement = netCost <= currentMoney;
 
 								if (targetDropshipHasFreeSlot && canAffordShift)
@@ -3411,7 +3435,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 					}
 				}
 
-				bool canBuyDirectly = (!limitReached && pHoveredUnitType->Cost <= currentMoney && hasCompatibleFreeSlot);
+				bool canBuyDirectly = (!limitReached && this->GetUnitCost(pHoveredUnitType) <= currentMoney && hasCompatibleFreeSlot);
 
 				if (pHoveredUnitType == pType && !dropshipBayFixedUnitsLists[i][j])
 				{
@@ -3428,7 +3452,7 @@ void DropshipLoadoutClass::Render(DSurface* pSurface)
 					if (!canBuyDirectly && !dropshipBayFixedUnitsLists[i][j])
 					{
 						bool limitOk = !limitReached;
-						long netCost = pHoveredUnitType->Cost - pType->Cost;
+						long netCost = this->GetUnitCost(pHoveredUnitType) - this->GetUnitCost(pType);
 
 						if (limitOk && netCost <= currentMoney)
 						{
@@ -3701,7 +3725,7 @@ void DropshipLoadoutClass::DrawTooltip(DSurface* pSurface)
 	{
 		BitFont::Instance->GetTextDimension(costLabelStr.c_str(), &costLabelWidth, &costLabelHeight, maxToolTipWidth);
 
-		cost = pHoveredUnitType->GetActualCost(HouseClass::CurrentPlayer);
+		cost = this->GetUnitCost(pHoveredUnitType);
 		std::wostringstream costValOss;
 		costValOss << Phobos::UI::CostLabel << std::abs(cost);
 		costValStr = costValOss.str();
@@ -3975,6 +3999,24 @@ bool DropshipLoadoutClass::CanCarrierHoldUnit(int carrierIdx, TechnoTypeClass* p
 	return static_cast<int>(pUnitType->Size) <= limit;
 }
 
+int DropshipLoadoutClass::GetUnitCost(TechnoTypeClass* pType) const
+{
+	if (!pType)
+		return 0;
+
+	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
+
+	if (this->CostMultiplier != 1.0)
+	{
+		cost = static_cast<int>(std::round(cost * this->CostMultiplier));
+
+		if (cost < 0)
+			cost = 0;
+	}
+
+	return cost;
+}
+
 void DropshipLoadoutClass::SaveCargo()
 {
 	if (!HouseClass::CurrentPlayer)
@@ -4183,7 +4225,7 @@ DEFINE_HOOK(0x683D89, Dropship_Loadout_Remake, 0x6)
 	return EndFunction;
 }
 
-void DropshipLoadoutClass::OpenInGameWindow(bool bIgnoreFixedUnits, bool bPreloadCargo, int allowableUnitsIndex, int startingMoney, Nullable<bool> bAddUnusedMoneyToPlayer, Nullable<bool> bRememberPurchasedCargo, SuperWeaponTypeClass* pSWType)
+void DropshipLoadoutClass::OpenInGameWindow(bool bIgnoreFixedUnits, bool bPreloadCargo, int allowableUnitsIndex, int startingMoney, Nullable<bool> bAddUnusedMoneyToPlayer, Nullable<bool> bRememberPurchasedCargo, SuperWeaponTypeClass* pSWType, Nullable<double> costMultiplier)
 {
 	if (!ScenarioClass::Instance)
 		return;
@@ -4198,7 +4240,7 @@ void DropshipLoadoutClass::OpenInGameWindow(bool bIgnoreFixedUnits, bool bPreloa
 
 	DropshipLoadoutClass loadout;
 
-	if (loadout.Initialize(bIgnoreFixedUnits, bPreloadCargo, allowableUnitsIndex, startingMoney, bAddUnusedMoneyToPlayer, bRememberPurchasedCargo, pSWType))
+	if (loadout.Initialize(bIgnoreFixedUnits, bPreloadCargo, allowableUnitsIndex, startingMoney, bAddUnusedMoneyToPlayer, bRememberPurchasedCargo, pSWType, costMultiplier))
 		loadout.Run();
 
 	ScenarioClass::Instance->IsGamePaused = oldPaused;

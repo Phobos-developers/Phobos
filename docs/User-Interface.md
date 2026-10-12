@@ -758,6 +758,7 @@ DisableEmptySpawnPositions=false  ; boolean
 - `DropshipLoadout.Carriers.SizeLimit`: Comma-separated list of passenger capacity/size limits for each carrier. Each unit's `Size=` tag dictates its space usage.
 - `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money from an allocated budget in the loadout screen will be added back to the player's main funds. Ignored if `DropshipLoadout.Money` is negative (using player treasury).
 - `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased". Its cost is not deducted from the starting budget when reopening the window (so the preload can succeed even with a $0 budget), and selling it refunds its cost. If set to `false`, preloaded cargo is treated as "pending", and its cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
+- `DropshipLoadout.CostMultiplier`: Cost multiplier applied to all allowable units purchase and refund costs in this dropship loadout. Defaults to `1.0` (or falls back to higher-level settings).
 - `DropshipLoadout.Background`: The SHP file used for the window background graphic.
 - `DropshipLoadout.BackgroundPCX`: The PCX file used for the window background graphic. Takes precedence over `DropshipLoadout.Background`. Can contain `%d` which will be replaced by the current dropship index.
 - `DropshipLoadout.UpArrow`: The SHP file used for the scroll-up navigation arrow.
@@ -796,6 +797,7 @@ In `rulesmd.ini`:
 [SOMECOUNTRY]                                        ; HouseType
 DropshipLoadout.StartingDropships=0                  ; integer
 DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.CostMultiplier=1.0                    ; floating point number
 DropshipLoadout.Theme=                               ; Theme
 DropshipLoadout.StartEVA=-1                          ; Vox
 DropshipLoadout.Palette=DROPSHIP.PAL                 ; filename (.pal)
@@ -851,6 +853,7 @@ DropshipLoadout.StartingDropships=0                  ; integer, default to [Basi
 ; or
 StartingDropships=0                                  ; integer
 DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.CostMultiplier=1.0                    ; floating point number
 DropshipLoadout.Theme=                               ; Theme
 DropshipLoadout.StartEVA=-1                          ; Vox
 DropshipLoadout.Palette=DROPSHIP.PAL                 ; filename (.pal)

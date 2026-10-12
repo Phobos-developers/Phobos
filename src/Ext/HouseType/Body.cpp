@@ -168,6 +168,7 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 		this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", -1);
 
 	this->DropshipLoadout_Money.Read(exINI, pSection, "DropshipLoadout.Money");
+	this->DropshipLoadout_CostMultiplier.Read(exINI, pSection, "DropshipLoadout.CostMultiplier");
 	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
 	this->DropshipLoadout_Carriers.Read(exINI, pSection, "DropshipLoadout.Carriers");
 	this->DropshipLoadout_Carriers_SizeLimit.Read(exINI, pSection, "DropshipLoadout.Carriers.SizeLimit");
@@ -469,6 +470,7 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_AllowableUnitMaximums)
 		.Process(this->DropshipLoadout_Theme)
 		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_CostMultiplier)
 		.Process(this->DropshipLoadout_StartEVA)
 		.Process(this->DropshipLoadout_Carriers)
 		.Process(this->DropshipLoadout_Carriers_SizeLimit)

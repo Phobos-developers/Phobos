@@ -961,12 +961,13 @@ ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 - `PreloadCargo` - A boolean (`0` or `1`). If set to `1`, the window will load the previous cargo configuration if available. If set to `0`, the window starts empty.
 - `AddUnusedMoneyToPlayer` - A boolean (`0` or `1`). If set to `1`, any leftover money from an allocated loadout budget is added back to the player's main funds. If set to `0`, the unused money is lost. Ignored if using player treasury (`StartingMoney < 0` or defaulting to negative budget).
 - `StartingMoney` - The amount of money allocated for selecting units in this loadout window.
+- `CostMultiplier` - Floating-point number (e.g. `1.0`, `1.5`, `0.8`). Multiplier applied to unit costs and refunds in this loadout session. If omitted, set to a non-numeric placeholder (such as `A`), or left empty, falls back to `[SuperWeaponType]` -> `DropshipLoadout.CostMultiplier` (if opened via superweapon), `[HouseType]` -> `DropshipLoadout.CostMultiplier`, or `[Basic]` -> `DropshipLoadout.CostMultiplier` (defaults to `1.0`).
 
 In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],900,0,[AllowableUnitsIndex],[IgnoreFixedUnits],[PreloadCargo],[AddUnusedMoneyToPlayer],[StartingMoney],A,[ActionX]
+ID=ActionCount,[Action1],900,0,[AllowableUnitsIndex],[IgnoreFixedUnits],[PreloadCargo],[AddUnusedMoneyToPlayer],[StartingMoney],[CostMultiplier],[ActionX]
 ...
 ```
 

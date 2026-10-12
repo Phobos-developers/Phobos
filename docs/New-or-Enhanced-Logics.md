@@ -1458,6 +1458,7 @@ These parameters configure the interactive Dropship Loadout purchase window that
 - `DropshipLoadout.PreloadCargo`: If set to `true`, the window preloads the cargo configuration selected in the previous invocation.
 - `DropshipLoadout.RememberPurchasedCargo`: If set to `true`, preloaded cargo from a previous loadout window call is treated as "already purchased" (free, does not deduct cost from the new starting money pool, and selling it refunds the cost). If set to `false`, the cost is deducted from the budget at startup (failing the preload if the player cannot afford it).
 - `DropshipLoadout.AddUnusedMoneyToPlayer`: If set to `true`, any unused money from an allocated budget in the loadout screen will be added back to the player's main funds. Ignored if `DropshipLoadout.Money` is negative (using player treasury).
+- `DropshipLoadout.CostMultiplier`: Cost multiplier applied to all allowable units purchase and refund costs in this dropship loadout. Defaults to `1.0` (or falls back to higher-level settings).
 - `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`: A list of TechnoTypes that are allowed to be purchased and loaded. If `N` is omitted, it defines the default allowed units.
 - `DropshipLoadout.AllowableUnitMaximums` / `DropshipLoadout.AllowableUnitMaximumsN`: The maximum allowed quantity that can be purchased for each unit in `DropshipLoadout.AllowableUnits` / `DropshipLoadout.AllowableUnitsN`. Use `-1` for unlimited.
 - `DropshipLoadout.FixedUnits`: Locked units pre-placed in the dropship cargo slots that cannot be sold or moved.
@@ -1499,6 +1500,7 @@ In `rulesmd.ini`:
 [SOMESW]                                             ; SuperWeaponType
 DropshipLoadout.OpenWindow=false                     ; boolean
 DropshipLoadout.Money=-1                             ; integer
+DropshipLoadout.CostMultiplier=1.0                    ; floating point number
 DropshipLoadout.PreloadCargo=false                   ; boolean
 DropshipLoadout.RememberPurchasedCargo=true          ; boolean
 DropshipLoadout.AddUnusedMoneyToPlayer=false         ; boolean

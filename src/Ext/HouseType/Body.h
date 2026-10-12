@@ -35,6 +35,7 @@ public:
 	std::map<int, std::vector<int>> DropshipLoadout_AllowableUnitMaximumsLists;
 	Nullable<int> DropshipLoadout_Theme;
 	Nullable<int> DropshipLoadout_Money;
+	Nullable<double> DropshipLoadout_CostMultiplier;
 	NullableIdx<VoxClass> DropshipLoadout_StartEVA;
 	ValueableVector<TechnoTypeClass*> DropshipLoadout_Carriers;
 	ValueableVector<int> DropshipLoadout_Carriers_SizeLimit;
@@ -86,6 +87,7 @@ public:
 		, DropshipLoadout_AllowableUnitMaximumsLists {}
 		, DropshipLoadout_Theme {}
 		, DropshipLoadout_Money {}
+		, DropshipLoadout_CostMultiplier {}
 		, DropshipLoadout_StartEVA {}
 		, DropshipLoadout_Carriers {}
 		, DropshipLoadout_Carriers_SizeLimit {}
