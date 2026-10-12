@@ -1556,20 +1556,21 @@ Units.UseRepairCost=  ; boolean
 
 ### Country-specific veteran buildings
 
-- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following flag is added to complete the meaningful combination results.
+- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following 2 flags are added to complete the meaningful combination results.
 
 ```{hint}
-`Defenses` refers to buildings with `BuildCat=Combat`, while `Veteran*` is an explicit type list, so the same list is used uniformly here without distinction.
+`Defenses` refers to buildings with `BuildCat=Combat`, consistent with vanilla rules.
 ```
 
 In `rulesmd.ini`:
 ```ini
 [SOMECOUNTRY]           ; Country
 VeteranBuildings=       ; List of BuildingTypes
+VeteranDefenses=        ; List of BuildingTypes
 ```
 
 ```{note}
-Due to the game's parsing order issue, this new flag will register buildings that do not exist in its respective list when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
+Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
 ```
 
 ### Customizable crew type per country
