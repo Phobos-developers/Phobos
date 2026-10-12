@@ -1117,6 +1117,11 @@ msgid "Customize insignias palette (by Flactine & NetsuNegi)"
 msgstr ""
 "自定义军衔色盘（by Flactine 与 NetsuNegi）"
 
+msgid ""
+"Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)"
+msgstr ""
+"允许无部署序列的可部署步兵像可部署载具那样直接执行 `Convert.Deploy`（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

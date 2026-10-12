@@ -871,6 +871,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ### Allow infantry to perform type conversion when deploying and undeploying
 
 - Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+  - If a deployable infantry has no deploy sequence, it will immediately execute `Convert.Deploy` after a deploy order is issued, just like deployable vehicles.
 
 In `rulesmd.ini`:
 ```ini

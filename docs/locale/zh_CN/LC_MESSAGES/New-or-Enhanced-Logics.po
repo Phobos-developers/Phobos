@@ -2158,6 +2158,11 @@ msgid ""
 "or `Undeploy` sequence action has been executed."
 msgstr "现在步兵可以在执行 `Deploy` 或 `Undeploy` 序列后触发类型转换。"
 
+msgid ""
+"If a deployable infantry has no deploy sequence, it will immediately execute `Convert.Deploy` after a deploy order is issued, just like deployable vehicles."
+msgstr ""
+"如果一个可部署的步兵没有部署序列，那么它将会像可部署的载具那样在下达部署命令后立即执行 `Convert.Deploy`。"
+
 msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐或部署状态的 FLH"
 
