@@ -297,7 +297,11 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, Foot
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
-	//pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
+	const auto pPlanningToken = pPassenger->PlanningToken;
+
+	if (pPlanningToken && pPlanningToken->PlanningNodes.Count > 0)
+		pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
+
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
