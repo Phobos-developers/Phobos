@@ -278,7 +278,7 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
 	// Convert.From & Convert.To
-	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
+	this->Convert_Pairs.Read(exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 
