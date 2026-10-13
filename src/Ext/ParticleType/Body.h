@@ -2,40 +2,45 @@
 
 #include <ParticleTypeClass.h>
 
+#include <Ext/ObjectType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
-class ParticleTypeExt
+class ParticleTypeExt final : public ObjectTypeExt
 {
 public:
 	using base_type = ParticleTypeClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = ParticleTypeExt;
+
 	static constexpr DWORD Canary = 0xEAFEEAFE;
-	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<ParticleTypeClass>
+public:
+	// typed owner accessor
+	ParticleTypeClass* OwnerObject() const
 	{
-	public:
-		Valueable<int> Gas_MaxDriftSpeed;
+		return static_cast<ParticleTypeClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(ParticleTypeClass* OwnerObject) : Extension<ParticleTypeClass>(OwnerObject)
-			, Gas_MaxDriftSpeed { 2 }
-		{ }
+	Valueable<int> Gas_MaxDriftSpeed;
 
-		virtual ~ExtData() = default;
+	ParticleTypeExt(ParticleTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, Gas_MaxDriftSpeed { 2 }
+	{ }
 
-		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+	virtual ~ParticleTypeExt() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<ParticleTypeExt>
 	{
 	public:
@@ -45,6 +50,17 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static ParticleTypeExt* Fetch(const ParticleTypeClass* pThis)
+	{
+		return AbstractExt::Fetch<ParticleTypeExt>(pThis);
+	}
+
+	static ParticleTypeExt* TryFetch(const ParticleTypeClass* pThis)
+	{
+		return AbstractExt::TryFetch<ParticleTypeExt>(pThis);
+	}
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 };
+

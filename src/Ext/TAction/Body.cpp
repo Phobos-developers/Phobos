@@ -1,7 +1,7 @@
 #include "Body.h"
 
-#include <MessageListClass.h>
-
+#include <ScenarioClass.h>
+#include <TriggerTypeClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <New/Entity/BannerClass.h>
@@ -14,20 +14,20 @@ TActionExt::ExtContainer TActionExt::ExtMap;
 // load / save
 
 template <typename T>
-void TActionExt::ExtData::Serialize(T& Stm)
+void TActionExt::Serialize(T& Stm)
 {
 	//Stm;
 }
 
-void TActionExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TActionExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TActionClass>::LoadFromStream(Stm);
+	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TActionExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TActionExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TActionClass>::SaveToStream(Stm);
+	AbstractExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -67,6 +67,13 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::UndeployToWaypoint:
 		return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetFollowsIndexForVehicle:
+		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetMissionTimer:
+		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::SetDropCrate:
+		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::EditAngerNode:
 		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
@@ -78,6 +85,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SetFreeRadar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetTeamDelay:
 		return TActionExt::SetTeamDelay(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextScanario:
+		return TActionExt::SetNextScanario(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::CreateBannerLocal:
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
@@ -234,7 +243,7 @@ bool TActionExt::BinaryOperation(TActionClass* pThis, HouseClass* pHouse, Object
 		case 5: { nCurrentValue %= nOptValue; break; }
 		case 6: { nCurrentValue <<= nOptValue; break; }
 		case 7: { nCurrentValue >>= nOptValue; break; }
-		case 8: { nCurrentValue = nOptValue; break; }
+		case 8: { nCurrentValue = ~nCurrentValue; break; }
 		case 9: { nCurrentValue ^= nOptValue; break; }
 		case 10: { nCurrentValue |= nOptValue; break; }
 		case 11: { nCurrentValue &= nOptValue; break; }
@@ -307,7 +316,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive)
+					&& !pHouse->IsNeutral())
 				{
 					housesList.push_back(pHouse);
 				}
@@ -420,20 +429,16 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 	if (!allBuilding && !pBuildingType)
 		return true;
 
-	const auto& limboDelivereds = HouseExt::ExtMap.Find(vHouse)->OwnedLimboDeliveredBuildings;
+	const auto& limboDelivereds = HouseExt::Fetch(vHouse)->OwnedLimboDeliveredBuildings;
 	const bool existLimboBuilding = !limboDelivereds.empty();
 	const auto vectorBegin = limboDelivereds.begin();
 	const auto vectorEnd = limboDelivereds.end();
 
 	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
-	auto canUndeploy = [&](BuildingClass* const pBuilding)
+	auto canUndeploy = [&](BuildingClass* const pBuilding, const bool isConYard)
 	{
-		auto const pType = pBuilding->Type;
-
-		if (!pType->UndeploysInto
-			|| pBuilding->Owner != vHouse
-			|| (!allBuilding && pType != pBuildingType)
+		if (pBuilding->Owner != vHouse
 			|| pBuilding->CurrentMission == Mission::Selling 
 			|| !pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->InLimbo)
 		{
@@ -441,37 +446,109 @@ bool TActionExt::UndeployToWaypoint(TActionClass* const pThis, HouseClass* const
 		}
 
 		// verify whether the building's source is LimboDelivery.
-		if (existLimboBuilding
-			&& std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
-		{
+		if (existLimboBuilding && std::find(vectorBegin, vectorEnd, pBuilding) != vectorEnd)
 			return false;
-		}
 
-		if (pType->ConstructionYard)
-		{
-			// Conyards can't undeploy if MCVRedeploy=no
-			if (!GameModeOptionsClass::Instance.MCVRedeploy)
-				return false;
-			// or MindControlledBy YURIX (why? for balance?)
-			if (!RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
-				return false;
-		}
+		// MindControlledBy YURIX(why ? for balance ? )
+		if (isConYard && !RulesExt::Global()->AllowDeployControlledMCV && pBuilding->MindControlledBy)
+			return false;
 
 		return true;
 	};
 
-	for (const auto pBuilding : BuildingClass::Array)
+	auto executeUndeploy = [&](BuildingTypeClass* pType)
 	{
-		if (!canUndeploy(pBuilding))
+		const bool isConYard = pType->ConstructionYard;
+
+		// Conyards can't undeploy if MCVRedeploy=no
+		if (isConYard && !GameModeOptionsClass::Instance.MCVRedeploy)
+			return;
+
+		for (const auto pTechno : TechnoTypeExt::Fetch(pType)->Array)
+		{
+			const auto pBuilding = static_cast<BuildingClass*>(pTechno);
+
+			if (!canUndeploy(pBuilding, isConYard))
+				continue;
+
+			// Why does having this allow it to undeploy?
+			// Why don't vehicles move when waypoints are placed off the map?
+
+			const bool old = std::exchange(VocClass::VoicesEnabled, false);
+			pBuilding->SetArchiveTarget(pCell);
+			pBuilding->Sell(true);
+			VocClass::VoicesEnabled = old;
+		}
+	};
+
+	if (pBuildingType)
+	{
+		executeUndeploy(pBuildingType);
+	}
+	else
+	{
+		for (const auto pType : BuildingTypeClass::Array)
+		{
+			if (pType->UndeploysInto)
+				executeUndeploy(pType);
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::SetFollowsIndexForVehicle(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const int followerIndex = pThis->Param3;
+
+	if (followerIndex < 0 || followerIndex >= UnitClass::Array.Count)
+		return false;
+
+	auto const pNewFollower = UnitClass::Array[followerIndex];
+
+	if (!pNewFollower)
+		return false;
+
+	for (auto const pTechno : UnitClass::Array)
+	{
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
 			continue;
 
-		// Why does having this allow it to undeploy?
-		// Why don't vehicles move when waypoints are placed off the map?
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
 
-		const bool old = std::exchange(VocClass::VoicesEnabled, false);
-		pBuilding->SetArchiveTarget(pCell);
-		pBuilding->Sell(true);
-		VocClass::VoicesEnabled = old;
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
+			continue;
+
+		if (auto const pOldFollower = pTechno->FollowerCar)
+		{
+			pOldFollower->IsFollowerCar = false;
+			pTechno->FollowerCar = nullptr;
+		}
+
+		for (auto const pOther : UnitClass::Array)
+		{
+			if (pOther && pOther->FollowerCar == pNewFollower)
+			{
+				pOther->FollowerCar = nullptr;
+				break;
+			}
+		}
+
+		pTechno->FollowerCar = pNewFollower;
+		pNewFollower->IsFollowerCar = true;
 	}
 
 	return true;
@@ -578,7 +655,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 
 bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	auto const pHouseExt = HouseExt::Fetch(pHouse);
 	const int value = pThis->Param3;
 
 	if (value >= 0 || value == -2)
@@ -612,11 +689,48 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	return true;
 }
 
+bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	for (const auto pTechno : TechnoClass::Array)
+	{
+		const auto pAttachedTag = pTechno->AttachedTag;
+
+		if (!pAttachedTag)
+			continue;
+
+		bool foundTrigger = false;
+		auto pAttachedTrigger = pAttachedTag->FirstTrigger;
+
+		// A tag can link multiple triggers
+		do
+		{
+			if (_stricmp(pAttachedTrigger->Type->ID, pTrigger->Type->ID) == 0)
+				foundTrigger = true;
+
+			pAttachedTrigger = pAttachedTrigger->NextTrigger;
+		}
+		while (pAttachedTrigger && !foundTrigger);
+
+		if (!foundTrigger)
+			continue;
+
+		// Overwrite the default techno's crate properties
+		const auto pExt = TechnoExt::Fetch(pTechno);
+		pExt->DropCrate = pThis->Value;
+
+		if (pExt->DropCrate == 1)
+			pExt->DropCrateType = static_cast<Powerup>(pThis->Param3);
+
+	}
+
+	return true;
+}
+
 bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	if (pHouse->IsControlledByHuman())
 	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		auto const pHouseExt = HouseExt::Fetch(pHouse);
 
 		switch (pThis->Param3)
 		{
@@ -647,8 +761,8 @@ bool TActionExt::SetFreeRadar(TActionClass* const pThis, HouseClass* const pHous
 bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
 {
 	const int value = pThis->Param3;
-	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[static_cast<int>(pHouse->AIDifficulty)] : value;
-	HouseExt::ExtMap.Find(pHouse)->TeamDelay = value;
+	const int timer = value < 0 ? RulesClass::Instance->TeamDelays.Items[pHouse->GetAIDifficultyIndex()] : value;
+	HouseExt::Fetch(pHouse)->TeamDelay = value;
 
 	auto& Timer = pHouse->TeamDelayTimer;
 	const int time = std::min(Timer.GetTimeLeft(), timer);
@@ -661,6 +775,39 @@ bool TActionExt::SetTeamDelay(TActionClass* const pThis, HouseClass* const pHous
 	{
 		Timer.Start(time);
 	}
+
+	return true;
+}
+
+bool TActionExt::SetNextScanario(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	if (SessionClass::Instance.IsCampaign())
+	{
+		const char* pText = pThis->Text;
+
+		if (strcmp(pText, "") && strcmp(pText, "0"))
+		{
+			// When you can customize it as you like, there’s no longer a need for additional branches.
+			ScenarioClass* const pScenario = ScenarioClass::Instance;
+			_snprintf_s(pScenario->AltNextScenario, sizeof(pScenario->AltNextScenario), pText);
+			_snprintf_s(pScenario->NextScenario, sizeof(pScenario->NextScenario), pText);
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const int type = pThis->Param3;
+	const int reverse = pThis->Param5;
+	ScenarioExt::Global()->MissionTimer_Variable = pThis->Param4;
+
+	if (0 <= type && 4 >= type)
+		ScenarioExt::Global()->MissionTimer_Type = type;
+
+	if (0 <= reverse && 1 >= reverse)
+		ScenarioExt::Global()->MissionTimer_Reverse = (bool)reverse;
 
 	return true;
 }
@@ -730,46 +877,3 @@ TActionExt::ExtContainer::ExtContainer() : Container("TActionClass") { }
 
 TActionExt::ExtContainer::~ExtContainer() = default;
 
-// =============================
-// container hooks
-
-#ifdef MAKE_GAME_SLOWER_FOR_NO_REASON
-DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.TryAllocate(pItem);
-	return 0;
-}
-
-DEFINE_HOOK(0x6E4761, TActionClass_SDDTOR, 0x6)
-{
-	GET(TActionClass*, pItem, ESI);
-
-	TActionExt::ExtMap.Remove(pItem);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x6E3E30, TActionClass_SaveLoad_Prefix, 0x8)
-DEFINE_HOOK(0x6E3DB0, TActionClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(TActionClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TActionExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E29, TActionClass_Load_Suffix, 0x4)
-{
-	TActionExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x6E3E4A, TActionClass_Save_Suffix, 0x3)
-{
-	TActionExt::ExtMap.SaveStatic();
-	return 0;
-}
-#endif

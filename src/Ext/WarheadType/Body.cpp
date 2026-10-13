@@ -4,7 +4,9 @@
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
-bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) const
+WarheadTypeClass* WarheadTypeExt::LocomotorWarhead = nullptr;
+
+bool WarheadTypeExt::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) const
 {
 	if (pHouse && pTarget)
 	{
@@ -32,7 +34,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
+bool WarheadTypeExt::CanAffectTarget(TechnoClass* pTarget) const
 {
 	if (!IsHealthInThreshold(pTarget))
 		return false;
@@ -40,13 +42,21 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	if (!IsVeterancyInThreshold(pTarget))
 		return false;
 
+	if (!IsInvokerAllowed(pTarget, this->DamageAreaInvoker))
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
+
+	bool isAir = pTarget->IsInAir();
+
+	if ((isAir && !this->AffectsAir) || (!isAir && !this->AffectsGround))
+		return false;
 
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget, pTarget->GetTechnoType()) != 0.0;
 }
 
-bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+bool WarheadTypeExt::IsHealthInThreshold(TechnoClass* pTarget) const
 {
 	if (!this->HealthCheck)
 		return true;
@@ -54,7 +64,7 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
 }
 
-bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
+bool WarheadTypeExt::IsVeterancyInThreshold(TechnoClass* pTarget) const
 {
 	if (!this->VeterancyCheck)
 		return true;
@@ -62,8 +72,26 @@ bool WarheadTypeExt::ExtData::IsVeterancyInThreshold(TechnoClass* pTarget) const
 	return EnumFunctions::CanTargetVeterancy(this->AffectsVeterancy, pTarget);
 }
 
+bool WarheadTypeExt::IsInvokerAllowed(TechnoClass* pTarget, TechnoClass* pInvoker) const
+{
+	if (!this->AffectsInvokerOnly)
+		return true;
+
+	const bool invokerExists = (pInvoker != nullptr);
+	const bool targetIsInvoker = invokerExists && (pTarget == pInvoker);
+
+	if (invokerExists)
+	{
+		return this->AffectsInvokerOnly_Reverse ? !targetIsInvoker : targetIsInvoker;
+	}
+	else
+	{
+		return !this->AffectsInvokerOnly_IgnoreInvokerState.Get(RulesExt::Global()->AffectsInvokerOnly_IgnoreInvokerState);
+	}
+}
+
 // Checks if Warhead can affect target that might or might be currently invulnerable.
-bool WarheadTypeExt::ExtData::CanAffectInvulnerable(TechnoClass* pTarget) const
+bool WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget) const
 {
 	if (!pTarget->IsIronCurtained())
 		return true;
@@ -81,16 +109,17 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	BulletExt::Detonate(coords, pOwner, damage, pFiringHouse, pTarget, pThis->Bright, nullptr, pThis);
 }
 
-bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const
+bool WarheadTypeExt::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const
 {
-	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
+	if (!pTechno || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking || !pTechno->IsOnMap)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
 		return false;
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
-		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
+	// no need to calculate AffectTypes here
+	//if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+	if (this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
@@ -104,20 +133,22 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	return true;
 }
 
-// Wrapper for MapClass::DamageArea() that sets a pointer in WarheadTypeExt::ExtData that is used to figure 'intended' target of the Warhead detonation, if set and there's no CellSpread.
-DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
+// Wrapper for MapClass::DamageArea() that sets a pointer in WarheadTypeExt that is used to figure 'intended' target of the Warhead detonation, if set and there's no CellSpread.
+DamageAreaResult WarheadTypeExt::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
-	auto const pWarheadTypeExt = WarheadTypeExt::ExtMap.Find(pWH);
+	auto const pWarheadTypeExt = WarheadTypeExt::Fetch(pWH);
 	pWarheadTypeExt->DamageAreaTarget = pTarget;
+	pWarheadTypeExt->DamageAreaInvoker = pSource;
 	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, affectsTiberium, pSourceHouse);
 	pWarheadTypeExt->DamageAreaTarget = nullptr;
+	pWarheadTypeExt->DamageAreaInvoker = nullptr;
 	return result;
 }
 
 // =============================
 // load / save
 
-void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
@@ -146,6 +177,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->RemoveMindControl_Silent.Read(exINI, pSection, "RemoveMindControl.Silent");
 	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
 	this->RemoveParasite_Allow.Read(exINI, pSection, "RemoveParasite.Allow");
 	this->RemoveParasite_Disallow.Read(exINI, pSection, "RemoveParasite.Disallow");
@@ -156,6 +188,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 	this->Rocker_AmplitudeMultiplier.Read(exINI, pSection, "Rocker.AmplitudeMultiplier");
 	this->Rocker_AmplitudeOverride.Read(exINI, pSection, "Rocker.AmplitudeOverride");
+	this->Temporal_ApplyVersus.Read(exINI, pSection, "Temporal.ApplyVersus");
+	this->Temporal_ApplyMultiplier.Read(exINI, pSection, "Temporal.ApplyMultiplier");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -197,6 +231,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
+	// CanCrit
+	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0)
+		this->CanCrit = true;
+	else
+		this->CanCrit = false;
 
 	// Return warhead
 	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
@@ -291,11 +331,22 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
 	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
+	this->JumpjetTurnRate.Read(exINI, pSection, "JumpjetTurnRate");
+	this->JumpjetSpeed.Read(exINI, pSection, "JumpjetSpeed");
+	this->JumpjetClimb.Read(exINI, pSection, "JumpjetClimb");
+	this->JumpjetCrash.Read(exINI, pSection, "JumpjetCrash");
+	this->JumpjetHeight.Read(exINI, pSection, "JumpjetHeight");
+	this->JumpjetAccel.Read(exINI, pSection, "JumpjetAccel");
+	this->JumpjetWobbles.Read(exINI, pSection, "JumpjetWobbles");
+	this->JumpjetNoWobbles.Read(exINI, pSection, "JumpjetNoWobbles");
+	this->JumpjetDeviation.Read(exINI, pSection, "JumpjetDeviation");
+
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
 	this->MergeBuildingDamage.Read(exINI, pSection, "MergeBuildingDamage");
 
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
+	this->CombatLightDetailLevel_CheckColored.Read(exINI, pSection, "CombatLightDetailLevel.CheckColored");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
 	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
@@ -364,6 +415,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 	this->HealthCheck = this->AffectsAbovePercent > 0.0 || this->AffectsBelowPercent < 1.0;
 	this->VeterancyCheck = this->AffectsVeterancy != AffectedVeterancy::All;
+	this->AffectsInvokerOnly.Read(exINI, pSection, "AffectsInvokerOnly");
+	this->AffectsInvokerOnly_Reverse.Read(exINI, pSection, "AffectsInvokerOnly.Reverse");
+	this->AffectsInvokerOnly_IgnoreInvokerState.Read(exINI, pSection, "AffectsInvokerOnly.IgnoreInvokerState");
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -381,6 +435,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AnimZAdjust.Read(exINI, pSection, "AnimZAdjust");
 
+	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
+	this->ChangeOwner_SetAsMindControl.Read(exINI, pSection, "ChangeOwner.SetAsMindControl");
+	this->ChangeOwner_MindControlAnim.Read(exINI, pSection, "ChangeOwner.MindControlAnim");
+
 	this->ApplyPerTargetEffectsOnDetonate.Read(exINI, pSection, "ApplyPerTargetEffectsOnDetonate");
 
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
@@ -392,8 +450,23 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Taunt.Read(exINI, pSection, "Taunt");
 
+	this->Psychedelic_StackingMode.Read(exINI, pSection, "Psychedelic.StackingMode");
+
+	this->PreventCrewEscape.Read(exINI, pSection, "PreventCrewEscape");
+	this->PreventPassengerEscape.Read(exINI, pSection, "PreventPassengerEscape");
+	this->PreventOccupantEscape.Read(exINI, pSection, "PreventOccupantEscape");
+
+	this->Ammo.Read(exINI, pSection, "Ammo");
+
+	this->IvanBomb_Detonate.Read(exINI, pSection, "IvanBomb.Detonate");
+	this->IvanBomb_Detonate_SameInvokerOnly.Read(exINI, pSection, "IvanBomb.Detonate.SameInvokerOnly");
+	this->IvanBomb_Detonate_PenetratesTransport.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesTransport");
+	this->IvanBomb_Detonate_PenetratesGarrison.Read(exINI, pSection, "IvanBomb.Detonate.PenetratesGarrison");
+	this->IvanBomb_Detonate_AffectsParasite.Read(exINI, pSection, "IvanBomb.Detonate.AffectsParasite");
+	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
+
 	// Convert.From & Convert.To
-	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+	this->Convert_Pairs.Read(exINI, pSection, AffectedHouse::All);
 
 	// AttachEffect
 	this->AttachEffects.LoadFromINI(pINI, pSection);
@@ -428,9 +501,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 	this->Malicious.Read(exINI, pSection, "Malicious");
 	this->Flash_Duration.Read(exINI, pSection, "Flash.Duration");
+	this->Damage_Deployed.Read(exINI, pSection, "Damage.Deployed");
+	this->PreventScatter.Read(exINI, pSection, "PreventScatter");
 
 	// List all Warheads here that respect CellSpread
-	// Used in WarheadTypeExt::ExtData::Detonate
+	// Used in WarheadTypeExt::Detonate
 	this->PossibleCellSpreadDetonate = (
 		this->RemoveDisguise
 		|| this->RemoveMindControl
@@ -441,8 +516,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Shield_RemoveTypes.size() > 0
 		|| this->Shield_RemoveAll
 		|| this->Convert_Pairs.size() > 0
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+#endif
+		|| this->ChangeOwner
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
@@ -452,6 +530,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ReturnWarhead
 		|| this->PenetratesTransport_Level > 0
 		|| this->Taunt
+		|| this->Ammo
+		|| this->IvanBomb_Detonate
 	);
 
 	char tempBuffer[32];
@@ -494,7 +574,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 }
 
 template <typename T>
-void WarheadTypeExt::ExtData::Serialize(T& Stm)
+void WarheadTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Reveal)
@@ -519,6 +599,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+		.Process(this->RemoveMindControl_Silent)
 		.Process(this->RemoveParasite)
 		.Process(this->RemoveParasite_Allow)
 		.Process(this->RemoveParasite_Disallow)
@@ -529,6 +610,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Rocker_AmplitudeMultiplier)
 		.Process(this->Rocker_AmplitudeOverride)
+		.Process(this->Temporal_ApplyVersus)
+		.Process(this->Temporal_ApplyMultiplier)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
@@ -546,6 +629,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectsBelowPercent)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+		.Process(this->CanCrit)
 
 		.Process(this->ReturnWarhead)
 		.Process(this->ReturnWarhead_Damage)
@@ -642,6 +726,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CellSpread_Cylinder)
 		.Process(this->HealthCheck)
 		.Process(this->VeterancyCheck)
+		.Process(this->AffectsInvokerOnly)
+		.Process(this->AffectsInvokerOnly_Reverse)
+		.Process(this->AffectsInvokerOnly_IgnoreInvokerState)
 
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->PenetratesTransport_PassThrough)
@@ -649,10 +736,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PenetratesTransport_DamageMultiplier)
 		.Process(this->PenetratesTransport_DamageAll)
 		.Process(this->PenetratesTransport_CleanSound)
-
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
-
+#endif
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
@@ -667,11 +754,22 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parasite_CullingTarget)
 		.Process(this->Parasite_GrappleAnim)
 
+		.Process(this->JumpjetTurnRate)
+		.Process(this->JumpjetSpeed)
+		.Process(this->JumpjetClimb)
+		.Process(this->JumpjetCrash)
+		.Process(this->JumpjetHeight)
+		.Process(this->JumpjetAccel)
+		.Process(this->JumpjetWobbles)
+		.Process(this->JumpjetNoWobbles)
+		.Process(this->JumpjetDeviation)
+
 		.Process(this->Nonprovocative)
 
 		.Process(this->MergeBuildingDamage)
 
 		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightDetailLevel_CheckColored)
 		.Process(this->CombatLightChance)
 		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)
@@ -709,9 +807,19 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AnimZAdjust)
 
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_SetAsMindControl)
+		.Process(this->ChangeOwner_MindControlAnim)
+
 		.Process(this->ApplyPerTargetEffectsOnDetonate)
 
 		.Process(this->Taunt)
+
+		.Process(this->Psychedelic_StackingMode)
+
+		.Process(this->PreventCrewEscape)
+		.Process(this->PreventPassengerEscape)
+		.Process(this->PreventOccupantEscape)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
@@ -719,24 +827,36 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EffectsRequireVerses)
 		.Process(this->Malicious)
 		.Process(this->Flash_Duration)
+		.Process(this->Damage_Deployed)
+		.Process(this->PreventScatter)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->InApplyCrit)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->Ammo)
+
+		.Process(this->IvanBomb_Detonate)
+		.Process(this->IvanBomb_Detonate_SameInvokerOnly)
+		.Process(this->IvanBomb_Detonate_PenetratesTransport)
+		.Process(this->IvanBomb_Detonate_PenetratesGarrison)
+		.Process(this->IvanBomb_Detonate_AffectsParasite)
+		.Process(this->IvanBomb_Detonate_AffectTypes)
 		;
 }
 
-void WarheadTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void WarheadTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<WarheadTypeClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void WarheadTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<WarheadTypeClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -774,31 +894,6 @@ DEFINE_HOOK(0x75E5C8, WarheadTypeClass_SDDTOR, 0x6)
 	GET(WarheadTypeClass*, pItem, ESI);
 
 	WarheadTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x75E2C0, WarheadTypeClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x75E0C0, WarheadTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(WarheadTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	WarheadTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x75E2AE, WarheadTypeClass_Load_Suffix, 0x7)
-{
-	WarheadTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x75E39C, WarheadTypeClass_Save_Suffix, 0x5)
-{
-	WarheadTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

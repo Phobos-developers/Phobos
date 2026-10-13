@@ -5,7 +5,7 @@ DEFINE_HOOK(0x47F71D, CellClass_DrawOverlay_ZAdjust, 0x5)
 	GET(const int, zAdjust, EDI);
 	GET_STACK(OverlayTypeClass*, pOverlayType, STACK_OFFSET(0x24, -0x14));
 
-	auto const pTypeExt = OverlayTypeExt::ExtMap.Find(pOverlayType);
+	auto const pTypeExt = OverlayTypeExt::Fetch(pOverlayType);
 
 	if (pTypeExt->ZAdjust != 0)
 		R->EDI(zAdjust - pTypeExt->ZAdjust);
@@ -32,7 +32,7 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
 
 	LightConvertClass* pConvert = nullptr;
-	auto const pTypeExt = OverlayTypeExt::ExtMap.Find(pOverlayType);
+	auto const pTypeExt = OverlayTypeExt::Fetch(pOverlayType);
 
 	if (pTypeExt->Palette)
 		pConvert = pTypeExt->Palette->Items[colorSchemeIndex]->LightConvert;

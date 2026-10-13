@@ -2,12 +2,6 @@
 
 #include <filesystem>
 
-#include <ScenarioClass.h>
-#include <SessionClass.h>
-#include <MessageListClass.h>
-#include <HouseClass.h>
-#include <GameOptionsClass.h>
-
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
