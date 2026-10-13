@@ -1490,22 +1490,22 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 }
 
 // Handle disabling deploy action & cursor for infantry.
-DEFINE_HOOK(0x700E2C, TechnoClass_CanShowDeployCursor_Infantry, 0x5)
+DEFINE_HOOK(0x700E25, TechnoClass_CanShowDeployCursor_Infantry, 0x7)
 {
-	enum { DoNotAllowDeploy = 0x700DCE };
+	enum { AllowDeploy = 0x700E2C, DoNotAllowDeploy = 0x700DCE };
 
 	GET(InfantryClass*, pThis, ESI);
 
-	if (!R->AL())
-		return 0;
-
-	if (!pThis->InAir && pThis->GetHeight() <= 0)
+	if (pThis->Type->Deployer)
 	{
-		if (!TechnoExt::CanDeployOnCell(pThis))
-			return DoNotAllowDeploy;
+		if (pThis->InAir || pThis->GetHeight() > 0 || TechnoExt::CanDeployOnCell(pThis))
+		{
+			R->AL(1);
+			return AllowDeploy;
+		}
 	}
 
-	return 0;
+	return DoNotAllowDeploy;
 }
 
 // Handle customized WarpAway
