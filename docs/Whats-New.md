@@ -2035,7 +2035,6 @@ HideShakeEffects=false           ; boolean
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
-- [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
@@ -2048,6 +2047,13 @@ HideShakeEffects=false           ; boolean
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [AttachEffect `CumulativeAnimations` count increment customization](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
+- [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
+- Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
+- [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
+- [New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-driver-killed-vehicles) (by FlyStar)
+- Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
+- Customize insignias palette (by Flactine & NetsuNegi)
+- Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
@@ -2058,6 +2064,12 @@ HideShakeEffects=false           ; boolean
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
+- [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
+- Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2076,6 +2088,9 @@ HideShakeEffects=false           ; boolean
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
+- [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
+- [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
 ```
 
 ### 0.5
@@ -2380,7 +2395,7 @@ HideShakeEffects=false           ; boolean
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
 - Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
 - Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
-- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
+- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi & Noble_Fish)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
@@ -2508,6 +2523,35 @@ HideShakeEffects=false           ; boolean
 ```
 
 ```{dropdown} Pre-release changes
+
+#### 0.5-alpha2
+
+##### Vanilla fixes:
+- Fixed units approaching target not taking weapon `MinimumRange` correctly into accord (by NetsuNegi)
+
+##### Phobos fixes:
+- Fixed an issue with `ApproachTarget.StopWhenInRange` (by NetsuNegi)
+- Units on `Unload` mission now ignore `ReadyToNextMission.MovingCheck` (by Ollerus)
+- Fixed an issue with WeaponType parsing from special global weapon keys (by Noble_Fish)
+- Fixed an issue causing upgrade animations on pre-placed buildings on maps to not play correctly (by CrimRecya & Ollerus)
+- Fixed `JumpjetSpeed` not updating after type conversion (by Noble_Fish)
+- Fixed `AIBiasSpawnCell` to only apply if more than one Construction Yard is owned (by Ollerus)
+- Fixed a bug in recalculating AttachEffect effects during transfer between technos (by Ollerus)
+- Fixed display of percentage-based superweapon timers for short recharge times (by NetsuNegi)
+- Fixed an issue with `TypeSelectUseIFVMode` not working correctly (by NetsuNegi)
+- Fixed a bug in building start facing logic with a variable not using a correct default value (by Noble_Fish)
+- Fixed `EnemyUIName` to work on units disguised as the enemy (by Ollerus)
+- Fixed fallback of order of damage source house in damage calculations (by Ollerus)
+- Fixed a bug in sync checks causing freezes in multiplayer games if `Next` was used to create loop between animation types (by NetsuNegi)
+- Reverted a previous, incorrectly working bugfix for AI trying to produce aircraft without free docks (by NetsuNegi)
+- Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
+- Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
+- Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
+
+##### Fixes / interactions with other extensions:
+- Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
+- Fixed an issue causing east-west facing laser fences to function incorrectly (by CrimRecya)
+- Fixed a bug caused by spotlights and transports interacting (by Noble_Fish)
 
 #### 0.5-alpha1
 
