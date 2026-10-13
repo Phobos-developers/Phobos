@@ -26,6 +26,7 @@ public:
 
 	Valueable<int> ArrayIndex;
 	Valueable<bool> Sidebar_GDIPositions;
+	Nullable<int> Sidebar_RadarOffsetFix;
 	Valueable<int> IngameScore_WinTheme;
 	Valueable<int> IngameScore_LoseTheme;
 	Valueable<Point2D> Sidebar_HarvesterCounter_Offset;
@@ -58,6 +59,7 @@ public:
 	SideExt(SideClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, ArrayIndex { -1 }
 		, Sidebar_GDIPositions { false }
+		, Sidebar_RadarOffsetFix { }
 		, IngameScore_WinTheme { -2 }
 		, IngameScore_LoseTheme { -2 }
 		, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
