@@ -584,6 +584,57 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 			return false;
 	}
 
+	const bool targetIsGround = (speed != SpeedType::Winged && mZone != MovementZone::Fly)
+		|| pType->DeployToLand || pTargetType->DeployToLand;
+
+	if (targetIsGround)
+	{
+		ObjectClass* pFirstObj = nullptr;
+		if (pCell->ContainsBridge())
+			pFirstObj = (pThis->IsInAir() || pThis->GetHeight() > 0 || pThis->OnBridge) ? pCell->AltObject : pCell->FirstObject;
+		else
+			pFirstObj = pCell->FirstObject;
+
+		int groundInfantryCount = 0;
+		for (auto pObj = pFirstObj; pObj; pObj = pObj->NextObject)
+		{
+			if (pObj == pThis)
+				continue;
+
+			// Objects flying overhead do not occupy ground space
+			if (pObj->IsInAir() || pObj->GetHeight() > 0)
+				continue;
+
+			// Any ground building blocks ground deployment
+			if (abstract_cast<BuildingClass*>(pObj))
+				return false;
+
+			// Any ground vehicle blocks ground deployment
+			if (abstract_cast<UnitClass*>(pObj))
+				return false;
+
+			// Any landed aircraft blocks ground deployment
+			if (abstract_cast<AircraftClass*>(pObj))
+				return false;
+
+			// Ground infantry
+			if (auto const pInfantry = abstract_cast<InfantryClass*>(pObj))
+			{
+				// Ground vehicles/buildings cannot share a cell with infantry
+				if (abstract_cast<UnitTypeClass*>(pTargetType) || abstract_cast<BuildingTypeClass*>(pTargetType))
+					return false;
+
+				// Enemy infantry cannot share cell
+				if (pInfantry->Owner && pThis->Owner && !pThis->Owner->IsAlliedWith(pInfantry->Owner))
+					return false;
+
+				groundInfantryCount++;
+				if (groundInfantryCount >= 5)
+					return false;
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -631,7 +682,7 @@ CellClass* TechnoExt::FindNearbyDeployCell(FootClass* pThis, CellClass* pCurrent
 		{
 			if (auto const pCandidate = MapClass::Instance.TryGetCellAt(targetCoord))
 			{
-				if (CanDeployOnCell(pThis, pCandidate))
+				if (pCandidate != pCurrentCell && CanDeployOnCell(pThis, pCandidate))
 					return pCandidate;
 			}
 		}
@@ -651,10 +702,7 @@ CellClass* TechnoExt::FindNearbyDeployCell(FootClass* pThis, CellClass* pCurrent
 				if (auto const pCandidate = MapClass::Instance.TryGetCellAt(candidateCoords))
 				{
 					if (CanDeployOnCell(pThis, pCandidate))
-					{
-						if (!pCandidate->GetContent() || pCandidate->GetContent() == pThis)
-							return pCandidate;
-					}
+						return pCandidate;
 				}
 			}
 		}

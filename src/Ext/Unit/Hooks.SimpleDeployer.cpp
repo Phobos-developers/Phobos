@@ -256,7 +256,7 @@ DEFINE_HOOK(0x54C57A, JumpjetLocomotionClass_Descending_CheckDeployTerrain, 0x6)
 
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis->LinkedTo);
 
-	if (pFoot && (pFoot->CurrentMission == Mission::Unload || pFoot->GetTechnoType()->DeployToLand))
+	if (pFoot && (pFoot->CurrentMission == Mission::Unload || pFoot->QueuedMission == Mission::Unload || pFoot->GetTechnoType()->DeployToLand))
 	{
 		if (TechnoExt::CanDeployOnCell(pFoot, pCell))
 			return ProceedToLanding;
