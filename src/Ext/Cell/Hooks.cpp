@@ -3,9 +3,9 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 
-DEFINE_HOOK(0x480EA8, CellClass_DamageWall_AdjacentWallDamage, 0x7)
+DEFINE_HOOK(0x480EA8, CellClass_DamageWall_AdjacentWallDamage, 0x5)
 {
-	enum{ SkipGameCode = 0x480EB4 };
+	enum { SkipGameCode = 0x480EB4 };
 	GET(CellClass*, pThis, EAX);
 	pThis->DamageWall(RulesExt::Global()->AdjacentWallDamage);
 	return SkipGameCode;
@@ -27,17 +27,21 @@ void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, void*, CoordStru
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->AltOccupation = alt;
 
+	const bool isAttached = TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis);
+
 	if (alt)
 	{
 		pCell->AltOccupationFlags |= 0x20;
 		// Phobos addition: set incoming unit tracker
-		pCellExt->IncomingUnitAlt = pThis;
+		if (!isAttached)
+			pCellExt->IncomingUnitAlt = pThis;
 	}
 	else
 	{
 		pCell->OccupationFlags |= 0x20;
 		// Phobos addition: set incoming unit tracker
-		pCellExt->IncomingUnit = pThis;
+		if (!isAttached)
+			pCellExt->IncomingUnit = pThis;
 	}
 }
 

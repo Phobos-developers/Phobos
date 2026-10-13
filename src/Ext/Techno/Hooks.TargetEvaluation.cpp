@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Interop/TechnoExt.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
@@ -8,7 +9,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
 	if (pExt->AutoTargetOwnPosition)
 	{
@@ -25,12 +26,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 
 static FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	const bool disableWeapons = pExt->AE.DisableWeapons;
-	pExt->AE.DisableWeapons = false;
-	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE.DisableWeapons = disableWeapons;
-	return fireError;
+	return TechnoExt::GetFireErrorIgnoreDisableWeapons(pThis, pTarget, weaponIndex, ignoreRange);
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x7098E6, TechnoClass_TargetSomethingNearby_CanFire_Wrapper);
@@ -48,10 +44,50 @@ DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	auto const pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 	MapZoneTemp::zoneScanType = pTypeExt->TargetZoneScanType;
 
 	return 0;
+}
+
+static bool IsCloakedAndUndetected(TechnoClass* pTarget, HouseClass* pAttackerHouse)
+{
+	if (!pTarget || !pAttackerHouse)
+		return false;
+
+	if (pTarget->Owner == pAttackerHouse || pTarget->Owner->IsAlliedWith(pAttackerHouse))
+		return false;
+
+	bool isCloaked = pTarget->CloakState == CloakState::Cloaked || pTarget->CloakState == CloakState::Cloaking;
+
+	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Parent)
+		{
+			auto const pParent = pAttachment->Parent;
+			if (pParent->CloakState == CloakState::Cloaked || pParent->CloakState == CloakState::Cloaking)
+				isCloaked = true;
+		}
+	}
+
+	if (!isCloaked)
+		return false;
+
+	auto const pCell = pTarget->GetCell();
+	if (pCell && pCell->Sensors_InclHouse(pAttackerHouse->ArrayIndex))
+		return false;
+
+	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	{
+		if (pAttachment->Parent)
+		{
+			auto const pParentCell = pAttachment->Parent->GetCell();
+			if (pParentCell && pParentCell->Sensors_InclHouse(pAttackerHouse->ArrayIndex))
+				return false;
+		}
+	}
+
+	return true;
 }
 
 DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
@@ -64,6 +100,18 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		if (pThis == pTechno || TechnoExt::AreRelatives(pThis, pTechno))
+			return DisallowedObject;
+
+		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechno)->ParentAttachment)
+		{
+			if (!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable)
+				return DisallowedObject;
+		}
+
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return DisallowedObject;
+
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
 	}
@@ -184,7 +232,7 @@ DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
 {
 	GET(FootClass* const, pThis, ECX);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget)
 		&& CheckAttackMoveCanResetTarget(pThis))
@@ -211,7 +259,7 @@ DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
 	if (!pThis->MegaMissionIsAttackMove())
 		return ContinueCheck;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::Fetch(pThis);
 
 	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
 }
@@ -242,7 +290,7 @@ static double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 
 	if (result >= 1.0)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		const auto pExt = TechnoExt::Fetch(pTechno);
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -281,7 +329,7 @@ public:
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
-			const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+			const auto pExt = TechnoExt::Fetch(pTechno);
 
 			if (const auto pShieldData = pExt->Shield.get())
 			{
@@ -343,6 +391,12 @@ private:
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return FireError::ILLEGAL;
+	}
+
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->UnitClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
@@ -352,6 +406,12 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F6030, UnitClass__GetFireError_Wrapper)
 
 static FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (IsCloakedAndUndetected(pTechno, pThis->Owner))
+			return FireError::ILLEGAL;
+	}
+
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
 	auto const result = pThis->InfantryClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
@@ -364,6 +424,36 @@ static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _
 	AresScheme::Prefix(pThis, pObj, -1, false);
 	auto result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
+
+	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+		else if (result == Action::Attack || result == Action::AreaAttack)
+		{
+			if (!ignoreForce && IsCloakedAndUndetected(pTechnoObj, pThis->Owner))
+			{
+				result = Action::None;
+			}
+			else if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			{
+				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
+				{
+					auto const pTargetParent = TechnoExt::GetFirstDamageableParent(pTechnoObj);
+					auto const pRedirect = pTargetParent ? pTargetParent : pAttachment->Parent;
+
+					AresScheme::Prefix(pThis, pRedirect, -1, false);
+					result = pThis->UnitClass::MouseOverObject(pRedirect, ignoreForce);
+					AresScheme::Suffix();
+				}
+			}
+		}
+	}
 
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt->ParentAttachment)
@@ -400,11 +490,179 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
-	auto const result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
+	auto result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
+
+	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+		else if (result == Action::Attack || result == Action::AreaAttack)
+		{
+			if (!ignoreForce && IsCloakedAndUndetected(pTechnoObj, pThis->Owner))
+			{
+				result = Action::None;
+			}
+			else if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechnoObj)->ParentAttachment)
+			{
+				if ((!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable) && pAttachment->Parent)
+				{
+					auto const pTargetParent = TechnoExt::GetFirstDamageableParent(pTechnoObj);
+					auto const pRedirect = pTargetParent ? pTargetParent : pAttachment->Parent;
+
+					AresScheme::Prefix(pThis, pRedirect, -1, pThis->Type->Engineer);
+					result = pThis->InfantryClass::MouseOverObject(pRedirect, ignoreForce);
+					AresScheme::Suffix();
+				}
+			}
+		}
+	}
 
 	return result;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
+
+#pragma endregion
+
+#pragma region ThreatEvaluation
+
+// Current target may hurt me.
+static inline bool IsAThreatToMe(TechnoClass* const pTechno, AbstractClass* const pTarget, int weaponIndex = -1)
+{
+	if (const auto pTechnoTarget = abstract_cast<TechnoClass*>(pTarget))
+	{
+		const auto pTypeExt = TechnoExt::Fetch(pTechnoTarget)->TypeExtData;
+
+		if (pTypeExt->AlwaysConsideredThreat)
+			return true;
+
+		if (weaponIndex < 0)
+			weaponIndex = pTechnoTarget->SelectWeapon(pTechno);
+
+		if (!pTechnoTarget->GetWeapon(weaponIndex)->WeaponType)
+			return false;
+
+		const auto error = pTechnoTarget->GetFireError(pTechno, weaponIndex, true);
+		return pTechnoTarget->WhatAmI() == AbstractType::Building ? (error != FireError::ILLEGAL) && (error != FireError::RANGE) : (error != FireError::ILLEGAL);
+	}
+
+	return false;
+}
+
+// Decide the facing to check for firing.
+static inline FacingClass* GetFireFacing(TechnoClass* const pTechno)
+{
+	if (!pTechno)
+		return nullptr;
+
+	switch (pTechno->WhatAmI())
+	{
+		case AbstractType::Building:
+			return &pTechno->PrimaryFacing;
+		case AbstractType::Unit:
+		{
+			if (pTechno->GetTechnoType()->Turret)
+				return &pTechno->SecondaryFacing;
+			else
+				return &pTechno->PrimaryFacing;
+		}
+		case AbstractType::Infantry:
+			return nullptr;
+		case AbstractType::Aircraft:
+			return &pTechno->SecondaryFacing;
+		default:
+			return nullptr;
+	}
+}
+
+DEFINE_HOOK(0x70CF87, TechnoClass_ThreatCoefficient_CanAttackMeThreatBonus, 0x9)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTarget, ESI);
+	REF_STACK(double, totalThreat, STACK_OFFSET(0x58, -0x48));
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (!pTypeExt->ExtraThreat_Enabled)
+		return 0;
+
+	auto ApplyIsThreatBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus = pTypeExt->ExtraThreat_IsThreat.Get(RulesExt::Global()->ExtraThreat_IsThreat);
+
+			if (bonus == 0.0)
+				return;
+
+			if (!IsAThreatToMe(pThis, pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyIsThreatBonus();
+
+	auto ApplyInRangeBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus1 = pTypeExt->ExtraThreat_InRange.Get(RulesExt::Global()->ExtraThreat_InRange);
+			const double dist = pThis->DistanceFrom(pTarget) / 256.0;
+			const double bonus2 = dist * pTypeExt->ExtraThreatCoefficient_InRangeDistance.Get(RulesExt::Global()->ExtraThreatCoefficient_InRangeDistance);
+			const double bonus = bonus1 + bonus2;
+
+			if (bonus == 0.0)
+				return;
+
+			if (!pThis->IsCloseEnoughToAttack(pTarget))
+				return;
+
+			totalThreat += bonus;
+		};
+	ApplyInRangeBonus();
+
+	auto ApplyFacingBonus = [pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const auto pFacing = GetFireFacing(pThis);
+
+			if (!pFacing)
+				return;
+
+			const double bonus = pTypeExt->ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing);
+
+			if (bonus == 0.0)
+				return;
+
+			DirStruct dir = DirStruct();
+			const int deltaFacing = 32768 - std::abs(std::abs(pThis->GetTargetDirection(&dir, pTarget)->Raw - pFacing->Current().Raw) - 32768);
+			totalThreat += deltaFacing * bonus;
+		};
+	ApplyFacingBonus();
+
+	auto ApplyLastTargetDistanceBonus = [pExt, pTypeExt, pThis, pTarget, &totalThreat]()
+		{
+			const double bonus = pTypeExt->ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget);
+
+			if (bonus == 0.0)
+				return;
+
+			if (pExt->LastTargetCrd == CoordStruct::Empty)
+				return;
+
+			const double distToLastTarget = pTarget->GetCoords().DistanceFrom(pExt->LastTargetCrd) / 256.0;
+			totalThreat += distToLastTarget * bonus;
+		};
+	ApplyLastTargetDistanceBonus();
+
+	for (auto const& cb : TechnoExtInterop::CalculateExtraThreatCallbacks)
+	{
+		totalThreat = cb(pThis, pTarget, totalThreat);
+	}
+
+	return 0;
+}
+
 
 #pragma endregion

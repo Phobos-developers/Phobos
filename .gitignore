@@ -8,6 +8,7 @@ Debug
 .cproject
 .project
 *.aps
+*.log
 
 Nightly/
 
@@ -27,3 +28,7 @@ out
 
 # Python virtual environment for docs
 .venv/
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]

@@ -90,7 +90,7 @@ void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 	if (pCoords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
 	{
-		BulletExt::ExtMap.Find(pBullet)->SnappedToTarget = true;
+		BulletExt::Fetch(pBullet)->SnappedToTarget = true;
 		pBullet->SetLocation(pCoords);
 	}
 }

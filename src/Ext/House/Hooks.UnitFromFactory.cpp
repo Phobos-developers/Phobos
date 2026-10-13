@@ -15,7 +15,7 @@ DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 	GET(TechnoClass* const, pThisTechno, ESI);
 	GET(FactoryClass* const, pThisFactory, EBX);
 
-	auto const pThisTechnoType = TechnoExt::ExtMap.Find(pThisTechno)->TypeExtData;
+	auto const pThisTechnoType = TechnoExt::Fetch(pThisTechno)->TypeExtData;
 	if (pThisTechno->Owner->IsControlledByCurrentPlayer() && pThisTechnoType->VoiceCreated.isset())
 	{
 		if (RulesExt::Global()->IsVoiceCreatedGlobal.Get())

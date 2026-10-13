@@ -14,14 +14,18 @@ public:
 	Valueable<bool> InheritCommands;
 	Valueable<bool> InheritCommands_StopCommand;
 	Valueable<bool> InheritCommands_DeployCommand;
+	Valueable<bool> InheritTarget;
 	Valueable<bool> InheritOwner; // aka mind control inheritance
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
 	Valueable<bool> InheritDestruction;
 	Valueable<bool> InheritHeightStatus;
+	Valueable<bool> InheritTilt;
 	Valueable<bool> OccupiesCell;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> PassSelection;
 	Valueable<bool> TransparentToMouse;
+	Valueable<bool> Targetable;
+	Valueable<bool> Damageable;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Parent;
@@ -34,14 +38,18 @@ public:
 		, InheritCommands { true }
 		, InheritCommands_StopCommand { true }
 		, InheritCommands_DeployCommand { true }
+		, InheritTarget { true }
 		, InheritOwner { true }
 		, InheritStateEffects { true }
 		, OccupiesCell { true }
 		, InheritDestruction { true }
 		, InheritHeightStatus { true }
+		, InheritTilt { true }
 		, LowSelectionPriority { true }
 		, PassSelection { true }
 		, TransparentToMouse { false }
+		, Targetable { true }
+		, Damageable { true }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		, DestructionWeapon_Child { }
 		, DestructionWeapon_Parent { }

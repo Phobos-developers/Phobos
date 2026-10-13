@@ -8,6 +8,8 @@
 
 enum class PhobosScripts : unsigned int
 {
+	PlaySpeech = 24,
+
 	// Range 10000-10999 are team (aka ingame) actions
 	// Sub-range 10000-10049 is for "attack" actions
 	RepeatAttackCloser = 10000,
@@ -146,31 +148,39 @@ enum class PhobosScripts : unsigned int
 	// Range 19000-19999 are miscellanous/uncategorized actions
 };
 
-class ScriptExt
+class ScriptExt final : public AbstractExt
 {
 public:
 	using base_type = ScriptClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = ScriptExt;
+
 	static constexpr DWORD Canary = 0x3B3B3B3B;
 
-	class ExtData final : public Extension<ScriptClass>
+public:
+	// typed owner accessor
+	ScriptClass* OwnerObject() const
 	{
-	public:
+		return static_cast<ScriptClass*>(this->GetAttachedObject());
+	}
+
+	// Nothing yet
+
+	ScriptExt(ScriptClass* OwnerObject) : AbstractExt(OwnerObject)
 		// Nothing yet
+	{ }
 
-		ExtData(ScriptClass* OwnerObject) : Extension<ScriptClass>(OwnerObject)
-			// Nothing yet
-		{ }
+	virtual ~ScriptExt() = default;
 
-		virtual ~ExtData() = default;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-
-	};
-
+public:
 	class ExtContainer final : public Container<ScriptExt>
 	{
 	public:
@@ -179,6 +189,16 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static ScriptExt* Fetch(const ScriptClass* pThis)
+	{
+		return AbstractExt::Fetch<ScriptExt>(pThis);
+	}
+
+	static ScriptExt* TryFetch(const ScriptClass* pThis)
+	{
+		return AbstractExt::TryFetch<ScriptExt>(pThis);
+	}
 
 	static void ProcessAction(TeamClass* pTeam);
 	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
@@ -210,6 +230,7 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
+	static void PlaySpeech(TeamClass* pTeam);
 
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, int calcThreatMode = 0, bool repeatAction = true, int attackAITargetType = -1, int idxAITargetTypeItem = -1);
@@ -232,3 +253,4 @@ private:
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0);
 	static void ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget);
 };
+

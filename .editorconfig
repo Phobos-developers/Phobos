@@ -14,6 +14,10 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.rc]
+# rc.exe assumes the system ANSI codepage without a BOM, which would mangle non-ASCII strings like the copyright symbol.
+charset = utf-8-bom
+
 [.gitattributes]
 charset = utf-8
 end_of_line = unset
