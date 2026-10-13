@@ -77,6 +77,7 @@ public:
 	Valueable<double> Crit_AffectsBelowPercent;
 	Valueable<double> Crit_AffectsAbovePercent;
 	Nullable<bool> Crit_SuppressWhenIntercepted;
+	bool CanCrit;
 
 	Valueable<WarheadTypeClass*> ReturnWarhead;
 	Valueable<int> ReturnWarhead_Damage;
@@ -158,7 +159,7 @@ public:
 	ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 	ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-	std::vector<TypeConvertGroup> Convert_Pairs;
+	TypeConvertGroupList Convert_Pairs;
 	AEAttachInfoTypeClass AttachEffects;
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	Valueable<bool> InflictLocomotor;
@@ -363,6 +364,7 @@ public:
 		, Crit_AffectsBelowPercent { 1.0 }
 		, Crit_AffectsAbovePercent { 0.0 }
 		, Crit_SuppressWhenIntercepted {}
+		, CanCrit { false }
 
 		, ReturnWarhead {}
 		, ReturnWarhead_Damage { 0 }
@@ -617,6 +619,7 @@ public:
 	void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt* pBulletExt, bool bulletWasIntercepted = false, int distance = -1);
 	void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 	DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
+	double GetCritChance(TechnoClass* pFirer) const;
 private:
 	void ApplyRemoveDisguise(TechnoClass* pTarget);
 	HouseClass* ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
@@ -627,7 +630,6 @@ private:
 	void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 	void ApplyReturnWarhead(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 	void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage, int distance);
-	double GetCritChance(TechnoClass* pFirer) const;
 	void ApplyAmmoModifier(TechnoClass* pTarget);
 	void IvanBombDetonate(TechnoClass* pOwner, TechnoClass* pTarget);
 

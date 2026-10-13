@@ -181,7 +181,7 @@ static void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThi
 					}
 				}
 
-				if (nCurIdx > 0 && pOwner->IsAlive && pOwner->Health > 0 && !pOwner->InLimbo)
+				if (nCurIdx > 0 && pOwner->IsAlive && pOwner->Health > 0 && !pOwner->InLimbo && !pOwner->IsSinking)
 				{
 					double const nBase = (nCurIdx != 1) ? 0.015 : 0.03;
 					double const nCopied_base = (ScenarioClass::Instance->Random.RandomRanged(0, 100) < 50) ? -nBase : nBase;
