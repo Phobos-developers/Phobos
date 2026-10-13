@@ -140,7 +140,7 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 		}
 		else if (!pThis->InAir)
 		{
-			if (CheckRestrictions(pThis, true))
+			if (CheckRestrictions(pThis, true) || !TechnoExt::CanDeployOnCell(pThis))
 				return ReturnFromFunction;
 
 			if (HasDeployingAnim(pType))
@@ -247,16 +247,36 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
+DEFINE_HOOK(0x54C57A, JumpjetLocomotionClass_Descending_CheckDeployTerrain, 0x6)
 {
-	enum { SkipGameCode = 0x54C65F };
+	enum { ProceedToLanding = 0x54C65F, AbortDescent = 0x54CA46 };
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
+	GET(CellClass*, pCell, EDI);
 
-	auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo);
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis->LinkedTo);
 
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
-		return SkipGameCode;
+	if (pFoot && pFoot->CurrentMission == Mission::Unload)
+	{
+		if (TechnoExt::CanDeployOnCell(pFoot, pCell))
+			return ProceedToLanding;
+
+		if (auto const pTargetCell = TechnoExt::FindNearbyDeployCell(pFoot, pCell))
+		{
+			pThis->Move_To(pTargetCell->GetCoords());
+			pThis->State = JumpjetLocomotionClass::State::Cruising;
+			pFoot->SetDestination(pTargetCell, true);
+			R->EAX(1);
+			return AbortDescent;
+		}
+
+		pThis->Stop_Moving();
+		pThis->State = JumpjetLocomotionClass::State::Hovering;
+		pFoot->SetDestination(nullptr, true);
+		pFoot->QueueMission(Mission::Guard, true);
+		R->EAX(0);
+		return AbortDescent;
+	}
 
 	return 0;
 }

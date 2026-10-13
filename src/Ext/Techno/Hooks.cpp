@@ -1457,7 +1457,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 }
 
 // Handle disabling deploy action & cursor for vehicles and aircraft.
-// Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
+// Possible hook locations for other types in same function: Building: 0x700E3F
 DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 {
 	enum { DoNotAllowDeploy = 0x700DCE };
@@ -1474,8 +1474,34 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 		if (!UnitExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
+		// Ground terrain compatibility.
+		if (!pThis->InAir && pThis->GetHeight() <= 0)
+		{
+			if (!TechnoExt::CanDeployOnCell(pUnit))
+				return DoNotAllowDeploy;
+		}
+
 		// IsSimpleDeployer and type conversion
 		if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
+			return DoNotAllowDeploy;
+	}
+
+	return 0;
+}
+
+// Handle disabling deploy action & cursor for infantry.
+DEFINE_HOOK(0x700E2C, TechnoClass_CanShowDeployCursor_Infantry, 0x5)
+{
+	enum { DoNotAllowDeploy = 0x700DCE };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (!R->AL())
+		return 0;
+
+	if (!pThis->InAir && pThis->GetHeight() <= 0)
+	{
+		if (!TechnoExt::CanDeployOnCell(pThis))
 			return DoNotAllowDeploy;
 	}
 
