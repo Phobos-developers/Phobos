@@ -629,7 +629,8 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 					return false;
 
 				groundInfantryCount++;
-				if (groundInfantryCount >= 5)
+				// In RA2, only 4 subcell positions are valid (Top / 0x2 was abandoned from Tiberian Sun)
+				if (groundInfantryCount >= 4)
 					return false;
 			}
 		}
