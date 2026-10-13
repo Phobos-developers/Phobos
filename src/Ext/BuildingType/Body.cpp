@@ -181,6 +181,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
+	char tempBuffer[0x20];
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -296,7 +297,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (int i = 0; i < pThis->NumberOfDocks; ++i)
 		{
-			char tempBuffer[32];
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "AircraftDockingDir%d", i);
 			nLandingDir.Read(exINI, pSection, tempBuffer);
 
@@ -334,6 +334,24 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
 	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
 
+	this->Academy_Infantry_Veterancy.Read(exINI, pSection, "Academy.InfantryVeterancy");
+	this->Academy_Vehicle_Veterancy.Read(exINI, pSection, "Academy.VehicleVeterancy");
+	this->Academy_Aircraft_Veterancy.Read(exINI, pSection, "Academy.AircraftVeterancy");
+	this->Academy_Building_Veterancy.Read(exINI, pSection, "Academy.BuildingVeterancy");
+	this->Academy = Academy_Infantry_Veterancy > 0.0
+					|| Academy_Vehicle_Veterancy > 0.0
+					|| Academy_Aircraft_Veterancy > 0.0
+					|| Academy_Building_Veterancy > 0.0;
+
+	for (size_t idx = 0; idx < std::min(std::size(this->Academy_Country_Types), std::size(this->Academy_Country_Ignore)); ++idx)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Academy.Country.Types.%d", idx);
+		this->Academy_Country_Types[idx].Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Academy.Country.Ignore.%d", idx);
+		this->Academy_Country_Ignore[idx].Read(exINI, pSection, tempBuffer);
+	}
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -346,7 +364,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->MaxNumberOccupants > 10)
 	{
-		char tempBuffer[32];
 		this->OccupierMuzzleFlashes.clear();
 		this->OccupierMuzzleFlashes.resize(pThis->MaxNumberOccupants);
 
@@ -496,6 +513,13 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->RoofProductionAnimPoweredLight)
 		.Process(this->RoofProductionAnimPoweredEffect)
 		.Process(this->RoofProductionAnimPoweredSpecial)
+		.Process(this->Academy)
+		.Process(this->Academy_Infantry_Veterancy)
+		.Process(this->Academy_Vehicle_Veterancy)
+		.Process(this->Academy_Aircraft_Veterancy)
+		.Process(this->Academy_Building_Veterancy)
+		.Process(this->Academy_Country_Types)
+		.Process(this->Academy_Country_Ignore)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
