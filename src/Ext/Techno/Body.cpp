@@ -535,14 +535,21 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 	const bool onBridge = pCell->ContainsBridge();
 	const bool supportsWater = pTargetType->Naval || (pTargetType->MovementZone == MovementZone::Water) || (pTargetType->SpeedType == SpeedType::Float);
 
+	auto const speed = pTargetType->SpeedType;
+	auto const mZone = pTargetType->MovementZone;
+
+	if (isWaterCell && !supportsWater && !onBridge)
+	{
+		const bool isFlyingNoLand = (speed == SpeedType::Winged || mZone == MovementZone::Fly) && !pType->DeployToLand;
+		if (!isFlyingNoLand)
+			return false;
+	}
+
 	if (supportsWater && !isWaterCell && pCell->LandType != LandType::Beach)
 	{
 		if (pTargetType->MovementZone == MovementZone::Water || pTargetType->SpeedType == SpeedType::Float)
 			return false;
 	}
-
-	auto const speed = pTargetType->SpeedType;
-	auto const mZone = pTargetType->MovementZone;
 
 	if (speed == SpeedType::Winged || mZone == MovementZone::Fly)
 	{
@@ -558,11 +565,6 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 	else if (speed != SpeedType::None && mZone != MovementZone::None)
 	{
 		if (!pCell->IsClearToMove(speed, true, true, -1, mZone, -1, onBridge))
-			return false;
-	}
-	else
-	{
-		if (isWaterCell && !supportsWater && !onBridge)
 			return false;
 	}
 

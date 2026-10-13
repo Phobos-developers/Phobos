@@ -1475,11 +1475,8 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 			return DoNotAllowDeploy;
 
 		// Ground terrain compatibility.
-		if (!pThis->InAir && pThis->GetHeight() <= 0)
-		{
-			if (!TechnoExt::CanDeployOnCell(pUnit))
-				return DoNotAllowDeploy;
-		}
+		if (!TechnoExt::CanDeployOnCell(pUnit))
+			return DoNotAllowDeploy;
 
 		// IsSimpleDeployer and type conversion
 		if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
@@ -1498,7 +1495,7 @@ DEFINE_HOOK(0x700E25, TechnoClass_CanShowDeployCursor_Infantry, 0x7)
 
 	if (pThis->Type->Deployer)
 	{
-		if (pThis->InAir || pThis->GetHeight() > 0 || TechnoExt::CanDeployOnCell(pThis))
+		if (TechnoExt::CanDeployOnCell(pThis))
 		{
 			R->AL(1);
 			return AllowDeploy;
