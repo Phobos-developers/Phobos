@@ -521,10 +521,11 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 {
 	enum { SkipGameCode = 0x72900C };
 
-	GET(TechnoClass*, pLinkedTo, ECX);
+	GET(ILocomotion*, pThis, ESI);
 	GET(const int, heightOffset, EAX);
 	REF_STACK(int, height, 0x14);
 
+	auto const pLinkedTo = static_cast<TunnelLocomotionClass*>(pThis)->LinkedTo;
 	auto const pTypeExt = TechnoExt::Fetch(pLinkedTo)->TypeExtData;
 	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
