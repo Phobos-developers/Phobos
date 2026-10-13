@@ -109,7 +109,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
-	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
+	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->IsBeingWarpedOut() || pBuilding->TemporalTargetingMe)
 		return 0;
 
 	if (RulesExt::Global()->UseGlobalRadApplicationDelay)

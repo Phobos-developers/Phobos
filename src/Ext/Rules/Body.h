@@ -203,6 +203,7 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<int> UnitCrateVehicleCap;
+		Valueable<bool> HealBaseNoScatter;
 		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
@@ -309,6 +310,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
+		Valueable<bool> UseSidebarRadarOffsetFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -452,6 +454,7 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 		Valueable<int> LeptonMindControlOffset;
 		Valueable<int> MindControlRingOffset;
+		Valueable<bool> Anim_ShouldUseCellDrawer;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
 
@@ -750,6 +753,7 @@ public:
 			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
+			, HealBaseNoScatter { true }
 			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
@@ -852,6 +856,7 @@ public:
 			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
+			, UseSidebarRadarOffsetFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -971,6 +976,7 @@ public:
 			, DefaultToGuardArea { false }
 			, LeptonMindControlOffset { 70 }
 			, MindControlRingOffset { 140 }
+			, Anim_ShouldUseCellDrawer { true }
 
 			, CylinderRangefinding { false }
 

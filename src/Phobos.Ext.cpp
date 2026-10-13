@@ -30,6 +30,7 @@
 
 #include <New/Entity/BannerClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
+#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/Detach.h>
 
@@ -329,7 +330,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	AttachEffectTypeClass,
 	AttachEffectClass,
 	NewSWType,
-	SelectBoxTypeClass
+	SelectBoxTypeClass,
+	InsigniaTypeClass
 	// other classes
 > ;
 

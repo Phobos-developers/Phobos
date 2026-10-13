@@ -89,6 +89,8 @@ public:
 
 	bool PreventCrewEscape;
 
+	double OriginVeterancy;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -139,6 +141,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, OriginVeterancy { 0.0 }
 	{ }
 
 	void OnEarlyUpdate();
@@ -275,6 +278,9 @@ public:
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
 
+	static bool DriverKilled(TechnoClass* pThis);
+	static Mission DriverKilledMission(TechnoClass* pThis, Mission mission);
+
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
@@ -288,7 +294,7 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH, HouseClass* pSourceHouse);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool TryToCreateCrate(CoordStruct location, Powerup selectedPowerup = Powerup::Money, int maxCellRange = 10);
-	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
+	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType, const bool ignoreNeverUse = false);
 	static bool HasWeaponsDisabled(TechnoClass* pThis);
 	static FireError GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange);
 };
