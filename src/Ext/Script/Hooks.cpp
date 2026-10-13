@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Utilities/Helpers.Alex.h>
 
 #include <MapClass.h>
 #include <ThemeClass.h>
@@ -155,24 +156,34 @@ DEFINE_HOOK(0x6F02AD, TMission_ChronoShiftToTarget_SWIndex, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
+#pragma warning(push)
+#pragma warning(disable: 6031)
+#pragma warning(disable: 6054)
+DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
 {
-	enum { SkipCode = 0x723CD2 };
+	enum { SkipGameCode = 0x723CD3 };
+
+	GET_STACK(char*, scriptActionLine, 0x4);
+
+	if (!scriptActionLine)
+	{
+		R->EAX(0);
+		return SkipGameCode;
+	}
 
 	GET(ScriptActionNode*, node, ECX);
-	GET_STACK(char*, scriptActionLine, 0x8);
 
 	int action = 0;
 	int argument = 0;
-	char* endptr;
+	char* endptr = nullptr;
 
 	if (sscanf(scriptActionLine, "%d,%[^\n]", &action, Phobos::readBuffer) != 2)
 	{
 		node->Action = action;
 		node->Argument = argument;
-		R->ECX(node);
+		R->EAX(node->Action);
 
-		return SkipCode;
+		return SkipGameCode;
 	}
 
 	long val = strtol(Phobos::readBuffer, &endptr, 10);
@@ -187,7 +198,6 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 		// New strings case
 		char textArgument[sizeof(Phobos::readBuffer)] = { 0 };
 
-		action = action;
 		strcpy_s(textArgument, Phobos::readBuffer);
 
 		char* pArg = textArgument;
@@ -215,7 +225,7 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 			index = HouseTypeClass::FindIndexOfName(pArg);
 
 			if (index < 0)
-				ScriptExt::Log("AI Scripts - TeamMissionClass_FillIn_StringsSupport: Invalid Country string [%s]\n", pArg);
+				ScriptExt::Log("AI Scripts - ScriptActionNode_Read: Invalid Country string [%s]\n", pArg);
 			break;
 		case PhobosScripts::PlaySpeechByID:
 			action = static_cast<int>(PhobosScripts::PlaySpeech);
@@ -301,7 +311,8 @@ DEFINE_HOOK(0x723CA1, TeamMissionClass_FillIn_StringsSupport_and_id_masks, 0xB)
 
 	node->Action = action;
 	node->Argument = argument;
-	R->ECX(node);
+	R->EAX(node->Action);
 
-	return SkipCode;
+	return SkipGameCode;
 }
+#pragma warning(pop)
