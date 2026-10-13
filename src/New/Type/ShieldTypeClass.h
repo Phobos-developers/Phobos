@@ -1,5 +1,6 @@
 #pragma once
 
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include <Ext/Rules/Body.h>
@@ -60,9 +61,7 @@ public:
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
@@ -115,19 +114,12 @@ public:
 		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 	{ };
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
-
-	bool HasTint() const
-	{
-		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
-	}
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
 	{
