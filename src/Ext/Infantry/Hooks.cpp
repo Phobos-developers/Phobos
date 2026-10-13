@@ -189,6 +189,31 @@ DEFINE_HOOK(0x51ECC0, InfantryClass_WhatAction_ObjectClass_IsAreaFire, 0xA)
 	return deployWeapon && deployWeapon->AreaFire ? IsAreaFire : NotAreaFire;
 }
 
+DEFINE_HOOK(0x51ECEC, InfantryClass_MouseOverObject_DeployerCursor, 0x6)
+{
+	enum { Continue = 0x51ED10 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (pThis->Type->Deployer)
+	{
+		const bool canDeploy = pThis->IsDeployed() ?
+			TechnoExt::CanUndeployOnCell(pThis) :
+			TechnoExt::CanDeployOnCell(pThis);
+
+		if (canDeploy)
+			R->EBP(Action::Self_Deploy);
+		else
+			R->EBP(Action::NoDeploy);
+	}
+	else
+	{
+		R->EBP(Action::None);
+	}
+
+	return Continue;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x7093F8, TechnoClass_709290_DeployWeapon, 0x5)
