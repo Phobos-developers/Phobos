@@ -78,43 +78,57 @@ namespace
 		{
 			pRamp->Tiberium = true;
 
-			if (!pRamp->Image && ScenarioClass::Instance)
+			if (!pRamp->Image)
 			{
-				const auto theater = ScenarioClass::Instance->Theater;
-				const auto& ext = Theater::GetTheater(theater).Extension;
-
 				std::vector<const char*> candidateNames;
+
 				if (pRamp->ImageFile && pRamp->ImageFile[0])
 					candidateNames.push_back(pRamp->ImageFile);
 
 				if (pRamp->ID && pRamp->ID[0] && (!pRamp->ImageFile || _stricmp(pRamp->ID, pRamp->ImageFile) != 0))
 					candidateNames.push_back(pRamp->ID);
 
-				for (const auto name : candidateNames)
+				// Attempt demand-loading the shape asset from an aliased overlay definition if present.
+				for (const auto pName : candidateNames)
 				{
-					if (auto const pOther = OverlayTypeClass::Find(name))
+					if (const auto pOther = OverlayTypeClass::Find(pName))
 					{
 						pOther->Tiberium = true;
-						if (pOther->Image)
+
+						if (const auto pImage = pOther->GetImage())
 						{
-							pRamp->Image = pOther->Image;
+							pRamp->Image = pImage;
 							pRamp->ImageLoaded = true;
+							pRamp->Theater = pOther->Theater;
 							break;
 						}
 					}
 				}
 
+				// Enable theater resolution and image loaded flags on the ramp overlay to allow native demand-loading.
 				if (!pRamp->Image)
 				{
-					for (const auto name : candidateNames)
+					pRamp->Theater = true;
+					pRamp->ImageLoaded = true;
+
+					pRamp->GetImage();
+				}
+
+				// Fallback to direct shape loading using the active scenario theater extension.
+				if (!pRamp->Image && ScenarioClass::Instance)
+				{
+					const auto theater = ScenarioClass::Instance->Theater;
+					const auto& ext = Theater::GetTheater(theater).Extension;
+
+					for (const auto pName : candidateNames)
 					{
 						char filename[64];
-						sprintf_s(filename, "%s.%s", name, ext);
+						sprintf_s(filename, "%s.%s", pName, ext);
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
 
-						sprintf_s(filename, "%s.shp", name);
+						sprintf_s(filename, "%s.shp", pName);
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
@@ -535,7 +549,7 @@ DEFINE_HOOK(0x487228, CellClass_IncreaseTiberium_RampOverlayType, 0x9)
 
 	const int variation = R->EAX();
 	const int slopeOffset = (static_cast<int>(pThis->SlopeIndex) - 1) * 2 + variation;
-	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+	const auto pRampType = GetRampOverlay(pTib, slopeOffset);
 
 	if (pRampType)
 	{
@@ -615,7 +629,8 @@ DEFINE_HOOK(0x47F8B7, CellClass_DrawOverlay_RampOverlayType, 0x6)
 	GET(TiberiumClass*, pTib, EAX);
 	GET(int, slopeOffset, EDX);
 
-	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+	const auto pRampType = GetRampOverlay(pTib, slopeOffset);
+
 	if (!pRampType || !pRampType->GetImage())
 	{
 		R->EBX(pTib);
@@ -649,7 +664,8 @@ DEFINE_HOOK(0x47FC20, CellClass_GetOverlayRect_RampOverlayType, 0x6)
 	GET(TiberiumClass*, pTib, EDI);
 	GET(int, slopeOffset, EDX);
 
-	auto const pRampType = GetRampOverlay(pTib, slopeOffset);
+	const auto pRampType = GetRampOverlay(pTib, slopeOffset);
+
 	if (!pRampType || !pRampType->GetImage())
 		return JumpToFlat;
 
@@ -658,16 +674,16 @@ DEFINE_HOOK(0x47FC20, CellClass_GetOverlayRect_RampOverlayType, 0x6)
 	return JumpToCall;
 }
 
-DEFINE_HOOK(0x5FDD28, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
+DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 {
 	enum { FoundTiberium = 0x5FDDCF, DefaultCheck = 0x0 };
 
 	GET(int, overlayTypeIndex, ECX);
 
-	if (overlayTypeIndex != -1)
-	{
-		const auto pOverlay = OverlayTypeClass::Array.GetItemOrDefault(overlayTypeIndex);
+	const auto pOverlay = OverlayTypeClass::Array.GetItemOrDefault(overlayTypeIndex);
 
+	if (pOverlay)
+	{
 		for (const auto pTib : TiberiumClass::Array)
 		{
 			if (const auto pExt = TiberiumExt::TryFetch(pTib))
@@ -684,10 +700,32 @@ DEFINE_HOOK(0x5FDD28, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 						R->EAX(pTib->ArrayIndex);
 						return FoundTiberium;
 					}
+
+					if (pOverlay->ImageFile && pOverlay->ImageFile[0])
+					{
+						if (_stricmp(pOverlay->ImageFile, pRampOverlay->ID) == 0 ||
+							(pRampOverlay->ImageFile && _stricmp(pOverlay->ImageFile, pRampOverlay->ImageFile) == 0))
+						{
+							R->EAX(pTib->ArrayIndex);
+							return FoundTiberium;
+						}
+					}
+
+					if (pRampOverlay->ImageFile && pRampOverlay->ImageFile[0])
+					{
+						if (_stricmp(pRampOverlay->ImageFile, pOverlay->ID) == 0)
+						{
+							R->EAX(pTib->ArrayIndex);
+							return FoundTiberium;
+						}
+					}
 				}
 			}
 		}
 	}
+
+	// Replicate stolen instruction: mov edx, DynamicVectorClass<TiberiumClass *> Tiberiums.ActiveCount
+	R->EDX(TiberiumClass::Array.Count);
 
 	return DefaultCheck;
 }

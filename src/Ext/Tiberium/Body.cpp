@@ -54,8 +54,7 @@ void TiberiumExt::AutoDetectRampOverlays()
 	const int startRamp = variety + 1;
 	const int endRamp = variety + 8;
 
-	// 1. Suffix-based automatic detection:
-	// Extract prefix from Image->ID (e.g. "GEM01" -> "GEM")
+	// Suffix-based automatic detection extracting the base image prefix.
 	std::string imageId = pThis->Image->ID;
 	while (!imageId.empty() && std::isdigit(static_cast<unsigned char>(imageId.back())))
 		imageId.pop_back();
@@ -86,7 +85,14 @@ void TiberiumExt::AutoDetectRampOverlays()
 		if (allFound)
 		{
 			for (auto pOverlay : this->RampOverlays)
+			{
 				pOverlay->Tiberium = true;
+				if (!pOverlay->ImageLoaded)
+				{
+					pOverlay->ImageLoaded = true;
+					pOverlay->Theater = true;
+				}
+			}
 
 			if (pThis->NumSlopes < 8)
 				pThis->NumSlopes = 8;
@@ -95,7 +101,7 @@ void TiberiumExt::AutoDetectRampOverlays()
 		}
 	}
 
-	// 2. Fallback to contiguous overlays if present:
+	// Fallback detection for contiguous overlays following standard Tiberian Sun indexing.
 	const int baseIdx = pThis->Image->ArrayIndex + pThis->NumFrames;
 	if (baseIdx + 8 <= OverlayTypeClass::Array.Count)
 	{
@@ -113,7 +119,15 @@ void TiberiumExt::AutoDetectRampOverlays()
 		if (allContiguousValid)
 		{
 			for (int i = 0; i < 8; ++i)
-				this->RampOverlays[i] = OverlayTypeClass::Array.GetItem(baseIdx + i);
+			{
+				auto pOverlay = OverlayTypeClass::Array.GetItem(baseIdx + i);
+				this->RampOverlays[i] = pOverlay;
+				if (pOverlay && !pOverlay->ImageLoaded)
+				{
+					pOverlay->ImageLoaded = true;
+					pOverlay->Theater = true;
+				}
+			}
 
 			if (pThis->NumSlopes < 8)
 				pThis->NumSlopes = 8;
@@ -122,7 +136,7 @@ void TiberiumExt::AutoDetectRampOverlays()
 		}
 	}
 
-	// 3. Ensure NumSlopes is initialized if AllowRamps is enabled
+	// Ensure cardinal slope count is initialized if ramp germination is explicitly enabled.
 	if (this->AllowRamps && pThis->NumSlopes < 8)
 		pThis->NumSlopes = 8;
 }
