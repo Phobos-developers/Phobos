@@ -33,8 +33,6 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->Crew.Read<true>(exINI, pSection, "Crew");
 
-	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
-
 	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
 
 	this->Academy_AllowCountryFilter.Read(exINI, pSection, "Academy.AllowCountryFilter");

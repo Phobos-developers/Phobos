@@ -899,6 +899,7 @@ SpareCameoPCX=          ; filename - include ".pcx" extension
 ### Allow infantry to perform type conversion when deploying and undeploying
 
 - Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
+  - If a deployable infantry has no deploy sequence, it will immediately execute `Convert.Deploy` after a deploy order is issued, just like deployable vehicles.
 
 In `rulesmd.ini`:
 ```ini
@@ -1232,7 +1233,7 @@ Trajectory.Bombard.SubjectToGround=false      ; boolean
   - `Trajectory.Parabola.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation. More specifically, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Disperse` and `Airburst` purposes).
   - `Trajectory.Parabola.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Parabola.OpenFireMode` controls how should the projectile be launched. This has the following 6 modes.
-    - Speed - Automatic calculation mode with fixed horizontal velocity, using `Trajectory.Speed` and target coordinates as calculation conditions, i.e. the flight time of the projectile is permanently fixed.
+    - Speed - Automatic calculation mode with fixed horizontal velocity, using `Trajectory.Speed` and target coordinates as calculation conditions.
     - Height - Automatic calculation mode with fixed maximum height, useing `Trajectory.Parabola.ThrowHeight` and target coordinates as calculation conditions, i.e. the detonation time of the projectile is relatively fixed.
     - Angle - Automatic calculation mode with fixed fire angle, useing `Trajectory.Parabola.LaunchAngle` and target coordinates as calculation conditions. In this mode, the performance consumption is high, and may have no solution. It is not recommended to enable `SubjectToCliffs` or enable `AA` with a smaller `MinimumRange` when using this mode.
     - SpeedAndHeight - Fixed horizontal velocity and maximum height mode, using `Trajectory.Speed` and `Trajectory.Parabola.ThrowHeight` as calculation conditions, i.e. the trajectory will only undergo altitude changes with the height of the target.
@@ -3593,15 +3594,21 @@ Taunt=false      ; boolean
   - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
   - The affected effects include:
     - [Remove mind-control](#break-mind-control-on-impact)
+    - [Change owner](#change-target-owner-on-impact)
     - [Type conversion](#convert-technotype-on-impact)
     - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
     - [`RemoveDisguise`](#remove-disguise-on-impact)
     - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [`Taunt`](#taunt-warhead)
+    - [Penetrates damage on transporter](#penetrates-damage-on-transporter)
+    - [Detonate ivan bomb](#detonate-ivan-bomb-on-impact)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
-    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
+    - [Modify ammo on impact](#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
-      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will be forced to use.
+    - [Return warhead](#return-warhead)
+      - Due to technical reasons, `ReturnWarhead.ApplyChancePerTarget=true` will be forced to use.
 
 In `rulesmd.ini`:
 ```ini

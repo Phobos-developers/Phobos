@@ -1269,7 +1269,7 @@ DEFINE_HOOK(0x415A00, AircraftClass_Mission_Paradrop_Overfly_Delay, 0x5)
 	const auto pTypeExt = AircraftTypeExt::Fetch(pThis->Type);
 	int delay;
 
-	if (pThis->Passengers.NumPassengers)
+	if (pThis->Passengers.NumPassengers > 0)
 	{
 		delay = pTypeExt->ParadropDelay.Get(RulesExt::Global()->ParadropDelay);
 	}
@@ -1294,7 +1294,7 @@ DEFINE_HOOK(0x4CD54C, FlyLocomotionClass_EdgeOfTheWorldAI_Paradrop, 0x8)
 
 	if (pLinkedTo->CurrentMission == Mission::Retreat || (pLinkedTo->CurrentMission == Mission::ParadropOverfly
 		&& AircraftTypeExt::Fetch(pLinkedTo->Type)->ParadropEndDelay.Get(RulesExt::Global()->ParadropEndDelay) < 0
-		&& !pLinkedTo->Passengers.NumPassengers))
+		&& pLinkedTo->Passengers.NumPassengers <= 0))
 	{
 		return Continue;
 	}

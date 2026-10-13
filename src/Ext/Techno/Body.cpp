@@ -987,7 +987,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 				const auto pOperator = static_cast<FootClass*>(*passenger);
 				passengers.RemovePassenger(pOperator);
 
-				if (pType->Gunner && !passengers.NumPassengers)
+				if (pType->Gunner && passengers.NumPassengers <= 0)
 					pThis->RemoveGunner(pOperator);
 
 				pOperator->RegisterDestruction(pKiller);
@@ -1008,7 +1008,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 			const auto pNextPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			passengers.RemovePassenger(pPassenger);
 
-			if (pType->Gunner && !passengers.NumPassengers)
+			if (pType->Gunner && passengers.NumPassengers <= 0)
 				pThis->RemoveGunner(pPassenger);
 
 			if (kill || !TechnoExt::EjectRandomly(pPassenger, pThis->Location, 128, false))
