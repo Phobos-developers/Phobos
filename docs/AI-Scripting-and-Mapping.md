@@ -170,6 +170,18 @@ ShowBriefing=true  ; boolean
 
 ## Script Actions
 
+### More convenient vanilla action script target specification
+
+- Now you can use more convenient argument format in vanilla action script target specification, no need to write building type index and calc scan mode offset.
+  - Scan mode has `low`(lowest threat), `high`(highest threat), `far`(farest), `near`(nearest) and default to `near`.
+- This is suitable for `46`, `47`, `56`, `58` action script.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n,m           ; n - target building type name, m - scan mode
+```
+
 ### `10000-10999` Ingame Actions
 
 #### `10000-10049` Attack Actions

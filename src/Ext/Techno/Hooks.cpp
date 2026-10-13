@@ -423,7 +423,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->HasTint())
+			if (pType->Tint->Enabled)
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -1030,7 +1030,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 		const bool onParachuted = pExt->OnParachuted;
 		pExt->OnParachuted = false;
 
-		if (pThis->IsABomb && pThis->IsAlive)
+		if (pThis->IsABomb && pThis->IsAlive && pThis->Health > 0)
 		{
 			const bool hoverShutdown = pExt->HoverShutdown;
 			pExt->HoverShutdown = false;
@@ -1435,7 +1435,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 	GET(FootClass*, pParasiteOwner, EAX);
 	GET(bool, removed, EBX);
 
-	if (pParasiteOwner == pAbstract && (!pParasiteOwner->Health || !Make_Global<char>(0xA8ED5C)))
+	if (pParasiteOwner == pAbstract && (pParasiteOwner->Health <= 0 || !Make_Global<char>(0xA8ED5C)))
 	{
 		pThis->ParasiteEatingMe = nullptr;
 		return SkipGameCode;
@@ -2603,3 +2603,69 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
+{
+	enum { SkipGameCode = 0x5F5B36, Continue = 0x5F5B0A };
+
+	GET(ObjectClass* const, pThis, ESI);
+	GET(AnimClass* const, pAnim, EDI);
+
+	if (!pAnim->Owner)
+		pAnim->Owner = pThis->GetOwningHouse();
+
+	if (!pAnim->Type->ShouldUseCellDrawer)
+		return SkipGameCode;
+
+	R->EAX(pThis->WhatAmI());
+	return Continue;
+}
+
+// After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
+#pragma region DriverKilledFix
+
+DEFINE_HOOK_AGAIN(0x708412, TechnoClass_BeAttacked_DriverKilled, 0x6)	// Unit
+DEFINE_HOOK(0x7081DC, TechnoClass_BeAttacked_DriverKilled, 0x6)			// Infantry
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (TechnoExt::DriverKilled(pThis))
+	{
+		R->AL(false);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
+static void __fastcall TechnoClass_Guard_ForceMission_DriverKilled(TechnoClass* pThis, void*, Mission mission)
+{
+	pThis->ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x70F87B, TechnoClass_Guard_ForceMission_DriverKilled)
+
+static bool __fastcall UnitClass_EnterIdleMode_QueueMission_DriverKilled(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x738D1B, UnitClass_EnterIdleMode_QueueMission_DriverKilled)
+
+// If you encounter a problem that you really can't solve, you can restore it here.
+/*
+static bool __fastcall UnitClass_QueueMission(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->MissionClass::QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+static void __fastcall UnitClass_ForceMission(UnitClass* pThis, void*, Mission mission)
+{
+	pThis->MissionClass::ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E58, UnitClass_QueueMission)
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
+*/
+
+#pragma endregion
