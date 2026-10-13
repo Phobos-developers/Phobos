@@ -151,6 +151,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
 	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
+	this->CumulativeAnimations_CountIncrement.Read(exINI, pSection, "CumulativeAnimations.CountIncrement");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -162,15 +163,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
 	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
 
-	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
-	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
-	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
-
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
 	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
 	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
 	this->ArmorMultiplier_Chance.Read(exINI, pSection, "ArmorMultiplier.Chance");
+	this->ArmorMultiplier_Delay.Read(exINI, pSection, "ArmorMultiplier.Delay");
 	this->ArmorMultiplier_AffectsHouse.Read(exINI, pSection, "ArmorMultiplier.AffectsHouse");
 	this->ArmorMultiplier_HitAnim.Read(exINI, pSection, "ArmorMultiplier.HitAnim");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
@@ -210,12 +208,19 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouses"); // Temporary solution for the INI tags renaming issue, see #2093
 	this->ReflectDamage_AffectsHouse.Read(exINI, pSection, "ReflectDamage.AffectsHouse");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
+	this->ReflectDamage_Delay.Read(exINI, pSection, "ReflectDamage.Delay");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
+
+	// Tint
+	if (this->Tint == nullptr)
+		this->Tint = std::make_unique<TintTypeClass>();
+
+	this->Tint->LoadFromINI(pINI, pSection);
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -235,7 +240,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// RequiresRecalculation
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
-		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->HasTint()
+		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->Tint->Enabled
 		|| (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
@@ -254,10 +259,22 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		this->RequiresAnimUpdate = false;
 
 	// RestrictedArmorMultiplier
-	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0 || this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
+	if (this->ArmorMultiplier_HitAnim.size() > 0 || (this->ArmorMultiplier != 1.0 && (this->ArmorMultiplier_AllowWarheads.size() > 0
+		|| this->ArmorMultiplier_DisallowWarheads.size() > 0 || this->ArmorMultiplier_Chance < 1.0
+		|| this->ArmorMultiplier_Delay > 0 || this->ArmorMultiplier_AffectsHouse != AffectedHouse::All)))
+	{
 		this->RestrictedArmorMultiplier = true;
+	}
 	else
+	{
 		this->RestrictedArmorMultiplier = false;
+	}
+
+	if (this->CumulativeAnimations_CountIncrement < 1)
+	{
+		Debug::Log("[Developer warning] [%s] CumulativeAnimations.CountIncrement is invalid value below 1, set to 1 instead.\n", pSection);
+		this->CumulativeAnimations_CountIncrement = 1;
+	}
 }
 
 template <typename T>
@@ -299,6 +316,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
 		.Process(this->CumulativeAnimations_RestartOnChange)
+		.Process(this->CumulativeAnimations_CountIncrement)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)
@@ -308,14 +326,13 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
 		.Process(this->ExpireWeapon_UseInvokerAsOwner)
-		.Process(this->Tint_Color)
-		.Process(this->Tint_Intensity)
-		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
 		.Process(this->ArmorMultiplier_AllowWarheads)
 		.Process(this->ArmorMultiplier_DisallowWarheads)
 		.Process(this->ArmorMultiplier_Chance)
+		.Process(this->ArmorMultiplier_Delay)
 		.Process(this->ArmorMultiplier_AffectsHouse)
 		.Process(this->ArmorMultiplier_HitAnim)
 		.Process(this->SpeedMultiplier)
@@ -340,6 +357,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouse)
 		.Process(this->ReflectDamage_Chance)
+		.Process(this->ReflectDamage_Delay)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)

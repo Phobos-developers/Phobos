@@ -3,6 +3,7 @@
 #include <set>
 #include <unordered_map>
 
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include "LaserTrailTypeClass.h"
@@ -89,6 +90,7 @@ public:
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> CumulativeAnimations_RestartOnChange;
+	Valueable<int> CumulativeAnimations_CountIncrement;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
@@ -98,14 +100,13 @@ public:
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
 	Valueable<double> ArmorMultiplier_Chance;
+	Valueable<int> ArmorMultiplier_Delay;
 	Valueable<AffectedHouse> ArmorMultiplier_AffectsHouse;
 	ValueableVector<AnimTypeClass*> ArmorMultiplier_HitAnim;
 	Valueable<double> SpeedMultiplier;
@@ -130,6 +131,7 @@ public:
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouse;
 	Valueable<double> ReflectDamage_Chance;
+	Valueable<int> ReflectDamage_Delay;
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
@@ -178,6 +180,7 @@ public:
 		, Animation {}
 		, CumulativeAnimations {}
 		, CumulativeAnimations_RestartOnChange { true }
+		, CumulativeAnimations_CountIncrement { 1 }
 		, Animation_ResetOnReapply { false }
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
@@ -187,14 +190,13 @@ public:
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, ExpireWeapon_UseInvokerAsOwner { false }
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
 		, ArmorMultiplier_AllowWarheads {}
 		, ArmorMultiplier_DisallowWarheads {}
 		, ArmorMultiplier_Chance { 1.0 }
+		, ArmorMultiplier_Delay { 0 }
 		, ArmorMultiplier_AffectsHouse { AffectedHouse::All }
 		, ArmorMultiplier_HitAnim {}
 		, SpeedMultiplier { 1.0 }
@@ -219,6 +221,7 @@ public:
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouse { AffectedHouse::All }
 		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Delay { 0 }
 		, ReflectDamage_Override {}
 		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
@@ -231,11 +234,6 @@ public:
 		, RestrictedArmorMultiplier { false }
 	{};
 
-	bool HasTint() const
-	{
-		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
-	}
-
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	bool HasAnim() const;
@@ -245,9 +243,10 @@ public:
 		if (cumulativeCount < 0)
 			return nullptr;
 
-		const int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+		const int index = this->CumulativeAnimations_CountIncrement > 1 ? cumulativeCount / this->CumulativeAnimations_CountIncrement : cumulativeCount - 1;
+		const int finalIndex = static_cast<size_t>(index) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : index;
 
-		return this->CumulativeAnimations.at(index);
+		return this->CumulativeAnimations.at(finalIndex);
 	}
 
 	void LoadFromINI(CCINIClass* pINI);
