@@ -592,7 +592,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize turn rate when jumpjet vehicle crashing
   - Customize insignias palette
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
-  - Fix the bug that survivors will return to location where they entered transport after the transport has been destroyed
+  - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -1980,10 +1980,10 @@ msgstr ""
 "修复了目标墙壁被相邻伤害／碾压／声波伤害摧毁后单位仍持续攻击地面的 Bug"
 
 msgid ""
-"Fix the bug that survivors will return to location where they entered "
-"transport after the transport has been destroyed"
+"Fix the bug that `NoQueueUpToEnter` will cause survivors will return to "
+"location where they entered transport after the transport has been destroyed"
 msgstr ""
-"修复了运输载具被摧毁后生还者会返回上车位置的 Bug"
+"修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
