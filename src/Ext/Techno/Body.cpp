@@ -71,7 +71,7 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		&& pThis->Health > 0
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
-		&& !pThis->BeingWarpedOut
+		&& !pThis->IsBeingWarpedOut()
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
@@ -767,7 +767,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 
 bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
 {
-	if (!pObject->Health && !pObject->GetType()->Strength)
+	if (pObject->Health <= 0 && !pObject->GetType()->Strength)
 		return true;
 
 	const double hp = pObject->GetHealthPercentage();
@@ -794,6 +794,7 @@ bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
         !pThis->IsAlive ||
         pThis->Health <= 0 ||
         pThis->InLimbo ||
+		pThis->IsSinking ||
         pThis->Owner != pHouse)
     {
         return false;
@@ -986,7 +987,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 				const auto pOperator = static_cast<FootClass*>(*passenger);
 				passengers.RemovePassenger(pOperator);
 
-				if (pType->Gunner && !passengers.NumPassengers)
+				if (pType->Gunner && passengers.NumPassengers <= 0)
 					pThis->RemoveGunner(pOperator);
 
 				pOperator->RegisterDestruction(pKiller);
@@ -1007,7 +1008,7 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 			const auto pNextPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			passengers.RemovePassenger(pPassenger);
 
-			if (pType->Gunner && !passengers.NumPassengers)
+			if (pType->Gunner && passengers.NumPassengers <= 0)
 				pThis->RemoveGunner(pPassenger);
 
 			if (kill || !TechnoExt::EjectRandomly(pPassenger, pThis->Location, 128, false))
@@ -1076,6 +1077,10 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 
 	pThis->SetTarget(nullptr);
 	pThis->SetDestination(nullptr, false);
+
+	// Thank you to NetsuNegi for the guidance.
+	if (!pThis->IsAttackedByLocomotor)
+		pThis->StopMoving();
 
 	auto pTag = pThis->AttachedTag;
 
@@ -1163,6 +1168,18 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 	return fireError;
 }
 
+bool TechnoExt::DriverKilled(TechnoClass* pThis)
+{
+	// Determine whether the driver was killed.
+	return AresHelper::CanUseAres && reinterpret_cast<DummyExtHere*>(pThis->align_154)->DriverKilled;
+}
+
+Mission TechnoExt::DriverKilledMission(TechnoClass* pThis, Mission mission)
+{
+	// After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
+	return TechnoExt::DriverKilled(pThis) ? Mission::Harmless : mission;
+}
+
 // =============================
 // load / save
 
@@ -1218,6 +1235,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
+		.Process(this->OriginVeterancy)
 		;
 }
 

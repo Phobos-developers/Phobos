@@ -342,7 +342,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 {
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit->InLimbo && pUnit->Health > 0)
+		if (!pUnit->InLimbo && pUnit->Health > 0 && pUnit->IsAlive && !pUnit->IsSinking)
 		{
 			auto const pUnitType = pUnit->GetTechnoType();
 
@@ -748,7 +748,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	{
 		if (ScriptExt::IsUnitAvailable(pUnit, true)
 			&& !pUnit->TemporalTargetingMe
-			&& !pUnit->BeingWarpedOut)
+			&& !pUnit->IsBeingWarpedOut())
 		{
 			if (mode == 2)
 			{
@@ -1251,7 +1251,7 @@ bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrA
 	if (!pTechno)
 		return false;
 
-	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap && !pTechno->IsSinking;
 
 	if (checkIfInTransportOrAbsorbed)
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
