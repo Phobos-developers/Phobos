@@ -166,25 +166,15 @@ bool DropshipLoadoutClass::Initialize(bool bIgnoreFixedUnits, bool bPreloadCargo
 	pHouseTypeExt = HouseTypeExt::Fetch(HouseClass::CurrentPlayer->Type);
 
 	if (costMultiplier.isset())
-	{
 		this->CostMultiplier = costMultiplier.Get();
-	}
 	else if (this->pSWTypeExt && this->pSWTypeExt->DropshipLoadout_CostMultiplier.isset())
-	{
 		this->CostMultiplier = this->pSWTypeExt->DropshipLoadout_CostMultiplier.Get();
-	}
 	else if (pHouseTypeExt && pHouseTypeExt->DropshipLoadout_CostMultiplier.isset())
-	{
 		this->CostMultiplier = pHouseTypeExt->DropshipLoadout_CostMultiplier.Get();
-	}
 	else if (ScenarioExt::Global())
-	{
 		this->CostMultiplier = ScenarioExt::Global()->DropshipLoadout_CostMultiplier;
-	}
 	else
-	{
 		this->CostMultiplier = 1.0;
-	}
 
 	if (this->CostMultiplier < 0.0)
 		this->CostMultiplier = 0.0;
@@ -883,9 +873,7 @@ void DropshipLoadoutClass::LoadAssets()
 		}
 
 		if (!listFound && this->allowableUnitsIndex != 0)
-		{
 			Debug::Log("[DropshipLoadout] Warning: Requested allowable units list index %d not found, falling back to default rules/all units.\n", this->allowableUnitsIndex);
-		}
 
 		if (allowableUnits.size() > 0)
 		{

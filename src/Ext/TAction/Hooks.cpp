@@ -134,9 +134,7 @@ DEFINE_HOOK(0x6DD791, TActionClass_ReadINI_DropshipLoadout, 0xB)
 			if (endPtr != pToken && val >= 0.0)
 			{
 				if (auto const pExt = TActionExt::Fetch(pThis))
-				{
 					pExt->DropshipLoadout_CostMultiplier = val;
-				}
 			}
 		}
 	}
