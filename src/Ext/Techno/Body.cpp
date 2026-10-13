@@ -533,10 +533,29 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 
 	const bool isWaterCell = (pCell->LandType == LandType::Water);
 	const bool onBridge = pCell->ContainsBridge();
-	const bool supportsWater = pTargetType->Naval || (pTargetType->MovementZone == MovementZone::Water) || (pTargetType->SpeedType == SpeedType::Float);
 
 	auto const speed = pTargetType->SpeedType;
 	auto const mZone = pTargetType->MovementZone;
+
+	const bool supportsWater = pTargetType->Naval
+		|| speed == SpeedType::Float
+		|| speed == SpeedType::FloatBeach
+		|| speed == SpeedType::Hover
+		|| speed == SpeedType::Amphibious
+		|| mZone == MovementZone::Water
+		|| mZone == MovementZone::WaterBeach
+		|| mZone == MovementZone::Amphibious
+		|| mZone == MovementZone::AmphibiousDestroyer
+		|| mZone == MovementZone::AmphibiousCrusher;
+
+	const bool isPureWaterOnly = (mZone == MovementZone::Water || speed == SpeedType::Float)
+		&& speed != SpeedType::FloatBeach
+		&& speed != SpeedType::Hover
+		&& speed != SpeedType::Amphibious
+		&& mZone != MovementZone::WaterBeach
+		&& mZone != MovementZone::Amphibious
+		&& mZone != MovementZone::AmphibiousDestroyer
+		&& mZone != MovementZone::AmphibiousCrusher;
 
 	if (isWaterCell && !supportsWater && !onBridge)
 	{
@@ -545,11 +564,8 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 			return false;
 	}
 
-	if (supportsWater && !isWaterCell && pCell->LandType != LandType::Beach)
-	{
-		if (pTargetType->MovementZone == MovementZone::Water || pTargetType->SpeedType == SpeedType::Float)
-			return false;
-	}
+	if (isPureWaterOnly && !isWaterCell && pCell->LandType != LandType::Beach)
+		return false;
 
 	if (speed == SpeedType::Winged || mZone == MovementZone::Fly)
 	{
@@ -558,7 +574,7 @@ bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTarge
 			if (isWaterCell && !supportsWater && !onBridge)
 				return false;
 
-			if (!isWaterCell && supportsWater)
+			if (!isWaterCell && isPureWaterOnly)
 				return false;
 		}
 	}
