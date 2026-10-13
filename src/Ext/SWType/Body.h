@@ -99,7 +99,7 @@ public:
 	std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 	std::vector<ValueableVector<int>> SW_Link_RandomWeightsData;
 
-	std::vector<TypeConvertGroup> Convert_Pairs;
+	TypeConvertGroupList Convert_Pairs;
 
 	Valueable<bool> UseWeeds;
 	Valueable<int> UseWeeds_Amount;

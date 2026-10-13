@@ -107,6 +107,8 @@ public:
 	std::array<int, 3> BeaconsPlacedOrder;
 	std::vector<FactoryResourceState> FactoryResourceStates;
 
+	std::vector<BuildingClass*> Academies;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -145,6 +147,7 @@ public:
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
 		, FactoryResourceStates {}
+		, Academies {}
 	{ }
 
 	int GetResourceAmount(int resourceIdx) const;

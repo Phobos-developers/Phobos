@@ -184,3 +184,22 @@ DEFINE_HOOK(0x4824CA, CellClass_GoodieCheck_MoneyCrate_CustomResources, 0xF)
 
 	return 0x4824D9;
 }
+
+DEFINE_HOOK(0x482C61, CellClass_CollectCrate_HealBaseNoScatter, 0x6)
+{
+	if (RulesExt::Global()->HealBaseNoScatter.Get())
+	{
+		GET(ObjectClass*, pObject, EDI);
+		GET(ObjectTypeClass*, pType, EAX);
+
+		const int health = pObject->Health;
+
+		// Make the damage received by units at full health / with Health higher than
+		// Strength also be negative rather than 0, avoiding the SCATTER check.
+		R->EDX(health < pType->Strength ? pType->Strength : health + 1);
+
+		return 0x482C67;
+	}
+
+	return 0;
+}

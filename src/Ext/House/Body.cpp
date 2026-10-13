@@ -725,6 +725,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
 		.Process(this->FactoryResourceStates)
+		.Process(this->Academies)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }

@@ -141,6 +141,14 @@ public:
 	Nullable<bool> RoofProductionAnimPoweredEffect;
 	Nullable<bool> RoofProductionAnimPoweredSpecial;
 
+	bool Academy;
+	Valueable<double> Academy_Infantry_Veterancy;
+	Valueable<double> Academy_Vehicle_Veterancy;
+	Valueable<double> Academy_Aircraft_Veterancy;
+	Valueable<double> Academy_Building_Veterancy;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types[16];
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore[16];
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -252,6 +260,14 @@ public:
 		, RoofProductionAnimPoweredLight { }
 		, RoofProductionAnimPoweredEffect { }
 		, RoofProductionAnimPoweredSpecial { }
+
+		, Academy { false }
+		, Academy_Infantry_Veterancy { 0.0 }
+		, Academy_Vehicle_Veterancy { 0.0 }
+		, Academy_Aircraft_Veterancy { 0.0 }
+		, Academy_Building_Veterancy { 0.0 }
+		, Academy_Country_Types {}
+		, Academy_Country_Ignore {}
 
 		// Ares 0.2
 		, CloningFacility { false }
