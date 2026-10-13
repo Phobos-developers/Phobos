@@ -258,6 +258,8 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
+	pItem->ShouldUseCellDrawer = RulesExt::Global()->Anim_ShouldUseCellDrawer;
+
 	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }

@@ -88,6 +88,7 @@ public:
 	float AddTiberiumStorage(float amount, int index);
 	float RemoveTiberiumStorage(float amount, int index);
 	float GetTotalTiberiumStorage() const;
+	std::vector<BuildingClass*> Academies;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
@@ -126,6 +127,7 @@ public:
 		, BeaconsPlacedOrder { 0, 0, 0 }
 		, TiberiumStorage {}
 		, WeedStorage {}
+		, Academies {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

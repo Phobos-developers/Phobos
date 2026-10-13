@@ -217,7 +217,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 			for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
-				if (pFoot->IsAlive && !pFoot->InLimbo)
+				if (pFoot->IsAlive && pFoot->Health > 0 && !pFoot->InLimbo && !pFoot->IsSinking)
 				{
 					const auto pTechnoType = pFoot->GetTechnoType();
 
@@ -481,7 +481,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (onlyTargetThisHouseEnemy && pTarget->Owner != onlyTargetThisHouseEnemy)
 			continue;
 
-		if (pTarget->TemporalTargetingMe || pTarget->BeingWarpedOut)
+		if (pTarget->TemporalTargetingMe || pTarget->IsBeingWarpedOut())
 			continue;
 
 		const auto pTargetType = pTarget->GetTechnoType();
