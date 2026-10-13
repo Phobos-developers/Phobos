@@ -125,6 +125,10 @@ public:
 
 	Nullable<bool> CylinderRangefinding;
 
+	Valueable<bool> Abductor_ChangeOwner_ResetDriverKilled;
+	Valueable<bool> Abductor_ChangeOwner_IgnoreDriverKilled;
+	Valueable<bool> CanTarget_DriverKilled;
+
 	WeaponTypeExt(WeaponTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, DiskLaser_Radius { DiskLaserClass::Radius }
 		, ProjectileRange { Leptons(100000) }
@@ -223,6 +227,9 @@ public:
 		, AttackNoThreatBuildings {}
 		, CylinderRangefinding {}
 		, Anim_Update {}
+		, Abductor_ChangeOwner_ResetDriverKilled { true }
+		, Abductor_ChangeOwner_IgnoreDriverKilled { false }
+		, CanTarget_DriverKilled { true }
 	{ }
 
 	int GetBurstDelay(int burstIndex) const;

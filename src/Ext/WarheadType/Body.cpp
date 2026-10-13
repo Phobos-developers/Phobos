@@ -124,7 +124,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 
 bool WarheadTypeExt::EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const
 {
-	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
+	if (!pTechno || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking || !pTechno->IsOnMap)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectsHouse, pOwner, pTechno->Owner))
@@ -244,6 +244,12 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
+	// CanCrit
+	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0)
+		this->CanCrit = true;
+	else
+		this->CanCrit = false;
 
 	// Return warhead
 	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
@@ -473,7 +479,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->IvanBomb_Detonate_AffectTypes.Read(exINI, pSection, "IvanBomb.Detonate.AffectTypes");
 
 	// Convert.From & Convert.To
-	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+	this->Convert_Pairs.Read(exINI, pSection, AffectedHouse::All);
 
 	// AttachEffect
 	this->AttachEffects.LoadFromINI(pINI, pSection);
@@ -641,6 +647,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Crit_AffectsBelowPercent)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+		.Process(this->CanCrit)
 
 		.Process(this->ReturnWarhead)
 		.Process(this->ReturnWarhead_Damage)

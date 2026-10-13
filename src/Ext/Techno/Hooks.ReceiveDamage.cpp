@@ -45,6 +45,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
 	{
 		const auto pOldInvoker = std::exchange(pWHExt->DamageAreaInvoker, pAttacker);
+		pWHExt->Crit_Active = false;
+		pWHExt->Crit_CurrentChance = pWHExt->GetCritChance(pAttacker);
 		pWHExt->DetonateOnOneUnit(pSourceHouse, pThis, CoordStruct { 0, 0, 0 }, damage, pAttacker, nullptr, args->DistanceToEpicenter);
 		pWHExt->DamageAreaInvoker = pOldInvoker;
 	}

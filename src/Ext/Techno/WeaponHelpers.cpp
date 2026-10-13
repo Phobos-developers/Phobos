@@ -46,7 +46,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pSecondExt->IsHealthInThreshold(pTargetTechno)
 				|| !pSecondExt->IsVeterancyInThreshold(pTargetTechno)
-				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
+				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
+				|| (!pSecondExt->CanTarget_DriverKilled && TechnoExt::DriverKilled(pTargetTechno)))
 			{
 				return weaponIndexOne;
 			}
@@ -79,7 +80,8 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
 				|| !pFirstExt->IsHealthInThreshold(pTargetTechno)
 				|| !pFirstExt->IsVeterancyInThreshold(pTargetTechno)
-				|| !firstAllowedAE)
+				|| !firstAllowedAE
+				|| (!pFirstExt->CanTarget_DriverKilled && TechnoExt::DriverKilled(pTargetTechno)))
 			{
 				return weaponIndexTwo;
 			}
@@ -364,9 +366,10 @@ int TechnoExt::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	return forceWeaponIndex;
 }
 
-bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
+bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType, const bool ignoreNeverUse)
 {
-	if (!pWeaponType || pWeaponType->NeverUse
+	if (!pWeaponType
+		|| (!ignoreNeverUse && pWeaponType->NeverUse)
 		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
 	{
 		return false;
@@ -455,7 +458,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
 			return false;
 
-		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+		if (!pWH->Temporal && pTechno->IsBeingWarpedOut())
 			return false;
 
 		if (pWH->Parasite
