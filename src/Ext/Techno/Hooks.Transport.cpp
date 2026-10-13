@@ -299,7 +299,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, Foot
 
 	const auto pPlanningToken = pPassenger->PlanningToken;
 
-	if (pPlanningToken && pPlanningToken->PlanningNodes.Count > 0)
+	if (!pPlanningToken || pPlanningToken->PlanningNodes.Count <= 0)
 		pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
 
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
