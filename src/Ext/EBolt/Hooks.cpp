@@ -105,7 +105,7 @@ public:
 
 void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 {
-	if (pTechno && pTechno->IsAlive)
+	if (pTechno && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->IsSinking)
 	{
 		auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
