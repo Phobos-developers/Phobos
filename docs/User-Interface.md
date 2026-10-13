@@ -1100,9 +1100,29 @@ In `rulesmd.ini`:
 Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Sidebar radar horizontal offset
+
+- In vanilla the radar image does not line up with the frame drawn around it - it is offset 3 pixels to the right on Allied/GDI sidebars and 2 pixels to the right on Soviet/NOD sidebars. The radar is now lined up with its frame.
+- The correction can be turned off entirely or adjusted: Setting `[AudioVisual] -> UseSidebarRadarOffsetFix` to `false` disables it altogether.
+  - `Sidebar.RadarOffsetFix` overrides the correction for that side. Negative values move the radar to the left, `0` disables the correction for that side.
+  - Which of the two defaults is used depends on `Sidebar.GDIPositions`, see [Specify Sidebar style](#specify-sidebar-style).
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseSidebarRadarOffsetFix=true  ; boolean
+
+[SOMESIDE]                     ; Side
+Sidebar.RadarOffsetFix=        ; integer, pixels, defaults to -3 if Sidebar.GDIPositions=true, otherwise -2
+```
+
+```{note}
+Only the sidebar of the local player is affected - the offset applied is always the one configured for the local player's side.
+```
+
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPositions`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini

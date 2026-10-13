@@ -454,10 +454,9 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->Crew.Read<true>(exINI, pSection, "Crew");
 
-	this->VeteranBuildings.Read(exINI, pSection, "VeteranBuildings");
-	this->VeteranDefenses.Read(exINI, pSection, "VeteranDefenses");
-
 	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
+
+	this->Academy_AllowCountryFilter.Read(exINI, pSection, "Academy.AllowCountryFilter");
 }
 
 template <typename T>
@@ -504,9 +503,8 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->Crew)
-		.Process(this->VeteranBuildings)
-		.Process(this->VeteranDefenses)
 		.Process(this->RevealHouses)
+		.Process(this->Academy_AllowCountryFilter)
 		;
 
 	int numDropships = (int)this->DropshipLoadout_FixedUnits.size();

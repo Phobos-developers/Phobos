@@ -726,6 +726,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_SWCarrier)
 		.Process(this->DropshipLoadout_InitialUnitsSet)
 		.Process(this->DropshipLoadout_SWInitialUnitsSet)
+		.Process(this->Academies)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }

@@ -73,10 +73,9 @@ public:
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;
 
-	ValueableVector<BuildingTypeClass*> VeteranBuildings;
-	ValueableVector<BuildingTypeClass*> VeteranDefenses;
-
 	Nullable<AffectedHouse> RevealHouses;
+
+	Valueable<bool> Academy_AllowCountryFilter;
 
 	HouseTypeExt(HouseTypeClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, EVATag { -2 }
@@ -121,9 +120,8 @@ public:
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
-		, VeteranBuildings {}
-		, VeteranDefenses {}
 		, RevealHouses {}
+		, Academy_AllowCountryFilter { false }
 	{ }
 
 	virtual ~HouseTypeExt() = default;
