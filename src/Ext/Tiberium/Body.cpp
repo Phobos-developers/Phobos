@@ -50,6 +50,10 @@ void TiberiumExt::AutoDetectRampOverlays()
 	if (!pThis || !pThis->Image)
 		return;
 
+	const int variety = pThis->NumImages > 0 ? pThis->NumImages : 12;
+	const int startRamp = variety + 1;
+	const int endRamp = variety + 8;
+
 	// 1. Suffix-based automatic detection:
 	// Extract prefix from Image->ID (e.g. "GEM01" -> "GEM")
 	std::string imageId = pThis->Image->ID;
@@ -58,41 +62,36 @@ void TiberiumExt::AutoDetectRampOverlays()
 
 	if (!imageId.empty())
 	{
-		const std::string candidatePrefixes[] = {
-			"TS_" + imageId,
-			"RA2_" + imageId,
-			imageId,
-			"ts_" + imageId,
-			"ra2_" + imageId
-		};
-
-		for (const auto& prefix : candidatePrefixes)
+		bool allFound = true;
+		for (int i = startRamp; i <= endRamp; ++i)
 		{
-			bool allFound = true;
-			for (int i = 13; i <= 20; ++i)
+			char buf[64];
+			sprintf_s(buf, "%s%02d", imageId.c_str(), i);
+			auto pFound = OverlayTypeClass::Find(buf);
+			if (!pFound)
 			{
-				char buf[64];
-				sprintf_s(buf, "%s%d", prefix.c_str(), i);
-				auto pFound = OverlayTypeClass::Find(buf);
-				if (!pFound)
-				{
-					allFound = false;
-					break;
-				}
-
-				this->RampOverlays[i - 13] = pFound;
+				sprintf_s(buf, "%s%d", imageId.c_str(), i);
+				pFound = OverlayTypeClass::Find(buf);
 			}
 
-			if (allFound)
+			if (!pFound)
 			{
-				for (auto pOverlay : this->RampOverlays)
-					pOverlay->Tiberium = true;
-
-				if (pThis->NumSlopes < 8)
-					pThis->NumSlopes = 8;
-
-				return;
+				allFound = false;
+				break;
 			}
+
+			this->RampOverlays[i - startRamp] = pFound;
+		}
+
+		if (allFound)
+		{
+			for (auto pOverlay : this->RampOverlays)
+				pOverlay->Tiberium = true;
+
+			if (pThis->NumSlopes < 8)
+				pThis->NumSlopes = 8;
+
+			return;
 		}
 	}
 

@@ -83,39 +83,16 @@ namespace
 				const auto theater = ScenarioClass::Instance->Theater;
 				const auto& ext = Theater::GetTheater(theater).Extension;
 
-				std::vector<std::string> candidateNames;
+				std::vector<const char*> candidateNames;
 				if (pRamp->ImageFile && pRamp->ImageFile[0])
 					candidateNames.push_back(pRamp->ImageFile);
 
 				if (pRamp->ID && pRamp->ID[0] && (!pRamp->ImageFile || _stricmp(pRamp->ID, pRamp->ImageFile) != 0))
 					candidateNames.push_back(pRamp->ID);
 
-				const size_t origCount = candidateNames.size();
-				for (size_t i = 0; i < origCount; ++i)
+				for (const auto name : candidateNames)
 				{
-					const auto& name = candidateNames[i];
-					if (_strnicmp(name.c_str(), "TS_", 3) != 0 && _strnicmp(name.c_str(), "RA2_", 4) != 0)
-					{
-						candidateNames.push_back("TS_" + name);
-						candidateNames.push_back("RA2_" + name);
-						candidateNames.push_back("ts_" + name);
-						candidateNames.push_back("ra2_" + name);
-					}
-					else if (_strnicmp(name.c_str(), "TS_", 3) == 0)
-					{
-						candidateNames.push_back(name.substr(3));
-						candidateNames.push_back("RA2_" + name.substr(3));
-					}
-					else if (_strnicmp(name.c_str(), "RA2_", 4) == 0)
-					{
-						candidateNames.push_back(name.substr(4));
-						candidateNames.push_back("TS_" + name.substr(4));
-					}
-				}
-
-				for (const auto& name : candidateNames)
-				{
-					if (auto const pOther = OverlayTypeClass::Find(name.c_str()))
+					if (auto const pOther = OverlayTypeClass::Find(name))
 					{
 						pOther->Tiberium = true;
 						if (pOther->Image)
@@ -129,15 +106,15 @@ namespace
 
 				if (!pRamp->Image)
 				{
-					for (const auto& name : candidateNames)
+					for (const auto name : candidateNames)
 					{
 						char filename[64];
-						sprintf_s(filename, "%s.%s", name.c_str(), ext);
+						sprintf_s(filename, "%s.%s", name, ext);
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
 
-						sprintf_s(filename, "%s.shp", name.c_str());
+						sprintf_s(filename, "%s.shp", name);
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
@@ -706,28 +683,6 @@ DEFINE_HOOK(0x5FDD28, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 					{
 						R->EAX(pTib->ArrayIndex);
 						return FoundTiberium;
-					}
-
-					if (pOverlay && pOverlay->ID && pRampOverlay->ID)
-					{
-						const char* pTargetId = pOverlay->ID;
-						const char* pRampId = pRampOverlay->ID;
-
-						if (_strnicmp(pTargetId, "TS_", 3) == 0)
-							pTargetId += 3;
-						else if (_strnicmp(pTargetId, "RA2_", 4) == 0)
-							pTargetId += 4;
-
-						if (_strnicmp(pRampId, "TS_", 3) == 0)
-							pRampId += 3;
-						else if (_strnicmp(pRampId, "RA2_", 4) == 0)
-							pRampId += 4;
-
-						if (_stricmp(pTargetId, pRampId) == 0)
-						{
-							R->EAX(pTib->ArrayIndex);
-							return FoundTiberium;
-						}
 					}
 				}
 			}
