@@ -191,8 +191,8 @@ DEFINE_HOOK(0x657013, RadarClass_Render_Radar_RecordCenter, 0x6)
 {
 	GET(RadarClass*, pRadar, ESI);
 
-	radarCenterPixel.X = pRadar->unknown_rect_14DC.X;
-	radarCenterPixel.Y = pRadar->unknown_rect_14DC.Y;
+	radarCenterPixel.X = pRadar->RadarViewRect.X;
+	radarCenterPixel.Y = pRadar->RadarViewRect.Y;
 
 	return 0;
 }
@@ -205,8 +205,8 @@ DEFINE_HOOK(0x657134, RadarClass_Render_Radar_ScaleViewRect, 0x6)
 
 	GET(RadarClass*, pRadar, ESI);
 
-	auto& radarViewRect = pRadar->unknown_rect_14DC;
-	const auto& radarRect = pRadar->unknown_rect_149C;
+	auto& radarViewRect = pRadar->RadarViewRect;
+	const auto& radarRect = pRadar->RadarRect;
 
 	const double zoom = ZoomManager::CurrentZoom;
 	const int oldW = radarViewRect.Width;
