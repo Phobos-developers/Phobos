@@ -3566,15 +3566,21 @@ Taunt=false      ; boolean
   - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
   - The affected effects include:
     - [Remove mind-control](#break-mind-control-on-impact)
+    - [Change owner](#change-target-owner-on-impact)
     - [Type conversion](#convert-technotype-on-impact)
     - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
     - [`RemoveDisguise`](#remove-disguise-on-impact)
     - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [`Taunt`](#taunt-warhead)
+    - [Penetrates damage on transporter](#penetrates-damage-on-transporter)
+    - [Detonate ivan bomb](#detonate-ivan-bomb-on-impact)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
-    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
+    - [Modify ammo on impact](#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
-      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will be forced to use.
+    - [Return warhead](#return-warhead)
+      - Due to technical reasons, `ReturnWarhead.ApplyChancePerTarget=true` will be forced to use.
 
 In `rulesmd.ini`:
 ```ini
