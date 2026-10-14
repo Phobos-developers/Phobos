@@ -3221,3 +3221,8 @@ msgstr ""
 "**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
 "不被遵守的问题"
 
+msgid ""
+"Fix the bug that `NoQueueUpToEnter` will cause survivors will return to "
+"location where they entered transport after the transport has been destroyed"
+msgstr ""
+"修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug"
