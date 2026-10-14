@@ -599,7 +599,7 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
 		pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletExt::Fetch(pThis)->FirerHouse;
 		pThis->Parachute = pAnim;
-		
+
 		if (pAnimType->ShouldUseCellDrawer)
 		{
 			const int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
