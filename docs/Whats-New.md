@@ -865,7 +865,11 @@ HideShakeEffects=false           ; boolean
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 
+##### 0.5-alpha2
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
+
 #### 0.5-alpha2
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Vanilla fixes:
 - Fixed units approaching target not taking weapon `MinimumRange` correctly into accord (by NetsuNegi)
