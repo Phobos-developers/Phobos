@@ -142,3 +142,65 @@ DEFINE_HOOK(0x6F02AD, TMission_ChronoShiftToTarget_SWIndex, 0x6)
 }
 
 #pragma endregion
+
+#pragma region InfantryAttackFocusFix
+
+// Fixed an issue where infantry units would continuously refresh their animation frames.
+DEFINE_HOOK(0x6EB5B0, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pTeamLeader, EBX);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pTeamLeader))
+	{
+		auto const pTarget = pThis->Focus;
+		auto const pInfantryType = pInfantry->Type;
+
+		if ((pInfantryType->Engineer || (pInfantryType->Agent && pInfantryType->Infiltrate))
+			&& pInfantry->GetCurrentMission() == Mission::Capture
+			&& pInfantry->Target == pTarget && pInfantry->Destination == pTarget)
+		{
+			return 0x6EB5D9;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate2, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pUnit, ESI);
+
+	auto const pTarget = pThis->Focus;
+	pUnit->SetTarget(pTarget);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pUnit))
+	{
+		if (!pInfantry->Destination)
+		{
+			if (auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
+			{
+				auto const pHouse = pInfantry->Owner;
+
+				if (!pHouse->IsAlliedWith(pTargetBuilding->Owner))
+				{
+					auto const pInfantryType = pInfantry->Type;
+					auto const pTargetBuildingType = pTargetBuilding->Type;
+
+					if ((pInfantryType->Engineer && pTargetBuildingType->Capturable)
+						|| (pInfantryType->Agent && pInfantryType->Infiltrate && pTargetBuildingType->Spyable))
+					{
+						pInfantry->SetDestination(pTargetBuilding, true);
+						pInfantry->QueueMission(Mission::Capture, false);
+						pInfantry->NextMission();
+					}
+				}
+			}
+		}
+	}
+
+	return 0x6EB807;
+}
+
+#pragma endregion
