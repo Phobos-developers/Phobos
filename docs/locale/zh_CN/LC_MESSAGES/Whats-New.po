@@ -1122,6 +1122,12 @@ msgid ""
 msgstr ""
 "允许无部署序列的可部署步兵像可部署载具那样直接执行 `Convert.Deploy`（by Noble_Fish）"
 
+msgid ""
+"Customize whether unit replace tag to vehiclethief/crew/passengers "
+"when it has been destroyed (by NetsuNegi)"
+msgstr ""
+"自定义单位被摧毁时是否替换 tag 到偷车贼/生还者/乘客（by NetsuNegi）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

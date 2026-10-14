@@ -1979,6 +1979,12 @@ msgid ""
 msgstr ""
 "修复了目标墙壁被相邻伤害／碾压／声波伤害摧毁后单位仍持续攻击地面的 Bug"
 
+msgid ""
+"Customize whether unit replace tag to vehiclethief/crew/passengers "
+"when it has been destroyed"
+msgstr ""
+"自定义单位被摧毁时是否替换 tag 到偷车贼/生还者/乘客"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
