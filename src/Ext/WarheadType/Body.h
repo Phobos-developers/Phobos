@@ -54,7 +54,7 @@ public:
 	Nullable<bool> DecloakDamagedTargets;
 	Nullable<bool> ShakeIsLocal;
 	Nullable<bool> ApplyModifiersOnNegativeDamage;
-	Valueable<bool> PenetratesIronCurtain;
+	Nullable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	Valueable<double> Rocker_AmplitudeMultiplier;
 	Nullable<int> Rocker_AmplitudeOverride;
@@ -341,7 +341,7 @@ public:
 		, DecloakDamagedTargets {}
 		, ShakeIsLocal {}
 		, ApplyModifiersOnNegativeDamage {}
-		, PenetratesIronCurtain { false }
+		, PenetratesIronCurtain {}
 		, PenetratesForceShield {}
 		, Rocker_AmplitudeMultiplier { 1.0 }
 		, Rocker_AmplitudeOverride {}
@@ -599,6 +599,7 @@ public:
 	bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
 	bool CanAffectTarget(TechnoClass* pTarget) const;
 	bool CanAffectInvulnerable(TechnoClass* pTarget) const;
+	int CanAffectInvulnerable(TechnoClass* pTarget, const int damage) const;
 	bool EligibleForFullMapDetonation(TechnoClass* pTechno, TechnoTypeClass* pType, HouseClass* pOwner) const;
 	bool IsHealthInThreshold(TechnoClass* pTarget) const;
 	bool IsVeterancyInThreshold(TechnoClass* pTarget) const;
