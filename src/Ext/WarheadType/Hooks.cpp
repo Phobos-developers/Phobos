@@ -372,15 +372,16 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 
 DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
 {
-	enum { AllowDamage = 0x701AAD };
+	enum { AllowDamage = 0x701AAD , Invulnerable = 0x701A5C };
 
 	GET(TechnoClass*, pThis, ESI);
+	GET(const int*, damage, EBX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (WarheadTypeExt::Fetch(pWarhead)->CanAffectInvulnerable(pThis))
 		return AllowDamage;
 
-	return 0;
+	return *damage < 0 && !RulesExt::Global()->NegativeDamageIgnoreIronCurtain ? Invulnerable : 0;
 }
 
 DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)

@@ -1001,4 +1001,5 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**:
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
+  - Customize whether negative damage ignore IronCurtain
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images

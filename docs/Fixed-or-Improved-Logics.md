@@ -2175,6 +2175,16 @@ DefaultLandingAnim.Carryall=CARYLAND  ; AnimationType
 LandingAnim=                          ; AnimationType, defaults to the global default (none, DROPLAND, or CARYLAND) based on unit's IsDropship/Carryall flags
 ```
 
+### Customize whether negative damage ignore IronCurtain
+
+- In vanilla, negative damage always ignores the IronCurtain's invulnerability effect. Now you can freely decide whether the IronCurtain applies to negative damage.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NegativeDamageIgnoreIronCurtain=true  ; boolean
+```
+
 ### Customize whether technos with `Locomotor=Fly` wobble
 
 - In vanilla, if technos use `Locomotor=Fly` and do not have `IsDropship=true`, they will have a hardcoded wobble effect. However, using `IsDropship=true` also introduces a series of hardcoded behaviors associated with it. Now, you can customize whether to disable this behavior, and it can also be used to enable this behavior for technos with `IsDropship=true`.
