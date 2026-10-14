@@ -2209,6 +2209,19 @@ In `rulesmd.ini`:
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
+### Customize whether unit replace tag to vehiclethief/crew/passengers when it has been destroyed
+
+- In vanilla, units always replace tag whether spawns vehicle thief or crews. Ares broken it that only replace tag to crews. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Survivors.ReplaceTagTo=crew  ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all)
+
+[SOMETECHNO]                 ; TechnoType
+Survivors.ReplaceTagTo=      ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
+```
+
 ### Customize `DefaultToGuardArea` per gunner mode
 
 - Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
@@ -2537,20 +2550,6 @@ ApproachTarget.StopWhenInRange=false  ; boolean
 
 [SOMETECHNO]                          ; TechnoType
 ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
-```
-
-### Customize whether unit replace tag to vehiclethief/crew/passengers when it has been destroyed
-
-- In vanilla, units always replace tag whether spawns vehicle thief or crews. Ares broken it that only replace tag to crews.
-- Now it is now possible to customize it.
-
-In `rulesmd.ini`:
-```ini
-[General]
-Survivors.ReplaceTagTo=crew  ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all)
-
-[SOMETECHNO]             ; TechnoType
-Survivors.ReplaceTagTo=      ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all)
 ```
 
 ### Subterranean unit travel height and speed
