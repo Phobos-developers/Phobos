@@ -193,3 +193,38 @@ DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
 	return SkipGameCode;
 }
 #pragma warning(pop)
+
+DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
+{
+	GET(FootClass* const, pUnit, ESI);
+	GET(AbstractClass* const, pFocus, ECX);
+
+	pUnit->SetTarget(pFocus);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pUnit))
+	{
+		if (!pInfantry->Destination)
+		{
+			if (auto const pTargetBuilding = abstract_cast<BuildingClass*>(pFocus))
+			{
+				auto const pHouse = pInfantry->Owner;
+
+				if (!pHouse->IsAlliedWith(pTargetBuilding->Owner))
+				{
+					auto const pInfantryType = pInfantry->Type;
+					auto const pTargetBuildingType = pTargetBuilding->Type;
+
+					if ((pInfantryType->Engineer && pTargetBuildingType->Capturable)
+						|| (pInfantryType->Agent && pInfantryType->Infiltrate && pTargetBuildingType->Spyable))
+					{
+						pInfantry->SetDestination(pTargetBuilding, true);
+						pInfantry->QueueMission(Mission::Capture, false);
+						pInfantry->NextMission();
+					}
+				}
+			}
+		}
+	}
+
+	return 0x6EB807;
+}

@@ -337,6 +337,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
 
 ## Fixes / interactions with other extensions
 
