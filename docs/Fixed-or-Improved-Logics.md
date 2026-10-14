@@ -598,6 +598,16 @@ In `rulesmd.ini`:
 AutoTarget.InsignificantWhenMindControlled=true  ; boolean
 ```
 
+### Customize whether negative damage ignore IronCurtain
+
+- In vanilla, negative damage always ignores the IronCurtain's invulnerability effect. Now you can freely decide whether the IronCurtain applies to negative damage.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NegativeDamageIgnoreIronCurtain=true  ; boolean
+```
+
 ### Customizing default ColorScheme
 
 - In vanilla, an `AltPalette=yes` animation or `Voxel=yes` Projectile image that cannot properly remap will use the first Color Scheme in the `[Colors]` list; now it can be manually specified.
@@ -2173,16 +2183,6 @@ DefaultLandingAnim.Carryall=CARYLAND  ; AnimationType
 
 [SOMETECHNO]                          ; TechnoType
 LandingAnim=                          ; AnimationType, defaults to the global default (none, DROPLAND, or CARYLAND) based on unit's IsDropship/Carryall flags
-```
-
-### Customize whether negative damage ignore IronCurtain
-
-- In vanilla, negative damage always ignores the IronCurtain's invulnerability effect. Now you can freely decide whether the IronCurtain applies to negative damage.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NegativeDamageIgnoreIronCurtain=true  ; boolean
 ```
 
 ### Customize whether technos with `Locomotor=Fly` wobble
