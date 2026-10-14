@@ -1090,7 +1090,7 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 // Safeguard against missing or zero-sized isometric tile files in theater definitions.
 // If the tile is placed on the active map, logs an error noting that this may crash the game and leaves it untouched.
 // If the tile is not placed on the map, silences the missing asset by falling back to a safe tile and logs a warning.
-DEFINE_HOOK(0x547020, IsometricTileTypeClass_LoadTile_MissingFallback, 0x6)
+DEFINE_HOOK(0x547020, IsometricTileTypeClass_LoadTile_MissingFallback, 0x5)
 {
 	GET(IsometricTileTypeClass*, pThis, ECX);
 
