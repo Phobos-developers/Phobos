@@ -194,18 +194,43 @@ DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
 }
 #pragma warning(pop)
 
-DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
-{
-	GET(FootClass* const, pUnit, ESI);
-	GET(AbstractClass* const, pFocus, ECX);
+#pragma region InfantryAttackFocusFix
 
-	pUnit->SetTarget(pFocus);
+// Fixed an issue where infantry units would continuously refresh their animation frames.
+DEFINE_HOOK(0x6EB5B0, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pTeamLeader, EBX);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pTeamLeader))
+	{
+		auto const pTarget = pThis->Focus;
+		auto const pInfantryType = pInfantry->Type;
+
+		if ((pInfantryType->Engineer || (pInfantryType->Agent && pInfantryType->Infiltrate))
+			&& pInfantry->GetCurrentMission() == Mission::Capture
+			&& pInfantry->Target == pTarget && pInfantry->Destination == pTarget)
+		{
+			return 0x6EB5D9;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate2, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pUnit, ESI);
+
+	auto const pTarget = pThis->Focus;
+	pUnit->SetTarget(pTarget);
 
 	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pUnit))
 	{
 		if (!pInfantry->Destination)
 		{
-			if (auto const pTargetBuilding = abstract_cast<BuildingClass*>(pFocus))
+			if (auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
 			{
 				auto const pHouse = pInfantry->Owner;
 
@@ -228,3 +253,5 @@ DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
 
 	return 0x6EB807;
 }
+
+#pragma endregion
