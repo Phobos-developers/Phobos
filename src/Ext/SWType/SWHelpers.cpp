@@ -434,13 +434,47 @@ bool SWTypeExt::EligibleTargetForPsyDomSW(TechnoClass* pTechno)
 // Override Ares' SW AI targeting behaviour based in AI targeting type or whatever else.
 bool SWTypeExt::HandleAITargetingOverrides(SuperClass* pSuper, SuperWeaponAITargetingMode aiTargetingType, CellStruct& targetCell, bool& isSuccessful)
 {
-	// Fix LightningRandom behaving suboptimally with explicit Designators.
+	auto const pTypeExt = SWTypeExt::Fetch(pSuper->Type);
+
 	if (aiTargetingType == SuperWeaponAITargetingMode::LightningRandom)
 	{
-		auto const pTypeExt = SWTypeExt::Fetch(pSuper->Type);
-
+		// Fix LightningRandom behaving suboptimally with explicit Designators.
 		if (pTypeExt->SW_AITargeting_Random_SnapOnDesignators)
 			return pTypeExt->PickDesignatorCell(pSuper->Owner, pTypeExt->SW_AITargeting_Random_PickFirstDesignator, targetCell, isSuccessful);
+	}
+	else if (aiTargetingType == SuperWeaponAITargetingMode::Base || aiTargetingType == SuperWeaponAITargetingMode::EnemyBase)
+	{
+		if (pTypeExt->SW_AITargeting_Base_Distance.isset())
+		{
+			auto const pHouse = pSuper->Owner;
+			auto const pEnemyHouse = pHouse->EnemyHouseIndex >= 0 ? HouseClass::Array[pHouse->EnemyHouseIndex] : nullptr;
+			bool targetEnemy = aiTargetingType == SuperWeaponAITargetingMode::EnemyBase;
+
+			if (!pEnemyHouse && targetEnemy)
+				return false;
+
+			int const distance = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->SW_AITargeting_Base_Distance);
+			bool const isRandomDir = pTypeExt->SW_AITargeting_Base_RandomDir;
+			auto const pCurrentHouse = targetEnemy ? pEnemyHouse : pHouse;
+			auto pTargetHouse = targetEnemy ? pHouse : pEnemyHouse;
+
+			if (isRandomDir)
+				pTargetHouse = nullptr;
+
+			auto const pCell = HouseExt::GetBaseGatherCell(pCurrentHouse, pTargetHouse, CoordStruct::Empty, SpeedType::Winged, false, false, distance);
+
+			if (!pCell)
+				return false;
+
+			int const minScatter = pTypeExt->SW_AITargeting_Base_MinScatter;
+			int const maxScatter = pTypeExt->SW_AITargeting_Base_MaxScatter;
+			short const xOffset = static_cast<short>(ScenarioClass::Instance->Random(minScatter, maxScatter));
+			short const yOffset = static_cast<short>(ScenarioClass::Instance->Random(minScatter, maxScatter));
+			auto const cell = pCell->MapCoords;
+			targetCell = CellStruct { cell.X + xOffset, cell.Y + yOffset };
+			isSuccessful = true;
+			return true;
+		}
 	}
 
 	return false;

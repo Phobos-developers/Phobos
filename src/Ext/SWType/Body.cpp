@@ -32,6 +32,10 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->SW_AITargeting_PsyDom_DisallowTypes)
 		.Process(this->SW_AITargeting_Random_SnapOnDesignators)
 		.Process(this->SW_AITargeting_Random_PickFirstDesignator)
+		.Process(this->SW_AITargeting_Base_Distance)
+		.Process(this->SW_AITargeting_Base_MinScatter)
+		.Process(this->SW_AITargeting_Base_MaxScatter)
+		.Process(this->SW_AITargeting_Base_RandomDir)
 		.Process(this->SW_UseAITargeting)
 		.Process(this->SW_AutoFire)
 		.Process(this->SW_ManualFire)
@@ -139,6 +143,10 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_AITargeting_PsyDom_DisallowTypes.Read(exINI, pSection, "SW.AITargeting.PsyDom.DisallowTypes");
 	this->SW_AITargeting_Random_SnapOnDesignators.Read(exINI, pSection, "SW.AITargeting.Random.SnapOnDesignators");
 	this->SW_AITargeting_Random_PickFirstDesignator.Read(exINI, pSection, "SW.AITargeting.Random.PickFirstDesignator");
+	this->SW_AITargeting_Base_Distance.Read(exINI, pSection, "SW.AITargeting.Base.Distance");
+	this->SW_AITargeting_Base_MinScatter.Read(exINI, pSection, "SW.AITargeting.Base.MinScatter");
+	this->SW_AITargeting_Base_MaxScatter.Read(exINI, pSection, "SW.AITargeting.Base.MaxScatter");
+	this->SW_AITargeting_Base_RandomDir.Read(exINI, pSection, "SW.AITargeting.Base.RandomDir");
 	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
 	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
 	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");

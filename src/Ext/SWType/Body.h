@@ -37,6 +37,10 @@ public:
 	ValueableVector<TechnoTypeClass*> SW_AITargeting_PsyDom_DisallowTypes;
 	Valueable<bool> SW_AITargeting_Random_SnapOnDesignators;
 	Valueable<bool> SW_AITargeting_Random_PickFirstDesignator;
+    Nullable<PartialVector2D<int>> SW_AITargeting_Base_Distance;
+    Valueable<int> SW_AITargeting_Base_MinScatter;
+	Valueable<int> SW_AITargeting_Base_MaxScatter;
+	Valueable<bool> SW_AITargeting_Base_RandomDir;
 	Valueable<bool> SW_AutoFire;
 	Valueable<bool> SW_ManualFire;
 	Valueable<bool> SW_ShowCameo;
@@ -147,6 +151,10 @@ public:
 		, SW_AITargeting_PsyDom_DisallowTypes {}
 		, SW_AITargeting_Random_SnapOnDesignators { false }
 		, SW_AITargeting_Random_PickFirstDesignator { false }
+		, SW_AITargeting_Base_Distance {}
+		, SW_AITargeting_Base_MinScatter { 0 }
+		, SW_AITargeting_Base_MaxScatter { 0 }
+		, SW_AITargeting_Base_RandomDir { false }
 		, SW_UseAITargeting { false }
 		, SW_AutoFire { false }
 		, SW_ManualFire { true }
