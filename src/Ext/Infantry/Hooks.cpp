@@ -30,7 +30,7 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_ConvertDeploy_NoSequence, 0x5
 		// instead: it forces Mission_Guard, so Mission_Unload cannot run a second time for one
 		// deploy command. A build with the guard and both assignments removed behaved identically.
 
-		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+		InfantryExt::PrepareConvertToType(pThis, pTypeExt->Convert_Deploy);
 		return FinishMission;
 	}
 
@@ -56,7 +56,7 @@ DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 	{
 		pExt->HasDeployConverted = true;
 		pExt->HasUndeployConverted = false;
-		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+		InfantryExt::PrepareConvertToType(pThis, pTypeExt->Convert_Deploy);
 	}
 
 	return 0;
@@ -73,7 +73,7 @@ DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 	{
 		pExt->HasUndeployConverted = true;
 		pExt->HasDeployConverted = false;
-		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
+		InfantryExt::PrepareConvertToType(pThis, pTypeExt->Convert_Undeploy);
 	}
 
 	return 0;
