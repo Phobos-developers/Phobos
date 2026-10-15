@@ -1292,6 +1292,7 @@ DEFINE_HOOK(0x4593C7, BuildingClass_DestroyTankBunker, 0x6)
 	if (pThis->Type->GetFoundationWidth() % 2)
 	{
 		EjectBunkeredUnit(pThis, pUnit);
+		R->EBX(0);
 		return SkipGameCode;
 	}
 
