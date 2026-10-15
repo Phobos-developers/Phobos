@@ -780,7 +780,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 	GET(UnitClass*, pThis, EBX);
 
-	R->EAX(UnitExt::CanDeployIntoBuilding(pThis, true));
+	R->EAX(FootExt::CanDeployIntoBuilding(pThis, true));
 
 	return SkipGameCode;
 }
@@ -791,7 +791,7 @@ DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !UnitExt::CanDeployIntoBuilding(pThis, true))
+	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !FootExt::CanDeployIntoBuilding(pThis, true))
 		return MustDeploy;
 
 	return SkipGameCode;

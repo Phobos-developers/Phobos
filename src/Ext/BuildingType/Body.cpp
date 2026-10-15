@@ -566,6 +566,20 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 	return false;
 }
 
+// Computes the top-left cell of the building that would be placed if the given
+// foot deployed into the given building type at its current location. Mirrors the
+// vanilla deploy logic, which offsets the top-left cell by (-1,-1) for any
+// foundation larger than 2x2.
+CellStruct BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(BuildingTypeClass* pBuilding, const CellStruct& cell)
+{
+	auto mapCoords = cell;
+
+	if (pBuilding->GetFoundationWidth() > 2 || pBuilding->GetFoundationHeight(false) > 2)
+		mapCoords += CellStruct { -1, -1 };
+
+	return mapCoords;
+}
+
 void BuildingTypeExt::Initialize()
 {
 	TechnoTypeExt::Initialize();

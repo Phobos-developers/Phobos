@@ -345,5 +345,6 @@ public:
 	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
 	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
 	static bool AutoUpgradeBuilding(BuildingClass* pBuilding);
+	static CellStruct GetBuildingTopLeftCellFromDeployCell(BuildingTypeClass* pBuilding, const CellStruct &cell);
 };
 
