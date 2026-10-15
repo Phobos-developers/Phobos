@@ -91,6 +91,8 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	std::vector<BuildingClass*> Academies;
+
 	std::vector<UnitClass*> OwnedDeployingUnits;
 	PlacingBuildingStruct Common;
 	PlacingBuildingStruct Combat;
@@ -130,6 +132,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, Academies {}
 		, OwnedDeployingUnits {}
 		, Common { nullptr, nullptr, 0 }
 		, Combat { nullptr, nullptr, 0 }

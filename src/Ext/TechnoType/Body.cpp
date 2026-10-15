@@ -8,7 +8,6 @@
 #include <Ext/Foot/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/AresHelper.h>
 
@@ -979,21 +978,83 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaGuardRange.Read(exINI, pSection, "AreaGuardRange");
 	this->MaxGuardRange.Read(exINI, pSection, "MaxGuardRange");
 
-	// insignia type
-	Nullable<InsigniaTypeClass*> InsigniaType;
-	InsigniaType.Read(exINI, pSection, "InsigniaType");
+	this->InsigniaData.Type.Read(exINI, pSection, "InsigniaType");
+	this->InsigniaData.Shape.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaData.Palette.LoadFromINI(pINI, pSection, "InsigniaPalette");
+	this->InsigniaData.Palette_Rookie.LoadFromINI(pINI, pSection, "InsigniaPalette.Rookie");
+	this->InsigniaData.Palette_Veteran.LoadFromINI(pINI, pSection, "InsigniaPalette.Veteran");
+	this->InsigniaData.Palette_Elite.LoadFromINI(pINI, pSection, "InsigniaPalette.Elite");
+	this->InsigniaData.Frame.Read(exINI, pSection, "InsigniaFrame.%s");
+	this->InsigniaData.Frames.Read(exINI, pSection, "InsigniaFrames");
 
-	if (InsigniaType.isset())
+	if (pThis->Gunner)
 	{
-		this->Insignia = InsigniaType.Get()->Insignia;
-		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
-		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+		const size_t weaponCount = pThis->WeaponCount;
+		this->Insignia_WeaponData.resize(weaponCount);
+
+		for (size_t idx = 0; idx < weaponCount; ++idx)
+		{
+			auto& data = this->Insignia_WeaponData[idx];
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Weapon%d", idx + 1);
+			data.Type.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", idx + 1, "%s");
+			data.Shape.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Weapon%d", idx + 1);
+			data.Palette.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Weapon%d.Rookie", idx + 1);
+			data.Palette_Rookie.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Weapon%d.Veteran", idx + 1);
+			data.Palette_Veteran.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Weapon%d.Elite", idx + 1);
+			data.Palette_Elite.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", idx + 1, "%s");
+			data.Frame.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", idx + 1);
+			data.Frames.Read(exINI, pSection, tempBuffer);
+		}
 	}
-	else
+
+	if (pThis->Passengers > 0)
 	{
-		this->Insignia.Read(exINI, pSection, "Insignia.%s");
-		this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
-		this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+		const size_t passengers = pThis->Passengers + 1;
+		this->Insignia_PassengersData.resize(passengers);
+
+		for (size_t idx = 0; idx < passengers; ++idx)
+		{
+			auto& data = this->Insignia_PassengersData[idx];
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", idx);
+			data.Type.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", idx, "%s");
+			data.Shape.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Passengers%d", idx);
+			data.Palette.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Passengers%d.Rookie", idx);
+			data.Palette_Rookie.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Passengers%d.Veteran", idx);
+			data.Palette_Veteran.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaPalette.Passengers%d.Elite", idx);
+			data.Palette_Elite.LoadFromINI(pINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", idx, "%s");
+			data.Frame.Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", idx);
+			data.Frames.Read(exINI, pSection, tempBuffer);
+		}
 	}
 
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
@@ -1212,7 +1273,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
-	
+
 	this->VoiceEnterGrinder.Read(exINI, pSection, "VoiceEnterGrinder");
 
 	this->DefaultToGuardArea_Modes.Read(exINI, pSection, "DefaultToGuardArea.Modes");
@@ -1242,84 +1303,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 3.0
 	this->Unsellable.Read(exINI, pSection, "Unsellable");
 	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
-
-	if (pThis->Gunner)
-	{
-		size_t weaponCount = pThis->WeaponCount;
-
-		if (this->Insignia_Weapon.empty() || this->Insignia_Weapon.size() != weaponCount)
-		{
-			this->Insignia_Weapon.resize(weaponCount);
-			this->InsigniaFrame_Weapon.resize(weaponCount, Promotable<int>(-1));
-			Valueable<Vector3D<int>> frames;
-			frames = Vector3D<int>(-1, -1, -1);
-			this->InsigniaFrames_Weapon.resize(weaponCount, frames);
-		}
-
-		for (size_t i = 0; i < weaponCount; i++)
-		{
-			Nullable<InsigniaTypeClass*> InsigniaType_Weapon;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Weapon%d", i + 1);
-			InsigniaType_Weapon.Read(exINI, pSection, tempBuffer);
-
-			if (InsigniaType_Weapon.isset())
-			{
-				this->Insignia_Weapon[i] = InsigniaType_Weapon.Get()->Insignia;
-				this->InsigniaFrame_Weapon[i] = InsigniaType_Weapon.Get()->InsigniaFrame;
-				this->InsigniaFrames_Weapon[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
-			}
-			else
-			{
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-				this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
-
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-				this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
-
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-				this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
-			}
-		}
-	}
-
-	if (pThis->Passengers > 0)
-	{
-		size_t passengers = pThis->Passengers + 1;
-
-		if (this->Insignia_Passengers.empty() || this->Insignia_Passengers.size() != passengers)
-		{
-			this->Insignia_Passengers.resize(passengers);
-			this->InsigniaFrame_Passengers.resize(passengers, Promotable<int>(-1));
-			Valueable<Vector3D<int>> frames;
-			frames = Vector3D<int>(-1, -1, -1);
-			this->InsigniaFrames_Passengers.resize(passengers, frames);
-		}
-
-		for (size_t i = 0; i < passengers; i++)
-		{
-			Nullable<InsigniaTypeClass*> InsigniaType_Passengers;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", i);
-			InsigniaType_Passengers.Read(exINI, pSection, tempBuffer);
-
-			if (InsigniaType_Passengers.isset())
-			{
-				this->Insignia_Passengers[i] = InsigniaType_Passengers.Get()->Insignia;
-				this->InsigniaFrame_Passengers[i] = InsigniaType_Passengers.Get()->InsigniaFrame;
-				this->InsigniaFrames_Passengers[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
-			}
-			else
-			{
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
-				this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
-
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
-				this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
-
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
-				this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
-			}
-		}
-	}
 
 	// Airstrike tint color
 	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
@@ -1652,16 +1635,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->AreaGuardRange)
 		.Process(this->MaxGuardRange)
 
-		.Process(this->Insignia)
-		.Process(this->InsigniaFrames)
-		.Process(this->InsigniaFrame)
+		.Process(this->InsigniaData)
+		.Process(this->Insignia_WeaponData)
+		.Process(this->Insignia_PassengersData)
 		.Process(this->Insignia_ShowEnemy)
-		.Process(this->Insignia_Weapon)
-		.Process(this->InsigniaFrame_Weapon)
-		.Process(this->InsigniaFrames_Weapon)
-		.Process(this->Insignia_Passengers)
-		.Process(this->InsigniaFrame_Passengers)
-		.Process(this->InsigniaFrames_Passengers)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
@@ -1864,7 +1841,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->CloakAnims)
 		.Process(this->DecloakAnims)
 		.Process(this->Cloak_KickOutParasite)
-			
+
 		.Process(this->RevealHouses)
 
 		.Process(this->SubterraneanSpeed)
@@ -1887,7 +1864,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		// Ares 0.A
 		.Process(this->GroupAs)
-			
+
 		// Ares 0.C
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
@@ -1914,6 +1891,31 @@ void TechnoTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
 	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool TechnoTypeExt::InsigniaDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool TechnoTypeExt::InsigniaDataEntry::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<TechnoTypeExt::InsigniaDataEntry*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool TechnoTypeExt::InsigniaDataEntry::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Type)
+		.Process(this->Shape)
+		.Process(this->Palette)
+		.Process(this->Palette_Rookie)
+		.Process(this->Palette_Veteran)
+		.Process(this->Palette_Elite)
+		.Process(this->Frame)
+		.Process(this->Frames)
+		.Success();
 }
 
 // =============================
