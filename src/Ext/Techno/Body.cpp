@@ -50,6 +50,9 @@ TechnoExt::~TechnoExt()
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
+	// The techno is about to be gone, so it must not keep counting towards its owner's total.
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pThis->Owner, pType, false);
+
 	for (auto const pBolt : this->ElectricBolts)
 	{
 		pBolt->Owner = nullptr;
@@ -412,6 +415,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	// Generic type-conversion
 	auto const prevType = *nowTypePtr;
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pOwner, prevType, false);
 	*nowTypePtr = pToType;
 
 	// Readjust health according to percentage
@@ -420,6 +424,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	// Add tracking of new techno
 	pOwner->AddTracking(pThis);
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pOwner, pToType, true);
 	if (!pThis->InLimbo)
 		pOwner->RegisterGain(pThis, false);
 	pOwner->RecheckTechTree = true;

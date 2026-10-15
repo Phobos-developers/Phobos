@@ -478,6 +478,29 @@ int HouseExt::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
 	return count;
 }
 
+void HouseExt::UpdateOwnedUnsellableDirectTechnos(HouseClass* pOwner, TechnoTypeClass* pType, bool add)
+{
+	auto const pTypeExt = pType ? TechnoTypeExt::Fetch(pType) : nullptr;
+
+	if (!pTypeExt || !pTypeExt->Unsellable_Direct.Get(false))
+		return;
+
+	// Either the owner or its extension can already be gone while the extensions are torn down.
+	auto const pExt = pOwner ? HouseExt::Fetch(pOwner) : nullptr;
+
+	if (!pExt)
+		return;
+
+	if (add)
+	{
+		pExt->OwnedUnsellableDirectTechnos++;
+	}
+	else if (pExt->OwnedUnsellableDirectTechnos > 0)
+	{
+		pExt->OwnedUnsellableDirectTechnos--;
+	}
+}
+
 void HouseExt::UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval)
 {
 	int* count = nullptr;
@@ -719,6 +742,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
 		.Process(this->Academies)
+		.Process(this->OwnedUnsellableDirectTechnos)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
 		;
 }
