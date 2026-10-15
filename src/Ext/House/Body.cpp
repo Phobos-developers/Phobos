@@ -309,14 +309,10 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 }
 
 // This basically gets same cell that AI script action 53 Gather at Enemy Base uses, and code for that (0x6EF700) was used as reference here.
-CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance)
+// Additionally does same as action 54 now with a param toggle.
+CellClass* HouseExt::GetBaseGatherCell(HouseClass* pCurrentHouse, HouseClass* pEnemyHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, bool gatherAtEnemy, bool useAISafeDistance, int extraDistance)
 {
-	if (!pTargetHouse || !pCurrentHouse)
-		return nullptr;
-
-	const auto targetCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
-
-	if (targetCoords == CoordStruct::Empty)
+	if (!pCurrentHouse)
 		return nullptr;
 
 	auto currentCoords = CellClass::Cell2Coord(pCurrentHouse->GetBaseCenter());
@@ -324,8 +320,39 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (currentCoords == CoordStruct::Empty)
 		currentCoords = defaultCurrentCoords;
 
-	const int distance = (RulesClass::Instance->AISafeDistance + extraDistance) * Unsorted::LeptonsPerCell;
-	const auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
+	auto enemyCoords = CoordStruct::Empty;
+
+	if (pEnemyHouse)
+		enemyCoords = CellClass::Cell2Coord(pEnemyHouse->GetBaseCenter());
+
+	int baseDistance = 0;
+
+	if (useAISafeDistance)
+	{
+		const int AISafeDistance = RulesClass::Instance->AISafeDistance;
+		baseDistance = gatherAtEnemy ? AISafeDistance : RulesExt::Global()->AIFriendlyDistance.Get(AISafeDistance);
+	}
+
+	const int distance = (baseDistance + extraDistance) * Unsorted::LeptonsPerCell;
+	CoordStruct newCoords;
+
+	if (enemyCoords == CoordStruct::Empty)
+	{
+		if (gatherAtEnemy)
+			return nullptr;
+
+		// No enemy/target house for friendly gather = pick random direction.
+		const double radians = DirStruct(DirType(ScenarioClass::Instance->Random(0,255))).GetRadian<65536>() + Math::Pi;
+		const int x = static_cast<int>(currentCoords.X + Math::cos(radians) * distance);
+		const int y = static_cast<int>(currentCoords.Y - Math::sin(radians) * distance);
+		newCoords = CoordStruct(x, y, currentCoords.Z);
+	}
+	else
+	{
+		newCoords = gatherAtEnemy
+			? GeneralUtils::CalculateCoordsFromDistance(currentCoords, enemyCoords, distance)
+			: GeneralUtils::CalculateCoordsFromDistance(enemyCoords, currentCoords, distance);
+	}
 
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance.NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);

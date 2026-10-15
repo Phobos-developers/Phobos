@@ -1162,7 +1162,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 		return;
 	}
 
-	auto const pTargetCell = HouseExt::GetEnemyBaseGatherCell(pEnemy, pLeader->Owner, pLeader->GetCoords(), pLeader->GetTechnoType()->SpeedType, extraDistance);
+	auto const pTargetCell = HouseExt::GetBaseGatherCell(pLeader->Owner, pEnemy, pLeader->GetCoords(), pLeader->GetTechnoType()->SpeedType, true, true, extraDistance);
 
 	if (!pTargetCell)
 	{
