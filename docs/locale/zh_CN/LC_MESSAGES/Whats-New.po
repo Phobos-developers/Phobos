@@ -7146,3 +7146,8 @@ msgid ""
 "Custom animation when selling TechnoTypes via `SellingAnim` in `artmd.ini` "
 "(by frg2089)"
 msgstr "通过 `artmd.ini` 中的 `SellingAnim` 在出售 TechnoType 时播放自定义动画（by frg2089）"
+
+msgid ""
+"Entering sell mode while owning no buildings if a TechnoType with "
+"`Unsellable.Direct` is owned (by frg2089)"
+msgstr "不拥有任何建筑时，只要拥有带有 `Unsellable.Direct` 的 TechnoType 即可进入变卖模式（by frg2089）"

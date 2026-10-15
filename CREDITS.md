@@ -1007,6 +1007,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
   - Directly sellable TechnoTypes
   - Custom animation when selling TechnoTypes
+  - Entering sell mode while owning no buildings
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1**:
   - Detonate ivan bomb on impact
