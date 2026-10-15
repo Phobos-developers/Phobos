@@ -31,7 +31,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	TechnoExt::Fetch(pThis)->OnEarlyUpdate();
+	auto const pExt = TechnoExt::Fetch(pThis);
+	pExt->OnEarlyUpdate();
+	pExt->HealthAutoConvertActions();
 
 	return 0;
 }
@@ -45,7 +47,6 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	pExt->UpdateWarpInDelay();
 	pExt->UpdateTiberiumEater();
 	pExt->AmmoAutoConvertActions();
-	pExt->HealthAutoConvertActions();
 
 	if (pExt->AttackMoveFollowerTempCount)
 		pExt->AttackMoveFollowerTempCount--;

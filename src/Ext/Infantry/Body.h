@@ -15,11 +15,13 @@ public:
 	bool SkipTargetChangeResetSequence;
 	bool HasDeployConverted;
 	bool HasUndeployConverted;
+	TechnoTypeClass* PendingConvertToTypeAtCenter;
 
 	explicit InfantryExt(InfantryClass* const OwnerObject) : FootExt(OwnerObject)
 		, SkipTargetChangeResetSequence { false }
 		, HasDeployConverted { false }
 		, HasUndeployConverted { false }
+		, PendingConvertToTypeAtCenter { nullptr }
 	{ }
 
 	InfantryClass* OwnerObject() const
@@ -34,6 +36,8 @@ public:
 	}
 
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
+	static void MoveToCellCenter(InfantryClass* pThis, CoordStruct const& target);
+	static void HandlePendingConvertToTypeAtCenter(InfantryClass* pThis);
 
 	class ExtContainer final : public Container<InfantryExt>
 	{
