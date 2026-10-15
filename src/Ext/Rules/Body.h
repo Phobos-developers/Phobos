@@ -959,7 +959,7 @@ public:
 
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
-			, Survivors_ReplaceTagTo { AffectedSurvivor::Crew }
+			, Survivors_ReplaceTagTo { AffectedSurvivor::VehicleThief | AffectedSurvivor::Crew }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }

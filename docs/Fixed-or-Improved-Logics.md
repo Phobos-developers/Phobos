@@ -2216,10 +2216,10 @@ ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or Jum
 In `rulesmd.ini`:
 ```ini
 [General]
-Survivors.ReplaceTagTo=crew  ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all)
+Survivors.ReplaceTagTo=vehiclethief, crew   ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all)
 
-[SOMETECHNO]                 ; TechnoType
-Survivors.ReplaceTagTo=      ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
+[SOMETECHNO]                                ; TechnoType
+Survivors.ReplaceTagTo=                     ; List of Affected Survivor Enumeration (none|vehiclethief|crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
 ```
 
 ### Customize `DefaultToGuardArea` per gunner mode
