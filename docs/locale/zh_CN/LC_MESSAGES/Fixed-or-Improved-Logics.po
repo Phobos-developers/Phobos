@@ -1754,6 +1754,9 @@ msgid ""
 msgstr ""
 "修复了目标墙壁被相邻伤害／碾压／声波伤害摧毁后单位仍持续攻击地面的 Bug。"
 
+msgid "Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over the health percentage, veteran status, armor / firepower / speed multipliers and slave manager of the source techno to the new one, in addition to the mind control, shields, invulnerability and attached effects that were already transferred."
+msgstr "原版的 `DeploysInto`、`UndeploysInto` 与出售现在除了原本就会传递的精神控制、护盾、无敌效果与附加效果之外，还会将源单位的生命值百分比、老兵等级、护甲／火力／速度倍增器与奴隶管理器传递给新单位。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

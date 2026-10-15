@@ -3430,12 +3430,20 @@ msgstr "**obsidianus** - 自动根据血量变形"
 msgid "**Nuke** - Reload speed adjustment on promotion"
 msgstr "**Nuke** - 升级时调整装填速率"
 
-msgid ""
-"**frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being "
-"respected when the master is sold or self-destructed"
-msgstr ""
-"**frg2089 (舰队的偶像-岛风酱!)** - 修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` "
-"不被遵守的问题"
+msgid "**frg2089 (舰队的偶像-岛风酱!)**:"
+msgstr "**frg2089 (舰队的偶像-岛风酱!)**："
+
+msgid "Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed"
+msgstr "修复了奴隶矿场被出售或自毁时 `Slaved.OwnerWhenMasterKilled` 不被遵守的问题"
+
+msgid "Convert TechnoType into any other type, including to and from `BuildingType`s"
+msgstr "允许任意科技类型转换为任意其他科技类型，包括与 `BuildingType` 之间的相互转换"
+
+msgid "Infantry walk to the centre of their cell before converting into another type"
+msgstr "步兵在转换为其他类型前会先走到所在单元格的中央"
+
+msgid "Carry over health percentage, veteran status, attribute multipliers and slave manager on conversion"
+msgstr "转换时继承生命值百分比、老兵等级、属性倍增器与奴隶管理器"
 
 msgid ""
 "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "

@@ -2163,6 +2163,12 @@ msgid ""
 msgstr ""
 "如果一个可部署的步兵没有部署序列，那么它将会像可部署的载具那样在下达部署命令后立即执行 `Convert.Deploy`。"
 
+msgid "The new type does not have to be an infantry type (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)). If it is not, the infantry first walks to the centre of the cell it is occupying."
+msgstr "新类型不必是步兵类型（参见 [任意科技类型之间的转换](#convert-technotype-into-any-other-type)）。若不是步兵类型，步兵会先走到其所在单元格的中央。"
+
+msgid "If the new type is a `BuildingType`, the deploy order is only carried out when the building can be placed on the spot the infantry stands on. Otherwise the `NoDeploy` cursor is shown and the *Cannot deploy here* EVA is played."
+msgstr "若新类型是 `BuildingType`，只有当建筑可以放置在步兵所处的位置时部署命令才会被执行。否则将显示 `NoDeploy` 光标并播放 *Cannot deploy here* 语音。"
+
 msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐或部署状态的 FLH"
 
@@ -3330,11 +3336,8 @@ msgstr ""
 msgid "Convert TechnoType"
 msgstr "单位转换超武"
 
-msgid ""
-"Warheads can now change TechnoTypes of affected units to other Types in "
-"the same category (infantry to infantry, vehicles to vehicles, aircraft "
-"to aircraft)."
-msgstr "现在弹头可以将受影响单位的科技类型更改为同大类的其他科技类型（步兵到步兵，车辆到车辆，战机到战机）。"
+msgid "Warheads can now change TechnoTypes of affected units to any other TechnoType, no matter which category it belongs to, including `BuildingType`s."
+msgstr "现在弹头可以将受影响单位的科技类型更改为任意其他科技类型，无论其属于哪个大类，包括 `BuildingType`。"
 
 msgid ""
 "`ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are "
@@ -3372,13 +3375,8 @@ msgid ""
 "`SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:"
 msgstr "例如，这个超级武器可以将所有被影响的己方和友方 `SOLDIERA` 和 `SOLDIERB` 转换为 `NEWSOLDIER`："
 
-msgid ""
-"This feature has the same limitations as [Ares' Type Conversion](https"
-"://ares-developers.github.io/Ares-docs/new/typeconversion.html). This "
-"feature does not support BuildingTypes."
-msgstr ""
-"此功能与 [Ares 的单位转换](https://ares-developers.github.io/Ares-"
-"docs/new/typeconversion.html) 存在同样的限制。此功能不支持建筑类型。"
+msgid "This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) when converting between TechnoTypes of the same category. Conversions to or from `BuildingType`s are handled by Phobos itself, see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)."
+msgstr "当在同一大类的科技类型之间转换时，此功能与 [Ares 的单位转换](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) 存在同样的限制。与 `BuildingType` 之间的转换由 Phobos 自行处理，详见 [任意科技类型之间的转换](#convert-technotype-into-any-other-type)。"
 
 msgid ""
 "This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is "
@@ -3920,11 +3918,8 @@ msgid ""
 "which a unit converts automatically after the ammo update."
 msgstr "`Ammo.AutoConvertMaximumAmount` 决定触发自动变形的最大弹药量。"
 
-msgid ""
-"`Ammo.AutoConvertType` specify the new techno after the conversion. This "
-"unit must be of the same type of the original (infantry -> infantry, "
-"vehicle -> vehicle or aircraft -> aircraft)."
-msgstr "`Ammo.AutoConvertType` 指定变形成哪个新单位。该单位必须与原单位同属一类（载具变载具，步兵变步兵，战机变战机）。"
+msgid "`Ammo.AutoConvertType` specify the new techno after the conversion. The new techno can be of any TechnoType, no matter which category it belongs to, including a `BuildingType` (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type))."
+msgstr "`Ammo.AutoConvertType` 指定变形成哪个新单位。新单位可以是任意科技类型，无论其属于哪个大类，包括 `BuildingType`（参见 [任意科技类型之间的转换](#convert-technotype-into-any-other-type)）。"
 
 msgid ""
 "Setting a negative number will disable the ammo count check, and when "
@@ -3947,11 +3942,11 @@ msgid ""
 " which a unit converts automatically."
 msgstr "`Convert.Health.BelowPercent` 决定了触发单位自动变身的最大生命值百分比。"
 
-msgid ""
-"`Convert.Health` specify the new techno after the conversion. This unit "
-"must be of the same type of the original (infantry -> infantry, vehicle "
-"-> vehicle or aircraft -> aircraft)."
-msgstr "`Convert.Health` 指定变形成哪个新单位。该单位必须与原单位同属一类（载具变载具，步兵变步兵，战机变战机）。"
+msgid "`Convert.Health` specify the new techno after the conversion. The new techno can be of any TechnoType, no matter which category it belongs to, including a `BuildingType` (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type))."
+msgstr "`Convert.Health` 指定变形成哪个新单位。新单位可以是任意科技类型，无论其属于哪个大类，包括 `BuildingType`（参见 [任意科技类型之间的转换](#convert-technotype-into-any-other-type)）。"
+
+msgid "`Convert.Health.AfterBuildup`, if set to true, delays the conversion of a `BuildingType` until its buildup has finished."
+msgstr "`Convert.Health.AfterBuildup` 设为 true 时，会将 `BuildingType` 的转换推迟到其建造动画结束之后。"
 
 msgid ""
 "Setting a negative number will disable the HP check, and when both checks"
@@ -4212,6 +4207,39 @@ msgstr "当单位开始或停止隐形时，可以在其位置播放动画。"
 msgid "You can also set whether cloak units kick out parasites."
 msgstr "您也可以设置隐形单位是否踢出寄生者。"
 
+msgid "Convert TechnoType into any other type"
+msgstr "允许转换为任意其他科技类型"
+
+msgid "Now any TechnoType can be converted into any other TechnoType, no matter which category it belongs to, including to and from `BuildingType`s."
+msgstr "现在任意科技类型都可以转换为任意其他科技类型，无论其属于哪个大类，包括与 `BuildingType` 之间的相互转换。"
+
+msgid "This applies to every form of type conversion: warhead and superweapon `Convert` pairs, `Convert.Deploy`, `Convert.Undeploy`, `Convert.Health`, `Ammo.AutoConvertType`, `Convert.HumanToComputer` / `Convert.ComputerToHuman` and Ares' type conversion."
+msgstr "这一改动适用于所有类型的转换方式：弹头与超级武器的 `Convert` 组合、`Convert.Deploy`、`Convert.Undeploy`、`Convert.Health`、`Ammo.AutoConvertType`、`Convert.HumanToComputer` / `Convert.ComputerToHuman` 以及 Ares 的类型转换。"
+
+msgid "If the new type is a `BuildingType`, it is placed on the spot the source techno stands on, as long as its whole foundation fits there. If it does not fit, the conversion does not happen; a deploy order for `Convert.Deploy` is refused with the `NoDeploy` cursor and the *Cannot deploy here* EVA."
+msgstr "若新类型是 `BuildingType`，它会被放置在源单位所处的位置，前提是其完整地基能够放下。若放不下则不会执行转换；`Convert.Deploy` 的部署命令会被拒绝并显示 `NoDeploy` 光标，同时播放 *Cannot deploy here* 语音。"
+
+msgid "Infantry that deploy or undeploy into a type other than an infantry type first walk to the centre of the cell they are occupying, so the conversion animation is played in the middle of the cell."
+msgstr "步兵在部署或反部署为非步兵类型时，会先走到其所在单元格的中央，以便在单元格中央播放转换动画。"
+
+msgid "The new techno inherits the health percentage, veteran status, mind control, shields, invulnerability, attached effects, armor / firepower / speed multipliers and slave manager of the source techno. This also applies to vanilla `DeploysInto`, `UndeploysInto` and selling."
+msgstr "新单位会继承源单位的生命值百分比、老兵等级、精神控制、护盾、无敌效果、附加效果、护甲／火力／速度倍增器与奴隶管理器。这一点同样适用于原版的 `DeploysInto`、`UndeploysInto` 与出售。"
+
+msgid "`Convert.Direction` determines the direction the new techno faces when converting from a `BuildingType`. If not set, the new techno keeps the facing of the source."
+msgstr "`Convert.Direction` 决定从该 `BuildingType` 转换而出的新单位的朝向。未设置时新单位保持源单位的朝向。"
+
+msgid "The building animations played while converting to or from a building are customizable with the following tags."
+msgstr "转换为建筑或从建筑转换时播放的建筑动画可以通过以下标签自定义。"
+
+msgid "`Convert.ShowBuildupFrom` makes the building being converted play its sell animation instead of disappearing immediately. Requires the building to be sellable."
+msgstr "`Convert.ShowBuildupFrom` 使被转换的建筑播放其出售动画而不是立即消失。要求该建筑可以被出售。"
+
+msgid "`Convert.ShowBuildupTo` makes the newly created building play its buildup animation and plays `[AudioVisual] -> BuildingSlam` at its location instead of appearing finished right away. Requires `Buildup=` (the name of an SHP file) to be set for the new building type in `artmd.ini`."
+msgstr "`Convert.ShowBuildupTo` 使新建的建筑播放其建造动画，并在其位置播放 `[AudioVisual] -> BuildingSlam`，而不是立即以完成状态出现。要求新建筑类型在 `artmd.ini` 中的 `[BuildingType]` 下 `Buildup=`（shp 文件名）非空。"
+
+msgid "`Convert.ShowBuildup` enables both of the above at once."
+msgstr "`Convert.ShowBuildup` 同时启用以上两项。"
+
 msgid "Convert TechnoType on owner house change"
 msgstr "根据操作者变形"
 
@@ -4219,6 +4247,9 @@ msgid ""
 "You can now change a unit's type when changing ownership from human to "
 "computer or from computer to human."
 msgstr "现在你可以在操作者从人类改为 AI 玩家或从 AI 玩家改为人类玩家时执行单位转换。"
+
+msgid "This also works for `BuildingType`s (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type))."
+msgstr "该功能同样适用于 `BuildingType`（参见 [任意科技类型之间的转换](#convert-technotype-into-any-other-type)）。"
 
 msgid "Custom tint on TechnoTypes"
 msgstr "染色"

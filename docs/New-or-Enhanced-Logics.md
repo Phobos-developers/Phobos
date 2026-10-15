@@ -872,12 +872,14 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 - Now infantry can perform type conversion immediately after the `Deploy` or `Undeploy` sequence action has been executed.
   - If a deployable infantry has no deploy sequence, it will immediately execute `Convert.Deploy` after a deploy order is issued, just like deployable vehicles.
+  - The new type does not have to be an infantry type (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)). If it is not, the infantry first walks to the centre of the cell it is occupying.
+  - If the new type is a `BuildingType`, the deploy order is only carried out when the building can be placed on the spot the infantry stands on. Otherwise the `NoDeploy` cursor is shown and the *Cannot deploy here* EVA is played.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]             ; InfantryType
-Convert.Deploy=            ; InfantryType
-Convert.Undeploy=          ; InfantryType
+Convert.Deploy=            ; TechnoType
+Convert.Undeploy=          ; TechnoType
 ```
 
 ### Customizable FLH when infantry is prone or deployed
@@ -1394,7 +1396,7 @@ SW.TechLevel=0  ; integer
 
 ### Convert TechnoType
 
-- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+- Warheads can now change TechnoTypes of affected units to any other TechnoType, no matter which category it belongs to, including `BuildingType`s.
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
   - `ConvertN.AffectsHouse` specifies whose units can be converted.
@@ -1423,7 +1425,7 @@ Convert.AffectsHouse=owner      ; List of Affected House Enumeration (none|owner
 ```
 
 ```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) when converting between TechnoTypes of the same category. Conversions to or from `BuildingType`s are handled by Phobos itself, see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type).
 ```
 
 ```{warning}
@@ -1693,7 +1695,7 @@ AutoTargetAI.NoThreatBuildings=true     ; boolean
 - Units can now be converted into another unit by ammo count.
 - `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
 - `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
-- `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- `Ammo.AutoConvertType` specify the new techno after the conversion. The new techno can be of any TechnoType, no matter which category it belongs to, including a `BuildingType` (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)).
 - Setting a negative number will disable the ammo count check, and when both checks are disabled, conversion will not occur.
 
 In `rulesmd.ini`:
@@ -1705,7 +1707,7 @@ Ammo.AutoConvertType=             ; TechnoType, after conversion
 ```
 
 ```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) when converting between TechnoTypes of the same category. Conversions to or from `BuildingType`s are handled by Phobos itself, see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type).
 ```
 
 ```{warning}
@@ -1717,7 +1719,8 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 - Units can now be converted into another unit by health percentage.
 - `Convert.Health.AbovePercent` determines the minimal health percentage at which a unit converts automatically.
 - `Convert.Health.BelowPercent` determines the maximum health percentage at which a unit converts automatically.
-- `Convert.Health` specify the new techno after the conversion. This unit must be of the same type of the original (infantry -> infantry, vehicle -> vehicle or aircraft -> aircraft).
+- `Convert.Health` specify the new techno after the conversion. The new techno can be of any TechnoType, no matter which category it belongs to, including a `BuildingType` (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)).
+- `Convert.Health.AfterBuildup`, if set to true, delays the conversion of a `BuildingType` until its buildup has finished.
 - Setting a negative number will disable the HP check, and when both checks are disabled, conversion will not occur.
 
 In `rulesmd.ini`:
@@ -1726,10 +1729,13 @@ In `rulesmd.ini`:
 Convert.Health.AbovePercent=-1.0     ; floating point value, percents or absolute
 Convert.Health.BelowPercent=-1.0     ; floating point value, percents or absolute
 Convert.Health=                      ; TechnoType, after conversion
+
+[SOMEBUILDING]                       ; BuildingType
+Convert.Health.AfterBuildup=false    ; boolean
 ```
 
 ```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) when converting between TechnoTypes of the same category. Conversions to or from `BuildingType`s are handled by Phobos itself, see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type).
 ```
 
 ```{warning}
@@ -1860,9 +1866,34 @@ DecloakAnims=                 ; List of Animation, default to [AudioVisual] -> D
 Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutParasite
 ```
 
+### Convert TechnoType into any other type
+
+- Now any TechnoType can be converted into any other TechnoType, no matter which category it belongs to, including to and from `BuildingType`s.
+  - This applies to every form of type conversion: warhead and superweapon `Convert` pairs, `Convert.Deploy`, `Convert.Undeploy`, `Convert.Health`, `Ammo.AutoConvertType`, `Convert.HumanToComputer` / `Convert.ComputerToHuman` and Ares' type conversion.
+  - If the new type is a `BuildingType`, it is placed on the spot the source techno stands on, as long as its whole foundation fits there. If it does not fit, the conversion does not happen; a deploy order for `Convert.Deploy` is refused with the `NoDeploy` cursor and the *Cannot deploy here* EVA.
+  - Infantry that deploy or undeploy into a type other than an infantry type first walk to the centre of the cell they are occupying, so the conversion animation is played in the middle of the cell.
+  - The new techno inherits the health percentage, veteran status, mind control, shields, invulnerability, attached effects, armor / firepower / speed multipliers and slave manager of the source techno. This also applies to vanilla `DeploysInto`, `UndeploysInto` and selling.
+  - `Convert.Direction` determines the direction the new techno faces when converting from a `BuildingType`. If not set, the new techno keeps the facing of the source.
+  - The building animations played while converting to or from a building are customizable with the following tags.
+    - `Convert.ShowBuildupFrom` makes the building being converted play its sell animation instead of disappearing immediately. Requires the building to be sellable.
+    - `Convert.ShowBuildupTo` makes the newly created building play its buildup animation and plays `[AudioVisual] -> BuildingSlam` at its location instead of appearing finished right away. Requires `Buildup=` (the name of an SHP file) to be set for the new building type in `artmd.ini`.
+    - `Convert.ShowBuildup` enables both of the above at once.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+Convert.ShowBuildup=false         ; boolean
+Convert.ShowBuildupFrom=false     ; boolean
+Convert.ShowBuildupTo=false       ; boolean
+
+[SOMEBUILDING]                    ; BuildingType
+Convert.Direction=                ; Direction type (integers from 0-255)
+```
+
 ### Convert TechnoType on owner house change
 
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
+  - This also works for `BuildingType`s (see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type)).
 
 In `rulesmd.ini`:
 ```ini
@@ -3114,7 +3145,7 @@ ChangeOwner.MindControlAnim=                ; Animation
 ![image](_static/images/convertwh.gif)
 *Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*
 
-- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+- Warheads can now change TechnoTypes of affected units to any other TechnoType, no matter which category it belongs to, including `BuildingType`s.
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
   - `ConvertN.AffectsHouse` specifies whose units can be converted.
@@ -3142,7 +3173,7 @@ Convert.AffectsHouse=all        ; List of Affected House Enumeration (none|owner
 ```
 
 ```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) when converting between TechnoTypes of the same category. Conversions to or from `BuildingType`s are handled by Phobos itself, see [Convert TechnoType into any other type](#convert-technotype-into-any-other-type).
 ```
 
 ```{warning}

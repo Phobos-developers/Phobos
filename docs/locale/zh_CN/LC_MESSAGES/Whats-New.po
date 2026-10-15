@@ -1122,6 +1122,15 @@ msgid ""
 msgstr ""
 "允许无部署序列的可部署步兵像可部署载具那样直接执行 `Convert.Deploy`（by Noble_Fish）"
 
+msgid "[Convert TechnoType into any other type](New-or-Enhanced-Logics.md#convert-technotype-into-any-other-type) (by frg2089)"
+msgstr "[允许转换为任意其他科技类型](New-or-Enhanced-Logics.md#convert-technotype-into-any-other-type)（by frg2089）"
+
+msgid "[Infantry deploying or undeploying into a type other than an infantry type now walk to the centre of their cell first](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by frg2089)"
+msgstr "[步兵部署或反部署为非步兵类型时会先走到所在单元格的中央](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying)（by frg2089）"
+
+msgid "Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over health percentage, veteran status, attribute multipliers and slave manager of the source techno (by frg2089)"
+msgstr "原版的 `DeploysInto`、`UndeploysInto` 与出售现在同样会将源单位的生命值百分比、老兵等级、属性倍增器与奴隶管理器传递给新单位（by frg2089）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
