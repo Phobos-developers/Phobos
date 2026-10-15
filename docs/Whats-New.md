@@ -2070,6 +2070,7 @@ HideShakeEffects=false           ; boolean
 - [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2548,6 +2549,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
 - Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
 - Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Fixes / interactions with other extensions:
 - Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
