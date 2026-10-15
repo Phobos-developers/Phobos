@@ -370,7 +370,7 @@ bool TechnoExt::CanCreateBuildingHere(TechnoClass* pFromTechno, BuildingTypeClas
 	{
 		location = CellClass::Coord2Cell(pFromTechno->GetCoords());
 	}
-	
+
 	location = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pToBuildingType, location);
 
 	auto const pPreviousDeployer = TechnoExt::Deployer;
@@ -412,7 +412,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	auto const pToTechno = static_cast<TechnoClass*>(pToType->CreateObject(pFromTechno->Owner));
 	if (!pToTechno)
 		return false;
-	
+
 	auto const wasSelected = pFromTechno->IsSelected;
 
 	TechnoExt::TransferStatus(pFromTechno, pToTechno);
@@ -475,13 +475,34 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	if (wasSelected)
 		pToTechno->Select();
 
-	pFromTechno->Limbo();
-	pFromTechno->UnInit();
+	bool showBuildupFrom = false;
+	if (pFromBuilding && pFromBuilding->CanBeSold() && !pFromBuilding->IsStrange())
+	{
+		auto const pFromBuildingExt = BuildingExt::Fetch(pFromBuilding);
+		showBuildupFrom = pFromBuildingExt->TypeExtData->Convert_ShowBuildupFrom || pFromBuildingExt->TypeExtData->Convert_ShowBuildup;
+	}
+
+	if (showBuildupFrom)
+	{
+		pFromBuilding->SetArchiveTarget(nullptr);
+		pFromBuilding->Sell(1);
+	}
+	else
+	{
+		pFromTechno->Limbo();
+		pFromTechno->UnInit();
+	}
+
 
 	if (!pToBuilding)
 		return true;
 
+	auto const pToBuildingExt = BuildingExt::Fetch(pToBuilding);
+	bool showBuildupTo = false;
 	if (pToBuilding->Type->Buildup)
+		showBuildupTo = pToBuildingExt->TypeExtData->Convert_ShowBuildupTo || pToBuildingExt->TypeExtData->Convert_ShowBuildup;
+
+	if (showBuildupTo)
 	{
 		pToBuilding->BeginMode(BStateType::Construction);
 		pToBuilding->QueueMission(Mission::Construction, false);
@@ -494,7 +515,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 		pToBuilding->NextMission();
 	}
 
-	pToBuilding->Place(!pFromTechno->Owner->IsNeutral() || !pFromTechno->Owner->IsCurrentPlayer());
+	pToBuilding->Place(!pFromTechno->Owner->IsNeutral() || pFromTechno->Owner->IsCurrentPlayer());
 
 	return true;
 }
@@ -1049,7 +1070,7 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	if (Unsorted::MoveFeedback)
 		pThis->VoiceMove();
 
-	EventExt event {};
+	EventExt event { };
 	event.Type = EventTypeExt::ApproachObject;
 	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
 	event.Frame = Unsorted::CurrentFrame;
@@ -1060,38 +1081,38 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 
 bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
 {
-    if (pThis->Team != nullptr ||
-        !pThis->IsAlive ||
-        pThis->Health <= 0 ||
-        pThis->InLimbo ||
+	if (pThis->Team != nullptr ||
+		!pThis->IsAlive ||
+		pThis->Health <= 0 ||
+		pThis->InLimbo ||
 		pThis->IsSinking ||
-        pThis->Owner != pHouse)
-    {
-        return false;
-    }
+		pThis->Owner != pHouse)
+	{
+		return false;
+	}
 
-    if (!(pThis->RecruitableA && pThis->RecruitableB))
-    {
-        return false;
-    }
+	if (!(pThis->RecruitableA && pThis->RecruitableB))
+	{
+		return false;
+	}
 
-    const Mission mission = pThis->GetCurrentMission();
-    if (!MissionClass::IsRecruitableMission(mission))
-    {
-        return false;
-    }
+	const Mission mission = pThis->GetCurrentMission();
+	if (!MissionClass::IsRecruitableMission(mission))
+	{
+		return false;
+	}
 
-    if (pThis->ShouldEnterAbsorber ||
-        pThis->ShouldEnterOccupiable ||
-        pThis->ShouldGarrisonStructure ||
-        pThis->DrainTarget != nullptr ||
-        pThis->BunkerLinkedItem ||
-        pThis->LocomotorSource != nullptr)
-    {
-        return false;
-    }
+	if (pThis->ShouldEnterAbsorber ||
+		pThis->ShouldEnterOccupiable ||
+		pThis->ShouldGarrisonStructure ||
+		pThis->DrainTarget != nullptr ||
+		pThis->BunkerLinkedItem ||
+		pThis->LocomotorSource != nullptr)
+	{
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
