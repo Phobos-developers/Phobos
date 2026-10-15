@@ -378,17 +378,12 @@ DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
 	GET(const int*, damage, EBX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	switch(WarheadTypeExt::Fetch(pWarhead)->CanAffectInvulnerable(pThis, *damage))
-	{
-	case -1:
+	const int returnValue = WarheadTypeExt::Fetch(pWarhead)->CanAffectInvulnerable(pThis, *damage);
+
+	if(returnValue == -1)
 		return Invulnerable;
-	case 0:
-		return 0;
-	case 1:
+	else if(returnValue == 1)
 		return AllowDamage;
-	default:
-		break;
-	}
 	
 	return 0;
 }
