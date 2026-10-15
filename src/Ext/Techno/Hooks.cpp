@@ -2612,17 +2612,6 @@ namespace ImmuneTemp
 	bool ImmuneToEngineerRepair = false;
 };
 
-DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_ImmuneToInfiltrate, 0x6)
-{
-	enum { PreventInfiltrate = 0x51A03E };
-
-	GET(BuildingClass*, pBuilding, EDI);
-
-	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
-
-	return pAE.HasImmuneToInfiltrate ? PreventInfiltrate : 0;
-}
-
 DEFINE_HOOK(0x519EB2, InfantryClass_UpdatePosition_ImmuneToCapture, 0x7)
 {
 	enum { PreventCapture = 0x519FB9 };

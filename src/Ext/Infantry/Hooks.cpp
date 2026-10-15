@@ -1,4 +1,5 @@
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/InfantryType/Body.h>
 #include <Ext/Rules/Body.h>
@@ -199,6 +200,8 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 
 DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 {
+	enum { PreventInfiltrate = 0x51A03E };
+
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
@@ -211,7 +214,10 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 	if (const auto pTag = pBuilding->AttachedTag)
 		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
 
-	return 0;
+	// ImmuneAE
+	const auto& pAE = BuildingExt::Fetch(pBuilding)->AE;
+
+	return pAE.HasImmuneToInfiltrate ? PreventInfiltrate : 0;
 }
 
 #pragma region CustomInfantrySequenceRates
