@@ -110,9 +110,8 @@ public:
 	static bool IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno);
 	static bool IsDistributionModeEligibleForTerrain(unsigned int range, int count, Action action, TerrainClass* pTerrain);
 	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
-	static Action GetRealAction(TechnoClass* pTechno, Action action);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
-	static std::vector<DistributionTargetInfo> CollectAndSortTargets(CoordStruct center, double range, int& selectCount);
+	static std::vector<DistributionTargetInfo> CollectAndSortTargets(CoordStruct center, double range);
 	static std::vector<DistributionTerrainInfo> CollectAndSortTargetsForTerrain(CoordStruct center, double range);
 	static void ProcessDistributionMode(DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);
 	static void ProcessDistributionModeForTerrain(DistributionTerrainInfo& info, ObjectClass* pTarget, bool noMove);

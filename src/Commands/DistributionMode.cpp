@@ -308,7 +308,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(
 		&& !pTerrain->Type->Immune;
 }
 
-std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range, int& selectCount)
+std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
 	// and in-air targets are within the same distance check.
@@ -355,9 +355,6 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 			info.CanBeOccupied = false;
 			info.Selected = ObjectClass::CurrentObjects.FindItemIndex(pItem) >= 0;
 			record.emplace_back(info);
-
-			if (info.Selected)
-				selectCount++;
 		}
 	}
 
@@ -443,8 +440,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 {
 	VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 	const auto spreadRange = Phobos::Config::DistributionSpreadRange;
-	int selectCount = 0;
-	auto record = CollectAndSortTargets(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell, selectCount);
+	auto record = CollectAndSortTargets(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell);
 
 	const size_t recordSize = record.size();
 	const size_t maxSize = recordSize;
@@ -591,23 +587,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 			});
 	}
 
-	if (selectCount > 0)
-	{
-		int hasDeselected = 0;
-
-		for (const auto& item : record)
-		{
-			if (item.Selected)
-			{
-				item.pTechno->Deselect();
-				hasDeselected++;
-
-				if (hasDeselected >= selectCount)
-					break;
-			}
-		}
-	}
-
 	int current = 1;
 
 	for (const auto& selectInfo : selectedObjects)
@@ -620,7 +599,15 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		{
 			auto& item = record[i];
 
-			if (selectInfo.pTechno->MouseOverObject(item.pTechno) != info.Action)
+			if (item.Selected)
+				item.pTechno->Deselect();
+
+			const auto itemAction = selectInfo.pTechno->MouseOverObject(item.pTechno);
+
+			if (item.Selected)
+				item.pTechno->Select();
+
+			if (itemAction != info.Action)
 				continue;
 
 			if (!info.TargetIsNeutral && item.TargetIsNeutral)
@@ -700,23 +687,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		{
 			ClickedTargetAction(selectInfo.pTechno, currentAction, pTarget);
 			info.CurrentPassenger += canTargetSize;
-		}
-	}
-
-	if (selectCount > 0)
-	{
-		int hasSelected = 0;
-
-		for (const auto& item : record)
-		{
-			if (item.Selected)
-			{
-				item.pTechno->Select();
-				hasSelected++;
-
-				if (hasSelected >= selectCount)
-					break;
-			}
 		}
 	}
 }
@@ -822,26 +792,6 @@ void DistributionModeHoldDownCommandClass::ProcessCellClick(CellStruct* pCell, A
 	}
 }
 
-Action DistributionModeHoldDownCommandClass::GetRealAction(TechnoClass* pTechno, Action action)
-{
-	if (ObjectClass::CurrentObjects.FindItemIndex(pTechno) < 0)
-		return action;
-
-	Point2D screenPos = DisplayClass::Instance.LeftDownPosition;
-	CellStruct cell;
-	CoordStruct coords;
-	ObjectClass* pTarget = nullptr;
-	BYTE a5 = 0, a6 = 0;
-
-	if (!DisplayClass::Instance.ProcessClickCoords(&screenPos, &cell, &coords, &pTarget, &a5, &a6))
-		return action;
-
-	pTechno->Deselect();
-	action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
-	pTechno->Select();
-	return action;
-}
-
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 {
 	enum { SkipGameCode = 0x4AE99B };
@@ -866,7 +816,15 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget))
 			{
-				const auto realAction = DistributionModeHoldDownCommandClass::GetRealAction(pTechno, action);
+				auto realAction = action;
+
+				if (ObjectClass::CurrentObjects.FindItemIndex(pTechno) >= 0)
+				{
+					GET_STACK(const CellStruct, cell, STACK_OFFSET(0x18, 0x8));
+					pTechno->Deselect();
+					realAction = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
+					pTechno->Select();
+				}
 
 				if (DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, realAction, pTechno))
 				{
