@@ -419,6 +419,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 
 	pToTechno->SetTarget(pFromTechno->Target);
 
+	auto direction = pFromTechno->PrimaryFacing.Current().GetDir();
 	auto location = pFromTechno->GetCoords();
 	auto const pFromFoot = abstract_cast<FootClass*>(pFromTechno);
 	auto const pFromBuilding = abstract_cast<BuildingClass*>(pFromTechno);
@@ -429,6 +430,9 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 		auto const buildingCell = CellClass::Coord2Cell(location);
 		auto const tmpCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pFromBuilding->Type, buildingCell);
 		location = CellClass::Cell2Coord(buildingCell + buildingCell - tmpCell, location.Z);
+
+		auto const pFromBuildingTypeExt = BuildingTypeExt::Fetch(pFromBuilding->Type);
+		direction = pFromBuildingTypeExt->Convert_Direction.Get(direction);
 	}
 	if (pToBuilding)
 	{
@@ -468,7 +472,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	}
 
 	Unsorted::ScenarioInit++;
-	pToTechno->Unlimbo(location, pFromTechno->PrimaryFacing.Current().GetDir());
+	pToTechno->Unlimbo(location, direction);
 	Unsorted::ScenarioInit--;
 
 	// Keep selection
@@ -667,6 +671,19 @@ void TechnoExt::HealthAutoConvertActions()
 
 	if (min < 0 && max < 0)
 		return;
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		if (BuildingTypeExt::Fetch(pBuilding->Type)->Convert_Health_AfterBuildup.Get())
+		{
+			switch (pBuilding->CurrentMission)
+			{
+			case Mission::None:
+			case Mission::Construction:
+				return;
+			}
+		}
+	}
 
 	const auto pThis = this->OwnerObject();
 

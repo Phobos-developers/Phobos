@@ -366,6 +366,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		this->Academy_Country_Ignore[idx].Read(exINI, pSection, tempBuffer);
 	}
 
+	this->Convert_Health_AfterBuildup.Read(exINI, pSection, "Convert.Health.AfterBuildup");
+	this->Convert_Direction.Read(exINI, pSection, "Convert.Direction");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -534,6 +537,8 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Academy_Building_Veterancy)
 		.Process(this->Academy_Country_Types)
 		.Process(this->Academy_Country_Ignore)
+		.Process(this->Convert_Health_AfterBuildup)
+		.Process(this->Convert_Direction)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
