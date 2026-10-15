@@ -3181,10 +3181,17 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	if (rtti == AbstractType::Building)
 		return true;
 
+	auto const pType = pTechno->GetTechnoType();
+	if (!pType)
+		return false;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+	if (pTypeExt->Unsellable_Direct.Get(false))
+		return true;
+
 	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
 	{
-		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
-
 		if (pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
 			return false;
 
@@ -3192,9 +3199,9 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 
 		if (auto const pBuilding = pCell->GetBuilding())
 		{
-			auto const pType = pBuilding->Type;
+			auto const pBuildingType = pBuilding->Type;
 
-			if (BuildingTypeExt::Fetch(pType)->UnitSell.Get(pType->UnitRepair))
+			if (BuildingTypeExt::Fetch(pBuildingType)->UnitSell.Get(pBuildingType->UnitRepair))
 				return true;
 		}
 	}
@@ -3212,10 +3219,8 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 
 	if (CanBeSold(pTechno, rtti))
 		pTechno->Sell(-1);
-
 	return SkipGameCode;
 }
-
 #pragma endregion
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.

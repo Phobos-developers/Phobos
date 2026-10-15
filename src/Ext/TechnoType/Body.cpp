@@ -1282,6 +1282,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
 	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
+	this->Unsellable_Direct.Read(exINI, pSection, "Unsellable.Direct");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1854,6 +1856,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->NoAmmoWeapons)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
+
+		.Process(this->Unsellable_Direct)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
