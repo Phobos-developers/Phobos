@@ -3218,7 +3218,34 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
+	{
+		if (auto const pAnimType = TechnoTypeExt::Fetch(pTechno->GetTechnoType())->SellingAnim.Get())
+		{
+			auto const pColorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
+			auto location = pTechno->Location;
+
+			if (rtti == AbstractType::Infantry)
+			{
+				location.X -= 128;
+				location.Y -= 128;
+			}
+			else
+			{
+				location.X &= ~0xFF;
+				location.Y &= ~0xFF;
+			}
+
+			auto anim = GameCreate<AnimClass>(pAnimType, location);
+			// AnimExt::SetAnimOwnerHouseKind only recolours anims that make infantry
+			// or create a unit, so the owner's colour scheme is applied here as well.
+			anim->LightConvertIndex = pColorScheme->ArrayIndex;
+			anim->LightConvert = pColorScheme->LightConvert;
+			AnimExt::SetAnimOwnerHouseKind(anim, pTechno->Owner, pTechno->Owner, false, true);
+		}
+
 		pTechno->Sell(-1);
+	}
+
 	return SkipGameCode;
 }
 #pragma endregion
