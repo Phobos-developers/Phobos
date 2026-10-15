@@ -2061,6 +2061,9 @@ PreserveCSFWhitespace=false      ; boolean
 - [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
 - [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
 - [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
+- [Convert TechnoType into any other type](New-or-Enhanced-Logics.md#convert-technotype-into-any-other-type) (by frg2089)
+- [Infantry deploying or undeploying into a type other than an infantry type now walk to the centre of their cell first](New-or-Enhanced-Logics.md#allow-infantry-to-perform-type-conversion-when-deploying-and-undeploying) (by frg2089)
+- Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over health percentage, veteran status, attribute multipliers and slave manager of the source techno (by frg2089)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
