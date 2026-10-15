@@ -68,11 +68,12 @@ public:
 	void UpdateOnTunnelEnter();
 	void UpdateOnTunnelExit();
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
-	void HealthAutoConvertActions();
 	void AmmoAutoConvertActions();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+	static bool CanDeployIntoBuilding(FootClass* pThis, bool noDeploysIntoDefaultValue = false);
 
 private:
 	template <typename T>

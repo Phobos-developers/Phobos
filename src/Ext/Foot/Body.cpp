@@ -4,6 +4,7 @@
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -912,23 +913,28 @@ void FootExt::AmmoAutoConvertActions()
 		TechnoExt::ConvertToType(pThis, pTypeExt->Ammo_AutoConvertType);
 }
 
-void FootExt::HealthAutoConvertActions()
+// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
+bool FootExt::CanDeployIntoBuilding(FootClass* pThis, bool noDeploysIntoDefaultValue)
 {
-	const auto pTypeExt = this->TypeExtData;
+	if (!pThis)
+		return false;
 
-	if (!pTypeExt->Convert_Health.isset())
-		return;
+	BuildingTypeClass* pDeployType = nullptr;
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+		pDeployType = pUnit->Type->DeploysInto;
 
-	const double min = pTypeExt->Convert_Health_AbovePercent;
-	const double max = pTypeExt->Convert_Health_BelowPercent;
+	if (!pDeployType)
+	{
+		if (auto const pType = TechnoTypeExt::Fetch(pThis->GetTechnoType())->Convert_Deploy.Get())
+			pDeployType = abstract_cast<BuildingTypeClass*>(pType);
+	}
 
-	if (min < 0 && max < 0)
-		return;
+	if (!pDeployType)
+		return noDeploysIntoDefaultValue;
 
-	const auto pThis = this->OwnerObject();
-
-	if (TechnoExt::IsHealthInThreshold(pThis, min, max))
-		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
+	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
+	// Now, through additional checks, we can directly exclude the unit who want to deploy.
+	return TechnoExt::CanCreateBuildingHere(pThis, pDeployType);
 }
 
 // =============================
