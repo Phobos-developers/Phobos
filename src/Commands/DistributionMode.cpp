@@ -308,7 +308,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(
 		&& !pTerrain->Type->Immune;
 }
 
-std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
+std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range, int& selectCount)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
 	// and in-air targets are within the same distance check.
@@ -353,7 +353,11 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 			info.CurrentPassenger = 0;
 			info.BySize = false;
 			info.CanBeOccupied = false;
+			info.Selected = ObjectClass::CurrentObjects.FindItemIndex(pItem) >= 0;
 			record.emplace_back(info);
+
+			if (info.Selected)
+				selectCount++;
 		}
 	}
 
@@ -439,7 +443,8 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 {
 	VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 	const auto spreadRange = Phobos::Config::DistributionSpreadRange;
-	auto record = CollectAndSortTargets(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell);
+	int selectCount = 0;
+	auto record = CollectAndSortTargets(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell, selectCount);
 
 	const size_t recordSize = record.size();
 	const size_t maxSize = recordSize;
@@ -586,6 +591,23 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 			});
 	}
 
+	if (selectCount > 0)
+	{
+		int hasDeselected = 0;
+
+		for (const auto& item : record)
+		{
+			if (item.Selected)
+			{
+				item.pTechno->Deselect();
+				hasDeselected++;
+
+				if (hasDeselected >= selectCount)
+					break;
+			}
+		}
+	}
+
 	int current = 1;
 
 	for (const auto& selectInfo : selectedObjects)
@@ -678,6 +700,23 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		{
 			ClickedTargetAction(selectInfo.pTechno, currentAction, pTarget);
 			info.CurrentPassenger += canTargetSize;
+		}
+	}
+
+	if (selectCount > 0)
+	{
+		int hasSelected = 0;
+
+		for (const auto& item : record)
+		{
+			if (item.Selected)
+			{
+				item.pTechno->Select();
+				hasSelected++;
+
+				if (hasSelected >= selectCount)
+					break;
+			}
 		}
 	}
 }
@@ -783,6 +822,26 @@ void DistributionModeHoldDownCommandClass::ProcessCellClick(CellStruct* pCell, A
 	}
 }
 
+Action DistributionModeHoldDownCommandClass::GetRealAction(TechnoClass* pTechno, Action action)
+{
+	if (ObjectClass::CurrentObjects.FindItemIndex(pTechno) < 0)
+		return action;
+
+	Point2D screenPos = DisplayClass::Instance.LeftDownPosition;
+	CellStruct cell;
+	CoordStruct coords;
+	ObjectClass* pTarget = nullptr;
+	BYTE a5 = 0, a6 = 0;
+
+	if (!DisplayClass::Instance.ProcessClickCoords(&screenPos, &cell, &coords, &pTarget, &a5, &a6))
+		return action;
+
+	pTechno->Deselect();
+	action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
+	pTechno->Select();
+	return action;
+}
+
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 {
 	enum { SkipGameCode = 0x4AE99B };
@@ -807,14 +866,16 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget))
 			{
-				if (DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, action, pTechno))
+				const auto realAction = DistributionModeHoldDownCommandClass::GetRealAction(pTechno, action);
+
+				if (DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, realAction, pTechno))
 				{
-					auto info = DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, action);
+					auto info = DistributionModeHoldDownCommandClass::CollectTargetInfo(pTechno, realAction);
 					DistributionModeHoldDownCommandClass::ProcessDistributionMode(info, pTarget, Phobos::Config::DistributionFilterMode, noMove);
 				}
 				else
 				{
-					DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, action, noMove);
+					DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, realAction, noMove);
 				}
 			}
 			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
@@ -922,7 +983,18 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
+		bool isDeselected = false;
+
+		if (ObjectClass::CurrentObjects.FindItemIndex(pTechno) >= 0)
+		{
+			isDeselected = true;
+			pTechno->Deselect();
+		}
+
 		const auto action = DisplayClass::Instance.DecideAction(cell, pTarget, 0);
+
+		if (isDeselected)
+			pTechno->Select();
 
 		if (!DistributionModeHoldDownCommandClass::IsDistributionModeEligible(Phobos::Config::DistributionSpreadRange, count, action, pTechno))
 			return 0;
