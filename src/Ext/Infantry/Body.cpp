@@ -82,9 +82,6 @@ bool InfantryExt::PrepareConvertToType(InfantryClass* pThis, TechnoTypeClass* pT
 	if (!pCell)
 		return false;
 
-	if (pCell->OccupationFlags & 0x01)
-		return false;
-
 	auto const pExt = InfantryExt::Fetch(pThis);
 
 	// Already walking there for a conversion that was ordered before this one; keep it, so the
@@ -124,6 +121,11 @@ void InfantryExt::UpdatePendingConvert(InfantryClass* pThis)
 	// Still on the way. Force_Immediate_Destination does not set IsMoving, the locomotor does
 	// that itself when it picks HeadToCoord up, so this only waits for an actual walk.
 	if (pThis->Locomotor && pThis->Locomotor->Is_Moving())
+		return;
+
+	auto const current = pThis->GetCoords();
+	auto const center = MapClass::Instance.TryGetCellAt(current)->GetCenterCoords();
+	if (current != center)
 		return;
 
 	const bool canConvert = InfantryExt::CanConvertAtCellCenter(pThis)
