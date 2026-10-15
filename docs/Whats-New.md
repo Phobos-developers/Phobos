@@ -2061,6 +2061,8 @@ PreserveCSFWhitespace=false      ; boolean
 - [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
 - [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
 - [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
+- [Selling units directly](New-or-Enhanced-Logics.md#selling-units-directly) without a repair depot via `Unsellable.Direct` (by frg2089)
+- [Custom animation when selling TechnoTypes](New-or-Enhanced-Logics.md#selling-units-directly) via `SellingAnim` in `artmd.ini` (by frg2089)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
