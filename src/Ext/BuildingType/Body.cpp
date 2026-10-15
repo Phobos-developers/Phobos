@@ -770,6 +770,8 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->AutoUpgrade.Read(exINI, pSection, "AutoUpgrade");
+	this->Convert_Health_AfterBuildup.Read(exINI, pSection, "Convert.Health.AfterBuildup");
+	this->Convert_Direction.Read(exINI, pSection, "Convert.Direction");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -940,6 +942,8 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Academy_Country_Types)
 		.Process(this->Academy_Country_Ignore)
 		.Process(this->AutoUpgrade)
+		.Process(this->Convert_Health_AfterBuildup)
+		.Process(this->Convert_Direction)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
