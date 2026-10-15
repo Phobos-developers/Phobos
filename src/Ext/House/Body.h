@@ -42,6 +42,10 @@ public:
 	bool ForceOnlyTargetHouseEnemy;
 	int ForceOnlyTargetHouseEnemyMode;
 
+	// TechnoTypes with `Unsellable.Direct=yes` this house currently owns. Kept up to date by
+	// TechnoExt, so that sell mode can be entered even when no building is owned at all.
+	int OwnedUnsellableDirectTechnos;
+
 	CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 	CounterClass LimboBuildings; // Currently owned buildings in limbo
 	CounterClass LimboInfantry;  // Currently owned infantry in limbo
@@ -101,6 +105,7 @@ public:
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
 		, OwnedCountedHarvesters {}
+		, OwnedUnsellableDirectTechnos { 0 }
 		, LimboAircraft {}
 		, LimboBuildings {}
 		, LimboInfantry {}
@@ -145,6 +150,11 @@ public:
 	void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 	int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
 	float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
+
+	// Counts a TechnoType carrying `Unsellable.Direct=yes` towards, or out of, `pOwner`'s total
+	// of currently owned ones. TechnoTypes without the flag and null arguments are ignored.
+	// Pass `add = false` before a techno changes owner or type and `add = true` afterwards.
+	static void UpdateOwnedUnsellableDirectTechnos(HouseClass* pOwner, TechnoTypeClass* pType, bool add);
 
 	int GetForceEnemyIndex();
 	void SetForceEnemyIndex(int EnemyIndex);

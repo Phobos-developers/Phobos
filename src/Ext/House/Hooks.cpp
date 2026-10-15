@@ -287,6 +287,9 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		}
 	}
 
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pThis->Owner, pType, false);
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pNewOwner, pType, true);
+
 	if (pFoot)
 	{
 		if (humanAndComputer)
