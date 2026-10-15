@@ -2053,6 +2053,8 @@ HideShakeEffects=false           ; boolean
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
+- [Selling units directly](New-or-Enhanced-Logics.md#selling-units-directly) without a repair depot via `Unsellable.Direct` (by frg2089)
+- [Custom animation when selling TechnoTypes](New-or-Enhanced-Logics.md#selling-units-directly) via `SellingAnim` in `artmd.ini` (by frg2089)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
