@@ -2525,6 +2525,11 @@ HideShakeEffects=false           ; boolean
 
 ```{dropdown} Pre-release changes
 
+#### TBD
+
+##### Phobos fixes:
+- Fixed a crash occuring when destroying a Tank Bunker with even foundation size f.ex 2x2 (by Starkku)
+
 #### 0.5-alpha2
 
 ##### Vanilla fixes:
