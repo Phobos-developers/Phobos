@@ -2053,7 +2053,7 @@ HideShakeEffects=false           ; boolean
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
-- Customize whether unit replace tag to vehiclethief/crew/passengers when it has been destroyed (by NetsuNegi)
+- [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

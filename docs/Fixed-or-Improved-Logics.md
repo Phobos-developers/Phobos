@@ -2210,9 +2210,9 @@ In `rulesmd.ini`:
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
-### Customize whether unit replace tag to vehiclethief/crew/passengers when it has been destroyed
+### Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
 
-- In vanilla, units always replace tag whether spawns vehicle thief or crews. Ares broken it that only replace tag to crews. Now you can customize it.
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it.
 
 In `rulesmd.ini`:
 ```ini
