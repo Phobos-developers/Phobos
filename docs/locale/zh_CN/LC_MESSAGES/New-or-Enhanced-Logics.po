@@ -4228,8 +4228,8 @@ msgstr "新单位会继承源单位的生命值百分比、老兵等级、精神
 msgid "`Convert.Direction` determines the direction the new techno faces when converting from a `BuildingType`. If not set, the new techno keeps the facing of the source."
 msgstr "`Convert.Direction` 决定从该 `BuildingType` 转换而出的新单位的朝向。未设置时新单位保持源单位的朝向。"
 
-msgid "The building animations played while converting to or from a building are customizable with the following tags."
-msgstr "转换为建筑或从建筑转换时播放的建筑动画可以通过以下标签自定义。"
+msgid "The building animations played while converting to or from a building are customizable with the following tags. Each of them can also be set in `[General]` to define its global default value."
+msgstr "转换为建筑或从建筑转换时播放的建筑动画可以通过以下标签自定义。这些标签也都可以在 `[General]` 中设置以定义其全局默认值。"
 
 msgid "`Convert.ShowBuildupFrom` makes the building being converted play its sell animation instead of disappearing immediately. Requires the building to be sellable."
 msgstr "`Convert.ShowBuildupFrom` 使被转换的建筑播放其出售动画而不是立即消失。要求该建筑可以被出售。"

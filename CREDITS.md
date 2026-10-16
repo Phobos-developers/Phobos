@@ -1008,6 +1008,7 @@ This page lists all the individual contributions to the project by their author.
   - Convert TechnoType into any other type, including to and from `BuildingType`s
   - Infantry walk to the centre of their cell before converting into another type
   - Carry over health percentage, veteran status, attribute multipliers and slave manager on conversion
+  - Global default value for `Convert.ShowBuildup`, `Convert.ShowBuildupFrom` and `Convert.ShowBuildupTo`
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
 - **dh381-1**:
   - Detonate ivan bomb on impact

@@ -3459,6 +3459,9 @@ msgstr "步兵在转换为其他类型前会先走到所在单元格的中央"
 msgid "Carry over health percentage, veteran status, attribute multipliers and slave manager on conversion"
 msgstr "转换时继承生命值百分比、老兵等级、属性倍增器与奴隶管理器"
 
+msgid "Global default value for `Convert.ShowBuildup`, `Convert.ShowBuildupFrom` and `Convert.ShowBuildupTo`"
+msgstr "`Convert.ShowBuildup`、`Convert.ShowBuildupFrom` 和 `Convert.ShowBuildupTo` 的全局默认值"
+
 msgid ""
 "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "
 "houses"
