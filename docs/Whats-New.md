@@ -173,6 +173,8 @@ ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
+RightClickCommand=false          ; boolean
+TypeSelectByMultiClick=false     ; boolean
 PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
@@ -2053,6 +2055,8 @@ HideShakeEffects=false           ; boolean
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
+- [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)

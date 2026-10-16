@@ -1004,3 +1004,6 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **Igor Kolchinskii (leosnake2208)**:
+  - Right-click to command
+  - Type selection by double/triple-click
