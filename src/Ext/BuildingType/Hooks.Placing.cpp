@@ -1122,7 +1122,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 						if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
 							continue;
 
-						if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
+						if (pConYard->CurrentMission == Mission::Construction || pConYard->QueuedMission == Mission::Selling)
 							continue;
 
 						const auto pConYardType = pConYard->Type;
