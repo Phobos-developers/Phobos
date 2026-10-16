@@ -1874,17 +1874,22 @@ Cloak.KickOutParasite=        ; boolean, default to [General] -> Cloak.KickOutPa
   - Infantry that deploy or undeploy into a type other than an infantry type first walk to the centre of the cell they are occupying, so the conversion animation is played in the middle of the cell.
   - The new techno inherits the health percentage, veteran status, mind control, shields, invulnerability, attached effects, armor / firepower / speed multipliers and slave manager of the source techno. This also applies to vanilla `DeploysInto`, `UndeploysInto` and selling.
   - `Convert.Direction` determines the direction the new techno faces when converting from a `BuildingType`. If not set, the new techno keeps the facing of the source.
-  - The building animations played while converting to or from a building are customizable with the following tags.
+  - The building animations played while converting to or from a building are customizable with the following tags. Each of them can also be set in `[General]` to define its global default value.
     - `Convert.ShowBuildupFrom` makes the building being converted play its sell animation instead of disappearing immediately. Requires the building to be sellable.
     - `Convert.ShowBuildupTo` makes the newly created building play its buildup animation and plays `[AudioVisual] -> BuildingSlam` at its location instead of appearing finished right away. Requires `Buildup=` (the name of an SHP file) to be set for the new building type in `artmd.ini`.
     - `Convert.ShowBuildup` enables both of the above at once.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; TechnoType
+[General]
 Convert.ShowBuildup=false         ; boolean
 Convert.ShowBuildupFrom=false     ; boolean
 Convert.ShowBuildupTo=false       ; boolean
+
+[SOMETECHNO]                      ; TechnoType
+Convert.ShowBuildup=              ; boolean, default to [General] -> Convert.ShowBuildup
+Convert.ShowBuildupFrom=          ; boolean, default to [General] -> Convert.ShowBuildupFrom
+Convert.ShowBuildupTo=            ; boolean, default to [General] -> Convert.ShowBuildupTo
 
 [SOMEBUILDING]                    ; BuildingType
 Convert.Direction=                ; Direction type (integers from 0-255)

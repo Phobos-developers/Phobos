@@ -1131,6 +1131,9 @@ msgstr "[步兵部署或反部署为非步兵类型时会先走到所在单元�
 msgid "Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over health percentage, veteran status, attribute multipliers and slave manager of the source techno (by frg2089)"
 msgstr "原版的 `DeploysInto`、`UndeploysInto` 与出售现在同样会将源单位的生命值百分比、老兵等级、属性倍增器与奴隶管理器传递给新单位（by frg2089）"
 
+msgid "Global default value for `Convert.ShowBuildup`, `Convert.ShowBuildupFrom` and `Convert.ShowBuildupTo` (by frg2089)"
+msgstr "`Convert.ShowBuildup`、`Convert.ShowBuildupFrom` 和 `Convert.ShowBuildupTo` 的全局默认值（by frg2089）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
