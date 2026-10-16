@@ -132,6 +132,9 @@ DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
 	if (pThis->Deactivated || pThis->IsUnderEMP())
 		return SkipAll;
 
+	if (!pThis->Target && (TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis)))
+		return SkipAll;
+
 	return 0;
 }
 
