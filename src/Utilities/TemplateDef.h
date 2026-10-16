@@ -927,6 +927,7 @@ namespace detail
 			{
 				{"vehiclethief", AffectedSurvivor::VehicleThief},
 				{"crew", AffectedSurvivor::Crew},
+				{"pilot", AffectedSurvivor::Crew},
 				{"passengers", AffectedSurvivor::Passengers},
 				{"all", AffectedSurvivor::All},
 				{"none", AffectedSurvivor::None},
