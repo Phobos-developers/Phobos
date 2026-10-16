@@ -444,9 +444,11 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 				if (std::find(checkedCells.begin(), checkedCells.end(), pDestinationCell) == checkedCells.end())
 					checkedCells.push_back(pDestinationCell);
 
-				if (std::find(optionalCells.begin(), optionalCells.end(), pDestinationCell) != optionalCells.end())
+				auto it = std::find(optionalCells.begin(), optionalCells.end(), pDestinationCell);
+
+				if (it != optionalCells.end())
 				{
-					optionalCells.erase(std::remove(optionalCells.begin(), optionalCells.end(), pDestinationCell), optionalCells.end());
+					optionalCells.erase(it);
 					auto searchCell = pDestinationCell->MapCoords - CellStruct { 1, 1 };
 
 					for (int i = 0; i < 4; ++i)
@@ -539,7 +541,7 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 
 			for (const auto& pOwned : pHouse->Buildings)
 			{
-				if (reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pBuildingType, pHouse)) // CanUpgradeBuilding
+				if (pOwned->CanUpgradeBuilding(pBuildingType, pHouse))
 				{
 					if (pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
 					{
