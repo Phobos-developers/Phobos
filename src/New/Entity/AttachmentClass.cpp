@@ -124,16 +124,30 @@ void AttachmentClass::AI()
 		{
 			this->Child->IsFallingDown = this->Parent->IsFallingDown;
 			this->Child->WasFallingDown = this->Parent->WasFallingDown;
-			this->Child->CloakState = this->Parent->CloakState;
+			if (this->Child->CloakState != this->Parent->CloakState)
+			{
+				const auto oldChildCloakState = this->Child->CloakState;
+				this->Child->CloakState = this->Parent->CloakState;
+				this->Child->Mark(MarkType::Change);
+
+				if ((this->Child->CloakState == CloakState::Cloaking || this->Child->CloakState == CloakState::Cloaked)
+					&& (oldChildCloakState == CloakState::Uncloaked || oldChildCloakState == CloakState::Uncloaking))
+				{
+					reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(this->Child, false);
+				}
+			}
+			this->Child->CloakProgress = this->Parent->CloakProgress;
 			this->Child->WarpingOut = this->Parent->WarpingOut;
 			this->Child->unknown_280 = this->Parent->unknown_280; // sth related to teleport
 			this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
 			this->Child->Deactivated = this->Parent->Deactivated;
+			this->Child->IsImmobilized = this->Parent->IsImmobilized;
 			//this->Child->Flash(this->Parent->Flashing.DurationRemaining);
 
 			this->Child->IronCurtainTimer = this->Parent->IronCurtainTimer;
 			this->Child->IdleActionTimer = this->Parent->IdleActionTimer;
 			this->Child->IronTintTimer = this->Parent->IronTintTimer;
+			this->Child->ForceShielded = this->Parent->ForceShielded;
 			this->Child->CloakDelayTimer = this->Parent->CloakDelayTimer;
 			this->Child->ChronoLockRemaining = this->Parent->ChronoLockRemaining;
 			this->Child->Berzerk = this->Parent->Berzerk;
@@ -160,6 +174,16 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 		if (pType->DestructionWeapon_Child.isset())
 			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+
+		if (pType->InheritStateEffects)
+		{
+			if (this->Child->CloakState != CloakState::Uncloaked && !this->Child->GetTechnoType()->Cloakable)
+			{
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(this->Child, false);
+			}
+
+			this->Child->ForceShielded = false;
+		}
 
 		if (pType->InheritDestruction && this->Child)
 			TechnoExt::Kill(this->Child, pSource);
@@ -256,6 +280,16 @@ bool AttachmentClass::DetachChild()
 
 		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
 			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
+
+		if (pType->InheritStateEffects)
+		{
+			if (this->Child->CloakState != CloakState::Uncloaked && !this->Child->GetTechnoType()->Cloakable)
+			{
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(this->Child, false);
+			}
+
+			this->Child->ForceShielded = false;
+		}
 
 		// FIXME this won't work probably
 		if (pType->InheritOwner)

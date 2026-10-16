@@ -507,6 +507,72 @@ void __fastcall BuildingClass_Flash(BuildingClass* pThis, void*, int duration)
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4004, BuildingClass_Flash) // BuildingClass
 
+void __fastcall TechnoClass_Uncloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pThis, bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Uncloaked && pAttachment->Child->CloakState != CloakState::Uncloaking)
+			{
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pAttachment->Child, false);
+			}
+		}
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto const pParent = pExt->ParentAttachment->Parent;
+		if (pParent && pParent->IsAlive && !pParent->InLimbo && pParent->CloakState != CloakState::Uncloaked && pParent->CloakState != CloakState::Uncloaking)
+		{
+			reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x7036C0)(pParent, bPlaySound);
+		}
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60CC, TechnoClass_Uncloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B4, TechnoClass_Uncloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4318, TechnoClass_Uncloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2700, TechnoClass_Uncloak) // AircraftClass
+
+void __fastcall TechnoClass_Cloak(TechnoClass* pThis, void*, bool bPlaySound)
+{
+	reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pThis, bPlaySound);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	for (const auto& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Child && pAttachment->Child->IsAlive && !pAttachment->Child->InLimbo)
+		{
+			if (pAttachment->Child->CloakState != CloakState::Cloaked && pAttachment->Child->CloakState != CloakState::Cloaking)
+			{
+				reinterpret_cast<void(__thiscall*)(TechnoClass*, bool)>(0x703770)(pAttachment->Child, false);
+			}
+
+			reinterpret_cast<void(__thiscall*)(ObjectClass*, bool)>(0x5F5280)(pAttachment->Child, false);
+		}
+	}
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F60D0, TechnoClass_Cloak) // UnitClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB4B8, TechnoClass_Cloak) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E431C, TechnoClass_Cloak) // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2704, TechnoClass_Cloak) // AircraftClass
+
+DEFINE_HOOK(0x6FB74B, TechnoClass_UpdateCloak_SkipAttached, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+			return 0x6FBC80;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
