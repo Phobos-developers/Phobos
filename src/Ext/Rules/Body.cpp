@@ -221,6 +221,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DestroyAnim_Random.Read(exINI, GameStrings::General, "DestroyAnim.Random");
 	this->UseDisguiseMovementSpeed.Read(exINI, GameStrings::General, "UseDisguiseMovementSpeed");
 	this->Convert_ResetMindControl.Read(exINI, GameStrings::General, "Convert.ResetMindControl");
+	this->Convert_ShowBuildup.Read(exINI, GameStrings::General, "Convert.ShowBuildup");
+	this->Convert_ShowBuildupFrom.Read(exINI, GameStrings::General, "Convert.ShowBuildupFrom");
+	this->Convert_ShowBuildupTo.Read(exINI, GameStrings::General, "Convert.ShowBuildupTo");
 	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.ContentIfAnyMatch");
 	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, GameStrings::General, "BuildLimitGroup.NotBuildableIfQueueMatch");
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
@@ -843,6 +846,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->Convert_ResetMindControl)
+		.Process(this->Convert_ShowBuildup)
+		.Process(this->Convert_ShowBuildupFrom)
+		.Process(this->Convert_ShowBuildupTo)
 		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
 		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
 		.Process(this->ForceWeapon_InRange_TechnoOnly)

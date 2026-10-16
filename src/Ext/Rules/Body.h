@@ -127,6 +127,9 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> UseDisguiseMovementSpeed;
 		Valueable<bool> Convert_ResetMindControl;
+		Valueable<bool> Convert_ShowBuildup;
+		Valueable<bool> Convert_ShowBuildupFrom;
+		Valueable<bool> Convert_ShowBuildupTo;
 		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
 		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
@@ -670,6 +673,9 @@ public:
 			, DestroyAnim_Random { true }
 			, UseDisguiseMovementSpeed { false }
 			, Convert_ResetMindControl { false }
+			, Convert_ShowBuildup { false }
+			, Convert_ShowBuildupFrom { false }
+			, Convert_ShowBuildupTo { false }
 			, BuildLimitGroup_ContentIfAnyMatch { false }
 			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
 			, DigitalDisplay_Health_FakeAtDisguise { true }

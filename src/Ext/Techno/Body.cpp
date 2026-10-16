@@ -483,7 +483,8 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	if (pFromBuilding && pFromBuilding->CanBeSold() && !pFromBuilding->IsStrange())
 	{
 		auto const pFromBuildingExt = BuildingExt::Fetch(pFromBuilding);
-		showBuildupFrom = pFromBuildingExt->TypeExtData->Convert_ShowBuildupFrom || pFromBuildingExt->TypeExtData->Convert_ShowBuildup;
+		showBuildupFrom = pFromBuildingExt->TypeExtData->Convert_ShowBuildupFrom.Get(RulesExt::Global()->Convert_ShowBuildupFrom)
+			|| pFromBuildingExt->TypeExtData->Convert_ShowBuildup.Get(RulesExt::Global()->Convert_ShowBuildup);
 	}
 
 	if (showBuildupFrom)
@@ -504,7 +505,8 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	auto const pToBuildingExt = BuildingExt::Fetch(pToBuilding);
 	bool showBuildupTo = false;
 	if (pToBuilding->Type->Buildup)
-		showBuildupTo = pToBuildingExt->TypeExtData->Convert_ShowBuildupTo || pToBuildingExt->TypeExtData->Convert_ShowBuildup;
+		showBuildupTo = pToBuildingExt->TypeExtData->Convert_ShowBuildupTo.Get(RulesExt::Global()->Convert_ShowBuildupTo)
+			|| pToBuildingExt->TypeExtData->Convert_ShowBuildup.Get(RulesExt::Global()->Convert_ShowBuildup);
 
 	if (showBuildupTo)
 	{
