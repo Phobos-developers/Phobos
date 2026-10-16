@@ -22,11 +22,15 @@ public:
 		return static_cast<OverlayTypeClass*>(this->GetAttachedObject());
 	}
 
+	Nullable<bool> CanBeBuiltOn;
+	Nullable<bool> CanBeBuiltOn_Remove;
 	Valueable<int> ZAdjust;
 	PhobosFixedString<32u> PaletteFile;
 	DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
 	OverlayTypeExt(OverlayTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
+		, CanBeBuiltOn {}
+		, CanBeBuiltOn_Remove {}
 		, ZAdjust { 0 }
 		, PaletteFile {}
 		, Palette {}
@@ -65,5 +69,8 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool CanPlaceBuildingOnOverlay(int overlayTypeIndex, BuildingTypeClass* pBuildingType, bool requireToBeRemovable);
+	static void RemoveOverlayFromCell(int overlayTypeIndex, CellClass* pCell, HouseClass* pSource);
 };
 
