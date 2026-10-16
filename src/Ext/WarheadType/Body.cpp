@@ -99,6 +99,36 @@ bool WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget) const
 	return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
 }
 
+// Return : 1 = allow Damage, 0 = vanilla invulnerable, -1 = always invulnerable.
+int WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget, const int damage) const
+{
+	if(!pTarget->IsIronCurtained())
+		return 1;
+
+	if(damage > 0)
+	{
+		if(this->PenetratesIronCurtain.isset())
+			return WarheadTypeExt::CanAffectInvulnerable(pTarget);
+		else
+			return pTarget->ForceShielded ? this->PenetratesForceShield.Get(false) : 0;
+	}
+	else if(damage < 0)
+	{
+		if(pTarget->ForceShielded)
+		{
+			if(this->PenetratesIronCurtain.isset() || this->PenetratesForceShield.isset())
+				return this->PenetratesForceShield.Get(this->PenetratesIronCurtain) ? 1 : -1;
+		}
+		else
+		{
+			if(this->PenetratesIronCurtain.isset())
+				return this->PenetratesIronCurtain ? 1 : -1;
+		}
+	}
+
+	return 0;
+}
+
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
