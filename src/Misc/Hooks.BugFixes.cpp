@@ -3181,10 +3181,17 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 	if (rtti == AbstractType::Building)
 		return true;
 
+	auto const pType = pTechno->GetTechnoType();
+	if (!pType)
+		return false;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+	if (pTypeExt->Unsellable_Direct.Get(false))
+		return true;
+
 	if (rtti == AbstractType::Unit || rtti == AbstractType::Aircraft)
 	{
-		auto const pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
-
 		if (pTypeExt->Unsellable.Get(RulesExt::Global()->UnitsUnsellable))
 			return false;
 
@@ -3192,9 +3199,9 @@ static bool inline CanBeSold(TechnoClass* pTechno, AbstractType rtti)
 
 		if (auto const pBuilding = pCell->GetBuilding())
 		{
-			auto const pType = pBuilding->Type;
+			auto const pBuildingType = pBuilding->Type;
 
-			if (BuildingTypeExt::Fetch(pType)->UnitSell.Get(pType->UnitRepair))
+			if (BuildingTypeExt::Fetch(pBuildingType)->UnitSell.Get(pBuildingType->UnitRepair))
 				return true;
 		}
 	}
@@ -3211,11 +3218,36 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 	GET(const AbstractType, rtti, EAX);
 
 	if (CanBeSold(pTechno, rtti))
+	{
+		if (auto const pAnimType = TechnoTypeExt::Fetch(pTechno->GetTechnoType())->SellingAnim.Get())
+		{
+			auto const pColorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
+			auto location = pTechno->Location;
+
+			if (rtti == AbstractType::Infantry)
+			{
+				location.X -= 128;
+				location.Y -= 128;
+			}
+			else
+			{
+				location.X &= ~0xFF;
+				location.Y &= ~0xFF;
+			}
+
+			auto anim = GameCreate<AnimClass>(pAnimType, location);
+			// AnimExt::SetAnimOwnerHouseKind only recolours anims that make infantry
+			// or create a unit, so the owner's colour scheme is applied here as well.
+			anim->LightConvertIndex = pColorScheme->ArrayIndex;
+			anim->LightConvert = pColorScheme->LightConvert;
+			AnimExt::SetAnimOwnerHouseKind(anim, pTechno->Owner, pTechno->Owner, false, true);
+		}
+
 		pTechno->Sell(-1);
+	}
 
 	return SkipGameCode;
 }
-
 #pragma endregion
 
 // Fixed the issue where non-repairer units needed sensors to attack cloaked friendly units.
