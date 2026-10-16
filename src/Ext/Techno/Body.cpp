@@ -682,6 +682,7 @@ void TechnoExt::HealthAutoConvertActions()
 			{
 			case Mission::None:
 			case Mission::Construction:
+			case Mission::Selling:
 				return;
 			}
 		}
