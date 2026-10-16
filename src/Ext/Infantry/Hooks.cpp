@@ -30,6 +30,9 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_ConvertDeploy_NoSequence, 0x5
 		// instead: it forces Mission_Guard, so Mission_Unload cannot run a second time for one
 		// deploy command. A build with the guard and both assignments removed behaved identically.
 
+		if (!TechnoExt::CanDeployOnCell(pThis))
+			return FinishMission;
+
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
 		return FinishMission;
 	}
@@ -54,6 +57,9 @@ DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
 
 	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
 	{
+		if (!TechnoExt::CanDeployOnCell(pThis))
+			return 0;
+
 		pExt->HasDeployConverted = true;
 		pExt->HasUndeployConverted = false;
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
@@ -71,6 +77,9 @@ DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
 
 	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
 	{
+		if (!TechnoExt::CanUndeployOnCell(pThis))
+			return 0;
+
 		pExt->HasUndeployConverted = true;
 		pExt->HasDeployConverted = false;
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
@@ -178,6 +187,31 @@ DEFINE_HOOK(0x51ECC0, InfantryClass_WhatAction_ObjectClass_IsAreaFire, 0xA)
 	const auto deployWeapon = pThis->GetWeapon(deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pObject))->WeaponType;
 
 	return deployWeapon && deployWeapon->AreaFire ? IsAreaFire : NotAreaFire;
+}
+
+DEFINE_HOOK(0x51ECEC, InfantryClass_MouseOverObject_DeployerCursor, 0x6)
+{
+	enum { Continue = 0x51ED10 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (pThis->Type->Deployer)
+	{
+		const bool canDeploy = pThis->IsDeployed() ?
+			TechnoExt::CanUndeployOnCell(pThis) :
+			TechnoExt::CanDeployOnCell(pThis);
+
+		if (canDeploy)
+			R->EBP(Action::Self_Deploy);
+		else
+			R->EBP(Action::NoDeploy);
+	}
+	else
+	{
+		R->EBP(Action::None);
+	}
+
+	return Continue;
 }
 
 #pragma endregion

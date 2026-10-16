@@ -4,12 +4,14 @@
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Event/Body.h>
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/Enum.h>
 #include <Interop/TechnoExt.h>
 
 TechnoExt::~TechnoExt()
@@ -469,6 +471,245 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
+}
+
+TechnoTypeClass* TechnoExt::GetDeployTargetType(TechnoClass* pThis)
+{
+	if (!pThis)
+		return nullptr;
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+
+	if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
+		return pTypeExt->Convert_Deploy;
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		if (pUnit->Type->DeploysInto)
+			return pUnit->Type->DeploysInto;
+	}
+
+	return pType;
+}
+
+bool TechnoExt::CanTechnoExistOnCell(TechnoClass* pThis, TechnoTypeClass* pTargetType, CellClass* pCell)
+{
+	if (!pThis)
+		return false;
+
+	if (!pCell)
+		pCell = pThis->GetCell();
+
+	if (!pCell)
+		return false;
+
+	if (!pTargetType)
+		pTargetType = pThis->GetTechnoType();
+
+	if (auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTargetType))
+	{
+		if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			return UnitExt::CanDeployIntoBuilding(pUnit);
+
+		auto mapCoords = pCell->MapCoords;
+		if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
+			mapCoords += CellStruct { -1, -1 };
+
+		return pBuildingType->CanCreateHere(mapCoords, pThis->Owner);
+	}
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*>(pType))
+	{
+		auto const pUnitTypeExt = UnitTypeExt::Fetch(pUnitType);
+		if (pUnitTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
+		{
+			if (IsLandTypeInFlags(pUnitTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get(), pCell->LandType))
+				return false;
+		}
+	}
+
+	const bool isWaterCell = (pCell->LandType == LandType::Water);
+	const bool onBridge = pCell->ContainsBridge();
+
+	auto const speed = pTargetType->SpeedType;
+	auto const mZone = pTargetType->MovementZone;
+
+	const bool supportsWater = pTargetType->Naval
+		|| speed == SpeedType::Float
+		|| speed == SpeedType::FloatBeach
+		|| speed == SpeedType::Hover
+		|| speed == SpeedType::Amphibious
+		|| mZone == MovementZone::Water
+		|| mZone == MovementZone::WaterBeach
+		|| mZone == MovementZone::Amphibious
+		|| mZone == MovementZone::AmphibiousDestroyer
+		|| mZone == MovementZone::AmphibiousCrusher;
+
+	const bool isPureWaterOnly = (mZone == MovementZone::Water || speed == SpeedType::Float)
+		&& speed != SpeedType::FloatBeach
+		&& speed != SpeedType::Hover
+		&& speed != SpeedType::Amphibious
+		&& mZone != MovementZone::WaterBeach
+		&& mZone != MovementZone::Amphibious
+		&& mZone != MovementZone::AmphibiousDestroyer
+		&& mZone != MovementZone::AmphibiousCrusher;
+
+	if (isWaterCell && !supportsWater && !onBridge)
+	{
+		const bool isFlyingNoLand = (speed == SpeedType::Winged || mZone == MovementZone::Fly) && !pType->DeployToLand;
+		if (!isFlyingNoLand)
+			return false;
+	}
+
+	if (isPureWaterOnly && !isWaterCell && pCell->LandType != LandType::Beach)
+		return false;
+
+	if (speed == SpeedType::Winged || mZone == MovementZone::Fly)
+	{
+		if (pType->DeployToLand)
+		{
+			if (isWaterCell && !supportsWater && !onBridge)
+				return false;
+
+			if (!isWaterCell && isPureWaterOnly)
+				return false;
+		}
+	}
+	else if (speed != SpeedType::None && mZone != MovementZone::None)
+	{
+		if (!pCell->IsClearToMove(speed, true, true, -1, mZone, -1, onBridge))
+			return false;
+	}
+
+	const bool targetIsGround = (speed != SpeedType::Winged && mZone != MovementZone::Fly)
+		|| pType->DeployToLand || pTargetType->DeployToLand;
+
+	if (targetIsGround)
+	{
+		ObjectClass* pFirstObj = nullptr;
+		if (pCell->ContainsBridge())
+			pFirstObj = (pThis->IsInAir() || pThis->GetHeight() > 0 || pThis->OnBridge) ? pCell->AltObject : pCell->FirstObject;
+		else
+			pFirstObj = pCell->FirstObject;
+
+		int groundInfantryCount = 0;
+		for (auto pObj = pFirstObj; pObj; pObj = pObj->NextObject)
+		{
+			if (pObj == pThis)
+				continue;
+
+			// Objects flying overhead do not occupy ground space
+			if (pObj->IsInAir() || pObj->GetHeight() > 0)
+				continue;
+
+			// Any ground building blocks ground deployment
+			if (abstract_cast<BuildingClass*>(pObj))
+				return false;
+
+			// Any ground vehicle blocks ground deployment
+			if (abstract_cast<UnitClass*>(pObj))
+				return false;
+
+			// Any landed aircraft blocks ground deployment
+			if (abstract_cast<AircraftClass*>(pObj))
+				return false;
+
+			// Ground infantry
+			if (auto const pInfantry = abstract_cast<InfantryClass*>(pObj))
+			{
+				// Ground vehicles/buildings cannot share a cell with infantry
+				if (abstract_cast<UnitTypeClass*>(pTargetType) || abstract_cast<BuildingTypeClass*>(pTargetType))
+					return false;
+
+				// Enemy infantry cannot share cell
+				if (pInfantry->Owner && pThis->Owner && !pThis->Owner->IsAlliedWith(pInfantry->Owner))
+					return false;
+
+				groundInfantryCount++;
+				// In RA2, only 4 subcell positions are valid (Top / 0x2 was abandoned from Tiberian Sun)
+				if (groundInfantryCount >= 4)
+					return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool TechnoExt::CanDeployOnCell(TechnoClass* pThis, CellClass* pCell)
+{
+	return CanTechnoExistOnCell(pThis, GetDeployTargetType(pThis), pCell);
+}
+
+bool TechnoExt::CanUndeployOnCell(TechnoClass* pThis, CellClass* pCell)
+{
+	if (!pThis)
+		return false;
+
+	auto const pTypeExt = TechnoTypeExt::Fetch(pThis->GetTechnoType());
+	auto const pTargetType = pTypeExt->Convert_Undeploy ? pTypeExt->Convert_Undeploy.Get() : pThis->GetTechnoType();
+	return CanTechnoExistOnCell(pThis, pTargetType, pCell);
+}
+
+CellClass* TechnoExt::FindNearbyDeployCell(FootClass* pThis, CellClass* pCurrentCell, int maxRange)
+{
+	if (!pThis || !pCurrentCell)
+		return nullptr;
+
+	auto const pTargetType = GetDeployTargetType(pThis);
+	if (!pTargetType)
+		return nullptr;
+
+	auto const speed = pTargetType->SpeedType;
+	auto const mZone = pTargetType->MovementZone;
+
+	if (speed != SpeedType::None && mZone != MovementZone::None)
+	{
+		const auto targetCoord = MapClass::Instance.NearByLocation(
+			pCurrentCell->MapCoords,
+			speed,
+			-1,
+			mZone,
+			false,
+			maxRange, maxRange,
+			false, false, false, true,
+			CellStruct::Empty, false, false
+		);
+
+		if (targetCoord != CellStruct::Empty)
+		{
+			if (auto const pCandidate = MapClass::Instance.TryGetCellAt(targetCoord))
+			{
+				if (pCandidate != pCurrentCell && CanDeployOnCell(pThis, pCandidate))
+					return pCandidate;
+			}
+		}
+	}
+
+	const auto center = pCurrentCell->MapCoords;
+	for (int r = 1; r <= maxRange; ++r)
+	{
+		for (int dx = -r; dx <= r; ++dx)
+		{
+			for (int dy = -r; dy <= r; ++dy)
+			{
+				if (std::abs(dx) != r && std::abs(dy) != r)
+					continue;
+
+				CellStruct const candidateCoords { static_cast<short>(center.X + dx), static_cast<short>(center.Y + dy) };
+				if (auto const pCandidate = MapClass::Instance.TryGetCellAt(candidateCoords))
+				{
+					if (CanDeployOnCell(pThis, pCandidate))
+						return pCandidate;
+				}
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource)
