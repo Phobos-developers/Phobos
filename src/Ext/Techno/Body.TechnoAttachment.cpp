@@ -274,6 +274,9 @@ bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
 
 bool TechnoExt::AreRelatives(TechnoClass* pThis, TechnoClass* pThat)
 {
+	if (!pThis || !pThat)
+		return false;
+
 	return TechnoExt::GetTopLevelParent(pThis)
 		== TechnoExt::GetTopLevelParent(pThat);
 }

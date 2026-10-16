@@ -109,6 +109,7 @@ public:
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 		std::map<int, ValueableVector<std::unique_ptr<AttachmentClass>>> DormantAttachments;
+		TechnoClass* LastAttacker;
 
 		// Ares
 		std::optional<bool> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
@@ -184,6 +185,7 @@ public:
 			, ParentAttachment {}
 			, ChildAttachments {}
 			, DormantAttachments {}
+			, LastAttacker { nullptr }
 			, AltOccupation {}
 		{ }
 

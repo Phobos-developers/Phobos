@@ -5,6 +5,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/GeneralUtils.h>
 
 namespace ReceiveDamageTemp
 {
@@ -31,6 +32,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
+
+	const double versus = args->WH
+		? GeneralUtils::GetWarheadVersusArmor(args->WH, pThis, pThis->GetTechnoType())
+		: 1.0;
+	const bool isHealing = (damage * versus) < 0.0;
+
+	if (args->Attacker && !isHealing && damage > 0)
+		pExt->LastAttacker = abstract_cast<TechnoClass*>(args->Attacker);
 
 	// Apply warhead effects
 	if (damage && !pWHExt->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))

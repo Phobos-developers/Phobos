@@ -64,6 +64,9 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		if (pThis == pTechno || TechnoExt::AreRelatives(pThis, pTechno))
+			return DisallowedObject;
+
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
 	}
@@ -365,6 +368,17 @@ static Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _
 	auto result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 
+	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+	}
+
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt->ParentAttachment)
 		return result;
@@ -400,8 +414,19 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 static Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
-	auto const result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
+	auto result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
+
+	if (auto const pTechnoObj = abstract_cast<TechnoClass*>(pObj))
+	{
+		if (pThis != pTechnoObj && TechnoExt::AreRelatives(pThis, pTechnoObj))
+		{
+			if (result == Action::Attack || result == Action::AreaAttack)
+				result = Action::None;
+			else if (result == Action::Enter)
+				result = pTechnoObj->Passengers.NumPassengers > 0 ? Action::Self_Deploy : Action::NoEnter;
+		}
+	}
 
 	return result;
 }

@@ -13,7 +13,16 @@
 DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 {
 	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x4, 0x4));
+	REF_STACK(TechnoClass*, pSource, STACK_OFFSET(0x4, 0x4));
+
+	if (!pSource)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pExt->LastAttacker)
+				pSource = pExt->LastAttacker;
+		}
+	}
 
 	TechnoExt::DestroyAttachments(pThis, pSource);
 
@@ -545,7 +554,8 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 	if (pTarget)
 	{
 		Action whatAction = pThis->MouseOverObject(pTarget, false);
-		pThis->ObjectClickedAction(whatAction, pTarget, false);
+		if (whatAction != Action::Self_Deploy || pThis == pTarget)
+			pThis->ObjectClickedAction(whatAction, pTarget, false);
 	}
 	else
 	{

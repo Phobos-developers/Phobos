@@ -1028,6 +1028,12 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (pThis == pTargetTechno || TechnoExt::AreRelatives(pThis, pTargetTechno))
+			pTarget = nullptr;
+	}
+
 	pThis->Target = pTarget;
 
 	if (pThis->LocomotorTarget != pTarget)
