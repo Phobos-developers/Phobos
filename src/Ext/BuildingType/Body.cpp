@@ -543,7 +543,7 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 			{
 				if (pOwned->CanUpgradeBuilding(pBuildingType, pHouse))
 				{
-					if (pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Construction && pOwned->CurrentMission != Mission::Selling)
+					if (pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
 					{
 						const auto cell = pOwned->GetMapCoords();
 
