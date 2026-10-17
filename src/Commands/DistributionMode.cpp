@@ -279,9 +279,11 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(House
 {
 	return (pOwner->IsNeutral() ? Phobos::Config::AllowDistributionCommandOnNeutral :
 		(HouseClass::CurrentPlayer->IsAlliedWith(pOwner)
-			? (action != Action::Attack && action != Action::Sabotage && HouseClass::CurrentPlayer == pOwner
-			? Phobos::Config::AllowDistributionCommandOnOwner
-			: Phobos::Config::AllowDistributionCommandOnAllies)
+			? (action == Action::Attack || action == Action::Sabotage
+				? false
+				: HouseClass::CurrentPlayer == pOwner
+					? Phobos::Config::AllowDistributionCommandOnOwner
+					: Phobos::Config::AllowDistributionCommandOnAllies)
 			: Phobos::Config::AllowDistributionCommandOnEnemies));
 }
 
@@ -702,17 +704,18 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		}
 
 		const auto currentAction = pTarget ? selectInfo.pTechno->MouseOverObject(pTarget) : Action::NoMove;
+		const int fallbackSize = selectInfo.Size > 0 ? (info.BySize ? selectInfo.Size : 1) : 0;
 
 		if ((noMove && currentAction == Action::NoMove && (selectInfo.pTechno->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
-			|| (handlePassenger && info.CurrentPassenger + canTargetSize > info.TotalPassenger)
-			|| (handleOccupant && info.CurrentPassenger + canTargetSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy))
+			|| (handlePassenger && info.CurrentPassenger + fallbackSize > info.TotalPassenger)
+			|| (handleOccupant && info.CurrentPassenger + fallbackSize > info.TotalPassenger && info.CanBeOccupied && selectInfo.CanOccupy))
 		{
 			AreaGuardAction(static_cast<TechnoClass*>(selectInfo.pTechno));
 		}
 		else if (pTarget)
 		{
 			ClickedTargetAction(selectInfo.pTechno, currentAction, pTarget);
-			info.CurrentPassenger += canTargetSize;
+			info.CurrentPassenger += fallbackSize;
 		}
 	}
 
