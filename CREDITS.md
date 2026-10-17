@@ -459,6 +459,7 @@ This page lists all the individual contributions to the project by their author.
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
   - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -592,6 +593,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize turn rate when jumpjet vehicle crashing
   - Customize insignias palette
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
+  - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
+  - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -781,7 +784,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
-  - Country-specific veteran buildings
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
@@ -1003,3 +1005,4 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **JerryDing07** - Fix `IsSonic=true` wave drawing crash near the screen edge

@@ -337,6 +337,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 
 ## Fixes / interactions with other extensions
 
@@ -1554,24 +1556,6 @@ Units.UseRepairCost=  ; boolean
 
 ## Countries
 
-### Country-specific veteran buildings
-
-- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following flag is added to complete the meaningful combination results.
-
-```{hint}
-`Defenses` refers to buildings with `BuildCat=Combat`, while `Veteran*` is an explicit type list, so the same list is used uniformly here without distinction.
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]           ; Country
-VeteranBuildings=       ; List of BuildingTypes
-```
-
-```{note}
-Due to the game's parsing order issue, this new flag will register buildings that do not exist in its respective list when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
-```
-
 ### Customizable crew type per country
 
 - You can now define `Crew` on a per-country basis.
@@ -2225,6 +2209,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Survivors.ReplaceTagTo=vehiclethief, crew   ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all)
+
+[SOMETECHNO]                                ; TechnoType
+Survivors.ReplaceTagTo=                     ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
 ```
 
 ### Customize `DefaultToGuardArea` per gunner mode

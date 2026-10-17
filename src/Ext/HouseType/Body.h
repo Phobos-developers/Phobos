@@ -32,8 +32,6 @@ public:
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;
 
-	ValueableVector<BuildingTypeClass*> VeteranBuildings;
-
 	Nullable<AffectedHouse> RevealHouses;
 
 	Valueable<bool> Academy_AllowCountryFilter;
@@ -43,7 +41,6 @@ public:
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
-		, VeteranBuildings {}
 		, RevealHouses {}
 		, Academy_AllowCountryFilter { false }
 	{ }
