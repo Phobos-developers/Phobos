@@ -83,6 +83,8 @@ public:
 
 	std::vector<BuildingClass*> Academies;
 
+	ValueableVector<TechnoTypeClass*> TechnoPCX_IsLoad;
+  
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -119,6 +121,7 @@ public:
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
 		, Academies {}
+		, TechnoPCX_IsLoad {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

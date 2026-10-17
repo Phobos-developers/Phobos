@@ -32,6 +32,15 @@ public:
 	Nullable<bool> AttachEffects_AttachOnOwnerChange;
 	Nullable<InfantryTypeClass*> Crew;
 
+	ValueableVector<InfantryTypeClass*> EliteInfantry;
+	ValueableVector<UnitTypeClass*> EliteUnits;
+	ValueableVector<AircraftTypeClass*> EliteAircraft;
+	ValueableVector<BuildingTypeClass*> EliteBuildings;
+	ValueableVector<BuildingTypeClass*> EliteDefenses;
+	Valueable<bool> Elite_AffectsAll;
+
+	ValueableVector<BuildingTypeClass*> VeteranBuildings;
+
 	Nullable<AffectedHouse> RevealHouses;
 
 	Valueable<bool> Academy_AllowCountryFilter;
@@ -41,6 +50,13 @@ public:
 		, AttachEffects {}
 		, AttachEffects_AttachOnOwnerChange {}
 		, Crew {}
+		, EliteInfantry {}
+		, EliteUnits {}
+		, EliteAircraft {}
+		, EliteBuildings {}
+		, EliteDefenses {}
+		, Elite_AffectsAll { true }
+		, VeteranBuildings {}
 		, RevealHouses {}
 		, Academy_AllowCountryFilter { false }
 	{ }
