@@ -81,6 +81,7 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	BuildingTypeClass* ActiveEvaVoiceBuildingType;
 	std::vector<BuildingClass*> Academies;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
@@ -118,6 +119,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, ActiveEvaVoiceBuildingType { nullptr }
 		, Academies {}
 	{ }
 
