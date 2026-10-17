@@ -8,6 +8,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <Ext/Event/Body.h>
 
 class AirstrikeClass;
 class BulletClass;
@@ -88,6 +89,7 @@ public:
 	Powerup DropCrateType;
 
 	bool PreventCrewEscape;
+	AbstractClass* SpawnRandomTarget;
 
 	double OriginVeterancy;
 
@@ -141,6 +143,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, SpawnRandomTarget { nullptr }
 		, OriginVeterancy { 0.0 }
 	{ }
 
@@ -262,6 +265,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, TechnoTypeClass* pType, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static AbstractClass* FindRandomTarget(TechnoClass* pFirer, AbstractClass* pOriginalTarget, WeaponTypeClass* pWeapon);
 	static int GetDropCrateIndex(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, TechnoTypeClass* pType, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
