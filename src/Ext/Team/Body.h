@@ -1,7 +1,13 @@
 #pragma once
 #include <TeamClass.h>
+#include <AITriggerTypeClass.h>
 
 #include <Ext/TeamType/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Phobos.h>
 
 #include <Utilities/Container.h>
 #include <Utilities/Detach.h>
@@ -75,6 +81,24 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static bool HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, TechnoTypeClass* pItem);
+	static bool HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, const std::vector<TechnoTypeClass*>& list);
+	static bool HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, const std::vector<TechnoTypeClass*>& list);
+	static bool EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, TechnoTypeClass* pItem);
+	static bool EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, const std::vector<TechnoTypeClass*>& list);
+	static bool EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, const std::vector<TechnoTypeClass*>& list);
+	static bool NeutralOwns(AITriggerTypeClass* pThis, TechnoTypeClass* pItem);
+	static bool NeutralOwns(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list);
+	static bool NeutralOwnsAll(AITriggerTypeClass* pThis, const std::vector<TechnoTypeClass*>& list);
+	static bool CountConditionMet(AITriggerTypeClass* pThis, int nObjects);
+	static bool EvaluateTriggerCondition(
+		AITriggerTypeClass* pTrigger,
+		HouseClass* pHouse,
+		HouseClass* pTargetHouse = nullptr,
+		bool hasReachedMaxDefensiveTeamsLimit = false,
+		int destroyedBridgesCount = 0,
+		int undamagedBridgesCount = 0);
+
 	static TeamExt* Fetch(const TeamClass* pThis)
 	{
 		return AbstractExt::Fetch<TeamExt>(pThis);
@@ -86,4 +110,3 @@ public:
 	}
 
 };
-
