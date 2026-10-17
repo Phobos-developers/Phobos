@@ -41,7 +41,6 @@ struct DistributionSelectInfo
 	ObjectClass* pTechno;
 	int ID;
 	int Size;
-	bool IsTransport;
 	bool CanOccupy;
 };
 

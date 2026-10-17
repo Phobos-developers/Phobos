@@ -293,8 +293,6 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 		&& range > 0
 		&& count > 1
 		&& action != Action::NoMove
-		&& action != Action::Select
-		&& action != Action::ToggleSelect
 		&& !PlanningNodeClass::PlanningModeActive
 		&& pTechno
 		&& grinderCheck(action, pTechno)
@@ -416,21 +414,6 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 
 	std::sort(record.begin(), record.end(), [&](const auto& recordA, const auto& recordB)
 		{
-			const bool aIsMain = recordA.pTechno == info.pTechno;
-			const bool bIsMain = recordB.pTechno == info.pTechno;
-
-			if (aIsMain != bIsMain)
-				return aIsMain;
-
-			if (handlePassenger)
-			{
-				const int remainA = recordA.TotalPassenger - recordA.CurrentPassenger;
-				const int remainB = recordB.TotalPassenger - recordB.CurrentPassenger;
-
-				if (remainA != remainB)
-					return remainA < remainB;
-			}
-
 			const auto coordsA = recordA.Center;
 			const double distanceA = Point2D{coordsA.X, coordsA.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
@@ -578,7 +561,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 			const auto pSelectType = static_cast<TechnoClass*>(pSelect)->GetTechnoType();
 			selectInfo.ID = TechnoTypeClass::Array.FindItemIndex(pSelectType);
 			selectInfo.Size = (int)pSelectType->Size;
-			selectInfo.IsTransport = handlePassenger ? pSelectType->Passengers > 0 : false;
 			
 			if (handleOccupant)
 			{
@@ -594,9 +576,6 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	{
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
-				if (objectA.IsTransport != objectB.IsTransport)
-					return !objectA.IsTransport;
-
 				if (objectA.Size != objectB.Size)
 					return objectA.Size > objectB.Size;
 
