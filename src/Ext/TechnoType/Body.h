@@ -319,6 +319,7 @@ public:
 	Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 	Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 	Nullable<bool> Convert_ResetMindControl;
+	Valueable<bool> Convert_SpawnsConversion;
 
 	std::unique_ptr<TintTypeClass> Tint;
 
@@ -757,6 +758,7 @@ public:
 		, Convert_HumanToComputer { }
 		, Convert_ComputerToHuman { }
 		, Convert_ResetMindControl {}
+		, Convert_SpawnsConversion { false }
 
 		, Tint {}
 
