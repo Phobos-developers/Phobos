@@ -2,6 +2,8 @@
 
 #include <Utilities/TemplateDef.h>
 
+class AnimTypeClass;
+
 class TypeConvertGroup
 {
 public:
@@ -15,8 +17,8 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
-	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
+	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType = nullptr);
+	static void ConvertSW(const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType = nullptr);
 
 private:
 	template <typename T>
