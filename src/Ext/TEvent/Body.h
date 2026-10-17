@@ -53,6 +53,9 @@ enum PhobosTriggerEvent
 	CellHasAnyTechnoTypeFromList = 605,
 	AttachedIsUnderAttachedEffect = 606,
 
+	ForceSequentialEvents = 1000,
+	ForceParallelEvents = 1001,
+
 	_DummyMaximum,
 };
 
