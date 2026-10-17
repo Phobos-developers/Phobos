@@ -26,7 +26,6 @@ struct DistributionTargetInfo
 	int CurrentPassenger;
 	bool BySize;
 	bool CanBeOccupied;
-	bool Selected;
 };
 
 struct DistributionTerrainInfo
