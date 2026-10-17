@@ -310,10 +310,11 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(
 		&& !pTerrain->Type->Immune;
 }
 
-std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(CoordStruct center, double range)
+std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::CollectAndSortTargets(DistributionTargetInfo& info, double range, int filterMode, bool handlePassenger, bool handleOccupant)
 {
 	// Flatten the center to the ground so the spread range is measured horizontally
 	// and in-air targets are within the same distance check.
+	auto center = info.Center;
 	center.Z = MapClass::Instance.GetCellFloorHeight(center);
 
 	if (MapClass::Instance.GetCellAt(center)->ContainsBridge())
@@ -345,22 +346,89 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 
 		if (!MapClass::Instance.IsLocationShrouded(coords))
 		{
-			DistributionTargetInfo info;
-			info.pTechno = pItem;
-			info.Num = 0;
-			info.Center = itemCenter;
-			info.TargetIsNeutral = pItem->Owner->IsNeutral();
+			DistributionTargetInfo targetInfo;
+			targetInfo.pTechno = pItem;
+			targetInfo.Num = 0;
+			targetInfo.Center = itemCenter;
+			targetInfo.TargetIsNeutral = pItem->Owner->IsNeutral();
 			// Initialize passenger values
-			info.TotalPassenger = INT_MAX;
-			info.CurrentPassenger = 0;
-			info.BySize = false;
-			info.CanBeOccupied = false;
-			record.emplace_back(info);
+			targetInfo.TotalPassenger = INT_MAX;
+			targetInfo.CurrentPassenger = 0;
+			targetInfo.BySize = false;
+			targetInfo.CanBeOccupied = false;
+			record.emplace_back(targetInfo);
 		}
 	}
 
-	std::sort(record.begin(), record.end(), [&center](const auto& recordA, const auto& recordB)
+	if (filterMode || handlePassenger || handleOccupant)
+	{
+		for (size_t i = 0; i < record.size(); ++i)
 		{
+			auto& item = record[i];
+			const auto pItemExt = TechnoExt::Fetch(item.pTechno);
+			const auto pItemTypeExt = pItemExt->TypeExtData;
+			const auto pItemType = pItemTypeExt->OwnerObject();
+
+			if (filterMode)
+			{
+				item.pType = pItemType;
+				item.pFakeType = pItemTypeExt->FakeOf;
+
+				if (filterMode == 1)
+				{
+					const auto pItemShield = pItemExt->Shield.get();
+					item.Armor = pItemShield ? Armor(pItemShield->GetArmorType()) : pItemType->Armor;
+				}
+
+				if (filterMode == 2)
+					item.WhatAmI = item.pTechno->WhatAmI();
+			}
+
+			if (!handlePassenger && !handleOccupant)
+				continue;
+
+			if (info.WhatAmI == AbstractType::Building)
+			{
+				const auto pBldType = static_cast<BuildingTypeClass*>(pItemType);
+
+				if (handleOccupant && pBldType->CanBeOccupied && pBldType->MaxNumberOccupants > 0) // Garrison
+				{
+					item.TotalPassenger = pBldType->MaxNumberOccupants;
+					item.CurrentPassenger = static_cast<BuildingClass*>(item.pTechno)->Occupants.Count;
+					item.CanBeOccupied = true;
+				}
+				else if (handlePassenger && pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
+				{
+					item.TotalPassenger = pBldType->Passengers;
+					item.CurrentPassenger = item.pTechno->Passengers.NumPassengers;
+				}
+			}
+			else if (handlePassenger && pItemType->Passengers > 0) // Other TechnoTypes
+			{
+				item.TotalPassenger = pItemType->Passengers;
+				item.BySize = pItemTypeExt->Passengers_BySize;
+				item.CurrentPassenger = item.BySize ? item.pTechno->Passengers.GetTotalSize() : item.pTechno->Passengers.NumPassengers;
+			}
+		}
+	}
+
+	std::sort(record.begin(), record.end(), [&](const auto& recordA, const auto& recordB)
+		{
+			const bool aIsMain = recordA.pTechno == info.pTechno;
+			const bool bIsMain = recordB.pTechno == info.pTechno;
+
+			if (aIsMain != bIsMain)
+				return aIsMain;
+
+			if (handlePassenger)
+			{
+				const int remainA = recordA.TotalPassenger - recordA.CurrentPassenger;
+				const int remainB = recordB.TotalPassenger - recordB.CurrentPassenger;
+
+				if (remainA != remainB)
+					return remainA < remainB;
+			}
+
 			const auto coordsA = recordA.Center;
 			const double distanceA = Point2D{coordsA.X, coordsA.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
 
@@ -441,10 +509,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 {
 	VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 	const auto spreadRange = Phobos::Config::DistributionSpreadRange;
-	auto record = CollectAndSortTargets(info.Center, (double)spreadRange / Unsorted::LeptonsPerCell);
 
-	const size_t recordSize = record.size();
-	const size_t maxSize = recordSize;
 	Armor infoArmor = Armor::None;
 
 	if (filterMode == 1)
@@ -492,57 +557,9 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		}
 	}
 
-	if (filterMode || handlePassenger || handleOccupant)
-	{
-		for (size_t i = 0; i < recordSize; ++i)
-		{
-			auto& item = record[i];
-			const auto pItemExt = TechnoExt::Fetch(item.pTechno);
-			const auto pItemTypeExt = pItemExt->TypeExtData;
-			const auto pItemType = pItemTypeExt->OwnerObject();
-
-			if (filterMode)
-			{
-				item.pType = pItemType;
-				item.pFakeType = pItemTypeExt->FakeOf;
-
-				if (filterMode == 1)
-				{
-					const auto pItemShield = pItemExt->Shield.get();
-					item.Armor = pItemShield ? Armor(pItemShield->GetArmorType()) : pItemType->Armor;
-				}
-
-				if (filterMode == 2)
-					item.WhatAmI = item.pTechno->WhatAmI();
-			}
-
-			if (!handlePassenger && !handleOccupant)
-				continue;
-
-			if (info.WhatAmI == AbstractType::Building)
-			{
-				const auto pBldType = static_cast<BuildingTypeClass*>(pItemType);
-
-				if (handleOccupant && pBldType->CanBeOccupied && pBldType->MaxNumberOccupants > 0) // Garrison
-				{
-					item.TotalPassenger = pBldType->MaxNumberOccupants;
-					item.CurrentPassenger = static_cast<BuildingClass*>(item.pTechno)->Occupants.Count;
-					item.CanBeOccupied = true;
-				}
-				else if (handlePassenger && pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
-				{
-					item.TotalPassenger = pBldType->Passengers;
-					item.CurrentPassenger = item.pTechno->Passengers.NumPassengers;
-				}
-			}
-			else if (handlePassenger && pItemType->Passengers > 0) // Other TechnoTypes
-			{
-				item.TotalPassenger = pItemType->Passengers;
-				item.BySize = pItemTypeExt->Passengers_BySize;
-				item.CurrentPassenger = item.BySize ? item.pTechno->Passengers.GetTotalSize() : item.pTechno->Passengers.NumPassengers;
-			}
-		}
-	}
+	auto record = CollectAndSortTargets(info, (double)spreadRange / Unsorted::LeptonsPerCell, filterMode, handlePassenger, handleOccupant);
+	const size_t recordSize = record.size();
+	const size_t maxSize = recordSize;
 
 	std::vector<DistributionSelectInfo> selectedObjects;
 	selectedObjects.reserve(ObjectClass::CurrentObjects.Count);
@@ -559,6 +576,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 			const auto pSelectType = static_cast<TechnoClass*>(pSelect)->GetTechnoType();
 			selectInfo.ID = TechnoTypeClass::Array.FindItemIndex(pSelectType);
 			selectInfo.Size = (int)pSelectType->Size;
+			selectInfo.IsTransport = handlePassenger ? pSelectType->Passengers > 0 : false;
 			
 			if (handleOccupant)
 			{
@@ -574,10 +592,13 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	{
 		std::sort(selectedObjects.begin(), selectedObjects.end(), [](const auto& objectA, const auto& objectB)
 			{
-				if (objectA.Size == objectB.Size)
-					return objectA.ID < objectB.ID;
+				if (objectA.IsTransport != objectB.IsTransport)
+					return !objectA.IsTransport;
 
-				return objectA.Size > objectB.Size;
+				if (objectA.Size != objectB.Size)
+					return objectA.Size > objectB.Size;
+
+				return objectA.ID < objectB.ID;
 			});
 	}
 	else
@@ -608,6 +629,9 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 		for (size_t i = 0; i < recordSize; ++i)
 		{
 			auto& item = record[i];
+
+			if (selectInfo.pTechno == item.pTechno)
+				continue;
 
 			if (selectInfo.pTechno->MouseOverObject(item.pTechno) != info.Action)
 				continue;
@@ -971,7 +995,7 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		Action action;
+		auto action = Action::NoMove;
 
 		if (pTechno->IsSelected)
 		{

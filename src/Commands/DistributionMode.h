@@ -41,6 +41,7 @@ struct DistributionSelectInfo
 	ObjectClass* pTechno;
 	int ID;
 	int Size;
+	bool IsTransport;
 	bool CanOccupy;
 };
 
@@ -110,7 +111,7 @@ public:
 	static bool IsDistributionModeEligibleForTerrain(unsigned int range, int count, Action action, TerrainClass* pTerrain);
 	static bool IsDistributionModeOwnerEligible(HouseClass* pOwner, Action action);
 	static DistributionTargetInfo CollectTargetInfo(TechnoClass* pTechno, Action action);
-	static std::vector<DistributionTargetInfo> CollectAndSortTargets(CoordStruct center, double range);
+	static std::vector<DistributionTargetInfo> CollectAndSortTargets(DistributionTargetInfo& info, double range, int filterMode, bool handlePassenger, bool handleOccupant);
 	static std::vector<DistributionTerrainInfo> CollectAndSortTargetsForTerrain(CoordStruct center, double range);
 	static void ProcessDistributionMode(DistributionTargetInfo& info, ObjectClass* pTarget, int filterMode, bool noMove);
 	static void ProcessDistributionModeForTerrain(DistributionTerrainInfo& info, ObjectClass* pTarget, bool noMove);
