@@ -5299,6 +5299,16 @@ msgstr ""
 "`AttackMove.StopWhenTargetAcquired` 被读取为一个 "
 "`ApproachTarget.StopWhenInRange` 的兼容别名（`[General]` 和单位微观部分都是如此）。"
 
+msgid ""
+"Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed"
+msgstr ""
+"自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人"
+
+msgid ""
+"In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it."
+msgstr ""
+"在原版中，当一个单位被毁时，它会将附着在自身的触发标签转移给偷车贼或驾驶员，但 Ares 破坏了这一点，以至于它只能被转移给驾驶员。现在你可以自定义了。"
+
 msgid "Subterranean unit travel height and speed"
 msgstr "潜地单位移动高度和速度"
 

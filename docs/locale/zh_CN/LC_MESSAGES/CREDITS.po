@@ -1985,6 +1985,11 @@ msgid ""
 msgstr ""
 "修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug"
 
+msgid ""
+"Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed"
+msgstr ""
+"自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

@@ -59,6 +59,9 @@ msgid ""
 " be disabled by setting `Tint.Cumulative=false` on the AttachEffect type."
 msgstr "`Cumulative=true` AE 的染色效果现在会叠加。可通过在 AE 上设置 `Tint.Cumulative=false` 以禁用。"
 
+msgid "In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares."
+msgstr "在原版中，当一个单位被毁时，它会将附着在自身的触发标签转移给偷车贼或驾驶员，但 Ares 破坏了这一点，以至于它只能被转移给驾驶员。现在，Phobos 允许使用 [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) 自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人，即默认行为与原版对齐，而不是 Ares。"
+
 msgid "0.5"
 msgstr "0.5"
 
@@ -1121,6 +1124,11 @@ msgid ""
 "Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)"
 msgstr ""
 "允许无部署序列的可部署步兵像可部署载具那样直接执行 `Convert.Deploy`（by Noble_Fish）"
+
+msgid ""
+"[Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)"
+msgstr ""
+"[自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed)（by NetsuNegi）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
