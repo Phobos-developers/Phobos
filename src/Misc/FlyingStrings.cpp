@@ -6,7 +6,7 @@
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 
-bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
+bool FlyingStrings::DrawAllowed(const CoordStruct& nCoords)
 {
 	if (auto const pCell = MapClass::Instance.TryGetCellAt(nCoords))
 		return !(pCell->IsFogged() || pCell->IsShrouded());
@@ -28,7 +28,7 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 void FlyingStrings::AddMoneyString(int amount, ObjectClass* pSource, HouseClass* pOwner,
 	AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
-	if (amount == 0 || MapClass::Instance.IsLocationShrouded(coords))
+	if (amount == 0 || !FlyingStrings::DrawAllowed(coords))
 		return;
 
 	if (displayToHouses != AffectedHouse::All && !EnumFunctions::CanTargetHouse(displayToHouses, pOwner, HouseClass::CurrentPlayer))
@@ -62,17 +62,20 @@ void FlyingStrings::UpdateAll()
 
 		point += dataItem.PixelOffset;
 
-		RectangleStruct bound = DSurface::Temp->GetRect();
-		bound.Height -= 32;
+		if (FlyingStrings::DrawAllowed(dataItem.Location))
+		{
+			RectangleStruct bound = DSurface::Temp->GetRect();
+			bound.Height -= 32;
 
-		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
-		{
-			point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
-		}
-		else
-		{
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
+			{
+				point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
+				DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			}
+			else
+			{
+				DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			}
 		}
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)
