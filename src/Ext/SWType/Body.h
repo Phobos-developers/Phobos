@@ -30,6 +30,17 @@ public:
 	ValueableIdx<VoxClass> EVA_InsufficientFunds;
 	ValueableIdx<VoxClass> EVA_SelectTarget;
 	Valueable<bool> SW_UseAITargeting;
+	Valueable<bool> SW_AITargeting_PsyDom_SkipChecks;
+	Valueable<bool> SW_AITargeting_PsyDom_AllowAir;
+	Valueable<bool> SW_AITargeting_PsyDom_AllowInvulnerable;
+	ValueableVector<TechnoTypeClass*> SW_AITargeting_PsyDom_AllowTypes;
+	ValueableVector<TechnoTypeClass*> SW_AITargeting_PsyDom_DisallowTypes;
+	Valueable<bool> SW_AITargeting_Random_SnapOnDesignators;
+	Valueable<bool> SW_AITargeting_Random_PickFirstDesignator;
+    Nullable<PartialVector2D<int>> SW_AITargeting_Base_Distance;
+    Valueable<int> SW_AITargeting_Base_MinScatter;
+	Valueable<int> SW_AITargeting_Base_MaxScatter;
+	Valueable<bool> SW_AITargeting_Base_RandomDir;
 	Valueable<bool> SW_AutoFire;
 	Valueable<bool> SW_ManualFire;
 	Valueable<bool> SW_ShowCameo;
@@ -43,6 +54,8 @@ public:
 	Valueable<double> SW_RangeMinimum;
 	Valueable<double> SW_RangeMaximum;
 	Valueable<int> SW_Shots;
+	Nullable<AffectedTarget> SW_AIRequiresTarget;
+	Nullable<AffectedHouse> SW_AIRequiresHouse;
 
 	DWORD SW_RequiredHouses;
 	DWORD SW_ForbiddenHouses;
@@ -131,6 +144,17 @@ public:
 		, EVA_Impatient { -1 }
 		, EVA_InsufficientFunds { -1 }
 		, EVA_SelectTarget { -1 }
+		, SW_AITargeting_PsyDom_SkipChecks { false }
+		, SW_AITargeting_PsyDom_AllowAir { false }
+		, SW_AITargeting_PsyDom_AllowInvulnerable { false }
+		, SW_AITargeting_PsyDom_AllowTypes {}
+		, SW_AITargeting_PsyDom_DisallowTypes {}
+		, SW_AITargeting_Random_SnapOnDesignators { false }
+		, SW_AITargeting_Random_PickFirstDesignator { false }
+		, SW_AITargeting_Base_Distance {}
+		, SW_AITargeting_Base_MinScatter { 0 }
+		, SW_AITargeting_Base_MaxScatter { 0 }
+		, SW_AITargeting_Base_RandomDir { false }
 		, SW_UseAITargeting { false }
 		, SW_AutoFire { false }
 		, SW_ManualFire { true }
@@ -155,6 +179,8 @@ public:
 		, SW_PostDependent {}
 		, SW_MaxCount { -1 }
 		, SW_Shots { -1 }
+		, SW_AIRequiresTarget {}
+		, SW_AIRequiresHouse {}
 		, Message_CannotFire {}
 		, Message_InsufficientFunds {}
 		, Message_ColorScheme { -1 }
@@ -242,6 +268,8 @@ public:
 	void ApplyActivatedMessage(SuperClass* pSW) const;
 	void ApplyActivatedEva(SuperClass* pSW) const;
 
+	bool PickDesignatorCell(HouseClass* pOwner, bool pickFirst, CellStruct& targetCell, bool& isSuccessful) const;
+
 	virtual void LoadFromINIFile(CCINIClass* pINI) override;
 	virtual void Initialize() override;
 
@@ -264,6 +292,8 @@ public:
 		~ExtContainer();
 	};
 
+	static SuperClass* CurrentAIEvaluatedSW;
+
 	static void FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell);
 
 	static ExtContainer ExtMap;
@@ -282,6 +312,7 @@ public:
 
 	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 	static SuperClass* __stdcall IsSuperAvailable(int swIdx, HouseClass* pHouse);
-
+	static bool EligibleTargetForPsyDomSW(TechnoClass* pTechno);
+	static bool HandleAITargetingOverrides(SuperClass* pSuper, SuperWeaponAITargetingMode aiTargetingType, CellStruct& targetCell, bool& isSuccessful);
 };
 
