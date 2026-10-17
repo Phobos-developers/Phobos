@@ -2,6 +2,7 @@
 // Author: Starkku
 
 #include "Body.h"
+#include <InfantryClass.h>
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
@@ -79,6 +80,28 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	GET(UnitClass*, pThis, ESI);
 
 	return UnitExt::CannotMove(pThis) ? 0x738927 : 0;
+}
+
+DEFINE_HOOK(0x51AA49, InfantryClass_Assign_Destination_DisallowMoving, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+
+	if (pThis->ParalysisTimer.HasTimeLeft())
+		return 0x51B1D7;
+
+	const auto pExt = TechnoExt::Fetch(pThis);
+
+	if (pExt->IsWebbed())
+	{
+		if (pThis->Target)
+		{
+			pThis->SetTarget(nullptr);
+			pThis->SetDestination(nullptr, false);
+			pThis->QueueMission(Mission::Sleep, false);
+		}
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73EFC4, UnitClass_Mission_Hunt_DisallowMoving, 0x6)
