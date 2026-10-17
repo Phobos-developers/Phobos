@@ -193,39 +193,36 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		auto currentCell = topLeftCell + *pFoundation;
+		const auto currentCell = topLeftCell + *pFoundation;
+		const auto pCell = MapClass::Instance.GetCellAt(currentCell);
+		auto pObject = pCell->FirstObject;
 
-		if (const auto pCell = MapClass::Instance.GetCellAt(currentCell))
+		while (pObject)
 		{
-			auto pObject = pCell->FirstObject;
+			const auto absType = pObject->WhatAmI();
 
-			while (pObject)
+			if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
 			{
-				const auto absType = pObject->WhatAmI();
+				const auto pCellTechno = static_cast<TechnoClass*>(pObject);
 
-				if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
+				if (pCellTechno != pExceptTechno) // No need to check house
 				{
-					const auto pCellTechno = static_cast<TechnoClass*>(pObject);
+					const auto pFoot = static_cast<FootClass*>(pCellTechno);
 
-					if (pCellTechno != pExceptTechno) // No need to check house
+					if (pFoot->GetCurrentSpeed() <= 0 || (locomotion_cast<TunnelLocomotionClass*>(pFoot->Locomotor) && !pFoot->Locomotor->Is_Moving()))
 					{
-						const auto pFoot = static_cast<FootClass*>(pCellTechno);
+						if (absType == AbstractType::Infantry)
+							++infantryCount.X;
 
-						if (pFoot->GetCurrentSpeed() <= 0 || (locomotion_cast<TunnelLocomotionClass*>(pFoot->Locomotor) && !pFoot->Locomotor->Is_Moving()))
-						{
-							if (absType == AbstractType::Infantry)
-								++infantryCount.X;
-
-							checkedTechnos.push_back(pCellTechno);
-						}
+						checkedTechnos.push_back(pCellTechno);
 					}
 				}
-
-				pObject = pObject->NextObject;
 			}
 
-			checkedCells.push_back(pCell);
+			pObject = pObject->NextObject;
 		}
+
+		checkedCells.push_back(pCell);
 	}
 
 	if (checkedTechnos.size() <= 0) // All in moving
@@ -237,16 +234,14 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		auto searchCell = topLeftCell + *pFoundation;
+		const auto searchCell = topLeftCell + *pFoundation;
+		const auto pSearchCell = MapClass::Instance.GetCellAt(searchCell);
 
-		if (const auto pSearchCell = MapClass::Instance.GetCellAt(searchCell))
-		{
-			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag (or CellExt) that can be used …
+		if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag (or CellExt) that can be used …
 				&& !pSearchCell->GetBuilding()
 				&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
-			{
-				optionalCells.push_back(pSearchCell);
-			}
+		{
+			optionalCells.push_back(pSearchCell);
 		}
 	}
 
@@ -254,7 +249,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 		return true;
 
 	// Step 3: Sort the technos by the distance out of the foundation.
-	std::sort(&checkedTechnos[0], &checkedTechnos[checkedTechnos.size()], [optionalCells](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
+	std::sort(checkedTechnos.begin(), checkedTechnos.end(), [optionalCells](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
 	{
 		int minA = INT_MAX;
 		int minB = INT_MAX;
@@ -330,9 +325,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 				{
 					if (infantryCells.size() && infantryCount.Y >= (infantryCount.X / 3 + (infantryCount.X % 3 ? 1 : 0)))
 					{
-						std::sort(&infantryCells[0], &infantryCells[infantryCells.size()], [location](InfantryCountInCell cellA, InfantryCountInCell cellB)
-{
-	return cellA.position->MapCoords.DistanceFromSquared(location) < cellB.position->MapCoords.DistanceFromSquared(location);
+						std::sort(infantryCells.begin(), infantryCells.end(), [location](InfantryCountInCell cellA, InfantryCountInCell cellB)
+						{
+							return cellA.position->MapCoords.DistanceFromSquared(location) < cellB.position->MapCoords.DistanceFromSquared(location);
 						});
 
 						for (auto& infantryCell : infantryCells)
@@ -355,9 +350,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 					}
 				}
 
-				std::sort(&optionalCells[0], &optionalCells[optionalCells.size()], [location](CellClass* pCellA, CellClass* pCellB)
-{
-	return pCellA->MapCoords.DistanceFromSquared(location) < pCellB->MapCoords.DistanceFromSquared(location);
+				std::sort(optionalCells.begin(), optionalCells.end(), [location](CellClass* pCellA, CellClass* pCellB)
+				{
+					return pCellA->MapCoords.DistanceFromSquared(location) < pCellB->MapCoords.DistanceFromSquared(location);
 				});
 				const auto minDistanceSquared = optionalCells[0]->MapCoords.DistanceFromSquared(location);
 

@@ -1108,12 +1108,12 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 		return 0;
 
 	const auto pHouseExt = HouseExt::Fetch(pHouse);
-	auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell, size_t placeType)
+	auto buildCurrent = [pHouse, pHouseExt](BuildingTypeClass* pType, CellStruct cell, size_t placeType)
 		{
 			if (!pType)
 				return;
 
-			auto currentCanBuild = [&pHouse, &pType]() -> const bool
+			auto currentCanBuild = [pHouse, pType]() -> const bool
 				{
 					auto const bitsOwners = pType->GetOwners();
 
