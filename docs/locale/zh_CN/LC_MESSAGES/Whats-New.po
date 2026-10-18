@@ -3855,11 +3855,13 @@ msgstr "预发布版本改动"
 
 msgid "TBD"
 msgstr ""
+"待定版本"
 
 msgid ""
 "Fixed a crash occuring when destroying a Tank Bunker with odd foundation "
 "size f.ex 3x3 (by Starkku)"
 msgstr ""
+"修复了摧毁占地尺寸为奇数（例如 3x3）的坦克碉堡会导致游戏崩溃的问题（by Starkku）"
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"
