@@ -1761,6 +1761,7 @@ msgid ""
 "Fixed a rare crash when an `IsSonic=true` wave was drawn near the top "
 "edge of the screen."
 msgstr ""
+"修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶发崩溃的问题。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

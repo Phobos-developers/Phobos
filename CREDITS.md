@@ -1005,4 +1005,4 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
-- **JerryDing07** - Fix `IsSonic=true` wave drawing crash near the screen edge
+- **JerryDing07** - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen

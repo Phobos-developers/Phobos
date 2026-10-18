@@ -3463,14 +3463,7 @@ msgid ""
 msgstr "**Krisztiaan** - 修复释放缓存的地形对象 SHP 图像所导致的任务重开崩溃"
 
 msgid ""
-"**JerryDing07** - Fix `IsSonic=true` wave drawing crash near the screen "
-"edge"
+"**JerryDing07** - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen"
 msgstr ""
-
-#~ msgid ""
-#~ "Fixed an issue where Engineers and "
-#~ "Spies might not be able to enter"
-#~ " target buildings properly when executing"
-#~ " vanilla's attack script"
-#~ msgstr ""
+"**JerryDing07** - 修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶发崩溃的问题"
 
