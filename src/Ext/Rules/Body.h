@@ -203,6 +203,7 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<int> UnitCrateVehicleCap;
+		Valueable<bool> HealBaseNoScatter;
 		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
@@ -450,6 +451,7 @@ public:
 
 		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<AffectedSurvivor> Survivors_ReplaceTagTo;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
@@ -737,6 +739,7 @@ public:
 			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
+			, HealBaseNoScatter { true }
 			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
@@ -956,6 +959,7 @@ public:
 
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
+			, Survivors_ReplaceTagTo { AffectedSurvivor::VehicleThief | AffectedSurvivor::Crew }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }

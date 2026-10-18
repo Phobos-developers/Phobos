@@ -60,7 +60,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
-- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
 - Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*).
@@ -336,8 +335,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
-- The sidebar radar is now horizontally centered in its frame instead of being drawn 3 pixels to the right for GDI and 2 pixels to the right for NOD sidebars.
-  - This fix may be disabled by setting `[AudioVisual] -> UseSidebarRadarOffsetFix=no` in `rulesmd.ini`. `Sidebar.RadarOffsetFix` can override the correction per side; negative values move the radar left and `0` disables it for that side.
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 
 ## Fixes / interactions with other extensions
 
@@ -502,12 +503,15 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle po
   - The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
   - `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
     - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+  - `HealBase` no longer scatters units that are already at full health.
+    - This fix is enabled by default and can be disabled by setting `HealBaseNoScatter` to `false`.
 
 In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=false          ; boolean
 UnitCrateVehicleCap=50         ; integer
+HealBaseNoScatter=true         ; boolean
 FreeMCV=true                   ; boolean
 FreeMCV.CreditsThreshold=1500  ; integer
 ```
@@ -1552,25 +1556,6 @@ Units.UseRepairCost=  ; boolean
 
 ## Countries
 
-### Country-specific veteran buildings
-
-- In the vanilla country attributes, all items except `Speed*` and `Veteran*` support the 5 application object types: `Aircraft`, `Units`, `Infantry`, `Buildings`, and `Defenses`. Buildings do not have speed, so that is understandable, but buildings also support being set to `Trainable=true` for promotion, so the following 2 flags are added to complete the meaningful combination results.
-
-```{hint}
-`Defenses` refers to buildings with `BuildCat=Combat`, consistent with vanilla rules.
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMECOUNTRY]           ; Country
-VeteranBuildings=       ; List of BuildingTypes
-VeteranDefenses=        ; List of BuildingTypes
-```
-
-```{note}
-Due to the game's parsing order issue, these two new flags will register buildings that do not exist in their respective lists when encountered, just as vanilla's `VeteranAircraft`, `VeteranUnits`, and `VeteranInfantry` handle their respective types.
-```
-
 ### Customizable crew type per country
 
 - You can now define `Crew` on a per-country basis.
@@ -2028,7 +2013,7 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
-  - `Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia file, optionally for each veterancy stage. Like the original / default file, `pips.shp`, they are drawn using `palette.pal` as palette.
+  - `Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia file, optionally for each veterancy stage. Like the original / default file, `pips.shp`, they are drawn using `palette.pal` as palette without `InsigniaPalette`.
   - `InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) frame index of the insignia to display, optionally for each veterancy stage. Using -1 uses the default setting. Default settings are -1 (none) for rookie, 14 for veteran and 15 for elite.
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType` is set.
@@ -2037,6 +2022,7 @@ ChronoDelay=            ; integer, delay after teleport for chronosphere
   - Normal insignia can be overridden when its current passenger size reaches a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where `N` stands for the current passenger size amount (from 0 to `Passengers` of the transport). If not set, defaults to non-passenger specific insignia settings. Will be overridden by weapon mode insignia settings, if set.
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.PassengersN` is set.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players.
+  - `InsigniaPalette` specify custom palette for insignia of TechnoType.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
@@ -2060,6 +2046,10 @@ Insignia=                                                   ; filename - excludi
 Insignia.Rookie=                                            ; filename - excluding the .shp extension
 Insignia.Veteran=                                           ; filename - excluding the .shp extension
 Insignia.Elite=                                             ; filename - excluding the .shp extension
+InsigniaPalette=palette.pal                                 ; filename - including the .pal extension
+InsigniaPalette.Rookie=                                     ; filename - including the .pal extension
+InsigniaPalette.Veteran=                                    ; filename - including the .pal extension
+InsigniaPalette.Elite=                                      ; filename - including the .pal extension
 InsigniaFrame=-1                                            ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Rookie=-1                                     ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Veteran=-1                                    ; int, frame of insignia shp (zero-based) or -1 for default
@@ -2069,6 +2059,10 @@ Insignia.WeaponN=                                           ; filename - excludi
 Insignia.WeaponN.Rookie=                                    ; filename - excluding the .shp extension
 Insignia.WeaponN.Veteran=                                   ; filename - excluding the .shp extension
 Insignia.WeaponN.Elite=                                     ; filename - excluding the .shp extension
+InsigniaPalette.WeaponN=palette.pal                         ; filename - including the .pal extension
+InsigniaPalette.WeaponN.Rookie=                             ; filename - including the .pal extension
+InsigniaPalette.WeaponN.Veteran=                            ; filename - including the .pal extension
+InsigniaPalette.WeaponN.Elite=                              ; filename - including the .pal extension
 InsigniaFrame.WeaponN=-1                                    ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.WeaponN.Rookie=-1                             ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.WeaponN.Veteran=-1                            ; int, frame of insignia shp (zero-based) or -1 for default
@@ -2078,6 +2072,10 @@ Insignia.PassengersN=                                       ; filename - excludi
 Insignia.PassengersN.Rookie=                                ; filename - excluding the .shp extension
 Insignia.PassengersN.Veteran=                               ; filename - excluding the .shp extension
 Insignia.PassengersN.Elite=                                 ; filename - excluding the .shp extension
+InsigniaPalette.PassengersN=palette.pal                     ; filename - including the .pal extension
+InsigniaPalette.PassengersN.Rookie=                         ; filename - including the .pal extension
+InsigniaPalette.PassengersN.Veteran=                        ; filename - including the .pal extension
+InsigniaPalette.PassengersN.Elite=                          ; filename - including the .pal extension
 InsigniaFrame.PassengersN=-1                                ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.PassengersN.Rookie=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.PassengersN.Veteran=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
@@ -2211,6 +2209,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Survivors.ReplaceTagTo=vehiclethief, crew   ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all)
+
+[SOMETECHNO]                                ; TechnoType
+Survivors.ReplaceTagTo=                     ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
 ```
 
 ### Customize `DefaultToGuardArea` per gunner mode
@@ -3394,7 +3405,7 @@ AmbientDamage.IgnoreTarget=       ; boolean, default to [General] -> AmbientDama
 
 ### Ares' Chrono Prisons / Abductors Expansion
 
-- When Ares brings a vehicle—whose driver has been killed—into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
+- When Ares brings a vehicle - whose driver has been killed - into the prison and changes its current country of affiliation, the vehicle, upon being released, will be unable to fire, move, or be recaptured by an engineer. Therefore, two new tags have been added to handle this situation (requires at least Ares 3.0).
   - `Abductor.ChangeOwner.ResetDriverKilled` allows you to reset the driver's status after capturing a vehicle whose driver has been killed. Determine whether to retain the status of a driver who has been killed based on the `MultiplayPassive` setting in the country where the capturing player is currently located.
   - `Abductor.ChangeOwner.IgnoreDriverKilled` prevents the current country of a vehicle whose driver has been killed from being changed; the effect is equivalent to `Abductor.ChangeOwner=no`.
 

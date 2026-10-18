@@ -1870,6 +1870,23 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 	return 0;
 }
 
+// IsSonic wave drawing reads each pixel's source color up to 3 pixels ahead in the wave direction (ColorData indices
+// 10-12 hold 3 times the direction step), so the drawing loops must stay 3 pixels inside the clip rectangle. The loops
+// used when the ZBuffer does not wrap keep this margin, but the ones used when it wraps only keep 2 pixels, so a wave
+// near the top edge of the screen can read above the surface buffer and crash. Magnetron drawing has the same 2 pixel
+// margin, which is correct there as it clamps the color index to 9. Patch the wrapping loops to use 3 pixels as well.
+
+// Wrapping ZBuffer, top-down loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x75FD24, 0x03); // lea edx, [eax+3]
+DEFINE_PATCH(0x75FD33, 0xFD); // lea edx, [eax+ecx-3]
+DEFINE_PATCH(0x75FD54, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x75FD78, 0x03); // lea edi, [ecx+3]
+// Wrapping ZBuffer, bottom-up loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x760035, 0x03); // lea ebp, [edx+3]
+DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
+DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
+
 // WW used SetDesired here, causing the barrel drawn incorrectly.
 DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 {
@@ -2752,6 +2769,33 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_JUMP(LJMP, 0x4896B2, 0x4896BF) // No need this shit
+
+DEFINE_HOOK(0x480EF6, CellClass_DamageWall_BecomUntargetable, 0x6)
+{
+	GET(CellClass*, pThis, EDI);
+
+	pThis->BecomeUntargetable();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x480952, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x48092B, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808FF, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808D8, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK(0x4808A9, Sub_480630_BecomUntargetable, 0xA)
+{
+	GET(CellClass*, pCell, ESI);
+
+	pCell->BecomeUntargetable();
+
+	if (R->Origin() == 0x4808A9)
+		pCell->WallOwnerIndex = -1;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 {

@@ -281,6 +281,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->HealBaseNoScatter.Read(exINI, GameStrings::CrateRules, "HealBaseNoScatter");
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
@@ -535,6 +536,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
+	this->Survivors_ReplaceTagTo.Read(exINI, GameStrings::General, "Survivors.ReplaceTagTo");
 	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
 	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
 	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.InRangeDistance");
@@ -903,6 +905,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
+		.Process(this->HealBaseNoScatter)
 		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
@@ -1087,6 +1090,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitsUnsellable)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->Survivors_ReplaceTagTo)
 		.Process(this->DisableOveroptimizationInTargeting)
 		.Process(this->ExtraThreat_IsThreat)
 		.Process(this->ExtraThreat_InRange)

@@ -441,7 +441,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
 			return false;
 
-		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+		if (!pWH->Temporal && pTechno->IsBeingWarpedOut())
 			return false;
 
 		if (pWH->Parasite

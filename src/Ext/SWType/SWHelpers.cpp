@@ -43,9 +43,9 @@ std::vector<int> SWTypeExt::WeightedRollsHandler(ValueableVector<float>* rolls, 
 // =============================
 // Ares 0.A helpers
 // Inhibitors check
-bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const
+bool SWTypeExt::IsInhibitorEligible(HouseClass* pOwner, TechnoClass* pTechno) const
 {
-	if (pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	if (pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->Deactivated)
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
@@ -62,9 +62,9 @@ bool SWTypeExt::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno, TechnoType
 	return false;
 }
 
-bool SWTypeExt::IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, TechnoTypeClass* pType, double range) const
+bool SWTypeExt::IsInhibitorEligibleInRange(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, double range) const
 {
-	if (this->IsInhibitor(pOwner, pTechno, pType))
+	if (this->IsInhibitorEligible(pOwner, pTechno))
 	{
 		// get the inhibitor's center
 		const auto center = pTechno->GetCenterCoords();
@@ -88,7 +88,7 @@ bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 			{
 				auto const& items = pTypeExt->Array;
 				return std::any_of(items.begin(), items.end(), [=, &coords](TechnoClass* pTechno)
-					{ return this->IsInhibitorEligible(pOwner, coords, pTechno, pType, (double)range); }
+					{ return this->IsInhibitorEligibleInRange(pOwner, coords, pTechno, (double)range); }
 				);
 			}
 		}
@@ -103,7 +103,7 @@ bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 			{
 				auto const& items = pTypeExt->Array;
 				return std::any_of(items.begin(), items.end(), [=, &coords](TechnoClass* pTechno)
-					{ return this->IsInhibitorEligible(pOwner, coords, pTechno, pType, (double)range); }
+					{ return this->IsInhibitorEligibleInRange(pOwner, coords, pTechno, (double)range); }
 				);
 			}
 		}
@@ -113,17 +113,17 @@ bool SWTypeExt::HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const
 }
 
 // Designators check
-bool SWTypeExt::IsDesignator(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const
+bool SWTypeExt::IsDesignatorEligible(HouseClass* pOwner, TechnoClass* pTechno) const
 {
-	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health && !pTechno->InLimbo && !pTechno->Deactivated)
+	if (pTechno->Owner == pOwner && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->Deactivated)
 		return true;
 
 	return false;
 }
 
-bool SWTypeExt::IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, TechnoTypeClass* pType, double range) const
+bool SWTypeExt::IsDesignatorEligibleInRange(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, double range) const
 {
-	if (this->IsDesignator(pOwner, pTechno, pType))
+	if (this->IsDesignatorEligible(pOwner, pTechno))
 	{
 		// get the designator's center
 		const auto center = pTechno->GetCenterCoords();
@@ -147,7 +147,7 @@ bool SWTypeExt::HasDesignator(HouseClass* pOwner, const CellStruct& coords) cons
 			{
 				auto const& items = pTypeExt->Array;
 				return std::any_of(items.begin(), items.end(), [=, &coords](TechnoClass* pTechno)
-					{ return this->IsDesignatorEligible(pOwner, coords, pTechno, pType, (double)range); }
+					{ return this->IsDesignatorEligibleInRange(pOwner, coords, pTechno, (double)range); }
 				);
 			}
 		}
@@ -162,7 +162,7 @@ bool SWTypeExt::HasDesignator(HouseClass* pOwner, const CellStruct& coords) cons
 			{
 				auto const& items = pTypeExt->Array;
 				return std::any_of(items.begin(), items.end(), [=, &coords](TechnoClass* pTechno)
-					{ return this->IsDesignatorEligible(pOwner, coords, pTechno, pType, (double)range); }
+					{ return this->IsDesignatorEligibleInRange(pOwner, coords, pTechno, (double)range); }
 				);
 			};
 		}
@@ -195,7 +195,7 @@ bool SWTypeExt::IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pB
 
 bool SWTypeExt::IsLaunchSite(BuildingClass* pBuilding) const
 {
-	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+	if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 	{
 		auto const pExt = BuildingExt::Fetch(pBuilding);
 		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex);
@@ -280,7 +280,7 @@ std::vector<BuildingClass*> SWTypeExt::GetEMPulseCannons(HouseClass* pOwner, con
 		auto const pType = pBuilding->Type;
 
 		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pType) && pBuilding->IsAlive
-			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+			&& pBuilding->Health > 0 && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 		{
 			eligible = true;
 		}

@@ -205,8 +205,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -227,8 +229,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -268,8 +272,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -287,8 +293,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -301,8 +309,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	{
 		for (const auto pTarget : pTypeExt->Array)
 		{
-			if (pTarget->Owner == pOwner)
-				TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
+			const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+			if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+				pTargetExt->AutoDeathFlag = -1;
 		}
 
 		this->AutoDeathFlag = 0;
@@ -650,7 +660,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
-	if (pThis->Health && healthDeficit > 0)
+	if (pThis->Health > 0 && healthDeficit > 0)
 	{
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
 		auto const whatAmI = pThis->WhatAmI();

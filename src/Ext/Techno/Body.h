@@ -89,6 +89,8 @@ public:
 
 	bool PreventCrewEscape;
 
+	double OriginVeterancy;
+
 	TechnoExt(TechnoClass* OwnerObject) : RadioExt(OwnerObject)
 		, TypeExtData { nullptr }
 		, RandomFactor { 0 }
@@ -139,6 +141,7 @@ public:
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
 		, PreventCrewEscape { false }
+		, OriginVeterancy { 0.0 }
 	{ }
 
 	void OnEarlyUpdate();
@@ -269,6 +272,7 @@ public:
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
 
+	static void SpawnSurvivors(FootClass* pThis, TechnoClass* pKiller, bool select, bool preventEscape);
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
