@@ -1001,6 +1001,7 @@ msgid ""
 "are gone, the cycle degrades into cycling through those objects one at a "
 "time, the way [Cycle Selection](#cycle-selection) does."
 msgstr ""
+"如果循环开始时已选中的对象中同属单一类型，无论是一开始便是如此还是在其它类型的对象全部消失后，循环都会退化为每次选中一个对象，就像 [循环切换选中对象](#cycle-selection) 那样。"
 
 msgid ""
 "If `CycleTypeSelectionPrintSummary` is set to true, every step prints the"
