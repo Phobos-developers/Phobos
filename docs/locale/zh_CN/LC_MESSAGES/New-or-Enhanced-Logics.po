@@ -7024,6 +7024,7 @@ msgstr "[解除心控](#break-mind-control-on-impact)"
 
 msgid "[Change owner](#change-target-owner-on-impact)"
 msgstr ""
+"[改所属弹头](#change-target-owner-on-impact)"
 
 msgid "[Type conversion](#convert-technotype-on-impact)"
 msgstr "[单位转换弹头](#convert-technotype-on-impact)"
@@ -7041,12 +7042,15 @@ msgstr "[逆向工程弹头](#reverse-engineer-warhead)"
 
 msgid "[`Taunt`](#taunt-warhead)"
 msgstr ""
+"[嘲讽弹头](#taunt-warhead)"
 
 msgid "[Penetrates damage on transporter](#penetrates-damage-on-transporter)"
 msgstr ""
+"[对运输工具的穿透伤害](#penetrates-damage-on-transporter)"
 
 msgid "[Detonate ivan bomb](#detonate-ivan-bomb-on-impact)"
 msgstr ""
+"[引爆伊文炸弹弹头](#detonate-ivan-bomb-on-impact)"
 
 msgid "[Modify shield](#shields)"
 msgstr "[护盾修改](#shields)"
@@ -7056,6 +7060,7 @@ msgstr "[AE 修改](#attached-effects)"
 
 msgid "[Modify ammo on impact](#modify-ammo-on-impact)"
 msgstr ""
+"[修改弹药弹头](#modify-ammo-on-impact)"
 
 msgid ""
 "[Critical hits](#chance-based-extra-damage-or-warhead-detonation"
@@ -7066,14 +7071,18 @@ msgid ""
 "Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and "
 "`Crit.ApplyChancePerTarget=true` will be forced to use."
 msgstr ""
+"由于技术原因，强制 `Crit.SuppressWhenIntercepted=false` 且 "
+"`Crit.ApplyChancePerTarget=true`。"
 
 msgid "[Return warhead](#return-warhead)"
 msgstr ""
+"[归返弹头](#return-warhead)"
 
 msgid ""
 "Due to technical reasons, `ReturnWarhead.ApplyChancePerTarget=true` will "
 "be forced to use."
 msgstr ""
+"由于技术原因，强制 `ReturnWarhead.ApplyChancePerTarget=true`。"
 
 msgid ""
 "Ares' warhead effects, such as EMP or IronCurtain warhead, will not be "
