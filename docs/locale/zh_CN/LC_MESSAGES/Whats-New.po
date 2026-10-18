@@ -1234,6 +1234,7 @@ msgid ""
 "target buildings properly when executing vanilla's attack script (by "
 "FlyStar)"
 msgstr ""
+"修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题（by FlyStar）"
 
 msgid ""
 "Fixed a rare crash when an `IsSonic=true` wave was drawn near the top "

@@ -1428,6 +1428,7 @@ msgid ""
 "Fix an issue where Engineers and Spies might not be able to enter target "
 "buildings properly when executing vanilla's attack script"
 msgstr ""
+"修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
