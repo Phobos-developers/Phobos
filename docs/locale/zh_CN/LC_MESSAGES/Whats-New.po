@@ -3953,6 +3953,7 @@ msgid ""
 " location where they entered transport after the transport has been "
 "destroyed (by NetsuNegi)"
 msgstr ""
+"修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug（by NetsuNegi）"
 
 msgid ""
 "Fixed `IvanBomb.Detachable` not being taken into accord correctly (by "
