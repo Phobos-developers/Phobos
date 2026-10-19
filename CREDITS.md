@@ -459,7 +459,7 @@ This page lists all the individual contributions to the project by their author.
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
   - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
-  - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
+  - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -594,6 +594,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize insignias palette
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
   - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
+  - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -1004,3 +1005,6 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **JerryDing07**:
+  - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
+  - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target

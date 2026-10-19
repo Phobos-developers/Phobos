@@ -1870,6 +1870,64 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 	return 0;
 }
 
+// IsSonic wave drawing reads each pixel's source color up to 3 pixels ahead in the wave direction (ColorData indices
+// 10-12 hold 3 times the direction step), so the drawing loops must stay 3 pixels inside the clip rectangle. The loops
+// used when the ZBuffer does not wrap keep this margin, but the ones used when it wraps only keep 2 pixels, so a wave
+// near the top edge of the screen can read above the surface buffer and crash. Magnetron drawing has the same 2 pixel
+// margin, which is correct there as it clamps the color index to 9. Patch the wrapping loops to use 3 pixels as well.
+
+// Wrapping ZBuffer, top-down loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x75FD24, 0x03); // lea edx, [eax+3]
+DEFINE_PATCH(0x75FD33, 0xFD); // lea edx, [eax+ecx-3]
+DEFINE_PATCH(0x75FD54, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x75FD78, 0x03); // lea edi, [ecx+3]
+// Wrapping ZBuffer, bottom-up loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x760035, 0x03); // lea ebp, [edx+3]
+DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
+DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
+
+// The wave polygon rasterizer only handles polygons that are monotone in Y: it allocates its span buffer for maxY - minY
+// rows and then appends one row per downward edge pixel while walking each side from the top vertex to the bottom one.
+// When a non-magnetron wave's firer is horizontally at the same position as its target, WaveClass::Draw_NonMagnetic
+// divides by the zero distance and all four side points collapse to the map origin. The polygon then folds back on itself,
+// the walk goes down the same edge twice and writes past the end of the span buffer, crashing or corrupting the heap.
+// Skip rasterizing such polygons. The span buffer stays null, so the caller does not draw the wave for that frame.
+DEFINE_HOOK(0x63F080, WaveClass_RasterizePolygon_NonMonotoneFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x63F2D9 };
+
+	GET(const int*, pPolygon, ECX); // { int Count; Point2D* Points; }
+
+	const int count = pPolygon[0];
+	const auto pPoints = reinterpret_cast<const Point2D*>(pPolygon[1]);
+
+	if (count < 3)
+		return 0;
+
+	int minY = pPoints[0].Y;
+	int maxY = pPoints[0].Y;
+	long long totalDown = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		const int y = pPoints[i].Y;
+		const int nextY = pPoints[(i + 1) % count].Y;
+
+		minY = Math::min(minY, y);
+		maxY = Math::max(maxY, y);
+
+		if (nextY > y)
+			totalDown += nextY - y;
+	}
+
+	// Each side covers maxY - minY rows exactly once only if the polygon is monotone in Y.
+	if (totalDown == static_cast<long long>(maxY) - minY)
+		return 0;
+
+	return ReturnFromFunction;
+}
+
 // WW used SetDesired here, causing the barrel drawn incorrectly.
 DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 {

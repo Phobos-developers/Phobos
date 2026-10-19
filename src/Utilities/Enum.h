@@ -464,3 +464,15 @@ enum class AdditionalAbility : unsigned char
 };
 
 constexpr size_t AdditionalAbilityCount = static_cast<size_t>(AdditionalAbility::Count);
+
+enum class AffectedSurvivor : unsigned char
+{
+	None = 0x0,
+	VehicleThief = 0x1,
+	Crew = 0x2,
+	Passengers = 0x4,
+
+	All = 0xFF
+};
+
+MAKE_ENUM_FLAGS(AffectedSurvivor);
