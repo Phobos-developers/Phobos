@@ -17,6 +17,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 ### 0.6
 
 - `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
 
 ### 0.5
 
@@ -2053,6 +2054,7 @@ HideShakeEffects=false           ; boolean
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
+- [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
 - Building placing and deploying logic enhancement (by CrimRecya)
 
 #### Vanilla fixes:
@@ -2071,6 +2073,7 @@ HideShakeEffects=false           ; boolean
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2525,6 +2528,11 @@ HideShakeEffects=false           ; boolean
 ```
 
 ```{dropdown} Pre-release changes
+
+#### TBD
+
+##### Phobos fixes:
+- Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
 
 #### 0.5-alpha2
 
