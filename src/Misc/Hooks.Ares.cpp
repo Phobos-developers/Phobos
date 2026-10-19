@@ -331,6 +331,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17536, AresHelper::AresBaseAddress + 0x1754D);
 
 	// SpawnSurvivor fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x464C0, GET_OFFSET(TechnoExt::SpawnSurvivors)); // Customize replace tag
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x445E0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// KillDriver re-implementation and enhancement
@@ -460,6 +461,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17C26, AresHelper::AresBaseAddress + 0x17C3D);
 
 	// SpawnSurvivor fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x47030, GET_OFFSET(TechnoExt::SpawnSurvivors)); // Customize replace tag
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x450C0, GET_OFFSET(TechnoExt::EjectRandomly));
 
 	// KillDriver re-implementation and enhancement
