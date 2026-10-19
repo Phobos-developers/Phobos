@@ -452,6 +452,7 @@ public:
 
 		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<AffectedSurvivor> Survivors_ReplaceTagTo;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
@@ -959,6 +960,7 @@ public:
 
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
+			, Survivors_ReplaceTagTo { AffectedSurvivor::VehicleThief | AffectedSurvivor::Crew }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }
