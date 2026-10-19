@@ -2049,7 +2049,7 @@ static int __fastcall Building_GetThreatValue_Wrapper(BuildingClass* pThis)
 		return RulesClass::Instance->ThreatPerOccupant * occupantCount;
 
 	if (auto const pLinked = pThis->BunkerLinkedItem)
-		return pLinked->GetThreatValue();
+		return pLinked->GetTechnoType()->ThreatPosed;
 
 	auto const pType = pThis->Type;
 
