@@ -3,7 +3,7 @@
 #include <Ext/InfantryType/Body.h>
 #include <Ext/Rules/Body.h>
 
-#include <InputManagerClass.h>
+#include <WWKeyboardClass.h>
 #include <GameOptionsClass.h>
 #include <Utilities/SequenceRates.h>
 
@@ -120,8 +120,8 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 	GET(ObjectClass*, pTarget, ESI);
 	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
 
-	WhatActionObjectTemp::Fire = !ignoreForce && InputManagerClass::Instance->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = !ignoreForce && InputManagerClass::Instance->IsForceMoveKeyPressed();
+	WhatActionObjectTemp::Fire = !ignoreForce && WWKeyboardClass::Instance->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = !ignoreForce && WWKeyboardClass::Instance->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
