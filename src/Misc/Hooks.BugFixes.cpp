@@ -1887,6 +1887,47 @@ DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
 DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
 DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
 
+// The wave polygon rasterizer only handles polygons that are monotone in Y: it allocates its span buffer for maxY - minY
+// rows and then appends one row per downward edge pixel while walking each side from the top vertex to the bottom one.
+// When a non-magnetron wave's firer is horizontally at the same position as its target, WaveClass::Draw_NonMagnetic
+// divides by the zero distance and all four side points collapse to the map origin. The polygon then folds back on itself,
+// the walk goes down the same edge twice and writes past the end of the span buffer, crashing or corrupting the heap.
+// Skip rasterizing such polygons. The span buffer stays null, so the caller does not draw the wave for that frame.
+DEFINE_HOOK(0x63F080, WaveClass_RasterizePolygon_NonMonotoneFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x63F2D9 };
+
+	GET(const int*, pPolygon, ECX); // { int Count; Point2D* Points; }
+
+	const int count = pPolygon[0];
+	const auto pPoints = reinterpret_cast<const Point2D*>(pPolygon[1]);
+
+	if (count < 3)
+		return 0;
+
+	int minY = pPoints[0].Y;
+	int maxY = pPoints[0].Y;
+	long long totalDown = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		const int y = pPoints[i].Y;
+		const int nextY = pPoints[(i + 1) % count].Y;
+
+		minY = Math::min(minY, y);
+		maxY = Math::max(maxY, y);
+
+		if (nextY > y)
+			totalDown += nextY - y;
+	}
+
+	// Each side covers maxY - minY rows exactly once only if the polygon is monotone in Y.
+	if (totalDown == static_cast<long long>(maxY) - minY)
+		return 0;
+
+	return ReturnFromFunction;
+}
+
 // WW used SetDesired here, causing the barrel drawn incorrectly.
 DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 {

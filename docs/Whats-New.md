@@ -2073,6 +2073,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
 
 #### Phobos fixes:
