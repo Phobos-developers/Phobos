@@ -98,7 +98,7 @@ void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
-bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial)
+bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial, bool isUpgrade)
 {
 	auto const pType = pBuilding->Type;
 
@@ -108,7 +108,7 @@ bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powere
 
 	return pBuilding->CurrentMission != Mission::Construction
 		&& pBuilding->CurrentMission != Mission::Selling
-		&& !pBuilding->IsPowerOnline()
+		&& !(isUpgrade || pBuilding->IsPowerOnline())
 		&& !BuildingExt::Fetch(pBuilding)->HasPowerFromMapFile;
 }
 

@@ -918,6 +918,50 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<AffectedSurvivor>(AffectedSurvivor& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, AffectedSurvivor> Names[] =
+			{
+				{"vehiclethief", AffectedSurvivor::VehicleThief},
+				{"crew", AffectedSurvivor::Crew},
+				{"pilot", AffectedSurvivor::Crew},
+				{"passengers", AffectedSurvivor::Passengers},
+				{"all", AffectedSurvivor::All},
+				{"none", AffectedSurvivor::None},
+			};
+
+			auto parsed = AffectedSurvivor::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected survivor");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
 
 	template <>
 	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey)
@@ -1884,6 +1928,34 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		return false;
 	}
 
+	template <>
+	inline bool read<PowerStatus>(PowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, PowerStatus> Names[] =
+			{
+				{"none", PowerStatus::None},
+				{"consumer", PowerStatus::Low},
+				{"low", PowerStatus::Low},
+				{"full", PowerStatus::Full},
+				{"normal", PowerStatus::Full},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerState (none, full, low|consumer");
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1925,34 +1997,6 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			else if (!INIClass::IsBlank(pCur))
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
-	}
-
-	template <>
-	inline bool read<PowerStatus>(PowerStatus& value, INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			static const std::pair<const char*, PowerStatus> Names[] =
-			{
-				{"none", PowerStatus::None},
-				{"consumer", PowerStatus::Low},
-				{"low", PowerStatus::Low},
-				{"full", PowerStatus::Full},
-				{"normal", PowerStatus::Full},
-			};
-
-			for (auto const& [name, val] : Names)
-			{
-				if (_strcmpi(parser.value(), name) == 0)
-				{
-					value = val;
-					return true;
-				}
-			}
-
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid PlayerPowerState (none, full, low|consumer");
-		}
-		return false;
 	}
 }
 

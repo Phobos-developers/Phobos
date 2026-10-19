@@ -217,12 +217,12 @@ public:
 	{ }
 
 	// Ares 0.A functions
-	bool IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const;
+	bool IsInhibitorEligible(HouseClass* pOwner, TechnoClass* pTechno) const;
 	bool HasInhibitor(HouseClass* pOwner, const CellStruct& coords) const;
-	bool IsInhibitorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, TechnoTypeClass* pType, double range) const;
-	bool IsDesignator(HouseClass* pOwner, TechnoClass* pTechno, TechnoTypeClass* pType) const;
+	bool IsInhibitorEligibleInRange(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, double range) const;
+	bool IsDesignatorEligible(HouseClass* pOwner, TechnoClass* pTechno) const;
 	bool HasDesignator(HouseClass* pOwner, const CellStruct& coords) const;
-	bool IsDesignatorEligible(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, TechnoTypeClass* pType, double range) const;
+	bool IsDesignatorEligibleInRange(HouseClass* pOwner, const CellStruct& coords, TechnoClass* pTechno, double range) const;
 	bool IsLaunchSiteEligible(const CellStruct& Coords, BuildingClass* pBuilding, bool ignoreRange) const;
 	bool IsLaunchSite(BuildingClass* pBuilding) const;
 	std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
