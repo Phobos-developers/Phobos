@@ -720,6 +720,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->PlayerAutoRepair)
 		.Process(this->Academies)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
+		.Process(this->TechnoPCX_IsLoad)
 		;
 }
 
