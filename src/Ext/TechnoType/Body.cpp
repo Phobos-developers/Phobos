@@ -1033,6 +1033,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->DriverKilled_KeptPassengers.Read(exINI, pSection, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, pSection, "DriverKilled.KillPassengers");
+	this->Survivors_ReplaceTagTo.Read(exINI, pSection, "Survivors.ReplaceTagTo");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
@@ -1690,6 +1691,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->Survivors_ReplaceTagTo)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
 

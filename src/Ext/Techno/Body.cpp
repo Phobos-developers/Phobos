@@ -10,6 +10,7 @@
 
 #include <Utilities/AresFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Interop/TechnoExt.h>
 
 TechnoClass* TechnoExt::DeployTransferSource = nullptr;
@@ -827,6 +828,200 @@ bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
     return true;
 }
 
+struct AresTechnoExt
+{
+	char _[0x50];
+	CDTimerClass DisableWeaponsTimer;
+	char __[0xC];
+	int HijackerHealth;
+	HouseClass* HijackerOwner;
+	VeterancyStruct HijackerVeterancy;
+	char ___[0x27];
+	bool SurvivorsDone;
+	bool DriverKilled;
+};
+
+static_assert(offsetof(AresTechnoExt, HijackerHealth) == 0x68, "AresTechnoExt layout slipped");
+static_assert(offsetof(AresTechnoExt, SurvivorsDone) == 0x9B, "AresTechnoExt layout slipped");
+
+struct AresTechnoTypeExt
+{
+	char _[0x14];
+	Promotable<int> Survivors_PilotChance;
+	Promotable<int> Survivors_PassengerChance;
+	char __[0xC8];
+	ValueableVector<TechnoTypeClass*> Operators;
+	bool Operator_Any;
+	char ___[0xCF];
+	ValueableIdx<VocClass> VehicleThief_LeaveSound;
+	Valueable<int> VehicleThief_KillPilots;
+	char ____[0x2];
+	Valueable<bool> VehicleThief_OneTime;
+};
+
+static_assert(offsetof(AresTechnoTypeExt, Survivors_PilotChance) == 0x14, "AresTechnoTypeExt layout slipped");
+static_assert(offsetof(AresTechnoTypeExt, VehicleThief_LeaveSound) == 0x1D0, "AresTechnoTypeExt layout slipped");
+static_assert(offsetof(AresTechnoTypeExt, VehicleThief_OneTime) == 0x1DA, "AresTechnoTypeExt layout slipped");
+
+void TechnoExt::SpawnSurvivors(FootClass* pThis, TechnoClass* pKiller, bool select, bool preventEscape)
+{
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
+	const auto pTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC);
+	const auto coords = pThis->Location;
+	const auto replaceTagTo = pTypeExt->Survivors_ReplaceTagTo.Get(RulesExt::Global()->Survivors_ReplaceTagTo);
+	const auto pExt_Ares = reinterpret_cast<AresTechnoExt*>(pThis->align_154);
+
+	if (!std::exchange(pExt_Ares->SurvivorsDone, true) && !pExt_Ares->DriverKilled && !preventEscape)
+	{
+		int pilotCount = pThis->GetCrewCount();
+
+		do
+		{
+			const int hijackerTypeIdx = pThis->HijackerInfantryType;
+
+			if (hijackerTypeIdx == -1)
+				break;
+
+			const auto pHijackerInfantryType = InfantryTypeClass::Array[hijackerTypeIdx];
+			pThis->HijackerInfantryType = -1;
+			const auto pHijackerInfantryTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pHijackerInfantryType->align_2FC);
+
+			if (pHijackerInfantryTypeExt_Ares->VehicleThief_OneTime)
+				break;
+
+			const auto pOwner = pExt_Ares->HijackerOwner ? pExt_Ares->HijackerOwner : pThis->Owner;
+
+			if (pOwner->Defeated)
+				break;
+
+			const auto pHijacker = static_cast<InfantryClass*>(pHijackerInfantryType->CreateObject(pOwner));
+			pHijacker->Health = std::max(pExt_Ares->HijackerHealth, 10) / 2;
+			pHijacker->Veterancy = pExt_Ares->HijackerVeterancy;
+
+			if (TechnoExt::EjectRandomly(pHijacker, coords, 144, select))
+			{
+				if (replaceTagTo & AffectedSurvivor::VehicleThief)
+				{
+					const auto pTag = pThis->AttachedTag;
+
+					if (pTag && pTag->ShouldReplace())
+						pHijacker->ReplaceTag(pTag);
+				}
+
+				if (const auto pController = pThis->MindControlledBy)
+				{
+					const auto pManager = pController->CaptureManager;
+					++Unsorted::ScenarioInit;
+					pManager->FreeUnit(pThis);
+					pManager->CaptureUnit(pHijacker);
+					--Unsorted::ScenarioInit;
+					pHijacker->QueueMission(Mission::Guard, true);
+				}
+
+				VocClass::PlayAt(pHijackerInfantryTypeExt_Ares->VehicleThief_LeaveSound, coords);
+				const int kills = pHijackerInfantryTypeExt_Ares->VehicleThief_KillPilots;
+
+				if (kills >= 0)
+					pilotCount -= kills;
+				else
+					pilotCount = 0;
+			}
+			else
+			{
+				pHijacker->RegisterDestruction(pKiller);
+				pHijacker->UnInit();
+			}
+		}
+		while (false);
+
+		do
+		{
+			if (!pType->Crewed)
+				break;
+
+			int pilotChance = pTypeExt_Ares->Survivors_PilotChance.Get(pThis);
+
+			if (pilotChance < 0)
+			{
+				pilotChance = static_cast<int>(RulesClass::Instance->CrewEscape * 100);
+
+				if (pilotChance < 0)
+					break;
+			}
+
+			const auto pScenario = ScenarioClass::Instance;
+
+			for (; pilotCount > 0; --pilotCount)
+			{
+				const auto pPilotType = pThis->GetCrew();
+
+				if (!pPilotType || pScenario->Random(1, 100) > pilotChance)
+					continue;
+
+				const auto pPilot = static_cast<InfantryClass*>(pPilotType->CreateObject(pThis->Owner));
+				pPilot->Health /= 2;
+				pPilot->Veterancy = pThis->Veterancy;
+
+				if (TechnoExt::EjectRandomly(pPilot, coords, 144, select))
+				{
+					if (replaceTagTo & AffectedSurvivor::Crew)
+					{
+						const auto pTag = pThis->AttachedTag;
+
+						if (pTag && pTag->ShouldReplace())
+							pPilot->ReplaceTag(pTag);
+					}
+				}
+				else
+				{
+					pPilot->RegisterDestruction(pKiller);
+					pPilot->UnInit();
+				}
+			}
+		}
+		while (false);
+	}
+
+	if (!pThis->Passengers.GetFirstPassenger())
+		return;
+
+	const int passengerChance = pTypeExt_Ares->Survivors_PassengerChance.Get(pThis);
+	const auto pUnit = abstract_cast<UnitClass*>(pThis);
+	const auto pCell = pUnit ? pThis->GetCell() : nullptr;
+
+	while (pThis->Passengers.GetFirstPassenger())
+	{
+		const auto pPassenger = pThis->RemoveFirstPassenger();
+
+		if (!preventEscape)
+		{
+			bool spawn = false;
+
+			if (passengerChance > 0)
+				spawn = ScenarioClass::Instance->Random(1, 100) <= passengerChance;
+			else if (passengerChance != 0 && pUnit)
+				spawn = Helpers::Alex::is_any_of(pPassenger->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true), Move::OK, Move::MovingBlock);
+
+			if (spawn && TechnoExt::EjectRandomly(pPassenger, coords, 128, select))
+			{
+				if (replaceTagTo & AffectedSurvivor::Passengers)
+				{
+					const auto pTag = pThis->AttachedTag;
+
+					if (pTag && pTag->ShouldReplace())
+						pPassenger->ReplaceTag(pTag);
+				}
+
+				continue;
+			}
+		}
+
+		pPassenger->RegisterDestruction(pKiller);
+		pPassenger->UnInit();
+	}
+}
+
 bool TechnoExt::EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select)
 {
 	std::vector<CoordStruct> usableCoords;
@@ -936,21 +1131,6 @@ bool TechnoExt::EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool sel
 	return true;
 }
 
-struct DummyExtHere
-{
-	char _pad0[0x50];
-	CDTimerClass DisableWeaponsTimer;
-	char _pad1[0x40];
-	bool DriverKilled;
-};
-
-struct DummyTypeExtHere
-{
-	char _[0xF4];
-	ValueableVector<TechnoTypeClass*> Operators;
-	bool Operator_Any;
-};
-
 bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy)
 {
 	const auto pThis = abstract_cast<FootClass*, true>(*pData);
@@ -959,14 +1139,14 @@ bool __fastcall TechnoExt::ApplyKillDriver(TechnoClass** pData, void*, HouseClas
 		return false;
 
 	const bool passive = pToHouse->IsNeutral();
-	const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	const auto pExt_Ares = reinterpret_cast<AresTechnoExt*>(pThis->align_154);
 	pExt_Ares->DriverKilled = passive;
 
 	if (pThis->Owner == pToHouse)
 		return false;
 
 	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt_Ares = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
+	const auto pTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC);
 	auto& passengers = pThis->Passengers;
 
 	do
@@ -1137,7 +1317,7 @@ bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 
 	if (AresHelper::CanUseAres)
 	{
-		const auto pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+		const auto pExt_Ares = reinterpret_cast<AresTechnoExt*>(pThis->align_154);
 
 		if (pExt_Ares->DisableWeaponsTimer.InProgress())
 			return true;
@@ -1149,7 +1329,7 @@ bool TechnoExt::HasWeaponsDisabled(TechnoClass* pThis)
 FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
 	auto const pExt = TechnoExt::Fetch(pThis);
-	auto const pExt_Ares = reinterpret_cast<DummyExtHere*>(pThis->align_154);
+	auto const pExt_Ares = reinterpret_cast<AresTechnoExt*>(pThis->align_154);
 	bool const canUseAres = AresHelper::CanUseAres;
 	bool const disableWeapons = pExt->AE.DisableWeapons;
 	int timeLeft = 0;
@@ -1174,7 +1354,7 @@ FireError TechnoExt::GetFireErrorIgnoreDisableWeapons(TechnoClass* pThis, Abstra
 bool TechnoExt::DriverKilled(TechnoClass* pThis)
 {
 	// Determine whether the driver was killed.
-	return AresHelper::CanUseAres && reinterpret_cast<DummyExtHere*>(pThis->align_154)->DriverKilled;
+	return AresHelper::CanUseAres && reinterpret_cast<AresTechnoExt*>(pThis->align_154)->DriverKilled;
 }
 
 Mission TechnoExt::DriverKilledMission(TechnoClass* pThis, Mission mission)
