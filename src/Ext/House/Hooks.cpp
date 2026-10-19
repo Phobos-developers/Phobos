@@ -68,9 +68,9 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 
 	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
-	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
+	if (pTypeExt->Refinery_UseStorage)
 	{
-		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
+		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex >= 0 ? storageTiberiumIndex : idxTiberium);
 		amount = 0.0f;
 	}
 
