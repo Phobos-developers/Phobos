@@ -22,7 +22,15 @@ namespace CycleTypeSelection
 	// Objects' types, ordered from the highest TypeCyclePriority, down to the lowest,
 	std::vector<TypeGroup> Types;
 
+	// Index into Types, used while cycling types.
 	int Index = -1;
+
+	// The pool holds living objects of a single type only, so cycling types cannot step
+	// anywhere. Degraded into CycleSelection but use separate container and status.
+	bool Degraded = false;
+
+	// Index into Objects, used instead of Index while degraded.
+	int ObjectIndex = -1;
 
 	// Vanilla's type selection predicate - alive, player-controlled, type-matching - extended
 	// by Ares and Phobos GroupAs definition.
@@ -55,11 +63,96 @@ namespace CycleTypeSelection
 		return false;
 	}
 
+	// Whether the pool the cycle was started with still holds living objects of more than one type.
+	bool HasMultipleLivingTypes()
+	{
+		bool hasType = false;
+
+		for (const auto& group : Types)
+		{
+			if (!HasLivingObject(group))
+				continue;
+
+			if (hasType)
+				return true;
+
+			hasType = true;
+		}
+
+		return false;
+	}
+
 	void Reset()
 	{
 		Objects.clear();
 		Types.clear();
 		Index = -1;
+		Degraded = false;
+		ObjectIndex = -1;
+	}
+
+	// The pool object at the given index if it is still usable, null otherwise.
+	ObjectClass* GetCyclableObject(int index)
+	{
+		if (index < 0 || index >= static_cast<int>(Objects.size()))
+			return nullptr;
+
+		const auto pObject = abstract_cast<ObjectClass*>(Objects[index]);
+
+		if (!pObject || pObject->Health <= 0 || !pObject->IsAlive || pObject->InLimbo)
+			return nullptr;
+
+		const auto pOwner = pObject->GetOwningHouse();
+
+		if (!pOwner || !pOwner->IsControlledByCurrentPlayer())
+			return nullptr;
+
+		return pObject;
+	}
+
+	// One step of the degraded cycle.
+	void StepObjects()
+	{
+		ObjectClass* pTarget = nullptr;
+		int targetIndex = -1;
+
+		while (!Objects.empty())
+		{
+			int index = ObjectIndex + 1;
+
+			if (index >= static_cast<int>(Objects.size()))
+				index = 0;
+
+			if (const auto pObject = GetCyclableObject(index))
+			{
+				pTarget = pObject;
+				targetIndex = index;
+				break;
+			}
+
+			Objects.erase(Objects.begin() + index);
+
+			if (index <= ObjectIndex)
+				--ObjectIndex;
+		}
+
+		if (!pTarget)
+		{
+			Reset();
+			MessageListClass::Instance.PrintMessage(StringTable::LoadString(GameStrings::TXT_NOTHING_SELECTED),
+				RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+			return;
+		}
+
+		// This also zeroes Unsorted::NavCycleMode.
+		MapClass::UnselectAll();
+
+		if (pTarget->Select())
+		{
+			ObjectIndex = targetIndex;
+			MapClass::Instance.MarkNeedsRedraw(1);
+			Unsorted::NavCycleMode = NavCycleMode_CycleTypeSelection;
+		}
 	}
 
 	void CollectFromCurrentSelection()
@@ -206,6 +299,15 @@ void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const
 	{
 		MessageListClass::Instance.PrintMessage(StringTable::LoadString(GameStrings::TXT_NOTHING_SELECTED),
 			RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		return;
+	}
+
+	if (!CycleTypeSelection::Degraded && !CycleTypeSelection::HasMultipleLivingTypes())
+		CycleTypeSelection::Degraded = true;
+
+	if (CycleTypeSelection::Degraded)
+	{
+		CycleTypeSelection::StepObjects();
 		return;
 	}
 
