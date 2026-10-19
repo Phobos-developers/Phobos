@@ -26,6 +26,8 @@ public:
 	int AttackMoveFollowerTempCount;
 	bool IsOwnerChangeFromRevertOnExit;
 	bool IsZeroSpeed; // Temporary speed multipliers have made this techno stationary.
+	int SpeedMultiplierFrame;
+	double CurrentSpeedMultiplier;
 
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 		, LastKillWasTeamTarget { false }
@@ -45,6 +47,8 @@ public:
 		, AttackMoveFollowerTempCount { 0 }
 		, IsOwnerChangeFromRevertOnExit { false }
 		, IsZeroSpeed { false }
+		, SpeedMultiplierFrame { 0 }
+		, CurrentSpeedMultiplier { 1.0 }
 	{ }
 
 	FootClass* OwnerObject() const

@@ -934,6 +934,12 @@ void FootExt::HealthAutoConvertActions()
 
 double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
+	auto const pExt = FootExt::Fetch(pThis);
+
+	if (Unsorted::CurrentFrame == pExt->SpeedMultiplierFrame)
+		return pExt->CurrentSpeedMultiplier;
+
+	pExt->SpeedMultiplierFrame = Unsorted::CurrentFrame;
 	double houseMultiplier = 1.0;
 	auto const whatAmI = pThis->WhatAmI();
 
@@ -944,8 +950,10 @@ double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::Fetch(pThis)->AE.SpeedMultiplier *
+	pExt->CurrentSpeedMultiplier = pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+
+	return pExt->CurrentSpeedMultiplier;
 }
 
 bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
@@ -1039,6 +1047,8 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
 		.Process(this->IsZeroSpeed)
+		.Process(this->SpeedMultiplierFrame)
+		.Process(this->CurrentSpeedMultiplier)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
 		;
 }
