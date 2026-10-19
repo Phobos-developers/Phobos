@@ -528,7 +528,7 @@ static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAni
 
 		auto const animData = pType->GetBuildingAnim(anim);
 
-		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial, true))
 			return false;
 	}
 	else if (anim == BuildingAnimSlot::Production || anim == BuildingAnimSlot::PreProduction)
