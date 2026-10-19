@@ -595,6 +595,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
   - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
   - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+  - Fix the bug that crashing or sinking unit can be recruit into taskforce team
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

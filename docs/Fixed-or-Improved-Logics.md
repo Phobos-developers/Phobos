@@ -339,6 +339,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
 
 ## Fixes / interactions with other extensions
 
