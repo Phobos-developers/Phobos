@@ -9,6 +9,9 @@
 // command's own predicate rather than delegated, because the cycle must stay confined to
 // the objects the cycle was started with.
 // The order the types are cycled to is customizable through TypeCyclePriority.
+// When the pool holds living objects of a single type only, cycling types cannot step
+// anywhere, so the cycle degrades into cycling the pool's objects one at a time,
+// without interfering CycleSelection' status
 class CycleTypeSelectionCommandClass : public CommandClass
 {
 public:
