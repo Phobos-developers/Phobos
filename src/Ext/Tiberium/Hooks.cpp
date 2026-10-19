@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <CCINIClass.h>
 #include <CellClass.h>
 #include <MapClass.h>
 #include <OverlayClass.h>
@@ -7,6 +8,7 @@
 #include <ScenarioClass.h>
 #include <Theater.h>
 
+#include <cctype>
 #include <string>
 #include <vector>
 
@@ -80,62 +82,79 @@ namespace
 
 			if (!pRamp->Image)
 			{
-				std::vector<const char*> candidateNames;
-
-				if (pRamp->ImageFile && pRamp->ImageFile[0])
-					candidateNames.push_back(pRamp->ImageFile);
-
-				if (pRamp->ID && pRamp->ID[0] && (!pRamp->ImageFile || _stricmp(pRamp->ID, pRamp->ImageFile) != 0))
-					candidateNames.push_back(pRamp->ID);
-
-				// Attempt demand-loading the shape asset from an aliased overlay definition if present.
-				for (const auto pName : candidateNames)
+				std::vector<std::string> candidateNames;
+				auto addCandidate = [&candidateNames](const char* pName)
 				{
-					if (const auto pOther = OverlayTypeClass::Find(pName))
+					if (!pName || !pName[0])
+						return;
+
+					for (const auto& existing : candidateNames)
+					{
+						if (_stricmp(existing.c_str(), pName) == 0)
+							return;
+					}
+
+					candidateNames.emplace_back(pName);
+				};
+
+				addCandidate(pRamp->ImageFile);
+				addCandidate(pRamp->ID);
+
+				if (pTib->Image && pTib->Image->ImageFile && pTib->Image->ImageFile[0])
+				{
+					std::string basePrefix = pTib->Image->ImageFile;
+					while (!basePrefix.empty() && std::isdigit(static_cast<unsigned char>(basePrefix.back())))
+						basePrefix.pop_back();
+
+					if (!basePrefix.empty())
+					{
+						const int variety = pTib->NumImages > 0 ? pTib->NumImages : 12;
+						char derived[64];
+						sprintf_s(derived, "%s%02d", basePrefix.c_str(), variety + 1 + slopeOffset);
+						addCandidate(derived);
+					}
+				}
+
+				const size_t initialCount = candidateNames.size();
+				for (size_t i = 0; i < initialCount; ++i)
+				{
+					char artImage[64] = { 0 };
+					CCINIClass::INI_Art.ReadString(candidateNames[i].c_str(), "Image", "", artImage, sizeof(artImage));
+					addCandidate(artImage);
+				}
+
+				for (const auto& name : candidateNames)
+				{
+					if (const auto pOther = OverlayTypeClass::Find(name.c_str()))
 					{
 						pOther->Tiberium = true;
 
-						if (const auto pImage = pOther->GetImage())
+						if (pOther->Image)
 						{
-							pRamp->Image = pImage;
-							pRamp->ImageLoaded = true;
-							pRamp->Theater = pOther->Theater;
+							pRamp->Image = pOther->Image;
 							break;
 						}
 					}
 				}
 
-				// Enable theater resolution and image loaded flags on the ramp overlay to allow native demand-loading.
-				if (!pRamp->Image)
-				{
-					pRamp->Theater = true;
-					pRamp->ImageLoaded = true;
-
-					pRamp->GetImage();
-				}
-
-				// Fallback to direct shape loading using the active scenario theater extension.
 				if (!pRamp->Image && ScenarioClass::Instance)
 				{
 					const auto theater = ScenarioClass::Instance->Theater;
 					const auto& ext = Theater::GetTheater(theater).Extension;
 
-					for (const auto pName : candidateNames)
+					for (const auto& name : candidateNames)
 					{
 						char filename[64];
-						sprintf_s(filename, "%s.%s", pName, ext);
+						sprintf_s(filename, "%s.%s", name.c_str(), ext);
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
 
-						sprintf_s(filename, "%s.shp", pName);
+						sprintf_s(filename, "%s.shp", name.c_str());
 						pRamp->Image = FileSystem::LoadSHPFile(filename);
 						if (pRamp->Image)
 							break;
 					}
-
-					if (pRamp->Image)
-						pRamp->ImageLoaded = true;
 				}
 			}
 		}
@@ -674,11 +693,14 @@ DEFINE_HOOK(0x47FC20, CellClass_GetOverlayRect_RampOverlayType, 0x6)
 	return JumpToCall;
 }
 
-DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
+DEFINE_HOOK(0x5FDD28, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 {
-	enum { FoundTiberium = 0x5FDDCF, DefaultCheck = 0x0 };
+	enum { FoundTiberium = 0x5FDDCF, ReturnInvalid = 0x5FDDD5, ContinueCheck = 0x5FDD2E };
 
 	GET(int, overlayTypeIndex, ECX);
+
+	if (overlayTypeIndex == -1)
+		return ReturnInvalid;
 
 	const auto pOverlay = OverlayTypeClass::Array.GetItemOrDefault(overlayTypeIndex);
 
@@ -697,6 +719,7 @@ DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 
 					if (pRampOverlay->ArrayIndex == overlayTypeIndex || pRampOverlay == pOverlay)
 					{
+						pOverlay->Tiberium = true;
 						R->EAX(pTib->ArrayIndex);
 						return FoundTiberium;
 					}
@@ -706,6 +729,7 @@ DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 						if (_stricmp(pOverlay->ImageFile, pRampOverlay->ID) == 0 ||
 							(pRampOverlay->ImageFile && _stricmp(pOverlay->ImageFile, pRampOverlay->ImageFile) == 0))
 						{
+							pOverlay->Tiberium = true;
 							R->EAX(pTib->ArrayIndex);
 							return FoundTiberium;
 						}
@@ -715,6 +739,7 @@ DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 					{
 						if (_stricmp(pRampOverlay->ImageFile, pOverlay->ID) == 0)
 						{
+							pOverlay->Tiberium = true;
 							R->EAX(pTib->ArrayIndex);
 							return FoundTiberium;
 						}
@@ -724,9 +749,6 @@ DEFINE_HOOK(0x5FDD48, OverlayClass_GetTiberiumType_RampOverlays, 0x6)
 		}
 	}
 
-	// Replicate stolen instruction: mov edx, DynamicVectorClass<TiberiumClass *> Tiberiums.ActiveCount
-	R->EDX(TiberiumClass::Array.Count);
-
-	return DefaultCheck;
+	return ContinueCheck;
 }
 
