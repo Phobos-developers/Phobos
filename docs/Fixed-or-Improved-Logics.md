@@ -341,7 +341,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
-- Fixed the bug where `IsSimpleDeployer` units cannot properly deploy when using Deploy Script (9,0).
+- Fixed the bug where `IsSimpleDeployer` units cannot properly deploy when using Deploy Script `(9,0)`.
 
 ## Fixes / interactions with other extensions
 
