@@ -2072,10 +2072,10 @@ HideShakeEffects=false           ; boolean
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
-- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
