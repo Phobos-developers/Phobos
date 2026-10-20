@@ -100,6 +100,7 @@
     <ClCompile Include="src\Ext\Event\Body.cpp" />
     <!-- src\Ext\Foot -->
     <ClCompile Include="src\Ext\Foot\Body.cpp" />
+    <ClCompile Include="src\Ext\Foot\Hooks.DisallowMoving.cpp" />	
     <!-- src\Ext\House -->
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
@@ -209,7 +210,6 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeployFire.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeploysInto.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DrawIt.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
