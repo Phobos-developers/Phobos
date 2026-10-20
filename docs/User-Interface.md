@@ -585,6 +585,7 @@ CycleSelectionKeyEnabled=true    ; boolean
 
 - Cycles through the types present in the selection the cycle was started with, selecting every object of one type at a time and wrapping around at the end of the type list.
 - Type identity follows the game's own type selection: vanilla's Type ID, as extended by Ares's `GroupAs`.
+- If the pool the cycle was started with holds living objects of a single type only, either from the start or once all objects of the other types are gone, the cycle degrades into cycling through those objects one at a time, the way [Cycle Selection](#cycle-selection) does.
 - The cycle is restarted from the beginning whenever the current selection changes, e.g. when another object is selected or the selection is cleared.
 - If nothing is selected, `MSG:NothingSelected` is logged.
 - If `CycleTypeSelectionPrintSummary` is set to true, every step prints the same kind of selection summary the game's own type selection prints: the type's name, followed by the number of selected objects of that type and their total cost, formatted into the vanilla `MSG:UnitsWorth` string. The total cost is what the game itself adds up for that summary.
@@ -934,9 +935,29 @@ In `rulesmd.ini`:
 Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Sidebar radar horizontal offset
+
+- In vanilla the radar image does not line up with the frame drawn around it - it is offset 3 pixels to the right on Allied/GDI sidebars and 2 pixels to the right on Soviet/NOD sidebars. The radar is now lined up with its frame.
+- The correction can be turned off entirely or adjusted: Setting `[AudioVisual] -> UseSidebarRadarOffsetFix` to `false` disables it altogether.
+  - `Sidebar.RadarOffsetFix` overrides the correction for that side. Negative values move the radar to the left, `0` disables the correction for that side.
+  - Which of the two defaults is used depends on `Sidebar.GDIPositions`, see [Specify Sidebar style](#specify-sidebar-style).
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseSidebarRadarOffsetFix=true  ; boolean
+
+[SOMESIDE]                     ; Side
+Sidebar.RadarOffsetFix=        ; integer, pixels, defaults to -3 if Sidebar.GDIPositions=true, otherwise -2
+```
+
+```{note}
+Only the sidebar of the local player is affected - the offset applied is always the one configured for the local player's side.
+```
+
 ### Specify Sidebar style
 
-- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for first side, false for all others.
+- It's now possible to switch hardcoded sidebar button coords to use GDI sidebar coords by setting `Sidebar.GDIPositions`. Defaults to true for first side, false for all others.
 
 In `rulesmd.ini`:
 ```ini

@@ -20,6 +20,7 @@ public:
 	CDTimerClass DeployFireTimer;
 	bool KeepTargetOnMove;
 	CDTimerClass SimpleDeployerAnimationTimer;
+	CDTimerClass UnitAutoDeployTimer;
 
 	std::vector<RecoilData> ExtraTurretRecoil;
 	std::vector<RecoilData> ExtraBarrelRecoil;
@@ -31,6 +32,7 @@ public:
 		, DeployFireTimer {}
 		, KeepTargetOnMove { false }
 		, SimpleDeployerAnimationTimer {}
+		, UnitAutoDeployTimer {}
 		, ExtraTurretRecoil {}
 		, ExtraBarrelRecoil {}
 	{ }

@@ -154,9 +154,13 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 	}
 
 	this->Crit_Active = false;
+
+	if (!this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
+		return;
+
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
-	if ((this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0) && this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate))
+	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
 	{
 		if (!this->Crit_ApplyChancePerTarget.Get(RulesExt::Global()->Crit_ApplyChancePerTarget))
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -197,7 +201,7 @@ void WarheadTypeExt::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt
 
 void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, BulletExt* pBulletExt, bool bulletWasIntercepted, int distance)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || pTarget->Health <= 0 || pTarget->IsSinking || pTarget->IsBeingWarpedOut())
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
@@ -247,8 +251,11 @@ void WarheadTypeExt::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget,
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 	// Put Crit at last since it might kill the target
-	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted.Get(RulesExt::Global()->Crit_SuppressWhenIntercepted) || !bulletWasIntercepted))
+	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted.Get(RulesExt::Global()->Crit_SuppressWhenIntercepted)
+		|| !this->ApplyPerTargetEffectsOnDetonate.Get(RulesExt::Global()->ApplyPerTargetEffectsOnDetonate) || !bulletWasIntercepted))
+	{
 		this->ApplyCrit(pHouse, pTarget, pOwner, pBulletExt);
+	}
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -737,6 +744,9 @@ void WarheadTypeExt::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvok
 
 double WarheadTypeExt::GetCritChance(TechnoClass* pFirer) const
 {
+	if (!this->CanCrit)
+		return 0.0;
+
 	double critChance = this->Crit_Chance;
 
 	if (!pFirer)

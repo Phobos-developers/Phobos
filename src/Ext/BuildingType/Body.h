@@ -141,6 +141,16 @@ public:
 	Nullable<bool> RoofProductionAnimPoweredEffect;
 	Nullable<bool> RoofProductionAnimPoweredSpecial;
 
+	bool Academy;
+	Valueable<double> Academy_Infantry_Veterancy;
+	Valueable<double> Academy_Vehicle_Veterancy;
+	Valueable<double> Academy_Aircraft_Veterancy;
+	Valueable<double> Academy_Building_Veterancy;
+	ValueableVector<TechnoTypeClass*> Academy_Country_Types[16];
+	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore[16];
+
+	Valueable<bool> AutoUpgrade;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -253,6 +263,16 @@ public:
 		, RoofProductionAnimPoweredEffect { }
 		, RoofProductionAnimPoweredSpecial { }
 
+		, Academy { false }
+		, Academy_Infantry_Veterancy { 0.0 }
+		, Academy_Vehicle_Veterancy { 0.0 }
+		, Academy_Aircraft_Veterancy { 0.0 }
+		, Academy_Building_Veterancy { 0.0 }
+		, Academy_Country_Types {}
+		, Academy_Country_Ignore {}
+
+		, AutoUpgrade { false }
+
 		// Ares 0.2
 		, CloningFacility { false }
 
@@ -315,11 +335,15 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
-	static bool IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial);
+	static bool IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial, bool isUpgrade = false);
 
 	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant = nullptr);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static bool CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse);
+	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
+	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
+	static bool AutoUpgradeBuilding(BuildingClass* pBuilding);
 };
 
