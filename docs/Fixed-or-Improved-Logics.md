@@ -338,6 +338,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
 
 ## Fixes / interactions with other extensions
 

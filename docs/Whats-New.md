@@ -2070,6 +2070,7 @@ HideShakeEffects=false           ; boolean
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)

@@ -50,6 +50,7 @@ void InfantryExt::Serialize(T& Stm)
 		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->HasDeployConverted)
 		.Process(this->HasUndeployConverted)
+		.Process(this->NeedsToSetReloadTimer)
 		;
 }
 

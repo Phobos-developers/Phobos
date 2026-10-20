@@ -1,3 +1,5 @@
+#include "Body.h"
+
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -209,6 +211,18 @@ DEFINE_HOOK(0x5209EE, InfantryClass_UpdateFiring_BurstNoDelay, 0x5)
 			}
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51DF70, InfantryClass_Fire_SetFlag, 0x7)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto const pInfExt = InfantryExt::Fetch(pThis);
+
+	if(pThis->Ammo >= pThis->Type->Ammo)
+		pInfExt->NeedsToSetReloadTimer = true;
 
 	return 0;
 }

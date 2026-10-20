@@ -1439,3 +1439,28 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
+	
+	if(pThis->WhatAmI() != AbstractType::Infantry)
+		return 0;
+	
+	auto const pInfExt = InfantryExt::Fetch(static_cast<InfantryClass*>(pThis));
+	
+	if(pInfExt->NeedsToSetReloadTimer && pThis->Ammo < pType->Ammo)
+	{
+		pThis->ReloadTimer.StartTime = Unsorted::CurrentFrame;
+
+		if(pThis->Ammo == 0)
+			pThis->ReloadTimer.TimeLeft = pType->EmptyReload;
+		else
+			pThis->ReloadTimer.TimeLeft = pType->Reload;
+
+		pInfExt->NeedsToSetReloadTimer = false;
+	}
+
+	return 0;
+}
