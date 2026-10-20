@@ -56,8 +56,6 @@ void TiberiumExt::AutoDetectRampOverlays()
 		return;
 
 	const int variety = pThis->NumImages > 0 ? pThis->NumImages : 12;
-	const int startRamp = variety + 1;
-	const int endRamp = variety + 8;
 
 	auto extractPrefix = [](const char* pStr) -> std::string
 	{
@@ -72,47 +70,72 @@ void TiberiumExt::AutoDetectRampOverlays()
 	};
 
 	std::vector<std::string> prefixes;
-	if (auto idPrefix = extractPrefix(pThis->Image->ID); !idPrefix.empty())
-		prefixes.push_back(std::move(idPrefix));
-
 	if (auto imgPrefix = extractPrefix(pThis->Image->ImageFile); !imgPrefix.empty())
+		prefixes.push_back(std::move(imgPrefix));
+
+	if (auto idPrefix = extractPrefix(pThis->Image->ID); !idPrefix.empty())
 	{
-		if (prefixes.empty() || _stricmp(prefixes.front().c_str(), imgPrefix.c_str()) != 0)
-			prefixes.push_back(std::move(imgPrefix));
+		if (prefixes.empty() || _stricmp(prefixes.front().c_str(), idPrefix.c_str()) != 0)
+			prefixes.push_back(std::move(idPrefix));
 	}
 
-	for (const auto& prefix : prefixes)
+	const int rampBases[] = { variety + 1, 13 };
+
+	for (const int startRamp : rampBases)
 	{
-		bool allFound = true;
-		for (int i = startRamp; i <= endRamp; ++i)
+		const int endRamp = startRamp + 7;
+
+		for (const auto& prefix : prefixes)
 		{
-			char buf[64];
-			sprintf_s(buf, "%s%02d", prefix.c_str(), i);
-			auto pFound = OverlayTypeClass::Find(buf);
-			if (!pFound)
+			bool allFound = true;
+			for (int i = startRamp; i <= endRamp; ++i)
 			{
-				sprintf_s(buf, "%s%d", prefix.c_str(), i);
-				pFound = OverlayTypeClass::Find(buf);
+				char buf[64];
+				sprintf_s(buf, "%s%02d", prefix.c_str(), i);
+				auto pFound = OverlayTypeClass::Find(buf);
+				if (!pFound)
+				{
+					sprintf_s(buf, "%s%d", prefix.c_str(), i);
+					pFound = OverlayTypeClass::Find(buf);
+				}
+
+				if (!pFound)
+				{
+					allFound = false;
+					break;
+				}
+
+				if (pFound->ImageFile && pFound->ImageFile[0])
+				{
+					char numSuffix[16];
+					sprintf_s(numSuffix, "%02d", i);
+					const size_t fileLen = strlen(pFound->ImageFile);
+					const size_t sufLen = strlen(numSuffix);
+					if (fileLen < sufLen || _stricmp(pFound->ImageFile + fileLen - sufLen, numSuffix) != 0)
+					{
+						if (auto altPrefix = extractPrefix(pFound->ImageFile); !altPrefix.empty())
+						{
+							char altBuf[64];
+							sprintf_s(altBuf, "%s%02d", altPrefix.c_str(), i);
+							if (auto pAlt = OverlayTypeClass::Find(altBuf))
+								pFound = pAlt;
+						}
+					}
+				}
+
+				this->RampOverlays[i - startRamp] = pFound;
 			}
 
-			if (!pFound)
+			if (allFound)
 			{
-				allFound = false;
-				break;
+				for (auto pOverlay : this->RampOverlays)
+					pOverlay->Tiberium = true;
+
+				if (pThis->NumSlopes < 8)
+					pThis->NumSlopes = 8;
+
+				return;
 			}
-
-			this->RampOverlays[i - startRamp] = pFound;
-		}
-
-		if (allFound)
-		{
-			for (auto pOverlay : this->RampOverlays)
-				pOverlay->Tiberium = true;
-
-			if (pThis->NumSlopes < 8)
-				pThis->NumSlopes = 8;
-
-			return;
 		}
 	}
 
