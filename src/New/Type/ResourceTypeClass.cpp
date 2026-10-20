@@ -153,14 +153,16 @@ void ResourceTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crate_Sound.Read(exINI, section, "Crate.Sound");
 	this->Crate_Anim.Read(exINI, section, "Crate.Anim");
 
-	this->Display_Power_Mode.Read(exINI, section, "Display.Format");
+	if (this->IsPowerResource())
+		this->Display_Power_Mode.Read(exINI, section, "Display.Format");
 
 	this->Display_Power_ColorGreen.Read(exINI, section, "Display.ColorGreen");
 	this->Display_Power_ColorYellow.Read(exINI, section, "Display.ColorYellow");
 	this->Display_Power_ColorRed.Read(exINI, section, "Display.ColorRed");
 	this->Display_Power_ColorGrey.Read(exINI, section, "Display.ColorGrey");
 
-	this->Display_Harvester_Mode.Read(exINI, section, "Display.Format");
+	if (this->IsHarvesterResource())
+		this->Display_Harvester_Mode.Read(exINI, section, "Display.Format");
 
 	this->Display_Harvester_ColorGreen.Read(exINI, section, "Display.ColorGreen");
 	this->Display_Harvester_ColorYellow.Read(exINI, section, "Display.ColorYellow");
@@ -262,7 +264,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 			defaultBaseX = pSurface->GetWidth() / 2;
 
 		const Point2D sideOffset = pSideExt->Sidebar_ResourceTypes_Offset.Get();
-		baseX = (sideOffset.X != 0 ? sideOffset.X : defaultBaseX) + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.X : 0);
+		baseX = defaultBaseX + sideOffset.X + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.X : 0);
 		baseY = 2 + sideOffset.Y + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.Y : 0);
 	}
 	else
@@ -307,7 +309,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 	TextAlign effectiveAlign;
 	if (isSidebar)
 	{
-		effectiveAlign = pSideExt ? pSideExt->Sidebar_ResourceTypes_Align.Get() : TextAlign::Left;
+		effectiveAlign = pSideExt ? pSideExt->Sidebar_ResourceTypes_Align.Get() : TextAlign::Center;
 	}
 	else
 	{
@@ -697,7 +699,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		{
 			if (dynamicSidebarCount <= 1)
 			{
-				vPos.X = baseX;
+				vPos.X = (screenW / 2) + (pSideExt ? pSideExt->Sidebar_ResourceTypes_Offset.Get().X : 0) + (sideAnchor == ResourceDisplayAnchor::Sidebar ? sideBaseOffset.X : 0);
 				vPos.Y = baseY;
 			}
 			else
@@ -790,7 +792,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		if (isSidebar)
 		{
 			auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
-					| static_cast<int>(effectiveAlign));
+					| static_cast<int>((!pResource->Display_Offset.isset() && dynamicSidebarCount <= 1) ? TextAlign::Center : effectiveAlign));
 			pSurface->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 		}
 		else

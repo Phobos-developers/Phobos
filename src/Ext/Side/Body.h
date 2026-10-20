@@ -91,7 +91,7 @@ public:
 		, Sidebar_PowerDelta_Align { TextAlign::Left }
 		, Sidebar_ResourceTypes_Offset { { 0, 0 } }
 		, Sidebar_ResourceTypes_Color {}
-		, Sidebar_ResourceTypes_Align { TextAlign::Left }
+		, Sidebar_ResourceTypes_Align { TextAlign::Center }
 		, Sidebar_ResourceTypes_Types {}
 		, ToolTip_Background_Color { }
 		, ToolTip_Background_Opacity { }

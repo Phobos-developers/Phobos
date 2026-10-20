@@ -49,7 +49,8 @@ void SideExt::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_ResourceTypes_Offset.Read(exINI, pSection, "Sidebar.ResourceTypes.Offset");
 	this->Sidebar_ResourceTypes_Color.Read(exINI, pSection, "Sidebar.ResourceTypes.Color");
 	this->Sidebar_ResourceTypes_Align.Read(exINI, pSection, "Sidebar.ResourceTypes.Align");
-	this->Sidebar_ResourceTypes_Types.Read(exINI, pSection, "Sidebar.ResourceTypes.Types");
+	if (!ResourceTypeClass::Array.empty())
+		this->Sidebar_ResourceTypes_Types.Read(exINI, pSection, "Sidebar.ResourceTypes.Types");
 
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
