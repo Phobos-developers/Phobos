@@ -1010,3 +1010,4 @@ This page lists all the individual contributions to the project by their author.
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
   - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target
+- **Deathreaperz** - `IsSimpleDeployer` Deploy Fix when using Deploy Script `(9,0)`

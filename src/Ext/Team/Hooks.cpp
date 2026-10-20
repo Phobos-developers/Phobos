@@ -166,3 +166,36 @@ DEFINE_HOOK(0x6EA870, TeamClass_LiberateMember_Start, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6ED657, TeamClass_TMission_Deploy_SimpleDeployer, 0x6)
+{
+	enum { ContinueMemberLoop = 0x6ED740 };
+
+	GET(UnitClass*, pThis, ESI);
+	const auto pType = pThis->Type;
+
+	if (!pType->IsSimpleDeployer || pType->DeploysInto)
+		return 0;
+
+	if (pThis->Deployed)
+	{
+		if (pThis->GetCurrentMission() != Mission::Area_Guard)
+			pThis->QueueMission(Mission::Area_Guard, false);
+	}
+	else
+	{
+		R->Stack<BYTE>(0x13, 0);
+
+		if (pThis->Deploying || pThis->DeployAnim)
+			return ContinueMemberLoop;
+
+		if (pThis->GetCurrentMission() != Mission::Unload)
+		{
+			pThis->SetDestination(nullptr, true);
+			pThis->SetTarget(nullptr);
+			pThis->QueueMission(Mission::Unload, false);
+		}
+	}
+
+	return ContinueMemberLoop;
+}
