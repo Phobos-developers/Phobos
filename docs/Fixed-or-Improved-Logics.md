@@ -339,6 +339,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
 
 ## Fixes / interactions with other extensions
 
@@ -2209,6 +2212,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]             ; TechnoType
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
+```
+
+### Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Survivors.ReplaceTagTo=vehiclethief, crew   ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all)
+
+[SOMETECHNO]                                ; TechnoType
+Survivors.ReplaceTagTo=                     ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
 ```
 
 ### Customize `DefaultToGuardArea` per gunner mode
