@@ -20,6 +20,7 @@ public:
 	CDTimerClass DeployFireTimer;
 	bool KeepTargetOnMove;
 	CDTimerClass SimpleDeployerAnimationTimer;
+	CDTimerClass UnitAutoDeployTimer;
 
 	std::vector<RecoilData> ExtraTurretRecoil;
 	std::vector<RecoilData> ExtraBarrelRecoil;
@@ -31,6 +32,7 @@ public:
 		, DeployFireTimer {}
 		, KeepTargetOnMove { false }
 		, SimpleDeployerAnimationTimer {}
+		, UnitAutoDeployTimer {}
 		, ExtraTurretRecoil {}
 		, ExtraBarrelRecoil {}
 	{ }
@@ -46,7 +48,6 @@ public:
 
 	static UnitClass* Deployer;
 
-	static bool CannotMove(UnitClass* pThis);
 	static bool HasAmmoToDeploy(UnitClass* pThis);
 	static void HandleOnDeployAmmoChange(UnitClass* pThis, int maxAmmoOverride = -1);
 	static bool SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue, bool alwaysCheckLandTypes);
