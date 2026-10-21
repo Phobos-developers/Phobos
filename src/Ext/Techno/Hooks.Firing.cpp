@@ -1443,16 +1443,17 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoTypeClass*, pType, EAX);
 	
-	if(pThis->WhatAmI() != AbstractType::Infantry)
+	const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis);
+    
+	if (!pInfantry)
 		return 0;
 	
-	auto const pInfExt = InfantryExt::Fetch(static_cast<InfantryClass*>(pThis));
+	auto const pInfExt = InfantryExt::Fetch(pInfantry);
 	
 	if(pInfExt->NeedsToSetReloadTimer)
 	{
-		pThis->StartReloading();
+		pInfantry->StartReloading();
 		pInfExt->NeedsToSetReloadTimer = false;
 	}
 
