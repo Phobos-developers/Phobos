@@ -1450,15 +1450,9 @@ DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
 	
 	auto const pInfExt = InfantryExt::Fetch(static_cast<InfantryClass*>(pThis));
 	
-	if(pInfExt->NeedsToSetReloadTimer && pThis->Ammo < pType->Ammo)
+	if(pInfExt->NeedsToSetReloadTimer)
 	{
-		pThis->ReloadTimer.StartTime = Unsorted::CurrentFrame;
-
-		if(pThis->Ammo == 0)
-			pThis->ReloadTimer.TimeLeft = pType->EmptyReload;
-		else
-			pThis->ReloadTimer.TimeLeft = pType->Reload;
-
+		pThis->StartReloading();
 		pInfExt->NeedsToSetReloadTimer = false;
 	}
 
