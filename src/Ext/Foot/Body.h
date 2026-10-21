@@ -25,6 +25,9 @@ public:
 	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 	int AttackMoveFollowerTempCount;
 	bool IsOwnerChangeFromRevertOnExit;
+	bool IsZeroSpeed; // Temporary speed multipliers have made this techno stationary.
+	int SpeedMultiplierFrame;
+	double CurrentSpeedMultiplier;
 	bool FlyingProduction_Descending;
 	int FlyingProduction_TargetHeight;
 	AbstractClass* FlyingProduction_RallyTarget;
@@ -48,6 +51,9 @@ public:
 		, JumpjetStraightAscend { false }
 		, AttackMoveFollowerTempCount { 0 }
 		, IsOwnerChangeFromRevertOnExit { false }
+		, IsZeroSpeed { false }
+		, SpeedMultiplierFrame { 0 }
+		, CurrentSpeedMultiplier { 1.0 }
 		, FlyingProduction_Descending { false }
 		, FlyingProduction_TargetHeight { 0 }
 		, FlyingProduction_RallyTarget { nullptr }
@@ -80,6 +86,7 @@ public:
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void HealthAutoConvertActions();
 	void AmmoAutoConvertActions();
+	void HandleTemporaryZeroSpeed();
 	void UpdateFlyingProductionDescent();
 	void FlyingProduction_DispatchMove(AbstractClass* pRallyTarget, BuildingClass* pSpawnBuilding, DirStruct facing);
 
@@ -89,4 +96,8 @@ public:
 private:
 	template <typename T>
 	void Serialize(T& Stm);
+
+public:
+	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static bool CannotMove(FootClass* pThis, bool checkSpeedMultiplier);
 };
