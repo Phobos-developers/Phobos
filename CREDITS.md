@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Veinhole monster and veins logic fixes and ramp support
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:

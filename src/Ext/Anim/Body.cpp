@@ -169,8 +169,8 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
 
-	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlayIndex
-		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex)
+	if (!pOccupier || pOccupier->GetHeight() > 5 || pCell->OverlayTypeIndex != weedOverlayIndex
+		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex > 4)
 	{
 		pAnim->UnableToContinue = true;
 	}
