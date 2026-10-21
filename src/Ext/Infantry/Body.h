@@ -16,13 +16,13 @@ public:
 	bool HasDeployConverted;
 	bool HasUndeployConverted;
 
-	bool NeedsToSetReloadTimer;
+	bool RestartReloadTimer;
 
 	explicit InfantryExt(InfantryClass* const OwnerObject) : FootExt(OwnerObject)
 		, SkipTargetChangeResetSequence { false }
 		, HasDeployConverted { false }
 		, HasUndeployConverted { false }
-		, NeedsToSetReloadTimer { true }
+		, RestartReloadTimer { true }
 	{ }
 
 	InfantryClass* OwnerObject() const

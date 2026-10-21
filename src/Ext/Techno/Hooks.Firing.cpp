@@ -1451,10 +1451,10 @@ DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
 	
 	auto const pInfExt = InfantryExt::Fetch(pInfantry);
 	
-	if(pInfExt->NeedsToSetReloadTimer)
+	if (pInfExt->RestartReloadTimer)
 	{
 		pInfantry->StartReloading();
-		pInfExt->NeedsToSetReloadTimer = false;
+		pInfExt->RestartReloadTimer = false;
 	}
 
 	return 0;
