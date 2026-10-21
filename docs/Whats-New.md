@@ -2077,8 +2077,8 @@ HideShakeEffects=false           ; boolean
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
-- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
