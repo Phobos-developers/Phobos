@@ -221,7 +221,7 @@ DEFINE_HOOK(0x51DF70, InfantryClass_Fire_SetFlag, 0x7)
 
 	auto const pInfExt = InfantryExt::Fetch(pThis);
 
-	if(pThis->Ammo >= pThis->Type->Ammo)
+	if (pThis->Ammo >= pThis->Type->Ammo)
 		pInfExt->NeedsToSetReloadTimer = true;
 
 	return 0;
