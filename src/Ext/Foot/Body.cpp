@@ -256,6 +256,13 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
+	// Remove from DeploysInto units
+	if (pOldType->DeploysInto && !pCurrentType->DeploysInto)
+	{
+		auto& vec = HouseExt::Fetch(pOwner)->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
 	// Powered by ststl-s, Fly-Star
 	if (pCurrentType->Enslaves && pCurrentType->SlavesNumber > 0)
 	{

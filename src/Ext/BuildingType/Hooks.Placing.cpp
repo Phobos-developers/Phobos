@@ -177,9 +177,7 @@ static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* co
 		return false;
 	}
 
-	const auto pTechnoType = pTechno->GetTechnoType();
-
-	if (!expand || pTechnoType->Speed <= 0 || !BuildingTypeExt::CheckOccupierCanLeave(pOwner, pTechno->Owner))
+	if (!expand || pTechno->GetTechnoType()->Speed <= 0 || !BuildingTypeExt::CheckOccupierCanLeave(pOwner, pTechno->Owner))
 		return true;
 	else
 		landFootOnly = true;
@@ -911,7 +909,7 @@ DEFINE_HOOK(0x6D5D38, TacticalClass_DrawOverlayWallGrid_DisableWhenHaveTechnos, 
 {
 	enum { Valid = 0x6D5D40, Invalid = 0x6D5F0F };
 
-	GET(bool, valid, EAX);
+	GET(const bool, valid, EAX);
 
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
@@ -925,7 +923,7 @@ DEFINE_HOOK(0x6D5A9D, TacticalClass_DrawFirestormWallGrid_DisableWhenHaveTechnos
 {
 	enum { Valid = 0x6D5AA5, Invalid = 0x6D5C2F };
 
-	GET(bool, valid, EAX);
+	GET(const bool, valid, EAX);
 
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
@@ -939,7 +937,7 @@ DEFINE_HOOK(0x588873, MapClass_BuildingToWall_DisableWhenHaveTechnos, 0x8)
 {
 	enum { Valid = 0x58887B, Invalid = 0x588935 };
 
-	GET(bool, valid, EAX);
+	GET(const bool, valid, EAX);
 
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
@@ -953,7 +951,7 @@ DEFINE_HOOK(0x588664, MapClass_BuildingToFirestormWall_DisableWhenHaveTechnos, 0
 {
 	enum { Valid = 0x58866C, Invalid = 0x588730 };
 
-	GET(bool, valid, EAX);
+	GET(const bool, valid, EAX);
 
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
@@ -1061,13 +1059,11 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 
 			if (mission == Mission::Guard || mission == Mission::Unload)
 			{
-				if (const auto pHouseExt = HouseExt::Fetch(pUnit->Owner))
-				{
-					auto& vec = pHouseExt->OwnedDeployingUnits;
+				const auto pHouseExt = HouseExt::Fetch(pUnit->Owner);
+				auto& vec = pHouseExt->OwnedDeployingUnits;
 
-					if (vec.size() > 0)
-						vec.erase(std::remove(vec.begin(), vec.end(), pUnit), vec.end());
-				}
+				if (vec.size() > 0)
+					vec.erase(std::remove(vec.begin(), vec.end(), pUnit), vec.end());
 			}
 		}
 	}
@@ -1238,7 +1234,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 			if (!pImage)
 				return;
 
-			BlitterFlags blitFlags = BlitterFlags::TransLucent75 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+			const auto blitFlags = BlitterFlags::TransLucent75 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 			auto rect = DSurface::Temp->GetRect();
 			rect.Height -= 32;
 			auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(cell, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
