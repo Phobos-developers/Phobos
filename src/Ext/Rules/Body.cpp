@@ -728,6 +728,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
 	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
+	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
 }
 
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -1345,6 +1346,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
 		.Process(this->UseSidebarRadarOffsetFix)
+		.Process(this->ExtendedBuildingPlacing)
     ;
 }
 
