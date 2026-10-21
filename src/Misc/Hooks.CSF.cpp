@@ -74,9 +74,13 @@ namespace CSFTextExt
 
 		auto const pLabel = &StringTable::Labels[CurrentLabelIndex];
 
+		// EBP holds the byte offset of the current value in StringTable::Values;
+		// dividing by the element size turns it back into a value index.
+		auto const valueIndex = static_cast<int>(R->EBP() / sizeof(*StringTable::Values));
+
 		// StringTable::LoadString only ever returns the first value of a label,
 		// the remaining ones are never used by the engine.
-		if (static_cast<int>(R->EBP()) / 4 != pLabel->FirstValueIndex)
+		if (valueIndex != pLabel->FirstValueIndex)
 			return;
 
 		auto const pRawValue = reinterpret_cast<const wchar_t*>(0x00B17F24);
@@ -103,7 +107,7 @@ namespace CSFTextExt
 // point; it is overwritten with the value index right before the value loop.
 DEFINE_HOOK(0x734A88, StringTable_ReadFile_TrackCurrentLabel, 0x6)
 {
-	CSFTextExt::CurrentLabelIndex = static_cast<int>(R->EBP()) / static_cast<int>(sizeof(CSFLabel));
+	CSFTextExt::CurrentLabelIndex = static_cast<int>(R->EBP() / sizeof(CSFLabel));
 	return 0;
 }
 
