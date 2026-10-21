@@ -1252,6 +1252,10 @@ msgid ""
 msgstr ""
 "修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶发崩溃的问题（by JerryDing07）"
 
+msgid ""
+"Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)"
+msgstr "修复了坠落或沉没中的单位可以被招募进特遣小队的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
