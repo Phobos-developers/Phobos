@@ -251,7 +251,6 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 	int baseX = 0;
 	int baseY = 0;
 
-	const int marginX = Phobos::Config::MessageDisplayInCenter ? 28 : 10;
 	const int screenW = pSurface->GetWidth();
 	const int screenH = pSurface->GetHeight();
 
@@ -272,32 +271,32 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 		switch (sideAnchor)
 		{
 		case ResourceDisplayAnchor::TopLeft:
-			baseX = marginX + sideBaseOffset.X;
-			baseY = 5 + sideBaseOffset.Y;
+			baseX = sideBaseOffset.X;
+			baseY = sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::TopRight:
-			baseX = screenW - marginX + sideBaseOffset.X;
-			baseY = 5 + sideBaseOffset.Y;
+			baseX = screenW + sideBaseOffset.X;
+			baseY = sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::TopCenter:
 			baseX = (screenW / 2) + sideBaseOffset.X;
-			baseY = 5 + sideBaseOffset.Y;
+			baseY = sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomLeft:
-			baseX = marginX + sideBaseOffset.X;
-			baseY = screenH - 20 + sideBaseOffset.Y;
+			baseX = sideBaseOffset.X;
+			baseY = screenH + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomRight:
-			baseX = screenW - marginX + sideBaseOffset.X;
-			baseY = screenH - 20 + sideBaseOffset.Y;
+			baseX = screenW + sideBaseOffset.X;
+			baseY = screenH + sideBaseOffset.Y;
 			break;
 		case ResourceDisplayAnchor::BottomCenter:
 			baseX = (screenW / 2) + sideBaseOffset.X;
-			baseY = screenH - 20 + sideBaseOffset.Y;
+			baseY = screenH + sideBaseOffset.Y;
 			break;
 		default:
-			baseX = marginX + sideBaseOffset.X;
-			baseY = 5 + sideBaseOffset.Y;
+			baseX = sideBaseOffset.X;
+			baseY = sideBaseOffset.Y;
 			break;
 		}
 	}
@@ -756,22 +755,23 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 
 			if (sideOrientation == ResourceDisplayOrientation::Horizontal)
 			{
+				const int textY = isBottomAnchor ? (baseY - dim.Height) : baseY;
 				if (isRightAlign)
 				{
 					vPos.X = runningRightX - dim.Width;
-					vPos.Y = baseY;
+					vPos.Y = textY;
 					runningRightX -= (dim.Width + spacing);
 				}
 				else if (isCenterAlign)
 				{
 					vPos.X = runningLeftX - (dim.Width / 2);
-					vPos.Y = baseY;
+					vPos.Y = textY;
 					runningLeftX += (dim.Width + spacing);
 				}
 				else
 				{
 					vPos.X = runningLeftX;
-					vPos.Y = baseY;
+					vPos.Y = textY;
 					runningLeftX += (dim.Width + spacing);
 				}
 			}
@@ -784,7 +784,7 @@ void ResourceTypeClass::DrawResourceHUD(DSurface* pSurface, bool isSidebar)
 				else
 					vPos.X = baseX;
 
-				vPos.Y = isBottomAnchor ? (baseY - bgHeight > 0 ? baseY - stackIndex * spacing : baseY) : (baseY + stackIndex * spacing);
+				vPos.Y = isBottomAnchor ? (baseY - dim.Height - stackIndex * spacing) : (baseY + stackIndex * spacing);
 				++stackIndex;
 			}
 		}
