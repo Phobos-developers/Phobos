@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 namespace FiringAITemp
@@ -28,7 +27,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 	enum { SkipGameCode = 0x5209A6 };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(int, weaponIndex, EDI);
+	GET(const int, weaponIndex, EDI);
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
@@ -219,10 +218,10 @@ DEFINE_HOOK(0x51DF70, InfantryClass_Fire_SetFlag, 0x7)
 {
 	GET(InfantryClass*, pThis, ESI);
 
-	auto const pInfExt = InfantryExt::Fetch(pThis);
+	auto const pExt = InfantryExt::Fetch(pThis);
 
 	if (pThis->Ammo >= pThis->Type->Ammo)
-		pInfExt->RestartReloadTimer = true;
+		pExt->RestartReloadTimer = true;
 
 	return 0;
 }

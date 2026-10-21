@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <Ext/InfantryType/Body.h>
-
 InfantryExt::ExtContainer InfantryExt::ExtMap;
 
 // Returns hardcoded prone/deployed FLH overrides for infantry, if set.
