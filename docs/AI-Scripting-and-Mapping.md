@@ -17,6 +17,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - Fixed AI team recruitment inconsistency causing underfilled teams.
 - Restored the ScriptType action#24 `Play speech` from Tiberian Sun.
 - Fixed Tiberium types not supporting overrides in map and game mode INIs.
+- Fixed briefing out of bound due to fixed window size.
 
 ### Dynamic Team Delays
 
