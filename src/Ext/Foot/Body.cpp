@@ -1,6 +1,7 @@
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
+#include <WalkLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
@@ -253,6 +254,13 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	// Remove from DeploysInto units
+	if (pOldType->DeploysInto && !pCurrentType->DeploysInto)
+	{
+		auto& vec = HouseExt::Fetch(pOwner)->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
 	// Powered by ststl-s, Fly-Star
@@ -972,6 +980,98 @@ void FootExt::HealthAutoConvertActions()
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
 }
 
+double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	auto const pExt = FootExt::Fetch(pThis);
+
+	if (Unsorted::CurrentFrame == pExt->SpeedMultiplierFrame)
+		return pExt->CurrentSpeedMultiplier;
+
+	pExt->SpeedMultiplierFrame = Unsorted::CurrentFrame;
+	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
+
+	if (whatAmI == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (whatAmI == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	pExt->CurrentSpeedMultiplier = pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+
+	return pExt->CurrentSpeedMultiplier;
+}
+
+bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
+{
+	if (pThis->LocomotorSource)
+		return false;
+
+	if (TechnoExt::DriverKilled(pThis))
+		return true;
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (pType->Speed == 0)
+		return true;
+
+	if (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsZeroSpeed)
+		return true;
+
+	auto landType = pThis->GetCell()->LandType;
+
+	if (landType == LandType::Tunnel && pType->Locomotor != LocomotionClass::CLSIDs::Jumpjet)
+		return false;
+
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		const auto movementRestrictedTo = static_cast<UnitTypeClass*>(pType)->MovementRestrictedTo;
+
+		if (movementRestrictedTo == LandType::None)
+			return false;
+
+		if (!pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+			landType = LandType::Road;
+
+		if (movementRestrictedTo != landType)
+			return true;
+	}
+
+	return false;
+}
+
+// Check speed multipliers for zero, update things like allowing
+// locomotor to process destination again.
+void FootExt::HandleTemporaryZeroSpeed()
+{
+	const auto pThis = this->OwnerObject();
+	const bool isZeroSpeed = FootExt::GetCurrentSpeedMultiplier(pThis) <= 0.0;
+	const bool wasZeroSpeed = this->IsZeroSpeed;
+	this->IsZeroSpeed = isZeroSpeed;
+
+	if (isZeroSpeed && !wasZeroSpeed)
+	{
+		// Walk locomotor requires manual reset of movement state when immobilized.
+		if (auto const pWalkLoco = locomotion_cast<WalkLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
+		{
+			pWalkLoco->Destination = CoordStruct::Empty;
+			pWalkLoco->HeadToCoord = CoordStruct::Empty;
+			pWalkLoco->Stop_Moving();
+		}
+	}
+	else if (!isZeroSpeed && wasZeroSpeed)
+	{
+		// Set destination again if it exists.
+		if (auto const pDest = pThis->Destination)
+		{
+			pThis->Destination = nullptr;
+			pThis->SetDestination(pDest, false);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -994,6 +1094,9 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->ResetLocomotor)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->IsZeroSpeed)
+		.Process(this->SpeedMultiplierFrame)
+		.Process(this->CurrentSpeedMultiplier)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
 		;
 }
