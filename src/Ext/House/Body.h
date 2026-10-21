@@ -9,6 +9,16 @@
 
 #include <array>
 
+struct PlacingBuildingStruct
+{
+	BuildingTypeClass* Type;
+	BuildingTypeClass* DrawType;
+	int Times;
+	CDTimerClass Timer;
+	CellStruct TopLeft;
+	size_t PlaceType;
+};
+
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -90,6 +100,10 @@ public:
 	float GetTotalTiberiumStorage() const;
 	std::vector<BuildingClass*> Academies;
 
+	std::vector<UnitClass*> OwnedDeployingUnits;
+	PlacingBuildingStruct Common;
+	PlacingBuildingStruct Combat;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -128,6 +142,9 @@ public:
 		, TiberiumStorage {}
 		, WeedStorage {}
 		, Academies {}
+		, OwnedDeployingUnits {}
+		, Common { nullptr, nullptr, 0 }
+		, Combat { nullptr, nullptr, 0 }
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
