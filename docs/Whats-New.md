@@ -682,12 +682,6 @@ HideShakeEffects=false           ; boolean
 - Allowed `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Noble_Fish)
 
 #### Vanilla fixes:
-- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
-- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
-- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
-- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
-- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
-- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
@@ -778,11 +772,6 @@ HideShakeEffects=false           ; boolean
 - Fixed the issue of significant lagging caused by frequent lighting updates due to the accumulation of a large amount of radsite in a short time (by NetsuNegi)
 
 #### Phobos fixes:
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
-- Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
-- Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
-- Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
-- Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 - Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)

@@ -376,7 +376,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
@@ -442,9 +441,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
-  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
-  - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
+  - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -611,6 +610,9 @@ This page lists all the individual contributions to the project by their author.
   - Extension system rework
   - New exception handler with a crash dialog, crash report and minidumps (ported from Vinifera)
   - Keep Syringe open until the game exits (ported from Vinifera)
+  - Fix script action `18000 Local variable set` doing nothing
+  - Fix some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare
+  - Fix operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue`
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -780,6 +782,7 @@ This page lists all the individual contributions to the project by their author.
   - Dynamic team delays
   - Customize whether or not passenger can fire out when the transport is moving
   - Show game time
+  - Fix `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
