@@ -304,6 +304,16 @@ In `RA2MD.INI`:
 ShowPlacementPreview=yes   ; boolean
 ```
 
+### Preserve whitespace in CSF
+
+- In vanilla, the CSF parser normalizes every label value: runs of consecutive spaces are collapsed into a single space, leading/trailing spaces are stripped and the spaces next to line breaks are removed. This makes any layout that relies on multiple spaces, such as indenting the lines of a briefing, impossible. Enabling this flag skips the normalization entirely and keeps the value exactly as written in the CSF.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+PreserveCSFWhitespace=false  ; boolean
+```
+
 ### Real time timers
 
 - Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=true`.
