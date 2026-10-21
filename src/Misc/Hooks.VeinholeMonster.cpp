@@ -1075,7 +1075,7 @@ DEFINE_HOOK(0x5FDE4D, OverlayClass_PostReadINI_RampVeins, 0x7)
 // Allows mature veins on cardinal ramps (SlopeIndex 1..4) to spawn vein attack animations on units.
 DEFINE_HOOK(0x48693E, CellClass_ActivateVeins_SlopeCheck, 0x6)
 {
-	GET(CellClass* const, pThis, ESI);
+	GET(CellClass* const, pThis, EBX);
 
 	return (pThis && pThis->SlopeIndex <= MaxCardRampSlopeIndex) ? 0x48694C : 0x486A66;
 }
@@ -1095,9 +1095,11 @@ DEFINE_HOOK(0x74D7DC, VeinholeMonsterClass_UpdateGrowth_CompactAndSeed, 0x6)
 			SeedMonsterBorderCells(pThis);
 
 		if (!pQueue || pQueue->Count <= 0)
-			return 0x74DBC5;
+			return 0x74DBE9;
 	}
 
+	R->EDX(pThis->GrowthLogic.NextFreeNodeIndex);
+	R->EAX(RulesClass::Instance->MaxVeinholeGrowth);
 	return 0x74D7E8;
 }
 
@@ -1115,24 +1117,24 @@ DEFINE_HOOK(0x74E1C0, VeinholeMonsterClass_Func_74E1C0_RecalculateCellVector, 0x
 	GET(VeinholeMonsterClass* const, pThis, ECX);
 
 	RebuildSingleMonsterBFS(pThis);
-	return 0x74E6A2;
+	return 0x74E6A1;
 }
 
 // Fixes VeinholeMonsterClass::Recalculate (called on death) so shared vein networks are adopted
 // by surviving monsters and no new veins are spawned around the dying monster.
-DEFINE_HOOK(0x74E930, VeinholeMonsterClass_Recalculate_Death, 0x8)
+DEFINE_HOOK(0x74E930, VeinholeMonsterClass_Recalculate_Death, 0x6)
 {
 	GET(VeinholeMonsterClass* const, pThis, ECX);
 
 	HandleMonsterDeath(pThis);
-	return 0x74EA29;
+	return 0x74EA23;
 }
 
 // Fixes ~VeinholeMonsterClass 5x5 cleanup so it does not wipe veins owned by another living monster
 // and properly updates CellClass::RecalcAttributes(-1) when clearing overlays.
 DEFINE_HOOK(0x74CA18, VeinholeMonsterClass_DTOR_CleanupArea, 0x8)
 {
-	GET(VeinholeMonsterClass* const, pThis, EBP);
+	GET(VeinholeMonsterClass* const, pThis, EBX);
 
 	bool* const pAffected = GetAffectedMap();
 	const int surfCap = PriorityQueueClassNode::SurfaceDataCount();
@@ -1191,6 +1193,8 @@ DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
 	const int theater = static_cast<int>(ScenarioClass::Instance->Theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
+	if (!Make_Global<void*>(0xB1D2EC) && theater != 0)
+		VeinholeMonsterClass::LoadVeinholeArt(0);
 
 	return 0;
 }
