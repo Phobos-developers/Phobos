@@ -408,7 +408,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
 		const double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
-			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+			FootExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
 
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ESI);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -432,7 +432,7 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ECX);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -443,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	const double multiplier = FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
@@ -3772,4 +3772,22 @@ DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	return pFoot && pFoot->IsAttackedByLocomotor ? 0x70F85F : 0;
+}
+
+DEFINE_HOOK(0x6EA661, TeamClass_CanAddMember_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6EA856 };
+
+	GET(FootClass*, pMember, ESI);
+
+	return (pMember->IsCrashing && !pMember->IsAttackedByLocomotor) || pMember->IsSinking ? ReturnFalse : 0;
+}
+
+DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6F1F1A };
+
+	GET(FootClass*, pUnit, ESI);
+
+	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }

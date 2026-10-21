@@ -21,7 +21,6 @@
   <!-- Compiled files -->
   <ItemGroup>
     <!-- src/ -->
-    <ClCompile Include="src\Ext\TeamType\Hooks.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
@@ -53,6 +52,8 @@
     <!-- src\Ext\Aircraft -->
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Hooks.cpp" />
+    <!-- src\Ext\AircraftType -->
+    <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <!-- src\Ext\Anim -->
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
@@ -63,12 +64,6 @@
     <ClCompile Include="src\Ext\Beacon\Hooks.cpp" />
     <!-- src\Ext\Building -->
     <ClCompile Include="src\Ext\Building\Body.cpp" />
-    <ClCompile Include="src\Ext\Foot\Body.cpp" />
-    <ClCompile Include="src\Ext\Unit\Body.cpp" />
-    <ClCompile Include="src\Ext\Infantry\Body.cpp" />
-    <ClCompile Include="src\Ext\UnitType\Body.cpp" />
-    <ClCompile Include="src\Ext\InfantryType\Body.cpp" />
-    <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
@@ -103,17 +98,24 @@
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
     <!-- src\Ext\Event -->
     <ClCompile Include="src\Ext\Event\Body.cpp" />
+    <!-- src\Ext\Foot -->
+    <ClCompile Include="src\Ext\Foot\Body.cpp" />
+    <ClCompile Include="src\Ext\Foot\Hooks.DisallowMoving.cpp" />	
     <!-- src\Ext\House -->
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
+    <!-- src\Ext\HouseType -->
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
     <!-- src\Ext\Infantry -->
+    <ClCompile Include="src\Ext\Infantry\Body.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
+    <!-- src\Ext\InfantryType -->
+    <ClCompile Include="src\Ext\InfantryType\Body.cpp" />
     <!-- src\Ext\OverlayType -->
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
@@ -165,6 +167,7 @@
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />
     <!-- src\Ext\TeamType -->
     <ClCompile Include="src\Ext\TeamType\Body.cpp" />
+    <ClCompile Include="src\Ext\TeamType\Hooks.cpp" />
     <!-- src\Ext\Techno -->
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.Internal.cpp" />
@@ -184,6 +187,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.WeaponEffects.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.WeaponRange.cpp" />
     <ClCompile Include="src\Ext\Techno\WeaponHelpers.cpp" />
+    <!-- src\Ext\TechnoType -->
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
@@ -202,10 +206,10 @@
     <!-- src\Ext\Trigger -->
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <!-- src\Ext\Unit -->
+    <ClCompile Include="src\Ext\Unit\Body.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeployFire.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeploysInto.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DrawIt.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
@@ -213,6 +217,8 @@
     <ClCompile Include="src\Ext\Unit\Hooks.SimpleDeployer.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Unload.cpp" />
+    <!-- src\Ext\UnitType -->
+    <ClCompile Include="src\Ext\UnitType\Body.cpp" />
     <!-- src\Ext\VoxelAnim -->
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
@@ -244,6 +250,7 @@
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
+    <ClCompile Include="src\Misc\Hooks.BriefingText.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.Crates.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />

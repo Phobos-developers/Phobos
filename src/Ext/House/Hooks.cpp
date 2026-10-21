@@ -320,8 +320,19 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		auto& vec = pOwnerExt->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
-
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+	}
+
+	if (pType->DeploysInto)
+	{
+		auto& vec = pOwnerExt->OwnedDeployingUnits;
+		const auto it = std::find(vec.begin(), vec.end(), pThis);
+
+		if (it != vec.end())
+		{
+			vec.erase(it);
+			pNewOwnerExt->OwnedDeployingUnits.push_back(static_cast<UnitClass*>(pThis));
+		}
 	}
 
 	if (pFoot)
