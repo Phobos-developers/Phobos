@@ -320,7 +320,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, Foot
 }
 
 // Update after unit location update
-// why is this hook in this file of all places?
+// TODO: Move hook to FootExt folder and split stuff off into helper functions.
 DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
@@ -375,6 +375,8 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 
 		pExt->ResetLocomotor = false;
 	}
+
+	pExt->HandleTemporaryZeroSpeed();
 
 	return 0;
 }

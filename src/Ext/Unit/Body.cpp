@@ -2,6 +2,7 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/UnitType/Body.h>
 #include <Utilities/AresFunctions.h>
@@ -12,8 +13,17 @@ UnitClass* UnitExt::Deployer = nullptr;
 
 UnitExt::~UnitExt()
 {
+	const auto pThis = this->OwnerObject();
+	const auto pType = this->TypeExtData->OwnerObject();
+
 	if (this->UndergroundTracked)
-		ScenarioExt::Global()->UndergroundTracker.Remove(this->OwnerObject());
+		ScenarioExt::Global()->UndergroundTracker.Remove(pThis);
+
+	if (RulesExt::Global()->ExtendedBuildingPlacing && pType->DeploysInto)
+	{
+		auto& vec = HouseExt::Fetch(pThis->Owner)->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
 }
 
 // =============================
@@ -29,6 +39,7 @@ void UnitExt::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->SimpleDeployerAnimationTimer)
+		.Process(this->UnitAutoDeployTimer)
 		.Process(this->ExtraTurretRecoil)
 		.Process(this->ExtraBarrelRecoil)
 		;
@@ -188,41 +199,6 @@ void UnitExt::DepletedAmmoActions()
 				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
 		}
 	}
-}
-
-bool UnitExt::CannotMove(UnitClass* pThis)
-{
-	if (TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis))
-		return true;
-
-	if (pThis->LocomotorSource)
-		return false;
-
-	if (TechnoExt::DriverKilled(pThis))
-		return true;
-
-	const auto pType = pThis->Type;
-
-	if (pType->Speed == 0)
-		return true;
-
-	const auto movementRestrictedTo = pType->MovementRestrictedTo;
-
-	if (movementRestrictedTo == LandType::None)
-		return false;
-
-	auto landType = pThis->GetCell()->LandType;
-
-	if (landType == LandType::Tunnel)
-		return false;
-
-	if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
-		landType = LandType::Road;
-
-	if (movementRestrictedTo != landType)
-		return true;
-
-	return false;
 }
 
 bool UnitExt::HasAmmoToDeploy(UnitClass* pThis)
