@@ -2058,6 +2058,7 @@ HideShakeEffects=false           ; boolean
 - [Building placing and deploying logic enhancement](New-or-Enhanced-Logics.md#building-placing-and-deploying-logic-enhancement) (by CrimRecya)
 - [Improvements to stationary unit logic](Fixed-or-Improved-Logics.md#stationary-units) (by Starkku)
 - [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
+- [New AITriggerType conditions for tech buildings & bridge repair huts](AI-Scripting-and-Mapping.md#ai-trigger-condition-types) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
