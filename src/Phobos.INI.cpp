@@ -6,6 +6,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+#include <Utilities/TemplateDef.h>
 
 #include "Misc/BlittersFix.h"
 
@@ -39,6 +40,11 @@ int Phobos::UI::CreditsIndicator_MaxStep = 143;
 bool Phobos::UI::CreditsIndicator_Smooth = true;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
+bool Phobos::UI::MovieSubtitles_Background = false;
+ColorStruct Phobos::UI::MovieSubtitles_BackgroundColor = { 0, 0, 0 };
+int Phobos::UI::MovieSubtitles_BackgroundOpacity = 60;
+int Phobos::UI::MovieSubtitles_BackgroundPaddingX = 6;
+int Phobos::UI::MovieSubtitles_BackgroundPaddingY = 3;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -259,6 +265,22 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		ini_uimd.ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonStatusLabel", "STT:BriefingButtonReturn", Phobos::readBuffer);
 		strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
+
+		Phobos::UI::MovieSubtitles_Background =
+			ini_uimd.ReadBool(UISETTINGS_SECTION, "MovieSubtitles.Background",
+				CCINIClass::INI_RA2MD.ReadBool(phobosSection, "MovieSubtitles.Background", false));
+
+		Phobos::UI::MovieSubtitles_BackgroundOpacity =
+			ini_uimd.ReadInteger(UISETTINGS_SECTION, "MovieSubtitles.BackgroundOpacity",
+				CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "MovieSubtitles.BackgroundOpacity", 60));
+
+		INI_EX exINI(ini_uimd);
+		detail::read<ColorStruct>(Phobos::UI::MovieSubtitles_BackgroundColor, exINI, UISETTINGS_SECTION, "MovieSubtitles.BackgroundColor");
+
+		Phobos::UI::MovieSubtitles_BackgroundPaddingX =
+			ini_uimd.ReadInteger(UISETTINGS_SECTION, "MovieSubtitles.BackgroundPaddingX", Phobos::UI::MovieSubtitles_BackgroundPaddingX);
+		Phobos::UI::MovieSubtitles_BackgroundPaddingY =
+			ini_uimd.ReadInteger(UISETTINGS_SECTION, "MovieSubtitles.BackgroundPaddingY", Phobos::UI::MovieSubtitles_BackgroundPaddingY);
 	}
 
 	return 0;
