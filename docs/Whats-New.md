@@ -2541,6 +2541,7 @@ HideShakeEffects=false           ; boolean
 ##### Phobos fixes:
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
 - Fixed `[CombatDamage]` -> `OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
+- Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
 
 #### 0.5-alpha2
 
