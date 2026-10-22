@@ -682,6 +682,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 						{
 							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(facing));
+							pTechno->LastMapCoords = CellClass::Coord2Cell(location);
 
 							if (pType->BalloonHover)
 							{
