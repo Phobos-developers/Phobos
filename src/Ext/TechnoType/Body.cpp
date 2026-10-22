@@ -1508,7 +1508,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			int idx = TechnoTypeClass::FindIndex(cur);
+			int idx = BuildingTypeClass::FindIndex(cur);
 
 			if (idx >= 0)
 			{
@@ -1532,7 +1532,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			int idx = TechnoTypeClass::FindIndex(cur);
+			int idx = BuildingTypeClass::FindIndex(cur);
 
 			if (idx >= 0)
 			{
@@ -1566,7 +1566,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				int idx = TechnoTypeClass::FindIndex(cur);
+				int idx = BuildingTypeClass::FindIndex(cur);
 
 				if (idx >= 0)
 				{
@@ -1581,7 +1581,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 				}
 			}
 
-			this->Prerequisite_ListVector.push_back(objectsList);
+			if (objectsList.Count > 0)
+				this->Prerequisite_ListVector.push_back(objectsList);
 		}
 	}
 
