@@ -2079,6 +2079,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
+- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker (by Starkku)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
