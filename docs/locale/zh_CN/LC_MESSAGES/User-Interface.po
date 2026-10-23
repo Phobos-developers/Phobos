@@ -902,6 +902,7 @@ msgid ""
 "Alpha images attached to Particles with `AlphaImage.IsLightFlash` set to "
 "true."
 msgstr ""
+"附着于 `AlphaImage.IsLightFlash=true` 粒子上的 AlphaImage 光效。"
 
 msgid ""
 "It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by "

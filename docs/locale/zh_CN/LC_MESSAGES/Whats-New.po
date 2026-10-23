@@ -1166,6 +1166,7 @@ msgid ""
 "[Light flash toggle for ParticleType alpha images](User-Interface.md"
 "#visual-effects-toggling) (by Starkku)"
 msgstr ""
+"[为附着于粒子的 AlphaImage 闪光效果添加开关](User-Interface.md#visual-effects-toggling)（by Starkku）"
 
 msgid ""
 "[Allow customizing if `IsSimpleDeployer` unit can deploy on top of "
