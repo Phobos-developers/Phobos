@@ -1173,6 +1173,7 @@ msgid ""
 "(passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-"
 "customizations) (by Starkku)"
 msgstr ""
+"[允许自定义 `IsSimpleDeployer` 单位能否在（可通行的）建筑上部署](Fixed-or-Improved-Logics.md#issimpledeployer-customizations)（by Starkku）"
 
 msgid ""
 "[Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-"

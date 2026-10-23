@@ -6067,6 +6067,7 @@ msgid ""
 "If `IsSimpleDeployer.DisallowOnBuildings` is set to true the unit is not "
 "allowed to deploy when sharing a cell with buildings."
 msgstr ""
+"如果 `IsSimpleDeployer.DisallowOnBuildings` 设为 true，那么单位在与建筑处于同一格子上时不允许部署。"
 
 msgid ""
 "In vanilla game only units with `DeployingAnim` were constrained to a "
