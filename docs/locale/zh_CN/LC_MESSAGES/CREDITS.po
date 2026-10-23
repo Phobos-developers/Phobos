@@ -3488,6 +3488,7 @@ msgid ""
 "Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was "
 "drawn while its firer was at the same horizontal position as its target"
 msgstr ""
+"修复了当开火者与目标处于相同水平位置时绘制波（例如 `IsSonic=true`）会导致崩溃或内存损坏的问题"
 
 msgid "**MagicShiba** - Fix briefing out of bound due to fixed window size"
 msgstr ""

@@ -1233,6 +1233,7 @@ msgid ""
 "drawn while its firer was at the same horizontal position as its target "
 "(by JerryDing07)"
 msgstr ""
+"修复了当开火者与目标处于相同水平位置时绘制波（例如 `IsSonic=true`）会导致崩溃或内存损坏的问题（by JerryDing07）"
 
 msgid ""
 "Fixed the bug that crashing or sinking unit can be recruit into taskforce"
