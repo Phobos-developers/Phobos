@@ -340,6 +340,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
+- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker.
 
 ## Fixes / interactions with other extensions
 
@@ -3067,6 +3068,7 @@ TurretShadow=   ; boolean
 
 - It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
   - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
+- If `IsSimpleDeployer.DisallowOnBuildings` is set to true the unit is not allowed to deploy when sharing a cell with buildings.
 - In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir` for units with `DeployingAnim`, -1 otherwise), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
@@ -3079,6 +3081,7 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                               ; VehicleType
 IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
 IsSimpleDeployer.DisallowedLandTypes=       ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+IsSimpleDeployer.DisallowOnBuildings=false  ; boolean
 DeployDir=                                  ; Facing type (integers from 0-7 or -1)
 DeployingAnims=                             ; List of AnimationTypes
 DeployingAnim.KeepUnitVisible=false         ; boolean
