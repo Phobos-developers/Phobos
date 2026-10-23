@@ -795,6 +795,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
+  - Preserve whitespace in CSF
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
