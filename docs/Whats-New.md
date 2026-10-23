@@ -848,23 +848,23 @@ HideShakeEffects=false           ; boolean
 
 #### TBD
 
+##### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+
 ##### Phobos fixes:
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
+- Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
+- Fixed `[CombatDamage]` -> `OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
+- Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
 - Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
-- Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
-- Fixed `[CombatDamage]` -> `OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
-- Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
-
-##### Vanilla fixes:
-- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
-- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
-- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
-- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
-- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
-- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 #### 0.5-alpha2
 
