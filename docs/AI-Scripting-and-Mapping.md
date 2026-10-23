@@ -352,8 +352,8 @@ x=10104,n         ; integer, additional distance in cells
 
 ##### `10105` Reapir Building at Waypoint
 
-- If a building at a waypoint can be repaired by an engineer, the engineer on the team will be responsible for performing the repairs.
-  - If there is no engineer on the team, please skip this script.
+- When a building at a waypoint can be repaired by an engineer, the engineers on the team will begin a repair mission.
+  - No engineer on the team will skip this script.
 
 In `aimd.ini`:
 ```ini
