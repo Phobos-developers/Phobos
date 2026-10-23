@@ -1230,7 +1230,7 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 
 			if (canRepair)
 			{
-				if (!captureMission && pInfantry->Destination != pBuilding)
+				if (!captureMission || pInfantry->Destination != pBuilding)
 				{
 					pInfantry->SetDestination(pBuilding, true);
 					pInfantry->QueueMission(Mission::Capture, false);
@@ -1246,41 +1246,38 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 
 	if (auto const pBuilding = pCell->GetBuilding())
 	{
-		if (!pBuilding->IsBeingWarpedOut())
-		{
-			auto const pBuildingType = pBuilding->Type;
-			const auto pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+		auto const pBuildingType = pBuilding->Type;
+		auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 
-			if (pBuildingTypeExt->EngineerRepairable.Get(pBuildingType->Repairable))
+		if (!pBuilding->IsBeingWarpedOut() && pBuildingTypeExt->EngineerRepairable.Get(pBuildingType->Repairable))
+		{
+			if (pBuildingType->BridgeRepairHut)
 			{
-				if (pBuildingType->BridgeRepairHut)
+				if (MapClass::Instance.IsLinkedBridgeDestroyed(pBuilding->GetMapCoords()))
 				{
-					if (MapClass::Instance.IsLinkedBridgeDestroyed(pBuilding->GetMapCoords()))
+					SetEngineerMode(pBuilding, true);
+					return;
+				}
+			}
+			else if (pBuilding->GetCurrentMission() != Mission::Selling)
+			{
+				auto const pBuildingOwner = pBuilding->Owner;
+				const bool lowHealth = pBuilding->Health < pBuildingType->Strength;
+
+				if (pBuildingType->CanBeOccupied && pBuildingType->TechLevel == -1 && pBuildingOwner == HouseClass::FindCivilianSide())
+				{
+					if (lowHealth)
 					{
 						SetEngineerMode(pBuilding, true);
 						return;
 					}
 				}
-				else if (pBuilding->GetCurrentMission() != Mission::Selling)
+				else if (pEngineer->Owner->IsAlliedWith(pBuildingOwner))
 				{
-					auto const pBuildingOwner = pBuilding->Owner;
-					const bool lowHealth = pBuilding->Health < pBuildingType->Strength;
-
-					if (pBuildingType->CanBeOccupied && pBuildingType->TechLevel == -1 && pBuildingOwner == HouseClass::FindCivilianSide())
+					if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || lowHealth)
 					{
-						if (lowHealth)
-						{
-							SetEngineerMode(pBuilding, true);
-							return;
-						}
-					}
-					else if (pEngineer->Owner->IsAlliedWith(pBuildingOwner))
-					{
-						if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || lowHealth)
-						{
-							SetEngineerMode(pBuilding, true);
-							return;
-						}
+						SetEngineerMode(pBuilding, true);
+						return;
 					}
 				}
 			}
