@@ -2000,6 +2000,7 @@ msgstr "如果 `NoBuildAreaOnBuildup` 设为 true 则任何建筑类型都不能
 
 msgid "Building placing and deploying logic enhancement"
 msgstr ""
+"建筑放置与部署逻辑增强"
 
 msgid ""
 "In vanilla games, buildings are always cannot placing or deploying on the"
@@ -2017,11 +2018,13 @@ msgid ""
 "the action and play \"cannot deploy here\", then you should re-place or "
 "re-deploy the building in a valid space."
 msgstr ""
+"在原版游戏中，建筑始终无法放置或部署在有其他步兵或单位占据的格子上。现在可以通过将 `ExtendedBuildingPlacing` 设为 true 来改变这一点：当你试图将建筑放置在这些格子上时，它会检查占据者能否被你自己驱散（包括你自己的单位与盟友的单位）以及是否有足够的空间供他们散开。如果可以，它会记录下你正在放置的建筑并向你和你的盟友显示预览，然后启动一个计时器记录此次放置并命令占据者离开该建筑区域。当该区域清空后，建筑才会真正放下，并且生产队列会恢复到原始状态。但当计时器到期或发生了使建筑无法再于此处建造的意外情况时，它会中止该行为并播放「无法在此部署」的提示，此时你需要在有效位置上重新放置或重新部署该建筑。"
 
 msgid ""
 "`AutoUpgrade` controls whether building upgrades can be automatically "
 "placed on the correct and earliest built building."
 msgstr ""
+"`AutoUpgrade` 控制建筑加载物是否可以自动放置在正确且最早建造完成的建筑上。"
 
 msgid "Destroyable pathfinding obstacles"
 msgstr "可摧毁的寻路障碍"

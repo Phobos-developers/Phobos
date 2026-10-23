@@ -2380,6 +2380,7 @@ msgstr "在武器开火时赋予 AE"
 
 msgid "Building placing and deploying logic enhancement"
 msgstr ""
+"建筑放置与部署逻辑增强"
 
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："

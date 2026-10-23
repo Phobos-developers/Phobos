@@ -1154,6 +1154,7 @@ msgid ""
 "Logics.md#building-placing-and-deploying-logic-enhancement) (by "
 "CrimRecya)"
 msgstr ""
+"[建筑放置与部署逻辑增强](New-or-Enhanced-Logics.md#building-placing-and-deploying-logic-enhancement)（by CrimRecya）"
 
 msgid ""
 "[Improvements to stationary unit logic](Fixed-or-Improved-Logics.md"
