@@ -1248,21 +1248,44 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 						return;
 					}
 				}
-				else if (pBuilding->GetCurrentMission() != Mission::Selling && pEngineer->Owner->IsAlliedWith(pBuilding->Owner))
+				else if (pBuilding->GetCurrentMission() != Mission::Selling)
 				{
-					if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || pBuilding->Health < pBuildingType->Strength)
-					{
-						for (auto const pInfantry : engineers)
-						{
-							if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
-							{
-								pInfantry->SetDestination(pBuilding, true);
-								pInfantry->QueueMission(Mission::Capture, false);
-								pInfantry->NextMission();
-							}
-						}
+					auto const pBuildingOwner = pBuilding->Owner;
+					const bool lowHealth = pBuilding->Health < pBuildingType->Strength;
 
-						return;
+					if (pBuildingType->CanBeOccupied && pBuildingType->TechLevel == -1 && pBuildingOwner == HouseClass::FindCivilianSide())
+					{
+						if (lowHealth)
+						{
+							for (auto const pInfantry : engineers)
+							{
+								if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
+								{
+									pInfantry->SetDestination(pBuilding, true);
+									pInfantry->QueueMission(Mission::Capture, false);
+									pInfantry->NextMission();
+								}
+							}
+
+							return;
+						}
+					}
+					else if (pEngineer->Owner->IsAlliedWith(pBuildingOwner))
+					{
+						if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || lowHealth)
+						{
+							for (auto const pInfantry : engineers)
+							{
+								if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
+								{
+									pInfantry->SetDestination(pBuilding, true);
+									pInfantry->QueueMission(Mission::Capture, false);
+									pInfantry->NextMission();
+								}
+							}
+
+							return;
+						}
 					}
 				}
 			}
