@@ -2734,6 +2734,10 @@ msgstr "修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover`
 msgid "Fix `HealBase` crates causing full-health objects to scatter"
 msgstr "修复 `HealBase` 补给箱导致满生命值对象散开的问题"
 
+msgid "Preserve whitespace in CSF"
+msgstr ""
+"保留 CSF 中的空白"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

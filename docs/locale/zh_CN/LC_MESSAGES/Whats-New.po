@@ -1149,6 +1149,12 @@ msgstr ""
 "#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-"
 "transferred-to-when-the-unit-is-destroyed)（by NetsuNegi）"
 
+msgid ""
+"[Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-"
+"csf) (by Noble_Fish)"
+msgstr ""
+"[保留 CSF 中的空白](User-Interface.md#preserve-whitespace-in-csf)（by Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

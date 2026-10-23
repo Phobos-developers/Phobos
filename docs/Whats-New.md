@@ -187,6 +187,7 @@ SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
 HideLaserTrailEffects=false      ; boolean
 HideShakeEffects=false           ; boolean
+PreserveCSFWhitespace=false      ; boolean
 ```
 
 ## For Map Editor (World-Altering Editor)
@@ -2059,6 +2060,7 @@ HideShakeEffects=false           ; boolean
 - [Improvements to stationary unit logic](Fixed-or-Improved-Logics.md#stationary-units) (by Starkku)
 - [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
 - [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
+- [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
