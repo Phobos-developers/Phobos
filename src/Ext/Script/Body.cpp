@@ -1222,6 +1222,28 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 		return;
 	}
 
+	auto SetEngineerMode = [&](BuildingClass* const pBuilding, const bool canRepair)
+	{
+		for (auto const pInfantry : engineers)
+		{
+			const bool captureMission = pInfantry->GetCurrentMission() == Mission::Capture;
+
+			if (canRepair)
+			{
+				if (!captureMission && pInfantry->Destination != pBuilding)
+				{
+					pInfantry->SetDestination(pBuilding, true);
+					pInfantry->QueueMission(Mission::Capture, false);
+					pInfantry->NextMission();
+				}
+			}
+			else if (captureMission)
+			{
+				pInfantry->Guard();
+			}
+		}
+	};
+
 	if (auto const pBuilding = pCell->GetBuilding())
 	{
 		if (!pBuilding->IsBeingWarpedOut())
@@ -1235,16 +1257,7 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 				{
 					if (MapClass::Instance.IsLinkedBridgeDestroyed(pBuilding->GetMapCoords()))
 					{
-						for (auto const pInfantry : engineers)
-						{
-							if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
-							{
-								pInfantry->SetDestination(pBuilding, true);
-								pInfantry->QueueMission(Mission::Capture, false);
-								pInfantry->NextMission();
-							}
-						}
-
+						SetEngineerMode(pBuilding, true);
 						return;
 					}
 				}
@@ -1257,16 +1270,7 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 					{
 						if (lowHealth)
 						{
-							for (auto const pInfantry : engineers)
-							{
-								if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
-								{
-									pInfantry->SetDestination(pBuilding, true);
-									pInfantry->QueueMission(Mission::Capture, false);
-									pInfantry->NextMission();
-								}
-							}
-
+							SetEngineerMode(pBuilding, true);
 							return;
 						}
 					}
@@ -1274,16 +1278,7 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 					{
 						if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || lowHealth)
 						{
-							for (auto const pInfantry : engineers)
-							{
-								if (pInfantry->Destination != pBuilding || pInfantry->GetCurrentMission() != Mission::Capture)
-								{
-									pInfantry->SetDestination(pBuilding, true);
-									pInfantry->QueueMission(Mission::Capture, false);
-									pInfantry->NextMission();
-								}
-							}
-
+							SetEngineerMode(pBuilding, true);
 							return;
 						}
 					}
@@ -1292,6 +1287,7 @@ void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
 		}
 	}
 
+	SetEngineerMode(nullptr, false);
 	pTeam->StepCompleted = true;
 }
 
