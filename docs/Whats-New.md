@@ -2547,6 +2547,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 #### 0.5-alpha2
 
@@ -2571,7 +2572,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
 - Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
 - Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Fixes / interactions with other extensions:
 - Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
