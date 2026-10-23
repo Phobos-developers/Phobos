@@ -3,8 +3,10 @@
 #include <EventClass.h>
 #include <IsometricTileTypeClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/TerrainType/Body.h>
 
@@ -171,7 +173,7 @@ static inline bool IsSameFenceType(const BuildingTypeClass* const pPostType, con
 
 static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* const pOwner, bool expand, bool& skipFlag, bool& landFootOnly)
 {
-	if (pTechno == UnitExt::Deployer)
+	if (pTechno == TechnoExt::Deployer)
 	{
 		skipFlag = true;
 		return false;
@@ -181,6 +183,34 @@ static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* co
 		return true;
 	else
 		landFootOnly = true;
+
+	return false;
+}
+
+// The deployer may be either a foot unit or a building (a building can deploy / sell
+// into another one). Foot units only cover the cell they currently stand on, while
+// buildings cover every cell of their foundation, so the two cases need handling
+// separately - BuildingClass has no CurrentMapCoords.
+static bool IsDeployerOnCell(const CellStruct& cellCoords)
+{
+	auto const pDeployer = TechnoExt::Deployer;
+
+	if (!pDeployer)
+		return false;
+
+	if (auto const pFoot = abstract_cast<FootClass*, true>(pDeployer))
+		return pFoot->CurrentMapCoords == cellCoords;
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pDeployer))
+	{
+		auto const foundationCells = BuildingExt::GetFoundationCells(pBuilding, pBuilding->GetMapCoords(), true);
+
+		for (auto const& foundationCell : foundationCells)
+		{
+			if (foundationCell == cellCoords)
+				return true;
+		}
+	}
 
 	return false;
 }
@@ -241,11 +271,17 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
 	{
-		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = IsDeployerOnCell(pCell->MapCoords);
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
+			if (pObject == TechnoExt::Deployer)
+			{
+				skipFlag = true;
+				continue;
+			}
+
 			switch (pObject->WhatAmI())
 			{
 			case AbstractType::Aircraft:
@@ -315,11 +351,17 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else
 	{
-		bool skipFlag = UnitExt::Deployer ? UnitExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool skipFlag = IsDeployerOnCell(pCell->MapCoords);
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
+			if (pObject == TechnoExt::Deployer)
+			{
+				skipFlag = true;
+				continue;
+			}
+
 			switch (pObject->WhatAmI())
 			{
 			case AbstractType::Aircraft:
@@ -358,7 +400,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			}
 		}
 
-		if (!landFootOnly && !builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x1F : 0x3F)))
+		if (!landFootOnly && !builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x02 : 0x3F)))
 		{
 			if (expand)
 				landFootOnly = true;

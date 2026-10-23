@@ -1257,6 +1257,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_Health_AbovePercent.Read(exINI, pSection, "Convert.Health.AbovePercent");
 	this->Convert_Health_BelowPercent.Read(exINI, pSection, "Convert.Health.BelowPercent");
 	this->Convert_Health.Read(exINI, pSection, "Convert.Health");
+	this->Convert_ShowBuildup.Read(exINI, pSection, "Convert.ShowBuildup");
+	this->Convert_ShowBuildupFrom.Read(exINI, pSection, "Convert.ShowBuildupFrom");
+	this->Convert_ShowBuildupTo.Read(exINI, pSection, "Convert.ShowBuildupTo");
 
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
@@ -1837,6 +1840,9 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
 		.Process(this->Convert_Health)
+		.Process(this->Convert_ShowBuildup)
+		.Process(this->Convert_ShowBuildupFrom)
+		.Process(this->Convert_ShowBuildupTo)
 
 		.Process(this->ExitThroughRoof)
 		.Process(this->PsychicDetectable)

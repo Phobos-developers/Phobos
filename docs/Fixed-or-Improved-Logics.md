@@ -341,6 +341,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
 - Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker.
+- Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over the health percentage, veteran status, armor / firepower / speed multipliers and slave manager of the source techno to the new one, in addition to the mind control, shields, invulnerability and attached effects that were already transferred.
 
 ## Fixes / interactions with other extensions
 

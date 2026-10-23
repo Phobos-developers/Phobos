@@ -1,6 +1,9 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/CaptureManager/Body.h>
+#include <Ext/Cell/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
@@ -333,18 +336,205 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	return true;
 }
 
+// Can a building of the given type be created where pFromTechno currently stands? The source
+// itself is excluded from the placement check through TechnoExt::Deployer, which
+// CellClass::CanThisExistHere understands.
+bool TechnoExt::CanCreateBuildingHere(TechnoClass* pFromTechno, BuildingTypeClass* pToBuildingType)
+{
+	if (!pFromTechno || !pToBuildingType)
+		return false;
+
+	CellStruct location;
+	if (auto const pFromBuilding = abstract_cast<BuildingClass*>(pFromTechno))
+	{
+		auto const buildingCell = CellClass::Coord2Cell(pFromTechno->GetCoords());
+		auto const tmpCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pFromBuilding->Type, buildingCell);
+		location = buildingCell + buildingCell - tmpCell;
+	}
+	else
+	{
+		location = CellClass::Coord2Cell(pFromTechno->GetCoords());
+	}
+
+	location = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pToBuildingType, location);
+
+	auto const pPreviousDeployer = TechnoExt::Deployer;
+	TechnoExt::Deployer = pFromTechno;
+	const bool canCreate = pToBuildingType->CanCreateHere(location, pFromTechno->Owner);
+	TechnoExt::Deployer = pPreviousDeployer;
+
+	return canCreate;
+}
+
+// First of the two conversion steps: may pFromTechno be replaced by pToType right now?
+// Unlike ConvertToType this has no side effects, so callers that only need to know (deploy
+// checks, the infantry walk to the cell centre) can ask without changing anything.
+bool TechnoExt::CanConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
+{
+	if (!pFromTechno || !pToType || pFromTechno->GetTechnoType() == pToType)
+		return false;
+
+	// A building that is busy with its own mission (building up, selling, ...) has no state
+	// to hand over yet.
+	if (auto const pFromBuilding = abstract_cast<BuildingClass*>(pFromTechno))
+	{
+		if (pFromBuilding->CurrentMission == Mission::None)
+			return false;
+	}
+
+	// A building target needs its whole foundation free where the source stands, everything
+	// else is created on the spot the source already occupies.
+	if (auto const pToBuildingType = abstract_cast<BuildingTypeClass*>(pToType))
+		return TechnoExt::CanCreateBuildingHere(pFromTechno, pToBuildingType);
+
+	return true;
+}
+
+// Second step: performs the conversion. Every caller is expected to have asked
+// CanConvertToType first, but it is checked again here so nothing can bypass it.
+static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
+{
+	auto const pToTechno = static_cast<TechnoClass*>(pToType->CreateObject(pFromTechno->Owner));
+	if (!pToTechno)
+		return false;
+
+	auto const wasSelected = pFromTechno->IsSelected;
+
+	TechnoExt::TransferStatus(pFromTechno, pToTechno);
+
+	pToTechno->SetTarget(pFromTechno->Target);
+
+	auto direction = pFromTechno->PrimaryFacing.Current().GetDir();
+	auto location = pFromTechno->GetCoords();
+	auto const pFromFoot = abstract_cast<FootClass*>(pFromTechno);
+	auto const pFromBuilding = abstract_cast<BuildingClass*>(pFromTechno);
+	auto const pToBuilding = abstract_cast<BuildingClass*>(pToTechno);
+	auto const pToInfantry = abstract_cast<InfantryClass*>(pToTechno);
+	if (pFromBuilding)
+	{
+		auto const buildingCell = CellClass::Coord2Cell(location);
+		auto const tmpCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pFromBuilding->Type, buildingCell);
+		location = CellClass::Cell2Coord(buildingCell + buildingCell - tmpCell, location.Z);
+
+		auto const pFromBuildingTypeExt = BuildingTypeExt::Fetch(pFromBuilding->Type);
+		direction = pFromBuildingTypeExt->Convert_Direction.Get(direction);
+	}
+	if (pToBuilding)
+	{
+		auto const deployCell = CellClass::Coord2Cell(location);
+		auto const buildingCell = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pToBuilding->Type, deployCell);
+		location = CellClass::Cell2Coord(buildingCell, location.Z);
+	}
+
+	if (pFromFoot)
+		pToTechno->SetDestination(pFromFoot->Destination, true);
+	pToTechno->QueueMission(pFromTechno->CurrentMission, false);
+
+	if (pFromBuilding && pFromBuilding->Occupants.Count > 0)
+	{
+		if (pToBuilding
+			&& pToBuilding->Type->CanBeOccupied
+			&& pToBuilding->Type->MaxNumberOccupants >= pFromBuilding->Occupants.Count)
+		{
+			pToBuilding->Occupants = pFromBuilding->Occupants;
+		}
+		else
+		{
+			pFromBuilding->Mission_Unload();
+		}
+	}
+
+	if (pFromFoot && pFromFoot->IsDeploying)
+	{
+		if (pToInfantry->Type->Sequence->GetSequence(Sequence::Deployed).CountFrames)
+		{
+			pToInfantry->PlayAnim(Sequence::Deployed, true);
+		}
+		else
+		{
+			pToInfantry->PlayAnim(Sequence::Ready, true);
+		}
+	}
+
+	Unsorted::ScenarioInit++;
+	pToTechno->Unlimbo(location, direction);
+	Unsorted::ScenarioInit--;
+
+	// Keep selection
+	if (wasSelected)
+		pToTechno->Select();
+
+	bool showBuildupFrom = false;
+	if (pFromBuilding && pFromBuilding->CanBeSold() && !pFromBuilding->IsStrange())
+	{
+		auto const pFromBuildingExt = BuildingExt::Fetch(pFromBuilding);
+		showBuildupFrom = pFromBuildingExt->TypeExtData->Convert_ShowBuildupFrom.Get(RulesExt::Global()->Convert_ShowBuildupFrom)
+			|| pFromBuildingExt->TypeExtData->Convert_ShowBuildup.Get(RulesExt::Global()->Convert_ShowBuildup);
+	}
+
+	if (showBuildupFrom)
+	{
+		pFromBuilding->SetArchiveTarget(nullptr);
+		pFromBuilding->Sell(1);
+	}
+	else
+	{
+		pFromTechno->Limbo();
+		pFromTechno->UnInit();
+	}
+
+
+	if (!pToBuilding)
+		return true;
+
+	auto const pToBuildingExt = BuildingExt::Fetch(pToBuilding);
+	bool showBuildupTo = false;
+	if (pToBuilding->Type->Buildup)
+		showBuildupTo = pToBuildingExt->TypeExtData->Convert_ShowBuildupTo.Get(RulesExt::Global()->Convert_ShowBuildupTo)
+			|| pToBuildingExt->TypeExtData->Convert_ShowBuildup.Get(RulesExt::Global()->Convert_ShowBuildup);
+
+	if (showBuildupTo)
+	{
+		pToBuilding->BeginMode(BStateType::Construction);
+		pToBuilding->QueueMission(Mission::Construction, false);
+		VoxClass::PlayAtPos(RulesClass::Instance->BuildingSlam, &location);
+	}
+	else
+	{
+		pToBuilding->BeginMode(BStateType::Idle);
+		pToBuilding->QueueMission(Mission::Guard, false);
+		pToBuilding->NextMission();
+	}
+
+	pToBuilding->Place(!pFromTechno->Owner->IsNeutral() || pFromTechno->Owner->IsCurrentPlayer());
+
+	return true;
+}
+
 // Feature for common usage : TechnoType conversion -- Trsdy
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
-bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
+bool TechnoExt::ConvertToType(TechnoClass* pThisTechno, TechnoTypeClass* pToType)
 {
-	const auto pType = pThis->GetTechnoType();
+	const auto pType = pThisTechno->GetTechnoType();
 
 	// It really should be at the beginning.
-	if (pType == pToType || pType->WhatAmI() != pToType->WhatAmI())
+	if (pType == pToType)
 	{
-		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		Debug::Log("Incompatible types between %s and %s\n", pThisTechno->get_ID(), pToType->get_ID());
 		return false;
 	}
+
+	if (!TechnoExt::CanConvertToType(pThisTechno, pToType))
+		return false;
+
+	const auto absType = pType->WhatAmI();
+
+	if (absType != pToType->WhatAmI() || absType == AbstractType::BuildingType)
+		return XConvertToType(pThisTechno, pToType);
+
+	auto const pThis = abstract_cast<FootClass*>(pThisTechno);
+	if (!pThis)
+		return false;
 
 	if (AresFunctions::ConvertTypeTo)
 	{
@@ -454,6 +644,127 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	FootExt::Fetch(pThis)->UpdateTypeData(pToType);
 	return true;
+}
+
+void TechnoExt::HealthAutoConvertActions()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->Convert_Health.isset())
+		return;
+
+	const double min = pTypeExt->Convert_Health_AbovePercent;
+	const double max = pTypeExt->Convert_Health_BelowPercent;
+
+	if (min < 0 && max < 0)
+		return;
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		if (BuildingTypeExt::Fetch(pBuilding->Type)->Convert_Health_AfterBuildup.Get())
+		{
+			switch (pBuilding->CurrentMission)
+			{
+			case Mission::None:
+			case Mission::Construction:
+			case Mission::Selling:
+				return;
+			}
+		}
+	}
+
+	const auto pThis = this->OwnerObject();
+
+	if (TechnoExt::IsHealthInThreshold(pThis, min, max))
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
+}
+
+void TechnoExt::TransferStatus(TechnoClass* pFrom, TechnoClass* pTo)
+{
+	pTo->SetHealthPercentage(pFrom->GetHealthPercentage());
+	pTo->Veterancy = pFrom->Veterancy;
+	TechnoExt::TransferMindControlOnDeploy(pFrom, pTo);
+	ShieldClass::SyncShieldToAnother(pFrom, pTo);
+	TechnoExt::SyncInvulnerability(pFrom, pTo);
+	AttachEffectClass::TransferAttachedEffects(pFrom, pTo);
+	pTo->ArmorMultiplier = pFrom->ArmorMultiplier;
+	pTo->FirepowerMultiplier = pFrom->FirepowerMultiplier;
+	if (auto const pFromFoot = abstract_cast<FootClass*>(pFrom),
+		pToFoot = abstract_cast<FootClass*>(pTo);
+		pFromFoot && pToFoot)
+	{
+		pToFoot->SpeedMultiplier = pFromFoot->SpeedMultiplier;
+	}
+
+	if (pFrom->SlaveManager)
+		pFrom->SlaveManager->SetOwner(pTo);
+}
+
+void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+{
+	const auto pAnimType = pTechnoFrom->MindControlRingAnim
+		? pTechnoFrom->MindControlRingAnim->Type
+		: TechnoExt::Fetch(pTechnoFrom)->MindControlRingAnimType;
+
+	if (const auto pController = pTechnoFrom->MindControlledBy)
+	{
+		if (const auto pManager = pController->CaptureManager)
+		{
+			CaptureManagerExt::FreeUnit(pManager, pTechnoFrom, true);
+
+			if (CaptureManagerExt::CaptureUnit(pManager, pTechnoTo, false, pAnimType, true))
+			{
+				if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechnoTo))
+				{
+					// Capturing the building after unlimbo before buildup has finished or even started appears to throw certain things off,
+					// Hopefully this is enough to fix most of it like anims playing prematurely etc.
+					pBld->ActuallyPlacedOnMap = false;
+					pBld->DestroyNthAnim(BuildingAnimSlot::All);
+
+					pBld->BeginMode(BStateType::Construction);
+					pBld->QueueMission(Mission::Construction, false);
+				}
+			}
+			else
+			{
+				int nSound = pTechnoTo->GetTechnoType()->MindClearedSound;
+				if (nSound == -1)
+					nSound = RulesClass::Instance->MindClearedSound;
+
+				if (nSound != -1)
+					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
+			}
+		}
+	}
+	else if (const auto phMC = pTechnoFrom->MindControlledByHouse)
+	{
+		pTechnoTo->MindControlledByHouse = phMC;
+		pTechnoFrom->MindControlledByHouse = nullptr;
+	}
+	else if (pTechnoFrom->MindControlledByAUnit) // Perma MC
+	{
+		pTechnoTo->MindControlledByAUnit = true;
+
+		const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechnoTo);
+		CoordStruct location = pTechnoTo->GetCoords();
+
+		location.Z += pBuilding
+			? pBuilding->Type->Height * Unsorted::LevelHeight
+			: pTechnoTo->GetTechnoType()->MindControlRingOffset;
+
+		const auto pAnim = pAnimType
+			? GameCreate<AnimClass>(pAnimType, location, 0, 1)
+			: nullptr;
+
+		if (pAnim)
+		{
+			if (pBuilding)
+				pAnim->ZAdjust = -1024;
+
+			pTechnoTo->MindControlRingAnim = pAnim;
+			pAnim->SetOwnerObject(pTechnoTo);
+		}
+	}
 }
 
 bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource)
@@ -764,7 +1075,7 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	if (Unsorted::MoveFeedback)
 		pThis->VoiceMove();
 
-	EventExt event {};
+	EventExt event { };
 	event.Type = EventTypeExt::ApproachObject;
 	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
 	event.Frame = Unsorted::CurrentFrame;
@@ -775,38 +1086,38 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 
 bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
 {
-    if (pThis->Team != nullptr ||
-        !pThis->IsAlive ||
-        pThis->Health <= 0 ||
-        pThis->InLimbo ||
+	if (pThis->Team != nullptr ||
+		!pThis->IsAlive ||
+		pThis->Health <= 0 ||
+		pThis->InLimbo ||
 		pThis->IsSinking ||
-        pThis->Owner != pHouse)
-    {
-        return false;
-    }
+		pThis->Owner != pHouse)
+	{
+		return false;
+	}
 
-    if (!(pThis->RecruitableA && pThis->RecruitableB))
-    {
-        return false;
-    }
+	if (!(pThis->RecruitableA && pThis->RecruitableB))
+	{
+		return false;
+	}
 
-    const Mission mission = pThis->GetCurrentMission();
-    if (!MissionClass::IsRecruitableMission(mission))
-    {
-        return false;
-    }
+	const Mission mission = pThis->GetCurrentMission();
+	if (!MissionClass::IsRecruitableMission(mission))
+	{
+		return false;
+	}
 
-    if (pThis->ShouldEnterAbsorber ||
-        pThis->ShouldEnterOccupiable ||
-        pThis->ShouldGarrisonStructure ||
-        pThis->DrainTarget != nullptr ||
-        pThis->BunkerLinkedItem ||
-        pThis->LocomotorSource != nullptr)
-    {
-        return false;
-    }
+	if (pThis->ShouldEnterAbsorber ||
+		pThis->ShouldEnterOccupiable ||
+		pThis->ShouldGarrisonStructure ||
+		pThis->DrainTarget != nullptr ||
+		pThis->BunkerLinkedItem ||
+		pThis->LocomotorSource != nullptr)
+	{
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 struct AresTechnoExt

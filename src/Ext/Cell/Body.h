@@ -47,6 +47,15 @@ public:
 	std::vector<RadLevel> RadLevels { };
 	int InfantryCount{ 0 };
 
+	// Transient, deliberately not serialized: it only gates whether infantry walking
+	// within this cell may use the centre sub-position instead of a corner one
+	// (CellClass::FindInfantrySubposition, see Ext/Cell/Hooks.cpp).
+	//
+	// The caller that sets it is responsible for clearing it again, otherwise every
+	// infantry crossing this cell keeps using the centre. Leaving it out of Serialize
+	// means a loaded game starts with it false, which is the safe default.
+	int InfantryCenterAllowed { 0 };
+
 	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
 	{ }
 

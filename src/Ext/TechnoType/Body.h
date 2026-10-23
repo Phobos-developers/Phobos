@@ -500,6 +500,9 @@ public:
 	Valueable<double> Convert_Health_AbovePercent;
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
+	Nullable<bool> Convert_ShowBuildup;
+	Nullable<bool> Convert_ShowBuildupFrom;
+	Nullable<bool> Convert_ShowBuildupTo;
 
 	Nullable<bool> ExitThroughRoof;
 	Valueable<bool> PsychicDetectable;
@@ -926,6 +929,9 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+		, Convert_ShowBuildup {}
+		, Convert_ShowBuildupFrom {}
+		, Convert_ShowBuildupTo {}
 
 		, PsychicDetectable { true }
 
