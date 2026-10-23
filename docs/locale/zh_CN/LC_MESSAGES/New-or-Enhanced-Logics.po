@@ -5993,11 +5993,10 @@ msgid ""
 " turret direction with the vehicle body."
 msgstr "你可以自定义当载具丢失目标时炮塔方向是否回正（与车身对齐）"
 
-#, fuzzy
 msgid ""
 "If VehicleType has `Speed=0` or `MovementRestrictedTo` prevents it from "
 "moving on the cell, the default value is no; in other cases, it is yes."
-msgstr "若 `Speed=0` 或单位由于 `MovementRestrictedTo` 导致无法移动，则默认 no；否则默认 yes。"
+msgstr "若载具类型的 `Speed=0` 或 `MovementRestrictedTo` 导致其无法在所在格子上移动，则默认 no；否则默认 yes。"
 
 msgid "Turretless Shape Vehicle FireUp"
 msgstr "无炮塔 Shape 载具开火前摇"

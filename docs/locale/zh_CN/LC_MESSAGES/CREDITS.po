@@ -510,9 +510,8 @@ msgstr "自定义战机武器扫射"
 msgid "Vehicle `DeployFire` fixes/improvements"
 msgstr "载具 `DeployFire` 修复／改进"
 
-#, fuzzy
 msgid "Stationary units"
-msgstr "静止的载具"
+msgstr "静止的单位"
 
 msgid "Burst logic improvements"
 msgstr "Burst 逻辑改进"

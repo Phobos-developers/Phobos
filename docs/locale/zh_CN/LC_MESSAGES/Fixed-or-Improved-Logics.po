@@ -5322,9 +5322,8 @@ msgstr ""
 "`AttackMove.StopWhenTargetAcquired` 被读取为一个 "
 "`ApproachTarget.StopWhenInRange` 的兼容别名（`[General]` 和单位微观部分都是如此）。"
 
-#, fuzzy
 msgid "Stationary units"
-msgstr "静止的载具"
+msgstr "静止的单位"
 
 msgid ""
 "Infantry & vehicles with `Speed=0` or those that are prevented from "
@@ -5333,21 +5332,26 @@ msgid ""
 "on trainable/buildable units as they become stuck in factory. Following "
 "behaviours apply:"
 msgstr ""
+"拥有 `Speed=0` 或因 `MovementRestrictedTo` 而无法在所在格子上移动的步兵与载具，现在才是真正意义上的静止，在接到移动命令时不会再尝试移动。不应当将其用于可训练／可建造的单位，否则它们会卡在工厂中。其具有以下行为："
 
 msgid "Cannot retaliate if target is beyond their weapon range."
 msgstr ""
+"目标超出其武器射程时无法反击。"
 
 msgid "Cannot acquire units outside their weapon range on `Area Guard` mission."
 msgstr ""
+"处于 `Area Guard` 任务时无法获取武器射程外的单位。"
 
 msgid "`Hunt` mission is reassigned to `Guard`."
 msgstr ""
+"`Hunt` 任务会被重新指派为 `Guard`。"
 
 msgid ""
 "Units rendered stationary by speed multipliers instead of intrinsic "
 "properties of TechnoType will respond to cursor actions e.g assigning "
 "destination but will not move while the multiplier is in effect."
 msgstr ""
+"因速度倍率而非 TechnoType 自身属性而陷入静止的单位仍会响应光标操作（例如指定目的地），但在倍率生效期间不会移动。"
 
 msgid "Subterranean unit travel height and speed"
 msgstr "潜地单位移动高度和速度"

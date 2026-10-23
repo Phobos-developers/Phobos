@@ -1160,6 +1160,7 @@ msgid ""
 "[Improvements to stationary unit logic](Fixed-or-Improved-Logics.md"
 "#stationary-units) (by Starkku)"
 msgstr ""
+"[静止单位逻辑的改进](Fixed-or-Improved-Logics.md#stationary-units)（by Starkku）"
 
 msgid ""
 "[Light flash toggle for ParticleType alpha images](User-Interface.md"
