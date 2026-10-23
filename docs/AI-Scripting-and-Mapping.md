@@ -350,6 +350,16 @@ In `aimd.ini`:
 x=10104,n         ; integer, additional distance in cells
 ```
 
+##### `10105` Reapir Building at Waypoint
+
+- Repair friendly structures at waypoints if they support engineer repairs.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=10105,n         ; integer, Waypoint
+```
+
 ### `12000-12999` Suplementary/Setup Pre-actions
 
 #### `12000` Wait if No Target Found

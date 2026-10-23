@@ -161,6 +161,9 @@ public:
 	// Ares 0.E
 	Valueable<bool> Tunnel; // temporarily bool: Ares stores TunnelType name (string -> index), not mapped here
 
+	// Ares 2.0
+	Nullable<bool> EngineerRepairable;
+
 	// Ares 3.0
 	Nullable<bool> UnitSell;
 
@@ -282,6 +285,9 @@ public:
 
 		// Ares 0.E
 		, Tunnel { false }
+
+		// Ares 2.0
+		, EngineerRepairable {}
 
 		// Ares 3.0
 		, UnitSell {}
