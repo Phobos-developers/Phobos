@@ -2670,6 +2670,25 @@ SuppressRevengeWeapons=false    ; boolean
 SuppressRevengeWeapons.Types=   ; List of WeaponTypes
 ```
 
+### Selling units directly
+
+- In vanilla, only buildings can be sold directly, while units and aircraft have to be docked into a repair depot with `UnitSell` first. Now you can allow any TechnoType to be sold on the spot, without a depot.
+  - `Unsellable.Direct` controls whether the sell cursor is shown over the TechnoType and whether it can be sold directly, bypassing the `Unsellable` check.
+  - `SellingAnim` controls which animation is played when the TechnoType is sold. The animation is drawn in the owner's colour scheme.
+  - Sell mode can normally only be entered while owning at least one building. Owning a TechnoType with `Unsellable.Direct=yes` is counted as a reason to enter it as well, so such TechnoTypes stay sellable even after the last building is gone.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+Unsellable.Direct=false  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]    ; TechnoType
+SellingAnim=    ; AnimationType
+```
+
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.

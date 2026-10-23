@@ -3452,6 +3452,21 @@ msgstr ""
 "不被遵守的问题"
 
 msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Directly sellable TechnoTypes"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 可直接出售的 TechnoType"
+
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Custom animation when selling TechnoTypes"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 出售 TechnoType 时播放自定义动画"
+
+msgid ""
+"**frg2089 (舰队的偶像-岛风酱!)** - Entering sell mode while owning no buildings"
+msgstr ""
+"**frg2089 (舰队的偶像-岛风酱!)** - 不拥有任何建筑时进入变卖模式"
+
+msgid ""
 "**weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral "
 "houses"
 msgstr "**weiyongxuan** - 扩展 `CanTargetHouses` 以允许瞄准中立所属方"

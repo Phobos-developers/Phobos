@@ -7139,3 +7139,15 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
 
+msgid "Directly sellable TechnoTypes via `Unsellable.Direct` (by frg2089)"
+msgstr "通过 `Unsellable.Direct` 直接出售 TechnoType（by frg2089）"
+
+msgid ""
+"Custom animation when selling TechnoTypes via `SellingAnim` in `artmd.ini` "
+"(by frg2089)"
+msgstr "通过 `artmd.ini` 中的 `SellingAnim` 在出售 TechnoType 时播放自定义动画（by frg2089）"
+
+msgid ""
+"Entering sell mode while owning no buildings if a TechnoType with "
+"`Unsellable.Direct` is owned (by frg2089)"
+msgstr "不拥有任何建筑时，只要拥有带有 `Unsellable.Direct` 的 TechnoType 即可进入变卖模式（by frg2089）"

@@ -4,6 +4,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Infantry/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
@@ -1027,6 +1028,63 @@ DEFINE_HOOK(0x4DECBB, FootClass_Crash_Spin, 0x5)
 	}
 
 	return SkipGameCode;
+}
+
+// Override the final action to `Sell` for technos with `Unsellable.Direct` set,
+// so the sell cursor can be shown over them even when they are not docked and even when
+// Ares is loaded (Ares's own hook at 0x6929FC would otherwise set NoSell for infantry).
+DEFINE_HOOK(0x692B28, DisplayClass_ChooseAction_AllowCursor, 0x6)
+{
+	enum { Continue = 0 };
+
+	if (!DisplayClass::Instance.SellMode)
+		return Continue;
+
+	GET(ObjectClass*, pObject, ESI);
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+	{
+		if (pTechno->Owner != HouseClass::CurrentPlayer)
+			return Continue;
+
+		auto const pType = pTechno->GetTechnoType();
+		auto const pTypeExt = TechnoTypeExt::Fetch(pType);
+		if (pTypeExt->Unsellable_Direct.Get(false))
+			R->Stack(0x10, static_cast<int>(Action::Sell));
+	}
+
+	return Continue;
+}
+
+// Vanilla only allows entering sell mode while the player owns at least one building, which
+// leaves TechnoTypes with `Unsellable.Direct` unsellable for a house that owns none. Treat
+// owning such a TechnoType as a reason to enter sell mode as well; everything else keeps
+// following the vanilla check.
+DEFINE_HOOK(0x4AC6C4, MapClass_SetSellMode_UnsellableDirect, 0x10)
+{
+	enum { DontEnterSellMode = 0x4AC6E5, EnterSellMode = 0x4AC6D4 };
+
+	auto const pPlayer = HouseClass::CurrentPlayer;
+
+	if (pPlayer && (pPlayer->OwnedBuildings > 0 || HouseExt::Fetch(pPlayer)->OwnedUnsellableDirectTechnos > 0))
+		return EnterSellMode;
+
+	return DontEnterSellMode;
+}
+
+// The per-house update that runs every logic frame drops the current player out of sell mode as
+// soon as the last building is gone, which immediately undoes the mode the hook above entered.
+// Owning a TechnoType with `Unsellable.Direct` keeps it; everything else still follows vanilla.
+DEFINE_HOOK(0x4F8B14, HouseClass_AI_SellModeWithoutBuildings, 0x6)
+{
+	enum { DontExitSellMode = 0x4F8B30, VanillaCheck = 0x4F8B1A };
+
+	GET(HouseClass*, pThis, ESI);
+
+	if (pThis->OwnedBuildings > 0 || HouseExt::Fetch(pThis)->OwnedUnsellableDirectTechnos > 0)
+		return DontExitSellMode;
+
+	return VanillaCheck;
 }
 
 #pragma endregion
