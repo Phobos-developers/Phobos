@@ -3911,6 +3911,7 @@ msgid ""
 "`CreateUnit`-created Jumpjet locomotor units that are spawned in air (by "
 "Starkku)"
 msgstr ""
+"尝试修复了由 `CreateUnit` 创建、生成于空中的 `Locomotor=Jumpjet` 单位寻路异常等罕见问题（by Starkku）"
 
 msgid ""
 "Fixed `InsigniaFrames` not being updated correctly for passengers and "
