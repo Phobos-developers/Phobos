@@ -3902,6 +3902,7 @@ msgid ""
 "Fixed `[CombatDamage] -> OccupyDamageMultiplier` being used instead of "
 "`BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)"
 msgstr ""
+"修复了坦克碉堡内的载具使用 `[CombatDamage] -> OccupyDamageMultiplier` 而非 `BunkerDamageMultiplier` 的问题（by Starkku）"
 
 msgid ""
 "Attempted to fix edge-case issues such as odd pathfinding with "
