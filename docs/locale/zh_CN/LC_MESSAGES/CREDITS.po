@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 05:38+0800\n"
+"POT-Creation-Date: 2026-10-23 21:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -510,7 +510,8 @@ msgstr "自定义战机武器扫射"
 msgid "Vehicle `DeployFire` fixes/improvements"
 msgstr "载具 `DeployFire` 修复／改进"
 
-msgid "Stationary VehicleTypes"
+#, fuzzy
+msgid "Stationary units"
 msgstr "静止的载具"
 
 msgid "Burst logic improvements"
@@ -1427,8 +1428,7 @@ msgstr "修复了受 `IsLocomotor=yes` 弹头影响的载具在失灵或重新�
 msgid ""
 "Fix an issue where Engineers and Spies might not be able to enter target "
 "buildings properly when executing vanilla's attack script"
-msgstr ""
-"修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题"
+msgstr "修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题"
 
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
@@ -1989,6 +1989,11 @@ msgid ""
 "transferred to when the unit is destroyed"
 msgstr "自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人"
 
+msgid ""
+"Fix the bug that crashing or sinking unit can be recruit into taskforce "
+"team"
+msgstr "修复了坠落或沉没中的单位可以被招募进特遣小队的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2373,6 +2378,9 @@ msgstr "修复了 Ares 的 EMP 不会使 AI 工厂暂停生产的问题"
 msgid "Attach effect when weapon fire"
 msgstr "在武器开火时赋予 AE"
 
+msgid "Building placing and deploying logic enhancement"
+msgstr ""
+
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
 
@@ -2729,6 +2737,9 @@ msgstr "修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover`
 
 msgid "Fix `HealBase` crates causing full-health objects to scatter"
 msgstr "修复 `HealBase` 补给箱导致满生命值对象散开的问题"
+
+msgid "Preserve whitespace in CSF"
+msgstr "保留 CSF 中的空白"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -3249,6 +3260,9 @@ msgstr "循环切换当前已选中对象的快捷键"
 msgid "Hotkey for cycling through the types in the current selection"
 msgstr "循环切换当前已选中类型的快捷键"
 
+msgid "Fix briefing out of bound due to fixed window size"
+msgstr ""
+
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
 "payloads of vehicles built from a war factory"
@@ -3462,8 +3476,19 @@ msgid ""
 "TerrainType SHP images"
 msgstr "**Krisztiaan** - 修复释放缓存的地形对象 SHP 图像所导致的任务重开崩溃"
 
+msgid "**JerryDing07**:"
+msgstr "**JerryDing07**："
+
 msgid ""
-"**JerryDing07** - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen"
+"Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge "
+"of the screen"
+msgstr "修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶发崩溃的问题"
+
+msgid ""
+"Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was "
+"drawn while its firer was at the same horizontal position as its target"
 msgstr ""
-"**JerryDing07** - 修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶发崩溃的问题"
+
+msgid "**MagicShiba** - Fix briefing out of bound due to fixed window size"
+msgstr ""
 

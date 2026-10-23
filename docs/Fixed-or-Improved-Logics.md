@@ -240,7 +240,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
-- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 - Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 - `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering.
@@ -339,6 +338,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
+- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker.
 
 ## Fixes / interactions with other extensions
 
@@ -2554,6 +2556,14 @@ ApproachTarget.StopWhenInRange=false  ; boolean
 ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
 ```
 
+### Stationary units
+
+- Infantry & vehicles with `Speed=0` or those that are prevented from moving on their cell by `MovementRestrictedTo` are now truly stationary will not attempt to move if issued movement commands. Should not be used on trainable/buildable units as they become stuck in factory. Following behaviours apply:
+  - Cannot retaliate if target is beyond their weapon range.
+  - Cannot acquire units outside their weapon range on `Area Guard` mission.
+  - `Hunt` mission is reassigned to `Guard`.
+  - Units rendered stationary by speed multipliers instead of intrinsic properties of TechnoType will respond to cursor actions e.g assigning destination but will not move while the multiplier is in effect.
+
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
@@ -2994,10 +3004,6 @@ SinkSpeed=5                ; integer, leptons per frame, default to [General] ->
 Sinkable.SquidGrab=true    ; boolean, default to [General] -> Sinkable.SquidGrab
 ```
 
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
 ### Turret recoil
 
 - Now you can use `TurretRecoil` to control units' turret/barrel recoil effect when firing.
@@ -3062,6 +3068,7 @@ TurretShadow=   ; boolean
 
 - It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
   - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
+- If `IsSimpleDeployer.DisallowOnBuildings` is set to true the unit is not allowed to deploy when sharing a cell with buildings.
 - In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir` for units with `DeployingAnim`, -1 otherwise), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
@@ -3074,6 +3081,7 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                               ; VehicleType
 IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
 IsSimpleDeployer.DisallowedLandTypes=       ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+IsSimpleDeployer.DisallowOnBuildings=false  ; boolean
 DeployDir=                                  ; Facing type (integers from 0-7 or -1)
 DeployingAnims=                             ; List of AnimationTypes
 DeployingAnim.KeepUnitVisible=false         ; boolean

@@ -408,7 +408,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
 		const double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
-			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+			FootExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
 
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ESI);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -432,7 +432,7 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ECX);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -443,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	const double multiplier = FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
@@ -1886,6 +1886,47 @@ DEFINE_PATCH(0x760035, 0x03); // lea ebp, [edx+3]
 DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
 DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
 DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
+
+// The wave polygon rasterizer only handles polygons that are monotone in Y: it allocates its span buffer for maxY - minY
+// rows and then appends one row per downward edge pixel while walking each side from the top vertex to the bottom one.
+// When a non-magnetron wave's firer is horizontally at the same position as its target, WaveClass::Draw_NonMagnetic
+// divides by the zero distance and all four side points collapse to the map origin. The polygon then folds back on itself,
+// the walk goes down the same edge twice and writes past the end of the span buffer, crashing or corrupting the heap.
+// Skip rasterizing such polygons. The span buffer stays null, so the caller does not draw the wave for that frame.
+DEFINE_HOOK(0x63F080, WaveClass_RasterizePolygon_NonMonotoneFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x63F2D9 };
+
+	GET(const int*, pPolygon, ECX); // { int Count; Point2D* Points; }
+
+	const int count = pPolygon[0];
+	const auto pPoints = reinterpret_cast<const Point2D*>(pPolygon[1]);
+
+	if (count < 3)
+		return 0;
+
+	int minY = pPoints[0].Y;
+	int maxY = pPoints[0].Y;
+	long long totalDown = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		const int y = pPoints[i].Y;
+		const int nextY = pPoints[(i + 1) % count].Y;
+
+		minY = Math::min(minY, y);
+		maxY = Math::max(maxY, y);
+
+		if (nextY > y)
+			totalDown += nextY - y;
+	}
+
+	// Each side covers maxY - minY rows exactly once only if the polygon is monotone in Y.
+	if (totalDown == static_cast<long long>(maxY) - minY)
+		return 0;
+
+	return ReturnFromFunction;
+}
 
 // WW used SetDesired here, causing the barrel drawn incorrectly.
 DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
@@ -3723,4 +3764,22 @@ DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	return pFoot && pFoot->IsAttackedByLocomotor ? 0x70F85F : 0;
+}
+
+DEFINE_HOOK(0x6EA661, TeamClass_CanAddMember_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6EA856 };
+
+	GET(FootClass*, pMember, ESI);
+
+	return (pMember->IsCrashing && !pMember->IsAttackedByLocomotor) || pMember->IsSinking ? ReturnFalse : 0;
+}
+
+DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6F1F1A };
+
+	GET(FootClass*, pUnit, ESI);
+
+	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }
