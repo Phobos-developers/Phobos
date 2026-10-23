@@ -30,6 +30,7 @@ public:
 	int TurretAnimRateTick;
 	int ConstructionStartFacing;
 	bool IsPlayingRoofProductionAnim;
+	int DetectDisguiseActiveCounter;
 
 	BuildingExt(BuildingClass* OwnerObject) : TechnoExt(OwnerObject)
 		, DeployedTechno { false }
@@ -49,6 +50,7 @@ public:
 		, TurretAnimRateTick { 0 }
 		, ConstructionStartFacing { -1 }
 		, IsPlayingRoofProductionAnim { false }
+		, DetectDisguiseActiveCounter { 0 }
 	{ }
 
 	// typed owner accessor (shadows the TechnoClass one from the base)
@@ -68,6 +70,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
+	void UpdateDetectDisguise();
 
 	virtual ~BuildingExt() = default;
 

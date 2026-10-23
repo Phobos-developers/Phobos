@@ -332,6 +332,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Observer can see IvanBomb that's attached by any house.
 - Fixed crashes and freezes caused by Tiberium growth and spread.
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster.
+- Fixed the bug where building disguise detection (`DetectDisguise=yes`) failed to react to power outages, EMP deactivation, or ownership changes, and was permanently disabled if placed while unpowered or if double-deactivated upon destruction/selling. Also fixed radial indicator display for `DetectDisguiseRange`.
 - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country.
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated.
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
