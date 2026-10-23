@@ -352,7 +352,7 @@ x=10104,n         ; integer, additional distance in cells
 
 ##### `10105` Reapir Building at Waypoint
 
-- Repair friendly structures at waypoints if they support engineer repairs.
+- If a building on waypoint can be repaired by an engineer, the squad will carry out the task of repairing the building.
 
 In `aimd.ini`:
 ```ini
