@@ -118,6 +118,7 @@ msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题�
 
 msgid "Fixed briefing out of bound due to fixed window size."
 msgstr ""
+"修复了固定窗口尺寸导致简报越界的问题。"
 
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"

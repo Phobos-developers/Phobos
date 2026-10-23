@@ -3263,6 +3263,7 @@ msgstr "循环切换当前已选中类型的快捷键"
 
 msgid "Fix briefing out of bound due to fixed window size"
 msgstr ""
+"修复了固定窗口尺寸导致简报越界的问题"
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
@@ -3493,4 +3494,5 @@ msgstr ""
 
 msgid "**MagicShiba** - Fix briefing out of bound due to fixed window size"
 msgstr ""
+"**MagicShiba** - 修复固定窗口尺寸导致简报越界的问题"
 

@@ -1245,6 +1245,7 @@ msgid ""
 "Fixed briefing out of bound due to fixed window size (by FrozenFog, based"
 " on knowledge of MagicShiba)"
 msgstr ""
+"修复了固定窗口尺寸导致简报越界的问题（by FrozenFog，基于 MagicShiba 提供的知识）"
 
 msgid ""
 "Units in Tank Bunker with deploy functions no longer perform them when "
