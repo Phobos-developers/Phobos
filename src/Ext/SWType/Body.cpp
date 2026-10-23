@@ -92,6 +92,7 @@ void SWTypeExt::Serialize(T& Stm)
 		.Process(this->EMPulse_SuspendOthers)
 		.Process(this->EMPulse_Cannons)
 		.Process(this->EMPulse_TargetSelf)
+		.Process(this->EMPulse_Burst)
 		.Process(this->SW_Link)
 		.Process(this->SW_Link_Grant)
 		.Process(this->SW_Link_Ready)
@@ -180,6 +181,7 @@ void SWTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->EMPulse_SuspendOthers.Read(exINI, pSection, "EMPulse.SuspendOthers");
 	this->EMPulse_Cannons.Read(exINI, pSection, "EMPulse.Cannons");
 	this->EMPulse_TargetSelf.Read(exINI, pSection, "EMPulse.TargetSelf");
+	this->EMPulse_Burst.Read(exINI, pSection, "EMPulse.Burst");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights
