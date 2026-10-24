@@ -2091,6 +2091,7 @@ HideShakeEffects=false           ; boolean
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
+- Veinhole monster and veins logic fixes and ramp support (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
