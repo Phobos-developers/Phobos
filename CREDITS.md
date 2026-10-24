@@ -376,7 +376,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
