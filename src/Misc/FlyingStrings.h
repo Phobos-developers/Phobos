@@ -26,7 +26,7 @@ private:
 	static const int Duration = 75;
 	static std::vector<Item> Data;
 
-	static bool DrawAllowed(CoordStruct& nCoords);
+	static bool DrawAllowed(const CoordStruct& nCoords);
 
 public:
 	static void Add(const wchar_t* text, const CoordStruct& coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
