@@ -10,6 +10,7 @@
 #include <Misc/FlyingStrings.h>
 
 #include <New/Entity/BannerClass.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #include <Utilities/Debug.h>
 
@@ -98,6 +99,24 @@ DEFINE_HOOK(0x4A2729, CreditClass_AI_CreditsStepClamp, 0x5)
     return Continue;
 }
 
+DEFINE_HOOK(0x4A24DB, CreditsClass_Draw_SkipIfMoneyResource1, 0x5)
+{
+	if (ResourceTypeClass::ShouldSkipWestwoodCredits())
+	{
+		return 0x4A24E0;
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x4A25DB, CreditsClass_Draw_SkipIfMoneyResource2, 0x5)
+{
+	if (ResourceTypeClass::ShouldSkipWestwoodCredits())
+	{
+		return 0x4A25E0;
+	}
+	return 0;
+}
+
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
 	auto const pPlayer = HouseClass::CurrentPlayer;
@@ -105,10 +124,13 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		return 0;
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
+	auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 
-	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
+	// Draw custom resources in sidebar if Anchor=Sidebar
+	ResourceTypeClass::DrawResourceHUD(DSurface::Sidebar, true);
+
+	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter && !ResourceTypeClass::HasHarvesterResource())
 	{
-		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		const int nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		const int nTotal = HouseExt::TotalHarvesterCount(pPlayer);
@@ -134,9 +156,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
-	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
+	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count && !ResourceTypeClass::HasPowerResource())
 	{
-		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 
 		ColorStruct clrToolTip;
@@ -172,9 +193,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
-	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
+	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter && !ResourceTypeClass::HasWeedsResource())
 	{
-		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		const ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);
 

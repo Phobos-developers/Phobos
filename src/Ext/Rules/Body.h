@@ -350,11 +350,9 @@ public:
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
-
 		Valueable<bool> InfantryAutoDeploy;
 
 		Valueable<int> AdjacentWallDamage;
-
 		Valueable<int> WarheadAnimZAdjust;
 
 		Valueable<bool> IvanBombAttachToCenter;
@@ -869,7 +867,6 @@ public:
 			, Parasite_AllowWaterExit {}
 			, InfantryAutoDeploy { false }
 			, AdjacentWallDamage { 200 }
-
 			, WarheadAnimZAdjust { -15 }
 
 			, IvanBombAttachToCenter { false }
