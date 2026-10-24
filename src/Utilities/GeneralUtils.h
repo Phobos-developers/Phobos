@@ -43,6 +43,7 @@ public:
 	static int SafeMultiply(int value, int mult);
 	static int SafeMultiply(int value, double mult);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
+	static std::unique_ptr<std::vector<class PhobosPCXFile>> GetAnimationPCX(const std::string& baseFilename);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)
