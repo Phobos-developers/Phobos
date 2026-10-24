@@ -91,6 +91,7 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	BuildingTypeClass* ActiveEvaVoiceBuildingType;
 	std::vector<BuildingClass*> Academies;
 
 	std::vector<UnitClass*> OwnedDeployingUnits;
@@ -132,6 +133,7 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, ActiveEvaVoiceBuildingType { nullptr }
 		, Academies {}
 		, OwnedDeployingUnits {}
 		, Common { nullptr, nullptr, 0 }
