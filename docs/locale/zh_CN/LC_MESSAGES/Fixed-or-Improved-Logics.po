@@ -2941,6 +2941,7 @@ msgid ""
 "house is used if available if animation has no owner house. Defaults to "
 "`[AudioVisual] -> AnimRemapUseInvokerFallback`."
 msgstr ""
+"如果将 `AltPalette.UseInvokerFallback` 设置为 true，那么当动画没有所属方时将会使用可用的调用者的所属方。默认为 `[AudioVisual] -> AnimRemapUseInvokerFallback`。"
 
 msgid ""
 "`TheaterPalette` can be used to customize whether or not animation is "

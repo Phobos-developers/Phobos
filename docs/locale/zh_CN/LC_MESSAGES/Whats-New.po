@@ -1187,6 +1187,7 @@ msgid ""
 "Improved-Logics.md#animation-palette-customizations-improvements) (by "
 "Starkku)"
 msgstr ""
+"[`AltPalette` 动画重映射回退到调用者所属方的开关](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements)（by Starkku）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
