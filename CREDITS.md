@@ -1008,6 +1008,7 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**:
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
+  - Add `Immune.Capture`, `Immune.Infiltrate`, `Immune.EngineerRepair` for AttachEffect
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
