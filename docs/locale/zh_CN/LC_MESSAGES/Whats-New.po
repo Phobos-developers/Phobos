@@ -3947,6 +3947,7 @@ msgid ""
 "destroyed unless otherwise specified by `MakeInfantryOwner` or "
 "`CreateUnit.Owner` (by Starkku)"
 msgstr ""
+"修复了 `DestroyAnim` 的默认所属方，现在其默认为被摧毁单位的所属方，除非由 `MakeInfantryOwner` 或 `CreateUnit.Owner` 另行指定（by Starkku）"
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"
