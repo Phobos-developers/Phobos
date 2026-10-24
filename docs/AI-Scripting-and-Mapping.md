@@ -4,15 +4,46 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ## Bugfixes and Miscellanous
 
+- `<Player @ X>` can now be used as owner for pre-placed objects as well as owner for triggers on skirmish and multiplayer maps. Triggers with owners that are not present in the game are destroyed and never sprung.
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
-- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
-- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
+- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE configs](Whats-New.md#for-map-editor-world-altering-editor)).
+- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE configs](Whats-New.md#for-map-editor-world-altering-editor)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Fixed AI team recruitment inconsistency causing underfilled teams.
+- Restored the ScriptType action#24 `Play speech` from Tiberian Sun.
+- Fixed Tiberium types not supporting overrides in map and game mode INIs.
+- Fixed briefing out of bound due to fixed window size.
+
+### Dynamic Team Delays
+
+- It is now possible to make `TeamDelays` in skirmish changed dynamically based on player's amount.
+- `TeamDelays.DynamicType` controls how team delay will be changed. Neutral houses and observers won't be accounted in all the following patterns.
+  - `startingpoint`: taking the map's `NumberStartingPoints` into account.
+  - `playercount`: taking the total amount of players into account, including itself.
+  - `allies`: taking the amount of allied players into account, excluding itself.
+  - `enemies`: taking the amount of hostile players into account.
+  - `alivecount`: taking the amount of players that's not defeated at the moment into account, including itself.
+  - `aliveallies`: taking the amount of allied players that's not defeated at the moment into account, excluding itself.
+  - `aliveenemies`: taking the amount of hostile players that's not defeated at the moment into account.
+  - `none`: dynamic team delay will be disabled regardless of the settings of `TeamDelays.CountN`.
+- `TeamDelays.CountN` control the team delay when the amount of players meets the above conditions, where `N` stands for an integer between 1-8. Consisted by 3 integers that represent each difficulty.
+  - If a dynamic team delay is not set for this player amount, or the set value isn't greater than 0, it'll default to `[General] -> TeamDelays`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+TeamDelays.DynamicType=startingpoint    ; Dynamic Team Delay Type Enumeration (startingpoint|playercount|allies/ally|enemies/enemy|alivecount|aliveallies/alliveally|aliveenemies/aliveenemy|none)
+TeamDelays.CountN=                      ; List of 3 integers indicating AI's TeamDelays in Difficult / Normal / Easy game diffculty.
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
+```
 
 ### Increased Overlay Limit
 
@@ -132,7 +163,25 @@ In `RA2MD.INI`:
 ShowBriefing=true  ; boolean
 ```
 
+### SkipMapSelect Enhancement
+
+- Using `SkipMapSelect=yes` in the map file allows you to bypass the restriction in mapselmd.ini—which requires that the player's faction in the current campaign must match the faction in the next new campaign.
+  - You can use `NextScenario` and `AltNextScenario` to specify the map names required to enter a new campaign, thereby forcing the game to proceed to the next campaign.
+  - Now, setting a local variable named `<Alternate Next Scenario>` will also trigger `AltNextScenario`.
+
 ## Script Actions
+
+### More convenient vanilla action script target specification
+
+- Now you can use more convenient argument format in vanilla action script target specification, no need to write building type index and calc scan mode offset.
+  - Scan mode has `low`(lowest threat), `high`(highest threat), `far`(farest), `near`(nearest) and default to `near`.
+- This is suitable for `46`, `47`, `56`, `58` action script.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=i,n,m           ; n - target building type name, m - scan mode
+```
 
 ### `10000-10999` Ingame Actions
 
@@ -466,7 +515,7 @@ In `rulesmd.ini`:
 
 #### `16005` Jump Back To Previous Script
 
-- Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
+- Used in a Random Script picked by action `16004`. It can jump back to the previous script, and continue in the line after `x=16004,n`.
 
 In `aimd.ini`:
 ```ini
@@ -499,7 +548,7 @@ In `aimd.ini`:
 x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the low 16 bits is being used to store the variable index, the high 16 bits is being used for storing the local variable index.
 ```
 
-#### `18000 - 18071` Edit Variable using Global Variable
+#### `18048 - 18071` Edit Variable using Global Variable
 
 - Operate a variable's value using a global variable's value.
 - Similar to `18000-18023`, but the number to operate the value is being read from a global variable.
@@ -513,6 +562,37 @@ x=i,n             ; where 18048 <= i <= 18071, n is made up of two parts, the lo
 ### `19000-19999` Miscellanous/Uncategorized
 
 This category is empty for now.
+
+## Teams
+
+### Adjust recruitable status on team member liberate
+
+- In vanilla, when a unit is added to a team, its `RecruitableB` flag is overwritten by the team's `AreTeamMembersRecruitable` setting. When the unit is liberated from the team, the flag is not restored. The following settings allow a team to reset this flag when liberating its members.
+  - If set to a value **greater than 0**, the liberated unit is forcibly marked as recruitable.
+  - If set to **0**, the liberated unit is forcibly marked as not recruitable.
+  - If set to a value **less than 0** (default: `-1`), the original game behavior is preserved.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SetRecruitableOnLiberate=-1  ; integer
+```
+
+In `aimd.ini`:
+```ini
+[SOMETEAMTYPE]               ; TeamType
+SetRecruitableOnLiberate=    ; integer, default to [General] -> SetRecruitableOnLiberate
+```
+
+### Customized transport plane for teams
+
+- You can now use `ParaDropAircraft` to specify a new transport aircraft type for teams with `Droppod=yes`, which will override the global settings for `Ares` and `Vanilla`.
+
+In `aimd.ini`:
+```ini
+[SOMETEAMTYPE]      ; TeamType, with Droppod=yes
+ParaDropAircraft=   ; AircraftType
+```
 
 ## Trigger Actions
 
@@ -666,6 +746,67 @@ ID=ActionCount,[Action1],511,-10,[BuildingTypesID],[HouseIndex],0,0,0,[WaypointI
 ...
 ```
 
+### `512` Set Follower for Associated Unit
+
+![image](_static/images/follow_index.gif)
+*The locomotive pulls away the parked multiple carriages in [Bellum Æternum](https://ra2be.com/download.html)*
+
+- Sets the follower for the associated object. The parameter is the index of the follower unit.
+  - Invalid for non-vehicle objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],512,0,0,[FollowerIndex],0,0,0,A,[ActionX]
+...
+```
+
+### `513` Set mission timer properties
+
+- Set the method to display mission timer and whether the timer should be displayed reversedly based on given value.
+  - For behaviours `0`, `1`, and `2`, the second parameter decides the base value for percentage timer type or reversed timer that'll be used for calculation.
+  - For behaviours `3` and `4`, the second parameter decides the index of variable that'll be displayed. If the local/global variable does not exist, 0 will be displayed.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],513,0,0,[MissionTimerType],[BaseValue or VariableIndex],[ReverseTimer],0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*                              |
+| :---------: | :----------------------------------------- |
+| 0           | Show normal timer                          |
+| 1           | show percentage based on the given value   |
+| 2           | Show timer in digit form                   |
+| 3           | Show value of the selected local variable  |
+| 4           | Show value of the selected global variable |
+
+```{note}
+This won't affect how the global mission timer really ticks, so it'll still end after the mission tiemr expired.
+```
+
+### `600` Configure Drop Crate
+
+- Set or overwrite the `DropCrate` of the affected objects.
+- Only functions when used as attached triggers within objects.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],600,0,[Behaviour],[index of the powerup],0,0,0,A,[ActionX]
+...
+```
+
+| *Behaviour* | *Description*               |
+| :---------: | :-------------------------: |
+| -1          | Use default Techno settings |
+| 0           | Clear `DropCrate` type      |
+| 1           | Overwrite `DropCrate` type  |
+
 ### `606` Edit Hate-Value
 
 - Edit the hate-value that trigger houses to other houses.
@@ -745,13 +886,30 @@ ID=ActionCount,[Action1],609,0,0,[RadarMode],0,0,0,A,[ActionX]
 ### `610` Set house's `TeamDelays` value
 
 - Set the `TeamDelays` value of the trigger's house.
-  - If this value is less than 0, then use the value of `[General] -> TeamDelays`.
+  - If this value is less than 0, then use the value of `[General] -> TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-team-delays) if set and in skirmish.
 
 In `mycampaign.map`:
 ```ini
 [Actions]
 ...
 ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
+...
+```
+
+```{note}
+Team delay change will take effect for a house after its next AI team is created.
+```
+
+### `611` Set Next Scenario
+
+- Set the next campaign to load after winning the current one.
+  - Works only in `Campaign Mode` and requires setting `[Basic] -> SkipMapSelect=yes`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],611,4,[Map Filename],0,0,0,0,A,[ActionX]
 ...
 ```
 
@@ -773,23 +931,28 @@ ID=ActionCount,[Action1],610,0,0,[Number],0,0,0,A,[ActionX]
   - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
   - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
     - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
+  - `ClampToScreen` controls whether the banner is clamped to stay within the visible area. When disabled, a PCX banner exceeding the top screen edge may crash the game.
+  - `Horizontal` and `Vertical` set the anchor point from which the banner is drawn relative to the drawing point from trigger.
 
 In `rulesmd.ini`:
 ```ini
 [BannerTypes]
 0=SOMEBANNER
 
-[SOMEBANNER]                ; BannerType
-PCX=                        ; filename - including the .pcx extension
-SHP=                        ; filename - including the .shp extension
-SHP.Palette=palette.pal     ; filename - including the .pal extension
-SHP.RefreshAfterDelay=false ; boolean
-CSF=                        ; CSF entry key
-CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
-CSF.Background=false        ; boolean
-CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
-Duration=-1                 ; integer
-Delay=-1                    ; integer
+[SOMEBANNER]                 ; BannerType
+PCX=                         ; filename - including the .pcx extension
+SHP=                         ; filename - including the .shp extension
+SHP.Palette=palette.pal      ; filename - including the .pal extension
+SHP.RefreshAfterDelay=false  ; boolean
+CSF=                         ; CSF entry key
+CSF.Color=                   ; integer - Red,Green,Blue, defaults to MessageTextColor of the owner Side
+CSF.Background=false         ; boolean
+CSF.VariableFormat=none      ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                  ; integer
+Delay=-1                     ; integer
+ClampToScreen=true           ; boolean
+Horizontal=center            ; Horizontal position enumeration (left|center/centre|right)
+Vertical=center              ; Vertical position enumeration (top|center/centre|bottom)
 ```
 
 In `mycampaign.map`:
@@ -886,6 +1049,8 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 | 535        | CurrentValue & GlobalVariableValue  | Yes      |
 
 ### `600` The shield of the attached object is broken
+
+- Springs when the shield of the attached object is broken.
 
 In `mycampaign.map`:
 ```ini

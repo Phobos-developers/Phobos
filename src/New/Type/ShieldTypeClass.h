@@ -1,5 +1,6 @@
 #pragma once
 
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
 #include <Ext/Rules/Body.h>
@@ -50,6 +51,7 @@ public:
 	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
+	Nullable<bool> AllowTransfer_Convert;
 
 	Valueable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
@@ -59,9 +61,7 @@ public:
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
@@ -106,6 +106,7 @@ public:
 		, ReceivedDamage_Minimum { INT32_MIN }
 		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
+		, AllowTransfer_Convert { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
@@ -113,29 +114,25 @@ public:
 		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 	{ };
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
-	bool HasTint() const
-	{
-		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
-	}
-
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
 	{
+		const double conditionYellow = this->GetConditionYellow();
+		const double conditionRed = this->GetConditionRed();
+
 		if (isDamaged)
 		{
-			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio))
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio, conditionYellow, conditionRed))
 				return damagedAnim;
 		}
 
-		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+		return this->IdleAnim.Get(healthRatio, conditionYellow, conditionRed);
 	}
 
 	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }

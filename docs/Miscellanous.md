@@ -4,7 +4,7 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 ## Blowfish Dependency
 
-`BLOWFISH.DLL` is no longer required to start the game.
+- `BLOWFISH.DLL` is no longer required to start the game.
 
 ## Developer tools
 
@@ -27,6 +27,35 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 - There's a [new hotkey](User-Interface.md#toggle-frame-by-frame-mode) to execute the game frame by frame for development usage.
   - You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
+
+### Insignia Type
+
+- It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
+
+In `rulesmd.ini`:
+```ini
+[InsigniaTypes]
+0=SOMEINSIGNIATYPE
+
+[SOMEINSIGNIATYPE]                       ; InsigniaType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaPalette=palette.pal              ; filename - including the .pal extension
+InsigniaPalette.Rookie=              	 ; filename - including the .pal extension
+InsigniaPalette.Veteran=              	 ; filename - including the .pal extension
+InsigniaPalette.Elite=              	 ; filename - including the .pal extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+
+[SOMETECHNO]                             ; TechnoType
+InsigniaType=                            ; InsigniaType
+InsigniaType.WeaponN=                    ; InsigniaType
+InsigniaType.PassengersN=                ; InsigniaType
+```
 
 ### Logging missing audio files (samples)
 
@@ -70,31 +99,6 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
 ```
 
-### Insignia Type
-
-- It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
-
-In `rulesmd.ini`:
-```ini
-[InsigniaTypes]
-0=SOMEINSIGNIATYPE
-
-[SOMEINSIGNIATYPE]                       ; InsigniaType
-Insignia=                                ; filename - excluding the .shp extension
-Insignia.Rookie=                         ; filename - excluding the .shp extension
-Insignia.Veteran=                        ; filename - excluding the .shp extension
-Insignia.Elite=                          ; filename - excluding the .shp extension
-InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
-
-[SOMETECHNO]                             ; TechnoType
-InsigniaType=                            ; InsigniaType
-InsigniaType.WeaponN=                    ; InsigniaType
-InsigniaType.PassengersN=                ; InsigniaType
-```
-
 ## Game Speed
 
 ### Single player game speed
@@ -111,10 +115,10 @@ InsigniaType.PassengersN=                ; InsigniaType
 In `rulesmd.ini`:
 ```ini
 [General]
-CustomGS=false              ; boolean
-CustomGSN.ChangeInterval=-1 ; integer >= 1
-CustomGSN.ChangeDelay=N     ; integer between 0 and 6
-CustomGSN.DefaultDelay=N    ; integer between 0 and 6
+CustomGS=false               ; boolean
+CustomGSN.ChangeInterval=-1  ; integer >= 1
+CustomGSN.ChangeDelay=N      ; integer between 0 and 6
+CustomGSN.DefaultDelay=N     ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
 ```
 
@@ -216,6 +220,29 @@ Due to a technical issue, there is a chance that ***the first line of a included
 When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
 ```
 
+### Keyframe animations
+
+- Some features use keyframe-based animation system to define animations in INI. Defined in INI it looks something like following.
+
+```ini
+[SOMESECTION]
+BASEKEY.KeyframeN.Value=            ; Key-dependant value type
+BASEKEY.KeyframeN.Percentage=       ; floating point value, percents or absolute
+BASEKEY.KeyframeN.Absolute=         ; integer, zero-based frame index
+BASEKEY.Keyframe.ResetValues=false  ; boolean
+BASEKEY.Interpolation=none          ; Interpolation mode (none|linear)
+```
+
+- `BASEKEY` is whatever base key name the feature in question may use. `N` is zero-based keyframe index. If no keyframes are defined, a single value from `BASEKEY` is attempted to be parsed instead.
+  - `Value` is a key/feature-dependant value type associated with that keyframe.
+  - `Percentage` is the percentage through the animation's frames where the keyframe becomes active. It is also possible to instead use zero-based frame index via `Absolute` which takes precedence over percentage, albeit it is internally converted to a percentage value. Has to be 0.0 or above, values below this are not valid.
+  - `ResetValues` if set to true makes it so that all existing keyframe data is reset before parsing. Can be used to reset keyframes when redefining them in map files etc.
+  - `Interpolation` controls interpolation of values between animation keyframes. The behaviour here may depend on the value type in use, as not all value types may be interpolatable well or at all.
+
+```{note}
+Keyframes are expected to be defined with no duplicates for Percentage or Absolute. Failure to do so will crash the game and output developer warnings about offending keys to the log.
+```
+
 ### Section inheritance
 
 ```{note}
@@ -248,15 +275,35 @@ This feature may noticeably increase game loading time, depending on the size of
 
 ### Turning off/on in-game exception handling
 
-You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
+- You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
+
+- When the exception handler is enabled, Phobos replaces the game's own crash handling (and Ares', if present) with its own exception handler, ported from [Vinifera](https://github.com/Vinifera-Developers/Vinifera). When the game crashes, it will:
+  - create a per-crash folder `debug\snapshot-<timestamp>\` and write into it a detailed crash report (`except.txt`) with registers, call stacks, a stack dump and the list of loaded modules, a minidump (`crashdump.dmp`) and a copy of the debug log (if one is found). This is the same folder layout Ares uses, so the CnCNet client will also fold `debug.log` and `syringe.log` into it;
+  - show a dialog displaying the crash report, with buttons to quit, break into an attached debugger, or additionally save a full memory dump (`fulldump.dmp`, into the same folder) - large, but the most useful to developers.
+
+- Crash folders older than 5 days are cleaned up automatically. The `-FullCrashDump` command line arg makes the automatically written minidump a full memory dump (useful for unattended setups).
+
+- Crash reports can be enriched with extra information:
+  - If a `gamemd.pdb` file is present in the game directory, it is used to resolve game addresses to symbol names in the call stacks. `Phobos.pdb` (shipped with devbuilds and nightlies) is picked up automatically for Phobos's own addresses.
+  - If a `gamemd.edb` exception database file is present in the game directory, its description for the faulting address (if any) is included in the report under "Additional information". The format is shared with Vinifera: one entry per line, `;` starts a comment.
+
+```text
+; address,can-continue,ignore,description (the two flags are parsed but not used)
+0x7BAEA1,0,0,A common crash in DSurface::GetPixel.
+0x5D6C21,0,0,The map is likely missing waypoint 90.
+```
 
 ```{note}
-In **debug** builds the in-game exception handler is **turned off** by default.
+The exception handler is enabled by default in all builds, including debug builds. An attached debugger still receives exceptions first, so this does not interfere with debugging; pass `-ExceptionHandler=false` if you want crashes to bypass the handler entirely.
 ```
 
 ```{warning}
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
+
+### Visual styles
+
+- gamemd.exe ships without an application manifest, so its windows bind the old Common Controls v5 and render in the Windows 9x style. Phobos now activates its embedded Common Controls v6 manifest for the lifetime of the process, so windows created by the game and Phobos - dialogs, message boxes and the crash dialog - render with modern visual styles.
 
 ## Player colors
 
@@ -274,7 +321,7 @@ SkirmishUnlimitedColors=false  ; boolean
 ```
 
 ```{note}
-This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+This feature should only be used if you use a spawner/outside client (i.e. CnCNet Client). Using it in the original YR launcher will produce undesireable effects.
 ```
 
 ```{warning}

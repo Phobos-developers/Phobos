@@ -1,7 +1,9 @@
 #include <JumpjetLocomotionClass.h>
 
-#include <Ext/Techno/Body.h>
+#include <Ext/Foot/Body.h>
+#include <Ext/UnitType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 // Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
@@ -70,14 +72,14 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
 		return 0;
 
-	if (err == FireError::REARM && !TechnoTypeExt::ExtMap.Find(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+	if (err == FireError::REARM && !UnitTypeExt::Fetch(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return 0;
 
 	auto const pWpn = pThis->GetWeapon(wpIdx)->WeaponType;
 
 	if (pWpn->OmniFire)
 	{
-		if (WeaponTypeExt::ExtMap.Find(pWpn)->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
+		if (WeaponTypeExt::Fetch(pWpn)->OmniFire_TurnToTarget.Get(RulesExt::Global()->OmniFire_TurnToTarget) && !pThis->Locomotor->Is_Moving_Now())
 		{
 			CoordStruct& source = pThis->Location;
 			const CoordStruct target = pThis->Target->GetCoords();
@@ -103,14 +105,15 @@ static void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruc
 	// Rewrite just in case
 	const auto pThis = static_cast<JumpjetLocomotionClass*>(iloco);
 	pThis->LocomotionFacing.SetDesired(dir);
-	pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
+	if (pThis->LinkedTo)
+		pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDB4, JumpjetLocomotionClass_DoTurn)
 
 DEFINE_HOOK(0x54D326, JumpjetLocomotionClass_MovementAI_CrashSpeedFix, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	return pThis->LinkedTo->IsCrashing ? 0x54D350 : 0;
+	return (pThis->LinkedTo && pThis->LinkedTo->IsCrashing) ? 0x54D350 : 0;
 }
 
 DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
@@ -118,7 +121,7 @@ DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
 	enum { ZeroWobble = 0x54D22C };
 
-	if (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP())
+	if (pThis->LinkedTo && (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP()))
 		return ZeroWobble;
 
 	return 0;
@@ -129,7 +132,10 @@ DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
 	GET(UnitClass* const, pThis, ECX);
 	enum { SkipAll = 0x736C0E };
 
-	if (pThis->Deactivated || pThis->IsUnderEMP())
+	if (pThis->IsUnderEMP())
+		return SkipAll;
+
+	if (!pThis->Target && (TechnoExt::IsAttached(pThis) || TechnoExt::HasAttachmentLoco(pThis)))
 		return SkipAll;
 
 	return 0;
@@ -153,9 +159,35 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 
 DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
+	enum { NoRotation = 0x54CB3E };
+
 	GET(JumpjetLocomotionClass*, pThis, EDI);
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData;
-	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
+	if (!pThis->LinkedTo)
+		return NoRotation;
+
+	const auto pTypeExt = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData;
+
+	if (!pTypeExt->JumpjetRotateOnCrash.Get(RulesExt::Global()->JumpjetRotateOnCrash))
+		return NoRotation;
+
+	const int rot = pTypeExt->CrashROT;
+
+	if (rot >= 0)
+		pThis->LocomotionFacing.SetROT(rot);
+
+	return 0;
+}
+
+// Bugfix: Prevent crash in JumpjetLocomotionClass State4 (Descending) if unit died, deployed, or unlinked during landing (vt_entry_18C)
+DEFINE_HOOK(0x54C8F6, JumpjetLocomotionClass_State4_CheckLinkedTo, 0x7)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+	enum { ExitFunction = 0x54CA7C };
+
+	if (!pThis->LinkedTo)
+		return ExitFunction;
+
+	return 0;
 }
 
 // We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing
@@ -183,13 +215,14 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDF4, JumpjetLocomotionClass_Can_Fire);
 DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
 {
 	GET(FootClass*, pLinkedTo, EAX);
-	auto const* pType = pLinkedTo->GetTechnoType();
+	const auto pType = pLinkedTo->GetTechnoType();
+	const auto pExt = FootExt::Fetch(pLinkedTo);
 
+	pExt->JumpjetSpeed = pType->JumpjetSpeed;
 	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
 
 	if (pType->SensorsSight)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
 		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 		pLinkedTo->AddSensorsAt(CellStruct::Empty);
 	}
@@ -204,9 +237,12 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 	__assume(iLoco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
 
-	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
-	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
-	pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
+	if (pThis->LinkedTo)
+	{
+		pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
+		pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+		pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
+	}
 
 	return 0;
 }
@@ -217,8 +253,11 @@ static void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 	__assume(pThis != nullptr);
 	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
 
-	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
-	pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+	if (pThisLoco->LinkedTo)
+	{
+		pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
+		pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+	}
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECDB8, JumpjetLocomotionClass_Unlimbo)
@@ -255,7 +294,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 {
 	const auto pFoot = pThis->LinkedTo;
 	const auto pLocation = &pFoot->Location;
-	const bool ignoreOccupy = TechnoExt::ExtMap.Find(pFoot)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	const bool ignoreOccupy = TechnoExt::Fetch(pFoot)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
 	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
@@ -389,7 +428,7 @@ DEFINE_HOOK(0x54BBD0, JumpjetLocomotionClass_Ascending_JumpjetStraightAscend, 0x
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	auto const pTechnoExt = FootExt::Fetch(pThis->LinkedTo);
 
 	if (pTechnoExt->JumpjetStraightAscend)
 		return SkipGameCode;
@@ -406,7 +445,7 @@ DEFINE_HOOK(0x54D600, JumpjetLocomotionClass_MovementAI_JumpjetStraightAscend, 0
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	auto const pLinkedTo = pThis->LinkedTo;
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	auto const pTechnoExt = FootExt::Fetch(pLinkedTo);
 
 	if (pTechnoExt->JumpjetStraightAscend)
 	{
@@ -439,7 +478,7 @@ namespace JumpjetClimbIgnoreBuilding
 DEFINE_HOOK(0x54D820, JumpjetLocomotionClass_GetFloorZ_SetContext, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	if (JumpjetClimbIgnoreBuilding::Ignore)
 		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pThis->LinkedTo->Location);
@@ -457,3 +496,42 @@ DEFINE_HOOK(0x54D859, JumpjetLocomotionClass_GetFloorZ_IgnoreBuilding, 0x9)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x54AD41, JumpjetLocomotionClass_Link_To_Object_LocomotorWarhead, 0x8)
+{
+	enum { SkipGameCode = 0x54ADF8 };
+
+	GET(ILocomotion*, pThis, EBP);
+	GET(FootClass*, pLinkedTo, EBX);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(pThis);
+	const auto pLinkedToExt = FootExt::Fetch(pLinkedTo);
+	const auto pType = pLinkedTo->GetTechnoType();
+
+	if (const auto pLocomotorWarhead = WarheadTypeExt::LocomotorWarhead)
+	{
+		const auto pWHExt = WarheadTypeExt::Fetch(pLocomotorWarhead);
+		pLoco->TurnRate = pWHExt->JumpjetTurnRate.Get(pType->JumpjetTurnRate);
+		pLoco->Speed = pLinkedToExt->JumpjetSpeed = pWHExt->JumpjetSpeed.Get(pType->JumpjetSpeed);
+		pLoco->Climb = pWHExt->JumpjetClimb.Get(pType->JumpjetClimb);
+		pLoco->Crash = pWHExt->JumpjetCrash.Get(pType->JumpjetCrash);
+		pLoco->Height = std::max(pWHExt->JumpjetHeight.Get(pType->JumpjetHeight), Unsorted::CellHeight);
+		pLoco->Accel = pWHExt->JumpjetAccel.Get(pType->JumpjetAccel);
+		pLoco->Wobbles = pWHExt->JumpjetWobbles.Get(pType->JumpjetWobbles);
+		pLoco->Deviation = pWHExt->JumpjetDeviation.Get(pType->JumpjetDeviation);
+		pLoco->NoWobbles = pWHExt->JumpjetNoWobbles.Get(pType->JumpjetNoWobbles);
+	}
+	else
+	{
+		pLoco->TurnRate = pType->JumpjetTurnRate;
+		pLoco->Speed = pLinkedToExt->JumpjetSpeed = pType->JumpjetSpeed;
+		pLoco->Climb = pType->JumpjetClimb;
+		pLoco->Crash = pType->JumpjetCrash;
+		pLoco->Height = std::max(pType->JumpjetHeight, Unsorted::CellHeight);
+		pLoco->Accel = pType->JumpjetAccel;
+		pLoco->Wobbles = pType->JumpjetWobbles;
+		pLoco->Deviation = pType->JumpjetDeviation;
+		pLoco->NoWobbles = pType->JumpjetNoWobbles;
+	}
+
+	return SkipGameCode;
+}

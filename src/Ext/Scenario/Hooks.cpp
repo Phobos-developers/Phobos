@@ -1,5 +1,45 @@
 #include "Body.h"
 
+static bool ScenarioNamesMatch(const char* a, const char* b)
+{
+	if (!a || !b)
+		return false;
+
+	while (*a && *b)
+	{
+		char ca = *a == '\\' ? '/' : *a;
+		char cb = *b == '\\' ? '/' : *b;
+
+		if (tolower(static_cast<unsigned char>(ca)) != tolower(static_cast<unsigned char>(cb)))
+			return false;
+
+		++a;
+		++b;
+	}
+
+	return *a == *b;
+}
+
+DEFINE_HOOK(0x686D85, ReadScenario_MissionINI_FixCasing, 0x7)
+{
+	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0x174, -0x158));
+
+	auto const pScenario = ScenarioClass::Instance;
+	if (pINI && pScenario && pINI->GetSection(pScenario->FileName) == nullptr)
+	{
+		for (auto pNode = pINI->Sections.First(); pNode && pNode->IsValid(); pNode = pNode->Next())
+		{
+			if (pNode->Name && ScenarioNamesMatch(pNode->Name, pScenario->FileName))
+			{
+				strcpy_s(pScenario->FileName, pNode->Name);
+				break;
+			}
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 {
 	enum { SkipGameCode = 0x6873AB };
@@ -11,20 +51,17 @@ DEFINE_HOOK(0x6870D7, ReadScenario_MissionINI, 0x5)
 	auto const scenarioName = pScenario->FileName;
 	auto const defaultsSection = "Defaults";
 
-	CCINIClass ini_missionmd {};
-	ini_missionmd.LoadFromFile(GameStrings::MISSIONMD_INI);
-
-	pScenarioExt->DefaultLS640BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS640BkgdName");
-	pScenarioExt->DefaultLS800BkgdName.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdName");
-	pScenarioExt->DefaultLS800BkgdPal.Read(&ini_missionmd, defaultsSection, "DefaultLS800BkgdPal");
+	pScenarioExt->DefaultLS640BkgdName.Read(pINI, defaultsSection, "DefaultLS640BkgdName");
+	pScenarioExt->DefaultLS800BkgdName.Read(pINI, defaultsSection, "DefaultLS800BkgdName");
+	pScenarioExt->DefaultLS800BkgdPal.Read(pINI, defaultsSection, "DefaultLS800BkgdPal");
 
 	pScenarioExt->ShowBriefing = pINI->ReadBool(scenarioName, "ShowBriefing", pScenarioExt->ShowBriefing);
 	pScenarioExt->BriefingTheme = pINI->ReadTheme(scenarioName, "BriefingTheme", pScenarioExt->BriefingTheme);
 
-	pScenario->LS640BriefLocX = pINI->ReadInteger(scenarioName, "LS640BriefLocX", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS640BriefLocX", 0));
-	pScenario->LS640BriefLocY = pINI->ReadInteger(scenarioName, "LS640BriefLocY", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS640BriefLocY", 0));
-	pScenario->LS800BriefLocX = pINI->ReadInteger(scenarioName, "LS800BriefLocX", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS800BriefLocX", 0));
-	pScenario->LS800BriefLocY = pINI->ReadInteger(scenarioName, "LS800BriefLocY", ini_missionmd.ReadInteger(defaultsSection, "DefaultLS800BriefLocY", 0));
+	pScenario->LS640BriefLocX = pINI->ReadInteger(scenarioName, "LS640BriefLocX", pINI->ReadInteger(defaultsSection, "DefaultLS640BriefLocX", 0));
+	pScenario->LS640BriefLocY = pINI->ReadInteger(scenarioName, "LS640BriefLocY", pINI->ReadInteger(defaultsSection, "DefaultLS640BriefLocY", 0));
+	pScenario->LS800BriefLocX = pINI->ReadInteger(scenarioName, "LS800BriefLocX", pINI->ReadInteger(defaultsSection, "DefaultLS800BriefLocX", 0));
+	pScenario->LS800BriefLocY = pINI->ReadInteger(scenarioName, "LS800BriefLocY", pINI->ReadInteger(defaultsSection, "DefaultLS800BriefLocY", 0));
 
 	pINI->ReadString(scenarioName, "LS640BkgdName", pScenarioExt->DefaultLS640BkgdName, pScenario->LS640BkgdName, 64);
 	pINI->ReadString(scenarioName, "LS800BkgdName", pScenarioExt->DefaultLS800BkgdName, pScenario->LS800BkgdName, 64);
