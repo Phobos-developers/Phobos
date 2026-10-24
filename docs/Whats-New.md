@@ -2078,6 +2078,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
 - Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker (by Starkku)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
