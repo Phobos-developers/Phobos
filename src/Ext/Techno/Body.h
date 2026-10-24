@@ -15,7 +15,7 @@
 class AirstrikeClass;
 class BulletClass;
 
-class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
+class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>, public Detach::Listener<AbstractClass>
 {
 public:
 	using base_type = TechnoClass;
