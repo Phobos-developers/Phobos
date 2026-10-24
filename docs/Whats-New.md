@@ -2548,6 +2548,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
+- Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
 
 #### 0.5-alpha2
 

@@ -49,7 +49,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 			auto const pAnimTypeExt = AnimTypeExt::Fetch(pAnim->Type);
 			auto const pAnimExt = AnimExt::Fetch(pAnim);
 
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner, true);
 
 			pAnimExt->SetInvoker(pThis);
 			pAnimExt->FromDeathUnit = true;
