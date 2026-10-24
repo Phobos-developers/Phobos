@@ -63,7 +63,13 @@ enum class SuperWeaponAITargetingMode
 	Base = 11,
 	MultiMissile = 12,
 	HunterSeeker = 13,
-	EnemyBase = 14
+	EnemyBase = 14,
+	IronCurtain = 15,
+	Attack = 16,
+	LowPower = 17,
+	LowPowerAttack = 18,
+	DropPod = 19,
+	LightningRandom = 20
 };
 
 enum class LandTypeFlags : unsigned short

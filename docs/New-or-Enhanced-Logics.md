@@ -1388,6 +1388,37 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
+### AI Superweapon targeting customizations
+
+- There are several customizations available for AI superweapon targeting, currently restricted to controlling Ares' `SW.AITargeting` modes.
+- For `SW.AITargeting=PsychicDominator`:
+    - If `SW.AITargeting.PsyDom.SkipChecks` is set to true targets with `ImmuneToPsionics=yes` will be considered and `SW.AITargeting.PsyDom.AllowAir` and `SW.AITargeting.PsyDom.AllowInvulnerable` will be available to customize whether or not targets in air or those affected by Iron Curtain/Force Shield, respectively, will be considered.
+    - `SW.AIRequiresTarget` and `SW.AIRequiresHouse` will be considered if explicitly set, with latter overriding previously hardcoded check to only allow enemy house targets to be considered.
+    - `SW.AITargeting.PsyDom.AllowTypes` and `SW.AITargeting.PsyDom.DisallowTypes` can be used to white/blacklist specific TechnoTypes.
+- For `SW.AITargeting=LightningRandom`:
+    - If `SW.AITargeting.Random.SnapOnDesignators` is set to true, instead of picking random cells and hoping they have designators on them it will only consider cells with active designators on them. If all designators are within range of inhibitors, it attempts to look for a valid cell within designator's range but outside inhibitor's range. If `SW.AITargeting.Random.PickFirstDesignator` is also set to true first eligible cell is picked, otherwise it is chosen at random.
+      - Use caution when using in conjunction with `SW.Inhibitors` and large `DesignatorRange` as the fallback of looking for cells outside inhibitor range in a large radius can degrade performance.
+- For `SW.AITargeting=Base` and `SW.AITargeting=EnemyBase`:
+  - `SW.AITargeting.Base.Distance` can be used to customize distance (single value or random range) from base center to pick target at. Direction depends on which targeting mode is being used (`Base`/`EnemyBase`) and who is firing the superweapon (for `Base` it faces towards firer's enemy, and for `EnemyBase` it is towards the firer) and negative distance value inverts this. Note that setting this to 0 is not same as omitting the value and explicit value is required for the remaining settings to take effect.
+  - `SW.AITargeting.Base.MinScatter` & `SW.AITargeting.Base.MaxScatter` can be used to randomize the final target cell, defining minimum and maximum cell offset to randomize it with respectively.
+  - `SW.AITargeting.Base.RandomDir` if set to true, makes it so that distance calculations are done with random direction instead.
+ 
+In `rulesmd.ini`:
+```ini
+[SOMESW]                                         ; SuperWeaponType
+SW.AITargeting.PsyDom.SkipChecks=false           ; boolean
+SW.AITargeting.PsyDom.AllowAir=false             ; boolean
+SW.AITargeting.PsyDom.AllowInvulnerable=false    ; boolean
+SW.AITargeting.PsyDom.AllowTypes=                ; List of TechnoTypes
+SW.AITargeting.PsyDom.DisallowTypes=             ; List of TechnoTypes
+SW.AITargeting.Random.SnapOnDesignators=false    ; boolean
+SW.AITargeting.Random.PickFirstDesignator=false  ; boolean
+SW.AITargeting.Base.Distance=                    ; integer, range in cells - single or comma-sep. range
+SW.AITargeting.Base.MinScatter=0                 ; integer, range in cells
+SW.AITargeting.Base.MaxScatter=0                 ; integer, range in cells
+SW.AITargeting.Base.RandomDir=false              ; boolean
+```
+
 ### Aux technos and TechLevel requirement of superweapon
 
 - `SW.AuxTechnos` specifies the auxiliary technos without which this super weapon cannot become available. The player has to own at least one techno of any of these types to get access to this super weapon.
