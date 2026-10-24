@@ -756,6 +756,9 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 					if (pCurrentType->BalloonHover)
 					{
 						// Makes the jumpjet think it is hovering without actually moving.
+						const bool wasOnMap = pThis->IsOnMap;
+						pThis->Mark(MarkType::Up);
+						pThis->IsOnMap = wasOnMap;
 						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
 						pJJLoco->IsMoving = true;
 
@@ -1129,40 +1132,57 @@ void FootExt::UpdateFlyingProductionDescent()
 	if (curLoc.Z - descentSpeed > targetZ)
 	{
 		curLoc.Z -= descentSpeed;
-		pThis->SetLocation(curLoc);
-		pThis->Location = curLoc;
-
 		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
+			const bool wasOnMap = pThis->IsOnMap;
+			if (pJJLoco->State == JumpjetLocomotionClass::State::Hovering || pJJLoco->State == JumpjetLocomotionClass::State::Cruising)
+				pThis->IsOnMap = false;
+			pThis->SetLocation(curLoc);
+			pThis->IsOnMap = wasOnMap;
+			pThis->Location = curLoc;
 			pJJLoco->CurrentHeight = curLoc.Z - groundZ;
 			pThis->Jumpjet_OccupyCell(CellClass::Coord2Cell(curLoc));
 		}
-		else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+		else
 		{
-			pAircraft->SetHeight(curLoc.Z - groundZ);
+			pThis->SetLocation(curLoc);
+			pThis->Location = curLoc;
+
+			if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+				pAircraft->SetHeight(curLoc.Z - groundZ);
 		}
 	}
 	else
 	{
 		// Arrived at target cruise altitude!
 		curLoc.Z = targetZ;
-		pThis->SetLocation(curLoc);
-		pThis->Location = curLoc;
 
 		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
+			const bool wasOnMap = pThis->IsOnMap;
+			if (pJJLoco->State == JumpjetLocomotionClass::State::Hovering || pJJLoco->State == JumpjetLocomotionClass::State::Cruising)
+				pThis->IsOnMap = false;
+			pThis->SetLocation(curLoc);
+			pThis->IsOnMap = wasOnMap;
+			pThis->Location = curLoc;
 			pJJLoco->CurrentHeight = this->FlyingProduction_TargetHeight;
 			pThis->Jumpjet_OccupyCell(CellClass::Coord2Cell(curLoc));
 		}
-		else if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
+		else
 		{
-			pFlyLoco->FlightLevel = this->FlyingProduction_TargetHeight;
-			if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+			pThis->SetLocation(curLoc);
+			pThis->Location = curLoc;
+
+			if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
+			{
+				pFlyLoco->FlightLevel = this->FlyingProduction_TargetHeight;
+				if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+					pAircraft->SetHeight(this->FlyingProduction_TargetHeight);
+			}
+			else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+			{
 				pAircraft->SetHeight(this->FlyingProduction_TargetHeight);
-		}
-		else if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
-		{
-			pAircraft->SetHeight(this->FlyingProduction_TargetHeight);
+			}
 		}
 
 		this->FlyingProduction_Descending = false;

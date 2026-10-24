@@ -405,6 +405,9 @@ KickOutResult BuildingExt::TrySpawnFlyingProduction(BuildingClass* pFactory, Tec
 			}
 			else
 			{
+				const bool wasOnMap = pFoot->IsOnMap;
+				pFoot->Mark(MarkType::Up);
+				pFoot->IsOnMap = wasOnMap;
 				pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
 			}
 		}
