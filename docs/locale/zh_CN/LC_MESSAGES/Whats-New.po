@@ -3685,6 +3685,12 @@ msgstr ""
 "修复了奴隶矿场被出售或自毁时，奴隶会归于中立阵营而不是遵守 `Slaved.OwnerWhenMasterKilled` 设置的问题（by "
 "frg2089）"
 
+msgid ""
+"Resolved a performance issue introduced by the shadow fix for hover "
+"locomotor vehicles lifted by `IsLocomotor=yes` warheads (by NetsuNegi)"
+msgstr ""
+"解决了针对悬浮运动载具被 `IsLocomotor=yes` 弹头抬起时的阴影修复所引入的性能问题（by NetsuNegi）"
+
 msgid "0.4.0.2"
 msgstr "0.4.0.2"
 

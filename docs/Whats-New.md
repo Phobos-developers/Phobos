@@ -929,6 +929,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
 - Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 - Fixed the bug that slaves would be handed over to the neutral house instead of respecting `Slaved.OwnerWhenMasterKilled` when their master was sold or self-destructed (by frg2089)
+- Resolved a performance issue introduced by the shadow fix for hover locomotor vehicles lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
 ```
 
 ### 0.4.0.2
