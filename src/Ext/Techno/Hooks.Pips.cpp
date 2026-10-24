@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/Tiberium/Body.h>
 
 DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
 DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
@@ -338,9 +339,11 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	if (isWeeder)
 	{
+		const auto pExt = TechnoExt::Fetch(pThis);
+		const float currentTotal = pExt ? pExt->GetTotalTiberium() : pThis->Tiberium.GetTotalAmount();
 		const int fullWeedFrames = whatAmI == AbstractType::Building
 			? static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5)
-			: static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
+			: static_cast<int>(currentTotal / totalStorage * maxPips + 0.5);
 
 		for (int i = 0; i < maxPips; i++)
 		{
@@ -354,10 +357,12 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	{
 		const int count = TiberiumClass::Array.Count;
 		std::vector<int> tiberiumPipCounts(count);
+		const auto pExt = TechnoExt::Fetch(pThis);
 
 		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
 		{
-			tiberiumPipCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
+			const float amount = pExt ? pExt->GetTiberium(static_cast<int>(i)) : (i < 4 ? pThis->Tiberium.GetAmount(static_cast<int>(i)) : 0.0f);
+			tiberiumPipCounts[i] = static_cast<int>(amount / totalStorage * maxPips + 0.5);
 		}
 
 		auto const rawPipOrder = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : RulesExt::Global()->Pips_Tiberiums_DisplayOrder;
@@ -394,11 +399,25 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 				{
 					tiberiumPipCounts[index]--;
 
-					if (static_cast<size_t>(index) >= pipFrames.size())
-						pipsToDraw.push_back(index == 1 ? 5 : 2);
-					else
-						pipsToDraw.push_back(pipFrames.at(index));
+					int pipFrame = -1;
+					if (const auto pTib = TiberiumClass::Array.GetItemOrDefault(index))
+					{
+						if (const auto pTibExt = TiberiumExt::TryFetch(pTib))
+						{
+							if (pTibExt->PipFrame.isset())
+								pipFrame = pTibExt->PipFrame.Get();
+						}
+					}
 
+					if (pipFrame < 0)
+					{
+						if (static_cast<size_t>(index) >= pipFrames.size())
+							pipFrame = (index == 1 ? 5 : 2);
+						else
+							pipFrame = pipFrames.at(index);
+					}
+
+					pipsToDraw.push_back(pipFrame);
 					break;
 				}
 			}
