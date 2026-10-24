@@ -134,10 +134,9 @@ This page lists all the individual contributions to the project by their author.
   - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
-  - `Powered.KillSpawns`
-  - `Spawner.LimitRange`
   - Majority of ScriptType actions
   - ScriptType Action 14004: Force Global `OnlyTargetHouseEnemy` value in Teams
+  - Script actions for managing AI Triggers
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
