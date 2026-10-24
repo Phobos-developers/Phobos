@@ -52,15 +52,19 @@ DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 
 static bool IsCloakedAndUndetected(TechnoClass* pTarget, HouseClass* pAttackerHouse)
 {
-	if (!pTarget || !pAttackerHouse)
+	if (!pTarget || !pTarget->IsAlive || !pAttackerHouse)
 		return false;
 
-	if (pTarget->Owner == pAttackerHouse || pTarget->Owner->IsAlliedWith(pAttackerHouse))
+	auto const pTargetExt = TechnoExt::TryFetch(pTarget);
+	if (!pTargetExt)
+		return false;
+
+	if (pTarget->Owner == pAttackerHouse || (pTarget->Owner && pTarget->Owner->IsAlliedWith(pAttackerHouse)))
 		return false;
 
 	bool isCloaked = pTarget->CloakState == CloakState::Cloaked || pTarget->CloakState == CloakState::Cloaking;
 
-	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	if (auto const pAttachment = pTargetExt->ParentAttachment)
 	{
 		if (pAttachment->GetType()->InheritStateEffects && pAttachment->Parent)
 		{
@@ -77,7 +81,7 @@ static bool IsCloakedAndUndetected(TechnoClass* pTarget, HouseClass* pAttackerHo
 	if (pCell && pCell->Sensors_InclHouse(pAttackerHouse->ArrayIndex))
 		return false;
 
-	if (auto const pAttachment = TechnoExt::ExtMap.Find(pTarget)->ParentAttachment)
+	if (auto const pAttachment = pTargetExt->ParentAttachment)
 	{
 		if (pAttachment->Parent)
 		{
@@ -100,10 +104,17 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		if (!pTechno->IsAlive)
+			return DisallowedObject;
+
+		auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
+		if (!pTechnoExt)
+			return DisallowedObject;
+
 		if (pThis == pTechno || TechnoExt::AreRelatives(pThis, pTechno))
 			return DisallowedObject;
 
-		if (auto const pAttachment = TechnoExt::ExtMap.Find(pTechno)->ParentAttachment)
+		if (auto const pAttachment = pTechnoExt->ParentAttachment)
 		{
 			if (!pAttachment->GetType()->Targetable || !pAttachment->GetType()->Damageable)
 				return DisallowedObject;
