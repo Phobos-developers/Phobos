@@ -5,6 +5,7 @@
 #include <CRT.h>
 
 #include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 
 const char* ObjectInfoCommandClass::GetName() const
 {
