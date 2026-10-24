@@ -48,13 +48,21 @@ public:
 	int InfantryCount{ 0 };
 	UnitClass* IncomingUnit {};
 	UnitClass* IncomingUnitAlt {};
+	// true while this cell is in the list of cells with a tracked incoming unit (see TrackIncoming)
+	bool IncomingTracked { false };
 
 	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
 	{ }
 
-	virtual ~CellExt() = default;
+	virtual ~CellExt();
 
 	void InvalidatePointer(void* ptr, bool bRemoved);
+
+	// Incoming unit pointers are cleared when the unit is removed from the game: the old per-extension
+	// InvalidatePointer is no longer called by the extension system, so this keeps a list of the cells
+	// holding one and a detach listener (Cell/Body.cpp) clears them.
+	void TrackIncoming();
+	static void ClearIncomingUnit(UnitClass* pUnit);
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

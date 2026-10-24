@@ -1,8 +1,77 @@
 #include "Body.h"
 
 #include <memory>
+#include <algorithm>
+#include <vector>
+
+#include <Utilities/Detach.h>
 
 CellExt::ExtContainer CellExt::ExtMap;
+
+namespace
+{
+	std::vector<CellExt*> IncomingCells;
+
+	struct IncomingUnitDetachListener final : Detach::Listener<UnitClass>
+	{
+		virtual void OnDetach(UnitClass* pTarget, bool removed) override
+		{
+			if (removed)
+				CellExt::ClearIncomingUnit(pTarget);
+		}
+	};
+
+	IncomingUnitDetachListener IncomingUnitDetach;
+}
+
+CellExt::~CellExt()
+{
+	if (this->IncomingTracked)
+		IncomingCells.erase(std::remove(IncomingCells.begin(), IncomingCells.end(), this), IncomingCells.end());
+}
+
+void CellExt::TrackIncoming()
+{
+	if (!this->IncomingTracked)
+	{
+		this->IncomingTracked = true;
+		IncomingCells.push_back(this);
+	}
+}
+
+void CellExt::ClearIncomingUnit(UnitClass* pUnit)
+{
+	for (auto it = IncomingCells.begin(); it != IncomingCells.end();)
+	{
+		auto const pExt = *it;
+
+		if (pExt->IncomingUnit == pUnit)
+		{
+			if (auto const pCell = pExt->OwnerObject())
+				pCell->OccupationFlags &= ~0x20;
+
+			pExt->IncomingUnit = nullptr;
+		}
+
+		if (pExt->IncomingUnitAlt == pUnit)
+		{
+			if (auto const pCell = pExt->OwnerObject())
+				pCell->AltOccupationFlags &= ~0x20;
+
+			pExt->IncomingUnitAlt = nullptr;
+		}
+
+		if (!pExt->IncomingUnit && !pExt->IncomingUnitAlt)
+		{
+			pExt->IncomingTracked = false;
+			it = IncomingCells.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
 
 // =============================
 // load / save
@@ -23,6 +92,9 @@ void CellExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	AbstractExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (this->IncomingUnit || this->IncomingUnitAlt)
+		this->TrackIncoming();
 }
 
 void CellExt::SaveToStream(PhobosStreamWriter& Stm)

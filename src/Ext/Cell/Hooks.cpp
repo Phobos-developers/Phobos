@@ -34,14 +34,20 @@ void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, void*, CoordStru
 		pCell->AltOccupationFlags |= 0x20;
 		// Phobos addition: set incoming unit tracker
 		if (!isAttached)
+		{
 			pCellExt->IncomingUnitAlt = pThis;
+			pCellExt->TrackIncoming();
+		}
 	}
 	else
 	{
 		pCell->OccupationFlags |= 0x20;
 		// Phobos addition: set incoming unit tracker
 		if (!isAttached)
+		{
 			pCellExt->IncomingUnit = pThis;
+			pCellExt->TrackIncoming();
+		}
 	}
 }
 
