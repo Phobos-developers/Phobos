@@ -3474,6 +3474,7 @@ msgid ""
 "Fix the bug that infantry weapons with both `LimboLaunch=yes` and "
 "ammunition logic could not set ReloadTimer properly"
 msgstr ""
+"修复了同时弹药逻辑和 `LimboLaunch=yes` 武器的步兵无法正确设置重装填计时器（无法正常消耗第一发弹药）的问题"
 
 msgid ""
 "**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
