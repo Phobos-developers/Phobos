@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-04 20:23+0800\n"
+"POT-Creation-Date: 2026-10-23 21:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,6 +115,10 @@ msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`�
 
 msgid "Fixed Tiberium types not supporting overrides in map and game mode INIs."
 msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题。"
+
+msgid "Fixed briefing out of bound due to fixed window size."
+msgstr ""
+"修复了固定窗口尺寸导致简报越界的问题。"
 
 msgid "Dynamic Team Delays"
 msgstr "动态 `TeamDelays`"
@@ -340,16 +344,23 @@ msgid "More convenient vanilla action script target specification"
 msgstr "更方便的原版动作脚本目标指定"
 
 msgid ""
-"Now you can use more convenient argument format in vanilla action script target specification, "
-"no need to write building type index and calc scan mode offset."
+"Now you can use more convenient argument format in vanilla action script "
+"target specification, no need to write building type index and calc scan "
+"mode offset."
 msgstr "现在你可以使用更方便的参数格式来指定原版动作脚本的目标，无需手写建筑类型索引与计算扫描模式偏移量。"
 
 msgid ""
-"Scan mode has `low`(lowest threat), `high`(highest threat), `far`(farest), `near`(nearest) and default to `near`."
-msgstr "扫描模式具有 `low` （最低威胁）， `high` （最高威胁）， `far` （最远距离）， `near` （最近距离）且默认为 `near` 。"
+"Scan mode has `low`(lowest threat), `high`(highest threat), "
+"`far`(farest), `near`(nearest) and default to `near`."
+msgstr ""
+"扫描模式具有 `low` （最低威胁）， `high` （最高威胁）， `far` （最远距离）， `near` （最近距离）且默认为 "
+"`near` 。"
 
 msgid "This is suitable for `46`, `47`, `56`, `58` action script."
 msgstr "这适用于 `46` 、`47` 、 `56` 、 `58` 号动作脚本。"
+
+msgid "In `aimd.ini`:"
+msgstr "在 `aimd.ini`："
 
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
@@ -387,9 +398,6 @@ msgid ""
 msgstr ""
 "`AITargetTypes` 动作通过第二个参数指示小队类型使用特遣部队接近并攻击目标，该参数是 `AITargetTypes` 中一个由 "
 "modder 自行定义的组的索引。请参阅下表以了解可能的行为（第一个参数）和参量（第二个参数值）。"
-
-msgid "In `aimd.ini`:"
-msgstr "在 `aimd.ini`："
 
 msgid "*Action*"
 msgstr "*行为*"
