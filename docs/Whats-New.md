@@ -2053,6 +2053,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
 - [New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-driver-killed-vehicles) (by FlyStar)
 - Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
+- Added dynamic immunity effects to AE for `Capture`, `Infiltrate`, and `EngineerRepair` (by dh381)
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
 - [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
