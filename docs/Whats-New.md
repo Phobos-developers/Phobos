@@ -2077,7 +2077,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
-- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker (by Starkku)
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2435,7 +2435,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
-- Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
 - Fixed BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
@@ -2542,12 +2541,13 @@ PreserveCSFWhitespace=false      ; boolean
 
 ##### Phobos fixes:
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
-- Fixed `[CombatDamage]` -> `OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
+- Fixed `[CombatDamage] -> OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
 - Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
 - Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
 - Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
 - Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
 
 #### 0.5-alpha2
@@ -2573,7 +2573,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
 - Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
 - Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Fixes / interactions with other extensions:
 - Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
@@ -2591,6 +2590,7 @@ PreserveCSFWhitespace=false      ; boolean
 #### Vanilla fixes:
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
+- Miners back to work when ore regenerated (by TaranDahl)
 
 #### Phobos fixes:
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)

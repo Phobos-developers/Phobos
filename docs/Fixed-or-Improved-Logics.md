@@ -340,7 +340,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
-- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker.
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker.
 
 ## Fixes / interactions with other extensions
 
@@ -979,7 +979,7 @@ SpawnHeight=                 ; integer, height in leptons
 - Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
   - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
-  - If `AltPalette.UseInvokerFallback` is set to true animation's invoker house is used if available if animation has no owner house. Defaults to `[AudioVisual]` -> `AnimRemapUseInvokerFallback`.
+  - If `AltPalette.UseInvokerFallback` is set to true animation's invoker house is used if available if animation has no owner house. Defaults to `[AudioVisual] -> AnimRemapUseInvokerFallback`.
 - `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
 
 In `rulesmd.ini`:
