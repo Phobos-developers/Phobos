@@ -1785,6 +1785,13 @@ DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	return removed ? 0 : 0x44E916;
 }
 
+DEFINE_HOOK(0x75F635, WaveClass_PointerExpired_TargetFix, 0x6)
+{
+	GET_STACK(const bool, removed, STACK_OFFSET(0x0, 0x10));
+	// Skip the reset of WaveClass::Target if !removed.
+	return removed ? 0 : 0x75F643;
+}
+
 DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
 {
 	GET(const bool, removed, EDI);
