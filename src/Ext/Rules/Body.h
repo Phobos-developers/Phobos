@@ -574,6 +574,8 @@ public:
 
 		Valueable<bool> ExtendedBuildingPlacing;
 
+		Valueable<int> MaxPlanningNodes;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -1081,6 +1083,8 @@ public:
 			, MissileKeepTargetCoord { false }
 
 			, ExtendedBuildingPlacing { false }
+
+			, MaxPlanningNodes { INT_MAX }
 		{ }
 
 		virtual ~ExtData() = default;

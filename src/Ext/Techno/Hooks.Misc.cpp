@@ -5,7 +5,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -1173,3 +1172,32 @@ DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 
 	return 0;
 }
+
+#pragma region PlanningNodeLimit
+
+DEFINE_HOOK(0x6384DC, TechnoClass_AddPlanningNode_MaxNodes, 0x5)
+{
+	enum { AddUnit = 0x638477, Refuse = 0x6384E1 };
+
+	GET(const int, count, EAX);
+
+	return static_cast<unsigned int>(count) < static_cast<unsigned int>(RulesExt::Global()->MaxPlanningNodes)
+		? AddUnit
+		: Refuse;
+}
+
+DEFINE_HOOK(0x6383B4, TechnoClass_AddPlanningNode_MaxNodesWarning, 0x6)
+{
+	enum { StoreFullState = 0x6383BA, Continue = 0x6383C4 };
+
+	GET(PlanningTokenClass* const, pToken, EBP);
+
+	if (!pToken)
+		return 0;
+
+	return pToken->PlanningNodes.Count == RulesExt::Global()->MaxPlanningNodes - 1
+		? StoreFullState
+		: Continue;
+}
+
+#pragma endregion

@@ -401,6 +401,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Removed the 128 techno limit when executing a command.
+- Removed the 16 nodes limit for planning node mode. Set `[General] -> MaxPlanningNodes` if you want to restore or alter the limit.
 
 ## Newly added global settings
 
