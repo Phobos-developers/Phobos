@@ -1008,6 +1008,7 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
   - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
