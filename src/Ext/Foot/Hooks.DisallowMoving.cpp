@@ -29,16 +29,34 @@ static bool __fastcall InfantryClass_CantMove_Wrapper(InfantryClass* pThis)
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x75ACBD, InfantryClass_CantMove_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x75BF87, InfantryClass_CantMove_Wrapper);
+
+DEFINE_HOOK(0x51F663, InfantryClass_Mission_Move_DisallowMoving, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+		pThis->UpdateIdleAction();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5216F2, InfantryClass_IsReadyToRandomAnimate_DisallowMoving, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+		return 0x521706;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x51AA84, InfantryClass_AssignDestination_DisallowMoving, 0x6)
 {
 	GET(InfantryClass*, pThis, EBP);
 
 	if (FootExt::CannotMove(pThis, false))
-	{
-		pThis->AbortMotion();
 		return 0x51B1D7;
-	}
 
 	return 0;
 }
@@ -210,7 +228,7 @@ DEFINE_HOOK(0x4D4203, FootClass_Mission_Move_DisallowMoving, 0x6)
 
 	if (FootExt::CannotMove(pThis, true))
 	{
-		pThis->ForceMission(Mission::Guard);
+		pThis->EnterIdleMode(false, true);
 		return 0x4D4248;
 	}
 
@@ -222,7 +240,7 @@ DEFINE_HOOK(0x4D9563, FootClass_AssignDestination_DisallowMoving, 0x6)
 	GET(FootClass*, pThis, EBP);
 
 	// Prevent locomotor processing when assigned target if temporarily immobilized.
-	if (FootExt::Fetch(pThis)->IsZeroSpeed)
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
 		return 0x4D96C2;
 
 	return 0;

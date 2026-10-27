@@ -976,7 +976,7 @@ bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 	if (pType->Speed == 0)
 		return true;
 
-	if (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsZeroSpeed)
+	if (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized)
 		return true;
 
 	auto landType = pThis->GetCell()->LandType;
@@ -1003,26 +1003,26 @@ bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 
 // Check speed multipliers for zero, update things like allowing
 // locomotor to process destination again.
-void FootExt::HandleTemporaryZeroSpeed()
+void FootExt::HandleTemporaryImmobilization()
 {
 	const auto pThis = this->OwnerObject();
 	const bool isZeroSpeed = FootExt::GetCurrentSpeedMultiplier(pThis) <= 0.0;
-	const bool wasZeroSpeed = this->IsZeroSpeed;
-	this->IsZeroSpeed = isZeroSpeed;
+	const bool wasZeroSpeed = this->IsTempImmobilized;
 
 	if (isZeroSpeed && !wasZeroSpeed)
 	{
-		// Walk locomotor requires manual reset of movement state when immobilized.
-		if (auto const pWalkLoco = locomotion_cast<WalkLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
-		{
-			pWalkLoco->Destination = CoordStruct::Empty;
-			pWalkLoco->HeadToCoord = CoordStruct::Empty;
-			pWalkLoco->Stop_Moving();
-		}
+		// Reset destination & restore without
+		// executing associated logic.
+		auto const pDest = pThis->Destination;
+		pThis->SetDestination(nullptr, false);
+		pThis->Destination = pDest;
+		this->IsTempImmobilized = true;
 	}
 	else if (!isZeroSpeed && wasZeroSpeed)
 	{
-		// Set destination again if it exists.
+		this->IsTempImmobilized = false;
+
+		// Fully restore destination if it exists.
 		if (auto const pDest = pThis->Destination)
 		{
 			pThis->Destination = nullptr;
@@ -1053,7 +1053,7 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->ResetLocomotor)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
-		.Process(this->IsZeroSpeed)
+		.Process(this->IsTempImmobilized)
 		.Process(this->SpeedMultiplierFrame)
 		.Process(this->CurrentSpeedMultiplier)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.

@@ -25,7 +25,7 @@ public:
 	bool JumpjetStraightAscend; // Is set to true jumpjet units will ascend straight and do not adjust rotation or position during it.
 	int AttackMoveFollowerTempCount;
 	bool IsOwnerChangeFromRevertOnExit;
-	bool IsZeroSpeed; // Temporary speed multipliers have made this techno stationary.
+	bool IsTempImmobilized; // Temporary speed multipliers have made this techno stationary.
 	int SpeedMultiplierFrame;
 	double CurrentSpeedMultiplier;
 
@@ -46,7 +46,7 @@ public:
 		, JumpjetStraightAscend { false }
 		, AttackMoveFollowerTempCount { 0 }
 		, IsOwnerChangeFromRevertOnExit { false }
-		, IsZeroSpeed { false }
+		, IsTempImmobilized { false }
 		, SpeedMultiplierFrame { 0 }
 		, CurrentSpeedMultiplier { 1.0 }
 	{ }
@@ -76,7 +76,7 @@ public:
 	void UpdateTypeData(TechnoTypeClass* pCurrentType);
 	void HealthAutoConvertActions();
 	void AmmoAutoConvertActions();
-	void HandleTemporaryZeroSpeed();
+	void HandleTemporaryImmobilization();
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;

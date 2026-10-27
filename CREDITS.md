@@ -172,7 +172,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
-  - Stationary units
+  - Stationary units & following improvements/bugfixes
   - Burst logic improvements
   - TechnoType auto-firing weapons
   - Secondary weapon fallback customization

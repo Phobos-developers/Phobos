@@ -373,7 +373,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 		pExt->ResetLocomotor = false;
 	}
 
-	pExt->HandleTemporaryZeroSpeed();
+	pExt->HandleTemporaryImmobilization();
 
 	return 0;
 }
