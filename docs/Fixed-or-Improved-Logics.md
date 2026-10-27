@@ -401,6 +401,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Fixed issues with rangefinding for `Arcing=true` weapons when targeting buildings due to building `Foundation` size not being taken into accord.
 
 ## Newly added global settings
 
