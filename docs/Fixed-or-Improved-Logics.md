@@ -342,6 +342,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
 - Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker.
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die.
 
 ## Fixes / interactions with other extensions
 
