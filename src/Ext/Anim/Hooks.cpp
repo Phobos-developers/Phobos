@@ -639,8 +639,16 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 
 	GET(AnimClass*, pThis, ESI);
 
-	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
-	schemeIndex += AnimTypeExt::Fetch(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
+	auto const pTypeExt = AnimTypeExt::Fetch(pThis->Type);
+	auto const pRulesExt = RulesExt::Global();
+	bool useInvoker = pTypeExt->AltPalette_UseInvokerFallback.Get(pRulesExt->AnimRemapUseInvokerFallback);
+	auto pOwner = pThis->Owner;
+
+	if (useInvoker && !pOwner)
+		pOwner = AnimExt::Fetch(pThis)->InvokerHouse;
+
+	int schemeIndex = pOwner ? pOwner->ColorSchemeIndex - 1 : pRulesExt->AnimRemapDefaultColorScheme;
+	schemeIndex += pTypeExt->AltPalette_ApplyLighting ? 1 : 0;
 	auto const scheme = ColorScheme::Array[schemeIndex];
 
 	R->ECX(scheme);

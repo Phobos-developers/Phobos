@@ -233,7 +233,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	// CanCrit
-	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0)
+	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0 || this->Crit_AnimList.size() > 0)
 		this->CanCrit = true;
 	else
 		this->CanCrit = false;
