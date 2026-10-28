@@ -175,6 +175,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 	this->DrawTurretShadow.Read(exINI, GameStrings::AudioVisual, "DrawTurretShadow");
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
+	this->AnimRemapUseInvokerFallback.Read(exINI, GameStrings::AudioVisual, "AnimRemapUseInvokerFallback");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
@@ -1075,6 +1076,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
+		.Process(this->AnimRemapUseInvokerFallback)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
