@@ -84,10 +84,9 @@ public:
 	Valueable<int> Parachuted_FallRate;
 	Nullable<int> Parachuted_MaxFallRate;
 	Nullable<AnimTypeClass*> BombParachute;
-
 	Valueable<bool> AU;
-
 	Valueable<int> ZAdjust;
+	Valueable<int> EMPulseCannon_InaccurateRadius;
 
 	Nullable<bool> MissileKeepTargetCoord;
 	Nullable<int> MissileSafetyAltitude;
@@ -106,11 +105,9 @@ public:
 		, Vertical_AircraftFix {}
 		, VerticalInitialFacing {}
 		, TrajectoryType { }
-		, Shrapnel_AffectsGround {}
-		, Shrapnel_AffectsBuildings {}
-		, Shrapnel_UseWeaponTargeting {}
-		, Shrapnel_IgnoreHitBuildings {}
-		, Shrapnel_ObeyWarheadTriggerConditions {}
+		, Shrapnel_AffectsGround { false }
+		, Shrapnel_AffectsBuildings { false }
+		, Shrapnel_UseWeaponTargeting { false }
 		, ClusterScatter_Min { Leptons(256) }
 		, ClusterScatter_Max { Leptons(512) }
 		, BallisticScatter_Min {}
@@ -120,9 +117,9 @@ public:
 		, SubjectToWater {}
 		, SubjectToWater_Detonate { true }
 		, AAOnly { false }
-		, Arcing_AllowElevationInaccuracy {}
+		, Arcing_AllowElevationInaccuracy { true }
 		, ReturnWeapon {}
-		, ReturnWeapon_ApplyFirepowerMult {}
+		, ReturnWeapon_ApplyFirepowerMult { false }
 		, SubjectToGround { false }
 		, Splits { false }
 		, AirburstSpread { 1.5 }
@@ -151,6 +148,7 @@ public:
 		, BombParachute {}
 		, AU { false }
 		, ZAdjust { 0 }
+		, EMPulseCannon_InaccurateRadius { 0 }
 		, MissileKeepTargetCoord {}
 		, MissileSafetyAltitude {}
 	{ }
