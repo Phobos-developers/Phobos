@@ -254,6 +254,7 @@
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\Hooks.BriefingText.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
+    <ClCompile Include="src\Misc\Hooks.CSF.cpp" />
     <ClCompile Include="src\Misc\Hooks.Crates.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
