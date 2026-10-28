@@ -1175,13 +1175,17 @@ DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 
 #pragma region PlanningNodeLimit
 
+// Same ceiling as MaxPlanningOrderUnits in Ext/Event/Hooks.cpp: one route may not hold more than a
+// single order can carry.
+constexpr int MaxPlanningNodes = 256;
+
 DEFINE_HOOK(0x6384DC, TechnoClass_AddPlanningNode_MaxNodes, 0x5)
 {
 	enum { AddUnit = 0x638477, Refuse = 0x6384E1 };
 
 	GET(const int, count, EAX);
 
-	return static_cast<unsigned int>(count) < static_cast<unsigned int>(RulesExt::Global()->MaxPlanningNodes)
+	return static_cast<unsigned int>(count) < static_cast<unsigned int>(MaxPlanningNodes)
 		? AddUnit
 		: Refuse;
 }
@@ -1195,7 +1199,7 @@ DEFINE_HOOK(0x6383B4, TechnoClass_AddPlanningNode_MaxNodesWarning, 0x6)
 	if (!pToken)
 		return 0;
 
-	return pToken->PlanningNodes.Count == RulesExt::Global()->MaxPlanningNodes - 1
+	return pToken->PlanningNodes.Count == MaxPlanningNodes - 1
 		? StoreFullState
 		: Continue;
 }

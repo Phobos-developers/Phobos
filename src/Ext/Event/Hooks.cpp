@@ -2,6 +2,7 @@
 
 #include <Utilities/Macro.h>
 
+#include <climits>
 #include <vector>
 
 namespace EventOutQueue
@@ -87,6 +88,13 @@ DEFINE_HOOK_AGAIN(0x6AB516, EventClass_OutList_MakeRoom, 0xA)
 DEFINE_HOOK_AGAIN(0x730F71, EventClass_OutList_MakeRoom, 0xA)
 DEFINE_HOOK_AGAIN(0x73188F, EventClass_OutList_MakeRoom, 0xA)
 DEFINE_HOOK_AGAIN(0x7319A1, EventClass_OutList_MakeRoom, 0xA)
+// The same check written register-first (`mov eax, dword_A802C8` then `cmp eax, 80h`), including
+// the shared enqueue routine at 0x6521C0 that planning mode orders go through.
+DEFINE_HOOK_AGAIN(0x4C7D5B, EventClass_OutList_MakeRoom, 0x5)
+DEFINE_HOOK_AGAIN(0x64778F, EventClass_OutList_MakeRoom, 0x5)
+DEFINE_HOOK_AGAIN(0x647DED, EventClass_OutList_MakeRoom, 0x5)
+DEFINE_HOOK_AGAIN(0x647ECE, EventClass_OutList_MakeRoom, 0x5)
+DEFINE_HOOK_AGAIN(0x6521C9, EventClass_OutList_MakeRoom, 0x5)
 DEFINE_HOOK(0x6FFE55, EventClass_OutList_MakeRoom, 0xA)
 {
 	EventOutQueue::MakeRoom();
@@ -101,8 +109,22 @@ DEFINE_HOOK(0x55DE40, UpdateFrame_EventOutQueue_Replay, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6391A7, PlanningManager_CanAddPlanningNodes_MakeRoom, 0x6)
+#pragma region PlanningOrderLimit
+
+// Vanilla refuses a planning order above 128 units; this raises it to 256 rather than removing it.
+// EventClass::DoList (0x64C380) moves at most 256 MegaMission events per frame into
+// EventClass::MegaMissionList (0xA83ED0), a fixed array with no room to grow in place, so an order
+// above that would keep all its planning nodes but only the first 256 would ever act. Refusing it
+// whole keeps that half-applied state from happening.
+constexpr int MaxPlanningOrderUnits = 256;
+
+DEFINE_HOOK(0x6391A7, PlanningManager_CanAddPlanningNodes_MaxUnits, 0x6)
 {
-	R->EBP(0);
+	GET(const int, unitCount, EBP);
+
+	R->EBP(unitCount <= MaxPlanningOrderUnits ? 0 : INT_MAX);
+
 	return 0;
 }
+
+#pragma endregion

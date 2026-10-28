@@ -2080,7 +2080,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 - Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
-- Removed the 16 nodes limit for planning node mode (by FrozenFog, based on knowledge of MagicShiba)
+- Raised the 16 nodes limit for planning node mode and the 128 units limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2091,6 +2091,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
