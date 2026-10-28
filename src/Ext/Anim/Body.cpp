@@ -169,7 +169,7 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
 
-	if (!pOccupier || pOccupier->GetHeight() > 5 || pCell->OverlayTypeIndex != weedOverlayIndex
+	if (!pOccupier || pOccupier->GetHeight() > RulesExt::Global()->VeinAttackHeight || pCell->OverlayTypeIndex != weedOverlayIndex
 		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex > 4)
 	{
 		pAnim->UnableToContinue = true;
@@ -184,7 +184,7 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 			TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pOccupier);
 
 			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
-				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
+				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= RulesExt::Global()->VeinAttackHeight)
 			{
 				pTechno->ReceiveDamage(&damage, 0, RulesExt::Global()->VeinholeWarhead, nullptr, false, false, nullptr);
 			}

@@ -1,4 +1,5 @@
 #include <Ext/Anim/Body.h>
+#include <Ext/Rules/Body.h>
 
 #include <CellClass.h>
 #include <ColorScheme.h>
@@ -101,8 +102,8 @@ namespace
 		const double dist = std::hypot(
 			static_cast<double>(cellPos.X - monsterPos.X),
 			static_cast<double>(cellPos.Y - monsterPos.Y));
-		const int jitter = ScenarioClass::Instance->Random.RandomRanged(-5, 5);
-		return static_cast<float>(dist + static_cast<double>(jitter));
+		const int jitter = std::abs(ScenarioClass::Instance->Random.Random() % 50);
+		return static_cast<float>(Unsorted::CurrentFrame / 50 + jitter + 1 + dist);
 	}
 
 	void SafeRemoveNodeFromHeap(PriorityQueueClass<PriorityQueueClassNode>* pQueue, int heapIdx)
@@ -225,17 +226,18 @@ namespace
 		if (logic.NextFreeNodeIndex >= maxGrowth - 2)
 			return false;
 
-		bool* const pAffected = GetAffectedMap();
-		logic.CellIndexesWithVeins[surfIdx] = true;
-		if (pAffected)
-			pAffected[surfIdx] = true;
-
 		PriorityQueueClassNode* const pNode = &logic.Nodes[logic.NextFreeNodeIndex];
 		pNode->MapCoord = pCell->MapCoords;
 		pNode->Score = priority;
 
 		if (pQueue->Push(pNode))
 		{
+			bool* const pAffected = GetAffectedMap();
+			logic.CellIndexesWithVeins[surfIdx] = true;
+
+			if (pAffected)
+				pAffected[surfIdx] = true;
+
 			++logic.NextFreeNodeIndex;
 			return true;
 		}
@@ -1080,6 +1082,15 @@ DEFINE_HOOK(0x48693E, CellClass_ActivateVeins_SlopeCheck, 0x6)
 	return (pThis && pThis->SlopeIndex <= MaxCardRampSlopeIndex) ? 0x48694C : 0x486A66;
 }
 
+DEFINE_HOOK(0x486980, CellClass_ActivateVeins_HeightCheck, 0x9)
+{
+	enum { CheckPassed = 0x486989, SkipObject = 0x486A55 };
+
+	GET(int const, height, EAX);
+
+	return (height <= RulesExt::Global()->VeinAttackHeight) ? CheckPassed : SkipObject;
+}
+
 // Compacts the growth node pool when needed and seeds border cells when a living Veinhole Monster
 // has no veins touching it.
 DEFINE_HOOK(0x74D7DC, VeinholeMonsterClass_UpdateGrowth_CompactAndSeed, 0x6)
@@ -1105,7 +1116,7 @@ DEFINE_HOOK(0x74D7DC, VeinholeMonsterClass_UpdateGrowth_CompactAndSeed, 0x6)
 
 // Replaces the per-monster DFS in InitVeinGrowthData with a simultaneous multi-source BFS
 // that seeds border cells for bare monsters and calls RecalcAttributes(-1) on removed unattached veins.
-DEFINE_HOOK(0x74E04D, VeinholeMonsterClass_InitVeinGrowthData_BuildIndex, 0x6)
+DEFINE_HOOK(0x74E04D, VeinholeMonsterClass_InitVeinGrowthData_BuildIndex, 0x8)
 {
 	IndexMonstersBFS(true);
 	return 0x74E0F0;
@@ -1178,7 +1189,7 @@ DEFINE_HOOK(0x74CA18, VeinholeMonsterClass_DTOR_CleanupArea, 0x8)
 
 // Replaces VeinholeMonsterClass::RemoveFrom (0x74EF10) to fix divide-by-zero crash traps,
 // ramp vein removal/regrowth, and multi-monster network border handoff.
-DEFINE_HOOK(0x74EF10, VeinholeMonsterClass_RemoveFrom_Full, 0x6)
+DEFINE_HOOK(0x74EF10, VeinholeMonsterClass_RemoveFrom_Full, 0x9)
 {
 	GET(VeinholeMonsterClass* const, pThis, ECX);
 	GET_STACK(CellClass* const, pCell, 0x4);
