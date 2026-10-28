@@ -33,6 +33,7 @@ public:
 		Valueable<bool> GainSelfHealFromPlayerControl;
 		Valueable<bool> GainSelfHealFromAllies;
 		Valueable<bool> EnemyInsignia;
+		Nullable<int> AIFriendlyDistance;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
@@ -583,6 +584,7 @@ public:
 			, GainSelfHealFromPlayerControl { false }
 			, GainSelfHealFromAllies { false }
 			, EnemyInsignia { true }
+			, AIFriendlyDistance {}
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }

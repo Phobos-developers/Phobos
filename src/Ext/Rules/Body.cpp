@@ -115,6 +115,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->GainSelfHealFromPlayerControl.Read(exINI, GameStrings::General, "GainSelfHealFromPlayerControl");
 	this->GainSelfHealFromAllies.Read(exINI, GameStrings::General, "GainSelfHealFromAllies");
 	this->EnemyInsignia.Read(exINI, GameStrings::General, "EnemyInsignia");
+	this->AIFriendlyDistance.Read(exINI, GameStrings::General, "AIFriendlyDistance");
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
@@ -761,6 +762,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->GainSelfHealFromPlayerControl)
 		.Process(this->GainSelfHealFromAllies)
 		.Process(this->EnemyInsignia)
+		.Process(this->AIFriendlyDistance)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
