@@ -1489,6 +1489,28 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 	return 0;
 }
 
+// Prevent other deploy functionality if unit is bunkered or bunkering.
+DEFINE_HOOK(0x73D63B, UnitClass_Mission_Unload_TankBunker, 0x6)
+{
+	enum { ReturnFromFunction = 0x73E289 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->BunkerLinkedItem)
+	{
+		auto const pCell = pThis->GetCell();
+
+		if (auto const pBuilding = pCell->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		pThis->ForceMission(Mission::Guard);
+
+		return ReturnFromFunction;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region BuildingStartFacing

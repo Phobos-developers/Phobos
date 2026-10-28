@@ -16,7 +16,7 @@ struct PlacingBuildingStruct
 	int Times;
 	CDTimerClass Timer;
 	CellStruct TopLeft;
-	size_t PlaceType;
+};
 
 class FactoryClass;
 class TechnoTypeClass;
