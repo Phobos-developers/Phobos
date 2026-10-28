@@ -50,11 +50,17 @@ DEFINE_HOOK(0x52291A, InfantryClass_InfantryEnteredThing_Cyborg, 0x6)
 	return 0;
 }
 
-// When infantry enters into a structure with "tunnel logic" created by Ares
-DEFINE_HOOK(0x51A27F, InfantryClass_PerCellProcess_AresTunnel_Cyborg, 0xA)
+// When infantry enters into a building with InfantryAbsorb or Ares Tunnel logic
+DEFINE_HOOK(0x51A2A4, InfantryClass_PerCellProcess_EnterBuilding_Cyborg, 0x9)
 {
+	enum { CannotEnter = 0x51A4BF, CanEnter = 0x51A2AD };
+
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
+	GET(const RadioCommand, answer, EAX);
+
+	if (answer != RadioCommand::AnswerPositive)
+		return CannotEnter;
 
 	if (pThis->Type->Cyborg && pThis->Crawling)
 	{
@@ -64,7 +70,7 @@ DEFINE_HOOK(0x51A27F, InfantryClass_PerCellProcess_AresTunnel_Cyborg, 0xA)
 			pThis->Crawling = false;
 	}
 
-	return 0;
+	return CanEnter;
 }
 
 // Allow a Deployer=true infantry that has no Deploy sequence (Sequences[Deploy].CountFrames == 0)
