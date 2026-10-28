@@ -383,7 +383,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
@@ -796,6 +795,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
+  - Preserve whitespace in CSF
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -1008,6 +1008,8 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**:
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
+  - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
