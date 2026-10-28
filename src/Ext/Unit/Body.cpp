@@ -246,6 +246,12 @@ bool UnitExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue,
 
 	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 
+	if (pTypeExt->IsSimpleDeployer_DisallowOnBuildings)
+	{
+		if (pThis->GetCell()->GetBuilding())
+			return false;
+	}
+
 	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
 	{
 		LandTypeFlags disallowedLandTypes;
