@@ -2551,6 +2551,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
 - Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
+- Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
 
 #### 0.5-alpha2
 
