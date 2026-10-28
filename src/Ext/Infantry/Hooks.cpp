@@ -1,7 +1,6 @@
+#include "Body.h"
+
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
-#include <Ext/Rules/Body.h>
 
 #include <WWKeyboardClass.h>
 #include <GameOptionsClass.h>
