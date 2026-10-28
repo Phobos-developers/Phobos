@@ -39,6 +39,7 @@ public:
 
 	Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
 	Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
+	Valueable<bool> IsSimpleDeployer_DisallowOnBuildings;
 	Nullable<FacingType> DeployDir;
 	ValueableVector<AnimTypeClass*> DeployingAnims;
 	Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -104,6 +105,7 @@ public:
 		, DefaultMirageDisguises {}
 		, IsSimpleDeployer_ConsiderPathfinding { false }
 		, IsSimpleDeployer_DisallowedLandTypes {}
+		, IsSimpleDeployer_DisallowOnBuildings { false }
 		, DeployDir {}
 		, DeployingAnims {}
 		, DeployingAnim_KeepUnitVisible { false }
