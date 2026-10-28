@@ -626,13 +626,6 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 
 	if (pCell)
 	{
-		if (pCell->OverlayTypeIndex != -1)
-		{
-			auto const pOverlayType = OverlayTypeClass::Array[pCell->OverlayTypeIndex];
-			auto const overlayID = pOverlayType->get_ID();
-			Debug::Log("Debug: %s\n", overlayID);
-		}
-
 		isBridge = allowBridges && pCell->ContainsBridge();
 		const int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
 		const int zCoord = pCreateUnit->AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
