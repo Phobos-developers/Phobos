@@ -304,6 +304,16 @@ In `RA2MD.INI`:
 ShowPlacementPreview=yes   ; boolean
 ```
 
+### Preserve whitespace in CSF
+
+- In vanilla, the CSF parser normalizes every label value: runs of consecutive spaces are collapsed into a single space, leading/trailing spaces are stripped and the spaces next to line breaks are removed. This makes any layout that relies on multiple spaces, such as indenting the lines of a briefing, impossible. Enabling this flag skips the normalization entirely and keeps the value exactly as written in the CSF.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+PreserveCSFWhitespace=false  ; boolean
+```
+
 ### Real time timers
 
 - Timers can now display values in real time, taking game speed into account. This can be enabled with `RealTimeTimers=true`.
@@ -511,6 +521,7 @@ Due to technical limitations, this feature is forcibly disabled without Ares.
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+  - Alpha images attached to Particles with `AlphaImage.IsLightFlash` set to true.
 - It is possible to toggle shake screen effects (`ShakeX/Ylo/hi`) off by setting `HideShakeEffects=true`.
 - Phobos's [Laser Trail effects](New-or-Enhanced-Logics.md#laser-trails) can also be toggled off.
   - If a LaserTrailType has `IsHideable=false`, it can't be toggled off by setting `HideLaserTrailEffects=true`.
@@ -520,6 +531,9 @@ In `rulesmd.ini`:
 [AudioVisual]
 WarheadParticleAlphaImageIsLightFlash=false  ; boolean
 LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEPARTICLE]                               ; ParticleType
+AlphaImage.IsLightFlash=                     ; boolean
 
 [SOMEWARHEAD]                                ; WarheadType
 Particle.AlphaImageIsLightFlash=             ; boolean
