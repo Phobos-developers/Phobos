@@ -1,6 +1,7 @@
 #include <GameOptionsClass.h>
 #include <FPSCounter.h>
 
+#include <Ext/ParticleType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/AresFunctions.h>
 
@@ -27,6 +28,16 @@ DEFINE_HOOK(0x48A47E, AreaDamage_Particle_LightFlashUnset, 0x6)
 
 	return 0;
 }
+
+static bool __fastcall ParticleClass_Unlimbo_Wrapper(ParticleClass* pThis, void* _, const CoordStruct& coords, DirType facing)
+{
+	LightEffectsTemp::AlphaIsLightFlash = ParticleTypeExt::Fetch(pThis->Type)->AlphaImage_IsLightFlash;
+	bool retVal = pThis->Unlimbo(coords, facing);
+	LightEffectsTemp::AlphaIsLightFlash = false;
+	return retVal;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x62BB0E, ParticleClass_Unlimbo_Wrapper);
 
 DEFINE_HOOK(0x5F5053, ObjectClass_Unlimbo_AlphaImage, 0x6)
 {

@@ -474,7 +474,6 @@ static inline void ClearPlacingBuildingData(PlacingBuildingStruct* const pPlace)
 	pPlace->Times = 0;
 	pPlace->Timer.Stop();
 	pPlace->TopLeft = CellStruct::Empty;
-	pPlace->PlaceType = 0;
 }
 
 static inline void ClearCurrentBuildingData(DisplayClass* const pDisplay)
@@ -1108,7 +1107,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 		return 0;
 
 	const auto pHouseExt = HouseExt::Fetch(pHouse);
-	auto buildCurrent = [pHouse, pHouseExt](BuildingTypeClass* pType, CellStruct cell, size_t placeType)
+	auto buildCurrent = [pHouse, pHouseExt](BuildingTypeClass* pType, CellStruct cell)
 		{
 			if (!pType)
 				return;
@@ -1145,8 +1144,8 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 			}
 			else if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
 			{
-				const int place = static_cast<int>(placeType);
-				const auto arrayIndex = pType->GetArrayIndex();
+				const int place = pType->Naval ? 1 : 0;
+				const int arrayIndex = pType->GetArrayIndex();
 				EventClass::OutList.Add(EventClass(pHouse->ArrayIndex, EventType::Place, AbstractType::Building, arrayIndex, place, cell));
 			}
 		};
@@ -1156,7 +1155,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	if (commonPlace.Timer.Completed())
 	{
 		commonPlace.Timer.Stop();
-		buildCurrent(commonPlace.Type, commonPlace.TopLeft, commonPlace.PlaceType);
+		buildCurrent(commonPlace.Type, commonPlace.TopLeft);
 	}
 
 	auto& combatPlace = pHouseExt->Combat;
@@ -1164,7 +1163,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	if (combatPlace.Timer.Completed())
 	{
 		combatPlace.Timer.Stop();
-		buildCurrent(combatPlace.Type, combatPlace.TopLeft, combatPlace.PlaceType);
+		buildCurrent(combatPlace.Type, combatPlace.TopLeft);
 	}
 
 	if (pHouseExt->OwnedDeployingUnits.size() > 0)
@@ -1250,14 +1249,20 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 			DSurface::Temp->DrawSHP(pColor->LightConvert, pImage, imageFrame, &point, &rect, blitFlags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		};
 
+	if (RulesExt::Global()->PlacementPreview && Phobos::Config::ShowPlacementPreview)
+	{
+		if (const auto pType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingTypeCopy))
+		{
+			if (BuildingTypeExt::Fetch(pType)->PlacementPreview)
+				drawImage(pType, pPlayer, (pDisplay->CurrentFoundationCopy_TopLeftOffset + pDisplay->CurrentFoundationCopy_CenterCell));
+		}
+	}
+
 	for (const auto& pHouse : HouseClass::Array)
 	{
 		if (pPlayer->IsObserver() || pHouse->IsAlliedWith(pPlayer))
 		{
 			const auto pHouseExt = HouseExt::Fetch(pHouse);
-
-			if (const auto pType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingTypeCopy))
-				drawImage(pType, pHouse, (pDisplay->CurrentFoundationCopy_TopLeftOffset + pDisplay->CurrentFoundationCopy_CenterCell));
 
 			if (const auto pType = pHouseExt->Common.DrawType)
 				drawImage(pType, pHouse, pHouseExt->Common.TopLeft);
