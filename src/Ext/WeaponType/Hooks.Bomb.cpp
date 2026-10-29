@@ -2,7 +2,7 @@
 
 #include <Utilities/AresFunctions.h>
 
-DEFINE_HOOK(0x469363, BulletClass_DetonateAt_PlantIvanBombs, 0x6)
+DEFINE_HOOK(0x469363, BulletClass_DetonateAt_PlantIvanBombs, 0x7)
 {
 	enum { SkipGameCode = 0x469AA4 };
 
