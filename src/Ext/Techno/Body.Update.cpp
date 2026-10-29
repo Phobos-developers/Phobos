@@ -205,8 +205,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -227,8 +229,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -268,8 +272,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -287,8 +293,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 
 			for (const auto pTarget : pTypeExt->Array)
 			{
-				if (pTarget->Owner == pOwner)
-					TechnoExt::Fetch(pTarget)->AutoDeathFlag = 1;
+				const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+				if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+					pTargetExt->AutoDeathFlag = 1;
 			}
 
 			return true;
@@ -301,8 +309,10 @@ bool TechnoExt::CheckDeathConditions(bool isInLimbo)
 	{
 		for (const auto pTarget : pTypeExt->Array)
 		{
-			if (pTarget->Owner == pOwner)
-				TechnoExt::Fetch(pTarget)->AutoDeathFlag = -1;
+			const auto pTargetExt = TechnoExt::Fetch(pTarget);
+
+			if (pTarget->Owner == pOwner && pTargetExt->HasBeenPlacedOnMap)
+				pTargetExt->AutoDeathFlag = -1;
 		}
 
 		this->AutoDeathFlag = 0;
@@ -650,7 +660,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	auto const pType = pTypeExt->OwnerObject();
 	const int healthDeficit = pType->Strength - pThis->Health;
 
-	if (pThis->Health && healthDeficit > 0)
+	if (pThis->Health > 0 && healthDeficit > 0)
 	{
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
 		auto const whatAmI = pThis->WhatAmI();
@@ -979,7 +989,7 @@ void TechnoExt::UpdateAttachEffects()
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 		}
 
@@ -1002,7 +1012,7 @@ void TechnoExt::UpdateAttachEffects()
 			if (pType->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1190,7 +1200,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.DisableWeapons |= type->DisableWeapons;
 		pAE.Unkillable |= type->Unkillable;
 		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		pAE.HasTint |= type->Tint->Enabled;
+		pAE.HasTint |= TintTypeClass::IsEnabled(type->Tint.get());
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1242,7 +1252,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		disableWeapons |= type->DisableWeapons;
 		unkillable |= type->Unkillable;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		hasTint |= type->Tint->Enabled;
+		hasTint |= TintTypeClass::IsEnabled(type->Tint.get());
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1285,8 +1295,8 @@ void TechnoExt::UpdateTintValues()
 	this->TintIntensityEnemies = 0;
 
 	auto const pTypeExt = this->TypeExtData;
-	const bool hasTechnoTint = pTypeExt->Tint->Enabled;
-	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->Tint->Enabled;
+	const bool hasTechnoTint = TintTypeClass::IsEnabled(pTypeExt->Tint.get());
+	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && TintTypeClass::IsEnabled(this->Shield->GetType()->Tint.get());
 
 	// bail out early if no custom tint is applied.
 	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
@@ -1336,7 +1346,7 @@ void TechnoExt::UpdateTintValues()
 			auto const type = attachEffect->GetType();
 			auto const tint = type->Tint.get();
 
-			if (!attachEffect->IsActive() || !tint->Enabled)
+			if (!attachEffect->IsActive() || !TintTypeClass::IsEnabled(tint))
 				continue;
 
 			auto const& color = tint->Color.Get();

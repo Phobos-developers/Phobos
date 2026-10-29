@@ -20,7 +20,7 @@ DistributionTerrainInfo DistributionModeHoldDownCommandClass::DragTerrainInfo = 
 
 namespace
 {
-	constexpr unsigned int DistributionSpreadRangeMax = 5120;     // 20 cells (x LeptonsPerCell)
+	constexpr unsigned int DistributionSpreadRangeMax = 4096;     // 16 cells (x LeptonsPerCell)
 	constexpr unsigned int DistributionSpreadScrollStepMin = 16;
 	constexpr unsigned int DistributionSpreadHotkeySteps[] = { 0, 1024, 2048, 4096 };
 	constexpr size_t DistributionSpreadHotkeyStepsCount = std::size(DistributionSpreadHotkeySteps);

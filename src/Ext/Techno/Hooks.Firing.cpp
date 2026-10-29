@@ -421,7 +421,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
 				|| !pWeaponExt->IsVeterancyInThreshold(pTargetTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
-				|| (pWeaponExt->CanTarget_DriverKilled && !TechnoExt::DriverKilled(pTargetTechno)))
+				|| (!pWeaponExt->CanTarget_DriverKilled && TechnoExt::DriverKilled(pTargetTechno)))
 			{
 				return CannotFire;
 			}
@@ -1381,7 +1381,15 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 
 		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
 
-		// Per-type setting takes priority, falls back to the global one.
+		// Process OpenTopped.IgnoreRangefinding in its own logic
+		// TODO: find a better solution instead of disabling it altogether
+		if (pTypeExt->OwnerObject()->OpenTopped && pThis->Passengers.NumPassengers > 0
+			&& !pTypeExt->OpenTopped_IgnoreRangefinding.Get(RulesExt::Global()->OpenTopped_IgnoreRangefinding))
+		{
+			return 0;
+		}
+
+		// Per-type setting takes priority, falls back to the global one
 		if (pTypeExt->ApproachTarget_StopWhenInRange.Get(RulesExt::Global()->ApproachTarget_StopWhenInRange))
 		{
 			// these codes are for preventing jumpjets from moving around when executing ApproachTarget.StopWhenInRange
@@ -1427,6 +1435,26 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 		R->EDI(0);
 		R->Stack(STACK_OFFSET(0x158, -0x130), 0);
 		return Return;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	
+	const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis);
+    
+	if (!pInfantry)
+		return 0;
+	
+	const auto pExt = InfantryExt::Fetch(pInfantry);
+	
+	if (pExt->RestartReloadTimer)
+	{
+		pInfantry->StartReloading();
+		pExt->RestartReloadTimer = false;
 	}
 
 	return 0;

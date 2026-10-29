@@ -1,10 +1,45 @@
 #include "Body.h"
 
+#include <EventClass.h>
+#include <TunnelLocomotionClass.h>
+
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
+std::vector<TechnoClass*> BuildingTypeExt::CleanCheckedTechnos;
+std::vector<CellClass*> BuildingTypeExt::CleanCheckedCells;
+std::vector<CellClass*> BuildingTypeExt::CleanOptionalCells;
+std::vector<TechnoClass*> BuildingTypeExt::CleanReCheckedTechnos;
+std::vector<BuildingTypeExt::InfantryCountInCell> BuildingTypeExt::CleanInfantryCells;
+std::vector<BuildingTypeExt::TechnoWithDestination> BuildingTypeExt::CleanFinalOrder;
+std::vector<CellClass*> BuildingTypeExt::CleanDeleteCells;
+std::vector<TechnoClass*> BuildingTypeExt::CleanOptionalTechnos;
+
+static bool InitStaticBuildingTypeContainers()
+{
+	BuildingTypeExt::CleanCheckedTechnos.reserve(24);
+	BuildingTypeExt::CleanCheckedTechnos.clear();
+	BuildingTypeExt::CleanCheckedCells.reserve(24);
+	BuildingTypeExt::CleanCheckedCells.clear();
+	BuildingTypeExt::CleanOptionalCells.reserve(24);
+	BuildingTypeExt::CleanOptionalCells.clear();
+	BuildingTypeExt::CleanReCheckedTechnos.reserve(12);
+	BuildingTypeExt::CleanReCheckedTechnos.clear();
+	BuildingTypeExt::CleanInfantryCells.reserve(4);
+	BuildingTypeExt::CleanInfantryCells.clear();
+	BuildingTypeExt::CleanFinalOrder.reserve(24);
+	BuildingTypeExt::CleanFinalOrder.clear();
+	BuildingTypeExt::CleanDeleteCells.reserve(4);
+	BuildingTypeExt::CleanDeleteCells.clear();
+	BuildingTypeExt::CleanOptionalTechnos.reserve(4);
+	BuildingTypeExt::CleanOptionalTechnos.clear();
+
+	return true;
+}
+
+bool BuildingTypeExt::ContainersInit = InitStaticBuildingTypeContainers();
 BuildingTypeExt::ExtContainer::ExtContainer() : Container("BuildingTypeClass") { }
 BuildingTypeExt::ExtContainer::~ExtContainer() = default;
 
@@ -98,7 +133,7 @@ void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
-bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial)
+bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial, bool isUpgrade)
 {
 	auto const pType = pBuilding->Type;
 
@@ -108,7 +143,7 @@ bool BuildingTypeExt::IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powere
 
 	return pBuilding->CurrentMission != Mission::Construction
 		&& pBuilding->CurrentMission != Mission::Selling
-		&& !pBuilding->IsPowerOnline()
+		&& !(isUpgrade || pBuilding->IsPowerOnline())
 		&& !BuildingExt::Fetch(pBuilding)->HasPowerFromMapFile;
 }
 
@@ -163,6 +198,375 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+// Check whether can call the occupiers leave
+bool BuildingTypeExt::CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse)
+{
+	if (!pOccupierHouse || !pBuildingHouse)
+		return false;
+	else if (pOccupierHouse->IsAlliedWith(pBuildingHouse))
+		return true;
+	else if (SessionClass::IsCampaign() && pBuildingHouse->IsControlledByHuman() && pOccupierHouse->IsControlledByHuman())
+		return true;
+
+	return false;
+}
+
+// Force occupiers leave, return: whether it should stop right now
+bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno)
+{
+	// Step 1: Find the technos inside of the building place grid.
+	auto infantryCount = CellStruct::Empty;
+	BuildingTypeExt::CleanCheckedTechnos.clear();
+	BuildingTypeExt::CleanCheckedCells.clear();
+
+	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+	{
+		const auto currentCell = topLeftCell + *pFoundation;
+
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(currentCell))
+		{
+			for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+			{
+				const auto absType = pObject->WhatAmI();
+
+				if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
+				{
+					const auto pFoot = static_cast<FootClass*>(pObject);
+
+					if (pFoot != pExceptTechno) // No need to check house
+					{
+						if (pFoot->GetCurrentSpeed() <= 0 || !pFoot->Locomotor->Is_Moving())
+						{
+							if (absType == AbstractType::Infantry)
+								++infantryCount.X;
+
+							BuildingTypeExt::CleanCheckedTechnos.push_back(pFoot);
+						}
+					}
+				}
+			}
+
+			BuildingTypeExt::CleanCheckedCells.push_back(pCell);
+		}
+	}
+
+	if (BuildingTypeExt::CleanCheckedTechnos.size() <= 0) // All in moving
+		return false;
+
+	// Step 2: Find the cells around the building.
+	BuildingTypeExt::CleanOptionalCells.clear();
+
+	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+	{
+		const auto searchCell = topLeftCell + *pFoundation;
+
+		if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
+		{
+			if (!(pSearchCell->OccupationFlags & 0x80) && pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
+				BuildingTypeExt::CleanOptionalCells.push_back(pSearchCell);
+		}
+	}
+
+	if (BuildingTypeExt::CleanOptionalCells.size() <= 0) // There is no place for scattering
+		return true;
+
+	// Step 3: Sort the technos by the distance out of the foundation.
+	std::sort(BuildingTypeExt::CleanCheckedTechnos.begin(), BuildingTypeExt::CleanCheckedTechnos.end(), [](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
+	{
+		int minA = INT_MAX;
+		int minB = INT_MAX;
+
+		for (const auto& pOptionalCell : BuildingTypeExt::CleanOptionalCells) // If there are many valid cells at start, it means most of occupiers will near to the edge
+		{
+			if (minA <= 65536) // If distance squared is lower or equal to 256^2, then no need to calculate any more because it is on the edge
+			{
+				if (minB <= 65536)
+					break;
+			}
+			else
+			{
+				const int curA = static_cast<int>(pTechnoA->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
+
+				if (curA < minA)
+					minA = curA;
+
+				if (minB <= 65536)
+					continue;
+			}
+
+			const int curB = static_cast<int>(pTechnoB->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
+
+			if (curB < minB)
+				minB = curB;
+		}
+
+		return minA > minB;
+	});
+
+	// Step 4: Core, successively find the farthest techno and its closest valid destination.
+	BuildingTypeExt::CleanReCheckedTechnos.clear();
+	BuildingTypeExt::CleanInfantryCells.clear();
+	BuildingTypeExt::CleanFinalOrder.clear();
+
+	do
+	{
+		// Step 4.1: Push the technos discovered just now back to the vector.
+		for (const auto& pRecheckedTechno : BuildingTypeExt::CleanReCheckedTechnos)
+		{
+			if (pRecheckedTechno->WhatAmI() == AbstractType::Infantry)
+				++infantryCount.X;
+
+			BuildingTypeExt::CleanCheckedTechnos.push_back(pRecheckedTechno);
+		}
+
+		BuildingTypeExt::CleanReCheckedTechnos.clear();
+
+		// Step 4.2: Check the techno vector.
+		for (const auto& pCheckedTechno : BuildingTypeExt::CleanCheckedTechnos)
+		{
+			// Step 4.2.1: Search the closest valid cell to be the destination.
+			const auto location = pCheckedTechno->GetMapCoords();
+			const auto pCheckedType = pCheckedTechno->GetTechnoType();
+			const bool isInfantry = pCheckedTechno->WhatAmI() == AbstractType::Infantry;
+
+			auto tryGetInfantryDestinationCell = [&]() -> CellClass*
+				{
+					if (isInfantry) // Try to maximizing cells utilization
+					{
+						if (BuildingTypeExt::CleanInfantryCells.size() && infantryCount.Y >= (infantryCount.X / 3 + (infantryCount.X % 3 ? 1 : 0)))
+						{
+							std::sort(BuildingTypeExt::CleanInfantryCells.begin(), BuildingTypeExt::CleanInfantryCells.end(), [location](InfantryCountInCell cellA, InfantryCountInCell cellB)
+							{
+								return cellA.Position->MapCoords.DistanceFromSquared(location) < cellB.Position->MapCoords.DistanceFromSquared(location);
+							});
+
+							for (auto& infantryCell : BuildingTypeExt::CleanInfantryCells)
+							{
+								if (infantryCell.Count < 3 && infantryCell.Position->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
+								{
+									++infantryCell.Count;
+									return infantryCell.Position;
+								}
+							}
+						}
+					}
+
+					return nullptr;
+				};
+			auto pDestinationCell = tryGetInfantryDestinationCell();
+
+			if (!pDestinationCell)
+			{
+				std::sort(BuildingTypeExt::CleanOptionalCells.begin(), BuildingTypeExt::CleanOptionalCells.end(), [location](CellClass* pCellA, CellClass* pCellB)
+				{
+					return pCellA->MapCoords.DistanceFromSquared(location) < pCellB->MapCoords.DistanceFromSquared(location);
+				});
+				const auto minDistanceSquaredFactor = BuildingTypeExt::CleanOptionalCells[0]->MapCoords.DistanceFromSquared(location);
+
+				BuildingTypeExt::CleanDeleteCells.clear();
+
+				for (const auto& pOptionalCell : BuildingTypeExt::CleanOptionalCells)
+				{
+					if (!pDestinationCell) // First find a feasible destination
+					{
+						BuildingTypeExt::CleanOptionalTechnos.clear();
+						auto pObject = pOptionalCell->FirstObject;
+						bool valid = true;
+
+						for (; pObject; pObject = pObject->NextObject)
+						{
+							const auto absType = pObject->WhatAmI();
+
+							if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
+							{
+								const auto pCurTechno = static_cast<TechnoClass*>(pObject);
+
+								if (!BuildingTypeExt::CheckOccupierCanLeave(pHouse, pCurTechno->Owner))
+								{
+									BuildingTypeExt::CleanDeleteCells.push_back(pOptionalCell);
+									valid = false;
+									break;
+								}
+
+								BuildingTypeExt::CleanOptionalTechnos.push_back(pCurTechno);
+							}
+							// Other types will be checked by IsClearToMove
+						}
+
+						if (valid && pOptionalCell->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
+						{
+							// Record the foots on the destination cell, they also need to be evacuated
+							for (const auto& pOptionalTechno : BuildingTypeExt::CleanOptionalTechnos)
+							{
+								BuildingTypeExt::CleanReCheckedTechnos.push_back(pOptionalTechno);
+							}
+
+							if (isInfantry) // Not need to remove it now
+							{
+								BuildingTypeExt::CleanInfantryCells.emplace_back(InfantryCountInCell { pOptionalCell, 1 });
+								++infantryCount.Y;
+							}
+
+							pDestinationCell = pOptionalCell;
+
+							// Prioritize selecting empty cells
+							if (!pObject || pOptionalCell->MapCoords.DistanceFromSquared(location) > minDistanceSquaredFactor)
+								break;
+						}
+					}
+					else if (pOptionalCell->MapCoords.DistanceFromSquared(location) <= minDistanceSquaredFactor) // Not too far
+					{
+						// Only check empty cell
+						if (!pOptionalCell->FirstObject && pOptionalCell->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
+						{
+							if (isInfantry) // Not need to remove it now
+							{
+								BuildingTypeExt::CleanInfantryCells.emplace_back(InfantryCountInCell { pOptionalCell, 1 });
+								++infantryCount.Y;
+							}
+
+							pDestinationCell = pOptionalCell;
+							break;
+						}
+					}
+					else // End immediately if the distance is longer
+					{
+						break;
+					}
+				}
+
+				if (!pDestinationCell) // Can not build
+					return true;
+
+				for (const auto& pDeleteCell : BuildingTypeExt::CleanDeleteCells) // Mark the invalid cells
+				{
+					BuildingTypeExt::CleanCheckedCells.push_back(pDeleteCell);
+					BuildingTypeExt::CleanOptionalCells.erase(std::remove(BuildingTypeExt::CleanOptionalCells.begin(), BuildingTypeExt::CleanOptionalCells.end(), pDeleteCell), BuildingTypeExt::CleanOptionalCells.end());
+				}
+			}
+
+			// Step 4.2.2: Mark the cell and push back its surrounded cells, then prepare for the command.
+			if (std::find(BuildingTypeExt::CleanCheckedCells.begin(), BuildingTypeExt::CleanCheckedCells.end(), pDestinationCell) == BuildingTypeExt::CleanCheckedCells.end())
+				BuildingTypeExt::CleanCheckedCells.push_back(pDestinationCell);
+
+			const auto it = std::find(BuildingTypeExt::CleanOptionalCells.begin(), BuildingTypeExt::CleanOptionalCells.end(), pDestinationCell);
+
+			if (it != BuildingTypeExt::CleanOptionalCells.end())
+			{
+				BuildingTypeExt::CleanOptionalCells.erase(it);
+				auto searchCell = pDestinationCell->MapCoords - CellStruct { 1, 1 };
+
+				for (int i = 0; i < 4; ++i)
+				{
+					for (int j = 0; j < 2; ++j)
+					{
+						if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
+						{
+							if (std::find(BuildingTypeExt::CleanCheckedCells.begin(), BuildingTypeExt::CleanCheckedCells.end(), pSearchCell) == BuildingTypeExt::CleanCheckedCells.end()
+								&& std::find(BuildingTypeExt::CleanOptionalCells.begin(), BuildingTypeExt::CleanOptionalCells.end(), pSearchCell) == BuildingTypeExt::CleanOptionalCells.end()
+								&& !(pSearchCell->OccupationFlags & 0x80)
+								&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
+							{
+								BuildingTypeExt::CleanOptionalCells.push_back(pSearchCell);
+							}
+						}
+
+						if (i % 2)
+							searchCell.Y += static_cast<short>((i / 2) ? -1 : 1);
+						else
+							searchCell.X += static_cast<short>((i / 2) ? -1 : 1);
+					}
+				}
+			}
+
+			BuildingTypeExt::CleanFinalOrder.emplace_back(TechnoWithDestination { pCheckedTechno, pDestinationCell });
+		}
+
+		BuildingTypeExt::CleanCheckedTechnos.clear();
+	}
+	while (BuildingTypeExt::CleanReCheckedTechnos.size());
+
+	// Step 5: Confirm command execution.
+	for (const auto& thisOrder : BuildingTypeExt::CleanFinalOrder)
+	{
+		const auto pCheckedTechno = thisOrder.Techno;
+		const auto pDestinationCell = thisOrder.Destination;
+		const auto absType = pCheckedTechno->WhatAmI();
+
+		if (absType == AbstractType::Infantry)
+		{
+			const auto pInfantry = static_cast<InfantryClass*>(pCheckedTechno);
+
+			if (pInfantry->IsDeployed())
+				pInfantry->PlayAnim(Sequence::Undeploy, true);
+
+			pInfantry->SetDestination(pDestinationCell, true);
+		}
+		else if (absType == AbstractType::Unit)
+		{
+			const auto pUnit = static_cast<UnitClass*>(pCheckedTechno);
+
+			if (pUnit->Deployed && !(pUnit->Deploying || pUnit->Undeploying))
+				pUnit->QueueMission(Mission::Unload, false);
+
+			pUnit->SetDestination(pDestinationCell, true);
+		}
+	}
+
+	return false;
+}
+
+bool BuildingTypeExt::IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2)
+{
+	return ((pType1->BuildCat != BuildCat::Combat) == (pType2->BuildCat != BuildCat::Combat));
+}
+
+bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
+{
+	const auto pBuildingType = pBuilding->Type;
+
+	if (!pBuildingType->PowersUpBuilding[0])
+		return false;
+
+	if (const auto pTypeExt = BuildingTypeExt::Fetch(pBuildingType))
+	{
+		if (pTypeExt->AutoUpgrade)
+		{
+			const auto pHouse = pBuilding->Owner;
+			const auto pHouseExt = HouseExt::Fetch(pHouse);
+
+			for (const auto& pOwned : pHouse->Buildings)
+			{
+				if (pOwned->CanUpgradeBuilding(pBuildingType, pHouse))
+				{
+					if (pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
+					{
+						const auto cell = pOwned->GetMapCoords();
+
+						if (cell != CellStruct::Empty && !pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
+						{
+							const EventClass event
+							(
+								pHouse->ArrayIndex,
+								EventType::Place,
+								AbstractType::Building,
+								pBuildingType->GetArrayIndex(),
+								pBuildingType->Naval,
+								cell
+							);
+							EventClass::OutList.Add(event);
+
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void BuildingTypeExt::Initialize()
 {
 	TechnoTypeExt::Initialize();
@@ -181,6 +585,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
+	char tempBuffer[0x20];
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
@@ -296,7 +701,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (int i = 0; i < pThis->NumberOfDocks; ++i)
 		{
-			char tempBuffer[32];
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "AircraftDockingDir%d", i);
 			nLandingDir.Read(exINI, pSection, tempBuffer);
 
@@ -334,6 +738,26 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->RoofProductionAnimPoweredEffect.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredEffect");
 	this->RoofProductionAnimPoweredSpecial.Read(exArtINI, pArtSection, "RoofProductionAnimPoweredSpecial");
 
+	this->Academy_Infantry_Veterancy.Read(exINI, pSection, "Academy.InfantryVeterancy");
+	this->Academy_Vehicle_Veterancy.Read(exINI, pSection, "Academy.VehicleVeterancy");
+	this->Academy_Aircraft_Veterancy.Read(exINI, pSection, "Academy.AircraftVeterancy");
+	this->Academy_Building_Veterancy.Read(exINI, pSection, "Academy.BuildingVeterancy");
+	this->Academy = Academy_Infantry_Veterancy > 0.0
+					|| Academy_Vehicle_Veterancy > 0.0
+					|| Academy_Aircraft_Veterancy > 0.0
+					|| Academy_Building_Veterancy > 0.0;
+
+	for (size_t idx = 0; idx < std::min(std::size(this->Academy_Country_Types), std::size(this->Academy_Country_Ignore)); ++idx)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Academy.Country.Types.%d", idx);
+		this->Academy_Country_Types[idx].Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Academy.Country.Ignore.%d", idx);
+		this->Academy_Country_Ignore[idx].Read(exINI, pSection, tempBuffer);
+	}
+
+	this->AutoUpgrade.Read(exINI, pSection, "AutoUpgrade");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -346,7 +770,6 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->MaxNumberOccupants > 10)
 	{
-		char tempBuffer[32];
 		this->OccupierMuzzleFlashes.clear();
 		this->OccupierMuzzleFlashes.resize(pThis->MaxNumberOccupants);
 
@@ -496,6 +919,14 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->RoofProductionAnimPoweredLight)
 		.Process(this->RoofProductionAnimPoweredEffect)
 		.Process(this->RoofProductionAnimPoweredSpecial)
+		.Process(this->Academy)
+		.Process(this->Academy_Infantry_Veterancy)
+		.Process(this->Academy_Vehicle_Veterancy)
+		.Process(this->Academy_Aircraft_Veterancy)
+		.Process(this->Academy_Building_Veterancy)
+		.Process(this->Academy_Country_Types)
+		.Process(this->Academy_Country_Ignore)
+		.Process(this->AutoUpgrade)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)

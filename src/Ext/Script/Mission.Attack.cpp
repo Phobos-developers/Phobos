@@ -217,7 +217,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 			for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
-				if (pFoot->IsAlive && !pFoot->InLimbo)
+				if (pFoot->IsAlive && pFoot->Health > 0 && !pFoot->InLimbo && !pFoot->IsSinking)
 				{
 					const auto pTechnoType = pFoot->GetTechnoType();
 
@@ -236,15 +236,11 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 							continue;
 						}
 
-						const auto whatAmI = pFoot->WhatAmI();
-
-						// If the vehicle cannot be moved, perhaps it is better this way.
-						if (whatAmI == AbstractType::Unit
-							&& UnitExt::CannotMove(static_cast<UnitClass*>(pFoot))
-							&& !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
-						{
+						// If the unit cannot be moved, perhaps it is better this way.
+						if (FootExt::CannotMove(pFoot, true) && !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
 							continue;
-						}
+
+						const auto whatAmI = pFoot->WhatAmI();
 
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
 						if (whatAmI == AbstractType::Aircraft
@@ -481,7 +477,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (onlyTargetThisHouseEnemy && pTarget->Owner != onlyTargetThisHouseEnemy)
 			continue;
 
-		if (pTarget->TemporalTargetingMe || pTarget->BeingWarpedOut)
+		if (pTarget->TemporalTargetingMe || pTarget->IsBeingWarpedOut())
 			continue;
 
 		const auto pTargetType = pTarget->GetTechnoType();

@@ -205,13 +205,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
 					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 
@@ -222,13 +222,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxMetallicIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
 					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
@@ -408,7 +408,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
 		const double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
-			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+			FootExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
 
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ESI);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -432,7 +432,7 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ECX);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -443,7 +443,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	const double multiplier = FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
@@ -1785,6 +1785,13 @@ DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	return removed ? 0 : 0x44E916;
 }
 
+DEFINE_HOOK(0x75F635, WaveClass_PointerExpired_TargetFix, 0x6)
+{
+	GET_STACK(const bool, removed, STACK_OFFSET(0x0, 0x10));
+	// Skip the reset of WaveClass::Target if !removed.
+	return removed ? 0 : 0x75F643;
+}
+
 DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
 {
 	GET(const bool, removed, EDI);
@@ -1868,6 +1875,64 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 		R->EAX(12);
 
 	return 0;
+}
+
+// IsSonic wave drawing reads each pixel's source color up to 3 pixels ahead in the wave direction (ColorData indices
+// 10-12 hold 3 times the direction step), so the drawing loops must stay 3 pixels inside the clip rectangle. The loops
+// used when the ZBuffer does not wrap keep this margin, but the ones used when it wraps only keep 2 pixels, so a wave
+// near the top edge of the screen can read above the surface buffer and crash. Magnetron drawing has the same 2 pixel
+// margin, which is correct there as it clamps the color index to 9. Patch the wrapping loops to use 3 pixels as well.
+
+// Wrapping ZBuffer, top-down loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x75FD24, 0x03); // lea edx, [eax+3]
+DEFINE_PATCH(0x75FD33, 0xFD); // lea edx, [eax+ecx-3]
+DEFINE_PATCH(0x75FD54, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x75FD78, 0x03); // lea edi, [ecx+3]
+// Wrapping ZBuffer, bottom-up loop: row top/bottom, column right/left.
+DEFINE_PATCH(0x760035, 0x03); // lea ebp, [edx+3]
+DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
+DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
+DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
+
+// The wave polygon rasterizer only handles polygons that are monotone in Y: it allocates its span buffer for maxY - minY
+// rows and then appends one row per downward edge pixel while walking each side from the top vertex to the bottom one.
+// When a non-magnetron wave's firer is horizontally at the same position as its target, WaveClass::Draw_NonMagnetic
+// divides by the zero distance and all four side points collapse to the map origin. The polygon then folds back on itself,
+// the walk goes down the same edge twice and writes past the end of the span buffer, crashing or corrupting the heap.
+// Skip rasterizing such polygons. The span buffer stays null, so the caller does not draw the wave for that frame.
+DEFINE_HOOK(0x63F080, WaveClass_RasterizePolygon_NonMonotoneFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x63F2D9 };
+
+	GET(const int*, pPolygon, ECX); // { int Count; Point2D* Points; }
+
+	const int count = pPolygon[0];
+	const auto pPoints = reinterpret_cast<const Point2D*>(pPolygon[1]);
+
+	if (count < 3)
+		return 0;
+
+	int minY = pPoints[0].Y;
+	int maxY = pPoints[0].Y;
+	long long totalDown = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		const int y = pPoints[i].Y;
+		const int nextY = pPoints[(i + 1) % count].Y;
+
+		minY = Math::min(minY, y);
+		maxY = Math::max(maxY, y);
+
+		if (nextY > y)
+			totalDown += nextY - y;
+	}
+
+	// Each side covers maxY - minY rows exactly once only if the polygon is monotone in Y.
+	if (totalDown == static_cast<long long>(maxY) - minY)
+		return 0;
+
+	return ReturnFromFunction;
 }
 
 // WW used SetDesired here, causing the barrel drawn incorrectly.
@@ -2088,18 +2153,20 @@ DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_FixSomething, 0x7)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x73C41B, 0x73C431)
+#pragma region Unit Shadow Fix
 
-DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
+DEFINE_HOOK_AGAIN(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix, 0x6)
+DEFINE_HOOK(0x73C41B, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix, 0x5)
 {
-	enum { SkipGameCode = 0x73C445 };
-
 	GET(UnitClass*, pThis, EBP);
-	GET(UnitTypeClass*, pType, EAX);
 
-	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
-	return SkipGameCode;
+	if (pThis->IsAttackedByLocomotor)
+		return R->Origin() == 0x73C41B ? 0x73C431 : 0x73C459;
+
+	return 0;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_BridgeOrHeight, 0x6)
 {
@@ -2107,7 +2174,14 @@ DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_BridgeOrHeight, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	return pThis->OnBridge || pThis->GetHeight() > 0 ? Explode : 0;
+	if (pThis->OnBridge)
+		return Explode;
+
+	auto const pLoco = pThis->Locomotor.GetInterfacePtr();
+	const bool isHover = pLoco && locomotion_cast<HoverLocomotionClass*>(pLoco);
+	const bool isHeldInAir = isHover ? pThis->IsAttackedByLocomotor : pThis->GetHeight() > 0;
+
+	return isHeldInAir ? Explode : 0;
 }
 
 // These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
@@ -2746,6 +2820,33 @@ DEFINE_HOOK(0x741A66, UnitClass_SetDestination_JJVehFix, 0x5)
 
 #pragma endregion
 
+DEFINE_JUMP(LJMP, 0x4896B2, 0x4896BF) // No need this shit
+
+DEFINE_HOOK(0x480EF6, CellClass_DamageWall_BecomUntargetable, 0x6)
+{
+	GET(CellClass*, pThis, EDI);
+
+	pThis->BecomeUntargetable();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x480952, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x48092B, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808FF, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK_AGAIN(0x4808D8, Sub_480630_BecomUntargetable, 0xA)
+DEFINE_HOOK(0x4808A9, Sub_480630_BecomUntargetable, 0xA)
+{
+	GET(CellClass*, pCell, ESI);
+
+	pCell->BecomeUntargetable();
+
+	if (R->Origin() == 0x4808A9)
+		pCell->WallOwnerIndex = -1;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x5194EF, InfantryClass_DrawIt_DrawShadow, 0x5)
 {
 	enum { SkipDraw = 0x51958A };
@@ -3330,8 +3431,8 @@ DEFINE_HOOK(0x7442D6, FootClass_ReadyToNextMission_MovingCheck, 0x6) // Unit
 	GET(FootClass*, pThis, ESI);
 	bool result = false;
 
-	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || (!pThis->Owner->IsControlledByHuman()
-		&& (pThis->CurrentMission == Mission::Enter || pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)))
+	if (RulesExt::Global()->ReadyToNextMission_MovingCheck || pThis->QueuedMission == Mission::Unload || pThis->CurrentMission == Mission::Enter
+		|| pThis->CurrentMission == Mission::Capture || pThis->CurrentMission == Mission::Eaten || pThis->CurrentMission == Mission::Sabotage)
 	{
 		result = pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now();
 	}
@@ -3672,4 +3773,22 @@ DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	return pFoot && pFoot->IsAttackedByLocomotor ? 0x70F85F : 0;
+}
+
+DEFINE_HOOK(0x6EA661, TeamClass_CanAddMember_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6EA856 };
+
+	GET(FootClass*, pMember, ESI);
+
+	return (pMember->IsCrashing && !pMember->IsAttackedByLocomotor) || pMember->IsSinking ? ReturnFalse : 0;
+}
+
+DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6F1F1A };
+
+	GET(FootClass*, pUnit, ESI);
+
+	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }

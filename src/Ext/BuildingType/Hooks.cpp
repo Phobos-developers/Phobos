@@ -299,7 +299,7 @@ DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
 	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
 		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(static_cast<int>(damage * BuildingTypeExt::Fetch(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		R->EAX(static_cast<int>(damage * BuildingTypeExt::Fetch(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
@@ -528,7 +528,7 @@ static __forceinline bool AllowPoweredAnim(BuildingClass* pBuilding, BuildingAni
 
 		auto const animData = pType->GetBuildingAnim(anim);
 
-		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial))
+		if (BuildingTypeExt::IsPoweredAnimBlocked(pBuilding, animData.Powered, animData.PoweredLight, animData.PoweredEffect, animData.PoweredSpecial, true))
 			return false;
 	}
 	else if (anim == BuildingAnimSlot::Production || anim == BuildingAnimSlot::PreProduction)

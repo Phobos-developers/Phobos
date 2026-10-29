@@ -423,7 +423,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -1030,7 +1030,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 		const bool onParachuted = pExt->OnParachuted;
 		pExt->OnParachuted = false;
 
-		if (pThis->IsABomb && pThis->IsAlive)
+		if (pThis->IsABomb && pThis->IsAlive && pThis->Health > 0)
 		{
 			const bool hoverShutdown = pExt->HoverShutdown;
 			pExt->HoverShutdown = false;
@@ -1368,7 +1368,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove, 0x5)
 {
 	enum { SkipResponse = 0x709015 };
 
@@ -1395,11 +1395,11 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			}
 		}
 	}
-	else if (rtti == AbstractType::Unit)
+	else
 	{
-		auto const pUnit = static_cast<UnitClass*>(pThis);
+		auto const pFoot = static_cast<FootClass*>(pThis);
 
-		if (UnitExt::CannotMove(pUnit))
+		if (FootExt::CannotMove(pFoot, true))
 			return SkipResponse;
 	}
 
@@ -1435,7 +1435,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 	GET(FootClass*, pParasiteOwner, EAX);
 	GET(bool, removed, EBX);
 
-	if (pParasiteOwner == pAbstract && (!pParasiteOwner->Health || !Make_Global<char>(0xA8ED5C)))
+	if (pParasiteOwner == pAbstract && (pParasiteOwner->Health <= 0 || !Make_Global<char>(0xA8ED5C)))
 	{
 		pThis->ParasiteEatingMe = nullptr;
 		return SkipGameCode;
@@ -2048,7 +2048,7 @@ static int __fastcall Building_GetThreatValue_Wrapper(BuildingClass* pThis)
 		return RulesClass::Instance->ThreatPerOccupant * occupantCount;
 
 	if (auto const pLinked = pThis->BunkerLinkedItem)
-		return pLinked->GetThreatValue();
+		return pLinked->GetTechnoType()->ThreatPosed;
 
 	auto const pType = pThis->Type;
 

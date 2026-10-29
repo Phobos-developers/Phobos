@@ -9,6 +9,15 @@
 
 #include <array>
 
+struct PlacingBuildingStruct
+{
+	BuildingTypeClass* Type;
+	BuildingTypeClass* DrawType;
+	int Times;
+	CDTimerClass Timer;
+	CellStruct TopLeft;
+};
+
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -81,6 +90,12 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	std::vector<BuildingClass*> Academies;
+
+	std::vector<UnitClass*> OwnedDeployingUnits;
+	PlacingBuildingStruct Common;
+	PlacingBuildingStruct Combat;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -116,6 +131,10 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, Academies {}
+		, OwnedDeployingUnits {}
+		, Common { nullptr, nullptr, 0 }
+		, Combat { nullptr, nullptr, 0 }
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

@@ -172,7 +172,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
-  - Stationary VehicleTypes
+  - Stationary units
   - Burst logic improvements
   - TechnoType auto-firing weapons
   - Secondary weapon fallback customization
@@ -382,7 +382,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
@@ -458,7 +457,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
-  - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -589,6 +589,12 @@ This page lists all the individual contributions to the project by their author.
   - Observer can see IvanBomb that's attached by any house
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - More convenient vanilla action script target specification
+  - Customize turn rate when jumpjet vehicle crashing
+  - Customize insignias palette
+  - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
+  - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
+  - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+  - Fix the bug that crashing or sinking unit can be recruit into taskforce team
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -610,6 +616,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial effort on optimization for crates' random distribution
   - Customizable spawns queue
   - Initial spawns number
+  - Sidebar radar horizontal offset fix
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -701,6 +708,7 @@ This page lists all the individual contributions to the project by their author.
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
   - Attach effect when weapon fire
+  - Building placing and deploying logic enhancement
   - Distribution click action mode
 - **Noble Fish**:
   - Documentation maintenance
@@ -778,13 +786,16 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where `Ranged=true` causes projectiles using the new Trajectory to ignore settings such as `BounceTimes`
   - Customizable infantry sequence rates
-  - Country-specific veteran buildings
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the issue that *Customizable crew type per country* not considering parsing order caused game parsing failure and a warning in the log
   - Customize `IdleActionFrequency`
   - Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target
   - Customize `DefaultToGuardArea` per gunner mode
   - Global default value for `ShouldUseCellDrawer`
+  - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
+  - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
+  - Fix `HealBase` crates causing full-health objects to scatter
+  - Preserve whitespace in CSF
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -933,6 +944,7 @@ This page lists all the individual contributions to the project by their author.
   - Add veterancy-based target filtering for weapons and warheads
   - Recipient-specific message and EVA on superweapon activation
   - Add new AutoDeath conditions based on the owner's power status and the player's credits
+  - Customize insignias palette
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -940,6 +952,7 @@ This page lists all the individual contributions to the project by their author.
   - Hotkey for deselect object from current selection
   - Hotkey for cycling through the current selection
   - Hotkey for cycling through the types in the current selection
+  - Fix briefing out of bound due to fixed window size
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -992,5 +1005,13 @@ This page lists all the individual contributions to the project by their author.
 - **Nuke** - Reload speed adjustment on promotion
 - **frg2089 (舰队的偶像-岛风酱!)** - Fix `Slaved.OwnerWhenMasterKilled` not being respected when the master is sold or self-destructed
 - **weiyongxuan** - Extended `CanTargetHouses` to allow targeting neutral houses
-- **dh381-1** - Detonate ivan bomb on impact
+- **dh381-1**:
+  - Detonate ivan bomb on impact
+  - Allow Ares Academy add country-level filters
+  - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **JerryDing07**:
+  - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
+  - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target
+- **MagicShiba** - Fix briefing out of bound due to fixed window size

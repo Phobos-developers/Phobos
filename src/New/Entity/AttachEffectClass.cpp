@@ -216,7 +216,7 @@ void AttachEffectClass::AI()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (pType->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(pType->Tint.get()))
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -249,7 +249,7 @@ void AttachEffectClass::AI()
 
 			this->ShouldRefreshDuration = false;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 			{
 				pTechno->MarkForRedraw();
 				pExt->UpdateTintValues();
@@ -401,7 +401,7 @@ void AttachEffectClass::OnlineCheck()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (this->Type->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(this->Type->Tint.get()))
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -822,7 +822,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
-				if (pType->Tint->Enabled)
+				if (TintTypeClass::IsEnabled(pType->Tint.get()))
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1095,7 +1095,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 			if (pType->RequiresAnimUpdate)
 				requiresAnimUpdate = true;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 		}
 
@@ -1247,7 +1247,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			if (type->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (type->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(type->Tint.get()))
 				markForRedraw = true;
 
 			continue;
@@ -1329,7 +1329,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		if (type->RequiresRecalculation)
 			requiresRecalc = true;
 
-		if (type->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(type->Tint.get()))
 			markForRedraw = true;
 
 		it = pSourceExt->AttachedEffects.erase(it);
