@@ -3793,27 +3793,3 @@ DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
 	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }
 
-// Non-Arcing weapons add extra range in rangefinding checks based on building foundation size.
-// Lack of this in the Arcing code path presumably causes the odd movement they might
-// experience when targeting larger buildings.
-DEFINE_HOOK(0x6F7457, TechnoClass_InRange_ArcingBuildingTargetFix, 0x8)
-{
-	GET(BulletTypeClass*, pBulletType, EAX);
-	GET(int, range, EDI);
-	GET_BASE(AbstractClass*, pTarget, 0xC);
-
-	if (BulletTypeExt::Fetch(pBulletType)->Arcing_ConsiderBuildingFoundation.Get(RulesExt::Global()->Arcing_ConsiderBuildingFoundation))
-	{
-		if (auto const pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		{
-			constexpr int multiplier = Unsorted::LeptonsPerCell / 4;
-			auto const pType = pBuilding->Type;
-			const int width = pType->GetFoundationWidth();
-			const int height = pType->GetFoundationHeight(false);
-			range += (width + height) * multiplier;
-		}
-	}
-
-	R->EDI(range);
-	return 0;
-}
