@@ -489,6 +489,12 @@ msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题"
 msgid "Tiberium veins overlay palette fix"
 msgstr "泰伯利亚藤蔓蔓延地表色板修复"
 
+msgid "Flying production"
+msgstr "飞行生产"
+
+msgid "Rally point customization"
+msgstr "建筑集结点自定义"
+
 msgid "**Starkku**:"
 msgstr "**Starkku**："
 
