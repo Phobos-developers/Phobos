@@ -1541,3 +1541,23 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	
+	const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis);
+    
+	if (!pInfantry)
+		return 0;
+	
+	const auto pExt = InfantryExt::Fetch(pInfantry);
+	
+	if (pExt->RestartReloadTimer)
+	{
+		pInfantry->StartReloading();
+		pExt->RestartReloadTimer = false;
+	}
+
+	return 0;
+}

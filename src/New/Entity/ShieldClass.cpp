@@ -1098,7 +1098,7 @@ void ShieldClass::UpdateIdleAnim(ShieldTypeClass* pType, double ratio)
 
 void ShieldClass::UpdateTint()
 {
-	if (this->Type->Tint->Enabled)
+	if (TintTypeClass::IsEnabled(this->Type->Tint.get()))
 	{
 		auto const pTechno = this->Techno;
 		TechnoExt::Fetch(pTechno)->UpdateTintValues();
