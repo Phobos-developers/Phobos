@@ -18,14 +18,18 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
 	this->InheritCommands_StopCommand.Read(exINI, section, "InheritCommands.StopCommand");
 	this->InheritCommands_DeployCommand.Read(exINI, section, "InheritCommands.DeployCommand");
+	this->InheritTarget.Read(exINI, section, "InheritTarget");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
 	this->InheritDestruction.Read(exINI, section, "InheritDestruction");
 	this->InheritHeightStatus.Read(exINI, section, "InheritHeightStatus");
+	this->InheritTilt.Read(exINI, section, "InheritTilt");
 	this->OccupiesCell.Read(exINI, section, "OccupiesCell");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
 	this->PassSelection.Read(exINI, section, "PassSelection");
 	this->TransparentToMouse.Read(exINI, section, "TransparentToMouse");
+	this->Targetable.Read(exINI, section, "Targetable");
+	this->Damageable.Read(exINI, section, "Damageable");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
 	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
@@ -42,14 +46,18 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritCommands)
 		.Process(this->InheritCommands_StopCommand)
 		.Process(this->InheritCommands_DeployCommand)
+		.Process(this->InheritTarget)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
 		.Process(this->InheritDestruction)
 		.Process(this->InheritHeightStatus)
+		.Process(this->InheritTilt)
 		.Process(this->OccupiesCell)
 		.Process(this->LowSelectionPriority)
 		.Process(this->PassSelection)
 		.Process(this->TransparentToMouse)
+		.Process(this->Targetable)
+		.Process(this->Damageable)
 		.Process(this->YSortPosition)
 		.Process(this->DestructionWeapon_Child)
 		.Process(this->DestructionWeapon_Parent)

@@ -1,4 +1,5 @@
-#include <Ext/Techno/Body.h>
+#include "Body.h"
+
 #include <Ext/WeaponType/Body.h>
 
 namespace FiringAITemp
@@ -26,7 +27,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 	enum { SkipGameCode = 0x5209A6 };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(int, weaponIndex, EDI);
+	GET(const int, weaponIndex, EDI);
 
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
@@ -42,7 +43,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 
 	const auto pTarget = pThis->Target;
 	FiringAITemp::WeaponIndex = weaponIndex;
-	FiringAITemp::IsSecondary = TechnoTypeExt::ExtMap.Find(pThis->Type)->IsSecondary(weaponIndex);
+	FiringAITemp::IsSecondary = TechnoTypeExt::Fetch(pThis->Type)->IsSecondary(weaponIndex);
 	FiringAITemp::WeaponType = pWeapon;
 	FiringAITemp::FireErrorResult = pThis->GetFireError(pTarget, weaponIndex, true);
 	FiringAITemp::CanFire = true;
@@ -90,7 +91,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
 	const int weaponIndex = FiringAITemp::WeaponIndex;
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(FiringAITemp::WeaponType);
+	const auto pWeaponExt = WeaponTypeExt::Fetch(FiringAITemp::WeaponType);
 	const bool allowBurst = pWeaponExt->Burst_FireWithinSequence;
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
@@ -126,7 +127,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (fireUp + projectedDelay > frameCount)
-				TechnoExt::ExtMap.Find(pThis)->ForceFullRearmDelay = true;
+				TechnoExt::Fetch(pThis)->ForceFullRearmDelay = true;
 		}
 
 		R->EAX(weaponIndex); // Reuse the weapon index to save some time.
@@ -149,11 +150,11 @@ DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 			switch (fireError)
 			{
 			case FireError::OK:
-			case FireError::REARM:
 			case FireError::FACING:
+			case FireError::REARM:
 			case FireError::ROTATING:
 			{
-				if (pThis->IsDeployed())
+				if (pThis->IsDeployed() || (fireError == FireError::REARM && TechnoExt::HasWeaponsDisabled(pThis)))
 					pThis->GattlingRateDown(1);
 				else
 					pThis->GattlingRateUp(1);
@@ -184,7 +185,7 @@ DEFINE_HOOK(0x5209EE, InfantryClass_UpdateFiring_BurstNoDelay, 0x5)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
 
 			if (pWeaponExt->Burst_NoDelay && (!pWeaponExt->DelayedFire_Duration.isset() || pWeaponExt->DelayedFire_OnlyOnInitialBurst))
 			{
@@ -209,6 +210,18 @@ DEFINE_HOOK(0x5209EE, InfantryClass_UpdateFiring_BurstNoDelay, 0x5)
 			}
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51DF70, InfantryClass_Fire_SetFlag, 0x7)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto const pExt = InfantryExt::Fetch(pThis);
+
+	if (pThis->Ammo >= pThis->Type->Ammo)
+		pExt->RestartReloadTimer = true;
 
 	return 0;
 }

@@ -1,10 +1,11 @@
 #include "Body.h"
+#include <Utilities/Helpers.Alex.h>
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
 	GET(TeamClass*, pTeam, ESI);
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::Fetch(pTeam);
 
 	// Force a line jump. This should support vanilla YR Actions
 	if (pTeamData->ForceJump_InitialCountdown > 0 && pTeamData->ForceJump_Countdown.Expired())
@@ -139,6 +140,118 @@ DEFINE_HOOK(0x6F02AD, TMission_ChronoShiftToTarget_SWIndex, 0x6)
 		R->EDX(pSWType->GetArrayIndex());
 
 	return address + 0x6;
+}
+
+#pragma endregion
+
+#pragma warning(push)
+#pragma warning(disable: 6031)
+#pragma warning(disable: 6054)
+DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
+{
+	enum { SkipGameCode = 0x723CD3 };
+
+	GET_STACK(char*, pBuffer, 0x4);
+
+	if (!pBuffer)
+	{
+		R->EAX(pBuffer);
+		return SkipGameCode;
+	}
+
+	GET(ScriptActionNode*, pThis, ECX);
+	char arg[0x20];
+	sscanf(pBuffer, "%d,%s", &pThis->Action, arg);
+	R->EAX(pThis->Action);
+
+	if (Helpers::Alex::is_any_of(pThis->Action, 46, 47, 56, 58))
+	{
+		char* scanMode = nullptr;
+		char* targetName = strtok_s(arg, ",", &scanMode);
+		const int idx = BuildingTypeClass::FindIndex(targetName);
+
+		if (idx != -1)
+		{
+			int offset = 0x20000;
+
+			if (scanMode)
+			{
+				if (!_stricmp(scanMode, "low"))
+					offset = 0;
+				else if (!_stricmp(scanMode, "hight"))
+					offset = 0x10000;
+				else if (!_stricmp(scanMode, "far"))
+					offset = 0x30000;
+			}
+
+			pThis->Argument = idx + offset;
+			return SkipGameCode;
+		}
+	}
+
+	sscanf(arg, "%d", &pThis->Argument);
+	return SkipGameCode;
+}
+#pragma warning(pop)
+
+#pragma region InfantryAttackFocusFix
+
+// Fixed an issue where infantry units would continuously refresh their animation frames.
+DEFINE_HOOK(0x6EB5B0, TeamClass_AttackFocus_CaptureAndInfiltrate, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pTeamLeader, EBX);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pTeamLeader))
+	{
+		auto const pTarget = pThis->Focus;
+		auto const pInfantryType = pInfantry->Type;
+
+		if ((pInfantryType->Engineer || (pInfantryType->Agent && pInfantryType->Infiltrate))
+			&& pInfantry->GetCurrentMission() == Mission::Capture
+			&& pInfantry->Target == pTarget && pInfantry->Destination == pTarget)
+		{
+			return 0x6EB5D9;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6EB7FC, TeamClass_AttackFocus_CaptureAndInfiltrate2, 0x5)
+{
+	GET(TeamClass* const, pThis, EDI);
+	GET(FootClass* const, pUnit, ESI);
+
+	auto const pTarget = pThis->Focus;
+	pUnit->SetTarget(pTarget);
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*, true>(pUnit))
+	{
+		if (!pInfantry->Destination)
+		{
+			if (auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget))
+			{
+				auto const pHouse = pInfantry->Owner;
+
+				if (!pHouse->IsAlliedWith(pTargetBuilding->Owner))
+				{
+					auto const pInfantryType = pInfantry->Type;
+					auto const pTargetBuildingType = pTargetBuilding->Type;
+
+					if ((pInfantryType->Engineer && pTargetBuildingType->Capturable)
+						|| (pInfantryType->Agent && pInfantryType->Infiltrate && pTargetBuildingType->Spyable))
+					{
+						pInfantry->SetDestination(pTargetBuilding, true);
+						pInfantry->QueueMission(Mission::Capture, false);
+						pInfantry->NextMission();
+					}
+				}
+			}
+		}
+	}
+
+	return 0x6EB807;
 }
 
 #pragma endregion

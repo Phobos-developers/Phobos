@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 16:35+0800\n"
+"POT-Creation-Date: 2026-10-23 21:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 msgid "AI Scripting and Mapping"
 msgstr "AI 脚本与触发"
@@ -27,6 +27,14 @@ msgstr "此页面列出了所有 Phobos 引入的 AI 脚本与地图触发相关
 
 msgid "Bugfixes and Miscellanous"
 msgstr "Bug 修复与杂项"
+
+msgid ""
+"`<Player @ X>` can now be used as owner for pre-placed objects as well as"
+" owner for triggers on skirmish and multiplayer maps. Triggers with "
+"owners that are not present in the game are destroyed and never sprung."
+msgstr ""
+"`<Player @ X>` "
+"现在可以作为遭遇战／多人游戏地图预置对象和触发器的所有者。如果触发器的所有者不存在于游戏中，则该触发器会被销毁且永不被触发。"
 
 msgid ""
 "Script action `Move to cell` now obeys YR cell calculation now. Using "
@@ -43,18 +51,22 @@ msgid ""
 "Map trigger action `41 Play Animation At...` can now create 'non-inert' "
 "animations which can play sounds, deal damage and apply "
 "`TiberiumChainReaction` if a parameter is set (needs [following changes "
-"to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2))."
+"to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE "
+"configs](Whats-New.md#for-map-editor-world-altering-editor))."
 msgstr ""
 "地图触发结果 `41 播放动画在...` 现在可以更完善地创建可以播放音效、造成杀伤以及使用设置了 `TiberiumChainReaction`"
-" 参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2)）。"
+" 参数的动画（需要 [修改 `FAData.ini`](Whats-New.md#for-map-editor-final-alert-2) 或 "
+"[WAE 配置](Whats-New.md#for-map-editor-world-altering-editor)）。"
 
 msgid ""
 "Map trigger action `125 Build At...` can now play buildup anim and "
 "becomes singleplayer-AI-repairable optionally (needs [following changes "
-"to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2))."
+"to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2) or [WAE "
+"configs](Whats-New.md#for-map-editor-world-altering-editor))."
 msgstr ""
 "地图触发结果 `125 将建筑建于...` 现在可以设置是否播放建造动画（需要[修改 `FAData.ini`](Whats-New.md"
-"#for-map-editor-final-alert-2)）。"
+"#for-map-editor-final-alert-2) 或 [WAE 配置](Whats-New.md#for-map-editor-"
+"world-altering-editor)）。"
 
 msgid ""
 "Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local "
@@ -95,6 +107,89 @@ msgstr ""
 " 来获取关联的超级武器。如果也没有设置那么会分别使用 `[SuperWeaponTypes]` 列表中最后一个 "
 "`Type=ChronoSphere` 和 `Type=ChronoWarp` 的超级武器。"
 
+msgid "Fixed AI team recruitment inconsistency causing underfilled teams."
+msgstr "修复了 AI 小队招募数量与生产计划不一致导致不足以建立小队的问题。"
+
+msgid "Restored the ScriptType action#24 `Play speech` from Tiberian Sun."
+msgstr "复原了《泰伯利亚之日》中的动作脚本 `24 - 播放语音`。"
+
+msgid "Fixed Tiberium types not supporting overrides in map and game mode INIs."
+msgstr "修复了矿石类型不支持在地图和模式 INI 中覆盖的问题。"
+
+msgid "Fixed briefing out of bound due to fixed window size."
+msgstr ""
+"修复了固定窗口尺寸导致简报越界的问题。"
+
+msgid "Dynamic Team Delays"
+msgstr "动态 `TeamDelays`"
+
+msgid ""
+"It is now possible to make `TeamDelays` in skirmish changed dynamically "
+"based on player's amount."
+msgstr "现在可以使 `TeamDelays` 在遭遇战中根据玩家数量动态变化。"
+
+msgid ""
+"`TeamDelays.DynamicType` controls how team delay will be changed. Neutral"
+" houses and observers won't be accounted in all the following patterns."
+msgstr "`TeamDelays.DynamicType` 控制 `TeamDelays` 的更改方式。中立所属方和观察者在以下所有模式中均不被计入。"
+
+msgid "`startingpoint`: taking the map's `NumberStartingPoints` into account."
+msgstr "`startingpoint`：基于地图的 `NumberStartingPoints` 设置。"
+
+msgid ""
+"`playercount`: taking the total amount of players into account, including"
+" itself."
+msgstr "`playercount`：基于场上玩家总数，包括自己。"
+
+msgid ""
+"`allies`: taking the amount of allied players into account, excluding "
+"itself."
+msgstr "`allies`：基于盟友玩家的数量，不包括自己。"
+
+msgid "`enemies`: taking the amount of hostile players into account."
+msgstr "`enemies`：基于敌对玩家的数量。"
+
+msgid ""
+"`alivecount`: taking the amount of players that's not defeated at the "
+"moment into account, including itself."
+msgstr "`alivecount`：基于当前仍存活玩家的数量，包括自己。"
+
+msgid ""
+"`aliveallies`: taking the amount of allied players that's not defeated at"
+" the moment into account, excluding itself."
+msgstr "`aliveallies`：基于当前仍存活的盟友玩家数量，不包括自己。"
+
+msgid ""
+"`aliveenemies`: taking the amount of hostile players that's not defeated "
+"at the moment into account."
+msgstr "`aliveenemies`：基于当前仍存活的敌对玩家数量"
+
+msgid ""
+"`none`: dynamic team delay will be disabled regardless of the settings of"
+" `TeamDelays.CountN`."
+msgstr "`none`：始终禁用动态 `TeamDelays` 而无论 `TeamDelays.CountN` 设置如何。"
+
+msgid ""
+"`TeamDelays.CountN` control the team delay when the amount of players "
+"meets the above conditions, where `N` stands for an integer between 1-8. "
+"Consisted by 3 integers that represent each difficulty."
+msgstr ""
+"`TeamDelays.CountN` 控制当玩家数量满足上述条件时的 `TeamDelays` 值，其中 `N` 为 `[1,8]` "
+"的整数。值由 3 个整数组成，代表每个难度下的数值。"
+
+msgid ""
+"If a dynamic team delay is not set for this player amount, or the set "
+"value isn't greater than 0, it'll default to `[General] -> TeamDelays`."
+msgstr "如果未为特定玩家数量设置对应的动态 `TeamDelays` 或设置为不大于 0 的值则默认为 `[General] -> TeamDelays`。"
+
+msgid "In `rulesmd.ini`:"
+msgstr "在 `rulesmd.ini`："
+
+msgid ""
+"Team delay change will take effect for a house after its next AI team is "
+"created."
+msgstr "`TeamDelays` 的更改会在所属方的下一个 AI 小队创建后生效。"
+
 msgid "Increased Overlay Limit"
 msgstr "更高的覆盖物数量上限"
 
@@ -134,9 +229,6 @@ msgid ""
 msgstr ""
 "你可以通过设置 `[Basic] -> RepairBaseNodes` 来全局控制，或者在特定地图文件的 `[Some House]` "
 "中设置同名标签。局部标签会覆盖全局。"
-
-msgid "In `rulesmd.ini`:"
-msgstr "在 `rulesmd.ini`："
 
 msgid "In map file:"
 msgstr "在地图文件："
@@ -223,8 +315,52 @@ msgstr "在 `uimd.ini`："
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
 
+msgid "SkipMapSelect Enhancement"
+msgstr "`SkipMapSelect` 增强"
+
+msgid ""
+"Using `SkipMapSelect=yes` in the map file allows you to bypass the "
+"restriction in mapselmd.ini—which requires that the player's faction in "
+"the current campaign must match the faction in the next new campaign."
+msgstr ""
+"在地图文件中使用 `SkipMapSelect=yes` 可以绕过 `mapselmd.ini` "
+"中的限制——该限制要求当前战役中玩家所属的阵营必须与下一个新战役中的阵营一致。"
+
+msgid ""
+"You can use `NextScenario` and `AltNextScenario` to specify the map names"
+" required to enter a new campaign, thereby forcing the game to proceed to"
+" the next campaign."
+msgstr "你可以使用 `NextScenario` 和 `AltNextScenario` 来指定进入新战役所需的地图名称强制游戏进入下一个战役。"
+
+msgid ""
+"Now, setting a local variable named `<Alternate Next Scenario>` will also"
+" trigger `AltNextScenario`."
+msgstr "现在启用一个名为 `<Alternate Next Scenario>` 的局部变量也可以触发 `AltNextScenario`。"
+
 msgid "Script Actions"
 msgstr "动作脚本"
+
+msgid "More convenient vanilla action script target specification"
+msgstr "更方便的原版动作脚本目标指定"
+
+msgid ""
+"Now you can use more convenient argument format in vanilla action script "
+"target specification, no need to write building type index and calc scan "
+"mode offset."
+msgstr "现在你可以使用更方便的参数格式来指定原版动作脚本的目标，无需手写建筑类型索引与计算扫描模式偏移量。"
+
+msgid ""
+"Scan mode has `low`(lowest threat), `high`(highest threat), "
+"`far`(farest), `near`(nearest) and default to `near`."
+msgstr ""
+"扫描模式具有 `low` （最低威胁）， `high` （最高威胁）， `far` （最远距离）， `near` （最近距离）且默认为 "
+"`near` 。"
+
+msgid "This is suitable for `46`, `47`, `56`, `58` action script."
+msgstr "这适用于 `46` 、`47` 、 `56` 、 `58` 号动作脚本。"
+
+msgid "In `aimd.ini`:"
+msgstr "在 `aimd.ini`："
 
 msgid "`10000-10999` Ingame Actions"
 msgstr "`10000-10999` 游戏内行为"
@@ -262,9 +398,6 @@ msgid ""
 msgstr ""
 "`AITargetTypes` 动作通过第二个参数指示小队类型使用特遣部队接近并攻击目标，该参数是 `AITargetTypes` 中一个由 "
 "modder 自行定义的组的索引。请参阅下表以了解可能的行为（第一个参数）和参量（第二个参数值）。"
-
-msgid "In `aimd.ini`:"
-msgstr "在 `aimd.ini`："
 
 msgid "*Action*"
 msgstr "*行为*"
@@ -489,8 +622,7 @@ msgid "Tech Buildings"
 msgstr "科技建筑"
 
 msgid "Any `BuildingTypes` with `Capturable=yes` and `NeedsEngineer=yes`"
-msgstr ""
-"任何拥有 `Capturable=yes` 和 `NeedsEngineer=yes` 的`建筑类型`"
+msgstr "任何拥有 `Capturable=yes` 和 `NeedsEngineer=yes` 的`建筑类型`"
 
 msgid "12"
 msgstr "12"
@@ -719,9 +851,7 @@ msgstr "可占领"
 msgid ""
 "Any `BuildingTypes` with `Capturable=yes` or any `BuildingTypes` with "
 "`BridgeRepairHut=yes` that are linked to broken bridges"
-msgstr ""
-"任何拥有 `Capturable=yes` 的建筑或任何拥有 `BridgeRepairHut=yes` 且与断桥关联"
-"的建筑"
+msgstr "任何拥有 `Capturable=yes` 的建筑或任何拥有 `BridgeRepairHut=yes` 且与断桥关联的建筑"
 
 msgid "34"
 msgstr "34"
@@ -759,8 +889,7 @@ msgstr "桥梁维修小屋"
 msgid ""
 "Any `BuildingTypes`with `BridgeRepairHut=yes` that are linked to broken "
 "bridges"
-msgstr ""
-"任何拥有 `BridgeRepairHut=yes` 且与断桥关联的建筑"
+msgstr "任何拥有 `BridgeRepairHut=yes` 且与断桥关联的建筑"
 
 msgid ""
 "The second parameter with a 0-based index for the `AITargetTypes` section"
@@ -1089,9 +1218,9 @@ msgid "`16005` Jump Back To Previous Script"
 msgstr "`16005` 跳回上一个脚本"
 
 msgid ""
-"Used in a Random Script picked by action `94`. It can jump back to the "
-"previous script, and continue in the line after `x=94,n`."
-msgstr "在由 `94` 号动作选择的随机脚本中使用可以使其跳回到上一个脚本，并继续执行 `x=94,n` 之后的行。"
+"Used in a Random Script picked by action `16004`. It can jump back to the"
+" previous script, and continue in the line after `x=16004,n`."
+msgstr "在由 `16004` 号动作选择的随机脚本中使用可以使其跳回到上一个脚本，并继续执行 `x=16004,n` 之后的行。"
 
 msgid "`18000-18999` Variable Manipulation"
 msgstr "`18000-18999` 变量操作"
@@ -1121,8 +1250,8 @@ msgid ""
 "read from a local variable."
 msgstr "类似于 `18000-18023`，但用于操作值的数字是从局部变量中读取的。"
 
-msgid "`18000 - 18071` Edit Variable using Global Variable"
-msgstr "`18000 - 18071` 使用全局变量编辑变量"
+msgid "`18048 - 18071` Edit Variable using Global Variable"
+msgstr "`18048 - 18071` 使用全局变量编辑变量"
 
 msgid "Operate a variable's value using a global variable's value."
 msgstr "使用全局变量的值来操作变量的值。"
@@ -1137,6 +1266,45 @@ msgstr "`19000-19999` 杂项／未分类"
 
 msgid "This category is empty for now."
 msgstr "此类别目前为空。"
+
+msgid "Teams"
+msgstr "小队"
+
+msgid "Adjust recruitable status on team member liberate"
+msgstr "小队成员释放时调整可招募性"
+
+msgid ""
+"In vanilla, when a unit is added to a team, its `RecruitableB` flag is "
+"overwritten by the team's `AreTeamMembersRecruitable` setting. When the "
+"unit is liberated from the team, the flag is not restored. The following "
+"settings allow a team to reset this flag when liberating its members."
+msgstr ""
+"在原版游戏中，当单位被加入到小队中时，其 `RecruitableB` 字段会被小队的设置 `AreTeamMembersRecruitable`"
+" 覆写。单位被小队释放时，该字段也不会被恢复。以下设置允许小队在释放时重新设置该字段。"
+
+msgid ""
+"If set to a value **greater than 0**, the liberated unit is forcibly "
+"marked as recruitable."
+msgstr "如果值 **大于 0**，释放的单位会被强制标记为可招募。"
+
+msgid "If set to **0**, the liberated unit is forcibly marked as not recruitable."
+msgstr "如果值为 **0**，释放的单位会被强制标记为不可招募。"
+
+msgid ""
+"If set to a value **less than 0** (default: `-1`), the original game "
+"behavior is preserved."
+msgstr "如果值 **小于 0**（默认值：`-1`），则保留原版游戏行为。"
+
+msgid "Customized transport plane for teams"
+msgstr "为作战小队自定义运输机"
+
+msgid ""
+"You can now use `ParaDropAircraft` to specify a new transport aircraft "
+"type for teams with `Droppod=yes`, which will override the global "
+"settings for `Ares` and `Vanilla`."
+msgstr ""
+"现在你可以用 `ParaDropAircraft` 为 `Droppod=yes` 的作战小队指定新的运输机类型，这会覆盖 Ares "
+"和原版的全局设置。"
 
 msgid "Trigger Actions"
 msgstr "触发结果"
@@ -1320,6 +1488,89 @@ msgid ""
 "BuildingTypes."
 msgstr "若将此处建筑类型设为 `<All>` 则反部署所有建筑。"
 
+msgid "`512` Set Follower for Associated Unit"
+msgstr "`512` 设置关联单位的跟随目标..."
+
+msgid ""
+"![image](_static/images/follow_index.gif) *The locomotive pulls away the "
+"parked multiple carriages in [Bellum "
+"Æternum](https://ra2be.com/download.html)*"
+msgstr ""
+"![image](_static/images/follow_index.gif) "
+"*[万世之战](https://ra2be.com/download.html) 中用火车头拉走停着的多节车厢*"
+
+msgid "image"
+msgstr "图像"
+
+msgid ""
+"Sets the follower for the associated object. The parameter is the index "
+"of the follower unit."
+msgstr "设置关联对象的跟随者，参数为要跟随者单位的索引。"
+
+msgid "Invalid for non-vehicle objects."
+msgstr "非载具类对象无效。"
+
+msgid "`513` Set mission timer properties"
+msgstr "设置任务计时器属性"
+
+msgid ""
+"Set the method to display mission timer and whether the timer should be "
+"displayed reversedly based on given value."
+msgstr "设置任务计时器的显示方式，以及是否根据给定值倒序显示计时器。"
+
+msgid ""
+"For behaviours `0`, `1`, and `2`, the second parameter decides the base "
+"value for percentage timer type or reversed timer that'll be used for "
+"calculation."
+msgstr "对于行为 `0`、`1` 和 `2`，第二个参数决定百分比计时器类型或倒序计时器用于计算的基础值。"
+
+msgid ""
+"For behaviours `3` and `4`, the second parameter decides the index of "
+"variable that'll be displayed. If the local/global variable does not "
+"exist, 0 will be displayed."
+msgstr "对于行为 `3` 和 `4`，第二个参数决定要显示变量的索引。如果该局部／全局变量不存则显示 0。"
+
+msgid "*Behaviour*"
+msgstr "*行为*"
+
+msgid "Show normal timer"
+msgstr "显示常规计时器"
+
+msgid "show percentage based on the given value"
+msgstr "基于给定值显示百分比"
+
+msgid "Show timer in digit form"
+msgstr "以数字格式显示计时器"
+
+msgid "Show value of the selected local variable"
+msgstr "显示所选局部变量的值"
+
+msgid "Show value of the selected global variable"
+msgstr "显示所选全局变量的值"
+
+msgid ""
+"This won't affect how the global mission timer really ticks, so it'll "
+"still end after the mission tiemr expired."
+msgstr "这不会影响全局任务计时器的实际计时方式，因此它仍会在任务计时器到期后结束。"
+
+msgid "`600` Configure Drop Crate"
+msgstr "`600` 配置掉落箱子行为"
+
+msgid "Set or overwrite the `DropCrate` of the affected objects."
+msgstr "设置或覆盖受影响对象的 `DropCrate`。"
+
+msgid "Only functions when used as attached triggers within objects."
+msgstr "仅通过关联标签附加到对象上时生效。"
+
+msgid "Use default Techno settings"
+msgstr "使用单位的默认设置"
+
+msgid "Clear `DropCrate` type"
+msgstr "清除 `DropCrate` 类型"
+
+msgid "Overwrite `DropCrate` type"
+msgstr "覆盖 `DropCrate` 类型"
+
 msgid "`606` Edit Hate-Value"
 msgstr "`606` 编辑仇恨值"
 
@@ -1373,8 +1624,22 @@ msgstr "设置触发所属方的 `TeamDelays` 值。"
 
 msgid ""
 "If this value is less than 0, then use the value of `[General] -> "
-"TeamDelays`."
-msgstr "若该值小于 0 则使用 `[General] -> TeamDelays` 的值。"
+"TeamDelays`, or [dynamic team delay](AI-Scripting-and-Mapping.md#dynamic-"
+"team-delays) if set and in skirmish."
+msgstr ""
+"若该值小于 0 则使用 `[General] -> TeamDelays` 的值，或遭遇战中通过 [动态 `TeamDelays`](AI-"
+"Scripting-and-Mapping.md#dynamic-team-delays) 设置的值"
+
+msgid "`611` Set Next Scenario"
+msgstr "`611` 设置下一战役关卡"
+
+msgid "Set the next campaign to load after winning the current one."
+msgstr "设置当前战役胜利后加载的下一关战役关卡。"
+
+msgid ""
+"Works only in `Campaign Mode` and requires setting `[Basic] -> "
+"SkipMapSelect=yes`."
+msgstr "仅战役模式且存在 `[Basic] -> SkipMapSelect=yes` 时生生效。"
 
 msgid "`800-802` Display Banner"
 msgstr "`800-802` 显示横幅"
@@ -1461,6 +1726,17 @@ msgid ""
 "frame when it's stopped last time. This can also be changed to its first "
 "frame if `SHP.RefreshAfterDelay` set to true."
 msgstr "一个 `SHP` 横幅会在再次显示时从上次结束时的帧开始。这可以通过 `SHP.RefreshAfterDelay=true` 更改为从头开始。"
+
+msgid ""
+"`ClampToScreen` controls whether the banner is clamped to stay within the"
+" visible area. When disabled, a PCX banner exceeding the top screen edge "
+"may crash the game."
+msgstr "`ClampToScreen` 控制横幅是否被限制在可视区域内。禁用后，PCX 横幅超出屏幕上边缘时可能导致游戏崩溃。"
+
+msgid ""
+"`Horizontal` and `Vertical` set the anchor point from which the banner is"
+" drawn relative to the drawing point from trigger."
+msgstr "`Horizontal` 和 `Vertical` 设置横幅以触发位置为哪个锚点进行绘制。"
 
 msgid "Trigger events"
 msgstr "触发条件"
@@ -1650,6 +1926,9 @@ msgstr "535"
 
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
+
+msgid "Springs when the shield of the attached object is broken."
+msgstr "当所附着对象的护盾被击碎时触发。"
 
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
