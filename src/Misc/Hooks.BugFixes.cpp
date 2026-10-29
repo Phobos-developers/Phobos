@@ -443,8 +443,37 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	const double multiplier = FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
+	if (auto const pFoot = pThis->LinkedTo)
+	{
+		if (pThis->State == JumpjetLocomotionClass::State::Hovering || pThis->State == JumpjetLocomotionClass::State::Cruising)
+		{
+			if (auto const pCell = pFoot->GetCell())
+			{
+				bool isLinkedInCell = (pFoot->NextObject != nullptr);
+
+				for (auto pObj = pCell->FirstObject; !isLinkedInCell && pObj; pObj = pObj->NextObject)
+				{
+					if (pObj == pFoot)
+						isLinkedInCell = true;
+				}
+
+				for (auto pObj = pCell->AltObject; !isLinkedInCell && pObj; pObj = pObj->NextObject)
+				{
+					if (pObj == pFoot)
+						isLinkedInCell = true;
+				}
+
+				if (isLinkedInCell)
+				{
+					pFoot->IsOnMap = true;
+					pFoot->Mark(MarkType::Up);
+				}
+			}
+		}
+
+		const double multiplier = FootExt::GetCurrentSpeedMultiplier(pFoot);
+		pThis->Speed = static_cast<int>(FootExt::Fetch(pFoot)->JumpjetSpeed * multiplier);
+	}
 
 	return 0;
 }
