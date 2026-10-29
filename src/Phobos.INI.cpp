@@ -80,8 +80,8 @@ int Phobos::Config::ShowGameTime_BoardOpacity = 40;
 bool Phobos::Config::TacticalZoom = false;
 bool Phobos::Config::TacticalZoom_Scroll = true;
 bool Phobos::Config::TacticalZoom_KeyEnabled = true;
-double Phobos::Config::TacticalZoom_Max = 2.5;
-double Phobos::Config::TacticalZoom_Step = 0.15;
+double Phobos::Config::TacticalZoom_Max = 3.6;
+double Phobos::Config::TacticalZoom_Step = 0.2;
 bool Phobos::Config::TacticalZoom_Smooth = true;
 bool Phobos::Config::CycleTypeSelectionPrintSummary = true;
 // Hotkeys
@@ -309,7 +309,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		ZoomManager::Step = std::max(0.01, Phobos::Config::TacticalZoom_Step);
 		ZoomManager::Smooth = Phobos::Config::TacticalZoom_Smooth;
 
-		ZoomManager::ApplySurfacePatches();
 	}
 
 	return 0;

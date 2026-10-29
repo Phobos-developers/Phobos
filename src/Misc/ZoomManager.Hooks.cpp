@@ -81,7 +81,6 @@ DEFINE_HOOK(0x6930A0, ScrollClass_MessageHandler_MiddleClickReset, 0x5)
 // Advance smooth zoom interpolation at the beginning of each frame
 DEFINE_HOOK(0x4F4480, GScreenClass_Render_ZoomUpdate, 0x9)
 {
-	ZoomManager::ApplySurfacePatches();
 	ZoomManager::Update();
 
 	return 0;
@@ -99,18 +98,18 @@ DEFINE_HOOK(0x4F44CB, GScreenClass_Render_TacticalAndCommandBar, 0x5)
 
 	TacticalClass::Instance->Render(DSurface::Composite, flag, 0);
 
-	DSurface* pComposite = DSurface::Composite;
-	DSurface::Temp = DSurface::Alternate;
-
+	ZoomManager::RedirectSurfaces();
 	TacticalClass::Instance->Render(DSurface::Alternate, flag, 1);
-	TacticalClass::Instance->Render(DSurface::Alternate, flag, 2);
+	ZoomManager::RestoreSurfaces();
 
-	DSurface::Temp = pComposite;
+	pGScreen->Draw(bDraw ? 1 : 0);
+
+	ZoomManager::RedirectSurfaces();
+	TacticalClass::Instance->Render(DSurface::Alternate, flag, 2);
+	ZoomManager::RestoreSurfaces();
 
 	if (!ZoomManager::BlitAppliedThisFrame)
 		ZoomManager::ApplyTacticalBlit();
-
-	pGScreen->Draw(bDraw ? 1 : 0);
 
 	return 0x4F451B;
 }
@@ -127,6 +126,9 @@ DEFINE_HOOK(0x6D4941, TacticalClass_Render_Pass2_WorldEnd, 0x6)
 // Evaluate camera scrolling boundary in Scroll_Not_Really with zoom-scaled limits
 DEFINE_HOOK(0x6DA2FE, TacticalClass_Scroll_Not_Really_ClampCandidate, 0x6)
 {
+	if (!ZoomManager::IsZoomed())
+		return 0;
+
 	GET(int, candX, ESI);
 	GET(int, candY, EDI);
 
@@ -143,6 +145,9 @@ DEFINE_HOOK(0x6DA2FE, TacticalClass_Scroll_Not_Really_ClampCandidate, 0x6)
 // Update camera coordinates in TacticalClass::Update with zoom-aware boundary clamping
 DEFINE_HOOK(0x6D2727, TacticalClass_Update_ClampDesiredPos, 0x8)
 {
+	if (!ZoomManager::IsZoomed())
+		return 0;
+
 	GET(TacticalClass*, pTactical, ESI);
 
 	Point2D desiredPos = pTactical->TacticalCoord2;
@@ -158,6 +163,9 @@ DEFINE_HOOK(0x6D2727, TacticalClass_Update_ClampDesiredPos, 0x8)
 // Restrict camera position in TacticalClass::SetTacticalPosition(Point2D*) with zoom-scaled limits
 DEFINE_HOOK(0x6D600B, TacticalClass_SetTacticalPosition_ClampPos, 0x7)
 {
+	if (!ZoomManager::IsZoomed())
+		return 0;
+
 	GET(Point2D*, pPoint, EDI);
 
 	Point2D clamped = *pPoint;
@@ -173,6 +181,9 @@ DEFINE_HOOK(0x6D600B, TacticalClass_SetTacticalPosition_ClampPos, 0x7)
 // Restrict camera position in TacticalClass::SetTacticalPosition(CoordStruct*) with zoom-scaled limits
 DEFINE_HOOK(0x6D611A, TacticalClass_SetTacticalPosition_Coord_ClampPos, 0xB)
 {
+	if (!ZoomManager::IsZoomed())
+		return 0;
+
 	GET(int, candX, ESI);
 	GET(int, candY, EBX);
 
@@ -208,25 +219,20 @@ DEFINE_HOOK(0x657134, RadarClass_Render_Radar_ScaleViewRect, 0x6)
 	auto& radarViewRect = pRadar->RadarViewRect;
 	const auto& radarRect = pRadar->RadarRect;
 
+	if (radarRect.Width <= 2 || radarRect.Height <= 2)
+		return 0;
+
 	const double zoom = ZoomManager::CurrentZoom;
 	const int oldW = radarViewRect.Width;
 	const int oldH = radarViewRect.Height;
 
-	const int newW = std::max(2, static_cast<int>(oldW / zoom + 0.5));
-	const int newH = std::max(2, static_cast<int>(oldH / zoom + 0.5));
+	const int maxW = std::max(2, radarRect.Width - 1);
+	const int maxH = std::max(2, radarRect.Height - 1);
+	const int newW = std::clamp(static_cast<int>(oldW / zoom + 0.5), 2, maxW);
+	const int newH = std::clamp(static_cast<int>(oldH / zoom + 0.5), 2, maxH);
 
-	int newX = radarCenterPixel.X - newW / 2;
-	int newY = radarCenterPixel.Y - newH / 2;
-
-	if (newX < radarRect.X)
-		newX = radarRect.X;
-	else if (newX + newW >= radarRect.X + radarRect.Width)
-		newX = radarRect.X + radarRect.Width - newW - 1;
-
-	if (newY < radarRect.Y)
-		newY = radarRect.Y;
-	else if (newY + newH >= radarRect.Y + radarRect.Height)
-		newY = radarRect.Y + radarRect.Height - newH - 1;
+	const int newX = std::clamp(radarCenterPixel.X - newW / 2, radarRect.X, radarRect.X + radarRect.Width - newW - 1);
+	const int newY = std::clamp(radarCenterPixel.Y - newH / 2, radarRect.Y, radarRect.Y + radarRect.Height - newH - 1);
 
 	radarViewRect.X = newX;
 	radarViewRect.Y = newY;
@@ -263,4 +269,3 @@ DEFINE_HOOK(0x653DAC, RadarClass_RTacticalClass_Action_ClampHeight, 0x6)
 	R->EBX(effectiveHeight);
 	return 0x653DB2;
 }
-

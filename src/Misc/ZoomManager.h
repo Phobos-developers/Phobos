@@ -19,12 +19,14 @@ public:
 	static double SmoothRate;
 	static double ActiveSmoothRate;
 	static bool BlitAppliedThisFrame;
+	static DSurface* SavedCompositeSurface;
 
 	// Performs high-performance CPU software stretch blit directly in RAM, bypassing DirectDraw Blt stalls
 	static void FastStretchBlit(DSurface* pDst, const RectangleStruct& dstRect, DSurface* pSrc, const RectangleStruct& srcRect);
 
-	// Redirects hardcoded DSurface::Composite references to DSurface::Temp for tactical rendering
-	static void ApplySurfacePatches();
+	// Temporarily redirects DSurface::Composite and DSurface::Temp to DSurface::Alternate for world-space overlays
+	static void RedirectSurfaces();
+	static void RestoreSurfaces();
 
 	// Checks whether player manual zoom interaction is allowed
 	static bool CanPlayerZoom();
@@ -60,4 +62,3 @@ public:
 	// Transforms tactical coordinates back to screen coordinates
 	static Point2D TacticalToScreen(const Point2D& virtualPoint);
 };
-
