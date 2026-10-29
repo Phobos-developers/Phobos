@@ -229,9 +229,14 @@ DEFINE_HOOK(0x4D9563, FootClass_AssignDestination_DisallowMoving, 0x6)
 {
 	GET(FootClass*, pThis, EBP);
 
+	auto const pExt = FootExt::Fetch(pThis);
+
 	// Prevent locomotor processing when assigned target if temporarily immobilized.
-	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+	if (pExt->IsTempImmobilized)
+	{
+		pExt->ImmobilizedSuspendedDestination = nullptr;
 		return 0x4D96C2;
+	}
 
 	return 0;
 }
@@ -280,6 +285,16 @@ DEFINE_HOOK(0x4D5716, FootClass_ApproachTarget_DisallowMoving, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x4D5716, FootClass_ApproachTarget_DisallowMoving_ResetTarget, 0x6)
+{
+	GET(FootClass*, pThis, EBX);
+
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+		return 0x4D5744;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region Techno
@@ -316,6 +331,21 @@ DEFINE_HOOK(0x7088E3, TechnoClass_ShouldRetaliate_DisallowMoving, 0x6)
 			R->EAX(pUnit->GetFireError(pTarget, weaponIndex, true));
 			return 0x7088F3;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCDD2, TechnoClass_AssignTarget_DisallowMoving_ResetTarget, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		auto const pExt = FootExt::Fetch(static_cast<FootClass*>(pThis));
+
+		if (pExt->IsTempImmobilized)
+			pExt->ImmobilizedSuspendedTarget = nullptr;
 	}
 
 	return 0;

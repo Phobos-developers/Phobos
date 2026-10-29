@@ -1012,10 +1012,10 @@ void FootExt::HandleTemporaryImmobilization()
 	if (isZeroSpeed && !wasZeroSpeed)
 	{
 		// Remember target & destination.
-		this->ImmobilizedSuspendedTarget = pThis->Target;
-		this->ImmobilizedSuspendedDestination = pThis->Destination;
-		pThis->SetTarget(nullptr);
+		auto const pDest = pThis->Destination;
 		pThis->SetDestination(nullptr, false);
+		this->ImmobilizedSuspendedTarget = pThis->Target;
+		this->ImmobilizedSuspendedDestination = pDest;
 		this->IsTempImmobilized = true;
 
 		if (pThis->CurrentMission == Mission::Move)
