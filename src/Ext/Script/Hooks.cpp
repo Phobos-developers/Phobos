@@ -1,6 +1,18 @@
 #include "Body.h"
 #include <Utilities/Helpers.Alex.h>
 
+#include <MapClass.h>
+#include <ThemeClass.h>
+
+#include <Ext/House/Body.h>
+
+enum class BuildingWithProperty : unsigned int
+{
+	LeastThreat = 0 << 16,
+	HighestThreat = 1 << 16,
+	Nearest = 2 << 16,
+	Farthest = 3 << 16
+};
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
 	GET(TeamClass*, pTeam, ESI);
@@ -151,45 +163,156 @@ DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
 {
 	enum { SkipGameCode = 0x723CD3 };
 
-	GET_STACK(char*, pBuffer, 0x4);
+	GET_STACK(char*, scriptActionLine, 0x4);
 
-	if (!pBuffer)
+	if (!scriptActionLine)
 	{
-		R->EAX(pBuffer);
+		R->EAX(0);
 		return SkipGameCode;
 	}
 
-	GET(ScriptActionNode*, pThis, ECX);
-	char arg[0x20];
-	sscanf(pBuffer, "%d,%s", &pThis->Action, arg);
-	R->EAX(pThis->Action);
+	GET(ScriptActionNode*, node, ECX);
 
-	if (Helpers::Alex::is_any_of(pThis->Action, 46, 47, 56, 58))
+	int action = 0;
+	int argument = 0;
+	char* endptr = nullptr;
+
+	if (sscanf(scriptActionLine, "%d,%[^\n]", &action, Phobos::readBuffer) != 2)
 	{
-		char* scanMode = nullptr;
-		char* targetName = strtok_s(arg, ",", &scanMode);
-		const int idx = BuildingTypeClass::FindIndex(targetName);
+		node->Action = action;
+		node->Argument = argument;
+		R->EAX(node->Action);
 
-		if (idx != -1)
-		{
-			int offset = 0x20000;
-
-			if (scanMode)
-			{
-				if (!_stricmp(scanMode, "low"))
-					offset = 0;
-				else if (!_stricmp(scanMode, "hight"))
-					offset = 0x10000;
-				else if (!_stricmp(scanMode, "far"))
-					offset = 0x30000;
-			}
-
-			pThis->Argument = idx + offset;
-			return SkipGameCode;
-		}
+		return SkipGameCode;
 	}
 
-	sscanf(arg, "%d", &pThis->Argument);
+	long val = strtol(Phobos::readBuffer, &endptr, 10);
+
+	if (*endptr == '\0')
+	{
+		// Integer case (the classic).
+		argument = static_cast<int>(val);
+	}
+	else
+	{
+		// New strings case
+		char textArgument[sizeof(Phobos::readBuffer)] = { 0 };
+
+		strcpy_s(textArgument, Phobos::readBuffer);
+
+		char* pArg = textArgument;
+		while (*pArg == ' ' || *pArg == '\t')
+			++pArg;
+
+		// Action masks: These actions translate IDs into indices while preserving the original action values.
+		// The reason for using these masks is that some ScriptType actions rely on fixed indices rather than ID labels.
+		// When these lists change, there's a high probability of breaking the original index of the pointed element
+		int index = 0;
+		int prefixIndex = 0;
+
+		switch (static_cast<PhobosScripts>(action))
+		{
+		case PhobosScripts::ChangeToScriptByID:
+			action = 17;
+			index = ScriptTypeClass::FindIndex(pArg);
+			break;
+		case PhobosScripts::ChangeToTeamTypeByID:
+			action = 18;
+			index = TeamTypeClass::FindIndex(pArg);
+			break;
+		case PhobosScripts::ChangeToHouseByID:
+			action = 20;
+			index = HouseTypeClass::FindIndexOfName(pArg);
+
+			if (index < 0)
+				ScriptExt::Log("AI Scripts - ScriptActionNode_Read: Invalid Country string [%s]\n", pArg);
+			break;
+		case PhobosScripts::PlaySpeechByID:
+			action = static_cast<int>(PhobosScripts::PlaySpeech);
+			index = VoxClass::FindIndex(pArg);
+			break;
+		case PhobosScripts::PlaySoundByID:
+			action = 25;
+			index = VocClass::FindIndex(pArg);
+			break;
+		case PhobosScripts::PlayMovieByID:
+			// Note: action "26" is currently impossible without an expert Phobos developer declaring the Movies class... in that case I could code the right FindIndex(textArgument) so sadly I'll skip "26" for now :-(
+			action = 26;
+			index = 0;
+			break;
+		case PhobosScripts::PlayThemeByID:
+			action = 27;
+			index = ThemeClass::Instance.FindIndex(pArg);
+			break;
+		case PhobosScripts::PlayAnimationByID:
+			action = 51;
+			index = AnimTypeClass::FindIndex(pArg);
+			break;
+		case static_cast<PhobosScripts>(46):
+		case static_cast<PhobosScripts>(47):
+		case static_cast<PhobosScripts>(56):
+		case static_cast<PhobosScripts>(58):
+		case PhobosScripts::AttackEnemyStructureByID:
+		case PhobosScripts::MoveToEnemyStructureByID:
+		case PhobosScripts::ChronoshiftTaskForceToStructureByID:
+		case PhobosScripts::MoveToFriendlyStructureByID:
+			if (PhobosScripts::AttackEnemyStructureByID == static_cast<PhobosScripts>(action))
+				action = 46;
+			else if (PhobosScripts::MoveToEnemyStructureByID == static_cast<PhobosScripts>(action))
+				action = 47;
+			else if (PhobosScripts::ChronoshiftTaskForceToStructureByID == static_cast<PhobosScripts>(action))
+				action = 56;
+			else if (PhobosScripts::MoveToFriendlyStructureByID == static_cast<PhobosScripts>(action))
+				action = 58;
+
+			prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
+
+			{
+				char* scanMode = nullptr;
+				char* targetName = strtok_s(pArg, ",", &scanMode);
+				if (targetName)
+				{
+					while (*targetName == ' ' || *targetName == '\t')
+						++targetName;
+					char* end = targetName + strlen(targetName) - 1;
+					while (end > targetName && (*end == ' ' || *end == '\t'))
+						*end-- = '\0';
+
+					index = BuildingTypeClass::FindIndex(targetName);
+
+					if (index >= 0 && scanMode)
+					{
+						while (*scanMode == ' ' || *scanMode == '\t')
+							++scanMode;
+						end = scanMode + strlen(scanMode) - 1;
+						while (end > scanMode && (*end == ' ' || *end == '\t'))
+							*end-- = '\0';
+
+						if (_stricmp(scanMode, "low") == 0 || _stricmp(scanMode, "leastthreat") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::LeastThreat);
+						else if (_stricmp(scanMode, "high") == 0 || _stricmp(scanMode, "hight") == 0 || _stricmp(scanMode, "highestthreat") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::HighestThreat);
+						else if (_stricmp(scanMode, "near") == 0 || _stricmp(scanMode, "nearest") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::Nearest);
+						else if (_stricmp(scanMode, "far") == 0 || _stricmp(scanMode, "farthest") == 0)
+							prefixIndex = static_cast<int>(BuildingWithProperty::Farthest);
+					}
+				}
+			}
+			break;
+		default:
+			index = 0;
+			break;
+		}
+
+		if (index >= 0)
+			argument = prefixIndex + index;
+	}
+
+	node->Action = action;
+	node->Argument = argument;
+	R->EAX(node->Action);
+
 	return SkipGameCode;
 }
 #pragma warning(pop)
