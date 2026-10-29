@@ -217,6 +217,7 @@ public:
 	Nullable<bool> ForceShield_KeptOnDeploy;
 	Nullable<IronCurtainEffect> ForceShield_Effect;
 	Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
+	Valueable<bool> FixEnteringCyborgLegs;
 	Nullable<bool> Explodes_KillPassengers;
 	Nullable<bool> DriverKilled_KeptPassengers;
 	Nullable<bool> DriverKilled_KillPassengers;
@@ -716,6 +717,7 @@ public:
 		, ForceShield_KeptOnDeploy {}
 		, ForceShield_Effect {}
 		, ForceShield_KillWarhead {}
+		, FixEnteringCyborgLegs { false }
 
 		, Explodes_KillPassengers {}
 		, DriverKilled_KeptPassengers {}

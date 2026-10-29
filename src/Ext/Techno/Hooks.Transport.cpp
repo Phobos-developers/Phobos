@@ -306,8 +306,8 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger, Foot
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
 
-	pTransport->AddPassenger(pPassenger); // Don't swap order casually, very very important
 	pPassenger->Transporter = pTransport;
+	pTransport->AddPassenger(pPassenger); // Don't swap order casually, very very important
 
 	if (pTransport->Type->OpenTopped)
 		pTransport->EnteredOpenTopped(pPassenger);
@@ -827,7 +827,7 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
-	enum { EnterBuilding = 0x51A2AD, CannotEnter = 0x51A488 };
+	enum { EnterBuilding = 0x51A2A4, CannotEnter = 0x51A488 };
 
 	const auto pType = pBuilding->Type;
 	if (!pType->InfantryAbsorb)
@@ -843,6 +843,7 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 			if (const auto pTag = pBuilding->AttachedTag)
 				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
 
+			R->EAX(RadioCommand::AnswerPositive);
 			R->EBP(0);
 			R->EDI(pBuilding);
 			return EnterBuilding;
