@@ -2062,6 +2062,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
 - [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
+- [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
@@ -2079,7 +2080,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
 - Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
-- Fixed issues with rangefinding for `Arcing=true` weapons when targeting buildings due to building `Foundation` size not being taken into accord (by Starkku)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)

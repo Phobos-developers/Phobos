@@ -480,6 +480,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
+	this->Arcing_ConsiderBuildingFoundation.Read(exINI, GameStrings::CombatDamage, "Arcing.ConsiderBuildingFoundation");
 
 	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
 	this->Tibtree_IsPassable.Read(exINI, GameStrings::General, "Tibtree.IsPassable");
@@ -1050,6 +1051,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
 		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Arcing_ConsiderBuildingFoundation)
 		.Process(this->Terrain_IsPassable)
 		.Process(this->Tibtree_IsPassable)
 		.Process(this->Terrain_CanBeBuiltOn)

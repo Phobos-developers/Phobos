@@ -113,7 +113,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
@@ -401,7 +400,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
-- Fixed issues with rangefinding for `Arcing=true` weapons when targeting buildings due to building `Foundation` size not being taken into accord.
 
 ## Newly added global settings
 
@@ -1717,6 +1715,24 @@ AirburstWeapon.RadialFireSegments=0         ; integer
 ```{note}
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
 ```
+
+### Arcing projectile customization
+
+- There are several customizations available for `Arcing=true` projectile and weapon behaviour:
+  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage]` -> `Arcing.AllowElevationInaccuracy`
+  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage]` -> `Arcing.ConsiderBuildingFoundation`
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Arcing.AllowElevationInaccuracy=true     ; boolean
+Arcing.ConsiderBuildingFoundation=false  ; boolean
+
+[SOMEPROJECTILE]                         ; Projectile
+Arcing.AllowElevationInaccuracy=         ; boolean
+Arcing.ConsiderBuildingFoundation=       ; boolean
+```
+
 
 ### Cluster scatter distance customization
 
