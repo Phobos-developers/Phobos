@@ -313,6 +313,7 @@ This page lists all the individual contributions to the project by their author.
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
   - Attached animation draw offset customizations
+  - `Arcing` weapon rangefinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

@@ -2669,3 +2669,28 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
 */
 
 #pragma endregion
+
+// Non-Arcing weapons add extra range in rangefinding checks based on building foundation size.
+// Lack of this in the Arcing code path presumably causes the odd movement they might
+// experience when targeting larger buildings.
+DEFINE_HOOK(0x6F7457, TechnoClass_InRange_ArcingBuildingTargetFix, 0x8)
+{
+	GET(BulletTypeClass*, pBulletType, EAX);
+	GET(int, range, EDI);
+	GET_BASE(AbstractClass*, pTarget, 0xC);
+
+	if (BulletTypeExt::Fetch(pBulletType)->Arcing_ConsiderBuildingFoundation.Get(RulesExt::Global()->Arcing_ConsiderBuildingFoundation))
+	{
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		{
+			constexpr int multiplier = Unsorted::LeptonsPerCell / 4;
+			const auto pType = pBuilding->Type;
+			const int width = pType->GetFoundationWidth();
+			const int height = pType->GetFoundationHeight(false);
+			range += (width + height) * multiplier;
+		}
+	}
+
+	R->EDI(range);
+	return 0;
+}
