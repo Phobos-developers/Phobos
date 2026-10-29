@@ -2099,6 +2099,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
+- Fixed Ares' `Refinery.UseStorage=yes` not prioritizing the refinery's own `Storage` capacity and not properly handling `[General] -> Storage.TiberiumIndex` or Tiberium transfer across `DeploysInto` / `UndeploysInto` on Slave Miners and their slaves (by FS-21)
 ```
 
 ### 0.5
