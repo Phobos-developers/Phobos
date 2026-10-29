@@ -111,6 +111,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool HideLaserTrailEffects;
 		static bool HideShakeEffects;
+		static bool PreserveCSFWhitespace;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
