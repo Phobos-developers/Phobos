@@ -67,7 +67,7 @@ DEFINE_HOOK(0x51EBDF, InfantryClass_WhatAction_ObjectClass_DisallowMoving_2, 0x6
 DEFINE_HOOK(0x51F8A8, InfantryClass_WhatAction_DisallowMoving, 0x6)
 {
 	GET(InfantryClass*, pThis, EDI);
-	GET(Action, action, EBX);
+	GET(const Action, action, EBX);
 
 	if (FootExt::CannotMove(pThis, false))
 	{
@@ -84,7 +84,7 @@ DEFINE_HOOK(0x51F543, InfantryClass_Mission_Hunt_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (int delay = HandleHunt(pThis))
+	if (const int delay = HandleHunt(pThis))
 	{
 		R->EAX(delay);
 		return 0x51F5BE;
@@ -180,7 +180,7 @@ DEFINE_HOOK(0x73EFC4, UnitClass_Mission_Hunt_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (int delay = HandleHunt(pThis))
+	if (const int delay = HandleHunt(pThis))
 	{
 		R->EAX(delay);
 		return 0x73F091;

@@ -3808,8 +3808,8 @@ DEFINE_HOOK(0x6F7457, TechnoClass_InRange_ArcingBuildingTargetFix, 0x8)
 		{
 			constexpr int multiplier = Unsorted::LeptonsPerCell / 4;
 			auto const pType = pBuilding->Type;
-			int width = pType->GetFoundationWidth();
-			int height = pType->GetFoundationHeight(false);
+			const int width = pType->GetFoundationWidth();
+			const int height = pType->GetFoundationHeight(false);
 			range += (width + height) * multiplier;
 		}
 	}
