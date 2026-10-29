@@ -28,6 +28,8 @@ public:
 	bool IsTempImmobilized; // Temporary speed multipliers have made this techno stationary.
 	int SpeedMultiplierFrame;
 	double CurrentSpeedMultiplier;
+	AbstractClass* ImmobilizedSuspendedTarget;
+	AbstractClass* ImmobilizedSuspendedDestination;
 
 	explicit FootExt(FootClass* const OwnerObject) : TechnoExt(OwnerObject)
 		, LastKillWasTeamTarget { false }
@@ -49,6 +51,8 @@ public:
 		, IsTempImmobilized { false }
 		, SpeedMultiplierFrame { 0 }
 		, CurrentSpeedMultiplier { 1.0 }
+		, ImmobilizedSuspendedTarget { nullptr }
+		, ImmobilizedSuspendedDestination { nullptr }
 	{ }
 
 	FootClass* OwnerObject() const

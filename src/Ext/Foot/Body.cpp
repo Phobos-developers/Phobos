@@ -1011,23 +1011,29 @@ void FootExt::HandleTemporaryImmobilization()
 
 	if (isZeroSpeed && !wasZeroSpeed)
 	{
-		// Reset destination & restore without
-		// executing associated logic.
-		auto const pDest = pThis->Destination;
+		// Remember target & destination.
+		this->ImmobilizedSuspendedTarget = pThis->Target;
+		this->ImmobilizedSuspendedDestination = pThis->Destination;
+		pThis->SetTarget(nullptr);
 		pThis->SetDestination(nullptr, false);
-		pThis->Destination = pDest;
 		this->IsTempImmobilized = true;
+
+		if (pThis->CurrentMission == Mission::Move)
+			pThis->ForceMission(Mission::Guard);
 	}
 	else if (!isZeroSpeed && wasZeroSpeed)
 	{
 		this->IsTempImmobilized = false;
 
-		// Fully restore destination if it exists.
-		if (auto const pDest = pThis->Destination)
-		{
-			pThis->Destination = nullptr;
-			pThis->SetDestination(pDest, false);
-		}
+		// Restore target & destination.
+		if (!pThis->Target && this->ImmobilizedSuspendedTarget)
+			pThis->SetTarget(this->ImmobilizedSuspendedTarget);
+
+		if (!pThis->Destination && this->ImmobilizedSuspendedDestination)
+			pThis->SetDestination(this->ImmobilizedSuspendedDestination, false);
+
+		this->ImmobilizedSuspendedTarget = nullptr;
+		this->ImmobilizedSuspendedDestination = nullptr;
 	}
 }
 
@@ -1056,6 +1062,8 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->IsTempImmobilized)
 		.Process(this->SpeedMultiplierFrame)
 		.Process(this->CurrentSpeedMultiplier)
+		.Process(this->ImmobilizedSuspendedTarget)
+		.Process(this->ImmobilizedSuspendedDestination)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
 		;
 }
