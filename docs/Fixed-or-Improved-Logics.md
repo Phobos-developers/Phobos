@@ -344,7 +344,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die.
 - Removed the 128 techno limit when executing a command.
-- Raised the 16 nodes limit for planning node mode and the 128 units limit for a planning order to 256.
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 
 ## Fixes / interactions with other extensions
 

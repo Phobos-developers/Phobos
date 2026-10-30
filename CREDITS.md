@@ -953,7 +953,7 @@ This page lists all the individual contributions to the project by their author.
   - Hotkey for cycling through the types in the current selection
   - Fix briefing out of bound due to fixed window size
   - Remove the 128 techno limit when executing a command
-  - Raise the 16 nodes limit for planning node mode and the 128 units limit for a planning order to 256
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -1018,4 +1018,4 @@ This page lists all the individual contributions to the project by their author.
 - **MagicShiba**:
   - Fix briefing out of bound due to fixed window size
   - Remove the 128 techno limit when executing a command
-  - Raise the 16 nodes limit for planning node mode and the 128 units limit for a planning order to 256
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
