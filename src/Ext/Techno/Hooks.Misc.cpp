@@ -142,9 +142,16 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	auto const pOwner = pThis->Owner;
 	auto const pTypeExt = TechnoExt::Fetch(pOwner)->TypeExtData;
 
+	AbstractClass* pTarget = pThis->Target;
+	if (auto const pSpawnExt = TechnoExt::Fetch(pSpawnee))
+	{
+		if (pSpawnExt->SpawnRandomTarget)
+			pTarget = pSpawnExt->SpawnRandomTarget;
+	}
+
 	if (pTypeExt->Spawner_AttackImmediately.Get(RulesExt::Global()->Spawner_AttackImmediately))
 	{
-		pSpawnee->SetTarget(pThis->Target);
+		pSpawnee->SetTarget(pTarget);
 		pSpawnee->QueueMission(Mission::Attack, true);
 		pSpawnee->IsReturningFromAttackRun = false;
 	}

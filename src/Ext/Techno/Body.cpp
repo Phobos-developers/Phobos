@@ -1399,6 +1399,7 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
+		.Process(this->SpawnRandomTarget)
 		.Process(this->OriginVeterancy)
 		;
 }

@@ -7,6 +7,7 @@
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/Event/Body.h>
 #include <Ext/EBolt/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
