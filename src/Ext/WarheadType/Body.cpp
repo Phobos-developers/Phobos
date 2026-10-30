@@ -99,34 +99,25 @@ bool WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget) const
 	return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
 }
 
-// Return : 1 = allow Damage, 0 = vanilla invulnerable, -1 = always invulnerable.
+// Returns: 1 = allow damage, 0 = vanilla behavior, -1 = force invulnerability.
 int WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget, const int damage) const
 {
-	if (!pTarget->IsIronCurtained())
-		return 1;
+	const bool canAffectInvulnerable = this->CanAffectInvulnerable(pTarget);
 
-	if (damage > 0)
-	{
-		if (this->PenetratesIronCurtain.isset())
-			return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
-		else
-			return pTarget->ForceShielded ? this->PenetratesForceShield.Get(false) : 0;
-	}
-	else if (damage < 0)
+	if (damage < 0 && pTarget->IsIronCurtained())
 	{
 		if (pTarget->ForceShielded)
 		{
-			if (this->PenetratesIronCurtain.isset() || this->PenetratesForceShield.isset())
+			if (this->PenetratesForceShield.isset() || this->PenetratesIronCurtain.isset())
 				return this->PenetratesForceShield.Get(this->PenetratesIronCurtain) ? 1 : -1;
 		}
-		else
+		else if (this->PenetratesIronCurtain.isset())
 		{
-			if (this->PenetratesIronCurtain.isset())
-				return this->PenetratesIronCurtain ? 1 : -1;
+			return this->PenetratesIronCurtain ? 1 : -1;
 		}
 	}
 
-	return 0;
+	return canAffectInvulnerable ? 1 : 0;
 }
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
