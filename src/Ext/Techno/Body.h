@@ -240,7 +240,6 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static bool HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility ability);
-	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static double GetCurrentArmorMultiplier(TechnoClass* pThis, TechnoTypeClass* pType, HouseClass* pSourceHouse = nullptr, WarheadTypeClass* pWarhead = nullptr);
 	static double CalculateArmorMultipliers(TechnoClass* pThis, WarheadTypeClass* pWarhead, HouseClass* pSourceHouse, bool realHit = false);
@@ -272,6 +271,7 @@ public:
 	static void ClickedApproachObject(FootClass* pThis, ObjectClass* pObject);
 	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
 
+	static void SpawnSurvivors(FootClass* pThis, TechnoClass* pKiller, bool select, bool preventEscape);
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);

@@ -113,7 +113,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
@@ -240,7 +239,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
-- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 - Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 - Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 - `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering.
@@ -338,6 +336,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images.
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage.
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script.
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker.
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die.
+- Removed the 128 techno limit when executing a command.
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 
 ## Fixes / interactions with other extensions
 
@@ -597,16 +603,6 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 AutoTarget.InsignificantWhenMindControlled=true  ; boolean
-```
-
-### Customizing default ColorScheme
-
-- In vanilla, an `AltPalette=yes` animation or `Voxel=yes` Projectile image that cannot properly remap will use the first Color Scheme in the `[Colors]` list; now it can be manually specified.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-AnimRemapDefaultColorScheme=      ; ColorScheme name
 ```
 
 ### Customizing effect of level lighting on air units
@@ -986,19 +982,22 @@ SpawnHeight=                 ; integer, height in leptons
 - Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
   - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+  - If `AltPalette.UseInvokerFallback` is set to true animation's invoker house is used if available if animation has no owner house. Defaults to `[AudioVisual] -> AnimRemapUseInvokerFallback`.
 - `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-AnimRemapDefaultColorScheme=    ; integer, [Colors] list index
+AnimRemapDefaultColorScheme=       ; Color scheme name
+AnimRemapUseInvokerFallback=false  ; boolean
 ```
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                      ; AnimationType
-AltPalette.ApplyLighting=false  ; boolean
-TheaterPalette=                 ; boolean
+[SOMEANIM]                         ; AnimationType
+AltPalette.ApplyLighting=false     ; boolean
+AltPalette.UseInvokerFallback=     ; boolean
+TheaterPalette=                    ; boolean
 ```
 
 ### Animation weapon and damage settings
@@ -1720,6 +1719,24 @@ AirburstWeapon.RadialFireSegments=0         ; integer
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
 ```
 
+### Arcing projectile customization
+
+- There are several customizations available for `Arcing=true` projectile and weapon behaviour:
+  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage]` -> `Arcing.AllowElevationInaccuracy`
+  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage]` -> `Arcing.ConsiderBuildingFoundation`
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Arcing.AllowElevationInaccuracy=true     ; boolean
+Arcing.ConsiderBuildingFoundation=false  ; boolean
+
+[SOMEPROJECTILE]                         ; Projectile
+Arcing.AllowElevationInaccuracy=         ; boolean
+Arcing.ConsiderBuildingFoundation=       ; boolean
+```
+
+
 ### Cluster scatter distance customization
 
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
@@ -2210,6 +2227,19 @@ In `rulesmd.ini`:
 ExitThroughRoof=         ; boolean, defaults to true if BalloonHover=true or JumpJet=true, otherwise false
 ```
 
+### Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or pilot, but Ares broke this so that it can only be transferred to pilot. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Survivors.ReplaceTagTo=vehiclethief, crew   ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all)
+
+[SOMETECHNO]                                ; TechnoType
+Survivors.ReplaceTagTo=                     ; List of Affected Survivor Enumeration (none|vehiclethief|pilot/crew|passengers|all), defaults to [General] -> Survivors.ReplaceTagTo
+```
+
 ### Customize `DefaultToGuardArea` per gunner mode
 
 - Technos with `Gunner=yes` can now restrict the `DefaultToGuardArea` and the `GUARD_AREA` promotion ability to specific gunner modes.
@@ -2539,6 +2569,14 @@ ApproachTarget.StopWhenInRange=false  ; boolean
 [SOMETECHNO]                          ; TechnoType
 ApproachTarget.StopWhenInRange=       ; boolean, default to [General] -> ApproachTarget.StopWhenInRange
 ```
+
+### Stationary units
+
+- Infantry & vehicles with `Speed=0` or those that are prevented from moving on their cell by `MovementRestrictedTo` are now truly stationary will not attempt to move if issued movement commands. Should not be used on trainable/buildable units as they become stuck in factory. Following behaviours apply:
+  - Cannot retaliate if target is beyond their weapon range.
+  - Cannot acquire units outside their weapon range on `Area Guard` mission.
+  - `Hunt` mission is reassigned to `Guard`.
+  - Units rendered stationary by speed multipliers instead of intrinsic properties of TechnoType will respond to cursor actions e.g assigning destination but will not move while the multiplier is in effect.
 
 ### Subterranean unit travel height and speed
 
@@ -2980,10 +3018,6 @@ SinkSpeed=5                ; integer, leptons per frame, default to [General] ->
 Sinkable.SquidGrab=true    ; boolean, default to [General] -> Sinkable.SquidGrab
 ```
 
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
 ### Turret recoil
 
 - Now you can use `TurretRecoil` to control units' turret/barrel recoil effect when firing.
@@ -3048,6 +3082,7 @@ TurretShadow=   ; boolean
 
 - It is possible to enable checking if the deployed unit (if type conversion is in use, the conversion result will be used for these checks) is allowed to deploy on the cell which will also affect deploy cursor availability by setting `IsSimpleDeployer.ConsiderPathfinding` to true.
   - You can explicitly disable deploying on cells of specified land types using `IsSimpleDeployer.DisallowedLandTypes`. Defaults to `water,beach` for units with Jumpjet or Hover locomotor with `DeployToLand=true`, `none` for others.
+- If `IsSimpleDeployer.DisallowOnBuildings` is set to true the unit is not allowed to deploy when sharing a cell with buildings.
 - In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual] -> DeployDir` for units with `DeployingAnim`, -1 otherwise), including using value of -1 to disable the facing restriction.
 - Multiple new options for deploy animations:
   - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
@@ -3060,6 +3095,7 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                               ; VehicleType
 IsSimpleDeployer.ConsiderPathfinding=false  ; boolean
 IsSimpleDeployer.DisallowedLandTypes=       ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+IsSimpleDeployer.DisallowOnBuildings=false  ; boolean
 DeployDir=                                  ; Facing type (integers from 0-7 or -1)
 DeployingAnims=                             ; List of AnimationTypes
 DeployingAnim.KeepUnitVisible=false         ; boolean

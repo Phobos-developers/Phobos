@@ -149,6 +149,8 @@ public:
 	ValueableVector<TechnoTypeClass*> Academy_Country_Types[16];
 	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore[16];
 
+	Valueable<bool> AutoUpgrade;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -269,6 +271,8 @@ public:
 		, Academy_Country_Types {}
 		, Academy_Country_Ignore {}
 
+		, AutoUpgrade { false }
+
 		// Ares 0.2
 		, CloningFacility { false }
 
@@ -318,6 +322,30 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static std::vector<TechnoClass*> CleanCheckedTechnos;
+	static std::vector<CellClass*> CleanCheckedCells;
+	static std::vector<CellClass*> CleanOptionalCells;
+	static std::vector<TechnoClass*> CleanReCheckedTechnos;
+
+	struct InfantryCountInCell
+	{
+		CellClass* Position;
+		int Count;
+	};
+
+	static std::vector<InfantryCountInCell> CleanInfantryCells;
+
+	struct TechnoWithDestination
+	{
+		TechnoClass* Techno;
+		CellClass* Destination;
+	};
+
+	static std::vector<TechnoWithDestination> CleanFinalOrder;
+	static std::vector<CellClass*> CleanDeleteCells;
+	static std::vector<TechnoClass*> CleanOptionalTechnos;
+	static bool ContainersInit;
+
 	static BuildingTypeExt* Fetch(const BuildingTypeClass* pThis)
 	{
 		return AbstractExt::Fetch<BuildingTypeExt>(pThis);
@@ -337,5 +365,9 @@ public:
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static bool CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse);
+	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
+	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
+	static bool AutoUpgradeBuilding(BuildingClass* pBuilding);
 };
 

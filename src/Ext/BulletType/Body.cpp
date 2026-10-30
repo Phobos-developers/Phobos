@@ -51,6 +51,7 @@ void BulletTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->SubjectToWater_Detonate.Read(exINI, pSection, "SubjectToWater.Detonate");
 	this->AAOnly.Read(exINI, pSection, "AAOnly");
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
+	this->Arcing_ConsiderBuildingFoundation.Read(exINI, pSection, "Arcing.ConsiderBuildingFoundation");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
 	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, pSection, "ReturnWeapon.ApplyFirepowerMult");
 	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
@@ -161,6 +162,7 @@ void BulletTypeExt::Serialize(T& Stm)
 		.Process(this->SubjectToWater_Detonate)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Arcing_ConsiderBuildingFoundation)
 		.Process(this->ReturnWeapon)
 		.Process(this->ReturnWeapon_ApplyFirepowerMult)
 		.Process(this->SubjectToGround)

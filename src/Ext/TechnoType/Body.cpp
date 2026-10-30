@@ -604,7 +604,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 
 	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
-	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
+	auto const mZone = MovementZone::Normal; // Always use normal, cell/zone traversal is of no interest for this use case and non-Normal can consider destroyable obstacles passable.
 	const bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0f;
 	bool isBridge = allowBridges && pCell && pCell->ContainsBridge();
 	const int baseHeight = location.Z;
@@ -684,6 +684,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 						{
 							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(facing));
+							pTechno->LastMapCoords = CellClass::Coord2Cell(location);
 
 							if (pType->BalloonHover)
 							{
@@ -972,6 +973,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->DriverKilled_KeptPassengers.Read(exINI, pSection, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, pSection, "DriverKilled.KillPassengers");
+	this->Survivors_ReplaceTagTo.Read(exINI, pSection, "Survivors.ReplaceTagTo");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
@@ -1629,6 +1631,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->Survivors_ReplaceTagTo)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
 

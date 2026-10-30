@@ -102,26 +102,26 @@ bool WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget) const
 // Return : 1 = allow Damage, 0 = vanilla invulnerable, -1 = always invulnerable.
 int WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget, const int damage) const
 {
-	if(!pTarget->IsIronCurtained())
+	if (!pTarget->IsIronCurtained())
 		return 1;
 
-	if(damage > 0)
+	if (damage > 0)
 	{
-		if(this->PenetratesIronCurtain.isset())
-			return WarheadTypeExt::CanAffectInvulnerable(pTarget);
+		if (this->PenetratesIronCurtain.isset())
+			return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
 		else
 			return pTarget->ForceShielded ? this->PenetratesForceShield.Get(false) : 0;
 	}
-	else if(damage < 0)
+	else if (damage < 0)
 	{
-		if(pTarget->ForceShielded)
+		if (pTarget->ForceShielded)
 		{
-			if(this->PenetratesIronCurtain.isset() || this->PenetratesForceShield.isset())
+			if (this->PenetratesIronCurtain.isset() || this->PenetratesForceShield.isset())
 				return this->PenetratesForceShield.Get(this->PenetratesIronCurtain) ? 1 : -1;
 		}
 		else
 		{
-			if(this->PenetratesIronCurtain.isset())
+			if (this->PenetratesIronCurtain.isset())
 				return this->PenetratesIronCurtain ? 1 : -1;
 		}
 	}
@@ -263,7 +263,7 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	// CanCrit
-	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0)
+	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0 || this->Crit_AnimList.size() > 0)
 		this->CanCrit = true;
 	else
 		this->CanCrit = false;
