@@ -644,8 +644,8 @@ DeselectObjectKeysEnabled=true    ; boolean
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-KeyboardMoveUnitsCommand=true    ; boolean
-ToggleKeyboardMove=false         ; boolean
+KeyboardMoveUnitsCommands=true    ; boolean
+KeyboardMoveUnitsEnabled=false    ; boolean
 ```
 
 ### `[ ]` Next Idle Harvester
