@@ -313,6 +313,7 @@ This page lists all the individual contributions to the project by their author.
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
   - Attached animation draw offset customizations
+  - `Arcing` weapon rangefinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -952,6 +953,8 @@ This page lists all the individual contributions to the project by their author.
   - Hotkey for cycling through the current selection
   - Hotkey for cycling through the types in the current selection
   - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -1008,9 +1011,13 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
   - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
   - Add `KeyboardMoveUnits` hotkey to use keyboard move selected units controled by player
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
   - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target
-- **MagicShiba** - Fix briefing out of bound due to fixed window size
+- **MagicShiba**:
+  - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256

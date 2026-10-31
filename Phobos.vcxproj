@@ -99,9 +99,10 @@
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
     <!-- src\Ext\Event -->
     <ClCompile Include="src\Ext\Event\Body.cpp" />
+    <ClCompile Include="src\Ext\Event\Hooks.cpp" />
     <!-- src\Ext\Foot -->
     <ClCompile Include="src\Ext\Foot\Body.cpp" />
-    <ClCompile Include="src\Ext\Foot\Hooks.DisallowMoving.cpp" />	
+    <ClCompile Include="src\Ext\Foot\Hooks.DisallowMoving.cpp" />
     <!-- src\Ext\House -->
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />

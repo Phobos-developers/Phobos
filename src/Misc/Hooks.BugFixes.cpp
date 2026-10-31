@@ -205,13 +205,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
 					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 
@@ -222,13 +222,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxMetallicIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
 					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
@@ -3792,3 +3792,4 @@ DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
 
 	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }
+
