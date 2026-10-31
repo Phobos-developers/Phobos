@@ -965,12 +965,15 @@ double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 
 bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 {
-	if (pThis->LocomotorSource || TechnoExt::DriverKilled(pThis))
+	if (pThis->LocomotorSource)
 		return false;
+
+	if ((checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized) || TechnoExt::DriverKilled(pThis))
+		return true;
 
 	const auto pType = pThis->GetTechnoType();
 
-	if (pType->Speed == 0 || (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized))
+	if (pType->Speed == 0)
 		return true;
 
 	auto landType = pThis->GetCell()->LandType;
