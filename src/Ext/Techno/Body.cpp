@@ -773,42 +773,6 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	event.AddEvent();
 }
 
-bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
-{
-    if (pThis->Team != nullptr ||
-        !pThis->IsAlive ||
-        pThis->Health <= 0 ||
-        pThis->InLimbo ||
-		pThis->IsSinking ||
-        pThis->Owner != pHouse)
-    {
-        return false;
-    }
-
-    if (!(pThis->RecruitableA && pThis->RecruitableB))
-    {
-        return false;
-    }
-
-    const Mission mission = pThis->GetCurrentMission();
-    if (!MissionClass::IsRecruitableMission(mission))
-    {
-        return false;
-    }
-
-    if (pThis->ShouldEnterAbsorber ||
-        pThis->ShouldEnterOccupiable ||
-        pThis->ShouldGarrisonStructure ||
-        pThis->DrainTarget != nullptr ||
-        pThis->BunkerLinkedItem ||
-        pThis->LocomotorSource != nullptr)
-    {
-        return false;
-    }
-
-    return true;
-}
-
 struct AresTechnoExt
 {
 	char _[0x50];

@@ -726,7 +726,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		// The Hover movement pattern allows for self-landing.
 		if (pLocomotorType != LocomotionClass::CLSIDs::Fly && pLocomotorType != LocomotionClass::CLSIDs::Hover)
 		{
-			const bool isinAir = pThis->IsInAir() && !pThis->LocomotorSource;
+			const bool isinAir = pThis->IsInAir() && !pThis->IsAttackedByLocomotor;
 
 			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
@@ -965,7 +965,7 @@ double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 
 bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 {
-	if (pThis->LocomotorSource)
+	if (pThis->IsAttackedByLocomotor)
 		return false;
 
 	if ((checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized) || TechnoExt::DriverKilled(pThis))
@@ -1032,6 +1032,42 @@ void FootExt::HandleTemporaryImmobilization()
 		this->ImmobilizedSuspendedTarget = nullptr;
 		this->ImmobilizedSuspendedDestination = nullptr;
 	}
+}
+
+bool FootExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
+{
+	if (pThis->Team != nullptr ||
+		!pThis->IsAlive ||
+		pThis->Health <= 0 ||
+		pThis->InLimbo ||
+		pThis->IsSinking ||
+		pThis->Owner != pHouse)
+	{
+		return false;
+	}
+
+	if (!(pThis->RecruitableA && pThis->RecruitableB))
+	{
+		return false;
+	}
+
+	const Mission mission = pThis->GetCurrentMission();
+	if (!MissionClass::IsRecruitableMission(mission))
+	{
+		return false;
+	}
+
+	if (pThis->ShouldEnterAbsorber ||
+		pThis->ShouldEnterOccupiable ||
+		pThis->ShouldGarrisonStructure ||
+		pThis->DrainTarget != nullptr ||
+		pThis->BunkerLinkedItem ||
+		pThis->LocomotorSource != nullptr)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 // =============================

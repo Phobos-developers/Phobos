@@ -92,4 +92,5 @@ private:
 public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CannotMove(FootClass* pThis, bool checkSpeedMultiplier);
+	static bool CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse);
 };
