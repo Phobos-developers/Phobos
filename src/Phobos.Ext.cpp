@@ -26,6 +26,7 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/ResourceTypeClass.h>
 
 #include <New/Entity/BannerClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
@@ -329,6 +330,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	AttachEffectClass,
 	NewSWType,
 	SelectBoxTypeClass,
+	ResourceTypeClass,
 	InsigniaTypeClass
 	// other classes
 > ;

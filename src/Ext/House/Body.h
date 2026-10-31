@@ -18,6 +18,28 @@ struct PlacingBuildingStruct
 	CellStruct TopLeft;
 };
 
+class FactoryClass;
+class TechnoTypeClass;
+
+struct FactoryResourceState
+{
+	FactoryClass* pFactory { nullptr };
+	TechnoTypeClass* pType { nullptr };
+	int LastStep { 0 };
+	std::vector<int> Spent {};
+
+	template <typename T>
+	void Serialize(T& Stm)
+	{
+		Stm
+			.Process(this->pFactory)
+			.Process(this->pType)
+			.Process(this->LastStep)
+			.Process(this->Spent)
+			;
+	}
+};
+
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -74,6 +96,9 @@ public:
 
 	std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 
+	std::vector<int> CustomResources;
+	std::vector<int> ResourceCollectorCounts;
+
 	// standalone? no need and not a good idea
 	struct SWExt
 	{
@@ -89,6 +114,7 @@ public:
 	bool PlayerAutoRepair;
 
 	std::array<int, 3> BeaconsPlacedOrder;
+	std::vector<FactoryResourceState> FactoryResourceStates;
 
 	std::vector<BuildingClass*> Academies;
 
@@ -122,6 +148,8 @@ public:
 		, NumShipyards_NonMFB { 0 }
 		, AIFireSaleDelayTimer {}
 		, SuspendedEMPulseSWs {}
+		, CustomResources {}
+		, ResourceCollectorCounts {}
 		, SuperExts(SuperWeaponTypeClass::Array.Count)
 		, ForceEnemyIndex(-1)
 		, ForceOnlyTargetHouseEnemy { false }
@@ -131,11 +159,23 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, FactoryResourceStates {}
 		, Academies {}
 		, OwnedDeployingUnits {}
 		, Common { nullptr, nullptr, 0 }
 		, Combat { nullptr, nullptr, 0 }
 	{ }
+
+	int GetResourceAmount(int resourceIdx) const;
+	void SetResourceAmount(int resourceIdx, int amount);
+	void UpdateResourceAmount(int resourceIdx, int delta);
+	bool CanAffordResource(int resourceIdx, int amount) const;
+	bool IsResourceEnabled(int resourceIdx) const;
+	int CalculateResourceBounty(int resourceIdx, TechnoClass* pTechno) const;
+	void InitializeCustomResources();
+	int GetFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx) const;
+	void AddFactoryResourceSpent(FactoryClass* pFactory, size_t resIdx, int amount);
+	void ClearFactoryResourceState(FactoryClass* pFactory);
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
 	void AddToLimboTracking(TechnoTypeClass* pTechnoType);
