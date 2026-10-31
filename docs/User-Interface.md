@@ -634,6 +634,20 @@ In `rulesmd.ini`:
 DeselectObjectKeysEnabled=true    ; boolean
 ```
 
+### `[ ]` Keyboard Move Selected Units
+
+- Use keyboard hotkeys to move selected units that are controled by player. Instead of mouse.
+- Enable these hotkeys by setting `KeyboardMoveUnitsCommand` to true.
+- Use the `ToggleKeyboardMove` hotkey to enable/disable this feature.
+- For localization add `TXT_TOGGLE_KEYBOARD_MOVE`, `TXT_TOGGLE_KEYBOARD_MOVE_DESC`, `TXT_KEYBOARD_MOVE_UNITS_XX` and `TXT_KEYBOARD_MOVE_UNITS_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+KeyboardMoveUnitsCommands=true    ; boolean
+KeyboardMoveUnitsEnabled=false    ; boolean
+```
+
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.

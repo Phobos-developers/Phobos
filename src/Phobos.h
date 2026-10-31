@@ -118,6 +118,7 @@ public:
 		static bool ShowGameTime;
 		static int ShowGameTime_BoardOpacity;
 		static bool CycleTypeSelectionPrintSummary;
+		static bool KeyboardMoveUnitsCommand;
 		// Hotkeys
 		static bool NextIdleHarvesterCommand;
 		static bool QuickSaveCommand;
@@ -131,6 +132,7 @@ public:
 		static bool SelectCapturedCommand;
 		static bool SuperWeaponSidebarCommands;
 		static bool DevelopmentCommands;
+		static bool ToggleKeyboardMove;
 	};
 
 	class Misc
