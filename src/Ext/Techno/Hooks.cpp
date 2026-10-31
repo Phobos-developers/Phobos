@@ -1426,7 +1426,7 @@ DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
+DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid, 0x7)
 {
 	enum { SkipGameCode = 0x4D99D3 };
 
@@ -1434,6 +1434,17 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 	GET(AbstractClass*, pAbstract, EDI);
 	GET(FootClass*, pParasiteOwner, EAX);
 	GET(bool, removed, EBX);
+
+	auto const pExt = FootExt::Fetch(pThis);
+
+	if (removed)
+	{
+		if (pExt->ImmobilizedSuspendedTarget == pAbstract)
+			pExt->ImmobilizedSuspendedTarget = nullptr;
+
+		if (pExt->ImmobilizedSuspendedDestination == pAbstract)
+			pExt->ImmobilizedSuspendedDestination = nullptr;
+	}
 
 	if (pParasiteOwner == pAbstract && (pParasiteOwner->Health <= 0 || !Make_Global<char>(0xA8ED5C)))
 	{
@@ -1443,7 +1454,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 
 	if (!removed)
 	{
-		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+		const auto pTypeExt = pExt->TypeExtData;
 		removed = pTypeExt->Cloak_KickOutParasite.Get(RulesExt::Global()->Cloak_KickOutParasite);
 	}
 

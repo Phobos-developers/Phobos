@@ -29,16 +29,24 @@ static bool __fastcall InfantryClass_CantMove_Wrapper(InfantryClass* pThis)
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x75ACBD, InfantryClass_CantMove_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x75BF87, InfantryClass_CantMove_Wrapper);
+
+DEFINE_HOOK(0x5216F2, InfantryClass_IsReadyToRandomAnimate_DisallowMoving, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+		return 0x521706;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x51AA84, InfantryClass_AssignDestination_DisallowMoving, 0x6)
 {
 	GET(InfantryClass*, pThis, EBP);
 
 	if (FootExt::CannotMove(pThis, false))
-	{
-		pThis->AbortMotion();
 		return 0x51B1D7;
-	}
 
 	return 0;
 }
@@ -210,7 +218,7 @@ DEFINE_HOOK(0x4D4203, FootClass_Mission_Move_DisallowMoving, 0x6)
 
 	if (FootExt::CannotMove(pThis, true))
 	{
-		pThis->ForceMission(Mission::Guard);
+		pThis->EnterIdleMode(false, true);
 		return 0x4D4248;
 	}
 
@@ -221,9 +229,14 @@ DEFINE_HOOK(0x4D9563, FootClass_AssignDestination_DisallowMoving, 0x6)
 {
 	GET(FootClass*, pThis, EBP);
 
+	auto const pExt = FootExt::Fetch(pThis);
+
 	// Prevent locomotor processing when assigned target if temporarily immobilized.
-	if (FootExt::Fetch(pThis)->IsZeroSpeed)
+	if (pExt->IsTempImmobilized)
+	{
+		pExt->ImmobilizedSuspendedDestination = nullptr;
 		return 0x4D96C2;
+	}
 
 	return 0;
 }
@@ -272,6 +285,16 @@ DEFINE_HOOK(0x4D5716, FootClass_ApproachTarget_DisallowMoving, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x4D5716, FootClass_ApproachTarget_DisallowMoving_ResetTarget, 0x6)
+{
+	GET(FootClass*, pThis, EBX);
+
+	if (FootExt::Fetch(pThis)->IsTempImmobilized)
+		return 0x4D5744;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region Techno
@@ -308,6 +331,21 @@ DEFINE_HOOK(0x7088E3, TechnoClass_ShouldRetaliate_DisallowMoving, 0x6)
 			R->EAX(pUnit->GetFireError(pTarget, weaponIndex, true));
 			return 0x7088F3;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCDD2, TechnoClass_AssignTarget_DisallowMoving_ResetTarget, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		auto const pExt = FootExt::Fetch(static_cast<FootClass*>(pThis));
+
+		if (pExt->IsTempImmobilized)
+			pExt->ImmobilizedSuspendedTarget = nullptr;
 	}
 
 	return 0;
