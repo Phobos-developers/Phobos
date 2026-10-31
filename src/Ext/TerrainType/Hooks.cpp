@@ -190,9 +190,11 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 	if (TerrainTypeTemp::pCurrentExt)
 	{
 		GET(CellClass*, pThis, EDI);
-		GET(const int, tibIndex, EAX);
+		const int tibIndex = TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Type;
 
-		TiberiumClass* pTib = TiberiumClass::Array.GetItem(tibIndex);
+		TiberiumClass* pTib = TiberiumClass::Array.GetItemOrDefault(tibIndex);
+		if (!pTib)
+			return NoSpreadReturn;
 
 		std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Range);
 		const size_t size = adjacentCells.size();

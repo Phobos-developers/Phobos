@@ -1,5 +1,6 @@
 #pragma once
 #include <TiberiumClass.h>
+#include <array>
 
 #include <Ext/AbstractType/Body.h>
 #include <Utilities/Container.h>
@@ -24,10 +25,18 @@ public:
 
 	Nullable<ColorStruct> MinimapColor;
 	Valueable<bool> AllowRamps;
+	Nullable<int> PipFrame;
+	std::array<OverlayTypeClass*, 8> RampOverlays {};
+
+	bool HasRampOverlays();
+	OverlayTypeClass* GetRampOverlay(int slopeOffset);
+	void AutoDetectRampOverlays();
 
 	TiberiumExt(TiberiumClass* OwnerObject) : AbstractTypeExt(OwnerObject)
 		, MinimapColor {}
 		, AllowRamps { false }
+		, PipFrame {}
+		, RampOverlays {}
 	{ }
 
 	virtual ~TiberiumExt() = default;

@@ -11,6 +11,10 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <New/Type/TheaterTypeClass.h>
+#include <CCFileClass.h>
+#include <IsometricTileTypeClass.h>
+#include <Phobos.CRT.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -1079,6 +1083,37 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 
 	if (pINI->ReadBool(GameStrings::General, "ApplyLunarFixes", false))
 		return SkipGameCode;
+
+	return 0;
+}
+
+// Safeguard against missing or zero-sized isometric tile files in theater definitions.
+// If the tile is placed on the active map, logs an error noting that this may crash the game and leaves it untouched.
+// If the tile is not placed on the map, silences the missing asset by falling back to a safe tile and logs a warning.
+DEFINE_HOOK(0x547020, IsometricTileTypeClass_LoadTile_MissingFallback, 0x5)
+{
+	GET(IsometricTileTypeClass*, pThis, ECX);
+
+	if (!pThis->FileName[0] || CCFileClass { pThis->FileName }.GetFileSize() == 0)
+	{
+		if (pThis->unk_308 > 0)
+		{
+			Debug::Log("[Phobos] Error: Tileset '%s' tile file '%s' could not be loaded and is placed on the map (%u cells). This may crash the game.\n",
+				pThis->ID, pThis->FileName, pThis->unk_308);
+			return 0;
+		}
+
+		const auto pFallback = (IsometricTileTypeClass::Array.Count > 0)
+			? IsometricTileTypeClass::Array[0]->FileName
+			: nullptr;
+
+		if (pFallback && pFallback[0] && CCFileClass { pFallback }.GetFileSize() > 0)
+		{
+			Debug::Log("[Phobos] Warning: Tileset '%s' tile file '%s' could not be loaded, but is not used on this map. Falling back to '%s'.\n",
+				pThis->ID, pThis->FileName, pFallback);
+			PhobosCRT::strCopy(pThis->FileName, pFallback);
+		}
+	}
 
 	return 0;
 }
