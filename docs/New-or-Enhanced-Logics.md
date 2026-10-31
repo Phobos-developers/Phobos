@@ -3349,11 +3349,12 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 - It is now possible to have Warhead be able to deal damage to Iron Curtained and/or Force Shielded objects. `PenetratesForceShield` defaults to value of `PenetratesIronCurtain`.
   - Note that this does not affect any Warhead effects other than those adjacent to damage (e.g `Psychedelic`) and things like debris generation and detonation of `AirburstWeapon` that do not normally occur if the hit was nullified.
+  - Negative damage bypasses invulnerability by default. An explicit or inherited `false` for the applicable penetration setting blocks negative damage as well.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-PenetratesIronCurtain=false  ; boolean
+PenetratesIronCurtain=       ; boolean
 PenetratesForceShield=       ; boolean
 ```
 

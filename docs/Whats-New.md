@@ -2063,6 +2063,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
+- Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
