@@ -77,6 +77,7 @@ int Phobos::Config::SuperWeaponSidebar_RequiredSignificance = 0;
 bool Phobos::Config::ShowGameTime = false;
 int Phobos::Config::ShowGameTime_BoardOpacity = 40;
 bool Phobos::Config::CycleTypeSelectionPrintSummary = true;
+bool Phobos::Config::KeyboardMoveUnitsCommand = true;
 // Hotkeys
 bool Phobos::Config::NextIdleHarvesterCommand = true;
 bool Phobos::Config::QuickSaveCommand = true;
@@ -90,6 +91,7 @@ bool Phobos::Config::CycleTypeSelectionCommand = true;
 bool Phobos::Config::SelectCapturedCommand = false;
 bool Phobos::Config::SuperWeaponSidebarCommands = false;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::ToggleKeyboardMove = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -308,6 +310,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
 	Phobos::Config::CycleTypeSelectionPrintSummary = pINI_RULESMD->ReadBool("GlobalControls", "CycleTypeSelectionPrintSummary", Phobos::Config::CycleTypeSelectionPrintSummary);
+	Phobos::Config::KeyboardMoveUnitsCommand = pINI_RULESMD->ReadBool("GlobalControls", "KeyboardMoveUnitsCommands", Phobos::Config::KeyboardMoveUnitsCommand);
 
 	// Hotkeys
 	Phobos::Config::NextIdleHarvesterCommand = pINI_RULESMD->ReadBool("GlobalControls", "NextIdleHarvesterKeyEnabled", Phobos::Config::NextIdleHarvesterCommand);
@@ -321,6 +324,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::CycleTypeSelectionCommand = pINI_RULESMD->ReadBool("GlobalControls", "CycleTypeSelectionKeyEnabled", Phobos::Config::CycleTypeSelectionCommand);
 	Phobos::Config::SelectCapturedCommand = pINI_RULESMD->ReadBool("GlobalControls", "SelectCapturedKeyEnabled", Phobos::Config::SelectCapturedCommand);
 	Phobos::Config::SuperWeaponSidebarCommands = pINI_RULESMD->ReadBool("GlobalControls", "SuperWeaponSidebarKeysEnabled", Phobos::Config::SuperWeaponSidebarCommands);
+	Phobos::Config::ToggleKeyboardMove = pINI_RULESMD->ReadBool("Global_Controls", "KeyboardMoveUnitsEnabled", Phobos::Config::ToggleKeyboardMove);
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif

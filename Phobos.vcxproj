@@ -48,6 +48,7 @@
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\ToggleMessageList.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
+    <ClCompile Include="src\Commands\ToggleKeyboardMove.cpp" />
     <!-- src\Ext -->
     <!-- src\Ext\Aircraft -->
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
