@@ -965,18 +965,12 @@ double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 
 bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 {
-	if (pThis->LocomotorSource)
+	if (pThis->LocomotorSource || TechnoExt::DriverKilled(pThis))
 		return false;
-
-	if (TechnoExt::DriverKilled(pThis))
-		return true;
 
 	const auto pType = pThis->GetTechnoType();
 
-	if (pType->Speed == 0)
-		return true;
-
-	if (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized)
+	if (pType->Speed == 0 || (checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized))
 		return true;
 
 	auto landType = pThis->GetCell()->LandType;
@@ -991,7 +985,7 @@ bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
 		if (movementRestrictedTo == LandType::None)
 			return false;
 
-		if (!pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+		if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
 			landType = LandType::Road;
 
 		if (movementRestrictedTo != landType)
