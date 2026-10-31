@@ -113,7 +113,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`, default to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport. Can also be defined at `[General] -> ReloadInTransport` for a global default value.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead, default to `[General] -> ApplyModifiersOnNegativeDamage`.
@@ -340,7 +339,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen.
 - Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target.
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
-- Units in Tank Bunker with deploy functions no longer perform them when deployed out of Tank Bunker.
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker.
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die.
+- Removed the 128 techno limit when executing a command.
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 
 ## Fixes / interactions with other extensions
 
@@ -979,7 +982,7 @@ SpawnHeight=                 ; integer, height in leptons
 - Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud.
   - Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
-  - If `AltPalette.UseInvokerFallback` is set to true animation's invoker house is used if available if animation has no owner house. Defaults to `[AudioVisual]` -> `AnimRemapUseInvokerFallback`.
+  - If `AltPalette.UseInvokerFallback` is set to true animation's invoker house is used if available if animation has no owner house. Defaults to `[AudioVisual] -> AnimRemapUseInvokerFallback`.
 - `TheaterPalette` can be used to customize whether or not animation is drawn in theater / tile palette. Takes priority all over palette-influencing settings except `IsVeins=true`. Defaults to true for tile animations, otherwise false.
 
 In `rulesmd.ini`:
@@ -1715,6 +1718,24 @@ AirburstWeapon.RadialFireSegments=0         ; integer
 ```{note}
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
 ```
+
+### Arcing projectile customization
+
+- There are several customizations available for `Arcing=true` projectile and weapon behaviour:
+  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage]` -> `Arcing.AllowElevationInaccuracy`
+  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage]` -> `Arcing.ConsiderBuildingFoundation`
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+Arcing.AllowElevationInaccuracy=true     ; boolean
+Arcing.ConsiderBuildingFoundation=false  ; boolean
+
+[SOMEPROJECTILE]                         ; Projectile
+Arcing.AllowElevationInaccuracy=         ; boolean
+Arcing.ConsiderBuildingFoundation=       ; boolean
+```
+
 
 ### Cluster scatter distance customization
 

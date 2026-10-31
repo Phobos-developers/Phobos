@@ -205,13 +205,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
 					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 
@@ -222,13 +222,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxMetallicIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
 					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
@@ -1783,6 +1783,13 @@ DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	GET_STACK(const bool, removed, STACK_OFFSET(0xC, 0x8));
 	// Skip the reset for C4AppliedBy if !removed.
 	return removed ? 0 : 0x44E916;
+}
+
+DEFINE_HOOK(0x75F635, WaveClass_PointerExpired_TargetFix, 0x6)
+{
+	GET_STACK(const bool, removed, STACK_OFFSET(0x0, 0x10));
+	// Skip the reset of WaveClass::Target if !removed.
+	return removed ? 0 : 0x75F643;
 }
 
 DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
@@ -3785,3 +3792,4 @@ DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
 
 	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }
+
