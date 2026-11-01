@@ -124,6 +124,66 @@ namespace RightClickCommand
 
 		return reselects;
 	}
+
+	// Plan mode (PlanningNodeClass::PlanningModeActive) is not one of the special left-click
+	// modes above: its mouse handling never reaches the LeftMouseUp action dispatch, the
+	// tactical message handler intercepts it inside the button branches themselves.
+	//   LBUTTONDOWN 0x693187 -> 0x63A5A0(x, y)  remembers the clicked planning node as the
+	//                                           "current node" and consumes the press
+	//   LBUTTONUP   0x693225 -> 0x63A8E0(x, y)  still on that node -> 0x63AD50 ->
+	//                                           FillEvent_Waypoints: the plan becomes a patrol
+	//                                           ring (closed loop)
+	// Once the right button issues the orders, the same two calls have to be made on it,
+	// otherwise closing a plan into a patrol ring still needs a left click on the node.
+	// Both functions return 0 by themselves while plan mode is off, so no mode test is needed.
+	static bool HandlePlanningNodeMouseDown(int mouseX, int mouseY)
+	{
+		return reinterpret_cast<bool(__stdcall*)(int, int)>(0x63A5A0)(mouseX, mouseY);
+	}
+
+	static bool HandlePlanningNodeMouseUp(int mouseX, int mouseY)
+	{
+		return reinterpret_cast<bool(__stdcall*)(int, int)>(0x63A8E0)(mouseX, mouseY);
+	}
+}
+
+// RBUTTONDOWN: the same hand-off to plan mode that LBUTTONDOWN does at 0x693187, right after
+// ProcessClickCoords resolved the click. A consumed press exits the message handler at the
+// default label, exactly like a consumed left press. Stolen bytes: cmp byte ptr
+// [0xA8ED9C], bl (UserInputLocked), re-emitted below as the branch it feeds.
+DEFINE_HOOK(0x69330E, TacticalMsgHandler_RButtonDown_RightClickCommandPlanning, 0x6)
+{
+	if (Phobos::Config::RightClickCommand
+		&& RightClickCommand::HandlePlanningNodeMouseDown(R->Stack<int>(0x10), R->Stack<int>(0x14)))
+	{
+		return 0x693408;
+	}
+
+	// Vanilla: cmp UserInputLocked, bl / jnz 0x69334A
+	return Unsorted::UserInputLocked ? 0x69334A : 0x693316;
+}
+
+// RBUTTONUP: the same hand-off that LBUTTONUP does at 0x693225, but it has to run before the
+// "press in progress" gate at 0x69338F: a press plan mode consumed never ran the SetCapture
+// path, so [this+0x555A] is still 0 and the vanilla gate would end the message before the RMB
+// command redirect at 0x693397 is reached. Unlike the left button branch this one never stores
+// its click point in the [esp+0x10]/[esp+0x14] slots (see the redirect hook below), so the
+// view-relative point is reproduced here from the raw packed xy. Stolen bytes: cmp byte ptr
+// [esi+555Ah], bl, re-emitted below as the branch it feeds.
+DEFINE_HOOK(0x69338F, TacticalMsgHandler_RButtonUp_RightClickCommandPlanning, 0x6)
+{
+	if (Phobos::Config::RightClickCommand)
+	{
+		const int packed = R->Stack<int>(0x34);
+		const int mouseX = static_cast<short>(packed & 0xFFFF) - *reinterpret_cast<int*>(0x886FA0);
+		const int mouseY = static_cast<short>((packed >> 16) & 0xFFFF) - *reinterpret_cast<int*>(0x886FA4);
+
+		if (RightClickCommand::HandlePlanningNodeMouseUp(mouseX, mouseY))
+			return 0x693408;
+	}
+
+	// Vanilla: cmp [this+0x555A], bl / je 0x693408
+	return *reinterpret_cast<BYTE*>(R->ESI() + 0x555A) ? 0x693397 : 0x693408;
 }
 
 // RBUTTONUP handler, just past its "press/drag in progress" gate (cmp [this+0x555A],bl /
