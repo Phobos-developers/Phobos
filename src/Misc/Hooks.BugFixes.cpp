@@ -2017,11 +2017,17 @@ DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
 	const auto pBuildingType = pBuilding->Type;
 	const auto RulesExt = RulesExt::Global();
 
-	if (pBuildingType->Grinding
-		&& TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
-			RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
 	{
-		return SkipGameCode;
+		if (pBuildingType->Grinding)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
 	}
 
 	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
