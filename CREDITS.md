@@ -460,6 +460,7 @@ This page lists all the individual contributions to the project by their author.
   - Ares' Chrono Prisons / Abductors Expansion
   - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
   - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
+  - After enabling non-queue loading, buildings that have both `Grinding` and `InfantryAbsorb`/`UnitAbsorb` can no longer be detected by units searching for bio-reactor buildings and preparing to load into them
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

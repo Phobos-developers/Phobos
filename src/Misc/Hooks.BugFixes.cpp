@@ -12,6 +12,9 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 
+#include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
+
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
@@ -2005,10 +2008,22 @@ DEFINE_HOOK(0x46B23C, BulletClass_DrawVoxel_SetLightConvert2, 0x6)
 // These functions should consider reachablity.
 DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
 {
+	enum { SkipGameCode = 0x4DFC3F };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (pBuildingType->Grinding
+		&& TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
@@ -2016,7 +2031,8 @@ DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	auto const pBuildingType = pBuilding->Type;
+	return !pBuildingType->Grinding && pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
 }
 
 DEFINE_HOOK(0x4E0024, FootClass_FindTankBunker_CheckValid, 0x8)
@@ -2024,7 +2040,8 @@ DEFINE_HOOK(0x4E0024, FootClass_FindTankBunker_CheckValid, 0x8)
 	GET(FootClass*, pThis, EDI);
 	GET(BuildingClass*, pBuilding, ESI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	auto const pBuildingType = pBuilding->Type;
+	return !pBuildingType->Grinding && pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
 }
 
 DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
@@ -2032,15 +2049,31 @@ DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	auto const pBuildingType = pBuilding->Type;
+	return !pBuildingType->Grinding && pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
 }
 
 DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 {
+	enum { SkipGameCode = 0x4DFB30 };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel || pBuildingType->Passengers > 0)
+			return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 #pragma endregion
