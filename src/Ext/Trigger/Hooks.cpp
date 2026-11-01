@@ -1,6 +1,12 @@
+#include <array>
+#include <TriggerClass.h>
 #include <TriggerTypeClass.h>
+#include <HouseClass.h>
+#include <ScenarioClass.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/TEvent/Body.h>
+#include <Ext/Trigger/Body.h>
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x727064, TriggerTypeClass_HasLocalSetOrClearedEvent, 0x5)
 {
@@ -25,6 +31,279 @@ DEFINE_HOOK(0x727024, TriggerTypeClass_HasGlobalSetOrClearedEvent, 0x5)
 		? 0x72702E
 		: 0x727029;
 }
+
+static bool __fastcall TriggerClass_RegisterEvent_Wrapper(
+	TriggerClass* pThis,
+	void* _,
+	TriggerEvent nEvent,
+	ObjectClass* pObject,
+	bool forceFire,
+	bool isPersistent,
+	TechnoClass* pSource)
+{
+	if (!pThis || !pThis->Enabled || pThis->Destroyed || !pThis->Type)
+		return false;
+
+	if (forceFire)
+	{
+		if (isPersistent)
+		{
+			pThis->ResetTimers();
+			if (auto pExt = TriggerExt::TryFetch(pThis))
+				pExt->ResetAllTimers();
+		}
+		return true;
+	}
+
+	auto const pFirstEvent = pThis->Type->FirstEvent;
+	if (!pFirstEvent)
+		return false;
+
+	// Collect all events in original INI order
+	// In YR, OccuredEvents is a 32-bit bitfield, so max 32 events per trigger
+	constexpr size_t MaxEvents = 32;
+	std::array<TEventClass*, MaxEvents> events;
+	size_t eventCount = 0;
+	for (auto pEvent = pFirstEvent; pEvent && eventCount < MaxEvents; pEvent = pEvent->NextEvent)
+		events[eventCount++] = pEvent;
+	std::reverse(events.begin(), events.begin() + eventCount);
+
+	enum class EventBlockType
+	{
+		Parallel,
+		Sequential
+	};
+
+	struct EventBlock
+	{
+		EventBlockType Type { EventBlockType::Parallel };
+		int StartIndex { 0 };
+		int EndIndex { 0 };
+		int ControlEventIndex { -1 };
+	};
+
+	bool hasControlEvents = false;
+	for (size_t i = 0; i < eventCount; ++i)
+	{
+		int const kind = static_cast<int>(events[i]->EventKind);
+		if (kind == PhobosTriggerEvent::ForceSequentialEvents || kind == PhobosTriggerEvent::ForceParallelEvents)
+		{
+			hasControlEvents = true;
+			break;
+		}
+	}
+
+	auto const pExt = TriggerExt::Fetch(pThis);
+	HouseClass* pEventOwner = nullptr;
+	if (pThis->Type)
+	{
+		if (!SessionClass::IsCampaign())
+		{
+			if (auto const pScenarioExt = ScenarioExt::Global())
+			{
+				auto const& triggerOwners = pScenarioExt->TriggerTypePlayerAtXOwners;
+				auto it = triggerOwners.find(pThis->Type->ArrayIndex);
+				if (it != triggerOwners.end())
+					pEventOwner = HouseClass::FindByPlayerAt(it->second);
+			}
+		}
+
+		if (!pEventOwner && pThis->Type->House)
+			pEventOwner = HouseClass::FindByCountryName(pThis->Type->House->ID);
+	}
+
+	bool allEventsOccurred = true;
+
+	if (!hasControlEvents)
+	{
+		// Standard parallel evaluation (vanilla)
+		for (size_t i = 0; i < eventCount; ++i)
+		{
+			auto const pEvent = events[i];
+			const DWORD eventBit = 1u << i;
+			bool occurred = (pThis->OccuredEvents & eventBit) != 0;
+
+			if (!occurred)
+			{
+				bool repeatingFlag = isPersistent;
+				occurred = pEvent->HasOccured(
+					static_cast<int>(nEvent),
+					pEventOwner,
+					pObject,
+					&pThis->Timer,
+					&repeatingFlag,
+					pSource
+				);
+
+				if (!occurred)
+					allEventsOccurred = false;
+			}
+
+			if (occurred)
+			{
+				if (pEvent->House)
+					pThis->House = pEvent->House;
+
+				if (isPersistent && pEvent->GetStateA() && pEvent->GetStateB())
+					pThis->OccuredEvents |= eventBit;
+			}
+		}
+	}
+	else
+	{
+		// Multi-block evaluation (alternating Parallel and Sequential blocks)
+		std::array<EventBlock, MaxEvents> blocks;
+		size_t blockCount = 0;
+
+		EventBlock currentBlock;
+		currentBlock.Type = EventBlockType::Parallel;
+		currentBlock.StartIndex = 0;
+		currentBlock.ControlEventIndex = -1;
+
+		for (size_t i = 0; i < eventCount; ++i)
+		{
+			int const kind = static_cast<int>(events[i]->EventKind);
+			if (kind == PhobosTriggerEvent::ForceSequentialEvents)
+			{
+				currentBlock.EndIndex = static_cast<int>(i) - 1;
+				currentBlock.ControlEventIndex = static_cast<int>(i);
+				if (blockCount < MaxEvents)
+					blocks[blockCount++] = currentBlock;
+
+				// Start new sequential block
+				currentBlock.Type = EventBlockType::Sequential;
+				currentBlock.StartIndex = static_cast<int>(i) + 1;
+				currentBlock.ControlEventIndex = -1;
+			}
+			else if (kind == PhobosTriggerEvent::ForceParallelEvents)
+			{
+				currentBlock.EndIndex = static_cast<int>(i) - 1;
+				currentBlock.ControlEventIndex = static_cast<int>(i);
+				if (blockCount < MaxEvents)
+					blocks[blockCount++] = currentBlock;
+
+				// Start new parallel block
+				currentBlock.Type = EventBlockType::Parallel;
+				currentBlock.StartIndex = static_cast<int>(i) + 1;
+				currentBlock.ControlEventIndex = -1;
+			}
+		}
+		currentBlock.EndIndex = static_cast<int>(eventCount) - 1;
+		if (blockCount < MaxEvents)
+			blocks[blockCount++] = currentBlock;
+
+		for (size_t b = 0; b < blockCount; ++b)
+		{
+			const auto& block = blocks[b];
+			if (block.StartIndex <= block.EndIndex)
+			{
+				if (block.Type == EventBlockType::Parallel)
+				{
+					bool blockDone = true;
+					for (int i = block.StartIndex; i <= block.EndIndex; ++i)
+					{
+						auto const pEvent = events[i];
+						const DWORD eventBit = 1u << i;
+						bool occurred = (pThis->OccuredEvents & eventBit) != 0;
+
+						if (!occurred)
+						{
+							CDTimerClass* pTimer = pExt->GetTimerForEvent(i, pEvent, true);
+							bool repeatingFlag = isPersistent;
+							occurred = pEvent->HasOccured(
+								static_cast<int>(nEvent),
+								pEventOwner,
+								pObject,
+								pTimer,
+								&repeatingFlag,
+								pSource
+							);
+
+							if (!occurred)
+								blockDone = false;
+						}
+
+						if (occurred)
+						{
+							if (pEvent->House)
+								pThis->House = pEvent->House;
+
+							pThis->OccuredEvents |= eventBit;
+						}
+					}
+
+					if (!blockDone)
+						return false;
+				}
+				else // Sequential block
+				{
+					bool blockDone = true;
+					for (int i = block.StartIndex; i <= block.EndIndex; ++i)
+					{
+						auto const pEvent = events[i];
+						const DWORD eventBit = 1u << i;
+						bool occurred = (pThis->OccuredEvents & eventBit) != 0;
+
+						if (!occurred)
+						{
+							// Active sequential step in this block
+							CDTimerClass* pTimer = pExt->GetTimerForEvent(i, pEvent, false);
+							bool repeatingFlag = isPersistent;
+							occurred = pEvent->HasOccured(
+								static_cast<int>(nEvent),
+								pEventOwner,
+								pObject,
+								pTimer,
+								&repeatingFlag,
+								pSource
+							);
+
+							if (occurred)
+							{
+								if (pEvent->House)
+									pThis->House = pEvent->House;
+
+								pThis->OccuredEvents |= eventBit;
+							}
+							else
+							{
+								// Sequential step failed: stop evaluating this block and subsequent blocks!
+								blockDone = false;
+								break;
+							}
+						}
+						else
+						{
+							if (pEvent->House)
+								pThis->House = pEvent->House;
+						}
+					}
+
+					if (!blockDone)
+						return false;
+				}
+			}
+
+			// Block fully satisfied! Mark closing control event as passed
+			if (block.ControlEventIndex >= 0)
+				pThis->OccuredEvents |= (1u << block.ControlEventIndex);
+		}
+	}
+
+	if (allEventsOccurred)
+	{
+		if (isPersistent)
+		{
+			pThis->ResetTimers();
+			pExt->ResetAllTimers();
+		}
+		return true;
+	}
+
+	return false;
+}
+
+DEFINE_FUNCTION_JUMP(LJMP, 0x7264C0, TriggerClass_RegisterEvent_Wrapper);
 
 #pragma region PlayerAtX
 
