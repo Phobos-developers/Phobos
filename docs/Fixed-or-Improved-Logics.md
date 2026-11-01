@@ -741,9 +741,13 @@ FixRepairStepCost=false   ; boolean
 - Their core parameters are still loaded from `[General]`.
 - The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
-- The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
+- The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well. The maximum unit height (in leptons) affected by vein attacks can be configured via `[General] -> VeinAttackHeight`.
 - Units can be made immune to veins the same way as in Tiberian Sun.
 - The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
+- Veins now render, grow, connect, and damage units properly across ramps, and pre-placed veins on ramps are no longer removed when the map loads.
+- Veinhole monsters placed without pre-existing veins around them (or after all surrounding veins are cleared) now generate new veins on their own.
+- When multiple Veinhole monsters share the same vein network and one is destroyed, surviving monsters keep the connected veins alive instead of the entire network shrinking away.
+- Veinhole monsters no longer stop regrowing veins after repeated harvesting by weed eaters, nor spawn extra veins around themselves when destroyed.
 
 ```{note}
 Everything listed below functions identically to Tiberian Sun.
@@ -759,6 +763,7 @@ VeinholeGrowthRate=300        ; integer
 VeinholeShrinkRate=100        ; integer
 MaxVeinholeGrowth=2000        ; integer
 VeinDamage=5                  ; integer
+VeinAttackHeight=5            ; integer, leptons
 VeinholeTypeClass=VEINTREE    ; TerrainType
 
 [CombatDamage]
