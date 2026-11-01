@@ -2070,10 +2070,13 @@ DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
 		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
 	{
+		if (pBuildingType->Passengers > 0)
+			return SkipGameCode;
+
 		const auto pTunnel = AresHelper::CanUseAres
 			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
 
-		if (pTunnel || pBuildingType->Passengers > 0)
+		if (pTunnel)
 			return SkipGameCode;
 	}
 

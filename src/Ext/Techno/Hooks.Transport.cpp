@@ -745,10 +745,16 @@ DEFINE_HOOK(0x51EE36, InfantryClass_MouseOverObject_NoQueueUpToEnter, 0x5)
 		if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
 			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
+			if (pType->Passengers > 0)
+			{
+				R->EBP(Action::Repair);
+				return NewAction;
+			}
+
 			const auto pTunnel = AresHelper::CanUseAres
 				? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pObject->GetOwningHouse()) : nullptr;
 
-			if (pTunnel || pType->Passengers > 0)
+			if (pTunnel)
 			{
 				R->EBP(Action::Repair);
 				return NewAction;
@@ -773,10 +779,16 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOverObject_NoQueueUpToEnter, 0x5)
 		if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
 			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
+			if (pType->Passengers > 0)
+			{
+				R->EBX(Action::Repair);
+				return NewAction;
+			}
+
 			const auto pTunnel = AresHelper::CanUseAres
 				? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pObject->GetOwningHouse()) : nullptr;
 
-			if (pTunnel || pType->Passengers > 0)
+			if (pTunnel)
 			{
 				R->EBX(Action::Repair);
 				return NewAction;
@@ -799,10 +811,13 @@ DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 	if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
 		pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 	{
+		if (pType->UnitAbsorb && pType->Passengers > 0)
+			return SkipGameCode;
+
 		const auto pTunnel = AresHelper::CanUseAres
 			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pThis->Owner) : nullptr;
 
-		if (pTunnel || (pType->UnitAbsorb && pType->Passengers > 0))
+		if (pTunnel)
 			return SkipGameCode;
 	}
 
