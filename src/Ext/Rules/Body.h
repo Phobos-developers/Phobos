@@ -208,6 +208,7 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		Valueable<bool> AnimRemapUseInvokerFallback;
 		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
@@ -388,6 +389,7 @@ public:
 		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Valueable<bool> Arcing_ConsiderBuildingFoundation;
 
 		Valueable<bool> Terrain_IsPassable;
 		Valueable<bool> Tibtree_IsPassable;
@@ -451,6 +453,7 @@ public:
 
 		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<AffectedSurvivor> Survivors_ReplaceTagTo;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
@@ -569,6 +572,8 @@ public:
 		Valueable<AffectedHouse> RevealHouses;
 
 		Valueable<bool> MissileKeepTargetCoord;
+
+		Valueable<bool> ExtendedBuildingPlacing;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -755,6 +760,7 @@ public:
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
+			, AnimRemapUseInvokerFallback { false }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
@@ -899,6 +905,7 @@ public:
 			, HoverDrownable { true }
 
 			, Arcing_AllowElevationInaccuracy { true }
+			, Arcing_ConsiderBuildingFoundation { false }
 
 			, Terrain_IsPassable { false }
 			, Tibtree_IsPassable { false }
@@ -958,6 +965,7 @@ public:
 
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
+			, Survivors_ReplaceTagTo { AffectedSurvivor::VehicleThief | AffectedSurvivor::Crew }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }
@@ -1073,6 +1081,8 @@ public:
 			, RevealHouses { AffectedHouse::Team }
 
 			, MissileKeepTargetCoord { false }
+
+			, ExtendedBuildingPlacing { false }
 		{ }
 
 		virtual ~ExtData() = default;

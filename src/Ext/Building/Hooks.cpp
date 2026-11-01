@@ -304,14 +304,7 @@ DEFINE_HOOK(0x44FDC5, CreateBuildingFromINIFile_AfterCTOR_AfterUnlimbo, 0xA)
 	GET(BuildingClass* const, pBld, ESI);
 
 	if (auto const pExt = BuildingExt::TryFetch(pBld))
-	{
 		pExt->HasPowerFromMapFile = false;
-
-		GET_STACK(const bool, hasPower, STACK_OFFSET(0xEC, -0xDC));
-
-		if (!hasPower)
-			pBld->GoOffline();
-	}
 
 	return 0x44FDD3;
 }
@@ -911,6 +904,11 @@ DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 	if (!pThis->Type->Overpowerable)
 		return SkipGameCode;
 
+	// Oct 29, 2026 - Starkku: Moved to here from now-removed
+	// hook BuildingClass_UpdateDelayedFiring_PrefiringMar2 that
+	// shared same address.
+	BuildingExt::Fetch(pThis)->IsFiringNow = false;
+
 	int overPower = 0;
 
 	for (int idx = pThis->Overpowerers.Count - 1; idx >= 0; idx--)
@@ -1026,13 +1024,6 @@ DEFINE_HOOK(0x440045, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 	BuildingExt::Fetch(pThis)->IsFiringNow = (int)pThis->PrismStage && pThis->DelayBeforeFiring <= 1;
-	return 0;
-}
-
-DEFINE_HOOK(0x4400F9, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0x7)
-{
-	GET(BuildingClass*, pThis, ESI);
-	BuildingExt::Fetch(pThis)->IsFiringNow = false;
 	return 0;
 }
 
@@ -1450,6 +1441,7 @@ DEFINE_HOOK(0x4593C7, BuildingClass_DestroyTankBunker, 0x6)
 	if (pThis->Type->GetFoundationWidth() % 2)
 	{
 		EjectBunkeredUnit(pThis, pUnit);
+		R->EBX(0);
 		return SkipGameCode;
 	}
 
@@ -1483,6 +1475,28 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 
 	if (pType->Bunker && (pThis->TankBunkerState > TankBunkerState::Idle && pThis->TankBunkerState < TankBunkerState::Bunkered))
 		R->EAX(BuildingTypeExt::Fetch(pType)->BunkerStateUpdateDelay.Get(RulesExt::Global()->BunkerStateUpdateDelay));
+
+	return 0;
+}
+
+// Prevent other deploy functionality if unit is bunkered or bunkering.
+DEFINE_HOOK(0x73D63B, UnitClass_Mission_Unload_TankBunker, 0x6)
+{
+	enum { ReturnFromFunction = 0x73E289 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->BunkerLinkedItem)
+	{
+		auto const pCell = pThis->GetCell();
+
+		if (auto const pBuilding = pCell->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		pThis->ForceMission(Mission::Guard);
+
+		return ReturnFromFunction;
+	}
 
 	return 0;
 }

@@ -1,9 +1,8 @@
-#include <Ext/BuildingType/Body.h>
-#include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
-#include <Ext/Rules/Body.h>
+#include "Body.h"
 
-#include <InputManagerClass.h>
+#include <Ext/BuildingType/Body.h>
+
+#include <WWKeyboardClass.h>
 #include <GameOptionsClass.h>
 #include <Utilities/SequenceRates.h>
 
@@ -111,8 +110,8 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 	GET(ObjectClass*, pTarget, ESI);
 	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
 
-	WhatActionObjectTemp::Fire = !ignoreForce && InputManagerClass::Instance->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = !ignoreForce && InputManagerClass::Instance->IsForceMoveKeyPressed();
+	WhatActionObjectTemp::Fire = !ignoreForce && WWKeyboardClass::Instance->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = !ignoreForce && WWKeyboardClass::Instance->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
@@ -336,4 +335,53 @@ DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4D4B43, InfantryClass_Mission_Capture, 0x6)
+{
+	enum { LosesDestination = 0x4D4BD1 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (!pThis || pThis->Target)
+		return 0;
+
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
+
+	if (!pBld || pBld->IsStrange())
+		return 0;
+
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
+		return 0;
+
+	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return 0;
+
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
+		return 0;
+
+	auto const pBldType = pBld->Type;
+
+	if (pBldType->CanBeOccupied && (pType->Occupier || pType->Assaulter))
+	{
+		// Re-evaluate destination if order to garrison came from TMission.
+		if (pType->Occupier && (pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) && !pBld->CanBeOccupiedBy(pThis))
+		{
+			if (!(pThis->ShouldEnterOccupiable ? pThis->EnterBattleBunker() : pThis->GarrisonStructure()))
+			{
+				pThis->SetDestination(nullptr, false);
+				return LosesDestination;
+			}
+		}
+
+		return 0;
+	}
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+
+	return LosesDestination;
 }

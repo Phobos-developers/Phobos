@@ -5,7 +5,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Infantry/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Unit/Body.h>
 
 #pragma region SlaveManagerClass
@@ -1037,6 +1036,17 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		auto const pExt = FootExt::Fetch(static_cast<FootClass*>(pThis));
+
+		if (pExt->IsTempImmobilized)
+		{
+			pExt->ImmobilizedSuspendedTarget = nullptr;
+			pExt->ImmobilizedSuspendedDestination = nullptr;
+		}
+	}
+
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
 		auto const pType = pUnit->Type;
@@ -1173,3 +1183,36 @@ DEFINE_HOOK(0x738B67, UnitClass_DefaultToGuardAreaModes, 0x6)
 
 	return 0;
 }
+
+#pragma region PlanningNodeLimit
+
+// Same ceiling as MaxPlanningOrderUnits in Ext/Event/Hooks.cpp: one route may not hold more than a
+// single order can carry.
+constexpr int MaxPlanningNodes = 256;
+
+DEFINE_HOOK(0x6384DC, TechnoClass_AddPlanningNode_MaxNodes, 0x5)
+{
+	enum { AddUnit = 0x638477, Refuse = 0x6384E1 };
+
+	GET(const int, count, EAX);
+
+	return static_cast<unsigned int>(count) < static_cast<unsigned int>(MaxPlanningNodes)
+		? AddUnit
+		: Refuse;
+}
+
+DEFINE_HOOK(0x6383B4, TechnoClass_AddPlanningNode_MaxNodesWarning, 0x6)
+{
+	enum { StoreFullState = 0x6383BA, Continue = 0x6383C4 };
+
+	GET(PlanningTokenClass* const, pToken, EBP);
+
+	if (!pToken)
+		return 0;
+
+	return pToken->PlanningNodes.Count == MaxPlanningNodes - 1
+		? StoreFullState
+		: Continue;
+}
+
+#pragma endregion

@@ -173,6 +173,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 	this->DrawTurretShadow.Read(exINI, GameStrings::AudioVisual, "DrawTurretShadow");
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
+	this->AnimRemapUseInvokerFallback.Read(exINI, GameStrings::AudioVisual, "AnimRemapUseInvokerFallback");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
@@ -479,6 +480,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
+	this->Arcing_ConsiderBuildingFoundation.Read(exINI, GameStrings::CombatDamage, "Arcing.ConsiderBuildingFoundation");
 
 	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
 	this->Tibtree_IsPassable.Read(exINI, GameStrings::General, "Tibtree.IsPassable");
@@ -536,6 +538,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
+	this->Survivors_ReplaceTagTo.Read(exINI, GameStrings::General, "Survivors.ReplaceTagTo");
 	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
 	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
 	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.InRangeDistance");
@@ -714,6 +717,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
 	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
+	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -921,6 +925,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
+		.Process(this->AnimRemapUseInvokerFallback)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
@@ -1046,6 +1051,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
 		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Arcing_ConsiderBuildingFoundation)
 		.Process(this->Terrain_IsPassable)
 		.Process(this->Tibtree_IsPassable)
 		.Process(this->Terrain_CanBeBuiltOn)
@@ -1089,6 +1095,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitsUnsellable)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->Survivors_ReplaceTagTo)
 		.Process(this->DisableOveroptimizationInTargeting)
 		.Process(this->ExtraThreat_IsThreat)
 		.Process(this->ExtraThreat_InRange)
@@ -1178,6 +1185,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
 		.Process(this->UseSidebarRadarOffsetFix)
+		.Process(this->ExtendedBuildingPlacing)
     ;
 }
 

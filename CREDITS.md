@@ -172,7 +172,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
-  - Stationary VehicleTypes
+  - Stationary units & following improvements/bugfixes
   - Burst logic improvements
   - TechnoType auto-firing weapons
   - Secondary weapon fallback customization
@@ -313,6 +313,7 @@ This page lists all the individual contributions to the project by their author.
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
   - Attached animation draw offset customizations
+  - `Arcing` weapon rangefinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -382,7 +383,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
@@ -459,6 +459,7 @@ This page lists all the individual contributions to the project by their author.
   - New weapon filter tag `CanTarget.DriverKilled`
   - Ares' Chrono Prisons / Abductors Expansion
   - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
+  - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -592,6 +593,9 @@ This page lists all the individual contributions to the project by their author.
   - Customize turn rate when jumpjet vehicle crashing
   - Customize insignias palette
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
+  - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
+  - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+  - Fix the bug that crashing or sinking unit can be recruit into taskforce team
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -705,6 +709,7 @@ This page lists all the individual contributions to the project by their author.
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
   - Attach effect when weapon fire
+  - Building placing and deploying logic enhancement
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -790,6 +795,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
+  - Preserve whitespace in CSF
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -946,6 +952,9 @@ This page lists all the individual contributions to the project by their author.
   - Hotkey for deselect object from current selection
   - Hotkey for cycling through the current selection
   - Hotkey for cycling through the types in the current selection
+  - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -1001,7 +1010,17 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**:
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
+  - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
+  - Customize whether negative damage penetrates Iron Curtain and Force Shield
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
+- **JerryDing07**:
+  - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
+  - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target
+- **MagicShiba**:
+  - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
 - **Igor Kolchinskii (leosnake2208)**:
   - Right-click to command
   - Type selection by double/triple-click

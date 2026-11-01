@@ -99,6 +99,27 @@ bool WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget) const
 	return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
 }
 
+// Returns: 1 = allow damage, 0 = vanilla behavior, -1 = force invulnerability.
+int WarheadTypeExt::CanAffectInvulnerable(TechnoClass* pTarget, const int damage) const
+{
+	const bool canAffectInvulnerable = this->CanAffectInvulnerable(pTarget);
+
+	if (damage < 0 && pTarget->IsIronCurtained())
+	{
+		if (pTarget->ForceShielded)
+		{
+			if (this->PenetratesForceShield.isset() || this->PenetratesIronCurtain.isset())
+				return this->PenetratesForceShield.Get(this->PenetratesIronCurtain) ? 1 : -1;
+		}
+		else if (this->PenetratesIronCurtain.isset())
+		{
+			return this->PenetratesIronCurtain ? 1 : -1;
+		}
+	}
+
+	return canAffectInvulnerable ? 1 : 0;
+}
+
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
@@ -231,6 +252,12 @@ void WarheadTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->Crit_AffectsAbovePercent > this->Crit_AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
+	// CanCrit
+	if (this->Crit_ExtraDamage > 0 || this->Crit_Warhead || this->Crit_ActiveChanceAnims.size() > 0 || this->Crit_AnimList.size() > 0)
+		this->CanCrit = true;
+	else
+		this->CanCrit = false;
 
 	// Return warhead
 	this->ReturnWarhead.Read(exINI, pSection, "ReturnWarhead");
@@ -623,6 +650,7 @@ void WarheadTypeExt::Serialize(T& Stm)
 		.Process(this->Crit_AffectsBelowPercent)
 		.Process(this->Crit_AffectsAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
+		.Process(this->CanCrit)
 
 		.Process(this->ReturnWarhead)
 		.Process(this->ReturnWarhead_Damage)

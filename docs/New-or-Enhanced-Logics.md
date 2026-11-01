@@ -764,6 +764,20 @@ Adjacent.Disallowed.ProhibitDistance=0  ; integer, cell offset
 NoBuildAreaOnBuildup=false              ; boolean
 ```
 
+### Building placing and deploying logic enhancement
+
+- In vanilla games, buildings are always cannot placing or deploying on the cells that other infantries or units on. Now this can be changed by setting `ExtendedBuildingPlacing` to true, when you try to place the building on these cells, it will check whether the occupiers can be scatter by yourself (include your own technos and allies technos) and whether there are enough spaces to scatter. If can, it will record which building you are placing and show a preview to you and your allies, then start a timer to record this placement and order the occupiers to leave this building area. When the area is cleared, the building will be truly place down and the production queue will be restored to original state. But when the timer expires or an unexpected situation has occurred which make the building impossible be constructed here anymore, it will stop the action and play "cannot deploy here", then you should re-place or re-deploy the building in a valid space.
+- `AutoUpgrade` controls whether building upgrades can be automatically placed on the correct and earliest built building.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtendedBuildingPlacing=false   ; boolean
+
+[SOMEBUILDING]                  ; BuildingType
+AutoUpgrade=false               ; boolean
+```
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
@@ -2918,7 +2932,7 @@ This is essentially designed to restore multi-turrets in RA1, not to help you ma
 ### Turret Response
 
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
-  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
+  - If VehicleType has `Speed=0` or `MovementRestrictedTo` prevents it from moving on the cell, the default value is no; in other cases, it is yes.
 
 In `rulesmd.ini`:
 ```ini
@@ -3335,11 +3349,12 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 - It is now possible to have Warhead be able to deal damage to Iron Curtained and/or Force Shielded objects. `PenetratesForceShield` defaults to value of `PenetratesIronCurtain`.
   - Note that this does not affect any Warhead effects other than those adjacent to damage (e.g `Psychedelic`) and things like debris generation and detonation of `AirburstWeapon` that do not normally occur if the hit was nullified.
+  - Negative damage bypasses invulnerability by default. An explicit or inherited `false` for the applicable penetration setting blocks negative damage as well.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-PenetratesIronCurtain=false  ; boolean
+PenetratesIronCurtain=       ; boolean
 PenetratesForceShield=       ; boolean
 ```
 
@@ -3566,15 +3581,21 @@ Taunt=false      ; boolean
   - If you use a warhead with `CellSpread` to damage a building multiple times, then these effects will be applied multiple times. If you don't want this to happen, use [`MergeBuildingDamage`](#allow-merging-aoe-damage-to-buildings-into-one).
   - The affected effects include:
     - [Remove mind-control](#break-mind-control-on-impact)
+    - [Change owner](#change-target-owner-on-impact)
     - [Type conversion](#convert-technotype-on-impact)
     - [`BuildingSell` & `BuildingUndeploy`](#sell-or-undeploy-building-on-impact)
     - [`RemoveDisguise`](#remove-disguise-on-impact)
     - [`ReverseEngineer`](#reverse-engineer-warhead)
+    - [`Taunt`](#taunt-warhead)
+    - [Penetrates damage on transporter](#penetrates-damage-on-transporter)
+    - [Detonate ivan bomb](#detonate-ivan-bomb-on-impact)
     - [Modify shield](#shields)
     - [Modify attach-effects](#attached-effects)
-    - [Modify ammo on impact](New-or-Enhanced-Logics.md#modify-ammo-on-impact)
+    - [Modify ammo on impact](#modify-ammo-on-impact)
     - [Critical hits](#chance-based-extra-damage-or-warhead-detonation--critical-hits)
-      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will forced to be used.
+      - Due to technical reasons, `Crit.SuppressWhenIntercepted=false` and `Crit.ApplyChancePerTarget=true` will be forced to use.
+    - [Return warhead](#return-warhead)
+      - Due to technical reasons, `ReturnWarhead.ApplyChancePerTarget=true` will be forced to use.
 
 In `rulesmd.ini`:
 ```ini

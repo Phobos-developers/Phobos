@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Foot/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -216,7 +217,7 @@ void AttachEffectClass::AI()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (pType->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(pType->Tint.get()))
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -249,7 +250,7 @@ void AttachEffectClass::AI()
 
 			this->ShouldRefreshDuration = false;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 			{
 				pTechno->MarkForRedraw();
 				pExt->UpdateTintValues();
@@ -401,7 +402,7 @@ void AttachEffectClass::OnlineCheck()
 		if (pExt->RecalculateStatMultipliers(this) && pTechno->CloakState == CloakState::Cloaked)
 			pTechno->Uncloak(true);
 
-		if (this->Type->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(this->Type->Tint.get()))
 		{
 			pTechno->MarkForRedraw();
 			pExt->UpdateTintValues();
@@ -580,9 +581,14 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
-			? pFoot->Locomotor->Is_Moving()
-			: pFoot->Locomotor->Is_Really_Moving_Now();
+		bool isMoving = false;
+
+		if (!FootExt::Fetch(pFoot)->IsTempImmobilized)
+		{
+			isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+				? pFoot->Locomotor->Is_Moving()
+				: pFoot->Locomotor->Is_Really_Moving_Now();
+		}
 
 		if (isMoving)
 		{
@@ -822,7 +828,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 				if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 					ROFModifier *= pType->ROFMultiplier;
 
-				if (pType->Tint->Enabled)
+				if (TintTypeClass::IsEnabled(pType->Tint.get()))
 					markForRedraw = true;
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1095,7 +1101,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 			if (pType->RequiresAnimUpdate)
 				requiresAnimUpdate = true;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 		}
 
@@ -1247,7 +1253,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			if (type->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (type->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(type->Tint.get()))
 				markForRedraw = true;
 
 			continue;
@@ -1329,7 +1335,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		if (type->RequiresRecalculation)
 			requiresRecalc = true;
 
-		if (type->Tint->Enabled)
+		if (TintTypeClass::IsEnabled(type->Tint.get()))
 			markForRedraw = true;
 
 		it = pSourceExt->AttachedEffects.erase(it);
