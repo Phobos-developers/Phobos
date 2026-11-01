@@ -397,7 +397,7 @@ std::vector<DistributionTargetInfo> DistributionModeHoldDownCommandClass::Collec
 					item.CurrentPassenger = static_cast<BuildingClass*>(item.pTechno)->Occupants.Count;
 					item.CanBeOccupied = true;
 				}
-				else if (handlePassenger && pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb)) // Other Buildings
+				else if (handlePassenger && pBldType->Passengers > 0) // Other Buildings
 				{
 					item.TotalPassenger = pBldType->Passengers;
 					item.CurrentPassenger = item.pTechno->Passengers.NumPassengers;
@@ -510,12 +510,10 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 	{
 		if (info.WhatAmI == AbstractType::Building)
 		{
-			const auto pBldType = static_cast<BuildingTypeClass*>(info.pType);
-
-			if (pBldType->Passengers > 0 && (pBldType->InfantryAbsorb || pBldType->UnitAbsorb))
+			if (info.pType->Passengers > 0)
 			{
 				handlePassenger = true;
-				info.TotalPassenger = pBldType->Passengers;
+				info.TotalPassenger = info.pType->Passengers;
 				info.CurrentPassenger = info.pTechno->Passengers.NumPassengers;
 			}
 		}
