@@ -93,6 +93,11 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
 
 	}
+	else if (pOwner && pThis->Target && pThis->Status == SpawnManagerStatus::CoolDown && pThis->CountDockedSpawns() > 0)
+	{
+		if (pOwner->Target == pThis->Target || pOwner->CurrentMission == Mission::Attack)
+			pThis->Status = SpawnManagerStatus::Launching;
+	}
 
 	return 0;
 }

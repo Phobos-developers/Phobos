@@ -1328,6 +1328,9 @@ msgid ""
 "Deploy hotkey or command bar button (by Noble_Fish)"
 msgstr "修复有 Ares 隧道类建筑不能通过部署快捷键和命令部署按钮部署释放的 Bug（by Noble_Fish）"
 
+"[Recursive conversion of spawned units](New-or-Enhanced-Logics.md#recursive-conversion-of-spawned-units) (by FS-21)"
+msgstr "[子机的递归转换](New-or-Enhanced-Logics.md#recursive-conversion-of-spawned-units)（by FS-21）"
+
 msgid ""
 "Fixed an issue in Ares where vehicles would occasionally continue to fire"
 " and move even after the driver had been killed (by FlyStar)"
