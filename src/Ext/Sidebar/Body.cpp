@@ -60,8 +60,13 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 
 	// AbandonAll contains Abandon, if the factory cannot be found, it will also cannot be found when respont to this event.
 	// The original version added two events, I think it's to solve the problem of BuildCat::Combat because of the hardcode.
-	// Here make correction to the hardcoded BuildCat::DontCare.
-	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
+	const auto pPrimaryFactory = pTechnoType ? pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat) : nullptr;
+	const bool factoryHasItem = pPrimaryFactory && (
+		(pPrimaryFactory->Object && pPrimaryFactory->Object->GetTechnoType() == pTechnoType)
+		|| pPrimaryFactory->IsQueued(pTechnoType)
+	);
+
+	if (factoryHasItem)
 	{
 		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
