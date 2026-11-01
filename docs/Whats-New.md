@@ -16,6 +16,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### 0.6
 
+#### Changes to vanilla behavior
+
+- `DetectDisguise` and `DetectDisguiseRange` now work for buildings. In the vanilla game, these settings had no effect on buildings. To preserve the vanilla behavior, remove `DetectDisguise` and `DetectDisguiseRange` from affected BuildingTypes.
+
 - `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
 - In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
 
@@ -2072,6 +2076,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- Fixed building disguise detector logic (by FS-21)
 - [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
