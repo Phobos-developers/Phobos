@@ -1,4 +1,5 @@
 #include <IsometricTileTypeClass.h>
+#include <SessionClass.h>
 
 #include "Body.h"
 
@@ -95,6 +96,63 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 	TechnoExt::SyncInvulnerability(pUnit, pStructure);
 	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
 
+	if (pUnit->Tiberium.GetTotalAmount() > 0.0f)
+	{
+		if (auto const pHouse = pStructure->Owner)
+		{
+			auto const pBldTypeExt = BuildingTypeExt::Fetch(pStructure->Type);
+			int const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
+
+			if (pBldTypeExt->Refinery_UseStorage && (pHouse->IsControlledByHuman() || SessionClass::Instance.GameMode == GameMode::Campaign))
+			{
+				int const lastStorage = static_cast<int>(pHouse->OwnedTiberium.GetTotalAmount());
+				int const lastTotalStorage = pHouse->TotalStorage;
+
+				for (int i = 0; i < 4; ++i)
+				{
+					float const amount = pUnit->Tiberium.GetAmount(i);
+					if (amount > 0.0f)
+					{
+						pUnit->Tiberium.RemoveAmount(amount, i);
+						int const idxStorage = storageTiberiumIndex >= 0 ? storageTiberiumIndex : i;
+						auto const pTiberium = TiberiumClass::Array.GetItem(i);
+						auto const pDepositableTiberium = TiberiumClass::Array.GetItem(idxStorage);
+						float remaining = (amount * pTiberium->Value) / pDepositableTiberium->Value;
+
+						if (pStructure->Type->Storage > 0)
+						{
+							float const freeSpace = static_cast<float>(pStructure->Type->Storage) - pStructure->Tiberium.GetTotalAmount();
+							if (freeSpace > 0.0f)
+							{
+								float const toStore = std::min(remaining, freeSpace);
+								pStructure->Tiberium.AddAmount(toStore, idxStorage);
+								pHouse->OwnedTiberium.AddAmount(toStore, idxStorage);
+								remaining -= toStore;
+							}
+						}
+
+						if (remaining > 0.0f)
+							pHouse->GiveTiberium(remaining, idxStorage);
+					}
+				}
+
+				pHouse->UpdateAllSilos(lastStorage, lastTotalStorage);
+			}
+			else
+			{
+				for (int i = 0; i < 4; ++i)
+				{
+					float const amount = pUnit->Tiberium.GetAmount(i);
+					if (amount > 0.0f)
+					{
+						pUnit->Tiberium.RemoveAmount(amount, i);
+						pHouse->GiveTiberium(amount, i);
+					}
+				}
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -107,6 +165,33 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
+
+	if (pStructure->Tiberium.GetTotalAmount() > 0.0f)
+	{
+		int const maxStorage = pUnit->Type->Storage > 0 ? pUnit->Type->Storage : pStructure->Type->Storage;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			float const amount = pStructure->Tiberium.GetAmount(i);
+			if (amount > 0.0f)
+			{
+				pStructure->Tiberium.RemoveAmount(amount, i);
+
+				if (maxStorage > 0)
+				{
+					float const freeSpace = static_cast<float>(maxStorage) - pUnit->Tiberium.GetTotalAmount();
+					if (freeSpace > 0.0f)
+					{
+						float const toStore = std::min(amount, freeSpace);
+						pUnit->Tiberium.AddAmount(toStore, i);
+					}
+				}
+			}
+		}
+
+		if (auto const pHouse = pStructure->Owner)
+			pHouse->UpdateAllSilos(0, 0);
+	}
 
 	// This line will break the bahavior of UnDeploysInto buildings. However, it might serve a purpose that no one knows yet
 	// Comment out the line instead of removing it for now, so we can turn to it if something related goes wrong in the future

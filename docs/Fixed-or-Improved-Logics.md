@@ -404,6 +404,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Fixed Ares' `Refinery.UseStorage=yes` not prioritizing the refinery's own `Storage` capacity and not properly handling `[General] -> Storage.TiberiumIndex` or Tiberium transfer across `DeploysInto` / `UndeploysInto` on Slave Miners and their slaves.
 
 ## Newly added global settings
 
@@ -554,7 +555,7 @@ In vanilla, `[CLNT]` does not have its own image. Originally, in `artmd.ini`, it
 
 ### Customize resource storage
 
-- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
+- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0 (including Slave Miners and their slaves).
 - This tag can not be used without Ares.
 
 In `rulesmd.ini`:
