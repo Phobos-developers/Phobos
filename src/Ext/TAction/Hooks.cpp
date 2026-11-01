@@ -120,6 +120,27 @@ DEFINE_HOOK(0x6E2368, TActionClass_PlayAnimAt, 0x7)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6DD791, TActionClass_ReadINI_DropshipLoadout, 0xB)
+{
+	GET(TActionClass*, pThis, EBP);
+	GET(char*, pToken, EAX);
+
+	if (static_cast<PhobosTriggerAction>(pThis->ActionKind) == PhobosTriggerAction::OpenDropshipLoadoutWindow)
+	{
+		if (pToken && *pToken)
+		{
+			char* endPtr = nullptr;
+			double const val = strtod(pToken, &endPtr);
+			if (endPtr != pToken && val >= 0.0)
+			{
+				if (auto const pExt = TActionExt::Fetch(pThis))
+					pExt->DropshipLoadout_CostMultiplier = val;
+			}
+		}
+	}
+
+	return 0;
+}
 // Enable InGameMovie TAction in non-campaign mode.
 DEFINE_JUMP(LJMP, 0x5BF3B0, 0x5BF3BD);
 DEFINE_JUMP(LJMP, 0x5BF2BB, 0x5BF2C1); // Func unused in vanilla, but maybe someone will use it.
