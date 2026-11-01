@@ -731,44 +731,68 @@ DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
 
 #pragma region BuildingEnterExtension
 
-DEFINE_HOOK(0x51EE36, InfantryClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+DEFINE_HOOK(0x51EE36, InfantryClass_MouseOverObject_NoQueueUpToEnter, 0x5)
 {
-	GET(ObjectClass*, pObject, ESI);
 	enum { NewAction = 0x51EE3B };
+
+	GET(ObjectClass*, pObject, ESI);
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		const auto pRulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+		const auto pRulesExt = RulesExt::Global();
 
-		if (pType->InfantryAbsorb
-			&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
-				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+		if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
-			R->EBP(Action::Repair);
-			return NewAction;
+			if (pType->Passengers > 0)
+			{
+				R->EBP(Action::Repair);
+				return NewAction;
+			}
+
+			const auto pTunnel = AresHelper::CanUseAres
+				? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pObject->GetOwningHouse()) : nullptr;
+
+			if (pTunnel)
+			{
+				R->EBP(Action::Repair);
+				return NewAction;
+			}
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
+DEFINE_HOOK(0x740375, UnitClass_MouseOverObject_NoQueueUpToEnter, 0x5)
 {
-	GET(ObjectClass*, pObject, EDI);
 	enum { NewAction = 0x74037A };
+
+	GET(ObjectClass*, pObject, EDI);
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		const auto pRulesExt = RulesExt::Global();
 		const auto pType = static_cast<BuildingClass*>(pObject)->Type;
+		const auto pRulesExt = RulesExt::Global();
 
-		if (pType->UnitAbsorb
-			&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
-				pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+		if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 		{
-			R->EBX(Action::Repair);
-			return NewAction;
+			if (pType->Passengers > 0)
+			{
+				R->EBX(Action::Repair);
+				return NewAction;
+			}
+
+			const auto pTunnel = AresHelper::CanUseAres
+				? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pObject->GetOwningHouse()) : nullptr;
+
+			if (pTunnel)
+			{
+				R->EBX(Action::Repair);
+				return NewAction;
+			}
 		}
 	}
 
@@ -777,17 +801,24 @@ DEFINE_HOOK(0x740375, UnitClass_MouseOvetObject_NoQueueUpToEnter, 0x5)
 
 DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 {
-	GET(BuildingClass*, pThis, ESI);
 	enum { SkipGameCode = 0x73F64F };
 
-	const auto pRulesExt = RulesExt::Global();
-	const auto pType = pThis->Type;
+	GET(BuildingClass*, pThis, ESI);
 
-	if (pType->UnitAbsorb
-		&& TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
-			pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
+	const auto pType = pThis->Type;
+	const auto pRulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+		pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 	{
-		return SkipGameCode;
+		if (pType->UnitAbsorb && pType->Passengers > 0)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pThis->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
 	}
 
 	return 0;
@@ -795,9 +826,10 @@ DEFINE_HOOK(0x73F63F, UnitClass_IsCellOccupied_NoQueueUpToEnter, 0x6)
 
 DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
 {
+	enum { SkipGameCode = 0x4DFC91 };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGameCode = 0x4DFC91 };
 
 	const auto RulesExt = RulesExt::Global();
 	const Mission mission = TechnoTypeExt::Fetch(pBuilding->Type)->NoQueueUpToEnter.Get(
@@ -825,31 +857,35 @@ DEFINE_HOOK(0x44DCB1, BuildingClass_Mi_Unload_NoQueueUpToUnload, 0x7)
 
 DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
-	GET(InfantryClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EBX);
 	enum { EnterBuilding = 0x51A2AD, CannotEnter = 0x51A488 };
 
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+
 	const auto pType = pBuilding->Type;
-	if (!pType->InfantryAbsorb)
-		return 0;
+	const auto pRulesExt = RulesExt::Global();
 
-	const auto pTunnel = AresHelper::CanUseAres
-		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
-
-	if (pType->Passengers > 0 || pTunnel)
+	if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+		pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 	{
-		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel || pType->Passengers > 0)
 		{
-			if (const auto pTag = pBuilding->AttachedTag)
-				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+			{
+				if (const auto pTag = pBuilding->AttachedTag)
+					pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+				R->EBP(0);
+				R->EDI(pBuilding);
+				return EnterBuilding;
+			}
 
 			R->EBP(0);
-			R->EDI(pBuilding);
-			return EnterBuilding;
+			return CannotEnter;
 		}
-
-		R->EBP(0);
-		return CannotEnter;
 	}
 
 	return 0;
@@ -857,37 +893,39 @@ DEFINE_HOOK(0x519776, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 
 DEFINE_HOOK(0x739FA2, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 {
-	GET(UnitClass*, pThis, EBP);
-	GET(BuildingClass*, pBuilding, EBX);
 	enum { EnterBuilding = 0x73A28A, CannotEnter = 0x73A796, SkipGameCode = 0x73A315 };
 
+	GET(UnitClass*, pThis, EBP);
+	GET(BuildingClass*, pBuilding, EBX);
+
 	const auto pType = pBuilding->Type;
-	if (!pType->UnitAbsorb)
-		return 0;
+	const auto pRulesExt = RulesExt::Global();
 
-	const auto pTunnel = AresHelper::CanUseAres
-		? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
-
-	if (pType->Passengers > 0 || pTunnel)
+	if (TechnoTypeExt::Fetch(pType)->NoQueueUpToEnter.Get(
+		pRulesExt->NoQueueUpToEnter_Buildings.Get(pRulesExt->NoQueueUpToEnter)))
 	{
-		if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel || pType->Passengers > 0)
 		{
-			if (const auto pTag = pBuilding->AttachedTag)
-				pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
-
-			// This might fix a bug where hover vehicles enter tunnels.
-			FootExt::Fetch(pThis)->ResetLocomotor = true;
-
-			if (pTunnel)
+			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pBuilding) == RadioCommand::AnswerPositive)
 			{
-				AresFunctions::AddPassengerFromTunnel(pTunnel, pBuilding, pThis);
-				return SkipGameCode;
+				if (const auto pTag = pBuilding->AttachedTag)
+					pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+				// This might fix a bug where hover vehicles enter tunnels.
+				FootExt::Fetch(pThis)->ResetLocomotor = true;
+
+				if (pTunnel)
+				{
+					AresFunctions::AddPassengerFromTunnel(pTunnel, pBuilding, pThis);
+					return SkipGameCode;
+				}
+
+				return EnterBuilding;
 			}
 
-			return EnterBuilding;
-		}
-		else
-		{
 			return CannotEnter;
 		}
 	}
