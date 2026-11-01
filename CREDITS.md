@@ -1021,3 +1021,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix briefing out of bound due to fixed window size
   - Remove the 128 techno limit when executing a command
   - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
+- **Igor Kolchinskii (leosnake2208)**:
+  - Right-click to command
+  - Type selection by double/triple-click
