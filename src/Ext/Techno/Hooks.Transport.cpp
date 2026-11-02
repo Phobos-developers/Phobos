@@ -836,7 +836,7 @@ DEFINE_HOOK(0x4DFC83, FootClass_EnterBioReactor_NoQueueUpToUnload, 0x6)
 		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter))
 		? Mission::Eaten : Mission::Enter;
 
-	pThis->QueueMission(mission, false);
+	pThis->QueueMission(mission, true);
 	return SkipGameCode;
 }
 
