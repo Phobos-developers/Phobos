@@ -3,7 +3,6 @@
 #include <CellClass.h>
 #include <MapClass.h>
 #include <OverlayClass.h>
-#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 
 namespace

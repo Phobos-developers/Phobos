@@ -904,6 +904,11 @@ DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 	if (!pThis->Type->Overpowerable)
 		return SkipGameCode;
 
+	// Oct 29, 2026 - Starkku: Moved to here from now-removed
+	// hook BuildingClass_UpdateDelayedFiring_PrefiringMar2 that
+	// shared same address.
+	BuildingExt::Fetch(pThis)->IsFiringNow = false;
+
 	int overPower = 0;
 
 	for (int idx = pThis->Overpowerers.Count - 1; idx >= 0; idx--)
@@ -1019,13 +1024,6 @@ DEFINE_HOOK(0x440045, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 	BuildingExt::Fetch(pThis)->IsFiringNow = (int)pThis->PrismStage && pThis->DelayBeforeFiring <= 1;
-	return 0;
-}
-
-DEFINE_HOOK(0x4400F9, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0x7)
-{
-	GET(BuildingClass*, pThis, ESI);
-	BuildingExt::Fetch(pThis)->IsFiringNow = false;
 	return 0;
 }
 

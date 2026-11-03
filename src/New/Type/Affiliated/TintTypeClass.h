@@ -14,6 +14,8 @@ public:
 
 	TintTypeClass() = default;
 
+	static bool IsEnabled(TintTypeClass* pTint){ return pTint ? pTint->Enabled : false; }
+
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
