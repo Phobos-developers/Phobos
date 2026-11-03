@@ -1722,8 +1722,8 @@ AirburstWeapon.RadialFireSegments=0         ; integer
 ### Arcing projectile customization
 
 - There are several customizations available for `Arcing=true` projectile and weapon behaviour:
-  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage]` -> `Arcing.AllowElevationInaccuracy`
-  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage]` -> `Arcing.ConsiderBuildingFoundation`
+  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`
+  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage] -> Arcing.ConsiderBuildingFoundation`
 
 In `rulesmd.ini`:
 ```ini
@@ -1731,9 +1731,9 @@ In `rulesmd.ini`:
 Arcing.AllowElevationInaccuracy=true     ; boolean
 Arcing.ConsiderBuildingFoundation=false  ; boolean
 
-[SOMEPROJECTILE]                         ; Projectile
-Arcing.AllowElevationInaccuracy=         ; boolean
-Arcing.ConsiderBuildingFoundation=       ; boolean
+[SOMEPROJECTILE]                         ; Projectile， with Arcing=true
+Arcing.AllowElevationInaccuracy=         ; boolean, defaults to [CombatDamage] -> Arcing.AllowElevationInaccuracy
+Arcing.ConsiderBuildingFoundation=       ; boolean, defaults to [CombatDamage] -> Arcing.ConsiderBuildingFoundation
 ```
 
 

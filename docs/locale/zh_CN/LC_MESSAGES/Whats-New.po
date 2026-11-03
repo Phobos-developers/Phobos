@@ -1195,6 +1195,7 @@ msgid ""
 "foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-"
 "projectile-customization) (by Starkku)"
 msgstr ""
+"[`Arcing=true` 抛射体武器在射程计算中计入建筑占地的开关](Fixed-or-Improved-Logics.md#arcing-projectile-customization)（by Starkku）"
 
 msgid ""
 "Add negative damage handling for `PenetratesIronCurtain` and "

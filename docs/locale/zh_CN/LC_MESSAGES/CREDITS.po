@@ -929,6 +929,7 @@ msgstr "附着动画绘制偏移"
 
 msgid "`Arcing` weapon rangefinding fix"
 msgstr ""
+"`Arcing` 武器射程判定问题修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
