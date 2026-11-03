@@ -3496,6 +3496,7 @@ msgid ""
 "`DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once"
 " when they die"
 msgstr ""
+"修复了已定义 `MinDebris` 和 `MaxDebris` 但未定义 `DebrisTypes` 的单位在死亡时会无条件生成一次 `MetallicDebris` 的 Bug"
 
 msgid "Customize whether negative damage penetrates Iron Curtain and Force Shield"
 msgstr ""

@@ -1345,6 +1345,7 @@ msgid ""
 " `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` "
 "once when they die (by dh381)"
 msgstr ""
+"修复了已定义 `MinDebris` 和 `MaxDebris` 但未定义 `DebrisTypes` 的单位在死亡时会无条件生成一次 `MetallicDebris` 的 Bug（by dh381）"
 
 msgid ""
 "Fixed a bug where, when non-queue loading was enabled, tunnel structures "
