@@ -6698,6 +6698,7 @@ msgid ""
 "inherited `false` for the applicable penetration setting blocks negative "
 "damage as well."
 msgstr ""
+"负伤害默认会绕过无敌效果。若对应的穿透设置为显式或继承而来的 `false`，则也会阻止负伤害。"
 
 msgid "Launch superweapons on impact"
 msgstr "发射超武"

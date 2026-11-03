@@ -1201,6 +1201,7 @@ msgid ""
 "Add negative damage handling for `PenetratesIronCurtain` and "
 "`PenetratesForceShield` (by dh381)"
 msgstr ""
+"为 `PenetratesIronCurtain` 和 `PenetratesForceShield` 添加了负伤害处理（by dh381）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

@@ -3503,6 +3503,7 @@ msgstr ""
 
 msgid "Customize whether negative damage penetrates Iron Curtain and Force Shield"
 msgstr ""
+"自定义负值伤害是否穿透铁幕与力场护盾"
 
 msgid ""
 "**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
