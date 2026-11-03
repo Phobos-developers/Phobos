@@ -1766,11 +1766,13 @@ msgstr "修复了同时弹药逻辑和 `LimboLaunch=yes` 武器的步兵无法�
 
 msgid "Removed the 128 techno limit when executing a command."
 msgstr ""
+"移除了执行命令时的 128 单位上限。"
 
 msgid ""
 "Raised the 16 nodes limit for planning node mode and the 128 total unit "
 "limit for a planning order to 256."
 msgstr ""
+"将计划节点模式的 16 节点上限和计划命令的 128 单位总上限提升到了 256。"
 
 msgid ""
 "Allowed repair and sell mode to be always toggleable instead of relying "
