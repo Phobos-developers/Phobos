@@ -1298,6 +1298,7 @@ msgid ""
 "Allowed repair and sell mode to be always toggleable instead of relying "
 "on the presence of `Insignificant=no` buildings (by Ollerus)"
 msgstr ""
+"允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑（by Ollerus）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："

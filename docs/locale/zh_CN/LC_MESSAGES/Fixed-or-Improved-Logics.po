@@ -1778,6 +1778,7 @@ msgid ""
 "Allowed repair and sell mode to be always toggleable instead of relying "
 "on the presence of `Insignificant=no` buildings."
 msgstr ""
+"允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑。"
 
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"

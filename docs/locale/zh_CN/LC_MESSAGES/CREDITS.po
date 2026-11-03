@@ -2844,6 +2844,7 @@ msgid ""
 "Allow repair and sell mode to be always toggleable instead of relying on "
 "the presence of `Insignificant=no` buildings"
 msgstr ""
+"允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
