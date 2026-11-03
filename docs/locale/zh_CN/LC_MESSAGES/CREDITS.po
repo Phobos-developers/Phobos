@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 21:42+0800\n"
+"POT-Creation-Date: 2026-11-04 06:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -510,8 +510,8 @@ msgstr "自定义战机武器扫射"
 msgid "Vehicle `DeployFire` fixes/improvements"
 msgstr "载具 `DeployFire` 修复／改进"
 
-msgid "Stationary units"
-msgstr "静止的单位"
+msgid "Stationary units & following improvements/bugfixes"
+msgstr "静止的单位及相关改进／修复"
 
 msgid "Burst logic improvements"
 msgstr "Burst 逻辑改进"
@@ -926,6 +926,10 @@ msgstr "狂暴／ `Psychedelic` 持续时间叠加的自定义"
 
 msgid "Attached animation draw offset customizations"
 msgstr "附着动画绘制偏移"
+
+msgid "`Arcing` weapon rangefinding fix"
+msgstr ""
+"`Arcing` 武器射程判定问题修复"
 
 msgid "**Morton (MortonPL)**:"
 msgstr "**Morton (MortonPL)**："
@@ -2378,8 +2382,7 @@ msgid "Attach effect when weapon fire"
 msgstr "在武器开火时赋予 AE"
 
 msgid "Building placing and deploying logic enhancement"
-msgstr ""
-"建筑放置与部署逻辑增强"
+msgstr "建筑放置与部署逻辑增强"
 
 msgid "**Noble Fish**:"
 msgstr "**Noble_Fish**："
@@ -2837,6 +2840,12 @@ msgstr "修复了护盾重生／自愈的一系列问题"
 msgid "Country-based attached effects"
 msgstr "基于国家的 AE"
 
+msgid ""
+"Allow repair and sell mode to be always toggleable instead of relying on "
+"the presence of `Insignificant=no` buildings"
+msgstr ""
+"允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑"
+
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
 
@@ -3261,8 +3270,17 @@ msgid "Hotkey for cycling through the types in the current selection"
 msgstr "循环切换当前已选中类型的快捷键"
 
 msgid "Fix briefing out of bound due to fixed window size"
+msgstr "修复了固定窗口尺寸导致简报越界的问题"
+
+msgid "Remove the 128 techno limit when executing a command"
 msgstr ""
-"修复了固定窗口尺寸导致简报越界的问题"
+"移除执行命令时的 128 单位上限"
+
+msgid ""
+"Raise the 16 nodes limit for planning node mode and the 128 total unit "
+"limit for a planning order to 256"
+msgstr ""
+"将计划节点模式的 16 节点上限和计划命令的 128 单位总上限提升至 256"
 
 msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
@@ -3473,6 +3491,22 @@ msgid "Allow Ares Academy add country-level filters"
 msgstr "允许 Ares 训练所添加国家级别的过滤器"
 
 msgid ""
+"Fix the bug that infantry weapons with both `LimboLaunch=yes` and "
+"ammunition logic could not set ReloadTimer properly"
+msgstr "修复了同时弹药逻辑和 `LimboLaunch=yes` 武器的步兵无法正确设置重装填计时器（无法正常消耗第一发弹药）的问题"
+
+msgid ""
+"Fix a bug where units that have `MinDebris` and `MaxDebris` defined but "
+"`DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once"
+" when they die"
+msgstr ""
+"修复了已定义 `MinDebris` 和 `MaxDebris` 但未定义 `DebrisTypes` 的单位在死亡时会无条件生成一次 `MetallicDebris` 的 Bug"
+
+msgid "Customize whether negative damage penetrates Iron Curtain and Force Shield"
+msgstr ""
+"自定义负值伤害是否穿透铁幕与力场护盾"
+
+msgid ""
 "**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
 "TerrainType SHP images"
 msgstr "**Krisztiaan** - 修复释放缓存的地形对象 SHP 图像所导致的任务重开崩溃"
@@ -3488,10 +3522,14 @@ msgstr "修复了 `IsSonic=true` 的波在靠近屏幕顶部边缘绘制时偶�
 msgid ""
 "Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was "
 "drawn while its firer was at the same horizontal position as its target"
-msgstr ""
-"修复了当开火者与目标处于相同水平位置时绘制波（例如 `IsSonic=true`）会导致崩溃或内存损坏的问题"
+msgstr "修复了当开火者与目标处于相同水平位置时绘制波（例如 `IsSonic=true`）会导致崩溃或内存损坏的问题"
 
-msgid "**MagicShiba** - Fix briefing out of bound due to fixed window size"
-msgstr ""
-"**MagicShiba** - 修复固定窗口尺寸导致简报越界的问题"
+msgid "**MagicShiba**:"
+msgstr "**MagicShiba**："
+
+#~ msgid "Stationary units"
+#~ msgstr "静止的单位"
+
+#~ msgid "**MagicShiba** - Fix briefing out of bound due to fixed window size"
+#~ msgstr "**MagicShiba** - 修复固定窗口尺寸导致简报越界的问题"
 

@@ -341,7 +341,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that crashing or sinking unit can be recruit into taskforce team.
 - Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker.
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly.
-- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die.
 - Removed the 128 techno limit when executing a command.
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
@@ -1723,8 +1722,8 @@ AirburstWeapon.RadialFireSegments=0         ; integer
 ### Arcing projectile customization
 
 - There are several customizations available for `Arcing=true` projectile and weapon behaviour:
-  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage]` -> `Arcing.AllowElevationInaccuracy`
-  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage]` -> `Arcing.ConsiderBuildingFoundation`
+  - `Arcing.AllowElevationInaccuracy` determines whether or not the projectile has inbuilt inaccuracy if the target is at different elevation. Defaults to `[CombatDamage] -> Arcing.AllowElevationInaccuracy`
+  - `Arcing.ConsiderBuildingFoundation` determines whether or not weapons using the projectile consider building foundation size in rangefinding calculations - they gain extra range equivalent to building foundation width + height multiplied by 64, in leptons (1/256th of a cell). Defaults to `[CombatDamage] -> Arcing.ConsiderBuildingFoundation`
 
 In `rulesmd.ini`:
 ```ini
@@ -1732,9 +1731,9 @@ In `rulesmd.ini`:
 Arcing.AllowElevationInaccuracy=true     ; boolean
 Arcing.ConsiderBuildingFoundation=false  ; boolean
 
-[SOMEPROJECTILE]                         ; Projectile
-Arcing.AllowElevationInaccuracy=         ; boolean
-Arcing.ConsiderBuildingFoundation=       ; boolean
+[SOMEPROJECTILE]                         ; Projectile， with Arcing=true
+Arcing.AllowElevationInaccuracy=         ; boolean, defaults to [CombatDamage] -> Arcing.AllowElevationInaccuracy
+Arcing.ConsiderBuildingFoundation=       ; boolean, defaults to [CombatDamage] -> Arcing.ConsiderBuildingFoundation
 ```
 
 
