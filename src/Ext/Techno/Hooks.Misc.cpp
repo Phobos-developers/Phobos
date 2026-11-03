@@ -1036,6 +1036,17 @@ DEFINE_HOOK(0x4C7512, EventClass_Execute_StopCommand, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+	{
+		auto const pExt = FootExt::Fetch(static_cast<FootClass*>(pThis));
+
+		if (pExt->IsTempImmobilized)
+		{
+			pExt->ImmobilizedSuspendedTarget = nullptr;
+			pExt->ImmobilizedSuspendedDestination = nullptr;
+		}
+	}
+
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
 		auto const pType = pUnit->Type;

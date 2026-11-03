@@ -919,3 +919,39 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 }
 
 #pragma endregion
+
+// Vanilla repair/sell mode can only enable when owning buildings without Insignificant=yes
+// This can be problematic sometime. F.ex. you cannot repair tech buildings without the presence of another ones
+// Simply skip the OwnedBuildings check here and check house properties instead
+// Ideally we should use additional vector to record them, but let's keep it simple for now
+static inline bool CanEnterRepairOrSellMode(HouseClass* pHouse)
+{
+	return !pHouse->Defeated && !pHouse->IsObserver();
+}
+
+DEFINE_HOOK(0x4AC92A, DisplayClass_RepairModeControl_OwnedBuildingsOverride, 0x6)
+{
+	enum { EnterRepairMode = 0x4AC934, ExitRepairMode = 0x4AC945 };
+
+	GET(HouseClass* const, pHouse, ECX);
+
+	return CanEnterRepairOrSellMode(pHouse) ? EnterRepairMode : ExitRepairMode;
+}
+
+DEFINE_HOOK(0x4AC6CA, DisplayClass_SellModeControl_OwnedBuildingsOverride, 0x6)
+{
+	enum { EnterSellMode = 0x4AC6D4, ExitSellMode = 0x4AC6E5 };
+
+	GET(HouseClass* const, pHouse, ECX);
+
+	return CanEnterRepairOrSellMode(pHouse) ? EnterSellMode : ExitSellMode;
+}
+
+DEFINE_HOOK(0x4F8B14, HouseClass_AI_OwnedBuildingsOverride, 0x8)
+{
+    enum { ContinueCheck = 0x4F8B1C, SkipCheck = 0x4F8B30 };
+
+    GET(HouseClass* const, pHouse, ESI);
+
+    return !CanEnterRepairOrSellMode(pHouse) ? ContinueCheck : SkipCheck;
+}
