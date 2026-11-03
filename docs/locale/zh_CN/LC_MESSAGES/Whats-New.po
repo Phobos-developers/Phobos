@@ -4007,6 +4007,7 @@ msgid ""
 "Fixed `CreateUnit` potentially allowing units to spawn on wall overlays "
 "with `CreateUnit.ConsiderPathfinding=true` (by Starkku)"
 msgstr ""
+"修复了 `CreateUnit` 可能在 `CreateUnit.ConsiderPathfinding=true` 时允许单位生成于墙类覆盖物上的问题（by Starkku）"
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"
