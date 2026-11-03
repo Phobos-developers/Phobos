@@ -1731,7 +1731,7 @@ In `rulesmd.ini`:
 Arcing.AllowElevationInaccuracy=true     ; boolean
 Arcing.ConsiderBuildingFoundation=false  ; boolean
 
-[SOMEPROJECTILE]                         ; Projectile， with Arcing=true
+[SOMEPROJECTILE]                         ; Projectile, with Arcing=true
 Arcing.AllowElevationInaccuracy=         ; boolean, defaults to [CombatDamage] -> Arcing.AllowElevationInaccuracy
 Arcing.ConsiderBuildingFoundation=       ; boolean, defaults to [CombatDamage] -> Arcing.ConsiderBuildingFoundation
 ```
