@@ -511,7 +511,7 @@ msgid "Vehicle `DeployFire` fixes/improvements"
 msgstr "载具 `DeployFire` 修复／改进"
 
 msgid "Stationary units & following improvements/bugfixes"
-msgstr "静止的单位"
+msgstr "静止的单位及相关改进／修复"
 
 msgid "Burst logic improvements"
 msgstr "Burst 逻辑改进"
