@@ -12,6 +12,9 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 
+#include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
+
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
@@ -176,7 +179,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn > 0; --amountToSpawn)
+				for (; amountToSpawn > 0; --amountToSpawn)
 					GameCreate<VoxelAnimClass>(debrisTypes[currentIndex], &coord, pOwner);
 
 				if (totalSpawnAmount <= 0)
@@ -829,7 +832,8 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 static bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
-	if(announce) announce = !pThis->IsStrange();
+	if (announce)
+		announce = !pThis->IsStrange();
 
 	const bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
@@ -992,7 +996,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	auto const pLinkedTo = pLoco->LinkedTo;
 	auto& currLoc = pLinkedTo->Location;
 	const auto coords = pLoco->Coords;
-	const int distance = (int) CoordStruct{currLoc.X - coords.X, currLoc.Y - coords.Y,0}.Magnitude() ;
+	const int distance = (int)CoordStruct { currLoc.X - coords.X, currLoc.Y - coords.Y,0 }.Magnitude();
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
@@ -1011,7 +1015,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	{
 		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
 		const double angle = -Math::atan2(currLoc.Y - coords.Y, coords.X - currLoc.X);
-		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
+		newLoc = currLoc + CoordStruct { int((double)speed* Math::cos(angle)), int((double)speed* Math::sin(angle)), 0 };
 		return 0x7298D3;
 	}
 	return 0x7295CE;
@@ -1408,7 +1412,7 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 
 #pragma region JumpjetShadowPointFix
 
-static Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
+static Point2D* __stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion* iloco, Point2D* pPoint)
 {
 	__assume(iloco != nullptr);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -1498,7 +1502,7 @@ DEFINE_HOOK_AGAIN(0x69F05D, EndPiggyback_PowerOn, 0x7) // Ship
 DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
 {
 	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
-	__assume(iloco!=nullptr);
+	__assume(iloco != nullptr);
 	const auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
 	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
 		iloco->Power_On();
@@ -2005,10 +2009,28 @@ DEFINE_HOOK(0x46B23C, BulletClass_DrawVoxel_SetLightConvert2, 0x6)
 // These functions should consider reachablity.
 DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
 {
+	enum { SkipGameCode = 0x4DFC3F };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		if (pBuildingType->Grinding)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
@@ -2037,10 +2059,28 @@ DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
 
 DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 {
+	enum { SkipGameCode = 0x4DFB30 };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		if (pBuildingType->Passengers > 0)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 #pragma endregion
@@ -2233,8 +2273,8 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 
 	if (ignoreDestination || pTechno->HasAbility(Ability::Scatter)
 		|| (pTechno->Owner->IsControlledByHuman()
-		? RulesClass::Instance->PlayerScatter
-		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
+			? RulesClass::Instance->PlayerScatter
+			: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
 	{
 		pTechno->Scatter(*pCoords, ignoreMission, ignoreDestination);
 	}
@@ -2261,10 +2301,14 @@ DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Missio
 DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
 DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 {
+	enum
+	{
+		SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5
+	};
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
-		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
 
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
 	const bool InGuard = (R->Origin() == 0x4D5184);
@@ -3505,7 +3549,7 @@ DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
 	if (RulesExt::Global()->FixRepairStepCost)
 		R->EAX(static_cast<int>((cost / std::max(static_cast<double>(pType->Strength) / RulesClass::Instance->RepairStep, 1.0)) * RulesClass::Instance->RepairPercent));
 	else
-		R->EAX(static_cast<int>((cost / std::max(pType->Strength / RulesClass::Instance->RepairStep, 1))* RulesClass::Instance->RepairPercent));
+		R->EAX(static_cast<int>((cost / std::max(pType->Strength / RulesClass::Instance->RepairStep, 1)) * RulesClass::Instance->RepairPercent));
 
 	return SkipGameCode;
 }

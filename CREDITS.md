@@ -172,7 +172,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
-  - Stationary units
+  - Stationary units & following improvements/bugfixes
   - Burst logic improvements
   - TechnoType auto-firing weapons
   - Secondary weapon fallback customization
@@ -832,6 +832,7 @@ This page lists all the individual contributions to the project by their author.
   - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
   - Fix several shield respawn/self heal issues
   - Country-based attached effects
+  - Allow repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -1011,7 +1012,8 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
   - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
-  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
+  - Fix a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
+  - Customize whether negative damage penetrates Iron Curtain and Force Shield
   - Add `KeyboardMoveUnits` hotkey to use keyboard move selected units controled by player
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
