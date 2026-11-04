@@ -1752,7 +1752,7 @@ msgstr "修复了当开火者与目标处于相同水平位置时绘制波（例
 msgid ""
 "Fixed the bug that crashing or sinking unit can be recruit into taskforce"
 " team."
-msgstr "修复了坠落或沉没中的单位可以被招募进特遣小队的 Bug"
+msgstr "修复了坠落或沉没中的单位可以被招募进特遣部队的 Bug"
 
 msgid ""
 "Units in Tank Bunker with deploy functions no longer perform them when "
