@@ -2162,9 +2162,9 @@ In `rulesmd.ini`:
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
-### Customize the country displayed in `Sight`
+### Customize who sees the map revealed by `Sight`
 
-- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+- You can now customize which houses see the map revealed by a unit's `Sight`.
 
 In `rulesmd.ini`:
 ```ini

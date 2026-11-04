@@ -4817,13 +4817,11 @@ msgstr ""
 "为了应对像大型飞机坠毁时因为旋转而看起来滑稽的问题，Ares 允许自定义 `Locomotor=Fly` "
 "的单位坠毁时是否旋转，这里给出另一种方案：自定义旋转的速度倍率。"
 
-msgid "Customize the country displayed in `Sight`"
-msgstr "自定义 `Sight` 可见性"
+msgid "Customize who sees the map revealed by `Sight`"
+msgstr "自定义 `Sight` 揭示的地图对哪些所属方可见"
 
-msgid ""
-"You can now customize which countries the `Sight` unit for that nation "
-"provides map visibility to."
-msgstr "自定义国家单位的 `Sight` 可以给哪些国家显示视野。"
+msgid "You can now customize which houses see the map revealed by a unit's `Sight`."
+msgstr "现在可以自定义单位的 `Sight` 揭示的地图对哪些所属方可见。"
 
 msgid "Customize the landing animation of technos that have `Locomotor=Fly`"
 msgstr "自定义 `Locomotor=Fly` 单位的降落动画"
