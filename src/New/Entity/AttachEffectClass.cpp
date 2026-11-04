@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Foot/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -580,9 +581,14 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
-		const bool isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
-			? pFoot->Locomotor->Is_Moving()
-			: pFoot->Locomotor->Is_Really_Moving_Now();
+		bool isMoving = false;
+
+		if (!FootExt::Fetch(pFoot)->IsTempImmobilized)
+		{
+			isMoving = this->Type->DiscardOn_MoveBasedOnDestination.Get(RulesExt::Global()->DiscardOn_MoveBasedOnDestination)
+				? pFoot->Locomotor->Is_Moving()
+				: pFoot->Locomotor->Is_Really_Moving_Now();
+		}
 
 		if (isMoving)
 		{

@@ -274,82 +274,68 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
+DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0x9)
 {
 	enum { ApplyDamageBonus = 0x6FE405 };
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(BuildingClass* const, pThis, ESI); // Code path not entered if not a building.
+	GET_STACK(const int, damage, STACK_OFFSET(0xB0, -0x84));
 
-	if (const auto Building = specific_cast<BuildingClass*>(pThis))
-	{
-		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(static_cast<int>(damage * BuildingTypeExt::Fetch(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
-		return ApplyDamageBonus;
-	}
-
-	return 0;
+	R->EAX(static_cast<int>(damage * BuildingTypeExt::Fetch(pThis->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+	return ApplyDamageBonus;
 }
 
-DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
+DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0x9)
 {
 	enum { ApplyDamageBonus = 0x6FE435 };
 
 	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(int, damage, STACK_OFFSET(0xB0, -0x84));
 
-	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
-	{
-		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(static_cast<int>(damage * BuildingTypeExt::Fetch(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier)));
-		return ApplyDamageBonus;
-	}
+	if (const auto pBuilding = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+		damage = static_cast<int>(damage * BuildingTypeExt::Fetch(pBuilding->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->BunkerDamageMultiplier));
 
-	return 0;
+	R->EAX(damage);
+	return ApplyDamageBonus;
 }
 
-DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
+DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0x6)
 {
-	enum { ApplyRofMod = 0x6FD1AB, SkipRofMod = 0x6FD1B1 };
+	enum { ApplyROFMultiplier = 0x6FD1AB, SkipROFMultiplier = 0x6FD1B1 };
+
+	GET(BuildingClass*, pThis, ESI); // Code path not entered if not a building.
+
+	const auto multiplier = BuildingTypeExt::Fetch(pThis->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
+
+	if (multiplier > 0.0f)
+	{
+		GET_STACK(const int, rof, STACK_OFFSET(0x10, 0x4));
+		R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
+		return ApplyROFMultiplier;
+	}
+
+	return SkipROFMultiplier;
+}
+
+DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0x6)
+{
+	enum { ApplyROFMultiplier = 0x6FD1EF, SkipROFMultiplier = 0x6FD1F1 };
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (const auto Building = specific_cast<BuildingClass*>(pThis))
+	if (const auto pBuilding = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		const auto multiplier = BuildingTypeExt::Fetch(Building->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
+		const auto multiplier = BuildingTypeExt::Fetch(pBuilding->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
 
 		if (multiplier > 0.0f)
 		{
 			GET_STACK(const int, rof, STACK_OFFSET(0x10, 0x4));
 			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
-			return ApplyRofMod;
+			return ApplyROFMultiplier;
 		}
-
-		return SkipRofMod;
 	}
 
-	return 0;
-}
-
-DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
-{
-	enum { ApplyRofMod = 0x6FD1EF, SkipRofMod = 0x6FD1F1 };
-
-	GET(TechnoClass*, pThis, ESI);
-
-	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
-	{
-		const auto multiplier = BuildingTypeExt::Fetch(Building->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
-
-		if (multiplier > 0.0f)
-		{
-			GET_STACK(const int, rof, STACK_OFFSET(0x10, 0x4));
-			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
-			return ApplyRofMod;
-		}
-
-		return SkipRofMod;
-	}
-
-	return 0;
+	return SkipROFMultiplier;
 }
 
 DEFINE_HOOK_AGAIN(0x45933D, BuildingClass_BunkerSound, 0x5)

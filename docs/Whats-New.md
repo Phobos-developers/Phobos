@@ -2062,6 +2062,8 @@ PreserveCSFWhitespace=false      ; boolean
 - [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
 - [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
+- [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
+- Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
@@ -2079,6 +2081,9 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
 - Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
+- Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
+- Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2090,6 +2095,8 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 - Veinhole monster and veins logic fixes and ramp support (by FS-21)
 
 #### Fixes / interactions with other extensions:

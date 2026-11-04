@@ -390,6 +390,7 @@ public:
 		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Valueable<bool> Arcing_ConsiderBuildingFoundation;
 
 		Valueable<bool> Terrain_IsPassable;
 		Valueable<bool> Tibtree_IsPassable;
@@ -906,6 +907,7 @@ public:
 			, HoverDrownable { true }
 
 			, Arcing_AllowElevationInaccuracy { true }
+			, Arcing_ConsiderBuildingFoundation { false }
 
 			, Terrain_IsPassable { false }
 			, Tibtree_IsPassable { false }
