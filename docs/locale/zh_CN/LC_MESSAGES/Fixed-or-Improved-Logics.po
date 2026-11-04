@@ -1521,7 +1521,7 @@ msgstr "修复了反击行为会让单位在多个相同威胁值的目标间不
 msgid ""
 "Fixed the bug that if paradropping technos with `Crashable=yes` has been "
 "destroyed in air, they will falling down on ground but not dead."
-msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug。"
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时于半空中被摧毁，它会落地但不会死亡的 Bug。"
 
 msgid ""
 "Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore "
@@ -1891,7 +1891,7 @@ msgstr ""
 msgid ""
 "1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. "
 "When the limit is reached, the game will overwrite the latest save file."
-msgstr "支持从 `SVGM_000.NET` 到 `SVGM_999.NET` 的 1000 个文件。当达到上线后游戏将会覆盖此前最新的存档文件。"
+msgstr "支持从 `SVGM_000.NET` 到 `SVGM_999.NET` 的 1000 个文件。当达到上限后游戏将会覆盖此前最新的存档文件。"
 
 msgid ""
 "The previous `SVGM_XXX.NET` files are cleaned up before first copy if "

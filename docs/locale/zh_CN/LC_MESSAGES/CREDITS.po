@@ -1818,7 +1818,7 @@ msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频
 msgid ""
 "Fix the bug that if paradropping technos with `Crashable=yes` has been "
 "destroyed in air, they will falling down on ground but not dead"
-msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug"
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时于半空中被摧毁，它会落地但不会死亡的 Bug"
 
 msgid ""
 "Fix the bug where paradropped infantry with `NotHuman=yes` will ignore "
@@ -2704,7 +2704,7 @@ msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃�
 msgid ""
 "Fix the bug where `Ranged=true` causes projectiles using the new "
 "Trajectory to ignore settings such as `BounceTimes`"
-msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
+msgstr "修复了 `Ranged=true` 导致使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
 
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"

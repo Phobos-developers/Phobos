@@ -1311,7 +1311,7 @@ msgstr "修复了解析含有空条目的字符串列表时发生的游戏崩溃
 msgid ""
 "Fixed the bug where `Ranged=true` causes projectiles using the new "
 "Trajectory to ignore settings such as `BounceTimes` (by Noble_Fish)"
-msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug（by Noble_Fish）"
+msgstr "修复了 `Ranged=true` 导致使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug（by Noble_Fish）"
 
 msgid ""
 "Fixed `DiscardOn=entry` AttachEffects not triggering `ExpireWeapon` with "
@@ -3391,7 +3391,7 @@ msgid ""
 "Fixed the bug that if paradropping technos with `Crashable=yes` has been "
 "destroyed in air, they will falling down on ground but not dead (by "
 "NetsuNegi)"
-msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug（by NetsuNegi）"
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时于半空中被摧毁，它会落地但不会死亡的 Bug（by NetsuNegi）"
 
 msgid ""
 "Fixed the bug where paradropped infantry with `NotHuman=yes` will ignore "
@@ -5091,7 +5091,7 @@ msgstr "允许 Jumpjet 单位即便 `TiltCrashJumpjet=no` 也可以显示倾斜�
 msgid ""
 "Fixed the range for number of debris spawned by Warhead to use MaxDebris "
 "instead of MaxDebris - 1 (by Starkku)"
-msgstr "现在弹头碎片生成量上线正确使用 `MaxDebris` 而非 `MaxDebris - 1`（by Starkku）"
+msgstr "现在弹头碎片生成量上限正确使用 `MaxDebris` 而非 `MaxDebris - 1`（by Starkku）"
 
 msgid ""
 "Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees"
