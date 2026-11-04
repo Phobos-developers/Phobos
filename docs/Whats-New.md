@@ -866,6 +866,8 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
 - Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 
 #### 0.5-alpha2
 
