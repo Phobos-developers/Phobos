@@ -246,7 +246,7 @@ x=i,n             ; For i values check the next table
 | 20      | Vehicle Factory          | Any enemy `BuildingTypes` with with `Naval=no` and `Factory=UnitType` |
 | 21      | Aircraft Factory         | Any enemy `BuildingTypes` with `Factory=AircraftType` |
 | 22      | Radar                    | Any enemy `BuildingTypes` with `Radar=yes` or `SpySat=yes` |
-| 23      | Tech Lab                 | Any enemy `BuildingTypes` in `[AI]>BuildTech=` list |
+| 23      | Tech Lab                 | Any enemy `BuildingTypes` in `[AI] -> BuildTech=` list |
 | 24      | Naval Factory            | Any enemy `BuildingTypes` with `Naval=yes` and `Factory=UnitType` |
 | 25      | Super Weapon             | Any enemy `BuildingTypes` with `SuperWeapon=`, `SuperWeapon2=` or `SuperWeapons=` |
 | 26      | Construction Yard        | Any enemy `BuildingTypes` with `ConstructionYard=yes` and `Factory=BuildingType` |

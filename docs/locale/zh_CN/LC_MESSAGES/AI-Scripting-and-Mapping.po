@@ -752,8 +752,8 @@ msgstr "23"
 msgid "Tech Lab"
 msgstr "高科"
 
-msgid "Any enemy `BuildingTypes` in `[AI]>BuildTech=` list"
-msgstr "任何敌方位于 `[AI]>BuildTech=` 列表中的 `BuildingTypes`"
+msgid "Any enemy `BuildingTypes` in `[AI] -> BuildTech=` list"
+msgstr "任何敌方位于 `[AI] -> BuildTech=` 列表中的 `BuildingTypes`"
 
 msgid "24"
 msgstr "24"
