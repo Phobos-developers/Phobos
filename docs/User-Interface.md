@@ -638,7 +638,7 @@ DeselectObjectKeysEnabled=true    ; boolean
 
 - Use keyboard hotkeys to move selected units that are controled by player. Instead of mouse.
 - Enable these hotkeys by setting `KeyboardMoveUnitsCommand` to true.
-- Use the `ToggleKeyboardMove` hotkey to enable/disable this feature.
+- When these hotkeys enabled, you can use the `ToggleKeyboardMove` hotkey to enable/disable moving units with the keyboard. When this feature is enabled, units can no longer be moved with the mouse.
 - For localization add `TXT_TOGGLE_KEYBOARD_MOVE`, `TXT_TOGGLE_KEYBOARD_MOVE_DESC`, `TXT_KEYBOARD_MOVE_UNITS_XX` and `TXT_KEYBOARD_MOVE_UNITS_DESC` into your `.csf` file.
 
 In `rulesmd.ini`:
