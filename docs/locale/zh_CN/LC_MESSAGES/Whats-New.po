@@ -4874,7 +4874,7 @@ msgstr "允许 `RemoveDisguise` 作用于载具伪装效果（by Trsdy）"
 msgid ""
 "Allow anchoring extended tooltips to the left side of the sidebar (by "
 "Trsdy)"
-msgstr "允许将拓展工具条锚定在侧边栏左侧（by Trsdy）"
+msgstr "允许将扩展工具提示锚定在侧边栏左侧（by Trsdy）"
 
 msgid ""
 "Toggle to allow spawned aircraft to attack immediately after being "
@@ -6124,7 +6124,7 @@ msgstr ""
 "Starkku 与 Trsdy）"
 
 msgid "Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)"
-msgstr "允许将 Ares 的 `SW.Shots` 添加至拓展工具条（by Trsdy）"
+msgstr "允许将 Ares 的 `SW.Shots` 添加至扩展工具提示（by Trsdy）"
 
 msgid ""
 "Fixed Ares' Abductor weapon leaves permanent placement stats when "
@@ -6349,10 +6349,10 @@ msgid "Numeric Variables (by secsome)"
 msgstr "数字化变量（by secsome）"
 
 msgid "TechnoType's tooltip would display it's build time now (by secsome)"
-msgstr "现在单位的拓展工具条会显示生产时间（by secsome）"
+msgstr "现在单位的扩展工具提示会显示生产时间（by secsome）"
 
 msgid "Customizable tooltip background color and opacity (by secsome)"
-msgstr "可自定义的拓展工具条背景颜色和不透明度（by secsome）"
+msgstr "可自定义的扩展工具提示背景颜色和不透明度（by secsome）"
 
 msgid "FrameByFrame & FrameStep hotkey command (by secsome)"
 msgstr "逐帧模式及逐帧步进快捷键（by secsome）"
@@ -6853,7 +6853,7 @@ msgstr "修复了使用输入法时编辑对话框内容输入错误的问题（
 msgid ""
 "Fixed an issue where tooltip text could be clipped by tooltip rectangle "
 "border if using `MaxWidth` > 0 (by Starkku)"
-msgstr "修复了 `MaxWidth` > 0 时拓展工具条文本可能被拓展工具条矩形边框截断的问题（by Starkku）"
+msgstr "修复了 `MaxWidth` > 0 时扩展工具提示文本可能被扩展工具提示矩形边框截断的问题（by Starkku）"
 
 msgid ""
 "Fixed projectiles with `Trajectory=Straight` suffering from potential "
@@ -7233,7 +7233,7 @@ msgstr "支持了任意尺寸的 PCX 载入图（by Belonit）"
 msgid ""
 "Extended sidebar tooltips with descriptions, recharge time and power "
 "consumption/generation (by Kerbiter & Belonit)"
-msgstr "扩展侧边栏拓展工具条时其带有描述、充能时间和电力能耗／产出（by Kerbiter 与 Belonit）"
+msgstr "扩展侧边栏扩展工具提示时其带有描述、充能时间和电力能耗／产出（by Kerbiter 与 Belonit）"
 
 msgid "Selection priority filtering for box selection (by Kerbiter)"
 msgstr "低优先级框选（by Kerbiter）"
@@ -7276,11 +7276,11 @@ msgstr "`DeployToFire` 的载具不再会于部署时丢失目标（DCoder 未�
 msgid ""
 "Fixed QWER hotkey tab switching not hiding the displayed tooltip as it "
 "should (by Belonit)"
-msgstr "修复了当通过 QWER 快捷键切换标签页时未能正确隐藏拓展工具条的问题（by Belonit）"
+msgstr "修复了当通过 QWER 快捷键切换标签页时未能正确隐藏扩展工具提示的问题（by Belonit）"
 
 msgid "Sidebar tooltips now can go over sidebar bounds (by Belonit)"
-msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit）"
+msgstr "现在侧边栏扩展工具提示可以超出侧边栏边界（by Belonit）"
 
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
-msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
+msgstr "解除了扩展工具提示字符数量小得愚蠢的上限（by Belonit）"
 
