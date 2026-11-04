@@ -55,7 +55,7 @@ msgid ""
 "the list, in case of need - individual permissions can be assigned to "
 "contributors by leads (for example, to help with documentation "
 "translations)."
-msgstr "这些角色根据 PR 的复杂性和贡献者的经验进行分配，并非一成不变。此外这里只列出了常用的角色，在必要情况下负责人可为贡献者单独分配权限。"
+msgstr "这些角色根据 PR 的复杂性和贡献者的经验进行分配。角色并非固定不变，会根据贡献者经验及其所处理 PR 的复杂度调整。此外这里只列出了常用的角色，在必要情况下负责人可为贡献者单独分配权限。"
 
 msgid "Suggested reviewing amount"
 msgstr "关于审查工作量的建议"
