@@ -1526,7 +1526,7 @@ msgstr "可以在资金示数器旁边追加一个电力差值计数器以显示
 msgid ""
 "The counter is displayed with the format of `Label(sign)(Power Delta)`. "
 "The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`)."
-msgstr "计数器以 `Label(sign)(电力差值)` 的格式显示，标签默认为 `PowerLabel`（在 `ToolTips` 中使用）。"
+msgstr "计数器以 `Label(sign)(电力差值)` 的格式显示，标签是 `ToolTips` 中的 `PowerLabel`（默认为 `⚡ U+26A1`）。"
 
 msgid ""
 "When the power of the player is blacked-out by a spy or force-shield, "
