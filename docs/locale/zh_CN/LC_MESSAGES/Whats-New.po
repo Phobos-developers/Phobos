@@ -1338,7 +1338,7 @@ msgstr "修复了有最大 `SpawnsTiberium.GrowthStage` 的矿柱无法将矿石
 msgid ""
 "Fixed the bug where Tiberium veins overlay used the wrong palette instead"
 " of matching the Veinhole Monster (by FS-21)"
-msgstr "修复了泰伯利亚藤蔓蔓延地表使用了错误的色板而未能与静脉孔怪物匹配的 Bug（by FS-21）"
+msgstr "修复了泰伯利亚藤蔓蔓延地表使用了错误的色板而未能与泰伯利亚藤蔓怪匹配的 Bug（by FS-21）"
 
 msgid ""
 "Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This "
