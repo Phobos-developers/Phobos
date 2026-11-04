@@ -1821,7 +1821,7 @@ msgid ""
 "character limit is lifted when the feature is enabled via the "
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr ""
-"现在当鼠标悬停在图标上时侧边栏扩展工具提示提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
+"现在当鼠标悬停在图标上时侧边栏扩展工具提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
 " 1024 字符长度的工具提示信息。"
 
 msgid ""

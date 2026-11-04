@@ -1528,7 +1528,7 @@ msgid ""
 "For behaviours `3` and `4`, the second parameter decides the index of "
 "variable that'll be displayed. If the local/global variable does not "
 "exist, 0 will be displayed."
-msgstr "对于行为 `3` 和 `4`，第二个参数决定要显示变量的索引。如果该局部／全局变量不存则显示 0。"
+msgstr "对于行为 `3` 和 `4`，第二个参数决定要显示变量的索引。如果该局部／全局变量不存在则显示 0。"
 
 msgid "*Behaviour*"
 msgstr "*行为*"

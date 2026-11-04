@@ -3078,7 +3078,7 @@ msgid ""
 "`Inviso=true` projectiles with `FlakScatter=true` to scatter (by "
 "CrimRecya)"
 msgstr ""
-"修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不不跟随散布的问题（by "
+"修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不跟随散布的问题（by "
 "CrimRecya）"
 
 msgid ""
@@ -3221,7 +3221,7 @@ msgstr "修复了 `MovementZone=Subterannean` 的矿车无法跨越封闭的水�
 msgid ""
 "Fixed an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner (by TaranDahl)"
-msgstr "修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题（by TaranDahl）"
+msgstr "修复了指向某个单位的部分效果在该单位变更所属时未能正确清除的问题（by TaranDahl）"
 
 msgid ""
 "Allow Reveal Crate to take effect when picking up by another player "
@@ -3681,7 +3681,7 @@ msgstr "修复了新类型弹道的 `.SubjectToGround` 未考虑桥梁的 Bug（
 msgid ""
 "AttachEffect `DisableWeapons=true` now makes `Gattling=yes` rate tick "
 "down and stops the sounds from playing (by Starkku)"
-msgstr "现有有 `DisableWeapons=true` 的 AE 会使 `Gattling=yes` 的速率降低并停止播放音效（by Starkku）"
+msgstr "现有 `DisableWeapons=true` 的 AE 会使 `Gattling=yes` 的速率降低并停止播放音效（by Starkku）"
 
 msgid ""
 "Fixed a bug where stationary vehicles would also block movement caused by"
@@ -4388,7 +4388,7 @@ msgstr "自定义建筑能否作为空袭目标（by Starkku）"
 msgid ""
 "IvanBomb detonation & image display optionally centered on buildings (by "
 "Starkku)"
-msgstr "伊文炸弹爆点和图像的位置可以设设置成建筑中心（by Starkku）"
+msgstr "伊文炸弹爆点和图像的位置可以设成建筑中心（by Starkku）"
 
 msgid "Forcing specific weapon against cloaked or disguised targets (by Starkku)"
 msgstr "强制对隐形或伪装中的目标使用特定武器（by Starkku）"
@@ -5154,7 +5154,7 @@ msgstr "拥有 `CanC4=false` 的建筑在受到负值杀伤时不再获得 1 点
 msgid ""
 "Buildings with primary weapon that has `AG=false` projectile now have "
 "attack cursor when selected (by Starkku)"
-msgstr "主武器使用 `AG=false` 抛射体的的建筑现在在选中时将正常显示攻击光标（by Starkku）"
+msgstr "主武器使用 `AG=false` 抛射体的建筑现在在选中时将正常显示攻击光标（by Starkku）"
 
 msgid ""
 "Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and"
@@ -5713,7 +5713,7 @@ msgstr "修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交
 msgid ""
 "Fixed an issue that `Spawned` aircraft will fly towards the edge of the "
 "map when its `Spawner` is under EMP (by CrimRecya)"
-msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题（by CrimRecya）"
+msgstr "修复了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题（by CrimRecya）"
 
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "

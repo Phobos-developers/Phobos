@@ -143,7 +143,7 @@ msgid "If you contribute something, please make sure:"
 msgstr "如果你贡献了什么，请确保："
 
 msgid "you write documentation for the change;"
-msgstr "你编编写了相关更改的文档说明；"
+msgstr "你编写了相关更改的文档说明；"
 
 msgid ""
 "you mention the change in the changelog and migration sections in the "
