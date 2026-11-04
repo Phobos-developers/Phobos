@@ -211,7 +211,7 @@ msgid ""
 "run and get the zip containing built DLL and PDB (for your testers, f. "
 "ex.), or download a build from an automatically posted comment."
 msgstr ""
-"更改源代码或项目文件的拉取请求会触发最新推送提交的自动构建，你可以在拉取请求页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 "
+"更改源代码或项目文件的拉取请求会触发最新推送提交的自动构建，你可以在 PR 页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 "
 "DLL 和 PDB 的压缩包（供你的测试人员使用），或从自动发布的评论中获取构建文件（需要拥有 GitHub 账号）。"
 
 msgid ""
