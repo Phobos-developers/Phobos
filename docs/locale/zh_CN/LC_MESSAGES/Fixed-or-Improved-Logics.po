@@ -1127,7 +1127,7 @@ msgid ""
 "repaired by engineer."
 msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug。"
 
-msgid "Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
+msgid "Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 
 msgid ""

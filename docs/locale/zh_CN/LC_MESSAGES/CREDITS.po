@@ -2279,7 +2279,7 @@ msgid ""
 msgstr "多种新的数显信息类型、特定情况下不显示以及一种新的单帧显示方式"
 
 msgid ""
-"Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its "
+"Customizable spawn delay of VoxelAnim's `TrailerAnim` and fix its "
 "incorrect position"
 msgstr "自定义 Voxel 碎片 `TrailerAnim` 生成间隔并修复其生成位置错误的问题"
 

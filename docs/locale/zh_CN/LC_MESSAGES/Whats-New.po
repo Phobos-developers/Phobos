@@ -5686,7 +5686,7 @@ msgid ""
 msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（by NetsuNegi）"
 
 msgid ""
-"Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by "
+"Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim (by "
 "CrimRecya)"
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
 
