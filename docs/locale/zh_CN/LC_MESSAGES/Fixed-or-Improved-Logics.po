@@ -2750,7 +2750,7 @@ msgid ""
 msgstr "在原版中当一架战机发起攻击它会强制触发目标单元格上的分散效果。现在你可以通过将下面的语句设为 `false` 来禁用该行为。"
 
 msgid "Customize whether aircraft is a cargo plane"
-msgstr "自定义飞机是否是cargo plane"
+msgstr "自定义飞机是否为货机"
 
 msgid ""
 "In vanilla, the `IsALoaner` flag of an aircraft is determined by the "
@@ -4600,7 +4600,7 @@ msgid ""
 "chronosphere, if set."
 msgstr ""
 "当单位被 `Type=ChronoSphere` 的超级武器传送时 `Chronoshift.WarpOut` 和 "
-"`Chronoshift.WarpIn` 会分别替代 `WarpOut` 和  `WarpIn` 使用。"
+"`Chronoshift.WarpIn` 会分别替代 `WarpOut` 和 `WarpIn` 使用。"
 
 msgid ""
 "`WarpAway` specify the anim when the techno is being erased by "
@@ -5233,7 +5233,7 @@ msgid ""
 msgstr "还可以通过 `AmmoPipSize` 为每个科技类型重写弹药 pip 的大小。"
 
 msgid "Ammo pip frames can now also be customized."
-msgstr "现在也可以自定义弹药  pip 的帧。"
+msgstr "现在也可以自定义弹药 `pip` 的帧。"
 
 msgid ""
 "`AmmoPipFrame` and `EmptyAmmoPipFrame` are frames (zero-based) of "

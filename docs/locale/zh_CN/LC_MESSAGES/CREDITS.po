@@ -2558,7 +2558,7 @@ msgid "Custom cruise missiles"
 msgstr "自定义巡航导弹"
 
 msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
-msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+msgstr "为水上禁用 `SecondaryFire` / `SecondaryProne` 添加开关"
 
 msgid "Customize the step limit of the credits indicator"
 msgstr "自定义资金示数器步长上限"
@@ -3210,7 +3210,7 @@ msgid "Fix the issue that spawnee or slave would execute some player commands"
 msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 
 msgid "Customize whether aircraft is a cargo plane"
-msgstr "自定义飞机是否是cargo plane"
+msgstr "自定义飞机是否为货机"
 
 msgid ""
 "Allow the unit to stop immediately if the target enters the range during "
