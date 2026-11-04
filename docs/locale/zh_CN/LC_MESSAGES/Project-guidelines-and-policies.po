@@ -432,7 +432,7 @@ msgid ""
 " style before submitting the code."
 msgstr ""
 "我们制定了代码样式规范以保持一致性。部分规则已在可用情况下通过 `.editorconfig` 文件强制执行，因此你可以在 Visual "
-"Studio 中通过按下 `Ctrl + K + D` 来自动格式化代码。尽管如此，我们仍建议在提交代码前手动检查代码样式。"
+"Studio 中通过按下 `Ctrl + K, D` 来自动格式化代码。尽管如此，我们仍建议在提交代码前手动检查代码样式。"
 
 msgid "We use tabs instead of spaces to indent code."
 msgstr "我们使用制表符而非空格来缩进代码。"

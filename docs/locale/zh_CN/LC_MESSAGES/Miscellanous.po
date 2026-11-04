@@ -374,7 +374,7 @@ msgid ""
 "docs/new/misc/include.html)) is disabled because of technical "
 "incompatibilities."
 msgstr ""
-"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-"
+"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#include]` 功能](https://ares-"
 "developers.github.io/Ares-docs/new/misc/include.html) 将被禁用。"
 
 msgid "Keyframe animations"

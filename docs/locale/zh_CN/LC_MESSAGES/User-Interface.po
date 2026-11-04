@@ -922,7 +922,7 @@ msgstr ""
 "来关闭。"
 
 msgid "In `artmd.ini`:"
-msgstr "在 `artmd.INI`："
+msgstr "在 `artmd.ini`："
 
 msgid "Visual indication of income from grinders and refineries"
 msgstr "从回收站和矿场获得收入的视觉提示"

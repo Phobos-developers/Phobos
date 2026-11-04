@@ -296,7 +296,7 @@ msgid ""
 "induced by some extreme  parameter values (for example, vanilla game "
 "crashes on zero-size `PreviewPack` instead of not drawing it)."
 msgstr ""
-"**边界情况**：某些极端情况下的工作状况，通常是一些极端参数值引发的（例如：原版游戏在 `[PreviewPack]` 尺寸为 0 "
+"**边界情况**：某些极端情况下的工作状况，通常是一些极端参数值引发的（例如：原版游戏在 `PreviewPack` 尺寸为 0 "
 "的情况不会跳过渲染而是导致崩溃）。"
 
 msgid ""

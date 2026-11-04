@@ -2726,7 +2726,7 @@ msgid "Customize `DefaultToGuardArea` per gunner mode"
 msgstr "为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid "Global default value for `ShouldUseCellDrawer`"
-msgstr "`KeepAlive` 添加全局默认值"
+msgstr "`ShouldUseCellDrawer` 添加全局默认值"
 
 msgid ""
 "Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
