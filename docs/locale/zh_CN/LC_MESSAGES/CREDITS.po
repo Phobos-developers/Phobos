@@ -42,7 +42,7 @@ msgid "Custom `DiskLaser` radius"
 msgstr "自定义 `DiskLaser` 范围"
 
 msgid "Extended tooltips"
-msgstr "扩展拓展工具条"
+msgstr "拓展工具条"
 
 msgid "Building upgrades enhancement"
 msgstr "建筑加载物逻辑增强"
@@ -1179,7 +1179,7 @@ msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
 msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
 
 msgid "Ares' `SW.Shots` hint on extended tooltips"
-msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
+msgstr "在拓展工具条中现实 Ares 的 `SW.Shots`"
 
 msgid "Ares' Abductor weapon fix"
 msgstr "Ares 超时空监狱吸取武器的修复"

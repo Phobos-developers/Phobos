@@ -4874,7 +4874,7 @@ msgstr "允许 `RemoveDisguise` 作用于载具伪装效果（by Trsdy）"
 msgid ""
 "Allow anchoring extended tooltips to the left side of the sidebar (by "
 "Trsdy)"
-msgstr "允许将扩展拓展工具条锚定在侧边栏左侧（by Trsdy）"
+msgstr "允许将拓展工具条锚定在侧边栏左侧（by Trsdy）"
 
 msgid ""
 "Toggle to allow spawned aircraft to attack immediately after being "
@@ -6124,7 +6124,7 @@ msgstr ""
 "Starkku 与 Trsdy）"
 
 msgid "Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)"
-msgstr "允许将 Ares 的 `SW.Shots` 添加至扩展拓展工具条（by Trsdy）"
+msgstr "允许将 Ares 的 `SW.Shots` 添加至拓展工具条（by Trsdy）"
 
 msgid ""
 "Fixed Ares' Abductor weapon leaves permanent placement stats when "
