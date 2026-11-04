@@ -1511,7 +1511,7 @@ msgid "Invalid for non-vehicle objects."
 msgstr "非载具类对象无效。"
 
 msgid "`513` Set mission timer properties"
-msgstr "设置任务计时器属性"
+msgstr "`513` 设置任务计时器属性"
 
 msgid ""
 "Set the method to display mission timer and whether the timer should be "

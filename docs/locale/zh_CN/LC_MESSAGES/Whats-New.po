@@ -3154,7 +3154,7 @@ msgstr "现在 Jumpjet 单位在空中可以正确地生成导弹子机（by Tar
 msgid ""
 "Fixed an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos (by CrimRecya)"
-msgstr "修复了所谓的高等路径学（by CrimRecya）"
+msgstr "修复了用快捷键选中单位等操作时当前悬停的计划节点未及时更新的问题（by CrimRecya）"
 
 msgid ""
 "Fixed an issue that jumpjet infantry' shadow is always drawn even if they"

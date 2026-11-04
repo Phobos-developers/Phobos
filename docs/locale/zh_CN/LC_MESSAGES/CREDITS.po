@@ -2357,7 +2357,7 @@ msgstr "修复了单位的 `LaserTrails` 总会滞后一帧的问题"
 msgid ""
 "Fix an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos"
-msgstr "修复了所谓的高等路径学"
+msgstr "修复了用快捷键选中单位等操作时当前悬停的计划节点未及时更新的问题"
 
 msgid ""
 "Allow the aircraft to enter area guard mission and not crash immediately "
