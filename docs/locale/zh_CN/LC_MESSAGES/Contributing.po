@@ -345,7 +345,7 @@ msgid ""
 "build run."
 msgstr ""
 "你无需安装 Python 和 Sphinx 模块即可查看更改——你创建的每个拉取请求均会触发 Read The Docs 的自动生成，类似 "
-"Phobos 自动构建版本，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
+"Phobos 自动构建，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
 
 msgid "There are two ways to edit the docs."
 msgstr "有两种方式可以编辑文档："
