@@ -479,7 +479,7 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 	return SkipExtraShadow;
 }
 
-DEFINE_HOOK(0x423855, AnimClass_DrawIt_ShadowLocation, 0x7)
+DEFINE_HOOK(0x423855, AnimClass_DrawIt_ShadowLocation, 0x8)
 {
 	enum { SkipGameCode = 0x42385D };
 
