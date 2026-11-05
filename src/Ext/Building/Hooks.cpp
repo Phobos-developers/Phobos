@@ -16,6 +16,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 
 	const auto pBuildingExt = BuildingExt::Fetch(pThis);
 	pBuildingExt->DisplayIncomeString();
+	pBuildingExt->UpdateDetectDisguise();
 
 	TechnoExt* const pTechnoExt = pBuildingExt; // the building extension is a TechnoExt
 	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
