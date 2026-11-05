@@ -1014,6 +1014,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
   - Fix a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
   - Customize whether negative damage penetrates Iron Curtain and Force Shield
+  - Add `KeyboardMoveUnits` hotkey to use keyboard move selected units controled by player
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:
   - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen

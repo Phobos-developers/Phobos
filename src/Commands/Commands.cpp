@@ -17,6 +17,8 @@
 #include "DeselectObject5.h"
 #include "CycleSelection.h"
 #include "CycleTypeSelection.h"
+#include "KeyboardMoveUnits.h"
+#include "ToggleKeyboardMove.h"
 
 #include <CCINIClass.h>
 
@@ -86,6 +88,15 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		MakeCommand<FrameStepCommandClass<15>>(); // Speed 3
 		MakeCommand<FrameStepCommandClass<30>>(); // Speed 4
 		MakeCommand<FrameStepCommandClass<60>>(); // Speed 5
+	}
+
+	if(Phobos::Config::KeyboardMoveUnitsCommand)
+	{
+		MakeCommand<ToggleKeyboardMove>();
+		MakeCommand<KeyboardMoveUnits<0>>();
+		MakeCommand<KeyboardMoveUnits<1>>();
+		MakeCommand<KeyboardMoveUnits<2>>();
+		MakeCommand<KeyboardMoveUnits<3>>();
 	}
 
 	return 0;
