@@ -169,25 +169,27 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
 ```ini
 [Phobos]
-CampaignDefaultGameSpeed=4       ; integer
-ShowBriefing=true                ; boolean
-DigitalDisplay.Enable=false      ; boolean
-ShowDesignatorRange=false        ; boolean
-PrioritySelectionFiltering=true  ; boolean
-PriorityDeployFiltering=true     ; boolean
-ShowPlacementPreview=yes         ; boolean
-RealTimeTimers=false             ; boolean
-RealTimeTimers.Adaptive=false    ; boolean
-ShowHarvesterCounter=true        ; boolean
-ShowPowerDelta=true              ; boolean
-ShowWeedsCounter=true            ; boolean
-ToolTipDescriptions=true         ; boolean
-ToolTipBlur=false                ; boolean
-SaveGameOnScenarioStart=true     ; boolean
-HideLightFlashEffects=false      ; boolean
-HideLaserTrailEffects=false      ; boolean
-HideShakeEffects=false           ; boolean
-PreserveCSFWhitespace=false      ; boolean
+CampaignDefaultGameSpeed=4           ; integer
+ShowBriefing=true                    ; boolean
+DigitalDisplay.Enable=false          ; boolean
+ShowDesignatorRange=false            ; boolean
+PrioritySelectionFiltering=true      ; boolean
+PriorityDeployFiltering=true         ; boolean
+ShowPlacementPreview=yes             ; boolean
+RealTimeTimers=false                 ; boolean
+RealTimeTimers.Adaptive=false        ; boolean
+ShowHarvesterCounter=true            ; boolean
+ShowPowerDelta=true                  ; boolean
+ShowWeedsCounter=true                ; boolean
+ToolTipDescriptions=true             ; boolean
+ToolTipBlur=false                    ; boolean
+SaveGameOnScenarioStart=true         ; boolean
+HideLightFlashEffects=false          ; boolean
+HideLaserTrailEffects=false          ; boolean
+HideShakeEffects=false               ; boolean
+PreserveCSFWhitespace=false          ; boolean
+MovieSubtitles.Background=false      ; boolean
+MovieSubtitles.BackgroundOpacity=60  ; integer
 ```
 
 ## For Map Editor (World-Altering Editor)
@@ -2047,6 +2049,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- [Movie subtitles background](User-Interface.md#movie-subtitles-background) (by FS-21)
 - [AttachEffect `CumulativeAnimations` count increment customization](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
 - [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
 - Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
