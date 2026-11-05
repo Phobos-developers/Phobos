@@ -710,6 +710,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue of Ares' EMP not suspending the production of AI factories
   - Attach effect when weapon fire
   - Building placing and deploying logic enhancement
+  - Distribution click action mode
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
