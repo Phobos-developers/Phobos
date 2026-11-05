@@ -1,6 +1,8 @@
 #pragma once
 #include <functional>
 #include "Constructs.h"
+#include <StageClass.h>
+#include <ArrayClasses.h>
 
 class TechnoClass;
 class TechnoTypeClass;
@@ -18,6 +20,30 @@ class AresTechnoExtData;
 class AresTechnoTypeExtData;
 class AresHouseExtData;
 class AresSWTypeExtData;
+class FactoryClass;
+
+struct AresBuildType
+{
+	int ItemIndex{ -1 };
+	AbstractType ItemType{ AbstractType::None };
+	BYTE IsAlt{ 0 };
+	BYTE Padding_09[3]{ 0, 0, 0 };
+	FactoryClass* CurrentFactory{ nullptr };
+	DWORD unknown_10{ 0 };
+	StageClass Progress{};
+	int FlashEndFrame{ 0 };
+
+	bool operator == (const AresBuildType& rhs) const
+	{
+		return ItemIndex == rhs.ItemIndex && ItemType == rhs.ItemType;
+	}
+
+	bool operator != (const AresBuildType& rhs) const
+	{
+		return !(*this == rhs);
+	}
+};
+static_assert(sizeof(AresBuildType) == 0x34);
 
 class AresFunctions
 {
@@ -25,6 +51,8 @@ public:
 	static void InitAres3_0();
 	static void InitAres3_0p1();
 	static void InitNoAres();
+
+	static DynamicVectorClass<AresBuildType>* TabCameos;
 
 	// TechnoExt
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
