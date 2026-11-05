@@ -20,7 +20,7 @@ public:
 	ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 	Valueable<double> PowerPlant_DamageFactor;
-	ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+	ValueableVector<TechnoTypeClass*> PowerPlantEnhancer_Buildings;
 	Valueable<Leptons> PowerPlantEnhancer_Range;
 	Valueable<int> PowerPlantEnhancer_Amount;
 	Nullable<float> PowerPlantEnhancer_Factor;
@@ -363,6 +363,7 @@ public:
 
 	static std::pair<int, int> GetEnhancedPower(TechnoTypeClass* pType, int output, HouseClass* pHouse, TechnoClass* pSource = nullptr);
 	static std::pair<std::int64_t, std::int64_t> GetEnhancedPower(TechnoTypeClass* pType, std::int64_t output, HouseClass* pHouse, TechnoClass* pSource = nullptr);
+	static std::pair<std::int64_t, std::int64_t> GetUnitPower(TechnoTypeClass* pType, std::int64_t power, HouseClass* pHouse, TechnoClass* pSource = nullptr);
 	static int GetPowerOutput(BuildingClass* pBuilding, int baseOutput);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);

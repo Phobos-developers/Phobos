@@ -106,6 +106,14 @@ std::pair<std::int64_t, std::int64_t> BuildingTypeExt::GetEnhancedPower(TechnoTy
 	return ApplyPowerEnhancers<std::int64_t>(pType, output, pHouse, pSource);
 }
 
+std::pair<std::int64_t, std::int64_t> BuildingTypeExt::GetUnitPower(TechnoTypeClass* pType, std::int64_t power, HouseClass* pHouse, TechnoClass* pSource)
+{
+	// Match buildings: enhance supply (including Amount on zero supply),
+	// retain base drain, and perform the pre-damage supply check.
+	const auto [output, extra] = GetEnhancedPower(pType, Math::max(power, 0LL), pHouse, pSource);
+	return { Math::max(output + extra, 0LL), Math::max(-power, 0LL) };
+}
+
 int BuildingTypeExt::GetPowerOutput(BuildingClass* pBuilding, int baseOutput)
 {
 	// Native GetPowerOutput checks warped-out state before reaching our hook.

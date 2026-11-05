@@ -797,6 +797,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `HealBase` crates causing full-health objects to scatter
   - Preserve whitespace in CSF
   - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
+  - Power plant enhancement for infantry, vehicles and aircraft
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

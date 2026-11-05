@@ -75,6 +75,12 @@ msgstr ""
 "the-tag-can-be-transferred-to-when-the-unit-is-destroyed) "
 "自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶员和乘客中的哪些人，即默认行为与原版对齐，而不是 Ares。"
 
+msgid "Changes to Phobos behavior"
+msgstr "Phobos 行为更改"
+
+msgid "`[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`. The list now accepts all TechnoTypes. The old key is deprecated but remains supported for compatibility; if both are set, the new key takes precedence."
+msgstr "`[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`。该列表现在接受所有 TechnoType。旧语句已弃用，但仍保留兼容；两者同时设置时，新语句优先。"
+
 msgid "0.5"
 msgstr "0.5"
 
@@ -129,9 +135,6 @@ msgid ""
 msgstr ""
 "战机降落到机场的默认方向将使用 `[AudioVisual] -> PoseDir=` 指定的方向而不再是建筑的方向，这可以通过 "
 "`AircraftDockingDir.DefaultToPoseDir=false` 来复原。"
-
-msgid "Changes to Phobos behavior"
-msgstr "Phobos 行为更改"
 
 msgid ""
 "When the value of the `ProjectileRange` (Ares feature) field on a weapon "
@@ -1204,6 +1207,9 @@ msgid ""
 "`PenetratesForceShield` (by dh381)"
 msgstr ""
 "为 `PenetratesIronCurtain` 和 `PenetratesForceShield` 添加了负伤害处理（by dh381）"
+
+msgid "Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)"
+msgstr "电厂增幅器支持作用于步兵、载具和战机（Noble_Fish）"
 
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："

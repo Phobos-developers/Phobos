@@ -234,5 +234,7 @@ public:
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 
 	static void CalculatePowerSurplus(HouseClass* pThis);
+	static void RecheckUnitPower(HouseClass* pThis);
+	static void UpdateUnitPower(HouseClass* pThis);
 };
 
