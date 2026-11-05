@@ -2039,7 +2039,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
-- [Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight) (by FlyStar)
+- [Customize who sees the map revealed by `Sight`](Fixed-or-Improved-Logics.md#customize-who-sees-the-map-revealed-by-sight) (by FlyStar)
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
@@ -2095,8 +2095,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
-- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
-- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
@@ -2559,6 +2557,8 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
 - Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 
 #### 0.5-alpha2
 
@@ -2956,7 +2956,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
