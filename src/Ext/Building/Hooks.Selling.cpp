@@ -181,6 +181,9 @@ DEFINE_HOOK(0x4575E4, BuildingClass_Sell_Upgrades_RefundResources, 0x5)
 		}
 	}
 
+	// The skipped HouseClass::Refund_Money call pops its argument (pushed at 0x4575E3); do the same.
+	R->ESP(R->ESP() + 4);
+
 	return ReturnOriginal;
 }
 
