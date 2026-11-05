@@ -1088,19 +1088,25 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 }
 
 // Safeguard against missing or zero-sized isometric tile files in theater definitions.
-// If the tile is placed on the active map, logs an error noting that this may crash the game and leaves it untouched.
-// If the tile is not placed on the map, silences the missing asset by falling back to a safe tile and logs a warning.
+// A tile placed on the map is left without an image, as the original game does for a tile whose
+// file is missing (Read_INI leaves unk_2F4 false, so Get_Image_Data returns no image and the cells
+// draw nothing); loading it would reach Ares' fatal "contains a file that could not be loaded".
+// A tile not placed on the map falls back to a safe tile file and logs a warning.
 DEFINE_HOOK(0x547020, IsometricTileTypeClass_LoadTile_MissingFallback, 0x5)
 {
+	enum { SkipLoad = 0x547106 }; // the final retn; the hook sits before the prologue pushes
+
 	GET(IsometricTileTypeClass*, pThis, ECX);
 
 	if (!pThis->FileName[0] || CCFileClass { pThis->FileName }.GetFileSize() == 0)
 	{
 		if (pThis->unk_308 > 0)
 		{
-			Debug::Log("[Phobos] Error: Tileset '%s' tile file '%s' could not be loaded and is placed on the map (%u cells). This may crash the game.\n",
+			Debug::Log("[Phobos] Warning: Tileset '%s' tile file '%s' could not be loaded and is placed on the map (%u cells). Left without image, as in the original game.\n",
 				pThis->ID, pThis->FileName, pThis->unk_308);
-			return 0;
+			pThis->unk_2F4 = false;
+			R->EAX(0);
+			return SkipLoad;
 		}
 
 		const auto pFallback = (IsometricTileTypeClass::Array.Count > 0)
