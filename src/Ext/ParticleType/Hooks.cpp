@@ -9,16 +9,17 @@ DEFINE_HOOK(0x62BE30, ParticleClass_Gas_AI_DriftSpeed, 0x0)
 	const auto pExt = ParticleTypeExt::Fetch(pParticle->Type);
 	const int maxDriftSpeed = pExt->Gas_MaxDriftSpeed;
 	const int minDriftSpeed = -maxDriftSpeed;
+	auto& gasDrift = pParticle->GasDrift;
 
-	if (pParticle->Velocity.X > maxDriftSpeed)
-		pParticle->Velocity.X = maxDriftSpeed;
-	else if (pParticle->Velocity.X < minDriftSpeed)
-		pParticle->Velocity.X = minDriftSpeed;
+	if (gasDrift.X > maxDriftSpeed)
+		gasDrift.X = maxDriftSpeed;
+	else if (gasDrift.X < minDriftSpeed)
+		gasDrift.X = minDriftSpeed;
 
-	if (pParticle->Velocity.Y > maxDriftSpeed)
-		pParticle->Velocity.Y = maxDriftSpeed;
-	else if (pParticle->Velocity.Y < minDriftSpeed)
-		pParticle->Velocity.Y = minDriftSpeed;
+	if (gasDrift.Y > maxDriftSpeed)
+		gasDrift.Y = maxDriftSpeed;
+	else if (gasDrift.Y < minDriftSpeed)
+		gasDrift.Y = minDriftSpeed;
 
 	return ContinueAI;
 }
