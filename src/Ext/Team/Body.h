@@ -37,6 +37,8 @@ public:
 	bool ForceJump_RepeatMode;
 	FootClass* TeamLeader;
 	std::vector<ScriptClass*> PreviousScriptList;
+	int TriggersSideIdx;
+	int TriggersHouseIdx;
 
 	TeamExt(TeamClass* OwnerObject) : AbstractExt(OwnerObject)
 		, WaitNoTargetAttempts { 0 }
@@ -52,6 +54,8 @@ public:
 		, ForceJump_RepeatMode { false }
 		, TeamLeader { nullptr }
 		, PreviousScriptList { }
+		, TriggersSideIdx { -1 }
+		, TriggersHouseIdx { -1 }
 	{ }
 
 	virtual ~TeamExt() = default;
