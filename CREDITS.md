@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Recursive spawn conversion on spawner type conversion
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
