@@ -365,6 +365,9 @@ public:
 	static std::pair<std::int64_t, std::int64_t> GetEnhancedPower(TechnoTypeClass* pType, std::int64_t output, HouseClass* pHouse, TechnoClass* pSource = nullptr);
 	static std::pair<std::int64_t, std::int64_t> GetUnitPower(TechnoTypeClass* pType, std::int64_t power, HouseClass* pHouse, TechnoClass* pSource = nullptr);
 	static int GetPowerOutput(BuildingClass* pBuilding, int baseOutput);
+	static std::int64_t GetAIPower(BuildingTypeClass* pType);
+	static std::int64_t GetAIPower(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled = false, std::int64_t* pDrain = nullptr);
+	static std::int64_t GetAIPowerDelta(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t* pDrainDelta = nullptr, bool* pAdjusted = nullptr);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

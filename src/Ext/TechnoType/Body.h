@@ -521,6 +521,9 @@ public:
 	ValueableVector<int> NoAmmoWeapons;
 	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
+	Nullable<int> AI_Power;
+	Nullable<bool> AI_Power_AffectedByEnhancers;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -947,6 +950,9 @@ public:
 
 		, NoAmmoWeapons {}
 		, NoAmmoWeapons_IgnoreNeverUse { true }
+
+		, AI_Power {}
+		, AI_Power_AffectedByEnhancers {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }

@@ -574,6 +574,7 @@ public:
 		Valueable<bool> MissileKeepTargetCoord;
 
 		Valueable<bool> ExtendedBuildingPlacing;
+		Valueable<bool> AI_Power_AffectedByEnhancers;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -1083,6 +1084,7 @@ public:
 			, MissileKeepTargetCoord { false }
 
 			, ExtendedBuildingPlacing { false }
+			, AI_Power_AffectedByEnhancers { true }
 		{ }
 
 		virtual ~ExtData() = default;

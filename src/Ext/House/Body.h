@@ -95,6 +95,7 @@ public:
 	std::vector<UnitClass*> OwnedDeployingUnits;
 	PlacingBuildingStruct Common;
 	PlacingBuildingStruct Combat;
+	std::int64_t AIPowerDelta;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
@@ -135,6 +136,7 @@ public:
 		, OwnedDeployingUnits {}
 		, Common { nullptr, nullptr, 0 }
 		, Combat { nullptr, nullptr, 0 }
+		, AIPowerDelta { 0 }
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
@@ -234,7 +236,18 @@ public:
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 
 	static void CalculatePowerSurplus(HouseClass* pThis);
+	static void CalculatePowerSurplus(HouseClass* pThis, std::int64_t aiPowerDrain);
 	static void RecheckUnitPower(HouseClass* pThis);
-	static void UpdateUnitPower(HouseClass* pThis);
+	struct PowerAdjustment
+	{
+		std::int64_t Net = 0;
+		std::int64_t Drain = 0;
+		std::int64_t OverflowNet = 0;
+		std::int64_t OverflowDrain = 0;
+		bool Adjusted = false;
+	};
+	static PowerAdjustment UpdateUnitPower(HouseClass* pThis);
+	static std::int64_t UpdateAIPower(HouseClass* pThis, PowerAdjustment unitPower);
+	static std::int64_t UpdateAIPower(HouseClass* pThis) { return UpdateAIPower(pThis, PowerAdjustment {}); }
 };
 

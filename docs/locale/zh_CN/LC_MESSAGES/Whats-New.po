@@ -1211,6 +1211,9 @@ msgstr ""
 msgid "Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)"
 msgstr "电厂增幅器支持作用于步兵、载具和战机（Noble_Fish）"
 
+msgid "[Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)"
+msgstr "[为科技类型独立设置 AI 电力预算值](New-or-Enhanced-Logics.md#ai-power-budgeting)（Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
