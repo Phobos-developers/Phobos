@@ -81,47 +81,6 @@ int BuildingTypeExt::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-std::pair<int, int> BuildingTypeExt::GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant)
-{
-	const auto pHouseExt = HouseExt::Fetch(pHouse);
-	int amount = 0;
-	float factor = 1.0f;
-	std::map<int, int> applied; // index, count
-
-	for (const auto pEnhancer : pHouseExt->PowerPlantEnhancers)
-	{
-		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
-			continue;
-
-		const auto pEnhancerType = pEnhancer->Type;
-		const auto pEnhancerTypeExt = BuildingTypeExt::Fetch(pEnhancerType);
-
-		if (!pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding))
-			continue;
-
-		const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get();
-
-		if (range > 0 && (!pPowerPlant || pEnhancer->DistanceFrom(pPowerPlant) > range))
-			continue;
-
-		const int max = pEnhancerTypeExt->PowerPlantEnhancer_MaxCount;
-
-		if (max > 0)
-		{
-			const auto it = applied.find(pEnhancerType->ArrayIndex);
-
-			if (it != applied.cend() && it->second >= max)
-				continue;
-		}
-
-		factor *= pEnhancerTypeExt->PowerPlantEnhancer_Factor;
-		amount += pEnhancerTypeExt->PowerPlantEnhancer_Amount;
-		++applied[pEnhancerType->ArrayIndex];
-	}
-
-	return std::make_pair(static_cast<int>(std::round(output * factor)), amount);
-}
-
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 {
 	auto const pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
