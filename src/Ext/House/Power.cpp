@@ -26,7 +26,7 @@ void HouseExt::RecheckUnitPower(HouseClass* const pThis)
 		if (pExt->PowerPlantEnhancer_Range.Get() <= 0)
 			continue;
 
-		for (const auto pType : pExt->PowerPlantEnhancer_Buildings)
+		for (const auto pType : pExt->PowerPlantEnhancer_AffectTypes)
 		{
 			if (pType && pType->WhatAmI() != AbstractType::BuildingType)
 			{
@@ -52,7 +52,7 @@ void HouseExt::UpdateUnitPower(HouseClass* const pThis)
 		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
 			continue;
 
-		for (const auto pType : BuildingTypeExt::Fetch(pEnhancer->Type)->PowerPlantEnhancer_Buildings)
+		for (const auto pType : BuildingTypeExt::Fetch(pEnhancer->Type)->PowerPlantEnhancer_AffectTypes)
 		{
 			if (pType && pType->WhatAmI() != AbstractType::BuildingType)
 				enhancedTypes.insert(pType);

@@ -20,7 +20,7 @@ public:
 	ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 	Valueable<double> PowerPlant_DamageFactor;
-	ValueableVector<TechnoTypeClass*> PowerPlantEnhancer_Buildings;
+	ValueableVector<TechnoTypeClass*> PowerPlantEnhancer_AffectTypes;
 	Valueable<Leptons> PowerPlantEnhancer_Range;
 	Valueable<int> PowerPlantEnhancer_Amount;
 	Nullable<float> PowerPlantEnhancer_Factor;
@@ -168,7 +168,7 @@ public:
 		, PowersUp_Owner { AffectedHouse::Owner }
 		, PowersUp_Buildings {}
 		, PowerPlant_DamageFactor { 1.0 }
-		, PowerPlantEnhancer_Buildings {}
+		, PowerPlantEnhancer_AffectTypes {}
 		, PowerPlantEnhancer_Range { Leptons(0) }
 		, PowerPlantEnhancer_Amount { 0 }
 		, PowerPlantEnhancer_Factor { 1.0f }
