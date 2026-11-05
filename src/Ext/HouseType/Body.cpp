@@ -26,6 +26,13 @@ void HouseTypeExt::LoadFromINIFile(CCINIClass* pINI)
 
 	this->RevealHouses.Read<false, true>(exINI, pSection, "RevealHouses");
 
+	this->NewTeamsSelector_MergeUnclassifiedCategoryWith.Read(exINI, pSection, "NewTeamsSelector.MergeUnclassifiedCategoryWith");
+	this->NewTeamsSelector_UnclassifiedCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.UnclassifiedCategoryPercentage");
+	this->NewTeamsSelector_GroundCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.GroundCategoryPercentage");
+	this->NewTeamsSelector_AirCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.AirCategoryPercentage");
+	this->NewTeamsSelector_NavalCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.NavalCategoryPercentage");
+	this->NewTeamsSelector_InfantryCategoryPercentage.Read(exINI, pSection, "NewTeamsSelector.InfantryCategoryPercentage");
+	this->NewTeamsSelector_VIPWeight.Read(exINI, pSection, "NewTeamsSelector.VIPWeight");
 	this->Academy_AllowCountryFilter.Read(exINI, pSection, "Academy.AllowCountryFilter");
 }
 
@@ -38,6 +45,13 @@ void HouseTypeExt::Serialize(T& Stm)
 		.Process(this->AttachEffects_AttachOnOwnerChange)
 		.Process(this->Crew)
 		.Process(this->RevealHouses)
+		.Process(this->NewTeamsSelector_MergeUnclassifiedCategoryWith)
+		.Process(this->NewTeamsSelector_UnclassifiedCategoryPercentage)
+		.Process(this->NewTeamsSelector_GroundCategoryPercentage)
+		.Process(this->NewTeamsSelector_AirCategoryPercentage)
+		.Process(this->NewTeamsSelector_NavalCategoryPercentage)
+		.Process(this->NewTeamsSelector_InfantryCategoryPercentage)
+		.Process(this->NewTeamsSelector_VIPWeight)
 		.Process(this->Academy_AllowCountryFilter)
 		;
 }
