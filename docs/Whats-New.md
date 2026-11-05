@@ -2097,6 +2097,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
 - Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
 - When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
+- Veinhole monster and veins logic fixes and ramp support (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
