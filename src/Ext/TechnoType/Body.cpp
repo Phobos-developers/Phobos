@@ -1290,6 +1290,10 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
+	// Ares 0.6
+	this->Drain_Local.Read(exINI, pSection, "Drain.Local");
+	this->Drain_Amount.Read(exINI, pSection, "Drain.Amount");
+
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
 	this->DesignatorRange.Read(exINI, pSection, "DesignatorRange");
@@ -1865,6 +1869,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
+
+		// Ares 0.6
+		.Process(this->Drain_Local)
+		.Process(this->Drain_Amount)
 
 		// Ares 0.9
 		.Process(this->InhibitorRange)

@@ -3,8 +3,10 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Utilities/AresHelper.h>
 
 #include <AircraftClass.h>
+#include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
 
@@ -12,6 +14,14 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+
+namespace
+{
+	// Consumed later in the same UpdatePower call, after Ares has applied its
+	// house-wide zero floor. It includes auxiliary power and all local drains.
+	HouseClass* powerOutputContext = nullptr;
+	int powerOutputBeforeDrainClamp = 0;
+}
 
 void HouseExt::RecheckUnitPower(HouseClass* const pThis)
 {
@@ -173,6 +183,12 @@ HouseExt::PowerAdjustment HouseExt::UpdateUnitPower(HouseClass* const pThis)
 		drain - pThis->PowerDrain, aiAdjusted };
 }
 
+void HouseExt::RecordPowerOutputBeforeDrainClamp(HouseClass* const pThis)
+{
+	powerOutputContext = pThis;
+	powerOutputBeforeDrainClamp = pThis->PowerOutput;
+}
+
 // Keep the AI adjustment in the same snapshot as the real power totals. Reading
 // live buildings during a later decision could mix new state with an old cache.
 std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, PowerAdjustment unitPower)
@@ -181,7 +197,14 @@ std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, PowerAdjustment un
 	std::int64_t aiDrain = static_cast<std::int64_t>(pThis->PowerDrain) + unitPower.Drain;
 	bool adjusted = unitPower.Adjusted;
 	const bool affectedByEnhancers = RulesExt::Global()->AI_Power_AffectedByEnhancers;
-	const bool outputDisabled = pThis->PowerBlackoutTimer.GetTimeLeft() != 0 || pThis->IsBeingDrained;
+	const bool blackout = pThis->PowerBlackoutTimer.GetTimeLeft() != 0;
+	const bool outputDisabled = blackout || pThis->IsBeingDrained;
+	const bool capturedOutput = powerOutputContext == pThis;
+	const auto realOutputBeforeClamp = powerOutputBeforeDrainClamp;
+	powerOutputContext = nullptr;
+	std::int64_t buildingOutputDelta = 0;
+	std::int64_t localDrainDelta = 0;
+	bool aiFullDrain = false;
 
 	for (auto const pBuilding : pThis->Buildings)
 	{
@@ -192,10 +215,56 @@ std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, PowerAdjustment un
 
 		std::int64_t drainDelta;
 		bool buildingAdjusted;
-		const auto buildingDelta = BuildingTypeExt::GetAIPowerDelta(pBuilding, affectedByEnhancers, outputDisabled, &drainDelta, &buildingAdjusted);
+		const auto buildingDelta = BuildingTypeExt::GetAIPowerDelta(pBuilding, affectedByEnhancers,
+			capturedOutput ? false : outputDisabled, &drainDelta, &buildingAdjusted);
 		delta += buildingDelta;
 		aiDrain += drainDelta;
 		adjusted |= buildingAdjusted;
+		buildingOutputDelta += buildingDelta + drainDelta;
+
+		if (capturedOutput && pBuilding->IsBeingDrained())
+		{
+			const auto pDrainer = pBuilding->DrainingMe;
+			if (!pDrainer)
+				continue;
+			const auto pBuildingExt = TechnoTypeExt::Fetch(pBuilding->Type);
+			const auto pDrainerExt = TechnoTypeExt::Fetch(pDrainer->GetTechnoType());
+			const std::int64_t realOutput = pBuilding->GetPowerOutput();
+			std::int64_t buildingAIDrain;
+			const auto aiNet = BuildingTypeExt::GetAIPower(pBuilding, affectedByEnhancers, false, &buildingAIDrain);
+			const auto aiOutput = aiNet + buildingAIDrain;
+			if (AresHelper::CanUseAres && (pBuildingExt->Drain_Local || pDrainerExt->Drain_Local))
+			{
+				auto localDrain = [&](std::int64_t output)
+				{
+					if (output <= 0)
+						return 0LL;
+					for (const std::int64_t amount : { pDrainerExt->Drain_Amount.Get(), pBuildingExt->Drain_Amount.Get() })
+					{
+						if (amount > 0)
+							output = Math::min(output, amount);
+						else if (amount != std::numeric_limits<int>::min())
+							output = Math::max(output, -amount);
+						// Ares negates its signed int before comparison; INT_MIN
+						// stays negative and cannot raise a positive drain amount.
+					}
+					return output;
+				};
+				localDrainDelta += localDrain(realOutput) - localDrain(aiOutput);
+			}
+			else
+				aiFullDrain |= aiOutput > 0;
+		}
+	}
+
+	if (capturedOutput)
+	{
+		const auto aiOutput = blackout || aiFullDrain ? 0LL : Math::max(0LL,
+			static_cast<std::int64_t>(realOutputBeforeClamp) + buildingOutputDelta + localDrainDelta);
+		// Clamp both output lines independently; actual overdrain was discarded
+		// by Ares before this hook. Unit power is added after that native step.
+		const auto realOutput = outputDisabled ? 0LL : Math::max(0LL, static_cast<std::int64_t>(realOutputBeforeClamp));
+		delta += aiOutput - realOutput - buildingOutputDelta;
 	}
 
 	if (adjusted)

@@ -4,6 +4,13 @@
 
 #include <limits>
 
+DEFINE_HOOK(0x508D45, HouseClass_UpdatePower_BeforeDrainClamp, 0x5)
+{
+	GET(HouseClass*, pThis, ESI);
+	HouseExt::RecordPowerOutputBeforeDrainClamp(pThis);
+	return 0;
+}
+
 DEFINE_HOOK(0x4FE713, HouseClass_AI_BaseConstructionUpdate_AIPower, 0x6)
 {
 	enum { Produce = 0x4FE953, CheckExemptions = 0x4FE723 };

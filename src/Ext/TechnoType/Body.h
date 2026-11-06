@@ -527,6 +527,10 @@ public:
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
+	// Ares 0.6
+	Valueable<bool> Drain_Local;
+	Valueable<int> Drain_Amount;
+
 	// Ares 0.9
 	Nullable<int> InhibitorRange;
 	Nullable<int> DesignatorRange;
@@ -956,6 +960,10 @@ public:
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
+
+		// Ares 0.6
+		, Drain_Local { false }
+		, Drain_Amount { 0 }
 
 		// Ares 0.9
 		, InhibitorRange {}

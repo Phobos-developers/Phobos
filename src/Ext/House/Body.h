@@ -247,6 +247,7 @@ public:
 		bool Adjusted = false;
 	};
 	static PowerAdjustment UpdateUnitPower(HouseClass* pThis);
+	static void RecordPowerOutputBeforeDrainClamp(HouseClass* pThis);
 	static std::int64_t UpdateAIPower(HouseClass* pThis, PowerAdjustment unitPower);
 	static std::int64_t UpdateAIPower(HouseClass* pThis) { return UpdateAIPower(pThis, PowerAdjustment {}); }
 };
