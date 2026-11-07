@@ -1367,6 +1367,9 @@ msgid ""
 msgstr ""
 "启用不排队装载时，同时拥有 `Grinding=yes` 与 `InfantryAbsorb=yes`／`UnitAbsorb=yes` 的建筑不会被正在寻找生化反应炉并准备进入的单位检测到（by FlyStar）"
 
+msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)"
+msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题（by Noble_Fish）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

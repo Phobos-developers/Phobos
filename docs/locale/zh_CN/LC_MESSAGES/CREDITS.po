@@ -2744,6 +2744,9 @@ msgstr "修复 `HealBase` 补给箱导致满生命值对象散开的问题"
 msgid "Preserve whitespace in CSF"
 msgstr "保留 CSF 中的空白"
 
+msgid "Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values"
+msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

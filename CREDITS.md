@@ -796,6 +796,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
   - Preserve whitespace in CSF
+  - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
