@@ -350,6 +350,17 @@ In `aimd.ini`:
 x=10104,n         ; integer, additional distance in cells
 ```
 
+##### `10105` Reapir Building at Waypoint
+
+- When a building at a waypoint can be repaired by an engineer, the engineers on the team will begin a repair mission.
+  - No engineer on the team will skip this script.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=10105,n         ; integer, Waypoint
+```
+
 ### `12000-12999` Suplementary/Setup Pre-actions
 
 #### `12000` Wait if No Target Found

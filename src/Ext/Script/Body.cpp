@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Scenario/Body.h>
 
 ScriptExt::ExtContainer ScriptExt::ExtMap;
@@ -215,6 +216,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::ChronoshiftToEnemyBase:
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
+		break;
+	case PhobosScripts::RepairToWarpoint:
+		ScriptExt::RepairToWarpoint(pTeam, argument);
 		break;
 	case PhobosScripts::ForceGlobalOnlyTargetHouseEnemy:
 		ScriptExt::ForceGlobalOnlyTargetHouseEnemy(pTeam, -1);
@@ -1172,6 +1176,116 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 	}
 
 	ScriptExt::ChronoshiftTeamToTarget(pTeam, pLeader, pTargetCell);
+}
+
+void ScriptExt::RepairToWarpoint(TeamClass* const pTeam, const int waypoint)
+{
+	const auto& waypoints = ScenarioExt::Global()->Waypoints;
+	const auto it = waypoints.find(waypoint);
+
+	if (it == waypoints.end())
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	auto const pCell = MapClass::Instance.TryGetCellAt(it->second);
+
+	if (!pCell)
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	std::vector<InfantryClass*> engineers;
+	InfantryClass* pEngineer = nullptr;
+
+	for (FootClass* pFirstUnit = pTeam->FirstUnit; pFirstUnit; pFirstUnit = pFirstUnit->NextTeamMember)
+	{
+		if (pFirstUnit->WhatAmI() != AbstractType::Infantry)
+			continue;
+
+		auto const pInfantry = static_cast<InfantryClass*>(pFirstUnit);
+
+		if (!pInfantry->Type->Engineer)
+			continue;
+
+		if (!pEngineer)
+			pEngineer = pInfantry;
+
+		engineers.push_back(pInfantry);
+	}
+
+	if (!pEngineer)
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	auto SetEngineerMode = [&](BuildingClass* const pBuilding, const bool canRepair)
+	{
+		for (auto const pInfantry : engineers)
+		{
+			const bool captureMission = pInfantry->GetCurrentMission() == Mission::Capture;
+
+			if (canRepair)
+			{
+				if (!captureMission || pInfantry->Destination != pBuilding)
+				{
+					pInfantry->SetDestination(pBuilding, true);
+					pInfantry->QueueMission(Mission::Capture, false);
+					pInfantry->NextMission();
+				}
+			}
+			else if (captureMission)
+			{
+				pInfantry->Guard();
+			}
+		}
+	};
+
+	if (auto const pBuilding = pCell->GetBuilding())
+	{
+		auto const pBuildingType = pBuilding->Type;
+		auto const pBuildingTypeExt = BuildingTypeExt::Fetch(pBuildingType);
+
+		if (!pBuilding->IsBeingWarpedOut() && pBuildingTypeExt->EngineerRepairable.Get(pBuildingType->Repairable))
+		{
+			if (pBuildingType->BridgeRepairHut)
+			{
+				if (MapClass::Instance.IsLinkedBridgeDestroyed(pBuilding->GetMapCoords()))
+				{
+					SetEngineerMode(pBuilding, true);
+					return;
+				}
+			}
+			else if (pBuilding->GetCurrentMission() != Mission::Selling)
+			{
+				auto const pBuildingOwner = pBuilding->Owner;
+				const bool lowHealth = pBuilding->Health < pBuildingType->Strength;
+
+				if (pBuildingType->CanBeOccupied && pBuildingType->TechLevel == -1 && pBuildingOwner == HouseClass::FindCivilianSide())
+				{
+					if (lowHealth)
+					{
+						SetEngineerMode(pBuilding, true);
+						return;
+					}
+				}
+				else if (pEngineer->Owner->IsAlliedWith(pBuildingOwner))
+				{
+					if (pBuildingTypeExt->RubbleIntact || pBuildingTypeExt->RubbleIntactRemove || lowHealth)
+					{
+						SetEngineerMode(pBuilding, true);
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	SetEngineerMode(nullptr, false);
+	pTeam->StepCompleted = true;
 }
 
 void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget)
