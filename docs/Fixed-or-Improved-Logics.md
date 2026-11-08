@@ -218,7 +218,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
@@ -1732,7 +1732,7 @@ In `rulesmd.ini`:
 Arcing.AllowElevationInaccuracy=true     ; boolean
 Arcing.ConsiderBuildingFoundation=false  ; boolean
 
-[SOMEPROJECTILE]                         ; Projectile， with Arcing=true
+[SOMEPROJECTILE]                         ; Projectile, with Arcing=true
 Arcing.AllowElevationInaccuracy=         ; boolean, defaults to [CombatDamage] -> Arcing.AllowElevationInaccuracy
 Arcing.ConsiderBuildingFoundation=       ; boolean, defaults to [CombatDamage] -> Arcing.ConsiderBuildingFoundation
 ```
@@ -2163,9 +2163,9 @@ In `rulesmd.ini`:
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
-### Customize the country displayed in `Sight`
+### Customize who sees the map revealed by `Sight`
 
-- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+- You can now customize which houses see the map revealed by a unit's `Sight`.
 
 In `rulesmd.ini`:
 ```ini

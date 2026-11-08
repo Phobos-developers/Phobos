@@ -42,7 +42,7 @@ msgid "Custom `DiskLaser` radius"
 msgstr "自定义 `DiskLaser` 范围"
 
 msgid "Extended tooltips"
-msgstr "扩展拓展工具条"
+msgstr "扩展工具提示"
 
 msgid "Building upgrades enhancement"
 msgstr "建筑加载物逻辑增强"
@@ -299,7 +299,7 @@ msgid "Vanilla map preview reading bugfix"
 msgstr "原版地图预览图读取 bug 修复"
 
 msgid "Customizable tooltip background"
-msgstr "自定义拓展工具条背景"
+msgstr "自定义扩展工具提示背景"
 
 msgid "Parts of Ares calling code"
 msgstr "部分 Ares 调用代码"
@@ -1132,7 +1132,7 @@ msgid ""
 msgstr "当被心灵控制的载具部署成建筑或当被视为载具的建筑被占领时移除声音事件"
 
 msgid "Building LightSource tint S/L fix"
-msgstr "建筑光源染色问题的的存读档修复"
+msgstr "建筑光源染色问题的存读档修复"
 
 msgid "Permanent healthbar display on units targeted by temporal weapons fix"
 msgstr "超时空武器所冻结单位的永久显示血条问题修复"
@@ -1179,7 +1179,7 @@ msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
 msgstr "`InfDeath=9` 对 Jumpjet 步兵 0 伤害效果的修复"
 
 msgid "Ares' `SW.Shots` hint on extended tooltips"
-msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
+msgstr "在扩展工具提示中现实 Ares 的 `SW.Shots`"
 
 msgid "Ares' Abductor weapon fix"
 msgstr "Ares 超时空监狱吸取武器的修复"
@@ -1400,8 +1400,8 @@ msgstr "修复了 *国家层级生还者自定义* 覆盖单位微观设置的 B
 msgid "Enter the grinder voice"
 msgstr "赴部队回收站语音"
 
-msgid "Customize the country displayed in `Sight`"
-msgstr "自定义 `Sight` 可见性"
+msgid "Customize who sees the map revealed by `Sight`"
+msgstr "自定义 `Sight` 揭示的地图对哪些所属方可见"
 
 msgid ""
 "The parachute animation supports `ShouldUseCellDrawer=no` to remove the "
@@ -1818,7 +1818,7 @@ msgstr "修复了一个极易崩溃且导致寄生者特定条件下会被高频
 msgid ""
 "Fix the bug that if paradropping technos with `Crashable=yes` has been "
 "destroyed in air, they will falling down on ground but not dead"
-msgstr "修复了当 `Crashable=yes` 的科技类型在空降时被于半空中摧毁，它会落地但不会死亡的 Bug"
+msgstr "修复了当 `Crashable=yes` 的科技类型在空降时于半空中被摧毁，它会落地但不会死亡的 Bug"
 
 msgid ""
 "Fix the bug where paradropped infantry with `NotHuman=yes` will ignore "
@@ -1995,7 +1995,7 @@ msgstr "自定义触发标签在单位被摧毁时可转移给偷车贼、驾驶
 msgid ""
 "Fix the bug that crashing or sinking unit can be recruit into taskforce "
 "team"
-msgstr "修复了坠落或沉没中的单位可以被招募进特遣小队的 Bug"
+msgstr "修复了坠落或沉没中的单位可以被招募进特遣部队的 Bug"
 
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
@@ -2220,7 +2220,7 @@ msgstr "激光、EBolt 和辐射波的散布"
 msgid ""
 "Fix an issue that laser, electric bolt and rad beam not support "
 "`Inviso=true` projectiles with `FlakScatter=true` to scatter"
-msgstr "修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不不跟随散布的问题"
+msgstr "修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不跟随散布的问题"
 
 msgid ""
 "Fix an issue that the first passenger who call the transport ship no "
@@ -2279,7 +2279,7 @@ msgid ""
 msgstr "多种新的数显信息类型、特定情况下不显示以及一种新的单帧显示方式"
 
 msgid ""
-"Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its "
+"Customizable spawn delay of VoxelAnim's `TrailerAnim` and fix its "
 "incorrect position"
 msgstr "自定义 Voxel 碎片 `TrailerAnim` 生成间隔并修复其生成位置错误的问题"
 
@@ -2307,7 +2307,7 @@ msgstr "修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交
 msgid ""
 "Fix an issue that `Spawned` aircraft will fly towards the edge of the map"
 " when its `Spawner` is under EMP"
-msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题"
+msgstr "修复了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题"
 
 msgid "Burst without delay"
 msgstr "无间隔连发"
@@ -2357,7 +2357,7 @@ msgstr "修复了单位的 `LaserTrails` 总会滞后一帧的问题"
 msgid ""
 "Fix an issue that the currently hovered planning node not update up-to-"
 "date, such as using hotkeys to select technos"
-msgstr "修复了所谓的高等路径学"
+msgstr "修复了用快捷键选中单位等操作时当前悬停的计划节点未及时更新的问题"
 
 msgid ""
 "Allow the aircraft to enter area guard mission and not crash immediately "
@@ -2558,7 +2558,7 @@ msgid "Custom cruise missiles"
 msgstr "自定义巡航导弹"
 
 msgid "Add a toggle for disabling `SecondaryFire` / `SecondaryProne` on water"
-msgstr "为水上禁用  `SecondaryFire` / `SecondaryProne` 添加开关"
+msgstr "为水上禁用 `SecondaryFire` / `SecondaryProne` 添加开关"
 
 msgid "Customize the step limit of the credits indicator"
 msgstr "自定义资金示数器步长上限"
@@ -2704,7 +2704,7 @@ msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃�
 msgid ""
 "Fix the bug where `Ranged=true` causes projectiles using the new "
 "Trajectory to ignore settings such as `BounceTimes`"
-msgstr "修复了 `Ranged=true` 倒是使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
+msgstr "修复了 `Ranged=true` 导致使用新轨迹的抛射体其 `BounceTimes` 等设置被忽略的 Bug"
 
 msgid "Customizable infantry sequence rates"
 msgstr "自定义步兵序列播放速率"
@@ -2726,7 +2726,7 @@ msgid "Customize `DefaultToGuardArea` per gunner mode"
 msgstr "为不同 IFV 模式自定义 `DefaultToGuardArea` 效果"
 
 msgid "Global default value for `ShouldUseCellDrawer`"
-msgstr "`KeepAlive` 添加全局默认值"
+msgstr "`ShouldUseCellDrawer` 添加全局默认值"
 
 msgid ""
 "Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
@@ -3055,7 +3055,7 @@ msgstr "弹头动画 `ZAdjust` 去硬编码"
 msgid ""
 "Fix an issue where some effects pointing to a unit were not properly "
 "cleared when the unit changed its owner"
-msgstr "修复了指向某个某个单位的部分效果在该单位变更所属时未能正确清除的问题"
+msgstr "修复了指向某个单位的部分效果在该单位变更所属时未能正确清除的问题"
 
 msgid "Fix an issue where the vanilla script ignores jumpjets"
 msgstr "修复了原版脚本会忽略 Jumpjet 单位的问题"
@@ -3172,7 +3172,7 @@ msgstr "修复了单位在 Limbo 状态下死亡时侧边栏不会刷新的问�
 msgid ""
 "Enable playing ingame movie in non-campaign modes (i.e. trigger action "
 "`100 Play Sidebar Movie...` and `117 Play Sidebar Movie and pause...`)"
-msgstr "启用了在非战役模式下游戏内播放电影的功能（例如触发结果 `100 在小地图窗口播放影片` 和 `177 在小地图窗口播放影片(游戏暂停)...`）"
+msgstr "启用了在非战役模式下游戏内播放电影的功能（例如触发结果 `100 在小地图窗口播放影片` 和 `117 在小地图窗口播放影片(游戏暂停)...`）"
 
 msgid "Allow replacing vanilla repairing with togglable auto repairing"
 msgstr "允许使用可切换的自动维修替换原版维修"
@@ -3213,7 +3213,7 @@ msgid "Fix the issue that spawnee or slave would execute some player commands"
 msgstr "修正子机或奴隶会执行部分玩家指令的问题"
 
 msgid "Customize whether aircraft is a cargo plane"
-msgstr "自定义飞机是否是cargo plane"
+msgstr "自定义飞机是否为货机"
 
 msgid ""
 "Allow the unit to stop immediately if the target enters the range during "

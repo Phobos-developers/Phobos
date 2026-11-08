@@ -1021,7 +1021,7 @@ In `rulesmd.ini`:
 [General]
 NotHuman.RandomDeathSequence=no   ; boolean
 
-[SOMEINFANTRY]                    ; InfantryType
+[SOMEINFANTRY]                    ; InfantryType, with NotHuman=true
 NotHuman.RandomDeathSequence=     ; boolean, default to [General] -> NotHuman.RandomDeathSequence
 ```
 
