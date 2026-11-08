@@ -73,36 +73,9 @@ DEFINE_HOOK(0x62FA41, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 }
 
 // Fix fire particles being disallowed from going upwards.
-DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
-{
-	enum { SkipGameCode = 0x62D6B7 };
-
-	// Game checks if MapClass::GetCellFloorHeight() for currentCoords is larger than for previousCoords and sets the flags on ParticleClass to
-	// remove it if so. Below is an attempt to create a smarter check that allows upwards movement and does not needlessly collide with elevation
-	// but removes particles when colliding with flat ground. It doesn't work perfectly and covering all edge-cases is difficult or impossible so
-	// preference was to disable it. Keeping the code here commented out, however.
-
-	/*
-	GET(ParticleClass*, pThis, ESI);
-	REF_STACK(CoordStruct, currentCoords, STACK_OFFSET(0x24, -0x18));
-	REF_STACK(CoordStruct, previousCoords, STACK_OFFSET(0x24, -0xC));
-
-	auto const sourceLocation = pThis->ParticleSystem ? pThis->ParticleSystem->Location : CoordStruct { INT_MAX, INT_MAX, INT_MAX };
-	auto const pCell = MapClass::Instance.TryGetCellAt(currentCoords);
-	int cellFloor = MapClass::Instance.GetCellFloorHeight(currentCoords);
-	bool downwardTrajectory = currentCoords.Z < previousCoords.Z;
-	bool isBelowSource = cellFloor < sourceLocation.Z - Unsorted::LevelHeight * 2;
-	bool isRamp = pCell ? pCell->SlopeIndex : false;
-
-	if (!isRamp && isBelowSource && downwardTrajectory && currentCoords.Z < cellFloor)
-	{
-		pThis->unknown_12D = 1;
-		pThis->unknown_131 = 1;
-	}
-	*/
-
-	return SkipGameCode;
-}
+// Skips a Z coordinate check that was likely intended to prevent
+// particles from going underground but causes other issues.
+DEFINE_JUMP(LJMP, 0x62D672, 0x62D6B7);
 
 // Fix railgun target coordinates potentially differing from actual target coords.
 DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
@@ -130,6 +103,8 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;
 
+	// This skips over vanilla game check for Z coordinates - making it so that
+	// the ambient damage simulation loop doesn't break if traveling upwards.
 	return Continue;
 }
 

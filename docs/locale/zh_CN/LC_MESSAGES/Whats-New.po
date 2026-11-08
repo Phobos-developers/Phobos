@@ -1354,6 +1354,9 @@ msgid ""
 msgstr ""
 "修复了已定义 `MinDebris` 和 `MaxDebris` 但未定义 `DebrisTypes` 的单位在死亡时会无条件生成一次 `MetallicDebris` 的 Bug（by dh381）"
 
+msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)"
+msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题（by Noble_Fish）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
