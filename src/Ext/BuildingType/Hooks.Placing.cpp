@@ -74,6 +74,38 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x42EB65, BaseClass_GetBaseNodeIndex_Rebuild, 0x5)
+{
+	enum { QueryNext = 0x42EB6A, QueryType = 0x42EB9A, SkipNode = 0x42EBAE };
+
+	GET(BaseClass* const, pBase, ESI);
+	GET(const int, nodeIndex, EDI);
+	GET(const int, queryType, EBP);
+
+	auto const& node = pBase->BaseNodes[nodeIndex];
+	const auto typeIndex = node.BuildingTypeIndex;
+
+	// Negative indices are native base-plan instructions, not building types.
+	// Placed also includes matching preplaced buildings owned by an AI house.
+	if (node.Placed && typeIndex >= 0 && typeIndex < BuildingTypeClass::Array.Count
+		&& !BuildingTypeExt::Fetch(BuildingTypeClass::Array.Items[typeIndex])->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+	{
+		return SkipNode;
+	}
+
+	// Preserve both the production query and the type query used for placement.
+	return queryType == -1 ? QueryNext : QueryType;
+}
+
+DEFINE_HOOK(0x445639, BuildingClass_KickOutUnit_NoBaseNodeToDelete, 0x6)
+{
+	GET(BaseNodeClass* const, pNode, EAX);
+
+	// A failed upgrade placement compares two node pointers before deleting one.
+	// Both can be null when every completed node is excluded from rebuilding.
+	return pNode ? 0 : 0x445696;
+}
+
 // AIConstructionYard Hook #4-2 -> sub_42EB50 - Prohibit AI from building construction yard.
 DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 {

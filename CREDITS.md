@@ -799,6 +799,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
   - Power plant enhancement for infantry, vehicles and aircraft
   - Techno power overrides for AI budgeting, including installed upgrades, independent of actual power
+  - Control of AI base plan rebuilding
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

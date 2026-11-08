@@ -2753,6 +2753,9 @@ msgstr "电厂增幅器支持作用于步兵、载具和战机"
 msgid "Techno power overrides for AI budgeting, including installed upgrades, independent of actual power"
 msgstr "为科技类型及其已安装加载物设置独立于实际电量的 AI 电力预算"
 
+msgid "Control of AI base plan rebuilding"
+msgstr "控制 AI 基地计划重建"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

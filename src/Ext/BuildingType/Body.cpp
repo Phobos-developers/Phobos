@@ -721,6 +721,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->AutoUpgrade.Read(exINI, pSection, "AutoUpgrade");
+	this->AI_BasePlan_Rebuild.Read(exINI, pSection, "AI.BasePlan.Rebuild");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -891,6 +892,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Academy_Country_Types)
 		.Process(this->Academy_Country_Ignore)
 		.Process(this->AutoUpgrade)
+		.Process(this->AI_BasePlan_Rebuild)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
