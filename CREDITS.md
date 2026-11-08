@@ -797,6 +797,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `HealBase` crates causing full-health objects to scatter
   - Preserve whitespace in CSF
   - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
+  - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
