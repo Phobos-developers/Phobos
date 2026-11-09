@@ -1366,6 +1366,9 @@ msgstr ""
 msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)"
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题（by Noble_Fish）"
 
+msgid "Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)"
+msgstr "修复逐帧模式下打开过选项菜单后退出逐帧模式时菜单再次弹出的问题（by Noble_Fish）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

@@ -2747,6 +2747,9 @@ msgstr "保留 CSF 中的空白"
 msgid "Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values"
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
 
+msgid "Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping"
+msgstr "修复逐帧模式下打开过选项菜单后退出逐帧模式时菜单再次弹出的问题"
+
 msgid "Power plant enhancement for infantry, vehicles and aircraft"
 msgstr "电厂增幅器支持作用于步兵、载具和战机"
 
