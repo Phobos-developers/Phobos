@@ -2064,6 +2064,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
 - Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
+- [Hotkey for keyboard move selected units](User-Interface.md#keyboard-move-selected-units) (by dh381)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)

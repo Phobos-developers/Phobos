@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Commands/KeyboardMoveUnits.h>
 #include <VeinholeMonsterClass.h>
 
 #include <Ext/House/Body.h>
@@ -296,6 +297,8 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 
 	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
 	ScenarioExt::Global()->UpdateTransportReloaders();
+
+	MoveUnits::KeyboardMoveUpdate();
 
 	return 0;
 }
