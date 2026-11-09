@@ -798,6 +798,7 @@ This page lists all the individual contributions to the project by their author.
   - Preserve whitespace in CSF
   - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
   - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
+  - Power plant enhancement for infantry, vehicles and aircraft
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

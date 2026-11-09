@@ -19,7 +19,7 @@ namespace
 
 			const auto pEnhancerType = pEnhancer->Type;
 			const auto pExt = BuildingTypeExt::Fetch(pEnhancerType);
-			if (std::find(pExt->PowerPlantEnhancer_Buildings.begin(), pExt->PowerPlantEnhancer_Buildings.end(), pType) == pExt->PowerPlantEnhancer_Buildings.end())
+			if (std::find(pExt->PowerPlantEnhancer_AffectTypes.begin(), pExt->PowerPlantEnhancer_AffectTypes.end(), pType) == pExt->PowerPlantEnhancer_AffectTypes.end())
 				continue;
 
 			const int range = pExt->PowerPlantEnhancer_Range.Get();
@@ -104,6 +104,14 @@ std::pair<int, int> BuildingTypeExt::GetEnhancedPower(TechnoTypeClass* pType, in
 std::pair<std::int64_t, std::int64_t> BuildingTypeExt::GetEnhancedPower(TechnoTypeClass* pType, std::int64_t output, HouseClass* pHouse, TechnoClass* pSource)
 {
 	return ApplyPowerEnhancers<std::int64_t>(pType, output, pHouse, pSource);
+}
+
+std::pair<std::int64_t, std::int64_t> BuildingTypeExt::GetUnitPower(TechnoTypeClass* pType, std::int64_t power, HouseClass* pHouse, TechnoClass* pSource)
+{
+	// Match buildings: enhance supply (including Amount on zero supply),
+	// retain base drain, and perform the pre-damage supply check.
+	const auto [output, extra] = GetEnhancedPower(pType, Math::max(power, 0LL), pHouse, pSource);
+	return { Math::max(output + extra, 0LL), Math::max(-power, 0LL) };
 }
 
 int BuildingTypeExt::GetPowerOutput(BuildingClass* pBuilding, int baseOutput)
