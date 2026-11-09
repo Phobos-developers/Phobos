@@ -691,7 +691,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 PoseDir.Production=  ; integer, defaults to [AudioVisual] -> PoseDir
-PoseDir.Field=       ; integer, defaults to 8 * [AudioVisual] -> PoseDir
+PoseDir.Field=       ; integer, defaults to 32 * [AudioVisual] -> PoseDir
 ```
 
 ### Skirmish AI behavior dehardcode
