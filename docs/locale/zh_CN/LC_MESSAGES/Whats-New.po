@@ -1302,11 +1302,6 @@ msgid ""
 msgstr ""
 "允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑（by Ollerus）"
 
-msgid ""
-"Fixed the bug where AI players cannot create a team whose `TaskForce` "
-"consists entirely of units with `Naval=true` and non-zero `Passengers` (by NetsuNegi)"
-msgstr "修复了电脑玩家无法创建 `TaskForce` 全部为 `Naval=true` 且 `Passengers` 非零单位的小队的 Bug（by NetsuNegi）"
-
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -1400,6 +1395,9 @@ msgid ""
 msgstr ""
 "[允许 Ares 训练所添加国家级别的过滤器](New-or-Enhanced-Logics.md#allow-ares-academy-add-"
 "country-level-filters)（by dh381）"
+
+msgid "Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)"
+msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug（by NetsuNegi 与 Noble_Fish）"
 
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"

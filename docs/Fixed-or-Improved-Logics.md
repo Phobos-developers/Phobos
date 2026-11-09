@@ -345,7 +345,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
-- Fixed the bug where AI players cannot create a team whose `TaskForce` consists entirely of units with `Naval=true` and non-zero `Passengers`.
 
 ## Fixes / interactions with other extensions
 
@@ -405,6 +404,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check.
 
 ## Newly added global settings
 

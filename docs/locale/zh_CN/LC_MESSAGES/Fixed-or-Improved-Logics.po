@@ -1783,11 +1783,6 @@ msgstr ""
 msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values."
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
 
-msgid ""
-"Fixed the bug where AI players cannot create a team whose `TaskForce` "
-"consists entirely of units with `Naval=true` and non-zero `Passengers`."
-msgstr "修复了电脑玩家无法创建 `TaskForce` 全部为 `Naval=true` 且 `Passengers` 非零单位的小队的 Bug。"
-
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
@@ -2072,6 +2067,9 @@ msgid ""
 "Fixed an issue in Ares where vehicles would occasionally continue to fire"
 " and move even after the driver had been killed."
 msgstr "修复了 Ares 中载具在驾驶员被击杀后偶尔仍会继续开火和移动的问题。"
+
+msgid "Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check."
+msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
