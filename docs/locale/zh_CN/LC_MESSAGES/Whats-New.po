@@ -3695,6 +3695,11 @@ msgid "0.4.0.2"
 msgstr "0.4.0.2"
 
 msgid ""
+"Elite technos no longer scatter by default, behaviour is controlled by "
+"`SCATTER` veterancy ability now (by Starkku)"
+msgstr "精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制（by Starkku）"
+
+msgid ""
 "Fixed `AircraftDockingDirs` being reset if the BuildingType section is "
 "redefined in map file (by Starkku)"
 msgstr "修复了 `AircraftDockingDirs` 在地图内置了建筑节名时会重置的问题（by Starkku）"
@@ -4449,11 +4454,6 @@ msgstr ""
 "来禁用地图光照重绘时的建筑光源问题修复以优化性能（by Kerbiter）"
 
 msgid ""
-"Elite technos no longer scatter by default, behaviour is controlled by "
-"`SCATTER` veterancy ability now (by NetsuNegi & Starkku)"
-msgstr "精英单位不再默认获得分散而是受 `SCATTER` 升级能力控制（by NetsuNegi 与 Starkku）"
-
-msgid ""
 "Allow AI to repair structures built from base nodes/trigger action 125/SW"
 " delivery in single player missions (by Trsdy)"
 msgstr "允许 AI 在单人任务中修复由基地节点／125 号触发结果／超级武器所投送的建筑（by Trsdy）"
@@ -5094,6 +5094,11 @@ msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeplo
 
 msgid "Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)"
 msgstr "修复了船只可以在高架桥上行驶的 Bug（by NetsuNegi）"
+
+msgid ""
+"Fixed the bug that uncontrolled scatter when elite techno attacked by "
+"aircraft or some unit try crush it (by NetsuNegi)"
+msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug（by NetsuNegi）"
 
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
