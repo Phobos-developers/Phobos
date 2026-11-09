@@ -20,7 +20,7 @@ public:
 	ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 	Valueable<double> PowerPlant_DamageFactor;
-	ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
+	ValueableVector<TechnoTypeClass*> PowerPlantEnhancer_AffectTypes;
 	Valueable<Leptons> PowerPlantEnhancer_Range;
 	Valueable<int> PowerPlantEnhancer_Amount;
 	Nullable<float> PowerPlantEnhancer_Factor;
@@ -171,7 +171,7 @@ public:
 		, PowersUp_Owner { AffectedHouse::Owner }
 		, PowersUp_Buildings {}
 		, PowerPlant_DamageFactor { 1.0 }
-		, PowerPlantEnhancer_Buildings {}
+		, PowerPlantEnhancer_AffectTypes {}
 		, PowerPlantEnhancer_Range { Leptons(0) }
 		, PowerPlantEnhancer_Amount { 0 }
 		, PowerPlantEnhancer_Factor { 1.0f }
@@ -367,7 +367,10 @@ public:
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
 	static bool IsPoweredAnimBlocked(BuildingClass* pBuilding, bool powered, bool poweredLight, bool poweredEffect, bool poweredSpecial, bool isUpgrade = false);
 
-	static std::pair<int, int> GetEnhancedPower(BuildingTypeClass* pBuilding, int output, HouseClass* pHouse, BuildingClass* pPowerPlant = nullptr);
+	static std::pair<int, int> GetEnhancedPower(TechnoTypeClass* pType, int output, HouseClass* pHouse, TechnoClass* pSource = nullptr);
+	static std::pair<std::int64_t, std::int64_t> GetEnhancedPower(TechnoTypeClass* pType, std::int64_t output, HouseClass* pHouse, TechnoClass* pSource = nullptr);
+	static std::pair<std::int64_t, std::int64_t> GetUnitPower(TechnoTypeClass* pType, std::int64_t power, HouseClass* pHouse, TechnoClass* pSource = nullptr);
+	static int GetPowerOutput(BuildingClass* pBuilding, int baseOutput);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);

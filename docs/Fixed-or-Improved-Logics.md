@@ -218,7 +218,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
@@ -344,6 +344,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed the 128 techno limit when executing a command.
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
+- Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
 
 ## Fixes / interactions with other extensions
 
@@ -1488,7 +1489,7 @@ FactoryPlant.MaxCount=-1     ; integer
 
 ### Power plant damage factor
 
-- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `PowerPlant.DamageFactor`. A negative damage scale clamps the scaled supply to 0 before enhancer `Amount` is added.
   - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
 
 In `rulesmd.ini`:
@@ -1731,7 +1732,7 @@ In `rulesmd.ini`:
 Arcing.AllowElevationInaccuracy=true     ; boolean
 Arcing.ConsiderBuildingFoundation=false  ; boolean
 
-[SOMEPROJECTILE]                         ; Projectile， with Arcing=true
+[SOMEPROJECTILE]                         ; Projectile, with Arcing=true
 Arcing.AllowElevationInaccuracy=         ; boolean, defaults to [CombatDamage] -> Arcing.AllowElevationInaccuracy
 Arcing.ConsiderBuildingFoundation=       ; boolean, defaults to [CombatDamage] -> Arcing.ConsiderBuildingFoundation
 ```
@@ -2162,9 +2163,9 @@ In `rulesmd.ini`:
 CrashSpin.Multiplier=1.0          ; floating point value
 ```
 
-### Customize the country displayed in `Sight`
+### Customize who sees the map revealed by `Sight`
 
-- You can now customize which countries the `Sight` unit for that nation provides map visibility to.
+- You can now customize which houses see the map revealed by a unit's `Sight`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2536,6 +2537,7 @@ SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ### Power drain for units
 
 - Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
+  - Units listed in `PowerPlantEnhancer.AffectTypes` can also receive [power plant enhancer](New-or-Enhanced-Logics.md#power-plant-enhancer) modifiers. Enhancer range is checked separately at each unit's position. Moving into or out of range is reflected during normal house power updates.
 
 In `rulesmd.ini`:
 ```ini
