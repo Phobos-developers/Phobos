@@ -596,6 +596,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
   - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
   - Fix the bug that crashing or sinking unit can be recruit into taskforce team
+  - Fix the bug where AI players cannot create a team whose `TaskForce` consists entirely of units with `Naval=true` and non-zero `Passengers`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

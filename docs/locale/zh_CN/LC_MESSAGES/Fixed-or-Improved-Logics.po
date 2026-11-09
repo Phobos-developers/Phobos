@@ -1783,6 +1783,11 @@ msgstr ""
 msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values."
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
 
+msgid ""
+"Fixed the bug where AI players cannot create a team whose `TaskForce` "
+"consists entirely of units with `Naval=true` and non-zero `Passengers`."
+msgstr "修复了电脑玩家无法创建 `TaskForce` 全部为 `Naval=true` 且 `Passengers` 非零单位的小队的 Bug。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

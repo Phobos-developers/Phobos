@@ -3837,3 +3837,5 @@ DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
 	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
 }
 
+// Fix the bug where AI players cannot create a team whose `TaskForce` consists entirely of units with `Naval=true` and non-zero `Passengers`.
+DEFINE_JUMP(LJMP, 0x6F1FDF, 0x6F1FE7) // Don't know why WW do this here.

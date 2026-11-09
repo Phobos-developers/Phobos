@@ -1302,6 +1302,11 @@ msgid ""
 msgstr ""
 "允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑（by Ollerus）"
 
+msgid ""
+"Fixed the bug where AI players cannot create a team whose `TaskForce` "
+"consists entirely of units with `Naval=true` and non-zero `Passengers` (by NetsuNegi)"
+msgstr "修复了电脑玩家无法创建 `TaskForce` 全部为 `Naval=true` 且 `Passengers` 非零单位的小队的 Bug（by NetsuNegi）"
+
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 

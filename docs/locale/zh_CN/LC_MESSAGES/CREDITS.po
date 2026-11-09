@@ -1997,6 +1997,11 @@ msgid ""
 "team"
 msgstr "修复了坠落或沉没中的单位可以被招募进特遣部队的 Bug"
 
+msgid ""
+"Fix the bug where AI players cannot create a team whose `TaskForce` "
+"consists entirely of units with `Naval=true` and non-zero `Passengers`"
+msgstr "修复了电脑玩家无法创建 `TaskForce` 全部为 `Naval=true` 且 `Passengers` 非零单位的小队的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

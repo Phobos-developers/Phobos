@@ -2084,6 +2084,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
+- Fixed the bug where AI players cannot create a team whose `TaskForce` consists entirely of units with `Naval=true` and non-zero `Passengers` (by NetsuNegi)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
