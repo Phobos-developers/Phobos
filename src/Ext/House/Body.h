@@ -9,15 +9,6 @@
 
 #include <array>
 
-struct PlacingBuildingStruct
-{
-	BuildingTypeClass* Type;
-	BuildingTypeClass* DrawType;
-	int Times;
-	CDTimerClass Timer;
-	CellStruct TopLeft;
-};
-
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -92,9 +83,27 @@ public:
 
 	std::vector<BuildingClass*> Academies;
 
+	struct PlacingBuildingStruct
+	{
+		BuildingTypeClass* Type { nullptr };
+		BuildingTypeClass* DrawType { nullptr };
+		int Times { 0 };
+		CDTimerClass Timer {};
+		CellStruct TopLeft { CellStruct::Empty };
+
+		PlacingBuildingStruct() = default;
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
 	std::vector<UnitClass*> OwnedDeployingUnits;
-	PlacingBuildingStruct Common;
-	PlacingBuildingStruct Combat;
+	HouseExt::PlacingBuildingStruct Common;
+	HouseExt::PlacingBuildingStruct Combat;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
@@ -133,8 +142,8 @@ public:
 		, BeaconsPlacedOrder { 0, 0, 0 }
 		, Academies {}
 		, OwnedDeployingUnits {}
-		, Common { nullptr, nullptr, 0 }
-		, Combat { nullptr, nullptr, 0 }
+		, Common {}
+		, Combat {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
