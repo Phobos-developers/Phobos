@@ -1783,6 +1783,9 @@ msgstr ""
 msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values."
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
 
+msgid "Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions."
+msgstr "修复了 AI 触发器对仅执行守卫、等待或辅助脚本动作的小队同样进行可达性检查的问题。"
+
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 

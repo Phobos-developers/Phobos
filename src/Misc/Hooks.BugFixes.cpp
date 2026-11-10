@@ -11,6 +11,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
@@ -3848,4 +3849,13 @@ DEFINE_HOOK(0x6F1FEF, TeamTypeClass_ProcessTaskForce_MovementZone, 0x7)
 		pTeamType->TaskForceMovementZone = AddMovement(pPayloadType->MovementZone, pTeamType->TaskForceMovementZone);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
+{
+	enum { ReturnTrue = 0x41FFC0 };
+
+	GET(TeamTypeClass*, pTeamType, EDI);
+
+	return ScriptExt::RequiresTargetReachability(pTeamType->ScriptType) ? 0 : ReturnTrue;
 }
