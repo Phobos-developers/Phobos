@@ -1,12 +1,8 @@
 #include "ShieldClass.h"
 
-#include <Phobos.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
-
-#include <unordered_map>
 
 std::vector<ShieldClass*> ShieldClass::Array;
 

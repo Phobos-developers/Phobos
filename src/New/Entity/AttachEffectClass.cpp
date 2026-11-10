@@ -1,13 +1,8 @@
 #include "AttachEffectClass.h"
 
-#include <Phobos.h>
-
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Foot/Body.h>
-
-#include <unordered_map>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
