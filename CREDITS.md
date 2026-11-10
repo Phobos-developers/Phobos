@@ -752,6 +752,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
+  - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
