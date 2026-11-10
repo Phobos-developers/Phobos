@@ -32,8 +32,8 @@ void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	}
 
 	this->Display.Read(exINI, pSection, "TiberiumEater.Display");
-	this->DisplayToHouse.Read(exINI, pSection, "TiberiumEater.DisplayToHouse");
-	this->DisplayOffset.Read(exINI, pSection, "TiberiumEater.DisplayOffset");
+	this->DisplayToHouse.Read(exINI, pSection, "TiberiumEater.Display.Houses");
+	this->DisplayOffset.Read(exINI, pSection, "TiberiumEater.Display.Offset");
 	this->Anims.Read(exINI, pSection, "TiberiumEater.Anims");
 
 	for (size_t idx = 0; idx < 4; ++idx)

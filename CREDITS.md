@@ -800,6 +800,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
   - Power plant enhancement for infantry, vehicles and aircraft
   - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
+  - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

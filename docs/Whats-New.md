@@ -2567,6 +2567,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
 - When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 - Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
+- Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
 
 #### 0.5-alpha2
 
