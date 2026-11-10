@@ -191,7 +191,7 @@ void HouseExt::RecordPowerOutputBeforeDrainClamp(HouseClass* const pThis)
 
 // Keep the AI adjustment in the same snapshot as the real power totals. Reading
 // live buildings during a later decision could mix new state with an old cache.
-std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, PowerAdjustment unitPower)
+std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, const PowerAdjustment& unitPower)
 {
 	std::int64_t delta = unitPower.Net;
 	std::int64_t aiDrain = static_cast<std::int64_t>(pThis->PowerDrain) + unitPower.Drain;
