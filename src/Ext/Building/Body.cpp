@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <BitFont.h>
+#include <SessionClass.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
 
@@ -88,7 +89,40 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 		{
 			// Store Tiberium in structures
 			depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-			pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+
+			auto const pHouse = pThis->Owner;
+			if (!pHouse)
+				return;
+
+			if (pHouse->IsControlledByHuman() || SessionClass::Instance.GameMode == GameMode::Campaign)
+			{
+				int const lastStorage = static_cast<int>(pHouse->OwnedTiberium.GetTotalAmount());
+				int const lastTotalStorage = pHouse->TotalStorage;
+
+				float const totalFree = static_cast<float>(lastTotalStorage) - pHouse->OwnedTiberium.GetTotalAmount();
+				float remaining = std::min(depositableTiberiumAmount, std::max(0.0f, totalFree));
+
+				if (remaining > 0.0f && pThis->IsOnMap && !pThis->InLimbo && pThis->Type->Storage > 0)
+				{
+					float const freeSpace = static_cast<float>(pThis->Type->Storage) - pThis->Tiberium.GetTotalAmount();
+					if (freeSpace > 0.0f)
+					{
+						float const toStore = std::min(remaining, freeSpace);
+						pThis->Tiberium.AddAmount(toStore, idxStorageTiberiumType);
+						pHouse->OwnedTiberium.AddAmount(toStore, idxStorageTiberiumType);
+						pHouse->HarvestedCredits += static_cast<int>(toStore * 5.0);
+						remaining -= toStore;
+						pHouse->UpdateAllSilos(lastStorage, lastTotalStorage);
+					}
+				}
+
+				if (remaining > 0.0f)
+					pHouse->GiveTiberium(remaining, idxStorageTiberiumType);
+			}
+			else
+			{
+				pHouse->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
+			}
 		}
 	}
 }
