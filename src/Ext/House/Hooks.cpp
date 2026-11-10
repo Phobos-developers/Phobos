@@ -30,31 +30,18 @@ DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_AfterBuildings, 0x6)
 {
 	GET(HouseClass*, pThis, ESI);
 
-	if (Phobos::Config::UnitPowerDrain)
-	{
-		auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
-			{
-				const int count = pThis->CountOwnedAndPresent(pType);
-				if (count == 0)
-					return;
-				const auto pExt = TechnoTypeExt::Fetch(pType);
-				if (pExt->Power > 0)
-					pThis->PowerOutput += pExt->Power * count;
-				else
-					pThis->PowerDrain -= pExt->Power * count;
-			};
-
-		for (const auto pType : InfantryTypeClass::Array)
-			updateDrainForThisType(pType);
-		for (const auto pType : UnitTypeClass::Array)
-			updateDrainForThisType(pType);
-		for (const auto pType : AircraftTypeClass::Array)
-			updateDrainForThisType(pType);
-		// Don't do this for buildings, they've already been counted.
-	}
+	HouseExt::UpdateUnitPower(pThis);
 
 	HouseExt::CalculatePowerSurplus(pThis);
 
+	return 0;
+}
+
+DEFINE_HOOK(0x4F84D9, HouseClass_Update_RecheckUnitPower, 0x6)
+{
+	GET(HouseClass*, pThis, ESI);
+
+	HouseExt::RecheckUnitPower(pThis);
 	return 0;
 }
 

@@ -549,7 +549,12 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
-	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
+	if (exINI.ReadString(pSection, "PowerPlantEnhancer.PowerPlants") > 0)
+	{
+		Debug::Log("[Developer warning][%s] PowerPlantEnhancer.PowerPlants is deprecated and has been replaced by PowerPlantEnhancer.AffectTypes! If both are set, the latter will be used.\n", pSection);
+	}
+	this->PowerPlantEnhancer_AffectTypes.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
+	this->PowerPlantEnhancer_AffectTypes.Read(exINI, pSection, "PowerPlantEnhancer.AffectTypes");
 	this->PowerPlantEnhancer_Range.Read(exINI, pSection, "PowerPlantEnhancer.Range");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
@@ -783,7 +788,7 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
 		.Process(this->PowerPlant_DamageFactor)
-		.Process(this->PowerPlantEnhancer_Buildings)
+		.Process(this->PowerPlantEnhancer_AffectTypes)
 		.Process(this->PowerPlantEnhancer_Range)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)

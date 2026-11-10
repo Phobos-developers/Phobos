@@ -19,6 +19,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
 - In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
 
+#### Changes to Phobos behavior
+
+- `[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`. The list now accepts all TechnoTypes. The old key is deprecated but remains supported for compatibility; if both are set, the new key takes precedence.
+
 ### 0.5
 
 #### Changes to vanilla behavior
@@ -2064,6 +2068,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
 - Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
+- Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
@@ -2096,6 +2101,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
+- Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
@@ -2561,6 +2567,8 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
 - Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
 - When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
+- Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
+- Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
 
 #### 0.5-alpha2
 
