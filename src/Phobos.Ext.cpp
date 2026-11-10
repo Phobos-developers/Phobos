@@ -28,6 +28,8 @@
 #include <New/Type/RadTypeClass.h>
 
 #include <New/Entity/BannerClass.h>
+#include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/ShieldClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 
@@ -374,6 +376,9 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
 
+	AttachEffectClass::PrepareForLoad();
+	ShieldClass::PrepareForLoad();
+
 	if (!PhobosTypeRegistry::LoadGlobals(pStm) || !PhobosTypeRegistry::LoadExtensions(pStm))
 		Debug::FatalErrorAndExit("LoadGame - Failed to load Phobos data!\n");
 
@@ -399,6 +404,8 @@ DEFINE_HOOK(0x4103D0, AbstractClass_Load_ClearExtensionSlot, 0x5)
 DEFINE_HOOK(0x67E685, LoadGame_PostSwizzle_Phobos, 0x5)
 {
 	PhobosTypeRegistry::RelinkExtensions();
+	AttachEffectClass::RebuildIndexes();
+	ShieldClass::RebuildIndexes();
 	// with the restored extensions in place, the owners left over are the objects the
 	// game created itself while loading; they get their extensions now
 	PhobosTypeRegistry::AllocatePendingExtensions();

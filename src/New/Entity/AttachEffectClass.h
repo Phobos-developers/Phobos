@@ -9,6 +9,11 @@ class AttachEffectClass
 public:
 	static std::vector<AttachEffectClass*> Array;
 
+	// Rebuilds the reverse indexes after the savegame swizzle has remapped the
+	// Animation/Invoker pointers. Call once after all extensions are relinked.
+	static void RebuildIndexes();
+	static void PrepareForLoad();
+
 	AttachEffectClass();
 
 	AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
@@ -24,8 +29,9 @@ public:
 	{
 		if (this->Animation)
 		{
-			this->Animation->UnInit();
-			this->Animation = nullptr;
+			auto* const pAnim = this->Animation;
+			this->ClearAnimation();
+			pAnim->UnInit();
 
 			if (this->Type->RequiresAnimUpdate)
 				this->ShouldUpdateAnim = true;
@@ -108,6 +114,11 @@ private:
 	void OnlineCheck();
 	void AnimCheck();
 
+	void SetAnimation(AnimClass* pAnimation);
+	void ClearAnimation();
+	void RegisterInvoker();
+	void UnregisterInvoker();
+
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, TechnoTypeClass* pTargetType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, AEAttachParams const& attachInfo, bool selfOwned, bool& updateAnim, bool checkCumulative = true);
 
@@ -123,6 +134,9 @@ private:
 	int CurrentDelay;
 	int InitialDelay;
 	int RecreationDelay;
+	std::size_t ArrayIndex;
+	AttachEffectClass* InvokerPrev;
+	AttachEffectClass* InvokerNext;
 	AttachEffectTypeClass* Type;
 	TechnoClass* Techno;
 	HouseClass* InvokerHouse;
