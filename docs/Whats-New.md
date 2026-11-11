@@ -2071,6 +2071,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
 - [Selling units directly](New-or-Enhanced-Logics.md#selling-units-directly) without a repair depot via `Unsellable.Direct` (by frg2089)
 - [Custom animation when selling TechnoTypes](New-or-Enhanced-Logics.md#selling-units-directly) via `SellingAnim` in `artmd.ini` (by frg2089)
+- [Entering sell mode while owning no buildings](New-or-Enhanced-Logics.md#selling-units-directly) if a TechnoType with `Unsellable.Direct` is owned (by frg2089)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
