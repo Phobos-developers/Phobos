@@ -10,10 +10,11 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 
+#include <algorithm>
 #include <limits>
 #include <type_traits>
 #include <unordered_map>
-#include <unordered_set>
+#include <vector>
 
 namespace
 {
@@ -61,7 +62,7 @@ HouseExt::PowerAdjustment HouseExt::UpdateUnitPower(HouseClass* const pThis)
 	std::int64_t aiDrainDelta = 0;
 	bool aiAdjusted = false;
 	const bool affectedByEnhancers = RulesExt::Global()->AI_Power_AffectedByEnhancers;
-	std::unordered_set<const TechnoTypeClass*> enhancedTypes;
+	std::vector<const TechnoTypeClass*> enhancedTypes;
 	for (const auto pEnhancer : HouseExt::Fetch(pThis)->PowerPlantEnhancers)
 	{
 		if (!TechnoExt::IsActive(pEnhancer) || !pEnhancer->HasPower)
@@ -70,7 +71,10 @@ HouseExt::PowerAdjustment HouseExt::UpdateUnitPower(HouseClass* const pThis)
 		for (const auto pType : BuildingTypeExt::Fetch(pEnhancer->Type)->PowerPlantEnhancer_AffectTypes)
 		{
 			if (pType && pType->WhatAmI() != AbstractType::BuildingType)
-				enhancedTypes.insert(pType);
+			{
+				if (std::find(enhancedTypes.begin(), enhancedTypes.end(), pType) == enhancedTypes.end())
+					enhancedTypes.push_back(pType);
+			}
 		}
 	}
 	auto addPower = [&output, &drain](std::int64_t power, int count)
@@ -106,7 +110,7 @@ HouseExt::PowerAdjustment HouseExt::UpdateUnitPower(HouseClass* const pThis)
 			aiDrainDelta += (Math::max(-static_cast<std::int64_t>(aiPower), 0LL)
 				- Math::max(-static_cast<std::int64_t>(power), 0LL)) * count;
 			aiAdjusted |= aiPower != power;
-			if (enhancedTypes.contains(pType))
+			if (std::find(enhancedTypes.begin(), enhancedTypes.end(), pType) != enhancedTypes.end())
 				counted.emplace(pType, CountedPower { count, power, aiPower,
 					pExt->AI_Power_AffectedByEnhancers.Get(affectedByEnhancers) });
 		}
