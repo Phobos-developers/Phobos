@@ -355,7 +355,7 @@ bool TechnoExt::CanCreateBuildingHere(TechnoClass* pFromTechno, BuildingTypeClas
 	{
 		location = CellClass::Coord2Cell(pFromTechno->GetCoords());
 	}
-	
+
 	location = BuildingTypeExt::GetBuildingTopLeftCellFromDeployCell(pToBuildingType, location);
 
 	auto const pPreviousDeployer = TechnoExt::Deployer;
@@ -397,7 +397,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	auto const pToTechno = static_cast<TechnoClass*>(pToType->CreateObject(pFromTechno->Owner));
 	if (!pToTechno)
 		return false;
-	
+
 	auto const wasSelected = pFromTechno->IsSelected;
 
 	TechnoExt::TransferStatus(pFromTechno, pToTechno);
@@ -460,13 +460,34 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 	if (wasSelected)
 		pToTechno->Select();
 
-	pFromTechno->Limbo();
-	pFromTechno->UnInit();
+	bool showBuildupFrom = false;
+	if (pFromBuilding && pFromBuilding->CanBeSold() && !pFromBuilding->IsStrange())
+	{
+		auto const pFromBuildingExt = BuildingExt::Fetch(pFromBuilding);
+		showBuildupFrom = pFromBuildingExt->TypeExtData->Convert_ShowBuildupFrom || pFromBuildingExt->TypeExtData->Convert_ShowBuildup;
+	}
+
+	if (showBuildupFrom)
+	{
+		pFromBuilding->SetArchiveTarget(nullptr);
+		pFromBuilding->Sell(1);
+	}
+	else
+	{
+		pFromTechno->Limbo();
+		pFromTechno->UnInit();
+	}
+
 
 	if (!pToBuilding)
 		return true;
 
+	auto const pToBuildingExt = BuildingExt::Fetch(pToBuilding);
+	bool showBuildupTo = false;
 	if (pToBuilding->Type->Buildup)
+		showBuildupTo = pToBuildingExt->TypeExtData->Convert_ShowBuildupTo || pToBuildingExt->TypeExtData->Convert_ShowBuildup;
+
+	if (showBuildupTo)
 	{
 		pToBuilding->BeginMode(BStateType::Construction);
 		pToBuilding->QueueMission(Mission::Construction, false);
@@ -479,7 +500,7 @@ static bool XConvertToType(TechnoClass* pFromTechno, TechnoTypeClass* pToType)
 		pToBuilding->NextMission();
 	}
 
-	pToBuilding->Place(!pFromTechno->Owner->IsNeutral() || !pFromTechno->Owner->IsCurrentPlayer());
+	pToBuilding->Place(!pFromTechno->Owner->IsNeutral() || pFromTechno->Owner->IsCurrentPlayer());
 
 	return true;
 }
@@ -1034,7 +1055,7 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	if (Unsorted::MoveFeedback)
 		pThis->VoiceMove();
 
-	EventExt event {};
+	EventExt event { };
 	event.Type = EventTypeExt::ApproachObject;
 	event.HouseIndex = static_cast<char>(pThis->Owner->ArrayIndex);
 	event.Frame = Unsorted::CurrentFrame;
