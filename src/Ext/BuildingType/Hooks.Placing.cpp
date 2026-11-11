@@ -85,15 +85,13 @@ DEFINE_HOOK(0x42EB65, BaseClass_GetBaseNodeIndex_Rebuild, 0x5)
 	auto const& node = pBase->BaseNodes[nodeIndex];
 	const auto typeIndex = node.BuildingTypeIndex;
 
-	// Negative indices are native base-plan instructions, not building types.
-	// Placed also includes matching preplaced buildings owned by an AI house.
+	// Preserve native base-plan instructions with negative type indices.
 	if (node.Placed && typeIndex >= 0 && typeIndex < BuildingTypeClass::Array.Count
 		&& !BuildingTypeExt::Fetch(BuildingTypeClass::Array.Items[typeIndex])->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
 	{
 		return SkipNode;
 	}
 
-	// Preserve both the production query and the type query used for placement.
 	return queryType == -1 ? QueryNext : QueryType;
 }
 
@@ -101,8 +99,7 @@ DEFINE_HOOK(0x445639, BuildingClass_KickOutUnit_NoBaseNodeToDelete, 0x6)
 {
 	GET(BaseNodeClass* const, pNode, EAX);
 
-	// A failed upgrade placement compares two node pointers before deleting one.
-	// Both can be null when every completed node is excluded from rebuilding.
+	// Skip failed-upgrade cleanup when both node queries returned null.
 	return pNode ? 0 : 0x445696;
 }
 
