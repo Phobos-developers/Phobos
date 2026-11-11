@@ -869,6 +869,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
 - When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
+- Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
 - Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
 - Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
 
