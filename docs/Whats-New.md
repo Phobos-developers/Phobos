@@ -2069,6 +2069,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
 - Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
 - Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
+- Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)

@@ -1211,6 +1211,9 @@ msgstr ""
 msgid "Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)"
 msgstr "电厂增幅器支持作用于步兵、载具和战机（Noble_Fish）"
 
+msgid "Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)"
+msgstr "`Wake.Grapple`、`Wake.Sinking` 和 `FallingDownDamage.Water` 的全局默认值（Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
