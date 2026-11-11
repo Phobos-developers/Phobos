@@ -227,6 +227,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
 	this->Overload_ParticleSysCount.Read(exINI, GameStrings::CombatDamage, "Overload.ParticleSysCount");
 	this->FallingDownDamage.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.AllowEMP");
 
 	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, GameStrings::General, "ForceWeapon.InRange.TechnoOnly");
@@ -610,6 +611,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DefaultLandingAnim_Dropship.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Dropship");
 	this->DefaultLandingAnim_Carryall.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Carryall");
 
+	this->Wake_Grapple.Read(exINI, GameStrings::General, "Wake.Grapple");
+	this->Wake_Sinking.Read(exINI, GameStrings::General, "Wake.Sinking");
+
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
 	char tempBuffer[40];
@@ -718,6 +722,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
 	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
+	this->AI_Power_AffectedByEnhancers.Read(exINI, GameStrings::AI, "AI.Power.AffectedByEnhancers");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -855,6 +860,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
 		.Process(this->Overload_ParticleSysCount)
 		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
 		.Process(this->FallingDownDamage_AllowEMP)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
@@ -1147,6 +1153,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLandingAnim)
 		.Process(this->DefaultLandingAnim_Dropship)
 		.Process(this->DefaultLandingAnim_Carryall)
+		.Process(this->Wake_Grapple)
+		.Process(this->Wake_Sinking)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
 		.Process(this->BerzerkMission)
@@ -1186,6 +1194,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->MissileKeepTargetCoord)
 		.Process(this->UseSidebarRadarOffsetFix)
 		.Process(this->ExtendedBuildingPlacing)
+		.Process(this->AI_Power_AffectedByEnhancers)
     ;
 }
 

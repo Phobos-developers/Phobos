@@ -3812,6 +3812,18 @@ msgstr "`AttackMove.UpdateTarget` 允许你的单位在执行移动攻击（Ctrl
 msgid "AI power budgeting"
 msgstr "AI 电力预算"
 
+msgid "`AI.Power` sets the base power used for technos (including installed upgrades) when the AI decides whether to build additional power plants."
+msgstr "`AI.Power` 设置科技类型（含加载物）在 AI 判断是否由于电力因素补建电厂时使用的基础电量。"
+
+msgid "`AI.Power.AffectedByEnhancers` controls whether [power plant enhancers](#power-plant-enhancer) apply to that value."
+msgstr "`AI.Power.AffectedByEnhancers` 控制 [电厂增幅器](#power-plant-enhancer) 是否影响该值。"
+
+msgid "`AI.Power` follows each object's normal `Power` calculation and state rules. Current contributions come from owned, living objects, including buildings created by `LimboDelivery`, and update with normal power recalculation."
+msgstr "`AI.Power` 沿用各类对象原有 `Power` 的计算及状态规则。当前贡献来自本方存活的对象（包括通过 `LimboDelivery` 创建的建筑），并随正常电力重算更新。"
+
+msgid "`AI.Power` does not change the actual power supply. For infantry, vehicles and aircraft, these settings require `[General] -> UnitPowerDrain=true`."
+msgstr "`AI.Power` 不改变实际电力供应状态。步兵、载具和战机需设置 `[General] -> UnitPowerDrain=true` 才能使用这些语句。"
+
 msgid "Aircraft spawner customizations"
 msgstr "自定义子机发射器"
 
