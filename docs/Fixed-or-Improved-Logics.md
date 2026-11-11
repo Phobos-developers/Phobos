@@ -2153,9 +2153,9 @@ FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 
 [SOMETECHNO]                        ; TechnoType
-FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
+FallingDownDamage=                  ; integer / percentage, defaults [CombatDamage] -> FallingDownDamage
 FallingDownDamage.Water=            ; integer / percentage, defaults to [CombatDamage] -> FallingDownDamage.Water, then [TechnoType] -> FallingDownDamage
-FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
+FallingDownDamage.AllowEMP=true     ; boolean, defaults [CombatDamage] -> FallingDownDamage.AllowEMP
 ```
 
 ### Customize crash spin multiplier
