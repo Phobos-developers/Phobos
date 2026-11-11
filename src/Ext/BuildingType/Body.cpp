@@ -771,6 +771,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.E
 	this->Tunnel = exINI.ReadString(pSection, "Tunnel");
 
+	// Ares 2.0
+	this->EngineerRepairable.Read(exINI, pSection, "EngineerRepairable");
+
 	// Ares 3.0
 	this->UnitSell.Read(exINI, pSection, "UnitSell");
 }
@@ -901,6 +904,9 @@ void BuildingTypeExt::Serialize(T& Stm)
 
 		// Ares 0.E
 		.Process(this->Tunnel)
+
+		// Ares 2.0
+		.Process(this->EngineerRepairable)
 
 		// Ares 3.0
 		.Process(this->UnitSell)
