@@ -1780,9 +1780,6 @@ msgid ""
 msgstr ""
 "允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑。"
 
-msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values."
-msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
-
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
 
