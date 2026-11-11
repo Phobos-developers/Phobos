@@ -367,6 +367,8 @@ public:
 	Nullable<AnimTypeClass*> Wake_Sinking;
 	Nullable<bool> MakesWake;
 
+	Nullable<AnimTypeClass*> SellingAnim;
+
 	Valueable<float> CrashSpin_Multiplier;
 
 	Nullable<int> AINormalTargetingDelay;
@@ -523,6 +525,8 @@ public:
 
 	Nullable<int> AI_Power;
 	Nullable<bool> AI_Power_AffectedByEnhancers;
+
+	Nullable<bool> Unsellable_Direct;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -813,6 +817,8 @@ public:
 		, Wake_Sinking { }
 		, MakesWake { }
 
+		, SellingAnim { }
+
 		, CrashSpin_Multiplier { 1.0f }
 
 		, AINormalTargetingDelay {}
@@ -958,6 +964,8 @@ public:
 
 		, AI_Power {}
 		, AI_Power_AffectedByEnhancers {}
+
+		, Unsellable_Direct { }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
