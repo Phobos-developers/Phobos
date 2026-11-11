@@ -9,15 +9,6 @@
 
 #include <array>
 
-struct PlacingBuildingStruct
-{
-	BuildingTypeClass* Type;
-	BuildingTypeClass* DrawType;
-	int Times;
-	CDTimerClass Timer;
-	CellStruct TopLeft;
-};
-
 class HouseExt final : public AbstractExt, public Detach::Listener<BuildingClass>
 {
 public:
@@ -92,9 +83,27 @@ public:
 
 	std::vector<BuildingClass*> Academies;
 
+	struct PlacingBuildingStruct
+	{
+		BuildingTypeClass* Type { nullptr };
+		BuildingTypeClass* DrawType { nullptr };
+		int Times { 0 };
+		CDTimerClass Timer {};
+		CellStruct TopLeft { CellStruct::Empty };
+
+		PlacingBuildingStruct() = default;
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
 	std::vector<UnitClass*> OwnedDeployingUnits;
-	PlacingBuildingStruct Common;
-	PlacingBuildingStruct Combat;
+	HouseExt::PlacingBuildingStruct Common;
+	HouseExt::PlacingBuildingStruct Combat;
 	std::int64_t AIPowerDelta;
 
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
@@ -134,8 +143,8 @@ public:
 		, BeaconsPlacedOrder { 0, 0, 0 }
 		, Academies {}
 		, OwnedDeployingUnits {}
-		, Common { nullptr, nullptr, 0 }
-		, Combat { nullptr, nullptr, 0 }
+		, Common {}
+		, Combat {}
 		, AIPowerDelta { 0 }
 	{ }
 
@@ -248,7 +257,7 @@ public:
 	};
 	static PowerAdjustment UpdateUnitPower(HouseClass* pThis);
 	static void RecordPowerOutputBeforeDrainClamp(HouseClass* pThis);
-	static std::int64_t UpdateAIPower(HouseClass* pThis, PowerAdjustment unitPower);
+	static std::int64_t UpdateAIPower(HouseClass* pThis, const PowerAdjustment& unitPower);
 	static std::int64_t UpdateAIPower(HouseClass* pThis) { return UpdateAIPower(pThis, PowerAdjustment {}); }
 };
 

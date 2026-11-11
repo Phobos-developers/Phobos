@@ -495,7 +495,7 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 	return Continue;
 }
 
-static inline void ClearPlacingBuildingData(PlacingBuildingStruct* const pPlace)
+static inline void ClearPlacingBuildingData(HouseExt::PlacingBuildingStruct* const pPlace)
 {
 	pPlace->Type = nullptr;
 	pPlace->DrawType = nullptr;
