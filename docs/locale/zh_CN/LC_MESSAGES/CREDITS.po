@@ -2771,6 +2771,7 @@ msgid ""
 "Fix the bug where `TiberiumEater.Display.Houses` is ineffective because "
 "it reads the wrong tag name"
 msgstr ""
+"修复了 `TiberiumEater.Display.Houses` 读错标签名而不生效的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

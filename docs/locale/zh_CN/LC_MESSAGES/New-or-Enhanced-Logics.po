@@ -5683,11 +5683,10 @@ msgid ""
 "credits display."
 msgstr "`TiberiumEater.Display.Houses` 决定了哪些所属方能看见。"
 
-#, fuzzy
 msgid ""
 "`TiberiumEater.Display.Offset` specifies an additional pixel offset for "
 "the floating credits text at each mined cell."
-msgstr "`DrainMoneyDisplay.Offset` 是资金显示中心的额外像素偏移量，默认为 0,0 即开火者的中心。"
+msgstr "`TiberiumEater.Display.Offset` 是资金显示中心的额外像素偏移量，默认为 0,0 即被开采单元格的中心。"
 
 msgid ""
 "An animation will be played at each mined cell in an eating process. If "

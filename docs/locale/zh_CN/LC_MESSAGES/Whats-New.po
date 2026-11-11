@@ -4059,6 +4059,7 @@ msgid ""
 "Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because"
 " it reads the wrong tag name (by Noble_Fish)"
 msgstr ""
+"修复了 `TiberiumEater.Display.Houses` 读错标签名而不生效的 Bug（by Noble_Fish）"
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"
