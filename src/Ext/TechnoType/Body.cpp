@@ -1284,8 +1284,15 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
 	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
+	this->AI_Power.Read(exINI, pSection, "AI.Power");
+	this->AI_Power_AffectedByEnhancers.Read(exINI, pSection, "AI.Power.AffectedByEnhancers");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+	// Ares 0.6
+	this->Drain_Local.Read(exINI, pSection, "Drain.Local");
+	this->Drain_Amount.Read(exINI, pSection, "Drain.Amount");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1858,9 +1865,15 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->NoAmmoWeapons)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
+		.Process(this->AI_Power)
+		.Process(this->AI_Power_AffectedByEnhancers)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
+
+		// Ares 0.6
+		.Process(this->Drain_Local)
+		.Process(this->Drain_Amount)
 
 		// Ares 0.9
 		.Process(this->InhibitorRange)

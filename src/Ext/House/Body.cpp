@@ -3,6 +3,8 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <limits>
+
 //Static init
 
 HouseExt::ExtContainer HouseExt::ExtMap;
@@ -660,6 +662,11 @@ void HouseExt::SetForceEnemyIndex(int EnemyIndex)
 
 void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
 {
+	CalculatePowerSurplus(pThis, pThis->PowerDrain);
+}
+
+void HouseExt::CalculatePowerSurplus(HouseClass* pThis, std::int64_t aiPowerDrain)
+{
 	auto const pRulesExt = RulesExt::Global();
 
 	if (!pRulesExt->EnablePowerSurplus)
@@ -673,8 +680,10 @@ void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
 	}
 	else
 	{
-		double factor = pThis->PowerDrain / static_cast<double>(scaleToDrainAmount);
-		pThis->PowerSurplus = static_cast<int>(RulesClass::Instance->PowerSurplus * factor);
+		double factor = aiPowerDrain / static_cast<double>(scaleToDrainAmount);
+		const auto surplus = RulesClass::Instance->PowerSurplus * factor;
+		pThis->PowerSurplus = static_cast<int>(std::clamp(surplus,
+			static_cast<double>(std::numeric_limits<int>::min()), static_cast<double>(std::numeric_limits<int>::max())));
 	}
 }
 
@@ -745,6 +754,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->OwnedDeployingUnits)
 		.Process(this->Common)
 		.Process(this->Combat)
+		.Process(this->AIPowerDelta)
 		;
 }
 
