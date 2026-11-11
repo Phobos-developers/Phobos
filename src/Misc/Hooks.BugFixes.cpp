@@ -3845,7 +3845,7 @@ DEFINE_HOOK(0x6F1FEF, TeamTypeClass_ProcessTaskForce_MovementZone, 0x7)
 	auto AddMovement = reinterpret_cast<MovementZone(__fastcall*)(MovementZone, MovementZone)>(0x5889F0);
 
 	for (const auto pPayloadType : pTechnoTypeExt->InitialPayload_Types)
-		pTeamType->field_EC = static_cast<int>(AddMovement(pPayloadType->MovementZone, static_cast<MovementZone>(pTeamType->field_EC)));
+		pTeamType->TaskForceMovementZone = AddMovement(pPayloadType->MovementZone, pTeamType->TaskForceMovementZone);
 
 	return 0;
 }
