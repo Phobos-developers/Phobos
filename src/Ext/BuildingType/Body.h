@@ -150,6 +150,8 @@ public:
 	ValueableVector<TechnoTypeClass*> Academy_Country_Ignore[16];
 
 	Valueable<bool> AutoUpgrade;
+	Valueable<bool> Convert_Health_AfterBuildup;
+	Nullable<DirType> Convert_Direction;
 
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
@@ -272,6 +274,8 @@ public:
 		, Academy_Country_Ignore {}
 
 		, AutoUpgrade { false }
+		, Convert_Health_AfterBuildup { false }
+		, Convert_Direction {}
 
 		// Ares 0.2
 		, CloningFacility { false }
