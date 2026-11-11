@@ -2548,6 +2548,9 @@ msgid ""
 msgstr ""
 "修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover` 的单位误判的 Bug"
 
+msgid "Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values"
+msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

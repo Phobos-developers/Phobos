@@ -456,7 +456,13 @@ DEFINE_HOOK(0x44E826, BuildingClass_GetPowerOutput_Enhancer, 0x6)
 	if (factor == 1.0)
 		power = static_cast<int>(power * pThis->GetHealthPercentage());
 	else if (factor != 0.0)
-		power = Math::max(static_cast<int>(power * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0);
+	{
+		const double scale = 1.0 - factor + factor * pThis->GetHealthPercentage();
+		power = static_cast<int>(power * scale);
+		// Only damage-induced sign changes are floored; Amount is not scaled.
+		if (scale < 0.0)
+			power = Math::max(power, 0);
+	}
 
 	R->EAX(power + extraPower);
 	return ApplyPower;

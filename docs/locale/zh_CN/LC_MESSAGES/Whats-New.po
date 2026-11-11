@@ -3446,6 +3446,9 @@ msgid ""
 "destroyed (by NetsuNegi)"
 msgstr "修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug（by NetsuNegi）"
 
+msgid "Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)"
+msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题（by Noble_Fish）"
+
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"
 
