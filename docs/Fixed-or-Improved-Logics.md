@@ -2129,7 +2129,7 @@ ShipLocomotorMakesWake=true    ; boolean
 
 [SOMETECHNO]                   ; TechnoType
 MakesWake=                     ; boolean, default to the global value that matches the techno's current locomotor
-Wake=                          ; AnimationType, default to [General] -> Wake
+Wake=                          ; AnimationType, defaults to [General] -> Wake
 Wake.Grapple=                  ; AnimationType, defaults to [General] -> Wake.Grapple, then [TechnoType] -> Wake
 Wake.Sinking=                  ; AnimationType, defaults to [General] -> Wake.Sinking, then [TechnoType] -> Wake
 ```
