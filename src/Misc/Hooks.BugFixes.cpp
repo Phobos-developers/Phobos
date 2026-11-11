@@ -3333,20 +3333,8 @@ DEFINE_HOOK(0x4C6F55, EventClass_Execute_Sell, 0x5)
 		if (auto const pAnimType = TechnoTypeExt::Fetch(pTechno->GetTechnoType())->SellingAnim.Get())
 		{
 			auto const pColorScheme = ColorScheme::Array[pTechno->Owner->ColorSchemeIndex];
-			auto location = pTechno->Location;
 
-			if (rtti == AbstractType::Infantry)
-			{
-				location.X -= 128;
-				location.Y -= 128;
-			}
-			else
-			{
-				location.X &= ~0xFF;
-				location.Y &= ~0xFF;
-			}
-
-			auto anim = GameCreate<AnimClass>(pAnimType, location);
+			auto anim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
 			// AnimExt::SetAnimOwnerHouseKind only recolours anims that make infantry
 			// or create a unit, so the owner's colour scheme is applied here as well.
 			anim->LightConvertIndex = pColorScheme->ArrayIndex;
