@@ -1080,7 +1080,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
+					ratio = pTypeExt->FallingDownDamage_Water.Get(RulesExt::Global()->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage)));
 				else
 					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 

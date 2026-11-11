@@ -1628,6 +1628,29 @@ AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Agg
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
+### AI power budgeting
+
+- `AI.Power` sets the base power used for technos (including installed upgrades) when the AI decides whether to build additional power plants.
+- `AI.Power.AffectedByEnhancers` controls whether [power plant enhancers](#power-plant-enhancer) apply to that value.
+
+```{note}
+`AI.Power` follows each object's normal `Power` calculation and state rules. Current contributions come from owned, living objects, including buildings created by `LimboDelivery`, and update with normal power recalculation.
+```
+
+```{hint}
+`AI.Power` does not change the actual power supply. For infantry, vehicles and aircraft, these settings require `[General] -> UnitPowerDrain=true`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AI]
+AI.Power.AffectedByEnhancers=true   ; boolean
+
+[SOMETECHNO]                        ; TechnoType, including installed upgrades
+AI.Power=                           ; integer, defaults to [TechnoType] -> Power
+AI.Power.AffectedByEnhancers=       ; boolean, defaults to [AI] -> AI.Power.AffectedByEnhancers
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)

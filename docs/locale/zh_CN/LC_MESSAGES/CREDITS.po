@@ -2000,6 +2000,9 @@ msgstr "修复了坠落或沉没中的单位可以被招募进特遣部队的 Bu
 msgid "Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check"
 msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug"
 
+msgid "Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water`"
+msgstr "`Wake.Grapple`、`Wake.Sinking` 和 `FallingDownDamage.Water` 的全局默认值"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -2755,6 +2758,9 @@ msgstr "修复逐帧模式下打开过选项菜单后退出逐帧模式时菜单
 
 msgid "Power plant enhancement for infantry, vehicles and aircraft"
 msgstr "电厂增幅器支持作用于步兵、载具和战机"
+
+msgid "Techno power overrides for AI budgeting, including installed upgrades, independent of actual power"
+msgstr "为科技类型及其已安装加载物设置独立于实际电量的 AI 电力预算"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

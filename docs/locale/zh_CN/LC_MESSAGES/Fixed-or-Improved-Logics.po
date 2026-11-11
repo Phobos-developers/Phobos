@@ -4750,13 +4750,13 @@ msgstr "现在你可以为每个科技类型指定 `Wake` 动画以覆盖默认�
 
 msgid ""
 "`Wake.Grapple` can be used to further customize wake anim when the techno"
-" being parasited on the water."
-msgstr "`Wake.Grapple` 可用于在单位被寄生时进一步自定义水波动画。"
+" being parasited on the water. Defaults to `[General] -> Wake.Grapple`, then the techno's own `Wake`."
+msgstr "`Wake.Grapple` 可用于在单位被寄生时进一步自定义水波动画。默认使用 `[General] -> Wake.Grapple`，若未设置则使用该科技类型自身的 `Wake`。"
 
 msgid ""
 "`Wake.Sinking` can be used to further customize wake anim when the techno"
-" sinking."
-msgstr "`Wake.Sinking` 可用于在单位沉没时进一步自定义水波动画。"
+" sinking. Defaults to `[General] -> Wake.Sinking`, then the techno's own `Wake`."
+msgstr "`Wake.Sinking` 可用于在单位沉没时进一步自定义水波动画。默认使用 `[General] -> Wake.Sinking`，若未设置则使用该科技类型自身的 `Wake`。"
 
 msgid "Also, you can now custom whether the techno makes wake when moving."
 msgstr "此外，你现在可以自定义单位移动时是否生成水波。"
@@ -4791,8 +4791,8 @@ msgstr "`FallingDownDamage` 用于自定义单位坠落触底时所受到的伤�
 
 msgid ""
 "`FallingDownDamage.Water` customizes the damage a unit receives when it "
-"falls onto the water. Defaults to `FallingDownDamage`."
-msgstr "`FallingDownDamage.Water` 用于自定义单位坠落到水中时所受的伤害值，默认同 `FallingDownDamage`。"
+"falls onto the water. Defaults to `[CombatDamage] -> FallingDownDamage.Water`, then the techno's own `FallingDownDamage`."
+msgstr "`FallingDownDamage.Water` 用于自定义单位坠落到水中时所受的伤害值。默认使用 `[CombatDamage] -> FallingDownDamage.Water`，若未设置则使用该科技类型自身的 `FallingDownDamage`。"
 
 msgid ""
 "`FallingDownDamage.AllowEMP` determines whether units incapacitated by "

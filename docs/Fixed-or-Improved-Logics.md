@@ -2110,8 +2110,8 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 ### Customizable wake anim
 
 - You can now specify the `Wake` anim per TechnoType to override default rules value.
-  - `Wake.Grapple` can be used to further customize wake anim when the techno being parasited on the water.
-  - `Wake.Sinking` can be used to further customize wake anim when the techno sinking.
+  - `Wake.Grapple` can be used to further customize wake anim when the techno being parasited on the water. Defaults to `[General] -> Wake.Grapple`, then the techno's own `Wake`.
+  - `Wake.Sinking` can be used to further customize wake anim when the techno sinking. Defaults to `[General] -> Wake.Sinking`, then the techno's own `Wake`.
 
 - Also, you can now custom whether the techno makes wake when moving.
   - Walk locomotor is able to make wake like ship now.
@@ -2119,6 +2119,10 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Wake.Grapple=                  ; AnimationType
+Wake.Sinking=                  ; AnimationType
+
 [AudioVisual]
 WalkLocomotorMakesWake=false   ; boolean
 HoverLocomotorMakesWake=true   ; boolean
@@ -2128,8 +2132,8 @@ ShipLocomotorMakesWake=true    ; boolean
 [SOMETECHNO]                   ; TechnoType
 MakesWake=                     ; boolean, default to the global value that matches the techno's current locomotor
 Wake=                          ; AnimationType, default to [General] -> Wake
-Wake.Grapple=                  ; AnimationType, defaults to [TechnoType] -> Wake
-Wake.Sinking=                  ; AnimationType, defaults to [TechnoType] -> Wake
+Wake.Grapple=                  ; AnimationType, defaults to [General] -> Wake.Grapple, then [TechnoType] -> Wake
+Wake.Sinking=                  ; AnimationType, defaults to [General] -> Wake.Sinking, then [TechnoType] -> Wake
 ```
 
 ### Customize bridge falling down damage
@@ -2139,7 +2143,7 @@ Wake.Sinking=                  ; AnimationType, defaults to [TechnoType] -> Wake
 
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
- - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `[CombatDamage] -> FallingDownDamage.Water`, then the techno's own `FallingDownDamage`.
  - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
  - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
@@ -2147,11 +2151,12 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 FallingDownDamage=1.0               ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 
 [SOMETECHNO]                        ; TechnoType
 FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
-FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage, defaults to [CombatDamage] -> FallingDownDamage.Water, then [TechnoType] -> FallingDownDamage
 FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
 ```
 

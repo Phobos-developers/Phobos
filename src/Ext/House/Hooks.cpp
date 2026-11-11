@@ -30,9 +30,10 @@ DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_AfterBuildings, 0x6)
 {
 	GET(HouseClass*, pThis, ESI);
 
-	HouseExt::UpdateUnitPower(pThis);
+	const auto unitPower = HouseExt::UpdateUnitPower(pThis);
 
-	HouseExt::CalculatePowerSurplus(pThis);
+	const auto aiPowerDrain = HouseExt::UpdateAIPower(pThis, unitPower);
+	HouseExt::CalculatePowerSurplus(pThis, aiPowerDrain);
 
 	return 0;
 }
