@@ -95,6 +95,32 @@ DEFINE_HOOK(0x42EB65, BaseClass_GetBaseNodeIndex_Rebuild, 0x5)
 	return queryType == -1 ? QueryNext : QueryType;
 }
 
+DEFINE_HOOK(0x4452F0, BuildingClass_KickOutUnit_CompleteUpgradeNode, 0x6)
+{
+	GET(BuildingClass* const, pFactory, ESI);
+	GET(BaseNodeClass* const, pNode, EBX);
+
+	if (pNode && !pFactory->Owner->IsControlledByHuman())
+	{
+		const auto index = pNode->BuildingTypeIndex;
+
+		if (index >= 0 && index < BuildingTypeClass::Array.Count)
+		{
+			const auto pType = BuildingTypeClass::Array.Items[index];
+
+			if (pType->PowersUpBuilding[0]
+				&& !BuildingTypeExt::Fetch(pType)->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+			{
+				// Upgrades bypass the normal Unlimbo node completion path.
+				pNode->Placed = true;
+				pNode->Attempts = 0;
+			}
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x445639, BuildingClass_KickOutUnit_NoBaseNodeToDelete, 0x6)
 {
 	GET(BaseNodeClass* const, pNode, EAX);
