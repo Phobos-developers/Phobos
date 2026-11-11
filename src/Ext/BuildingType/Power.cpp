@@ -22,7 +22,7 @@ namespace
 
 				const auto pEnhancerType = pEnhancer->Type;
 				const auto pExt = BuildingTypeExt::Fetch(pEnhancerType);
-				if (std::find(pExt->PowerPlantEnhancer_AffectTypes.begin(), pExt->PowerPlantEnhancer_AffectTypes.end(), pType) == pExt->PowerPlantEnhancer_AffectTypes.end())
+				if (!pExt->PowerPlantEnhancer_AffectTypes.Contains(pType))
 					continue;
 
 				const int range = pExt->PowerPlantEnhancer_Range.Get();
