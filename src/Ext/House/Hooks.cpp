@@ -274,6 +274,9 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		}
 	}
 
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pThis->Owner, pType, false);
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pNewOwner, pType, true);
+
 	if (pFoot)
 	{
 		if (humanAndComputer)
@@ -916,6 +919,14 @@ static inline bool CanEnterRepairOrSellMode(HouseClass* pHouse)
 	return !pHouse->Defeated && !pHouse->IsObserver();
 }
 
+static inline bool CanEnterSellMode(HouseClass* pHouse)
+{
+	if (!CanEnterRepairOrSellMode(pHouse))
+		return false;
+
+	return HouseExt::Fetch(pHouse)->OwnedUnsellableDirectTechnos > 0;
+}
+
 DEFINE_HOOK(0x4AC92A, DisplayClass_RepairModeControl_OwnedBuildingsOverride, 0x6)
 {
 	enum { EnterRepairMode = 0x4AC934, ExitRepairMode = 0x4AC945 };
@@ -931,7 +942,7 @@ DEFINE_HOOK(0x4AC6CA, DisplayClass_SellModeControl_OwnedBuildingsOverride, 0x6)
 
 	GET(HouseClass* const, pHouse, ECX);
 
-	return CanEnterRepairOrSellMode(pHouse) ? EnterSellMode : ExitSellMode;
+	return CanEnterSellMode(pHouse) ? EnterSellMode : ExitSellMode;
 }
 
 DEFINE_HOOK(0x4F8B14, HouseClass_AI_OwnedBuildingsOverride, 0x8)
@@ -940,5 +951,5 @@ DEFINE_HOOK(0x4F8B14, HouseClass_AI_OwnedBuildingsOverride, 0x8)
 
     GET(HouseClass* const, pHouse, ESI);
 
-    return !CanEnterRepairOrSellMode(pHouse) ? ContinueCheck : SkipCheck;
+    return !CanEnterSellMode(pHouse) ? ContinueCheck : SkipCheck;
 }

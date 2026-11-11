@@ -321,6 +321,8 @@ void TechnoExt::InitializeState(TechnoTypeClass* pType)
 	if (pTypeExt->Harvester_Counted)
 		HouseExt::Fetch(pOwner)->OwnedCountedHarvesters.push_back(pThis);
 
+	HouseExt::UpdateOwnedUnsellableDirectTechnos(pOwner, pType, true);
+
 	if (!(pOwner->IsControlledByHuman() && RulesExt::Global()->DistributeTargetingFrame_AIOnly)
 		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
 	{
