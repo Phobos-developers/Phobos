@@ -185,12 +185,10 @@ std::int64_t BuildingTypeExt::GetAIPower(BuildingClass* pBuilding, bool defaultA
 	return (outputDisabled ? 0 : output) - drain;
 }
 
-std::int64_t BuildingTypeExt::GetAIPowerDelta(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t* pDrainDelta, bool* pAdjusted)
+std::int64_t BuildingTypeExt::GetAIPowerDelta(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t& drainDelta, bool& aiAdjusted)
 {
-	if (pDrainDelta)
-		*pDrainDelta = 0;
-	if (pAdjusted)
-		*pAdjusted = false;
+	drainDelta = 0;
+	aiAdjusted = false;
 	bool adjusted = false;
 	ForEachPowerComponent(pBuilding, [&](BuildingTypeClass* pType, bool)
 	{
@@ -198,8 +196,8 @@ std::int64_t BuildingTypeExt::GetAIPowerDelta(BuildingClass* pBuilding, bool def
 		adjusted |= pExt->AI_Power.isset()
 			|| (!pExt->AI_Power_AffectedByEnhancers.Get(defaultAffectedByEnhancers)
 				&& !HouseExt::Fetch(pBuilding->Owner)->PowerPlantEnhancers.empty());
-		if (pAdjusted && pExt->AI_Power.isset())
-			*pAdjusted |= pExt->AI_Power.Get() != static_cast<std::int64_t>(pType->PowerBonus) - pType->PowerDrain;
+		if (pExt->AI_Power.isset())
+			aiAdjusted |= pExt->AI_Power.Get() != static_cast<std::int64_t>(pType->PowerBonus) - pType->PowerDrain;
 	});
 	if (!adjusted)
 		return 0;
@@ -209,9 +207,7 @@ std::int64_t BuildingTypeExt::GetAIPowerDelta(BuildingClass* pBuilding, bool def
 	const int output = outputDisabled ? 0 : pBuilding->GetPowerOutput();
 	const int drain = pBuilding->GetPowerDrain();
 	const auto delta = power - output + drain;
-	if (pDrainDelta)
-		*pDrainDelta = aiDrain - drain;
-	if (pAdjusted)
-		*pAdjusted |= delta != 0 || aiDrain != drain;
+	drainDelta = aiDrain - drain;
+	aiAdjusted |= delta != 0 || aiDrain != drain;
 	return delta;
 }

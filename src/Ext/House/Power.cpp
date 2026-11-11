@@ -220,7 +220,7 @@ std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, const PowerAdjustm
 		std::int64_t drainDelta;
 		bool buildingAdjusted;
 		const auto buildingDelta = BuildingTypeExt::GetAIPowerDelta(pBuilding, affectedByEnhancers,
-			capturedOutput ? false : outputDisabled, &drainDelta, &buildingAdjusted);
+			capturedOutput ? false : outputDisabled, drainDelta, buildingAdjusted);
 		delta += buildingDelta;
 		aiDrain += drainDelta;
 		adjusted |= buildingAdjusted;

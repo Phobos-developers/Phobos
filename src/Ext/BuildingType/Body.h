@@ -367,7 +367,7 @@ public:
 	static int GetPowerOutput(BuildingClass* pBuilding, int baseOutput);
 	static std::int64_t GetAIPower(BuildingTypeClass* pType);
 	static std::int64_t GetAIPower(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t& drain);
-	static std::int64_t GetAIPowerDelta(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t* pDrainDelta = nullptr, bool* pAdjusted = nullptr);
+	static std::int64_t GetAIPowerDelta(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t& drainDelta, bool& aiAdjusted);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
