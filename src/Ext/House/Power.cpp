@@ -235,7 +235,7 @@ std::int64_t HouseExt::UpdateAIPower(HouseClass* const pThis, const PowerAdjustm
 			const auto pDrainerExt = TechnoTypeExt::Fetch(pDrainer->GetTechnoType());
 			const std::int64_t realOutput = pBuilding->GetPowerOutput();
 			std::int64_t buildingAIDrain;
-			const auto aiNet = BuildingTypeExt::GetAIPower(pBuilding, affectedByEnhancers, false, &buildingAIDrain);
+			const auto aiNet = BuildingTypeExt::GetAIPower(pBuilding, affectedByEnhancers, false, buildingAIDrain);
 			const auto aiOutput = aiNet + buildingAIDrain;
 			if (AresHelper::CanUseAres && (pBuildingExt->Drain_Local || pDrainerExt->Drain_Local))
 			{

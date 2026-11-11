@@ -145,10 +145,9 @@ std::int64_t BuildingTypeExt::GetAIPower(BuildingTypeClass* pType)
 	return power.isset() ? power.Get() : static_cast<std::int64_t>(pType->PowerBonus) - pType->PowerDrain;
 }
 
-std::int64_t BuildingTypeExt::GetAIPower(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t* pDrain)
+std::int64_t BuildingTypeExt::GetAIPower(BuildingClass* pBuilding, bool defaultAffectedByEnhancers, bool outputDisabled, std::int64_t& drain)
 {
-	if (pDrain)
-		*pDrain = 0;
+	drain = 0;
 	if (!pBuilding->IsAlive || pBuilding->Health <= 0 || pBuilding->IsBeingWarpedOut() || !pBuilding->HasPower)
 		return 0;
 
@@ -174,7 +173,6 @@ std::int64_t BuildingTypeExt::GetAIPower(BuildingClass* pBuilding, bool defaultA
 
 	// Native drain has no health or EMP scaling. AI.Power replaces only its
 	// base contribution; the host's extra drain is retained independently.
-	std::int64_t drain = 0;
 	ForEachPowerComponent(pBuilding, [&](BuildingTypeClass* pType, bool host)
 	{
 		const auto& power = TechnoTypeExt::Fetch(pType)->AI_Power;
@@ -184,8 +182,6 @@ std::int64_t BuildingTypeExt::GetAIPower(BuildingClass* pBuilding, bool defaultA
 		if (host && pBuilding->HasExtraPowerDrain)
 			drain += pType->ExtraPowerDrain;
 	});
-	if (pDrain)
-		*pDrain = drain;
 	return (outputDisabled ? 0 : output) - drain;
 }
 
@@ -209,7 +205,7 @@ std::int64_t BuildingTypeExt::GetAIPowerDelta(BuildingClass* pBuilding, bool def
 		return 0;
 
 	std::int64_t aiDrain;
-	const auto power = BuildingTypeExt::GetAIPower(pBuilding, defaultAffectedByEnhancers, outputDisabled, &aiDrain);
+	const auto power = BuildingTypeExt::GetAIPower(pBuilding, defaultAffectedByEnhancers, outputDisabled, aiDrain);
 	const int output = outputDisabled ? 0 : pBuilding->GetPowerOutput();
 	const int drain = pBuilding->GetPowerDrain();
 	const auto delta = power - output + drain;
