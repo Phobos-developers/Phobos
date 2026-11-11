@@ -1997,6 +1997,12 @@ msgid ""
 "team"
 msgstr "修复了坠落或沉没中的单位可以被招募进特遣部队的 Bug"
 
+msgid "Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check"
+msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug"
+
+msgid "Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water`"
+msgstr "`Wake.Grapple`、`Wake.Sinking` 和 `FallingDownDamage.Water` 的全局默认值"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 

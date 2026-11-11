@@ -1300,6 +1300,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
@@ -1880,6 +1881,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		// Ares 0.A
 		.Process(this->GroupAs)
+		.Process(this->InitialPayload_Types)
 
 		// Ares 0.C
 		.Process(this->NoAmmoWeapon)

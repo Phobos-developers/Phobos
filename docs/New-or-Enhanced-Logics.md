@@ -2745,6 +2745,7 @@ BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|
 - By default, ores mined in this way worth the same as regular harvesting. This can be adjusted by `TiberiumEater.CashMultiplier`.
 - `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process.
   - `TiberiumEater.Display.Houses` determines which houses can see the credits display.
+  - `TiberiumEater.Display.Offset` specifies an additional pixel offset for the floating credits text at each mined cell.
 - An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
   - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
   - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
@@ -2759,6 +2760,7 @@ TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
 TiberiumEater.Display.Houses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|neutral|all)
+TiberiumEater.Display.Offset=0,0  ; X,Y, pixels relative to default
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes

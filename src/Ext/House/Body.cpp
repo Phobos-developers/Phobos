@@ -690,6 +690,28 @@ void HouseExt::CalculatePowerSurplus(HouseClass* pThis, std::int64_t aiPowerDrai
 // =============================
 // load / save
 
+bool HouseExt::PlacingBuildingStruct::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool HouseExt::PlacingBuildingStruct::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<HouseExt::PlacingBuildingStruct*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool HouseExt::PlacingBuildingStruct::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Type)
+		.Process(this->DrawType)
+		.Process(this->Times)
+		.Process(this->Timer)
+		.Process(this->TopLeft)
+		.Success();
+}
+
 template <typename T>
 void HouseExt::Serialize(T& Stm)
 {

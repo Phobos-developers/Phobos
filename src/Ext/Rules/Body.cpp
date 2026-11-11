@@ -227,6 +227,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
 	this->Overload_ParticleSysCount.Read(exINI, GameStrings::CombatDamage, "Overload.ParticleSysCount");
 	this->FallingDownDamage.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.AllowEMP");
 
 	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, GameStrings::General, "ForceWeapon.InRange.TechnoOnly");
@@ -549,8 +550,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WalkLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "WalkLocomotorMakesWake");
 	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
-	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
-	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
+	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotorMakesWake");
+	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotorMakesWake");
 
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
@@ -609,6 +610,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DefaultLandingAnim.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim");
 	this->DefaultLandingAnim_Dropship.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Dropship");
 	this->DefaultLandingAnim_Carryall.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Carryall");
+
+	this->Wake_Grapple.Read(exINI, GameStrings::General, "Wake.Grapple");
+	this->Wake_Sinking.Read(exINI, GameStrings::General, "Wake.Sinking");
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
@@ -856,6 +860,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
 		.Process(this->Overload_ParticleSysCount)
 		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
 		.Process(this->FallingDownDamage_AllowEMP)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
@@ -1148,6 +1153,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLandingAnim)
 		.Process(this->DefaultLandingAnim_Dropship)
 		.Process(this->DefaultLandingAnim_Carryall)
+		.Process(this->Wake_Grapple)
+		.Process(this->Wake_Sinking)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
 		.Process(this->BerzerkMission)

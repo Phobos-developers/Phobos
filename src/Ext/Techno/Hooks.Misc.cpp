@@ -397,7 +397,7 @@ DEFINE_HOOK(0x629E9B, ParasiteClass_GrappleUpdate_MakeWake_SetContext, 0x5)
 DEFINE_HOOK(0x629FA3, ParasiteClass_GrappleUpdate_MakeWake, 0x6)
 {
 	const auto pTypeExt = TechnoExt::Fetch(GrappleUpdateTemp::pThis)->TypeExtData;
-	R->EDX(pTypeExt->Wake_Grapple.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+	R->EDX(pTypeExt->Wake_Grapple.Get(RulesExt::Global()->Wake_Grapple.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake))));
 
 	return 0x629FA9;
 }
@@ -407,7 +407,7 @@ DEFINE_HOOK(0x7365AD, UnitClass_Update_SinkingWake, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
-	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+	R->ECX(pTypeExt->Wake_Sinking.Get(RulesExt::Global()->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake))));
 
 	return 0x7365B3;
 }
@@ -417,7 +417,7 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::Fetch(pThis->Type);
-	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+	R->ECX(pTypeExt->Wake_Sinking.Get(RulesExt::Global()->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake))));
 
 	return 0x737F0B;
 }

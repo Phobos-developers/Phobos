@@ -537,6 +537,7 @@ public:
 
 	// Ares 0.A
 	PhobosFixedString<0x20> GroupAs;
+	ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 
 	// Ares 0.C
 	Valueable<int> NoAmmoWeapon;
@@ -971,6 +972,7 @@ public:
 
 		// Ares 0.A
 		, GroupAs { NONE_STR }
+		, InitialPayload_Types {}
 
 		// Ares 0.C
 		, NoAmmoWeapon { -1 }
