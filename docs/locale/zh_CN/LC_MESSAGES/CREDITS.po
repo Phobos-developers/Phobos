@@ -2765,6 +2765,7 @@ msgid ""
 "Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` "
 "are ineffective because they read the wrong tag names"
 msgstr ""
+"修复了 `HoverLocomotorMakesWake` 和 `ShipLocomotorMakesWake` 读错标签名而不生效的 Bug"
 
 msgid ""
 "Fix the bug where `TiberiumEater.Display.Houses` is ineffective because "

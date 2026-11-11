@@ -4053,6 +4053,7 @@ msgid ""
 "`ShipLocomotorMakesWake` are ineffective because they read the wrong tag "
 "names (by Noble_Fish)"
 msgstr ""
+"修复了 `HoverLocomotorMakesWake` 和 `ShipLocomotorMakesWake` 读错标签名而不生效的 Bug（by Noble_Fish）"
 
 msgid ""
 "Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because"
