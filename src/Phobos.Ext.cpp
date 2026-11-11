@@ -376,6 +376,7 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
 
+	AnimExt::PrepareForLoad();
 	AttachEffectClass::PrepareForLoad();
 	ShieldClass::PrepareForLoad();
 
