@@ -1405,6 +1405,9 @@ msgstr ""
 "[允许 Ares 训练所添加国家级别的过滤器](New-or-Enhanced-Logics.md#allow-ares-academy-add-"
 "country-level-filters)（by dh381）"
 
+msgid "Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)"
+msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug（by NetsuNegi 与 Noble_Fish）"
+
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
 "or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)"

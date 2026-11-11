@@ -2068,6 +2068,9 @@ msgid ""
 " and move even after the driver had been killed."
 msgstr "修复了 Ares 中载具在驾驶员被击杀后偶尔仍会继续开火和移动的问题。"
 
+msgid "Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check."
+msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug。"
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 

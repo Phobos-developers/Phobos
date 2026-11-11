@@ -404,6 +404,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check.
 
 ## Newly added global settings
 
