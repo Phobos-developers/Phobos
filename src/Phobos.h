@@ -1,5 +1,4 @@
 #pragma once
-#include <Phobos.version.h>
 #include <Windows.h>
 
 #include <string>
