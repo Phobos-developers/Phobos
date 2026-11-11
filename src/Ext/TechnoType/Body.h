@@ -521,6 +521,8 @@ public:
 	ValueableVector<int> NoAmmoWeapons;
 	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
+	Nullable<bool> Unsellable_Direct;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
 
@@ -948,6 +950,8 @@ public:
 
 		, NoAmmoWeapons {}
 		, NoAmmoWeapons_IgnoreNeverUse { true }
+
+		, Unsellable_Direct { }
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
