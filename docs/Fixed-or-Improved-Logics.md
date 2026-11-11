@@ -2149,7 +2149,7 @@ FallingDownDamage.AllowEMP=true     ; boolean
 
 [SOMETECHNO]                        ; TechnoType
 FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
-FallingDownDamage.Water=            ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage, deafult to [TechnoType] -> FallingDownDamage
 FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
 ```
 
