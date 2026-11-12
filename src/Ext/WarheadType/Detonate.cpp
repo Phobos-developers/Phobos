@@ -730,7 +730,6 @@ void WarheadTypeExt::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
 
 void WarheadTypeExt::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker)
 {
-	std::vector<int> dummy = std::vector<int>();
 	auto const& info = this->AttachEffects;
 	AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), info);
 	AttachEffectClass::Detach(pTarget, info);

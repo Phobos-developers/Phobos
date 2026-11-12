@@ -2762,6 +2762,9 @@ msgstr "电厂增幅器支持作用于步兵、载具和战机"
 msgid "Techno power overrides for AI budgeting, including installed upgrades, independent of actual power"
 msgstr "为科技类型及其已安装加载物设置独立于实际电量的 AI 电力预算"
 
+msgid "Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`"
+msgstr "修复了 AI 触发器可达性检查错误地将汇总 `MovementZone` 为 `Amphibious`、`AmphibiousCrusher`、`AmphibiousDestroyer` 或 `Fly` 的可达运输小队拒绝的问题"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
