@@ -62,7 +62,7 @@ bool ScriptExt::RequiresTargetReachability(const ScriptTypeClass* pScriptType)
 			return true;
 
 		case 11: // Assign mission
-                        switch (static_cast<Mission>(node.Argument))
+            switch (static_cast<Mission>(node.Argument))
 			{
 			case Mission::Attack:
 			case Mission::Move:
