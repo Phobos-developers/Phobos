@@ -11,6 +11,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
@@ -3863,4 +3864,13 @@ DEFINE_HOOK(0x41FF2C, AITriggerTypeClass_ConditionMet_NavalTransports, 0x6)
 		&& movementZone != MovementZone::Fly;
 	R->AL(pTeamType->field_F1 && needsTransportRoute);
 	return 0x41FF32;
+}
+
+DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
+{
+	enum { ReturnTrue = 0x41FFC0 };
+
+	GET(TeamTypeClass*, pTeamType, EDI);
+
+	return ScriptExt::RequiresTargetReachability(pTeamType->ScriptType) ? 0 : ReturnTrue;
 }

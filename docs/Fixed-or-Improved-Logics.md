@@ -346,6 +346,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`.
+- Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions.
 
 ## Fixes / interactions with other extensions
 
