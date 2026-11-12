@@ -156,21 +156,23 @@ void TechnoExt::WebbyUpdate()
 
 		this->WebbyAnim = nullptr;
 		pThis->Target = nullptr;
-		auto const pLastTarget = static_cast<TechnoClass*>(this->WebbyLastTarget);
+		// The last target may be a cell or another object that is no techno.
+		auto const pLastTarget = abstract_cast<TechnoClass*>(this->WebbyLastTarget);
 
 		// Restore previous action
 		if (pLastTarget && pLastTarget->Health > 0 && pLastTarget->IsAlive && pLastTarget->IsOnMap)
 		{
-			pThis->SetDestination(this->WebbyLastTarget, false);
-			pThis->SetTarget(this->WebbyLastTarget);
+			pThis->SetDestination(pLastTarget, false);
+			pThis->SetTarget(pLastTarget);
 			pThis->QueueMission(this->WebbyLastMission, true);
-			this->WebbyLastTarget = nullptr;
-			this->WebbyLastMission = Mission::Sleep;
 		}
 		else
 		{
 			pThis->QueueMission(Mission::Guard, true);
 		}
+
+		this->WebbyLastTarget = nullptr;
+		this->WebbyLastMission = Mission::Sleep;
 	}
 }
 

@@ -1418,6 +1418,17 @@ void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
 		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
 }
 
+void TechnoExt::OnDetach(AbstractClass* pTarget, bool removed)
+{
+	// The target a webbed soldier goes back to and the web drawn on it: read when the web ends,
+	// long after either may be gone (a dead target left here made multiplayer games desync).
+	if (removed)
+	{
+		AnnounceInvalidPointer(this->WebbyLastTarget, pTarget);
+		AnnounceInvalidPointer(this->WebbyAnim, pTarget);
+	}
+}
+
 void TechnoExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	RadioExt::LoadFromStream(Stm);
