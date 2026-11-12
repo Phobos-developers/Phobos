@@ -56,6 +56,10 @@ public:
 		Valueable<bool> JumpjetRotateOnCrash;
 
 		Nullable<WarheadTypeClass*> VeinholeWarhead;
+		// The Ares tags of the cargo explosion of a destroyed vehicle, read here too: that explosion
+		// is done by Phobos so that it counts every resource type.
+		Nullable<WarheadTypeClass*> TiberiumExplosiveWarhead;
+		Nullable<AnimTypeClass*> TiberiumExplosiveAnim;
 
 		PhobosFixedString<32u> MissingCameo;
 
@@ -605,6 +609,8 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetRotateOnCrash { true }
 			, VeinholeWarhead {}
+			, TiberiumExplosiveWarhead {}
+			, TiberiumExplosiveAnim {}
 			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }

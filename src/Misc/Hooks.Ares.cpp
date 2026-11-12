@@ -12,6 +12,11 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Utilities/Debug.h>
+#include <AnimClass.h>
+#include <MapClass.h>
+#include <TiberiumClass.h>
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
@@ -322,8 +327,58 @@ static DWORD _cdecl AresPreventScatter_Override(REGISTERS* R)
 	return 0x702D11;
 }
 
+// Ares adds up the cargo of a destroyed vehicle for every resource type straight from the engine
+// storage, which holds four amounts: from the fifth type on it read the memory after it, bytes
+// nothing initializes, so the vehicle blew up on one client of a match and not on another
+// (multiplayer desyncs). This takes the place of its handler and reads the extended storage, for
+// as many resource types as there are.
+static DWORD _cdecl UnitClass_Destroy_TiberiumExplosive_AnyResourceCount(REGISTERS* R)
+{
+	enum { SkipGameCode = 0x7387C4 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (RulesClass::Instance->TiberiumExplosive && !ScenarioClass::Instance->SpecialFlags.HarvesterImmune)
+	{
+		auto const pExt = TechnoExt::Fetch(pThis);
+
+		if (pExt->GetTotalTiberium() > 0.0f)
+		{
+			int morePower = 0;
+
+			for (int i = 0; i < TiberiumClass::Array.Count; ++i)
+				morePower += Game::F2I(static_cast<double>(TiberiumClass::Array.GetItem(i)->Power) * pExt->GetTiberium(i));
+
+			if (morePower > 0)
+			{
+				CoordStruct coords = pThis->GetCoords();
+
+				if (auto const pWarhead = RulesExt::Global()->TiberiumExplosiveWarhead.Get(nullptr))
+					MapClass::DamageArea(coords, morePower, pThis, pWarhead, false, nullptr);
+
+				if (auto const pAnimType = RulesExt::Global()->TiberiumExplosiveAnim.Get(nullptr))
+					GameCreate<AnimClass>(pAnimType, coords, 0, 1, 0x2600, -15, false);
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
+// Replaces a hook handler of Ares, found by the name it is exported under: the same for every
+// Ares version.
+static void OverrideAresHandler(const char* name, void* pReplacement)
+{
+	if (auto const pHandler = GetProcAddress(reinterpret_cast<HMODULE>(AresHelper::AresBaseAddress), name))
+		Patch::Apply_LJMP(reinterpret_cast<DWORD>(pHandler), pReplacement);
+	else
+		Debug::Log("[Phobos] Ares handler %s not found: left as it is.\n", name);
+}
+
 void Apply_Ares3_0_Patches()
 {
+	OverrideAresHandler("UnitClass_Destroy_TiberiumExplosive", &UnitClass_Destroy_TiberiumExplosive_AnyResourceCount);
+
 	// Abductor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x54CDF, AresHelper::AresBaseAddress + 0x54D3C);
 
@@ -452,6 +507,8 @@ void Apply_Ares3_0_Patches()
 
 void Apply_Ares3_0p1_Patches()
 {
+	OverrideAresHandler("UnitClass_Destroy_TiberiumExplosive", &UnitClass_Destroy_TiberiumExplosive_AnyResourceCount);
+
 	// Abductor fix:
 	// Issue: moving vehicles leave permanent occupation stats on terrain
 	// What's done here: Skip Mark_Occupation_Bits cuz pFoot->Remove/Limbo() will do it.

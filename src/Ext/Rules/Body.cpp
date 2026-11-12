@@ -135,6 +135,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->ShieldApplyArmorMult.Read(exINI, GameStrings::CombatDamage, "ShieldApplyArmorMult");
 	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
+	this->TiberiumExplosiveWarhead.Read<true>(exINI, GameStrings::CombatDamage, "TiberiumExplosiveWarhead");
+	this->TiberiumExplosiveAnim.Read(exINI, GameStrings::CombatDamage, "TiberiumExplosiveAnim");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
 	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
@@ -783,6 +785,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->VeinholeWarhead)
+		.Process(this->TiberiumExplosiveWarhead)
+		.Process(this->TiberiumExplosiveAnim)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
