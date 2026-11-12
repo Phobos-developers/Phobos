@@ -15,6 +15,7 @@ public:
 	bool SkipTargetChangeResetSequence;
 	bool HasDeployConverted;
 	bool HasUndeployConverted;
+	TechnoTypeClass* PendingConvertType;
 
 	bool RestartReloadTimer;
 
@@ -22,6 +23,7 @@ public:
 		, SkipTargetChangeResetSequence { false }
 		, HasDeployConverted { false }
 		, HasUndeployConverted { false }
+		, PendingConvertType { nullptr }
 		, RestartReloadTimer { true }
 	{ }
 
@@ -37,6 +39,9 @@ public:
 	}
 
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
+	static bool PrepareConvertToType(InfantryClass* pThis, TechnoTypeClass* pToType);
+	static void UpdatePendingConvert(InfantryClass* pThis);
+	static bool CanConvertAtCellCenter(InfantryClass* pThis);
 
 	class ExtContainer final : public Container<InfantryExt>
 	{

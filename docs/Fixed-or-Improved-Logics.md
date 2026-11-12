@@ -346,6 +346,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`.
+- Vanilla `DeploysInto`, `UndeploysInto` and selling now also carry over the health percentage, veteran status, armor / firepower / speed multipliers and slave manager of the source techno to the new one, in addition to the mind control, shields, invulnerability and attached effects that were already transferred.
 
 ## Fixes / interactions with other extensions
 

@@ -189,6 +189,7 @@ public:
 	void UpdateTintValues();
 	void UpdateLastTargetCrd();
 	int GetSight();
+	void HealthAutoConvertActions();
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
@@ -217,6 +218,7 @@ public:
 
 	// deprecated stand-in for the pre-rework container of all TechnoClass extensions
 	static inline CompatExtMap<TechnoExt, TechnoClass> ExtMap {};
+	static inline TechnoClass* Deployer { nullptr };
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -250,7 +252,11 @@ public:
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
-	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
+	static bool CanConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType);
+	static bool ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType);
+	static bool CanCreateBuildingHere(TechnoClass* pThis, BuildingTypeClass* pToBuildingType);
+	static void TransferStatus(TechnoClass* pFrom, TechnoClass* pTo);
+	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoTypeClass* pType, TechnoClass* pSource);
 	static int GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk);
 	static int GetCustomTintColor(TechnoClass* pThis);
