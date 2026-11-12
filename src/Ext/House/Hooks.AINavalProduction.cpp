@@ -120,25 +120,28 @@ DEFINE_HOOK(0x4F91A4, HouseClass_AI_BuildingProductionCheck, 0x6)
 
 	auto const pExt = HouseExt::Fetch(pThis);
 
-	bool cantBuild = pThis->ProducingUnitTypeIndex == -1
+	if (pThis->ProducingUnitTypeIndex == -1
 		&& pThis->ProducingInfantryTypeIndex == -1
 		&& pThis->ProducingAircraftTypeIndex == -1
-		&& pExt->ProducingNavalUnitTypeIndex == -1;
+		&& pExt->ProducingNavalUnitTypeIndex == -1)
+	{
+		return CheckBuildingProduction;
+	}
 
 	int index = pExt->ProducingNavalUnitTypeIndex;
 	if (index != -1 && !UnitTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis))
-		cantBuild = true;
+		return CheckBuildingProduction;
 
 	index = pThis->ProducingUnitTypeIndex;
 	if (index != -1 && !UnitTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis))
-		cantBuild = true;
+		return CheckBuildingProduction;
 
 	index = pThis->ProducingInfantryTypeIndex;
 	if (index != -1 && !InfantryTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis))
-		cantBuild = true;
+		return CheckBuildingProduction;
 
 	index = pThis->ProducingAircraftTypeIndex;
-	if ((index != -1 && !AircraftTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis)) || cantBuild)
+	if (index != -1 && !AircraftTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis))
 		return CheckBuildingProduction;
 
 	return SkipGameCode;
