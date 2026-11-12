@@ -1559,3 +1559,163 @@ int TechnoExt::FirstUsedTiberiumSlot() const
 	return -1;
 }
 
+#pragma region EngineStorageAnyResourceCount
+
+// The engine's StorageClass holds four amounts and its accessors do not check the index, while
+// there are as many resource types as [Tiberiums] lists. A caller that walks every type over an
+// engine storage (Ares does, for the cargo explosion of a destroyed vehicle and for the spill of
+// a destroyed techno) read and wrote the memory after it from the fifth type on. Nothing
+// initializes those bytes, so two clients of one match got different amounts there: a vehicle
+// blew up on one and not on the other (multiplayer desyncs). An index outside the four slots
+// is now answered from the extended storage of the techno or house that owns the storage, and
+// with nothing for a storage of any other owner; the four engine slots work as they always did.
+namespace EngineStorage
+{
+	constexpr int SlotCount = 4;
+
+	static TechnoExt* TechnoOwner(const StorageClass* pStorage)
+	{
+		for (auto const pTechno : TechnoClass::Array)
+		{
+			if (&pTechno->Tiberium == pStorage)
+				return TechnoExt::Fetch(pTechno);
+		}
+
+		return nullptr;
+	}
+
+	static HouseExt* HouseOwner(const StorageClass* pStorage)
+	{
+		for (auto const pHouse : HouseClass::Array)
+		{
+			if (&pHouse->OwnedTiberium == pStorage)
+				return HouseExt::Fetch(pHouse);
+		}
+
+		return nullptr;
+	}
+
+	static bool IsEngineSlot(int index)
+	{
+		return index >= 0 && index < SlotCount;
+	}
+
+	// The first callers that reach past the engine slots, for the debug log (who still walks
+	// every resource type over an engine storage).
+	static void NoteCaller(const char* access, int index, unsigned int callerAddress)
+	{
+		constexpr int MaxNotes = 12;
+		static int notes = 0;
+
+		if (notes < MaxNotes)
+		{
+			++notes;
+			Debug::Log("[Phobos] Engine storage: %s of resource %d answered from the extended storage (caller %08x).\n",
+				access, index, callerAddress);
+		}
+	}
+
+	static float GetAmount(const StorageClass* pStorage, int index)
+	{
+		if (index < 0)
+			return 0.0f;
+
+		if (auto const pTechnoExt = TechnoOwner(pStorage))
+			return pTechnoExt->GetTiberium(index);
+
+		if (auto const pHouseExt = HouseOwner(pStorage))
+			return pHouseExt->GetTiberiumStorage(index);
+
+		return 0.0f;
+	}
+
+	static float AddAmount(const StorageClass* pStorage, float amount, int index)
+	{
+		if (index < 0)
+			return 0.0f;
+
+		if (auto const pTechnoExt = TechnoOwner(pStorage))
+			return pTechnoExt->AddTiberium(amount, index);
+
+		if (auto const pHouseExt = HouseOwner(pStorage))
+			return pHouseExt->AddTiberiumStorage(amount, index);
+
+		return 0.0f;
+	}
+
+	static float RemoveAmount(const StorageClass* pStorage, float amount, int index)
+	{
+		if (index < 0)
+			return 0.0f;
+
+		if (auto const pTechnoExt = TechnoOwner(pStorage))
+			return pTechnoExt->RemoveTiberium(amount, index);
+
+		if (auto const pHouseExt = HouseOwner(pStorage))
+			return pHouseExt->RemoveTiberiumStorage(amount, index);
+
+		return 0.0f;
+	}
+}
+
+DEFINE_HOOK(0x6C9680, StorageClass_GetAmount_AnyResourceCount, 0x7)
+{
+	enum { Return = 0x6C9687 };
+
+	GET(const StorageClass* const, pThis, ECX);
+	GET_STACK(const int, index, 0x4);
+
+	if (EngineStorage::IsEngineSlot(index))
+		return 0;
+
+	GET_STACK(const unsigned int, callerAddress, 0x0);
+	EngineStorage::NoteCaller("read", index, callerAddress);
+
+	float amount = EngineStorage::GetAmount(pThis, index);
+	__asm fld amount;
+
+	return Return;
+}
+
+DEFINE_HOOK(0x6C9690, StorageClass_AddAmount_AnyResourceCount, 0x8)
+{
+	enum { Return = 0x6C969E };
+
+	GET(const StorageClass* const, pThis, ECX);
+	GET_STACK(const float, amount, 0x4);
+	GET_STACK(const int, index, 0x8);
+
+	if (EngineStorage::IsEngineSlot(index))
+		return 0;
+
+	GET_STACK(const unsigned int, callerAddress, 0x0);
+	EngineStorage::NoteCaller("add", index, callerAddress);
+
+	float stored = EngineStorage::AddAmount(pThis, amount, index);
+	__asm fld stored;
+
+	return Return;
+}
+
+DEFINE_HOOK(0x6C96B0, StorageClass_RemoveAmount_AnyResourceCount, 0x7)
+{
+	enum { Return = 0x6C96CD };
+
+	GET(const StorageClass* const, pThis, ECX);
+	GET_STACK(const float, amount, 0x4);
+	GET_STACK(const int, index, 0x8);
+
+	if (EngineStorage::IsEngineSlot(index))
+		return 0;
+
+	GET_STACK(const unsigned int, callerAddress, 0x0);
+	EngineStorage::NoteCaller("remove", index, callerAddress);
+
+	float removed = EngineStorage::RemoveAmount(pThis, amount, index);
+	__asm fld removed;
+
+	return Return;
+}
+
+#pragma endregion
+
