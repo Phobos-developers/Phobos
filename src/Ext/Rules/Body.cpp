@@ -723,6 +723,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
 	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
 	this->AI_Power_AffectedByEnhancers.Read(exINI, GameStrings::AI, "AI.Power.AffectedByEnhancers");
+	this->AI_BasePlan_Rebuild.Read(exINI, GameStrings::AI, "AI.BasePlan.Rebuild");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -1195,6 +1196,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->UseSidebarRadarOffsetFix)
 		.Process(this->ExtendedBuildingPlacing)
 		.Process(this->AI_Power_AffectedByEnhancers)
+		.Process(this->AI_BasePlan_Rebuild)
     ;
 }
 

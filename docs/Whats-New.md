@@ -2071,6 +2071,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
 - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
 - [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
+- [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)

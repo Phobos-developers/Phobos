@@ -1217,6 +1217,9 @@ msgstr "`Wake.Grapple`、`Wake.Sinking` 和 `FallingDownDamage.Water` 的全局�
 msgid "[Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)"
 msgstr "[为科技类型独立设置 AI 电力预算值](New-or-Enhanced-Logics.md#ai-power-budgeting)（Noble_Fish）"
 
+msgid "[Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)"
+msgstr "[控制 AI 基地计划重建](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding)（Noble_Fish）"
+
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 

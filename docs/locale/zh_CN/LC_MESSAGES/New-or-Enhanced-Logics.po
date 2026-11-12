@@ -1942,6 +1942,15 @@ msgstr ""
 msgid "Buildings"
 msgstr "建筑"
 
+msgid "AI base plan rebuilding"
+msgstr "AI 基地计划重建"
+
+msgid "`AI.BasePlan.Rebuild=false` prevents the AI from rebuilding base plan nodes that have already been placed, including matching preplaced buildings. It applies in campaigns, skirmish and multiplayer."
+msgstr "`AI.BasePlan.Rebuild=false` 禁止 AI 重建已经放置过的基地计划节点，包括与计划匹配的预摆建筑。该设置在战役、遭遇战和多人游戏中均生效。"
+
+msgid "Initial placement, repairs and new nodes added for power or economic needs remain unchanged. Buildings may therefore still be built again for those reasons."
+msgstr "首次放置、维修以及因电力或经济需求新增的节点不受影响，因此 AI 仍可能出于这些原因再次建造同类建筑。"
+
 msgid "Allow Ares Academy add country-level filters"
 msgstr "允许 Ares 训练所添加国家级别的过滤器"
 

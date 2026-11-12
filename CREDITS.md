@@ -807,6 +807,7 @@ This page lists all the individual contributions to the project by their author.
   - Techno power overrides for AI budgeting, including installed upgrades, independent of actual power
   - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`
   - Fix the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions
+  - Control of AI base plan rebuilding
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
