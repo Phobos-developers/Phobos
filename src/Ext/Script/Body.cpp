@@ -62,13 +62,18 @@ bool ScriptExt::RequiresTargetReachability(const ScriptTypeClass* pScriptType)
 			return true;
 
 		case 11: // Assign mission
-			if (node.Argument == static_cast<int>(Mission::Attack)
-				|| node.Argument == static_cast<int>(Mission::Move)
-				|| node.Argument == static_cast<int>(Mission::QMove)
-				|| node.Argument == static_cast<int>(Mission::Hunt)
-				|| node.Argument == static_cast<int>(Mission::AttackMove)
-				|| node.Argument == static_cast<int>(Mission::Patrol))
+                        switch (static_cast<Mission>(node.Argument))
+			{
+			case Mission::Attack:
+			case Mission::Move:
+			case Mission::QMove:
+			case Mission::Hunt:
+			case Mission::Patrol:
+			case Mission::AttackMove:
 				return true;
+			default:
+				break;
+			}
 			break;
 
 		case static_cast<int>(PhobosScripts::MoveToEnemyCloser):
