@@ -1314,6 +1314,9 @@ msgid ""
 msgstr ""
 "允许维修与出售模式始终可切换，而不依赖于是否存在 `Insignificant=no` 的建筑（by Ollerus）"
 
+msgid "Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)"
+msgstr "修复了 AI 触发器可达性检查错误地将汇总 `MovementZone` 为 `Amphibious`、`AmphibiousCrusher`、`AmphibiousDestroyer` 或 `Fly` 的可达运输小队拒绝的问题（by Noble_Fish）"
+
 msgid "Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)"
 msgstr "修复了 AI 触发器对仅执行守卫、等待或辅助脚本动作的小队同样进行可达性检查的问题（by Noble_Fish）"
 

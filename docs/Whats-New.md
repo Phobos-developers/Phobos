@@ -2091,6 +2091,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
+- Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
 
 #### Phobos fixes:

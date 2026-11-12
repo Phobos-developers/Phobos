@@ -3851,6 +3851,21 @@ DEFINE_HOOK(0x6F1FEF, TeamTypeClass_ProcessTaskForce_MovementZone, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x41FF2C, AITriggerTypeClass_ConditionMet_NavalTransports, 0x6)
+{
+	GET(TeamTypeClass*, pTeamType, EDI);
+	GET(const MovementZone, movementZone, ESI);
+
+	// Amphibious and flying pathfinding use the combined zone's connectivity.
+	// Requiring different zones first would incorrectly reject connected bases.
+	const bool needsTransportRoute = movementZone != MovementZone::Amphibious
+		&& movementZone != MovementZone::AmphibiousCrusher
+		&& movementZone != MovementZone::AmphibiousDestroyer
+		&& movementZone != MovementZone::Fly;
+	R->AL(pTeamType->field_F1 && needsTransportRoute);
+	return 0x41FF32;
+}
+
 DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
 {
 	enum { ReturnTrue = 0x41FFC0 };
