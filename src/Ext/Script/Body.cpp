@@ -25,6 +25,73 @@ void ScriptExt::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+bool ScriptExt::RequiresTargetReachability(const ScriptTypeClass* pScriptType)
+{
+	if (!pScriptType || pScriptType->ActionsCount <= 0
+		|| pScriptType->ActionsCount > static_cast<int>(std::size(pScriptType->ScriptActions)))
+		return true;
+
+	for (int i = 0; i < pScriptType->ActionsCount; ++i)
+	{
+		const auto& node = pScriptType->ScriptActions[i];
+
+		// This range is reserved for Phobos attack actions.
+		if (node.Action >= 10000 && node.Action < 10050)
+			return true;
+
+		switch (node.Action)
+		{
+		case 0: // Attack target type
+		case 1: // Attack waypoint
+		case 3: // Move to waypoint
+		case 4: // Move to cell
+		case 15: // Spy on building at waypoint
+		case 16: // Patrol to waypoint
+		case 46: // Attack enemy building
+		case 47: // Move to enemy building
+		case 48: // Scout
+		case 53: // Gather at enemy base
+		case 59: // Attack building at waypoint
+			return true;
+
+		case 17: // Change script
+		case 18: // Change team
+		case static_cast<int>(PhobosScripts::PickRandomScript):
+		case static_cast<int>(PhobosScripts::JumpBackToPreviousScript):
+			// The replacement script can introduce attacks or movement.
+			return true;
+
+		case 11: // Assign mission
+            switch (static_cast<Mission>(node.Argument))
+			{
+			case Mission::Attack:
+			case Mission::Move:
+			case Mission::QMove:
+			case Mission::Hunt:
+			case Mission::Patrol:
+			case Mission::AttackMove:
+				return true;
+			default:
+				break;
+			}
+			break;
+
+		case static_cast<int>(PhobosScripts::MoveToEnemyCloser):
+		case static_cast<int>(PhobosScripts::MoveToTypeEnemyCloser):
+		case static_cast<int>(PhobosScripts::RandomMoveToTypeEnemyCloser):
+		case static_cast<int>(PhobosScripts::MoveToEnemyFarther):
+		case static_cast<int>(PhobosScripts::MoveToTypeEnemyFarther):
+		case static_cast<int>(PhobosScripts::RandomMoveToTypeEnemyFarther):
+			return true;
+
+		default:
+			break;
+		}
+	}
+
+	return false;
+}
+
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
 	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;

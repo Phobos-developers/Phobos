@@ -5,6 +5,21 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+
+namespace RadiationCellTemp
+{
+	struct Entry
+	{
+		RadSiteClass* Site;
+		int Level;
+		size_t Group;
+		size_t Order;
+	};
+
+	static std::vector<RadTypeClass*> Types;
+	static std::vector<Entry> Entries;
+}
+
 /*
 	Custom Radiations
 	Worked out from old uncommented Ares RadSite Hook , adding some more hook
@@ -132,8 +147,17 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			continue;
 
 		const auto pCellExt = CellExt::Fetch(pCell);
-		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
-		typeMap.reserve(RadTypeClass::Array.size());
+
+		if (pCellExt->RadLevels.empty())
+			continue;
+
+		auto& types = RadiationCellTemp::Types;
+		auto& entries = RadiationCellTemp::Entries;
+
+		types.clear();
+		types.reserve(RadTypeClass::Array.size());
+		entries.clear();
+		entries.reserve(pCellExt->RadLevels.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -158,42 +182,62 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 					continue;
 			}
 
-			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
+			const auto it = std::find(types.begin(), types.end(), pRadType);
+			size_t group = 0;
 
-			if (it != typeMap.cend())
+			if (it == types.end())
 			{
-				it->second.emplace_back(pRadSite, radLevel);
+				group = types.size();
+				types.push_back(pRadType);
 			}
 			else
 			{
-				std::vector<std::pair<RadSiteClass*, int>> sites;
-				sites.reserve(pCellExt->RadLevels.size());
-				sites.emplace_back(pRadSite, radLevel);
-				typeMap.emplace_back(pRadType, std::move(sites));
+				group = static_cast<size_t>(it - types.begin());
 			}
+
+			entries.push_back({ pRadSite, radLevel, group, entries.size() });
 		}
 
-		for (auto& [_, sites] : typeMap)
-			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
+		std::sort(entries.begin(), entries.end(), [](RadiationCellTemp::Entry const& left, RadiationCellTemp::Entry const& right)
+			{
+				if (left.Group != right.Group)
+					return left.Group < right.Group;
 
-		for (const auto& [pRadType, sites] : typeMap)
+				if (left.Level != right.Level)
+					return left.Level > right.Level;
+
+				return left.Order < right.Order;
+			});
+
+		for (size_t i = 0; i < entries.size(); )
 		{
+			const size_t group = entries[i].Group;
+			const auto pRadType = types[group];
 			const int radLevelMax = pRadType->GetLevelMax();
 			int radLevelSum = 0;
+			size_t groupEnd = i + 1;
 
-			for (const auto& [pRadSite, radLevel] : sites)
+			while (groupEnd < entries.size() && entries[groupEnd].Group == group)
 			{
-				const int remain = radLevelMax - radLevelSum;
-				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+				++groupEnd;
+			}
 
-				if (pBuilding->IsAlive && !RadSiteExt::Fetch(pRadSite)->ApplyRadiationDamage(pBuilding, damage))
+			for (size_t j = i; j < groupEnd; ++j)
+			{
+				const auto& entry = entries[j];
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(entry.Level, remain) * pRadType->GetLevelFactor());
+
+				if (pBuilding->IsAlive && !RadSiteExt::Fetch(entry.Site)->ApplyRadiationDamage(pBuilding, damage))
 					return 0;
 
-				if (radLevel >= remain)
+				if (entry.Level >= remain)
 					break;
 
-				radLevelSum += radLevel;
+				radLevelSum += entry.Level;
 			}
+
+			i = groupEnd;
 		}
 	}
 
@@ -216,8 +260,17 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x0)
 	{
 		const auto pCell = pFoot->GetCell();
 		const auto pCellExt = CellExt::Fetch(pCell);
-		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
-		typeMap.reserve(RadTypeClass::Array.size());
+
+		if (pCellExt->RadLevels.empty())
+			return pFoot->IsAlive ? Continue : ReturnFromFunction;
+
+		auto& types = RadiationCellTemp::Types;
+		auto& entries = RadiationCellTemp::Entries;
+
+		types.clear();
+		types.reserve(RadTypeClass::Array.size());
+		entries.clear();
+		entries.reserve(pCellExt->RadLevels.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -238,42 +291,61 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x0)
 					continue;
 			}
 
-			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
+			auto const it = std::find(types.begin(), types.end(), pRadType);
+			size_t group = 0;
 
-			if (it != typeMap.cend())
+			if (it == types.end())
 			{
-				it->second.emplace_back(pRadSite, radLevel);
+				group = types.size();
+				types.push_back(pRadType);
 			}
 			else
 			{
-				std::vector<std::pair<RadSiteClass*, int>> sites;
-				sites.reserve(pCellExt->RadLevels.size());
-				sites.emplace_back(pRadSite, radLevel);
-				typeMap.emplace_back(pRadType, std::move(sites));
+				group = static_cast<size_t>(it - types.begin());
 			}
+
+			entries.push_back({ pRadSite, radLevel, group, entries.size() });
 		}
 
-		for (auto& [_, sites] : typeMap)
-			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
+		std::sort(entries.begin(), entries.end(), [](RadiationCellTemp::Entry const& left, RadiationCellTemp::Entry const& right)
+			{
+				if (left.Group != right.Group)
+					return left.Group < right.Group;
 
-		for (const auto& [pRadType, sites] : typeMap)
+				if (left.Level != right.Level)
+					return left.Level > right.Level;
+
+				return left.Order < right.Order;
+			});
+
+		for (size_t i = 0; i < entries.size(); )
 		{
+			const size_t group = entries[i].Group;
+			const auto pRadType = types[group];
 			const int radLevelMax = pRadType->GetLevelMax();
 			int radLevelSum = 0;
 
-			for (const auto& [pRadSite, radLevel] : sites)
-			{
-				const int remain = radLevelMax - radLevelSum;
-				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+			size_t groupEnd = i + 1;
 
-				if ((pFoot->IsAlive || !pFoot->IsSinking) && !RadSiteExt::Fetch(pRadSite)->ApplyRadiationDamage(pFoot, damage))
+			while (groupEnd < entries.size() && entries[groupEnd].Group == group)
+				++groupEnd;
+
+			for (size_t j = i; j < groupEnd; ++j)
+			{
+				const auto& entry = entries[j];
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(entry.Level, remain) * pRadType->GetLevelFactor());
+
+				if ((pFoot->IsAlive || !pFoot->IsSinking) && !RadSiteExt::Fetch(entry.Site)->ApplyRadiationDamage(pFoot, damage))
 					return ReturnFromFunction;
 
-				if (radLevel >= remain)
+				if (entry.Level >= remain)
 					break;
 
-				radLevelSum += radLevel;
+				radLevelSum += entry.Level;
 			}
+
+			i = groupEnd;
 		}
 	}
 
