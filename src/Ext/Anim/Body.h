@@ -99,6 +99,7 @@ public:
 
 	static void PrepareForLoad()
 	{
+		AnimExt::AnimsWithAttachedParticles.clear();
 		AnimExt::FiringAnims.clear();
 		AnimExt::FiringAnimUpdateFrame = -1;
 	}
