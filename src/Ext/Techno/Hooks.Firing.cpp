@@ -1159,8 +1159,6 @@ static WeaponStruct* __fastcall  BuildingClass_GetPrimaryWeapon_Wrapper(Building
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x6FF4EA, BuildingClass_GetPrimaryWeapon_Wrapper)
 
-DEFINE_PATCH(0x6FF4DE, 0xFF, 0x52, 0x2C, 0x83, 0xF8, 0x6);
-
 DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
