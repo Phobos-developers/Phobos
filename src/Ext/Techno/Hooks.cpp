@@ -1801,7 +1801,7 @@ DEFINE_JUMP(LJMP, 0x700387, 0x7003BD)
 
 DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
 {
-	enum { CanAttack = 0x700381, Continue = 0x700385 };
+	enum { CanAttack = 0x700381 };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBP);
@@ -1816,7 +1816,8 @@ DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
 		return CanAttack;
 	}
 
-	return Continue;
+	// Preserve the vanilla Sonic check for removing parasites from friendly targets.
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x6F9CE9, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::SelectAutoTarget
