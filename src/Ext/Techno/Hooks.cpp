@@ -965,11 +965,16 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
+	// The key belongs to unit types. A parasite of another kind (an infantry with a Parasite=
+	// warhead) has another extension class: read through the unit one, the field is whatever
+	// lies in that memory, so one client let the parasite out of its dead victim and the other
+	// killed it (multiplayer desync).
+	auto const pUnitTypeExt = pType->WhatAmI() == AbstractType::UnitType
+		? static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType)) : nullptr;
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
-	if (pTypeExt->Parasite_AllowWaterExit.isset())
-		return pTypeExt->Parasite_AllowWaterExit.Get() ? SkipChecks : ForceFail;
+	if (pUnitTypeExt && pUnitTypeExt->Parasite_AllowWaterExit.isset())
+		return pUnitTypeExt->Parasite_AllowWaterExit.Get() ? SkipChecks : ForceFail;
 	else if (globalVal.isset())
 		return globalVal.Get() ? SkipChecks : ForceFail;
 	else
