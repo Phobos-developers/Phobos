@@ -2574,6 +2574,7 @@ PreserveCSFWhitespace=false      ; boolean
 - When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
 - Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
 - Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
+- Fixed a bug where a refactor of the fix for building laser weapon parameter reading accidentally caused `LaserThickness` of `IsHouseColor` lasers to become ineffective (by Noble_Fish)
 
 #### 0.5-alpha2
 
