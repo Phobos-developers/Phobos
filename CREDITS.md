@@ -755,6 +755,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
   - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
   - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
+  - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
