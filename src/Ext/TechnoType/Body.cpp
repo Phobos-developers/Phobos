@@ -1287,6 +1287,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AI_Power.Read(exINI, pSection, "AI.Power");
 	this->AI_Power_AffectedByEnhancers.Read(exINI, pSection, "AI.Power.AffectedByEnhancers");
 
+	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1867,6 +1869,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
 		.Process(this->AI_Power)
 		.Process(this->AI_Power_AffectedByEnhancers)
+		.Process(this->Parasite_AllowWaterExit)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
