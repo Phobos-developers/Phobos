@@ -22,6 +22,9 @@ void TeamExt::Serialize(T& Stm)
 		.Process(this->ForceJump_RepeatMode)
 		.Process(this->TeamLeader)
 		.Process(this->PreviousScriptList)
+		.Process(this->AngerNodeModifier)
+		.Process(this->OnlyTargetHouseEnemy)
+		.Process(this->OnlyTargetHouseEnemyMode)
 		;
 }
 
