@@ -809,6 +809,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions
   - Control of AI base plan rebuilding
   - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
+  - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
