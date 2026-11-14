@@ -20,6 +20,7 @@ enum class PhobosTriggerAction : unsigned int
 	UndeployToWaypoint = 511,
 	SetFollowsIndexForVehicle = 512,
 	SetMissionTimer = 513,
+	SetTacticalZoom = 514,
 
 	SetDropCrate = 600,
 
@@ -86,6 +87,7 @@ public:
 	ACTION_FUNC(UndeployToWaypoint);
 	ACTION_FUNC(SetFollowsIndexForVehicle);
 	ACTION_FUNC(SetMissionTimer);
+	ACTION_FUNC(SetTacticalZoom);
 
 	ACTION_FUNC(SetDropCrate);
 

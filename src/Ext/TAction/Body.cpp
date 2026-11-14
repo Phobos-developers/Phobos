@@ -6,6 +6,7 @@
 #include <Ext/Scenario/Body.h>
 #include <New/Entity/BannerClass.h>
 #include <Utilities/SpawnerHelper.h>
+#include <Misc/ZoomManager.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -71,6 +72,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SetFollowsIndexForVehicle(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetMissionTimer:
 		return TActionExt::SetMissionTimer(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetTacticalZoom:
+		return TActionExt::SetTacticalZoom(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::SetDropCrate:
 		return TActionExt::SetDropCrate(pThis, pHouse, pObject, pTrigger, location);
@@ -809,6 +812,18 @@ bool TActionExt::SetMissionTimer(TActionClass* const pThis, HouseClass* const pH
 	if (0 <= reverse && 1 >= reverse)
 		ScenarioExt::Global()->MissionTimer_Reverse = (bool)reverse;
 
+	return true;
+}
+
+// Applies scripted tactical zoom level with transition rate and resolution bounds
+bool TActionExt::SetTacticalZoom(TActionClass* const pThis, HouseClass* const pHouse, ObjectClass* const pObject, TriggerClass* const pTrigger, const CellStruct& location)
+{
+	const double targetZoom = 1.0 + (std::max(0, pThis->Value) / 100.0);
+	const int transitionRate = pThis->Param3;
+	const int minWidth = pThis->Param4;
+	const int minHeight = pThis->Param5;
+
+	ZoomManager::SetScriptZoom(targetZoom, transitionRate, minWidth, minHeight);
 	return true;
 }
 
