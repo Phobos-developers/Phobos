@@ -1,4 +1,5 @@
 #pragma once
+
 #include <EventClass.h>
 #include <TargetClass.h>
 #include <HouseClass.h>
@@ -54,4 +55,3 @@ public:
 static_assert(sizeof(EventExt) == 111);
 static_assert(offsetof(EventExt, DataBuffer) == 7);
 #pragma pack(pop)
-
