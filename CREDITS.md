@@ -756,6 +756,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
   - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
   - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
+  - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
