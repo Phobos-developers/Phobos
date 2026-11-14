@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <GeneralStructures.h>
 
 #include <string>
 
@@ -65,6 +66,11 @@ public:
 		static bool CreditsIndicator_Smooth;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
+		static bool MovieSubtitles_Background;
+		static ColorStruct MovieSubtitles_BackgroundColor;
+		static int MovieSubtitles_BackgroundOpacity;
+		static int MovieSubtitles_BackgroundPaddingX;
+		static int MovieSubtitles_BackgroundPaddingY;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
