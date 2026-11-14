@@ -347,6 +347,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`.
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions.
+- Fixed the bug where slaves responded to cheer events while enslaved.
 
 ## Fixes / interactions with other extensions
 
