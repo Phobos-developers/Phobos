@@ -391,7 +391,7 @@ DEFINE_HOOK(0x441553, BuildingClass_Unlimbo_AddOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pThis->Owner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pOwnerExt->PowerPlantEnhancers.push_back(pThis);
 
 	return 0;
@@ -404,7 +404,7 @@ DEFINE_HOOK(0x448A78, BuildingClass_SetOwningHouse_RemoveOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pOwner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		auto& vec = pOwnerExt->PowerPlantEnhancers;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x449197, BuildingClass_SetOwningHouse_AddOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pNewOwnerExt = HouseExt::Fetch(pNewOwner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pNewOwnerExt->PowerPlantEnhancers.push_back(pThis);
 
 	return 0;
@@ -904,6 +904,11 @@ DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 	if (!pThis->Type->Overpowerable)
 		return SkipGameCode;
 
+	// Oct 29, 2026 - Starkku: Moved to here from now-removed
+	// hook BuildingClass_UpdateDelayedFiring_PrefiringMar2 that
+	// shared same address.
+	BuildingExt::Fetch(pThis)->IsFiringNow = false;
+
 	int overPower = 0;
 
 	for (int idx = pThis->Overpowerers.Count - 1; idx >= 0; idx--)
@@ -1019,13 +1024,6 @@ DEFINE_HOOK(0x440045, BuildingClass_UpdateDelayedFiring_PrefiringMark1, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 	BuildingExt::Fetch(pThis)->IsFiringNow = (int)pThis->PrismStage && pThis->DelayBeforeFiring <= 1;
-	return 0;
-}
-
-DEFINE_HOOK(0x4400F9, BuildingClass_UpdateDelayedFiring_PrefiringMar2, 0x7)
-{
-	GET(BuildingClass*, pThis, ESI);
-	BuildingExt::Fetch(pThis)->IsFiringNow = false;
 	return 0;
 }
 
@@ -1259,7 +1257,7 @@ DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
 	GET(BuildingClass*, pThis, ESI);
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		R->EAX(pTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell);
 		return ApplyRange;
@@ -1477,6 +1475,28 @@ DEFINE_HOOK(0x44C976, BuildingClass_Mission_Repair_TankBunker, 0x5)
 
 	if (pType->Bunker && (pThis->TankBunkerState > TankBunkerState::Idle && pThis->TankBunkerState < TankBunkerState::Bunkered))
 		R->EAX(BuildingTypeExt::Fetch(pType)->BunkerStateUpdateDelay.Get(RulesExt::Global()->BunkerStateUpdateDelay));
+
+	return 0;
+}
+
+// Prevent other deploy functionality if unit is bunkered or bunkering.
+DEFINE_HOOK(0x73D63B, UnitClass_Mission_Unload_TankBunker, 0x6)
+{
+	enum { ReturnFromFunction = 0x73E289 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->BunkerLinkedItem)
+	{
+		auto const pCell = pThis->GetCell();
+
+		if (auto const pBuilding = pCell->GetBuilding())
+			pBuilding->EmptyBunker();
+
+		pThis->ForceMission(Mission::Guard);
+
+		return ReturnFromFunction;
+	}
 
 	return 0;
 }

@@ -49,7 +49,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, HouseClass* pKiller)
 			auto const pAnimTypeExt = AnimTypeExt::Fetch(pAnim->Type);
 			auto const pAnimExt = AnimExt::Fetch(pAnim);
 
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner, true);
 
 			pAnimExt->SetInvoker(pThis);
 			pAnimExt->FromDeathUnit = true;
@@ -103,6 +103,7 @@ void AnimTypeExt::LoadFromINIFile(CCINIClass* pINI)
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 	this->AttachedSystem.Read<true>(exINI, pID, "AttachedSystem");
 	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
+	this->AltPalette_UseInvokerFallback.Read(exINI, pID, "AltPalette.UseInvokerFallback");
 	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
 	this->DetachedReport.Read(exINI, pID, "DetachedReport");
@@ -175,6 +176,7 @@ void AnimTypeExt::Serialize(T& Stm)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)
 		.Process(this->AltPalette_ApplyLighting)
+		.Process(this->AltPalette_UseInvokerFallback)
 		.Process(this->MakeInfantryOwner)
 		.Process(this->ExtraShadow)
 		.Process(this->DetachedReport)

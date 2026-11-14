@@ -1133,12 +1133,13 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	int turIdx = -1;
 
-	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+	if (const auto pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
 	{
-		const int burstPerTurret = UnitTypeExt::Fetch(pUnitType)->BurstPerTurret;
+		const auto pUnitTypeExt = UnitTypeExt::Fetch(pUnitType);
+		const int burstPerTurret = pUnitTypeExt->BurstPerTurret;
 
 		if (burstPerTurret > 0)
-			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (burstPerTurret + 1)) - 1;
+			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (pUnitTypeExt->ExtraTurretCount + 1)) - 1;
 	}
 
 	flh += offset;
@@ -1435,6 +1436,26 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 		R->EDI(0);
 		R->Stack(STACK_OFFSET(0x158, -0x130), 0);
 		return Return;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	
+	const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis);
+    
+	if (!pInfantry)
+		return 0;
+	
+	const auto pExt = InfantryExt::Fetch(pInfantry);
+	
+	if (pExt->RestartReloadTimer)
+	{
+		pInfantry->StartReloading();
+		pExt->RestartReloadTimer = false;
 	}
 
 	return 0;

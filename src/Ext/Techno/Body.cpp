@@ -192,22 +192,6 @@ bool TechnoExt::HasAdditionalAbility(TechnoClass* pThis, AdditionalAbility abili
 	return pTypeExt->AdditionalVeteranAbilities.test(index);
 }
 
-double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
-{
-	double houseMultiplier = 1.0;
-	auto const whatAmI = pThis->WhatAmI();
-
-	if (whatAmI == AbstractType::Aircraft)
-		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (whatAmI == AbstractType::Infantry)
-		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
-	else
-		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
-
-	return pThis->SpeedMultiplier * houseMultiplier * TechnoExt::Fetch(pThis)->AE.SpeedMultiplier *
-		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
-}
-
 double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
 {
 	double mult = pThis->FirepowerMultiplier * pThis->Owner->FirepowerMultiplier * TechnoExt::Fetch(pThis)->AE.FirepowerMultiplier *
@@ -787,42 +771,6 @@ void TechnoExt::ClickedApproachObject(FootClass* pThis, ObjectClass* pObject)
 	event.ApproachObject.Whom = TargetClass(pThis);
 	event.ApproachObject.Target = TargetClass(pObject);
 	event.AddEvent();
-}
-
-bool TechnoExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
-{
-    if (pThis->Team != nullptr ||
-        !pThis->IsAlive ||
-        pThis->Health <= 0 ||
-        pThis->InLimbo ||
-		pThis->IsSinking ||
-        pThis->Owner != pHouse)
-    {
-        return false;
-    }
-
-    if (!(pThis->RecruitableA && pThis->RecruitableB))
-    {
-        return false;
-    }
-
-    const Mission mission = pThis->GetCurrentMission();
-    if (!MissionClass::IsRecruitableMission(mission))
-    {
-        return false;
-    }
-
-    if (pThis->ShouldEnterAbsorber ||
-        pThis->ShouldEnterOccupiable ||
-        pThis->ShouldGarrisonStructure ||
-        pThis->DrainTarget != nullptr ||
-        pThis->BunkerLinkedItem ||
-        pThis->LocomotorSource != nullptr)
-    {
-        return false;
-    }
-
-    return true;
 }
 
 struct AresTechnoExt

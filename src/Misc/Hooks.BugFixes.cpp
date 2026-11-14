@@ -11,6 +11,10 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/Script/Body.h>
+
+#include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -176,7 +180,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 
-				for ( ; amountToSpawn > 0; --amountToSpawn)
+				for (; amountToSpawn > 0; --amountToSpawn)
 					GameCreate<VoxelAnimClass>(debrisTypes[currentIndex], &coord, pOwner);
 
 				if (totalSpawnAmount <= 0)
@@ -205,13 +209,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
 					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 
@@ -222,13 +226,13 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 
 			if (maxMetallicIndex >= 0)
 			{
-				do
+				while (totalSpawnAmount > 0)
 				{
 					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
 					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+					totalSpawnAmount--;
 				}
-				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
@@ -408,7 +412,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
 		const double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
-			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+			FootExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
 
@@ -420,7 +424,7 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ESI);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -432,7 +436,7 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 	GET(FlyLocomotionClass*, pThis, ECX);
 
 	const double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+		FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -443,7 +447,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	const double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	const double multiplier = FootExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 	pThis->Speed = static_cast<int>(FootExt::Fetch(pThis->LinkedTo)->JumpjetSpeed * multiplier);
 
 	return 0;
@@ -829,7 +833,8 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 static bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
-	if(announce) announce = !pThis->IsStrange();
+	if (announce)
+		announce = !pThis->IsStrange();
 
 	const bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
@@ -992,7 +997,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	auto const pLinkedTo = pLoco->LinkedTo;
 	auto& currLoc = pLinkedTo->Location;
 	const auto coords = pLoco->Coords;
-	const int distance = (int) CoordStruct{currLoc.X - coords.X, currLoc.Y - coords.Y,0}.Magnitude() ;
+	const int distance = (int)CoordStruct { currLoc.X - coords.X, currLoc.Y - coords.Y,0 }.Magnitude();
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
@@ -1011,7 +1016,7 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	{
 		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
 		const double angle = -Math::atan2(currLoc.Y - coords.Y, coords.X - currLoc.X);
-		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
+		newLoc = currLoc + CoordStruct { int((double)speed* Math::cos(angle)), int((double)speed* Math::sin(angle)), 0 };
 		return 0x7298D3;
 	}
 	return 0x7295CE;
@@ -1408,7 +1413,7 @@ DEFINE_HOOK(0x4D77BD, FootClass_ObjectClickedAction_NoMove, 0x6)
 
 #pragma region JumpjetShadowPointFix
 
-static Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
+static Point2D* __stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion* iloco, Point2D* pPoint)
 {
 	__assume(iloco != nullptr);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -1498,7 +1503,7 @@ DEFINE_HOOK_AGAIN(0x69F05D, EndPiggyback_PowerOn, 0x7) // Ship
 DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
 {
 	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
-	__assume(iloco!=nullptr);
+	__assume(iloco != nullptr);
 	const auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
 	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
 		iloco->Power_On();
@@ -1785,6 +1790,13 @@ DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	return removed ? 0 : 0x44E916;
 }
 
+DEFINE_HOOK(0x75F635, WaveClass_PointerExpired_TargetFix, 0x6)
+{
+	GET_STACK(const bool, removed, STACK_OFFSET(0x0, 0x10));
+	// Skip the reset of WaveClass::Target if !removed.
+	return removed ? 0 : 0x75F643;
+}
+
 DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
 {
 	GET(const bool, removed, EDI);
@@ -1887,6 +1899,47 @@ DEFINE_PATCH(0x760044, 0xFD); // lea edx, [edx+ebp-3]
 DEFINE_PATCH(0x760069, 0xFD); // lea edx, [ecx+edx-3]
 DEFINE_PATCH(0x76007C, 0x03); // add ecx, 3
 
+// The wave polygon rasterizer only handles polygons that are monotone in Y: it allocates its span buffer for maxY - minY
+// rows and then appends one row per downward edge pixel while walking each side from the top vertex to the bottom one.
+// When a non-magnetron wave's firer is horizontally at the same position as its target, WaveClass::Draw_NonMagnetic
+// divides by the zero distance and all four side points collapse to the map origin. The polygon then folds back on itself,
+// the walk goes down the same edge twice and writes past the end of the span buffer, crashing or corrupting the heap.
+// Skip rasterizing such polygons. The span buffer stays null, so the caller does not draw the wave for that frame.
+DEFINE_HOOK(0x63F080, WaveClass_RasterizePolygon_NonMonotoneFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x63F2D9 };
+
+	GET(const int*, pPolygon, ECX); // { int Count; Point2D* Points; }
+
+	const int count = pPolygon[0];
+	const auto pPoints = reinterpret_cast<const Point2D*>(pPolygon[1]);
+
+	if (count < 3)
+		return 0;
+
+	int minY = pPoints[0].Y;
+	int maxY = pPoints[0].Y;
+	long long totalDown = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		const int y = pPoints[i].Y;
+		const int nextY = pPoints[(i + 1) % count].Y;
+
+		minY = Math::min(minY, y);
+		maxY = Math::max(maxY, y);
+
+		if (nextY > y)
+			totalDown += nextY - y;
+	}
+
+	// Each side covers maxY - minY rows exactly once only if the polygon is monotone in Y.
+	if (totalDown == static_cast<long long>(maxY) - minY)
+		return 0;
+
+	return ReturnFromFunction;
+}
+
 // WW used SetDesired here, causing the barrel drawn incorrectly.
 DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 {
@@ -1957,10 +2010,28 @@ DEFINE_HOOK(0x46B23C, BulletClass_DrawVoxel_SetLightConvert2, 0x6)
 // These functions should consider reachablity.
 DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
 {
+	enum { SkipGameCode = 0x4DFC3F };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		if (pBuildingType->Grinding)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
@@ -1989,10 +2060,28 @@ DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
 
 DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 {
+	enum { SkipGameCode = 0x4DFB30 };
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	const auto pBuildingType = pBuilding->Type;
+	const auto RulesExt = RulesExt::Global();
+
+	if (TechnoTypeExt::Fetch(pBuildingType)->NoQueueUpToEnter.Get(
+		RulesExt->NoQueueUpToEnter_Buildings.Get(RulesExt->NoQueueUpToEnter)))
+	{
+		if (pBuildingType->Passengers > 0)
+			return SkipGameCode;
+
+		const auto pTunnel = AresHelper::CanUseAres
+			? AresFunctions::GetTunnel(reinterpret_cast<void*>(pBuildingType->align_E24), pBuilding->Owner) : nullptr;
+
+		if (pTunnel)
+			return SkipGameCode;
+	}
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : SkipGameCode;
 }
 
 #pragma endregion
@@ -2105,18 +2194,20 @@ DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_FixSomething, 0x7)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x73C41B, 0x73C431)
+#pragma region Unit Shadow Fix
 
-DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
+DEFINE_HOOK_AGAIN(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix, 0x6)
+DEFINE_HOOK(0x73C41B, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix, 0x5)
 {
-	enum { SkipGameCode = 0x73C445 };
-
 	GET(UnitClass*, pThis, EBP);
-	GET(UnitTypeClass*, pType, EAX);
 
-	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
-	return SkipGameCode;
+	if (pThis->IsAttackedByLocomotor)
+		return R->Origin() == 0x73C41B ? 0x73C431 : 0x73C459;
+
+	return 0;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_BridgeOrHeight, 0x6)
 {
@@ -2183,8 +2274,8 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 
 	if (ignoreDestination || pTechno->HasAbility(Ability::Scatter)
 		|| (pTechno->Owner->IsControlledByHuman()
-		? RulesClass::Instance->PlayerScatter
-		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
+			? RulesClass::Instance->PlayerScatter
+			: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
 	{
 		pTechno->Scatter(*pCoords, ignoreMission, ignoreDestination);
 	}
@@ -2211,10 +2302,14 @@ DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Missio
 DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
 DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 {
+	enum
+	{
+		SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5
+	};
+
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
-		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
 
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
 	const bool InGuard = (R->Origin() == 0x4D5184);
@@ -3455,7 +3550,7 @@ DEFINE_HOOK(0x7120DD, TechnoTypeClass_GetRepairStepCost, 0x6)
 	if (RulesExt::Global()->FixRepairStepCost)
 		R->EAX(static_cast<int>((cost / std::max(static_cast<double>(pType->Strength) / RulesClass::Instance->RepairStep, 1.0)) * RulesClass::Instance->RepairPercent));
 	else
-		R->EAX(static_cast<int>((cost / std::max(pType->Strength / RulesClass::Instance->RepairStep, 1))* RulesClass::Instance->RepairPercent));
+		R->EAX(static_cast<int>((cost / std::max(pType->Strength / RulesClass::Instance->RepairStep, 1)) * RulesClass::Instance->RepairPercent));
 
 	return SkipGameCode;
 }
@@ -3723,4 +3818,59 @@ DEFINE_HOOK(0x70F853, TechnoClass_Guard_OnLocomotorMoving, 0x6)
 
 	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	return pFoot && pFoot->IsAttackedByLocomotor ? 0x70F85F : 0;
+}
+
+DEFINE_HOOK(0x6EA661, TeamClass_CanAddMember_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6EA856 };
+
+	GET(FootClass*, pMember, ESI);
+
+	return (pMember->IsCrashing && !pMember->IsAttackedByLocomotor) || pMember->IsSinking ? ReturnFalse : 0;
+}
+
+DEFINE_HOOK(0x6F1E54, TeamTypeClass_CanRecruitUnit_CrashOrSinking, 0x6)
+{
+	enum { ReturnFalse = 0x6F1F1A };
+
+	GET(FootClass*, pUnit, ESI);
+
+	return (pUnit->IsCrashing && !pUnit->IsAttackedByLocomotor) || pUnit->IsSinking ? ReturnFalse : 0;
+}
+
+DEFINE_HOOK(0x6F1FEF, TeamTypeClass_ProcessTaskForce_MovementZone, 0x7)
+{
+	GET(TeamTypeClass*, pTeamType, ESI);
+	GET(TechnoTypeClass*, pTechnoType, EAX);
+	const auto pTechnoTypeExt = TechnoTypeExt::Fetch(pTechnoType);
+	auto AddMovement = reinterpret_cast<MovementZone(__fastcall*)(MovementZone, MovementZone)>(0x5889F0);
+
+	for (const auto pPayloadType : pTechnoTypeExt->InitialPayload_Types)
+		pTeamType->TaskForceMovementZone = AddMovement(pPayloadType->MovementZone, pTeamType->TaskForceMovementZone);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x41FF2C, AITriggerTypeClass_ConditionMet_NavalTransports, 0x6)
+{
+	GET(TeamTypeClass*, pTeamType, EDI);
+	GET(const MovementZone, movementZone, ESI);
+
+	// Amphibious and flying pathfinding use the combined zone's connectivity.
+	// Requiring different zones first would incorrectly reject connected bases.
+	const bool needsTransportRoute = movementZone != MovementZone::Amphibious
+		&& movementZone != MovementZone::AmphibiousCrusher
+		&& movementZone != MovementZone::AmphibiousDestroyer
+		&& movementZone != MovementZone::Fly;
+	R->AL(pTeamType->field_F1 && needsTransportRoute);
+	return 0x41FF32;
+}
+
+DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
+{
+	enum { ReturnTrue = 0x41FFC0 };
+
+	GET(TeamTypeClass*, pTeamType, EDI);
+
+	return ScriptExt::RequiresTargetReachability(pTeamType->ScriptType) ? 0 : ReturnTrue;
 }

@@ -126,7 +126,7 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 		auto const pBuildingExt = BuildingExt::Fetch(pBuilding);
 		auto const pOwnerExt = HouseExt::Fetch(pOwner);
 
-		if (!pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Buildings.empty()
+		if (!pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_AffectTypes.empty()
 			&& (pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Amount != 0 || pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Factor != 1.0f))
 			pOwnerExt->PowerPlantEnhancers.push_back(pBuilding);
 

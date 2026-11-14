@@ -604,7 +604,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 
 	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
-	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
+	auto const mZone = MovementZone::Normal; // Always use normal, cell/zone traversal is of no interest for this use case and non-Normal can consider destroyable obstacles passable.
 	const bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0f;
 	bool isBridge = allowBridges && pCell && pCell->ContainsBridge();
 	const int baseHeight = location.Z;
@@ -684,6 +684,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						else if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 						{
 							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(facing));
+							pTechno->LastMapCoords = CellClass::Coord2Cell(location);
 
 							if (pType->BalloonHover)
 							{
@@ -1283,8 +1284,15 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapons.Read(exINI, pSection, "NoAmmoWeapons");
 	this->NoAmmoWeapons_IgnoreNeverUse.Read(exINI, pSection, "NoAmmoWeapons.IgnoreNeverUse");
 
+	this->AI_Power.Read(exINI, pSection, "AI.Power");
+	this->AI_Power_AffectedByEnhancers.Read(exINI, pSection, "AI.Power.AffectedByEnhancers");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+	// Ares 0.6
+	this->Drain_Local.Read(exINI, pSection, "Drain.Local");
+	this->Drain_Amount.Read(exINI, pSection, "Drain.Amount");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1292,6 +1300,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
@@ -1856,9 +1865,15 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->NoAmmoWeapons)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
+		.Process(this->AI_Power)
+		.Process(this->AI_Power_AffectedByEnhancers)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
+
+		// Ares 0.6
+		.Process(this->Drain_Local)
+		.Process(this->Drain_Amount)
 
 		// Ares 0.9
 		.Process(this->InhibitorRange)
@@ -1866,6 +1881,7 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		// Ares 0.A
 		.Process(this->GroupAs)
+		.Process(this->InitialPayload_Types)
 
 		// Ares 0.C
 		.Process(this->NoAmmoWeapon)

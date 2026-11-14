@@ -1,6 +1,7 @@
 #include <Kamikaze.h>
 
 #include <JumpjetLocomotionClass.h>
+#include <WalkLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
@@ -253,6 +254,13 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	// Remove from DeploysInto units
+	if (pOldType->DeploysInto && !pCurrentType->DeploysInto)
+	{
+		auto& vec = HouseExt::Fetch(pOwner)->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
 	// Powered by ststl-s, Fly-Star
@@ -718,7 +726,7 @@ void FootExt::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		// The Hover movement pattern allows for self-landing.
 		if (pLocomotorType != LocomotionClass::CLSIDs::Fly && pLocomotorType != LocomotionClass::CLSIDs::Hover)
 		{
-			const bool isinAir = pThis->IsInAir() && !pThis->LocomotorSource;
+			const bool isinAir = pThis->IsInAir() && !pThis->IsAttackedByLocomotor;
 
 			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
@@ -931,6 +939,137 @@ void FootExt::HealthAutoConvertActions()
 		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Health);
 }
 
+double FootExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	auto const pExt = FootExt::Fetch(pThis);
+
+	if (Unsorted::CurrentFrame == pExt->SpeedMultiplierFrame)
+		return pExt->CurrentSpeedMultiplier;
+
+	pExt->SpeedMultiplierFrame = Unsorted::CurrentFrame;
+	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
+
+	if (whatAmI == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (whatAmI == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	pExt->CurrentSpeedMultiplier = pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+
+	return pExt->CurrentSpeedMultiplier;
+}
+
+bool FootExt::CannotMove(FootClass* pThis, bool checkSpeedMultiplier)
+{
+	if (pThis->IsAttackedByLocomotor)
+		return false;
+
+	if ((checkSpeedMultiplier && FootExt::Fetch(pThis)->IsTempImmobilized) || TechnoExt::DriverKilled(pThis))
+		return true;
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (pType->Speed == 0)
+		return true;
+
+	auto landType = pThis->GetCell()->LandType;
+
+	if (landType == LandType::Tunnel && pType->Locomotor != LocomotionClass::CLSIDs::Jumpjet)
+		return false;
+
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		const auto movementRestrictedTo = static_cast<UnitTypeClass*>(pType)->MovementRestrictedTo;
+
+		if (movementRestrictedTo == LandType::None)
+			return false;
+
+		if (pThis->OnBridge && (landType == LandType::Water || landType == LandType::Beach))
+			landType = LandType::Road;
+
+		if (movementRestrictedTo != landType)
+			return true;
+	}
+
+	return false;
+}
+
+// Check speed multipliers for zero, update things like allowing
+// locomotor to process destination again.
+void FootExt::HandleTemporaryImmobilization()
+{
+	const auto pThis = this->OwnerObject();
+	const bool isZeroSpeed = FootExt::GetCurrentSpeedMultiplier(pThis) <= 0.0;
+	const bool wasZeroSpeed = this->IsTempImmobilized;
+
+	if (isZeroSpeed && !wasZeroSpeed)
+	{
+		// Remember target & destination.
+		auto const pDest = pThis->Destination;
+		pThis->SetDestination(nullptr, false);
+		this->ImmobilizedSuspendedTarget = pThis->Target;
+		this->ImmobilizedSuspendedDestination = pDest;
+		this->IsTempImmobilized = true;
+
+		if (pThis->CurrentMission == Mission::Move)
+			pThis->ForceMission(Mission::Guard);
+	}
+	else if (!isZeroSpeed && wasZeroSpeed)
+	{
+		this->IsTempImmobilized = false;
+
+		// Restore target & destination.
+		if (!pThis->Target && this->ImmobilizedSuspendedTarget)
+			pThis->SetTarget(this->ImmobilizedSuspendedTarget);
+
+		if (!pThis->Destination && this->ImmobilizedSuspendedDestination)
+			pThis->SetDestination(this->ImmobilizedSuspendedDestination, false);
+
+		this->ImmobilizedSuspendedTarget = nullptr;
+		this->ImmobilizedSuspendedDestination = nullptr;
+	}
+}
+
+bool FootExt::CanBeRecruitedFix(FootClass* pThis, HouseClass* pHouse)
+{
+	if (pThis->Team != nullptr ||
+		!pThis->IsAlive ||
+		pThis->Health <= 0 ||
+		pThis->InLimbo ||
+		pThis->IsSinking ||
+		pThis->Owner != pHouse)
+	{
+		return false;
+	}
+
+	if (!(pThis->RecruitableA && pThis->RecruitableB))
+	{
+		return false;
+	}
+
+	const Mission mission = pThis->GetCurrentMission();
+	if (!MissionClass::IsRecruitableMission(mission))
+	{
+		return false;
+	}
+
+	if (pThis->ShouldEnterAbsorber ||
+		pThis->ShouldEnterOccupiable ||
+		pThis->ShouldGarrisonStructure ||
+		pThis->DrainTarget != nullptr ||
+		pThis->BunkerLinkedItem ||
+		pThis->LocomotorSource != nullptr)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -953,6 +1092,11 @@ void FootExt::Serialize(T& Stm)
 		.Process(this->ResetLocomotor)
 		.Process(this->JumpjetStraightAscend)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->IsTempImmobilized)
+		.Process(this->SpeedMultiplierFrame)
+		.Process(this->CurrentSpeedMultiplier)
+		.Process(this->ImmobilizedSuspendedTarget)
+		.Process(this->ImmobilizedSuspendedDestination)
 		//.Process(this->IsOwnerChangeFromRevertOnExit) Temporary flag, does not need to be serialized.
 		;
 }

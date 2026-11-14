@@ -132,6 +132,7 @@ public:
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
 		Valueable<int> Overload_ParticleSysCount;
 		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
@@ -208,6 +209,7 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		Valueable<bool> AnimRemapUseInvokerFallback;
 		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
@@ -388,6 +390,7 @@ public:
 		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Valueable<bool> Arcing_ConsiderBuildingFoundation;
 
 		Valueable<bool> Terrain_IsPassable;
 		Valueable<bool> Tibtree_IsPassable;
@@ -512,6 +515,9 @@ public:
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
 
+		Nullable<AnimTypeClass*> Wake_Grapple;
+		Nullable<AnimTypeClass*> Wake_Sinking;
+
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
@@ -570,6 +576,10 @@ public:
 		Valueable<AffectedHouse> RevealHouses;
 
 		Valueable<bool> MissileKeepTargetCoord;
+
+		Valueable<bool> ExtendedBuildingPlacing;
+		Valueable<bool> AI_Power_AffectedByEnhancers;
+		Valueable<bool> AI_BasePlan_Rebuild;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -676,6 +686,7 @@ public:
 			, DigitalDisplay_Health_FakeAtDisguise { true }
 			, Overload_ParticleSysCount { 5 }
 			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 			, FallingDownDamage_AllowEMP { true }
 
 			, ForceWeapon_InRange_TechnoOnly { true }
@@ -756,6 +767,7 @@ public:
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
+			, AnimRemapUseInvokerFallback { false }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
@@ -900,6 +912,7 @@ public:
 			, HoverDrownable { true }
 
 			, Arcing_AllowElevationInaccuracy { true }
+			, Arcing_ConsiderBuildingFoundation { false }
 
 			, Terrain_IsPassable { false }
 			, Tibtree_IsPassable { false }
@@ -1016,6 +1029,9 @@ public:
 			, DefaultLandingAnim_Dropship {}
 			, DefaultLandingAnim_Carryall {}
 
+			, Wake_Grapple {}
+			, Wake_Sinking {}
+
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
 
@@ -1075,6 +1091,10 @@ public:
 			, RevealHouses { AffectedHouse::Team }
 
 			, MissileKeepTargetCoord { false }
+
+			, ExtendedBuildingPlacing { false }
+			, AI_Power_AffectedByEnhancers { true }
+			, AI_BasePlan_Rebuild { true }
 		{ }
 
 		virtual ~ExtData() = default;

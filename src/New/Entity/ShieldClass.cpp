@@ -49,7 +49,7 @@ ShieldClass::~ShieldClass()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	if (!removed) // TODO: might be risky, needs further investigation
+	if (!removed)
 		return;
 
 	auto const abs = static_cast<AbstractClass*>(ptr);
@@ -1098,7 +1098,7 @@ void ShieldClass::UpdateIdleAnim(ShieldTypeClass* pType, double ratio)
 
 void ShieldClass::UpdateTint()
 {
-	if (this->Type->Tint->Enabled)
+	if (TintTypeClass::IsEnabled(this->Type->Tint.get()))
 	{
 		auto const pTechno = this->Techno;
 		TechnoExt::Fetch(pTechno)->UpdateTintValues();

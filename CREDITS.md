@@ -172,7 +172,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
-  - Stationary VehicleTypes
+  - Stationary units & following improvements/bugfixes
   - Burst logic improvements
   - TechnoType auto-firing weapons
   - Secondary weapon fallback customization
@@ -313,6 +313,7 @@ This page lists all the individual contributions to the project by their author.
   - `ProjectileRange` weapon range modifiers interaction fix
   - Berzerk duration stacking behaviour customization
   - Attached animation draw offset customizations
+  - `Arcing` weapon rangefinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -382,7 +383,6 @@ This page lists all the individual contributions to the project by their author.
   - Building LightSource tint S/L fix
   - Permanent healthbar display on units targeted by temporal weapons fix
   - Powered anims on buildings cease playing upon capture by different house fix
-  - TechnoType conversion placeholder
   - TechnoType conversion upon ownership change
   - EIP 00529A14 crash fix on Linux
   - Teleport timer reset after load game fix
@@ -452,7 +452,7 @@ This page lists all the individual contributions to the project by their author.
   - Customized transport plane for teams
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
-  - Customize the country displayed in `Sight`
+  - Customize who sees the map revealed by `Sight`
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
   - New `NoAmmoWeapons` tag supporting multiple weapon types
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
@@ -595,6 +595,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage
   - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
   - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
+  - Fix the bug that crashing or sinking unit can be recruit into taskforce team
+  - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -683,7 +685,7 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
   - Several new Infotypes, no display in specific status and a new single frame display method
-  - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
+  - Customizable spawn delay of VoxelAnim's `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
   - Task subtitles display in the middle of the screen
   - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
@@ -708,6 +710,7 @@ This page lists all the individual contributions to the project by their author.
   - RA1-Style multi-turret and multi-barrel
   - Fix the issue of Ares' EMP not suspending the production of AI factories
   - Attach effect when weapon fire
+  - Building placing and deploying logic enhancement
 - **Noble Fish**:
   - Documentation maintenance
   - Chinese documentation maintenance and translation
@@ -793,6 +796,20 @@ This page lists all the individual contributions to the project by their author.
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
+  - Preserve whitespace in CSF
+  - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
+  - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
+  - Power plant enhancement for infantry, vehicles and aircraft
+  - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
+  - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
+  - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
+  - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water`
+  - Techno power overrides for AI budgeting, including installed upgrades, independent of actual power
+  - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`
+  - Fix the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions
+  - Control of AI base plan rebuilding
+  - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
+  - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -829,6 +846,7 @@ This page lists all the individual contributions to the project by their author.
   - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
   - Fix several shield respawn/self heal issues
   - Country-based attached effects
+  - Allow repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -949,6 +967,9 @@ This page lists all the individual contributions to the project by their author.
   - Hotkey for deselect object from current selection
   - Hotkey for cycling through the current selection
   - Hotkey for cycling through the types in the current selection
+  - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
@@ -1004,6 +1025,15 @@ This page lists all the individual contributions to the project by their author.
 - **dh381-1**:
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
+  - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
+  - Fix a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
+  - Customize whether negative damage penetrates Iron Curtain and Force Shield
   - Add `Immune.Capture`, `Immune.Infiltrate`, `Immune.EngineerRepair` for AttachEffect
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
-- **JerryDing07** - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
+- **JerryDing07**:
+  - Fix a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen
+  - Fix a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target
+- **MagicShiba**:
+  - Fix briefing out of bound due to fixed window size
+  - Remove the 128 techno limit when executing a command
+  - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256

@@ -1,7 +1,5 @@
 #include "Body.h"
 
-#include <Ext/InfantryType/Body.h>
-
 InfantryExt::ExtContainer InfantryExt::ExtMap;
 
 // Returns hardcoded prone/deployed FLH overrides for infantry, if set.
@@ -50,6 +48,7 @@ void InfantryExt::Serialize(T& Stm)
 		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->HasDeployConverted)
 		.Process(this->HasUndeployConverted)
+		.Process(this->RestartReloadTimer)
 		;
 }
 

@@ -19,6 +19,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
 - In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
 
+#### Changes to Phobos behavior
+
+- `[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`. The list now accepts all TechnoTypes. The old key is deprecated but remains supported for compatibility; if both are set, the new key takes precedence.
+
 ### 0.5
 
 #### Changes to vanilla behavior
@@ -187,6 +191,7 @@ SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
 HideLaserTrailEffects=false      ; boolean
 HideShakeEffects=false           ; boolean
+PreserveCSFWhitespace=false      ; boolean
 ```
 
 ## For Map Editor (World-Altering Editor)
@@ -2038,7 +2043,7 @@ HideShakeEffects=false           ; boolean
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
-- [Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight) (by FlyStar)
+- [Customize who sees the map revealed by `Sight`](Fixed-or-Improved-Logics.md#customize-who-sees-the-map-revealed-by-sight) (by FlyStar)
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
@@ -2056,24 +2061,40 @@ HideShakeEffects=false           ; boolean
 - Customize insignias palette (by Flactine & NetsuNegi)
 - Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
 - [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
+- [Building placing and deploying logic enhancement](New-or-Enhanced-Logics.md#building-placing-and-deploying-logic-enhancement) (by CrimRecya)
+- [Improvements to stationary unit logic](Fixed-or-Improved-Logics.md#stationary-units) (by Starkku)
+- [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
+- [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
+- [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
+- [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
+- [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
+- Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
+- Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
+- Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
+- [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
+- [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
 
 #### Vanilla fixes:
-- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
-- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
-- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
-- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
-- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
 - Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
 - Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
-- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
 - Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
+- Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
+- Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
+- Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
+- Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
+- Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2083,10 +2104,10 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
 - Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
-- Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
-- Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
-- Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
+- Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
+- Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
@@ -2095,6 +2116,7 @@ HideShakeEffects=false           ; boolean
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)
 ```
 
 ### 0.5
@@ -2434,7 +2456,6 @@ HideShakeEffects=false           ; boolean
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
-- Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
 - Fixed BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
@@ -2531,8 +2552,31 @@ HideShakeEffects=false           ; boolean
 
 #### TBD
 
+##### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+
 ##### Phobos fixes:
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
+- Fixed `[CombatDamage] -> OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
+- Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
+- Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
+- Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
+- Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
+- Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
+- Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
+- Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
+- Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
+- Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
+- Fixed the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints (by Noble_Fish)
+- Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` (by Noble_Fish)
 
 #### 0.5-alpha2
 
@@ -2557,7 +2601,6 @@ HideShakeEffects=false           ; boolean
 - Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
 - Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
 - Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
-- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 
 ##### Fixes / interactions with other extensions:
 - Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
@@ -2575,6 +2618,7 @@ HideShakeEffects=false           ; boolean
 #### Vanilla fixes:
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
+- Miners back to work when ore regenerated (by TaranDahl)
 
 #### Phobos fixes:
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
@@ -2597,6 +2641,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
 - Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 - Fixed the bug that slaves would be handed over to the neutral house instead of respecting `Slaved.OwnerWhenMasterKilled` when their master was sold or self-destructed (by frg2089)
+- Resolved a performance issue introduced by the shadow fix for hover locomotor vehicles lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
 ```
 
 ### 0.4.0.2
@@ -2929,7 +2974,7 @@ HideShakeEffects=false           ; boolean
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)

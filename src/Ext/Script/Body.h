@@ -201,6 +201,7 @@ public:
 	}
 
 	static void ProcessAction(TeamClass* pTeam);
+	static bool RequiresTargetReachability(const ScriptTypeClass* pScriptType);
 	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
 	static void LoadIntoTransports(TeamClass* pTeam);
 	static void WaitUntilFullAmmoAction(TeamClass* pTeam);

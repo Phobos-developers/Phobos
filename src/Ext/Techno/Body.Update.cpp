@@ -989,7 +989,7 @@ void TechnoExt::UpdateAttachEffects()
 			requiresRecalc = true;
 			attachEffect->ShouldRecalculateStats = false;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 		}
 
@@ -1012,7 +1012,7 @@ void TechnoExt::UpdateAttachEffects()
 			if (pType->RequiresAnimUpdate)
 				requiresUpdateAnim = true;
 
-			if (pType->Tint->Enabled)
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -1200,7 +1200,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		pAE.DisableWeapons |= type->DisableWeapons;
 		pAE.Unkillable |= type->Unkillable;
 		pAE.HasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		pAE.HasTint |= type->Tint->Enabled;
+		pAE.HasTint |= TintTypeClass::IsEnabled(type->Tint.get());
 		pAE.ReflectDamage |= type->ReflectDamage;
 		pAE.HasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		pAE.HasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1258,7 +1258,7 @@ bool TechnoExt::RecalculateStatMultipliers(AttachEffectClass* pAttachEffect)
 		disableWeapons |= type->DisableWeapons;
 		unkillable |= type->Unkillable;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
-		hasTint |= type->Tint->Enabled;
+		hasTint |= TintTypeClass::IsEnabled(type->Tint.get());
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 		hasOnDamageDiscardables |= (type->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None;
@@ -1307,8 +1307,8 @@ void TechnoExt::UpdateTintValues()
 	this->TintIntensityEnemies = 0;
 
 	auto const pTypeExt = this->TypeExtData;
-	const bool hasTechnoTint = pTypeExt->Tint->Enabled;
-	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->Tint->Enabled;
+	const bool hasTechnoTint = TintTypeClass::IsEnabled(pTypeExt->Tint.get());
+	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && TintTypeClass::IsEnabled(this->Shield->GetType()->Tint.get());
 
 	// bail out early if no custom tint is applied.
 	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
@@ -1358,7 +1358,7 @@ void TechnoExt::UpdateTintValues()
 			auto const type = attachEffect->GetType();
 			auto const tint = type->Tint.get();
 
-			if (!attachEffect->IsActive() || !tint->Enabled)
+			if (!attachEffect->IsActive() || !TintTypeClass::IsEnabled(tint))
 				continue;
 
 			auto const& color = tint->Color.Get();
@@ -1373,11 +1373,7 @@ void TechnoExt::UpdateTintValues()
 			// Case 2: Cumulative AE's without cumulative tint.
 			if (!tint->Cumulative)
 			{
-				if (std::find(processedTypes.begin(), processedTypes.end(), type) != processedTypes.end())
-					continue;
-
 				processedTypes.push_back(type);
-				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
 				continue;
 			}
 
@@ -1389,24 +1385,42 @@ void TechnoExt::UpdateTintValues()
 			}
 
 			// Case 4: Cumulative AE with cumulative color tint.
-			auto it = std::find_if(cumulativeTints.begin(), cumulativeTints.end(), [tint](auto const& cTint)
-				{ return cTint.Type == tint; }
-			);
+			cumulativeTints.push_back({ tint, color, tint->Intensity });
+		}
 
-			if (it != cumulativeTints.end())
+		if (!processedTypes.empty())
+		{
+			std::sort(processedTypes.begin(), processedTypes.end(), std::less<AttachEffectTypeClass*>{});
+			auto const last = std::unique(processedTypes.begin(), processedTypes.end());
+
+			for (auto it = processedTypes.begin(); it != last; ++it)
 			{
-				it->Color += color;
-				it->Intensity += tint->Intensity;
-			}
-			else
-			{
-				cumulativeTints.push_back({ tint, color, tint->Intensity });
+				auto const tint = (*it)->Tint.get();
+				auto const& color = tint->Color.Get();
+				calculateTint(Drawing::RGB_To_Int(color), static_cast<int>(tint->Intensity * 1000), tint->VisibleToHouses);
 			}
 		}
 
-		for (auto const& cTint : cumulativeTints)
+		if (!cumulativeTints.empty())
 		{
-			calculateTint(Drawing::RGB_To_Int(cTint.Color), static_cast<int>(cTint.Intensity * 1000), cTint.Type->VisibleToHouses);
+			std::sort(cumulativeTints.begin(), cumulativeTints.end(),
+				[](CumulativeTint const& a, CumulativeTint const& b) { return std::less<TintTypeClass*>{}(a.Type, b.Type); });
+
+			for (size_t i = 0; i < cumulativeTints.size(); )
+			{
+				auto& tint = cumulativeTints[i];
+				size_t next = i + 1;
+
+				while (next < cumulativeTints.size() && cumulativeTints[next].Type == tint.Type)
+				{
+					tint.Color += cumulativeTints[next].Color;
+					tint.Intensity += cumulativeTints[next].Intensity;
+					++next;
+				}
+
+				calculateTint(Drawing::RGB_To_Int(tint.Color), static_cast<int>(tint.Intensity * 1000), tint.Type->VisibleToHouses);
+				i = next;
+			}
 		}
 	}
 

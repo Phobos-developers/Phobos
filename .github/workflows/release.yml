@@ -32,7 +32,7 @@ jobs:
 
     # No `name:` is set, so the title the release author chose is left untouched.
     - name: Upload Release Assets
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         files: |
           ${{ env.BUILD_CONFIGURATION }}/Phobos.dll
@@ -79,6 +79,6 @@ jobs:
 
     # No `name:` is set, so the title the release author chose is left untouched.
     - name: Update the Release Body
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         body_path: RELEASE_NOTES.md
