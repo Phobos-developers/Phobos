@@ -93,9 +93,20 @@ public:
 	static void Clear()
 	{
 		AnimExt::AnimsWithAttachedParticles.clear();
+		AnimExt::FiringAnims.clear();
+		AnimExt::FiringAnimUpdateFrame = -1;
+	}
+
+	static void PrepareForLoad()
+	{
+		AnimExt::AnimsWithAttachedParticles.clear();
+		AnimExt::FiringAnims.clear();
+		AnimExt::FiringAnimUpdateFrame = -1;
 	}
 
 	static std::vector<AnimClass*> AnimsWithAttachedParticles;
+	static std::vector<AnimClass*> FiringAnims;
+	static int FiringAnimUpdateFrame;
 	static ExtContainer ExtMap;
 
 	static AnimExt* Fetch(const AnimClass* pThis)

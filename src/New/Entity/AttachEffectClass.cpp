@@ -1,17 +1,24 @@
 #include "AttachEffectClass.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Foot/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
+
+namespace
+{
+	std::unordered_map<AnimClass*, AttachEffectClass*> AnimationIndex;
+	std::unordered_map<TechnoClass*, AttachEffectClass*> InvokerIndex;
+	bool IndexesBuilt = false;
+}
 
 AttachEffectClass::AttachEffectClass()
 	: Type { nullptr }, Techno { nullptr }, InvokerHouse { nullptr }, Invoker { nullptr },
 	Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
+	, Animation { nullptr }
 	, ShouldRefreshDuration { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
@@ -25,6 +32,9 @@ AttachEffectClass::AttachEffectClass()
 	, ReceivedDamageCount { 0 }
 {
 	this->HasInitialized = false;
+	this->ArrayIndex = AttachEffectClass::Array.size();
+	this->InvokerPrev = nullptr;
+	this->InvokerNext = nullptr;
 	AttachEffectClass::Array.emplace_back(this);
 }
 
@@ -94,10 +104,19 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 		this->LaserTrail->Intrinsic = false;
 	}
 
+	this->ArrayIndex = AttachEffectClass::Array.size();
+	this->InvokerPrev = this->InvokerNext = nullptr;
+
 	if (pInvoker)
+	{
+		this->RegisterInvoker();
 		TechnoExt::Fetch(pInvoker)->AttachedEffectInvokerCount++;
+	}
 
 	AttachEffectClass::Array.emplace_back(this);
+
+	if (!Phobos::IsLoadingSaveGame)
+		IndexesBuilt = true;
 }
 
 AttachEffectClass::~AttachEffectClass()
@@ -113,23 +132,134 @@ AttachEffectClass::~AttachEffectClass()
 		this->LaserTrail = nullptr;
 	}
 
-	auto it = std::find(AttachEffectClass::Array.begin(), AttachEffectClass::Array.end(), this);
+	const size_t index = this->ArrayIndex;
 
-	if (it != AttachEffectClass::Array.end())
-		AttachEffectClass::Array.erase(it);
+	if (index < AttachEffectClass::Array.size() && AttachEffectClass::Array[index] == this)
+	{
+		auto* const pLast = AttachEffectClass::Array.back();
+		AttachEffectClass::Array[index] = pLast;
+		pLast->ArrayIndex = index;
+		AttachEffectClass::Array.pop_back();
+	}
 
 	if (this->Animation)
 	{
-		this->Animation->UnInit();
-		this->Animation = nullptr;
+		auto* const pAnim = this->Animation;
+		this->ClearAnimation();
+		pAnim->UnInit();
 	}
 
 	// the invoker may be mid-destruction with its extension already removed
 	if (this->Invoker)
 	{
-		if (auto const pInvokerExt = TechnoExt::TryFetch(this->Invoker))
+		auto const pInvoker = this->Invoker;
+		this->UnregisterInvoker();
+
+		if (auto const pInvokerExt = TechnoExt::TryFetch(pInvoker))
 			pInvokerExt->AttachedEffectInvokerCount--;
 	}
+}
+
+void AttachEffectClass::SetAnimation(AnimClass* pAnimation)
+{
+	if (this->Animation == pAnimation)
+		return;
+
+	if (this->Animation)
+		AnimationIndex.erase(this->Animation);
+
+	this->Animation = pAnimation;
+
+	if (pAnimation)
+		AnimationIndex[pAnimation] = this;
+}
+
+void AttachEffectClass::ClearAnimation()
+{
+	if (this->Animation)
+	{
+		AnimationIndex.erase(this->Animation);
+		this->Animation = nullptr;
+	}
+}
+
+void AttachEffectClass::RegisterInvoker()
+{
+	if (!this->Invoker)
+		return;
+
+	auto& head = InvokerIndex[this->Invoker];
+	this->InvokerPrev = nullptr;
+	this->InvokerNext = head;
+
+	if (head)
+		head->InvokerPrev = this;
+
+	head = this;
+}
+
+void AttachEffectClass::UnregisterInvoker()
+{
+	if (!this->Invoker)
+		return;
+
+	auto const it = InvokerIndex.find(this->Invoker);
+
+	if (it != InvokerIndex.end())
+	{
+		if (this->InvokerPrev)
+			this->InvokerPrev->InvokerNext = this->InvokerNext;
+		else
+			it->second = this->InvokerNext;
+
+		if (this->InvokerNext)
+			this->InvokerNext->InvokerPrev = this->InvokerPrev;
+
+		if (!it->second)
+			InvokerIndex.erase(it);
+	}
+
+	this->Invoker = nullptr;
+	this->InvokerPrev = nullptr;
+	this->InvokerNext = nullptr;
+}
+
+void AttachEffectClass::RebuildIndexes()
+{
+	AnimationIndex.clear();
+	InvokerIndex.clear();
+
+	for (size_t i = 0; i < AttachEffectClass::Array.size(); ++i)
+	{
+		auto* const pEffect = AttachEffectClass::Array[i];
+
+		pEffect->ArrayIndex = i;
+		pEffect->InvokerPrev = nullptr;
+		pEffect->InvokerNext = nullptr;
+
+		if (pEffect->Animation)
+			AnimationIndex.emplace(pEffect->Animation, pEffect);
+
+		if (pEffect->Invoker)
+		{
+			auto& head = InvokerIndex[pEffect->Invoker];
+			pEffect->InvokerNext = head;
+
+			if (head)
+				head->InvokerPrev = pEffect;
+
+			head = pEffect;
+		}
+	}
+
+	IndexesBuilt = true;
+}
+
+void AttachEffectClass::PrepareForLoad()
+{
+	AnimationIndex.clear();
+	InvokerIndex.clear();
+	IndexesBuilt = false;
 }
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
@@ -141,11 +271,10 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		auto const pAnimExt = AnimExt::TryFetch(pAnim);
-
-		// the flag is only a fast-path gate: during scenario teardown the anim's
-		// extension is already gone, and the references must still be dropped
-		if (!pAnimExt || pAnimExt->IsAttachedEffectAnim)
+		// During savegame loading the reverse indexes are rebuilt only after the
+		// swizzle has remapped the pointers, so keep the old scan as a fallback for
+		// that narrow window.
+		if (!IndexesBuilt)
 		{
 			for (auto const pEffect : AttachEffectClass::Array)
 			{
@@ -155,33 +284,73 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 					break; // one anim must be used by less than one AE
 				}
 			}
+
+			AnimationIndex.erase(pAnim);
+			return;
+		}
+
+		auto const it = AnimationIndex.find(pAnim);
+
+		if (it != AnimationIndex.end())
+		{
+			it->second->Animation = nullptr;
+			AnimationIndex.erase(it);
 		}
 	}
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
-		auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
 
-		// the counter is only a fast-path gate: during scenario teardown the techno's
-		// extension is already gone, and the invoker references must still be dropped
-		int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : -1;
-
-		if (count != 0)
+		if (!IndexesBuilt)
 		{
-			for (auto const pEffect : AttachEffectClass::Array)
+			auto const pTechnoExt = TechnoExt::TryFetch(pTechno);
+			int count = pTechnoExt ? pTechnoExt->AttachedEffectInvokerCount : -1;
+
+			if (count != 0)
 			{
-				if (pTechno == pEffect->Invoker)
+				for (auto const pEffect : AttachEffectClass::Array)
 				{
-					AnnounceInvalidPointer(pEffect->Invoker, ptr);
+					if (pTechno == pEffect->Invoker)
+					{
+						pEffect->Invoker = nullptr;
+						pEffect->InvokerPrev = nullptr;
+						pEffect->InvokerNext = nullptr;
 
-					if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
-						pEffect->ShouldBeDiscarded = true;
+						if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
+							pEffect->ShouldBeDiscarded = true;
 
-					if (--count == 0)
-						break;
+						if (--count == 0)
+							break;
+					}
 				}
 			}
+
+			InvokerIndex.erase(pTechno);
+			return;
 		}
+
+		auto const it = InvokerIndex.find(pTechno);
+
+		if (it == InvokerIndex.end())
+			return;
+
+		auto* pEffect = it->second;
+		it->second = nullptr;
+
+		while (pEffect)
+		{
+			auto* const pNext = pEffect->InvokerNext;
+			pEffect->Invoker = nullptr;
+			pEffect->InvokerPrev = nullptr;
+			pEffect->InvokerNext = nullptr;
+
+			if ((pEffect->Type->DiscardOn & DiscardCondition::InvokerDie) != DiscardCondition::None)
+				pEffect->ShouldBeDiscarded = true;
+
+			pEffect = pNext;
+		}
+
+		InvokerIndex.erase(it);
 	}
 }
 
@@ -354,8 +523,9 @@ void AttachEffectClass::UpdateConditionalAnimDrawingLogic()
 			// Inlined because calling KillAnim() would cause recursive calls to this function.
 			if (this->Animation)
 			{
-				this->Animation->UnInit();
-				this->Animation = nullptr;
+				auto* const pAnim = this->Animation;
+				this->ClearAnimation();
+				pAnim->UnInit();
 			}
 
 			this->IsAnimHidden = true;
@@ -490,7 +660,7 @@ void AttachEffectClass::CreateAnim()
 			pAnimExt->SetInvoker(pTechno);
 
 		pAnim->RemainingIterations = 0xFFu;
-		this->Animation = pAnim;
+		this->SetAnimation(pAnim);
 
 		if (pType->RequiresAnimUpdate)
 			this->ShouldUpdateAnim = true;
@@ -1430,6 +1600,10 @@ bool AttachEffectClass::Serialize(T& Stm)
 
 bool AttachEffectClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
+	// Pointers are swizzled after the stream is read; the reverse indexes are
+	// rebuilt in RebuildIndexes() once the swizzle has completed.
+	this->ClearAnimation();
+	IndexesBuilt = false;
 	return Serialize(Stm);
 }
 
