@@ -1236,6 +1236,11 @@ int TechnoExt::GetSight()
 	return static_cast<int>(sight);
 }
 
+bool TechnoExt::IsWebbed() const
+{
+	return this->WebbyDurationTimer.HasTimeLeft();
+}
+
 bool TechnoExt::CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse)
 {
 	if (pThis->Berzerk)
@@ -1363,6 +1368,10 @@ void TechnoExt::Serialize(T& Stm)
 		.Process(this->LastTargetCrdClearTimer)
 		.Process(this->AutoDeathFlag)
 		.Process(this->PreventCrewEscape)
+		.Process(this->WebbyDurationTimer)
+		.Process(this->WebbyAnim)
+		.Process(this->WebbyLastTarget)
+		.Process(this->WebbyLastMission)
 		.Process(this->OriginVeterancy)
 		;
 }
@@ -1371,6 +1380,17 @@ void TechnoExt::OnDetach(AirstrikeClass* pTarget, bool removed)
 {
 	if (removed)
 		AnnounceInvalidPointer(this->AirstrikeTargetingMe, pTarget);
+}
+
+void TechnoExt::OnDetach(AbstractClass* pTarget, bool removed)
+{
+	// The target a webbed soldier goes back to and the web drawn on it: read when the web ends,
+	// long after either may be gone (a dead target left here made multiplayer games desync).
+	if (removed)
+	{
+		AnnounceInvalidPointer(this->WebbyLastTarget, pTarget);
+		AnnounceInvalidPointer(this->WebbyAnim, pTarget);
+	}
 }
 
 void TechnoExt::LoadFromStream(PhobosStreamReader& Stm)
