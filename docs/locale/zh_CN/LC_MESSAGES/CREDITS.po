@@ -2817,6 +2817,7 @@ msgstr ""
 
 msgid "Fix the bug where slaves responded to cheer events while enslaved"
 msgstr ""
+"修复了奴隶在奴役状态响应欢呼事件的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："

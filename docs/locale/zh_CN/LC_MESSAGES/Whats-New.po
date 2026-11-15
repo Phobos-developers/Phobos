@@ -1353,6 +1353,7 @@ msgid ""
 "Fixed the bug where slaves responded to cheer events while enslaved (by "
 "Noble_Fish)"
 msgstr ""
+"修复了奴隶在奴役状态响应欢呼事件的 Bug（by Noble_Fish）"
 
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
