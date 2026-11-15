@@ -1942,6 +1942,15 @@ msgstr ""
 msgid "Buildings"
 msgstr "建筑"
 
+msgid "AI base plan rebuilding"
+msgstr "AI 基地计划重建"
+
+msgid "`AI.BasePlan.Rebuild=false` prevents the AI from rebuilding base plan nodes that have already been placed, including matching preplaced buildings. It applies in campaigns, skirmish and multiplayer."
+msgstr "`AI.BasePlan.Rebuild=false` 禁止 AI 重建已经放置过的基地计划节点，包括与计划匹配的预摆建筑。该设置在战役、遭遇战和多人游戏中均生效。"
+
+msgid "Initial placement, repairs and new nodes added for power or economic needs remain unchanged. Buildings may therefore still be built again for those reasons."
+msgstr "首次放置、维修以及因电力或经济需求新增的节点不受影响，因此 AI 仍可能出于这些原因再次建造同类建筑。"
+
 msgid "Allow Ares Academy add country-level filters"
 msgstr "允许 Ares 训练所添加国家级别的过滤器"
 
@@ -3812,6 +3821,21 @@ msgid ""
 "`AttackMove.UpdateTarget` allows your technos to automatically change and"
 " select a higher threat target when in attack move mission (Ctrl+Shift)."
 msgstr "`AttackMove.UpdateTarget` 允许你的单位在执行移动攻击（Ctrl+Shift）任务时自动切换威胁值更高的目标。"
+
+msgid "AI power budgeting"
+msgstr "AI 电力预算"
+
+msgid "`AI.Power` sets the base power used for technos (including installed upgrades) when the AI decides whether to build additional power plants."
+msgstr "`AI.Power` 设置科技类型（含加载物）在 AI 判断是否由于电力因素补建电厂时使用的基础电量。"
+
+msgid "`AI.Power.AffectedByEnhancers` controls whether [power plant enhancers](#power-plant-enhancer) apply to that value."
+msgstr "`AI.Power.AffectedByEnhancers` 控制 [电厂增幅器](#power-plant-enhancer) 是否影响该值。"
+
+msgid "`AI.Power` follows each object's normal `Power` calculation and state rules. Current contributions come from owned, living objects, including buildings created by `LimboDelivery`, and update with normal power recalculation."
+msgstr "`AI.Power` 沿用各类对象原有 `Power` 的计算及状态规则。当前贡献来自本方存活的对象（包括通过 `LimboDelivery` 创建的建筑），并随正常电力重算更新。"
+
+msgid "`AI.Power` does not change the actual power supply. For infantry, vehicles and aircraft, these settings require `[General] -> UnitPowerDrain=true`."
+msgstr "`AI.Power` 不改变实际电力供应状态。步兵、载具和战机需设置 `[General] -> UnitPowerDrain=true` 才能使用这些语句。"
 
 msgid "Aircraft spawner customizations"
 msgstr "自定义子机发射器"
@@ -7888,7 +7912,4 @@ msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任�
 
 #~ msgid "Low priority for deploy"
 #~ msgstr "低优先级部署"
-
-#~ msgid "AI power budgeting"
-#~ msgstr "AI 电力预算"
 

@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Fix desyncs caused by non-vehicle parasites reading `Parasite.AllowWaterExit` from invalid memory
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -804,6 +805,13 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
   - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
   - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water`
+  - Techno power overrides for AI budgeting, including installed upgrades, independent of actual power
+  - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`
+  - Fix the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions
+  - Control of AI base plan rebuilding
+  - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
+  - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
+  - Fix the bug where slaves responded to cheer events while enslaved
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

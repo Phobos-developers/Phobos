@@ -7,6 +7,17 @@
 #include <Ext/Infantry/Body.h>
 #include <Ext/Unit/Body.h>
 
+namespace SpawnQueueTemp
+{
+	struct TypeCount
+	{
+		AircraftTypeClass* Type;
+		int Count;
+	};
+
+	static std::vector<TypeCount> Counts;
+}
+
 #pragma region SlaveManagerClass
 
 // Issue #601
@@ -194,23 +205,52 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	if (pTypeExt->Spawns_Queue.empty())
 		return 0;
 
-	std::vector<AircraftTypeClass*> vec = pTypeExt->Spawns_Queue;
+	auto& counts = SpawnQueueTemp::Counts;
+	counts.clear();
+	counts.reserve(static_cast<size_t>(pThis->SpawnedNodes.Count));
 
 	for (auto const pNode : pThis->SpawnedNodes)
 	{
-		if (pNode->Unit)
-		{
-			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->Type; });
-			if (it != vec.end())
-				vec.erase(it);
-		}
+		if (!pNode->Unit)
+			continue;
+
+		auto const pType = pNode->Unit->Type;
+		auto const it = std::find_if(counts.begin(), counts.end(), [pType](SpawnQueueTemp::TypeCount const& item) { return item.Type == pType; });
+
+		if (it != counts.end())
+			++it->Count;
+		else
+			counts.push_back({ pType, 1 });
 	}
 
-	if (vec.empty() || !vec[0])
-		return 0;
+	for (auto const pType : pTypeExt->Spawns_Queue)
+	{
+		if (!pType)
+		{
+			auto const nullIt = std::find_if(counts.begin(), counts.end(), [](SpawnQueueTemp::TypeCount const& item) { return !item.Type; });
 
-	R->EAX(vec[0]->CreateObject(pOwner->Owner));
-	return 0x6B78EA;
+			if (nullIt != counts.end() && nullIt->Count > 0)
+			{
+				--nullIt->Count;
+				continue;
+			}
+
+			return 0;
+		}
+
+		auto const it = std::find_if(counts.begin(), counts.end(), [pType](SpawnQueueTemp::TypeCount const& item) { return item.Type == pType; });
+
+		if (it != counts.end() && it->Count > 0)
+		{
+			--it->Count;
+			continue;
+		}
+
+		R->EAX(pType->CreateObject(pOwner->Owner));
+		return 0x6B78EA;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)

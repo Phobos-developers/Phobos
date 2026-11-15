@@ -74,6 +74,61 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x42EB65, BaseClass_GetBaseNodeIndex_Rebuild, 0x5)
+{
+	enum { QueryNext = 0x42EB6A, QueryType = 0x42EB9A, SkipNode = 0x42EBAE };
+
+	GET(BaseClass* const, pBase, ESI);
+	GET(const int, nodeIndex, EDI);
+	GET(const int, queryType, EBP);
+
+	auto const& node = pBase->BaseNodes[nodeIndex];
+	const auto typeIndex = node.BuildingTypeIndex;
+
+	// Preserve native base-plan instructions with negative type indices.
+	if (node.Placed && typeIndex >= 0 && typeIndex < BuildingTypeClass::Array.Count
+		&& !BuildingTypeExt::Fetch(BuildingTypeClass::Array.Items[typeIndex])->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+	{
+		return SkipNode;
+	}
+
+	return queryType == -1 ? QueryNext : QueryType;
+}
+
+DEFINE_HOOK(0x4452F0, BuildingClass_KickOutUnit_CompleteUpgradeNode, 0x6)
+{
+	GET(BuildingClass* const, pFactory, ESI);
+	GET(BaseNodeClass* const, pNode, EBX);
+
+	if (pNode && !pFactory->Owner->IsControlledByHuman())
+	{
+		const auto index = pNode->BuildingTypeIndex;
+
+		if (index >= 0 && index < BuildingTypeClass::Array.Count)
+		{
+			const auto pType = BuildingTypeClass::Array.Items[index];
+
+			if (pType->PowersUpBuilding[0]
+				&& !BuildingTypeExt::Fetch(pType)->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+			{
+				// Upgrades bypass the normal Unlimbo node completion path.
+				pNode->Placed = true;
+				pNode->Attempts = 0;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x445639, BuildingClass_KickOutUnit_NoBaseNodeToDelete, 0x6)
+{
+	GET(BaseNodeClass* const, pNode, EAX);
+
+	// Skip failed-upgrade cleanup when both node queries returned null.
+	return pNode ? 0 : 0x445696;
+}
+
 // AIConstructionYard Hook #4-2 -> sub_42EB50 - Prohibit AI from building construction yard.
 DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 {

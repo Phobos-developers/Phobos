@@ -45,6 +45,11 @@ DEFINE_HOOK(0x550F47, LaserDrawClass_DrawInHouseColor_BetterDrawing, 0x0)
 	return 0x550F9D;
 }
 
+// DrawSubtractiveLine_AZ increments the X counter and secondary pixel offset twice
+// when the depth delta exceeds both screen deltas and the line is X-major.
+// Remove the duplicate increments so large LaserZAdjust values do not skew the line.
+DEFINE_PATCH(0x4BD096, 0x90, 0x90, 0x90, 0x90);
+
 DEFINE_HOOK(0x6FD3FD, TechnoClass_LaserZap_ZAdjust, 0x5)
 {
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x6C, 0xC));

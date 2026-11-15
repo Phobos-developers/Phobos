@@ -731,6 +731,20 @@ DetachedReport=  ; Sound entry
 
 ## Buildings
 
+### AI base plan rebuilding
+
+- `AI.BasePlan.Rebuild=false` prevents the AI from rebuilding base plan nodes that have already been placed, including matching preplaced buildings. It applies in campaigns, skirmish and multiplayer.
+- Initial placement, repairs and new nodes added for power or economic needs remain unchanged. Buildings may therefore still be built again for those reasons.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+AI.BasePlan.Rebuild=true  ; boolean
+
+[SOMEBUILDING]            ; BuildingType
+AI.BasePlan.Rebuild=      ; boolean, defaults to [AI] -> AI.BasePlan.Rebuild
+```
+
 ### Allow Ares Academy add country-level filters
 
 - Ares' Academy feature could previously only add `Academy.Types` and `Academy.Ignore` to buildings. Now, countries for which `Academy.AllowCountryFilter` is set to `true` will use the academy's `Academy.Country.Types.*` and `Academy.Country.Ignore.*` settings instead of `Academy.Types` and `Academy.Ignore`.
@@ -1624,6 +1638,29 @@ AttackMove.UpdateTarget=false  ; boolean
 [SOMETECHNO]                   ; TechnoType
 AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
+### AI power budgeting
+
+- `AI.Power` sets the base power used for technos (including installed upgrades) when the AI decides whether to build additional power plants.
+- `AI.Power.AffectedByEnhancers` controls whether [power plant enhancers](#power-plant-enhancer) apply to that value.
+
+```{note}
+`AI.Power` follows each object's normal `Power` calculation and state rules. Current contributions come from owned, living objects, including buildings created by `LimboDelivery`, and update with normal power recalculation.
+```
+
+```{hint}
+`AI.Power` does not change the actual power supply. For infantry, vehicles and aircraft, these settings require `[General] -> UnitPowerDrain=true`.
+```
+
+In `rulesmd.ini`:
+```ini
+[AI]
+AI.Power.AffectedByEnhancers=true   ; boolean
+
+[SOMETECHNO]                        ; TechnoType, including installed upgrades
+AI.Power=                           ; integer, defaults to [TechnoType] -> Power
+AI.Power.AffectedByEnhancers=       ; boolean, defaults to [AI] -> AI.Power.AffectedByEnhancers
 ```
 
 ### Aircraft spawner customizations
