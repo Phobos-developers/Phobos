@@ -2812,6 +2812,7 @@ msgstr ""
 
 msgid "Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`"
 msgstr ""
+"修复了 `BurstPerTurret=1` 时多炮塔分配不正确的 Bug"
 
 msgid "Fix the bug where slaves responded to cheer events while enslaved"
 msgstr ""

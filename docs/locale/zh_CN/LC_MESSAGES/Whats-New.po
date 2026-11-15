@@ -4113,6 +4113,7 @@ msgid ""
 "Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` "
 "(by Noble_Fish)"
 msgstr ""
+"修复了 `BurstPerTurret=1` 时多炮塔分配不正确的 Bug（by Noble_Fish）"
 
 msgid ""
 "Fixed parasites that are not vehicles (e.g. infantry with a "
