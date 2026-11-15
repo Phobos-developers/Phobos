@@ -441,8 +441,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `OmniFire` was ineffective on buildings with `Turret=yes`
   - Fix an issue where setting a production building as `Primary` could cause it to enter an unload state
   - SkipMapSelect Enhancement
-  - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
+  - Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated
   - Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -746,11 +746,11 @@ This page lists all the individual contributions to the project by their author.
   - Disable AlphaImage during Buildup
   - Allow customizing the default value of `[Warhead] -> PreventScatter` via `[CombatDamage] -> Warhead.PreventScatter`
   - Allow `(Pre)ProductionAnim` animations to use `Powered` & `PoweredLight/Effect/Special` keys
+  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
+  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
   - Fix the Spotlight-transport interaction bug caused by the incorrect reference removal fix
   - Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
-  - Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving
-  - Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building
   - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
   - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
   - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
