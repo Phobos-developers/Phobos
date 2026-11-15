@@ -6,31 +6,36 @@ TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 // load / save
 
 template <typename T>
-void TiberiumExt::ExtData::Serialize(T& Stm)
+void TiberiumExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
+		.Process(this->AllowRamps)
 		;
 }
 
-void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void TiberiumExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+	this->AllowRamps.Read(exINI, pSection, "AllowRamps");
+
+	if (this->AllowRamps && pThis->NumSlopes < 8)
+		pThis->NumSlopes = 8;
 }
 
-void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void TiberiumExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<TiberiumClass>::LoadFromStream(Stm);
+	AbstractTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void TiberiumExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void TiberiumExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<TiberiumClass>::SaveToStream(Stm);
+	AbstractTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -69,31 +74,6 @@ DEFINE_HOOK(0x721888, TiberiumClass_DTOR, 0x6)
 	GET(TiberiumClass*, pItem, ECX);
 
 	TiberiumExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x721E80, TiberiumClass_SaveLoad_Prefix, 0x7)
-DEFINE_HOOK(0x7220D0, TiberiumClass_SaveLoad_Prefix, 0x5)
-{
-	GET_STACK(TiberiumClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	TiberiumExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x72208C, TiberiumClass_Load_Suffix, 0x7)
-{
-	TiberiumExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x72212C, TiberiumClass_Save_Suffix, 0x5)
-{
-	TiberiumExt::ExtMap.SaveStatic();
 
 	return 0;
 }

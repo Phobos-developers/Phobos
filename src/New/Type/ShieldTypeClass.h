@@ -1,10 +1,9 @@
 #pragma once
 
+#include <New/Type/Affiliated/TintTypeClass.h>
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/Rules/Body.h>
 
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
@@ -17,9 +16,14 @@ public:
 	Valueable<bool> InheritArmorFromTechno;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
 	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
+	Nullable<bool> ApplyArmorMult;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
+	Valueable<bool> Respawn_RestartInCombat;
+	Valueable<int> Respawn_RestartInCombatDelay;
+	ValueableVector<AnimTypeClass*> Respawn_Anim;
+	Valueable<WeaponTypeClass*> Respawn_Weapon;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
@@ -32,8 +36,8 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Valueable<AnimTypeClass*> BreakAnim;
-	Valueable<AnimTypeClass*> HitAnim;
+	ValueableVector<AnimTypeClass*> BreakAnim;
+	ValueableVector<AnimTypeClass*> HitAnim;
 	Valueable<bool> HitFlash;
 	Nullable<int> HitFlash_FixedSize;
 	Valueable<bool> HitFlash_Red;
@@ -47,6 +51,7 @@ public:
 	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
+	Nullable<bool> AllowTransfer_Convert;
 
 	Valueable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
@@ -56,9 +61,7 @@ public:
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
-	Nullable<ColorStruct> Tint_Color;
-	Valueable<double> Tint_Intensity;
-	Valueable<AffectedHouse> Tint_VisibleToHouses;
+	std::unique_ptr<TintTypeClass> Tint;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
@@ -70,9 +73,14 @@ public:
 		, InheritArmorFromTechno { false }
 		, InheritArmor_Allowed { }
 		, InheritArmor_Disallowed { }
+		, ApplyArmorMult {}
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
+		, Respawn_RestartInCombat { true }
+		, Respawn_RestartInCombatDelay { 0 }
+		, Respawn_Anim { }
+		, Respawn_Weapon { }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
@@ -98,6 +106,7 @@ public:
 		, ReceivedDamage_Minimum { INT32_MIN }
 		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
+		, AllowTransfer_Convert { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
@@ -105,23 +114,29 @@ public:
 		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
-		, Tint_Color {}
-		, Tint_Intensity { 0.0 }
-		, Tint_VisibleToHouses { AffectedHouse::All }
+		, Tint {}
 	{ };
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
-	bool HasTint() const
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const
 	{
-		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+		const double conditionYellow = this->GetConditionYellow();
+		const double conditionRed = this->GetConditionRed();
+
+		if (isDamaged)
+		{
+			if (const auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio, conditionYellow, conditionRed))
+				return damagedAnim;
+		}
+
+		return this->IdleAnim.Get(healthRatio, conditionYellow, conditionRed);
 	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
-	double GetConditionYellow() const;
-	double GetConditionRed() const;
+	double GetConditionYellow() const { return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow)); }
+	double GetConditionRed() const { return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed)); }
 
 private:
 	template <typename T>

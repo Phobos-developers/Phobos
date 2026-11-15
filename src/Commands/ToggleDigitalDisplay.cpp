@@ -1,6 +1,5 @@
 #include "ToggleDigitalDisplay.h"
 
-#include <MessageListClass.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* ToggleDigitalDisplayCommandClass::GetName() const

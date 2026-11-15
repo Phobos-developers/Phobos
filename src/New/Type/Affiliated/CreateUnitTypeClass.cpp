@@ -1,7 +1,5 @@
 #include "CreateUnitTypeClass.h"
 
-#include <Ext/Techno/Body.h>
-
 void CreateUnitTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);

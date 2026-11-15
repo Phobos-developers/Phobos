@@ -2,16 +2,22 @@
 #include <CellClass.h>
 
 #include <Utilities/Container.h>
-#include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
+#include <Utilities/TemplateDef.h>
 
-class CellExt
+class CellExt final : public AbstractExt
 {
 public:
 	using base_type = CellClass;
 
+	// deprecated: the pre-rework nested data class is now the extension class itself
+	using ExtData [[deprecated("use the extension class itself instead")]] = CellExt;
+
 	static constexpr DWORD Canary = 0x13371337;
-	static constexpr size_t ExtPointerOffset = 0x144;
+
+	// cell extensions live in the cell's own savegame block, not in the centralized
+	// extension stream: while a savegame is loading they are created by LoadInline
+	// rather than by the cell constructor, which the game re-runs in place
+	static constexpr bool SavedInline = true;
 
 	struct RadLevel
 	{
@@ -30,35 +36,59 @@ public:
 		bool Serialize(T& stm);
 	};
 
-	class ExtData final : public Extension<CellClass>
+public:
+	// typed owner accessor
+	CellClass* OwnerObject() const
 	{
-	public:
-		std::vector<RadSiteClass*> RadSites {};
-		std::vector<RadLevel> RadLevels { };
+		return static_cast<CellClass*>(this->GetAttachedObject());
+	}
 
-		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
-		{ }
+	std::vector<RadSiteClass*> RadSites {};
+	std::vector<RadLevel> RadLevels { };
+	int InfantryCount{ 0 };
 
-		virtual ~ExtData() = default;
+	CellExt(CellClass* OwnerObject) : AbstractExt(OwnerObject)
+	{ }
 
-		virtual void InvalidatePointer(void* ptr, bool removed) override;
+	virtual ~CellExt() = default;
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	private:
-		template <typename T>
-		void Serialize(T& Stm);
-	};
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 
+public:
 	class ExtContainer final : public Container<CellExt>
 	{
 	public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override;
+		// cell extension data is persisted inline within each cell's own savegame
+		// block instead of the centralized extension stream: the owner is known at
+		// load time, so no owner remapping is needed
+		bool SaveAllToStream(IStream*) { return true; }
+		bool LoadAllFromStream(IStream*) { return true; }
+
+		void SaveInline(CellClass* pCell, IStream* pStm);
+		void LoadInline(CellClass* pCell, IStream* pStm);
+
+		// cells the game omits from the savegame need extensions allocated on load
+		void RelinkExtensionPointers();
 	};
 
 	static ExtContainer ExtMap;
+
+	static CellExt* Fetch(const CellClass* pThis)
+	{
+		return AbstractExt::Fetch<CellExt>(pThis);
+	}
+
+	static CellExt* TryFetch(const CellClass* pThis)
+	{
+		return AbstractExt::TryFetch<CellExt>(pThis);
+	}
 };
+

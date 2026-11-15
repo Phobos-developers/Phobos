@@ -1,10 +1,9 @@
 #include "FrameByFrame.h"
 
-#include <SessionClass.h>
-#include <TacticalClass.h>
-#include <Utilities/GeneralUtils.h>
+#include <MessageListClass.h>
 
-#include <Unsorted.h>
+#include <Utilities/Debug.h>
+#include <Utilities/GeneralUtils.h>
 
 size_t FrameByFrameCommandClass::FrameStepCount = 0;
 bool FrameByFrameCommandClass::FrameStep = false;
@@ -58,11 +57,20 @@ bool FrameByFrameCommandClass::FrameStepMainLoop()
 			MapClass::Instance.GetInputAndUpdate(input, x, y);
 			if (input != NULL)
 			{
-				Game::KeyboardProcess(input);
-
-				// Allow to open options
-				if (input == VK_ESCAPE || input == VK_SPACE)
+				if (input == VK_ESCAPE && !MessageListClass::Instance.IsEdit)
+				{
+					// Open options directly: KeyboardProcess would queue another options event
+					// that cannot be processed until stepping resumes.
 					Game::SpecialDialog = 1;
+				}
+				else
+				{
+					Game::KeyboardProcess(input);
+
+					// Let the message editor consume space before opening options.
+					if (input == VK_SPACE)
+						Game::SpecialDialog = 1;
+				}
 			}
 
 			MapClass::Instance.Render();

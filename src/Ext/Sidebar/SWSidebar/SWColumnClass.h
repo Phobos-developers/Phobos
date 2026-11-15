@@ -1,6 +1,7 @@
 #pragma once
 #include "SWButtonClass.h"
-#include <GadgetClass.h>
+#include <Ext/Side/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <vector>
 

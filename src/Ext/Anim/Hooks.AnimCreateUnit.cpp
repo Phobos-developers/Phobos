@@ -3,23 +3,17 @@
 
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-
-#include <Ext/Bullet/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/AnimType/Body.h>
+#include <Ext/Unit/Body.h>
 
 DEFINE_HOOK(0x737F6D, UnitClass_TakeDamage_Destroy, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
-	REF_STACK(args_ReceiveDamage const, Receivedamageargs, STACK_OFFSET(0x44, 0x4));
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x44, 0x4));
 
 	R->ECX(R->ESI());
-	TechnoExt::ExtMap.Find(pThis)->ReceiveDamage = true;
-	AnimTypeExt::ProcessDestroyAnims(pThis, Receivedamageargs.Attacker);
+	UnitExt::Fetch(pThis)->ReceiveDamage = true;
+	auto const pAttacker = receiveDamageArgs.Attacker;
+	AnimTypeExt::ProcessDestroyAnims(pThis, pAttacker ? pAttacker->Owner : receiveDamageArgs.SourceHouse);
 	pThis->Destroy();
 
 	return 0x737F74;
@@ -29,9 +23,9 @@ DEFINE_HOOK(0x738807, UnitClass_Destroy_DestroyAnim, 0x8)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	auto const Extension = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = UnitExt::Fetch(pThis);
 
-	if (!Extension->ReceiveDamage)
+	if (!pExt->ReceiveDamage)
 		AnimTypeExt::ProcessDestroyAnims(pThis);
 
 	return 0x73887E;
@@ -43,7 +37,7 @@ DEFINE_HOOK(0x4226F0, AnimClass_CTOR_CreateUnit_MarkOccupationBits, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimTypeExt::Fetch(pThis->Type);
 
 	if (pTypeExt->CreateUnitType)
 		pThis->MarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
@@ -55,15 +49,16 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AnimTypeExt::Fetch(pType);
 
 	if (auto const pCreateUnit = pTypeExt->CreateUnitType.get())
 	{
 		auto const pUnitType = pCreateUnit->Type;
-		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		auto const pExt = AnimExt::Fetch(pThis);
 		pThis->UnmarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
 
-		auto facing = pCreateUnit->RandomFacing
+		auto const facing = pCreateUnit->RandomFacing
 			? static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pCreateUnit->Facing;
 
 		auto const primaryFacing = pCreateUnit->InheritDeathFacings && pExt->FromDeathUnit ? pExt->DeathUnitFacing : facing;
@@ -73,11 +68,11 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 		{
 			auto dir = pExt->DeathUnitTurretFacing.GetDir();
 			secondaryFacing = &dir;
-			Debug::Log("CreateUnit: Using stored turret facing %d from anim [%s]\n", pExt->DeathUnitTurretFacing.GetFacing<256>(), pThis->Type->get_ID());
+			Debug::Log("CreateUnit: Using stored turret facing %d from anim [%s]\n", pExt->DeathUnitTurretFacing.GetFacing<256>(), pType->get_ID());
 		}
 
 		TechnoTypeExt::CreateUnit(pCreateUnit, primaryFacing, secondaryFacing, pThis->Location, pThis->Owner, pExt->Invoker, pExt->InvokerHouse);
 	}
 
-	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
+	return (pType->MakeInfantry != -1) ? 0x42493E : 0x424B31;
 }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
+#include <Utilities/TemplateDef.h>
 
 class CreateUnitTypeClass
 {
@@ -19,7 +18,7 @@ public:
 	Valueable<bool> AlwaysSpawnOnGround { false };
 	Valueable<bool> SpawnParachutedInAir { false };
 	Valueable<bool> ConsiderPathfinding { false };
-	Valueable<AnimTypeClass*> SpawnAnim { nullptr };
+	ValueableVector<AnimTypeClass*> SpawnAnim {};
 	Valueable<int> SpawnHeight { -1 };
 
 	CreateUnitTypeClass() = default;
