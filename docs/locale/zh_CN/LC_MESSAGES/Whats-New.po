@@ -1417,6 +1417,14 @@ msgid ""
 "had been opened while stepping (by Noble_Fish)"
 msgstr "修复逐帧模式下打开过选项菜单后退出逐帧模式时菜单再次弹出的问题（by Noble_Fish）"
 
+msgid ""
+"Fixed parasites that are not vehicles (e.g. infantry with a "
+"`Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid "
+"memory, which made them randomly survive or die when leaving a destroyed "
+"victim and caused desyncs (by FS-21)"
+msgstr ""
+"修复了非载具的寄生单位（例如使用 `Parasite=yes` 弹头的步兵）从无效内存中读取 `Parasite.AllowWaterExit` 而导致它们在离开被摧毁的宿主时随机存活或死亡并造成不同步的问题（by FS-21）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
@@ -4114,13 +4122,6 @@ msgid ""
 "(by Noble_Fish)"
 msgstr ""
 "修复了 `BurstPerTurret=1` 时多炮塔分配不正确的 Bug（by Noble_Fish）"
-
-msgid ""
-"Fixed parasites that are not vehicles (e.g. infantry with a "
-"`Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid "
-"memory, which made them randomly survive or die when leaving a destroyed "
-"victim and caused desyncs (by FS-21)"
-msgstr ""
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"

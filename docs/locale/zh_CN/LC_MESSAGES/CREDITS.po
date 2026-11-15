@@ -493,6 +493,7 @@ msgid ""
 "Fix desyncs caused by non-vehicle parasites reading "
 "`Parasite.AllowWaterExit` from invalid memory"
 msgstr ""
+"修复了由非载具寄生单位从无效内存中读取 `Parasite.AllowWaterExit` 所导致的不同步"
 
 msgid "**Starkku**:"
 msgstr "**Starkku**："
