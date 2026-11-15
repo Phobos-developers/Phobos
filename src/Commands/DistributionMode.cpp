@@ -289,8 +289,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeOwnerEligible(House
 
 bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned int range, int count, Action action, TechnoClass* pTechno)
 {
-	return Enabled
-		&& range > 0
+	return range > 0
 		&& count > 1
 		&& action != Action::NoMove
 		&& !PlanningNodeClass::PlanningModeActive
@@ -301,8 +300,7 @@ bool DistributionModeHoldDownCommandClass::IsDistributionModeEligible(unsigned i
 
 bool DistributionModeHoldDownCommandClass::IsDistributionModeEligibleForTerrain(unsigned int range, int count, Action action, TerrainClass* pTerrain)
 {
-	return Enabled
-		&& range > 0
+	return range > 0
 		&& count > 1
 		&& action == Action::Attack // only for destroying terrains
 		&& !PlanningNodeClass::PlanningModeActive
@@ -698,7 +696,7 @@ void DistributionModeHoldDownCommandClass::ProcessDistributionMode(DistributionT
 
 	for (const auto pObject : savedObject)
 	{
-		pObject->Select();
+		Unsorted::MoveFeedback = !pObject->Select();
 	}
 }
 
@@ -809,9 +807,6 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 	const int count = ObjectClass::CurrentObjects.Count;
 
-	if (!Phobos::Config::AllowDistributionUseClick)
-		return 0;
-
 	if (count > 0)
 	{
 		GET_STACK(const int, idxPath, STACK_OFFSET(0x18, -0x8));
@@ -825,7 +820,11 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 		{
 			const bool noMove = !Phobos::Config::ApplyNoMoveCommand;
 
-			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget))
+			if (!DistributionModeHoldDownCommandClass::Enabled || !Phobos::Config::AllowDistributionUseClick)
+			{
+				DistributionModeHoldDownCommandClass::ProcessNormalTargetClick(pTarget, action, noMove);
+			}
+			else if (const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget))
 			{
 				auto realAction = action;
 
@@ -856,7 +855,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 					for (const auto pObject : savedObject)
 					{
-						pObject->Select();
+						Unsorted::MoveFeedback = !pObject->Select();
 					}
 				}
 
@@ -1004,7 +1003,7 @@ DEFINE_HOOK(0x4AC4B9, DisplayClass_LeftPressAndDragging_DistributionDragStart, 0
 
 			for (const auto pObject : savedObject)
 			{
-				pObject->Select();
+				Unsorted::MoveFeedback = !pObject->Select();
 			}
 		}
 		else
@@ -1080,6 +1079,7 @@ DEFINE_HOOK(0x4ABCA7, DisplayClass_LeftPressAndDragging_DistributionDragEnd, 0x6
 	DisplayClass::Instance.LeftPressAndDraggingRectangle = false;
 	DistributionModeHoldDownCommandClass::DragDistributingType = 0;
 	TacticalClass::StartDrawActionLineTimer();
+	Unsorted::MoveFeedback = true;
 
 	return SkipGameCode;
 }
