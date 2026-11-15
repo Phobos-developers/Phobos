@@ -1133,12 +1133,13 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	int turIdx = -1;
 
-	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+	if (const auto pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
 	{
-		const int burstPerTurret = UnitTypeExt::Fetch(pUnitType)->BurstPerTurret;
+		const auto pUnitTypeExt = UnitTypeExt::Fetch(pUnitType);
+		const int burstPerTurret = pUnitTypeExt->BurstPerTurret;
 
 		if (burstPerTurret > 0)
-			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (burstPerTurret + 1)) - 1;
+			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (pUnitTypeExt->ExtraTurretCount + 1)) - 1;
 	}
 
 	flh += offset;
