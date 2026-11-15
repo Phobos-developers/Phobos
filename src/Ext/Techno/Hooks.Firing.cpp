@@ -124,7 +124,7 @@ DEFINE_HOOK(0x6F3415, TechnoClass_WhatWeaponShouldIUse_NoAmmoWeapon, 0x5)
 			return UseWeaponIndex;
 		}
 	}
-
+	
 	return 0;
 }
 
@@ -721,6 +721,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 				pExt->DelayedFireWeaponIndex = weaponIndex;
 				timer.Start(Math::max(GeneralUtils::GetRangedRandomOrSingleValue(pWeaponExt->DelayedFire_Duration), 0));
 				auto pAnimType = pWeaponExt->DelayedFire_Animation;
+
 				if (pThis->Transporter && pWeaponExt->DelayedFire_OpenToppedAnimation.isset())
 					pAnimType = pWeaponExt->DelayedFire_OpenToppedAnimation;
 
@@ -1418,7 +1419,7 @@ DEFINE_HOOK(0x4D5A34, FootClass_ApproachTarget_StopWhenInRange, 0x6)
 				pJumpjetLoco->MaxSpeed = 0;
 				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
 			}*/
-
+			
 			pThis->StopMoving();
 			pThis->AbortMotion();
 		}
@@ -1457,14 +1458,14 @@ DEFINE_HOOK(0x4D57EA, FootClass_ApproachTarget_PursuitTarget, 0x9)
 DEFINE_HOOK(0x6FF769, TechnoClass_Fire_SetReloadTimer, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-
+	
 	const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis);
-
+    
 	if (!pInfantry)
 		return 0;
-
+	
 	const auto pExt = InfantryExt::Fetch(pInfantry);
-
+	
 	if (pExt->RestartReloadTimer)
 	{
 		pInfantry->StartReloading();
