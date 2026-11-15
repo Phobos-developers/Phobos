@@ -3824,19 +3824,19 @@ CanTarget.DriverKilled=true        ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                                ; WeaponType
-DelayedFire.Duration=                       ; integer - single or comma-sep. range (game frames)
-DelayedFire.SkipInTransport=false           ; boolean
-DelayedFire.Animation=                      ; Animation
-DelayedFire.OpenToppedAnimation=            ; Animation
-DelayedFire.AnimIsAttached=true             ; boolean
-DelayedFire.AnimOffset=                     ; integer - Forward,Lateral,Height
-DelayedFire.AnimOnTurret=true               ; boolean
-DelayedFire.CenterAnimOnFirer=false         ; boolean
-DelayedFire.RemoveAnimOnNoDelay=false       ; boolean
-DelayedFire.PauseFiringSequence=false       ; boolean
-DelayedFire.OnlyOnInitialBurst=false        ; boolean
-DelayedFire.InitialBurstAnimCount=1         ; integer
+[SOMEWEAPON]                           ; WeaponType
+DelayedFire.Duration=                  ; integer - single or comma-sep. range (game frames)
+DelayedFire.SkipInTransport=false      ; boolean
+DelayedFire.Animation=                 ; Animation
+DelayedFire.OpenToppedAnimation=       ; Animation
+DelayedFire.AnimIsAttached=true        ; boolean
+DelayedFire.AnimOffset=                ; integer - Forward,Lateral,Height
+DelayedFire.AnimOnTurret=true          ; boolean
+DelayedFire.CenterAnimOnFirer=false    ; boolean
+DelayedFire.RemoveAnimOnNoDelay=false  ; boolean
+DelayedFire.PauseFiringSequence=false  ; boolean
+DelayedFire.OnlyOnInitialBurst=false   ; boolean
+DelayedFire.InitialBurstAnimCount=1    ; integer
 ```
 
 ```{note}
