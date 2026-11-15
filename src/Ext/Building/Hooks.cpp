@@ -391,7 +391,7 @@ DEFINE_HOOK(0x441553, BuildingClass_Unlimbo_AddOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pThis->Owner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pOwnerExt->PowerPlantEnhancers.push_back(pThis);
 
 	return 0;
@@ -404,7 +404,7 @@ DEFINE_HOOK(0x448A78, BuildingClass_SetOwningHouse_RemoveOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pOwnerExt = HouseExt::Fetch(pOwner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		auto& vec = pOwnerExt->PowerPlantEnhancers;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -420,7 +420,7 @@ DEFINE_HOOK(0x449197, BuildingClass_SetOwningHouse_AddOwned, 0x6)
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 	const auto pNewOwnerExt = HouseExt::Fetch(pNewOwner);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 		pNewOwnerExt->PowerPlantEnhancers.push_back(pThis);
 
 	return 0;
@@ -1257,7 +1257,7 @@ DEFINE_HOOK(0x45670D, BuildingClass_GetRadialIndicatorRange_Extras, 0x7)
 	GET(BuildingClass*, pThis, ESI);
 	const auto pTypeExt = BuildingTypeExt::Fetch(pThis->Type);
 
-	if (!pTypeExt->PowerPlantEnhancer_Buildings.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
+	if (!pTypeExt->PowerPlantEnhancer_AffectTypes.empty() && (pTypeExt->PowerPlantEnhancer_Amount != 0 || pTypeExt->PowerPlantEnhancer_Factor != 1.0f))
 	{
 		R->EAX(pTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell);
 		return ApplyRange;

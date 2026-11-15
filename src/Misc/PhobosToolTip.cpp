@@ -77,7 +77,10 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 				return 0;
 
 			const auto pExt = TechnoTypeExt::Fetch(pType);
-			return pExt->Power;
+			const auto [output, drain] = BuildingTypeExt::GetUnitPower(pType,
+				static_cast<std::int64_t>(pExt->Power), HouseClass::CurrentPlayer);
+			return static_cast<int>(std::clamp<std::int64_t>(output - drain,
+				std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
 		}
 	case AbstractType::BuildingType:
 		{

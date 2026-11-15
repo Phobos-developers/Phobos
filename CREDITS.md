@@ -165,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix crashes and freezes caused by Tiberium growth and spread
   - Fix Tiberium types not supporting overrides in map and game mode INIs
   - Tiberium veins overlay palette fix
+  - Fix desyncs caused by non-vehicle parasites reading `Parasite.AllowWaterExit` from invalid memory
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -452,7 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Customized transport plane for teams
   - Fix the bug where *Customizable crew type per country* overrides the pre-techno settings
   - Enter the grinder voice
-  - Customize the country displayed in `Sight`
+  - Customize who sees the map revealed by `Sight`
   - The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country
   - New `NoAmmoWeapons` tag supporting multiple weapon types
   - Fix an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed
@@ -596,6 +597,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed
   - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
   - Fix the bug that crashing or sinking unit can be recruit into taskforce team
+  - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -684,7 +686,7 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
   - Several new Infotypes, no display in specific status and a new single frame display method
-  - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
+  - Customizable spawn delay of VoxelAnim's `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
   - Task subtitles display in the middle of the screen
   - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
@@ -796,6 +798,20 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where the fix for airborne objects triggering sinking misjudged units with `Locomotor=Hover`
   - Fix `HealBase` crates causing full-health objects to scatter
   - Preserve whitespace in CSF
+  - Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values
+  - Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping
+  - Power plant enhancement for infantry, vehicles and aircraft
+  - Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names
+  - Fix the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name
+  - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
+  - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water`
+  - Techno power overrides for AI budgeting, including installed upgrades, independent of actual power
+  - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`
+  - Fix the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions
+  - Control of AI base plan rebuilding
+  - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
+  - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
+  - Fix the bug where slaves responded to cheer events while enslaved
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -832,6 +848,7 @@ This page lists all the individual contributions to the project by their author.
   - `RANGE`, `CRITIMMUNE` and `CRITCHANCE` promotion abilities
   - Fix several shield respawn/self heal issues
   - Country-based attached effects
+  - Allow repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama**:
   - AI script action to `16005 Jump Back To Previous Script`
@@ -1011,7 +1028,7 @@ This page lists all the individual contributions to the project by their author.
   - Detonate ivan bomb on impact
   - Allow Ares Academy add country-level filters
   - Fix the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly
-  - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
+  - Fix a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die
   - Customize whether negative damage penetrates Iron Curtain and Force Shield
 - **Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images
 - **JerryDing07**:

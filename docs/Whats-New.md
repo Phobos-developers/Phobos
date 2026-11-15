@@ -19,6 +19,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
 - In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
 
+#### Changes to Phobos behavior
+
+- `[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`. The list now accepts all TechnoTypes. The old key is deprecated but remains supported for compatibility; if both are set, the new key takes precedence.
+
 ### 0.5
 
 #### Changes to vanilla behavior
@@ -2041,7 +2045,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
-- [Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight) (by FlyStar)
+- [Customize who sees the map revealed by `Sight`](Fixed-or-Improved-Logics.md#customize-who-sees-the-map-revealed-by-sight) (by FlyStar)
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
@@ -2066,6 +2070,10 @@ PreserveCSFWhitespace=false      ; boolean
 - [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
 - [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
 - Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
+- Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
+- Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
+- [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
+- [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
 - [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
 - [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 
@@ -2087,6 +2095,10 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
 - Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
+- Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
+- Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
+- Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2098,6 +2110,9 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
 - Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
+- Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
+- Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
+- Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
@@ -2106,6 +2121,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)
 ```
 
 ### 0.5
@@ -2560,6 +2576,12 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
 - Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
 - Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
+- Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
+- Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
+- Fixed the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints (by Noble_Fish)
+- Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` (by Noble_Fish)
 
 #### 0.5-alpha2
 
@@ -2630,6 +2652,9 @@ PreserveCSFWhitespace=false      ; boolean
 ### 0.4.0.2
 
 ```{dropdown} Click to show
+
+#### Vanilla fixes:
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by Starkku)
 
 #### Phobos fixes:
 - Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)
@@ -2831,7 +2856,6 @@ PreserveCSFWhitespace=false      ; boolean
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
-- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
 
 #### Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -2954,10 +2978,11 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)

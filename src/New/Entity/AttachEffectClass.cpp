@@ -908,7 +908,6 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	const bool cumulative = pType->Cumulative && checkCumulative;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
-	cumulativeMatches.reserve(targetAEs.size());
 
 	for (auto const& aePtr : targetAEs)
 	{
@@ -951,6 +950,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 
 				if (!attachParams.CumulativeRefreshSameSourceOnly || attachEffect->IsFromSource(pInvoker, pSource))
 				{
+					if (cumulativeMatches.empty())
+						cumulativeMatches.reserve(targetAEs.size());
+
 					cumulativeMatches.push_back(attachEffect);
 
 					if (!match || attachEffect->Duration < match->Duration)

@@ -965,7 +965,7 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
@@ -1079,7 +1079,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
+					ratio = pTypeExt->FallingDownDamage_Water.Get(RulesExt::Global()->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage)));
 				else
 					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 

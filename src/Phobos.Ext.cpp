@@ -1,4 +1,5 @@
 #include <Phobos.h>
+#include <Phobos.version.h>
 
 #include <LoadOptionsClass.h>
 
