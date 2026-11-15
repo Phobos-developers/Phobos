@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 18:44+0800\n"
+"POT-Creation-Date: 2026-11-15 20:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1369,6 +1369,22 @@ msgstr "修复了设置一个生产建筑为 `主要` 时可能导致其进入�
 msgid "SkipMapSelect Enhancement"
 msgstr "`SkipMapSelect` 增强"
 
+msgid ""
+"Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` "
+"would have their effects interrupted when deactivated or reactivated"
+msgstr "修复了受 `IsLocomotor=yes` 弹头影响的载具在失灵或重新激活时其效果会被中断的问题"
+
+msgid ""
+"The parachute animation supports `ShouldUseCellDrawer=no` to remove the "
+"hard-coded requirement to use the owner's color palette, while inheriting"
+" the animation owner's current country"
+msgstr "降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家"
+
+msgid ""
+"Fix an issue where Engineers and Spies might not be able to enter target "
+"buildings properly when executing vanilla's attack script"
+msgstr "修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题"
+
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -1874,6 +1890,12 @@ msgid ""
 "due to the accumulation of a large amount of radsite in a short time"
 msgstr "修复了短时间内叠加大量辐射场会因为频繁的光照更新导致显著卡顿的问题"
 
+msgid ""
+"Fix the bug that `NoQueueUpToEnter` will cause survivors will return to "
+"location where they entered transport after the transport has been "
+"destroyed"
+msgstr "修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1991,6 +2013,19 @@ msgid ""
 "New exception handler with a crash dialog, crash report and minidumps "
 "(ported from Vinifera)"
 msgstr "带有崩溃对话框、崩溃报告和小型转储的新版异常处理程序（移植自 Vinifera）"
+
+msgid "Fix script action `18000 Local variable set` doing nothing"
+msgstr "修复了脚本动作 `18000 局部变量设置` 不起作用的问题"
+
+msgid ""
+"Fix some of the variable comparison trigger events `512-535` not reacting"
+" to changes of the variables they compare"
+msgstr "修复了部分变量比较触发事件 `512-535` 不会对其所比较变量的变化作出反应的问题"
+
+msgid ""
+"Fix operation `8` of trigger action `504 Binary operation` assigning the "
+"second variable's value instead of doing `~CurrentValue`"
+msgstr "修复了触发动作 `504 变量间计算` 的操作 `8` 会赋予第二个变量的值而不是执行 `~CurrentValue` 的问题"
 
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
@@ -2533,26 +2568,55 @@ msgstr ""
 msgid ""
 "Fix the Spotlight-transport interaction bug caused by the incorrect "
 "reference removal fix"
-msgstr ""
-"修复了错误脱引用修复导致的探照灯运输工具交互 Bug"
+msgstr "修复了错误脱引用修复导致的探照灯运输工具交互 Bug"
 
 msgid ""
 "Fix the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` "
 "crash as soon as they move"
-msgstr ""
-"修复了带有 `Locomotor=Tunnel` 的步兵和战机一旦移动就会崩溃的 Phobos bug"
+msgstr "修复了带有 `Locomotor=Tunnel` 的步兵和战机一旦移动就会崩溃的 Phobos bug"
 
 msgid ""
 "Fix the bug where the fix for airborne objects triggering sinking "
 "misjudged units with `Locomotor=Hover`"
-msgstr ""
-"修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover` 的单位误判的 Bug"
+msgstr "修复了空中对象触发沉没的修复逻辑会对 `Locomotor=Hover` 的单位误判的 Bug"
 
-msgid "Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values"
+msgid ""
+"Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game "
+"(integer divide-by-zero) the moment an object of that type started moving"
+msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
+
+msgid ""
+"Fix the bug where a building with `Factory=BuildingType` owned by the AI "
+"did not play `ProductionAnim` when placing a produced building"
+msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
+
+msgid ""
+"Fix inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` "
+"values"
 msgstr "修复了负值 `PowerPlantEnhancer.Factor` 的伤残缩放计算不一致的问题"
 
-msgid "Fix the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping"
+msgid ""
+"Fix the options menu reopening after leaving frame-by-frame mode if it "
+"had been opened while stepping"
 msgstr "修复逐帧模式下打开过选项菜单后退出逐帧模式时菜单再次弹出的问题"
+
+msgid ""
+"Fix the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` "
+"are ineffective because they read the wrong tag names"
+msgstr "修复了 `HoverLocomotorMakesWake` 和 `ShipLocomotorMakesWake` 读错标签名而不生效的 Bug"
+
+msgid ""
+"Fix the bug where `TiberiumEater.Display.Houses` is ineffective because "
+"it reads the wrong tag name"
+msgstr "修复了 `TiberiumEater.Display.Houses` 读错标签名而不生效的 Bug"
+
+msgid ""
+"Fix the bug where a larger `LaserZAdjust` incorrectly changes the "
+"coordinates of the drawing endpoints"
+msgstr "修复了 `LaserZAdjust` 较大时会错误更改绘制端点坐标的 Bug"
+
+msgid "Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`"
+msgstr "修复了 `BurstPerTurret=1` 时多炮塔分配不正确的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -2634,6 +2698,11 @@ msgid ""
 "Customize whether or not passenger can fire out when the transport is "
 "moving"
 msgstr "自定义乘客能否在运输工具移动时向外开火"
+
+msgid ""
+"Fix `InsigniaFrames` not being updated correctly for passengers and "
+"weapon-specific insignias"
+msgstr "修复了乘客和武器专属军衔的 `InsigniaFrames` 未正确更新的问题"
 
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
 msgstr "**NaotoYuuki** - 垂直和流星弹道雏形"
@@ -3228,37 +3297,7 @@ msgstr ""
 "不被遵守的问题"
 
 msgid ""
-"Fix the bug that `NoQueueUpToEnter` will cause survivors will return to "
-"location where they entered transport after the transport has been destroyed"
-msgstr ""
-"修复了 `NoQueueUpToEnter` 会导致运输载具被摧毁后生还者会返回上车位置的 Bug"
-
-msgid "Fix an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated"
-msgstr "修复了受 `IsLocomotor=yes` 弹头影响的载具在失灵或重新激活时其效果会被中断的问题"
-
-msgid "The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country"
-msgstr "降落伞动画支持使用 `ShouldUseCellDrawer=no` 解除强制使用拥有者色盘的硬编码，同时继承动画拥有者的当前国家"
-
-msgid "Fix an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script"
-msgstr "修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题"
-
-msgid "Fix script action `18000 Local variable set` doing nothing"
-msgstr "修复了脚本动作 `18000 局部变量设置` 不起作用的问题"
-
-msgid "Fix some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare"
-msgstr "修复了部分变量比较触发事件 `512-535` 不会对其所比较变量的变化作出反应的问题"
-
-msgid "Fix operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue`"
-msgstr "修复了触发动作 `504 变量间计算` 的操作 `8` 会赋予第二个变量的值而不是执行 `~CurrentValue` 的问题"
-
-msgid "Fix the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving"
-msgstr "修复了单位设置 `WalkRate=0` 时一开始移动游戏就会崩溃的 Bug（整数除零）"
-
-msgid "Fix the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building"
-msgstr "修复了 AI 家 `Factory=BuildingType` 的建筑在放置其生产出的建筑时不播放 `ProductionAnim` 的 Bug"
-
-msgid "Fix `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias"
-msgstr "修复了乘客和武器专属军衔的 `InsigniaFrames` 未正确更新的问题"
-
-msgid "**Krisztiaan** - Fix mission restart crashes caused by freeing cached TerrainType SHP images"
+"**Krisztiaan** - Fix mission restart crashes caused by freeing cached "
+"TerrainType SHP images"
 msgstr "**Krisztiaan** - 修复释放缓存的地形对象 SHP 图像所导致的任务重开崩溃"
+
