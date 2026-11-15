@@ -1,5 +1,6 @@
 #include <Ext/Foot/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/Infantry/Body.h>
 #include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
@@ -134,57 +135,23 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
-CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
-{
-	FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-	Nullable<CoordStruct> pickedFLH;
-
-	if (pThis->IsDeployed())
-	{
-		if (weaponIndex == 0)
-			pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
-		else if (weaponIndex == 1)
-			pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
-	}
-	else
-	{
-		if (pThis->Crawling)
-		{
-			if (weaponIndex == 0)
-				pickedFLH = pTypeExt->PronePrimaryFireFLH;
-			else if (weaponIndex == 1)
-				pickedFLH = pTypeExt->ProneSecondaryFireFLH;
-		}
-	}
-
-	if (pickedFLH.isset())
-	{
-		FLH = pickedFLH.Get();
-		FLHFound = true;
-	}
-
-	return FLH;
-}
-
 CoordStruct TechnoExt::GetCompleteFLH(TechnoClass* pThis, int weaponIndex)
 {
-		bool found = false;
-		auto FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+	bool found = false;
+	auto FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
+	if (!found)
+	{
+		if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
+			FLH = InfantryExt::GetSimpleFLH(pInf, weaponIndex, found);
 
 		if (!found)
-		{
-			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
-				FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+			FLH = pThis->GetWeapon(weaponIndex)->FLH;
 
-			if (!found)
-				FLH = pThis->GetWeapon(weaponIndex)->FLH;
+		if (pThis->CurrentBurstIndex % 2 != 0)
+			FLH.Y = -FLH.Y;
+	}
 
-			if (pThis->CurrentBurstIndex % 2 != 0)
-				FLH.Y = -FLH.Y;
-		}
 	return FLH;
 }
 

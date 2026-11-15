@@ -1119,20 +1119,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	if (weaponIndex >= 0)
 	{
-		bool found = false;
-		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
-
-		if (!found)
-		{
-			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
-				flh = InfantryExt::GetSimpleFLH(pInf, weaponIndex, found);
-
-			if (!found)
-				flh = pThis->GetWeapon(weaponIndex)->FLH;
-
-			if (pThis->CurrentBurstIndex % 2 != 0)
-				flh.Y = -flh.Y;
-		}
+		flh = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 	}
 	else
 	{
