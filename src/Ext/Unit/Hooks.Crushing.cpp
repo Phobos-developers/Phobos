@@ -1,11 +1,7 @@
 #include <DriveLocomotionClass.h>
 #include <ShipLocomotionClass.h>
-#include <UnitClass.h>
 
-#include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
-#include <Utilities/TemplateDef.h>
+#include "Body.h"
 
 DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
@@ -14,7 +10,7 @@ DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 	GET(UnitClass*, pThis, EBP);
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 
 	if (!pTypeExt->TiltsWhenCrushes_Overlays.Get(pType->TiltsWhenCrushes))
 		return SkipGameCode;
@@ -31,7 +27,7 @@ DEFINE_HOOK(0x741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
 	GET(UnitClass*, pThis, EDI);
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
 
 	if (!pTypeExt->TiltsWhenCrushes_Vehicles.Get(pType->TiltsWhenCrushes))
 		return SkipGameCode;
@@ -47,11 +43,12 @@ DEFINE_HOOK(0x4B1150, DriveLocomotionClass_WhileMoving_CrushSlowdown, 0x9)
 
 	GET(DriveLocomotionClass*, pThis, EBP);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pThis->LinkedTo))->GetTypeExtData();
 	auto slowdownCoefficient = pThis->movementspeed_50;
+	const double mult = pTypeExt->CrushSlowdownMultiplier.Get(RulesExt::Global()->CrushSlowdownMultiplier);
 
-	if (slowdownCoefficient > pTypeExt->CrushSlowdownMultiplier)
-		slowdownCoefficient = pTypeExt->CrushSlowdownMultiplier;
+	if (slowdownCoefficient > mult)
+		slowdownCoefficient = mult;
 
 	__asm { fld slowdownCoefficient };
 
@@ -67,7 +64,7 @@ DEFINE_HOOK(0x4B19F7, DriveLocomotionClass_WhileMoving_CrushTilt, 0xD)
 	GET(DriveLocomotionClass*, pThis, EBP);
 
 	auto const pLinkedTo = pThis->LinkedTo;
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.050000001));
 
 	return R->Origin() == 0x4B19F7 ? SkipGameCode1 : SkipGameCode2;
@@ -79,11 +76,12 @@ DEFINE_HOOK(0x6A0813, ShipLocomotionClass_WhileMoving_CrushSlowdown, 0xB)
 
 	GET(ShipLocomotionClass*, pThis, EBP);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->LinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pThis->LinkedTo))->GetTypeExtData();
 	auto slowdownCoefficient = pThis->movementspeed_50;
+	const double mult = pTypeExt->CrushSlowdownMultiplier.Get(RulesExt::Global()->CrushSlowdownMultiplier);
 
-	if (slowdownCoefficient > pTypeExt->CrushSlowdownMultiplier)
-		slowdownCoefficient = pTypeExt->CrushSlowdownMultiplier;
+	if (slowdownCoefficient > mult)
+		slowdownCoefficient = mult;
 
 	__asm { fld slowdownCoefficient };
 
@@ -97,7 +95,7 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 	GET(ShipLocomotionClass*, pThis, EBP);
 
 	auto const pLinkedTo = pThis->LinkedTo;
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData;
+	auto const pTypeExt = static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData();
 	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.02));
 
 	return SkipGameCode;
@@ -107,5 +105,5 @@ DEFINE_HOOK_AGAIN(0x6A0809, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0
 DEFINE_HOOK(0x4B1146, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0x6) // Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	return TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData->SkipCrushSlowdown ? R->Origin() + 0x3C : 0;
+	return static_cast<UnitExt*>(TechnoExt::Fetch(pLinkedTo))->GetTypeExtData()->SkipCrushSlowdown.Get(RulesExt::Global()->SkipCrushSlowdown) ? R->Origin() + 0x3C : 0;
 }

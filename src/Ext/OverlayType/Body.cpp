@@ -1,17 +1,12 @@
 #include "Body.h"
 
-#include <OverlayTypeClass.h>
-#include <TacticalClass.h>
-
-#include <Utilities/GeneralUtils.h>
-
 OverlayTypeExt::ExtContainer OverlayTypeExt::ExtMap;
 
 // =============================
 // load / save
 
 template <typename T>
-void OverlayTypeExt::ExtData::Serialize(T& Stm)
+void OverlayTypeExt::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->ZAdjust)
@@ -19,7 +14,7 @@ void OverlayTypeExt::ExtData::Serialize(T& Stm)
 		;
 }
 
-void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+void OverlayTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 
@@ -41,16 +36,16 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile.data());
 }
 
-void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+void OverlayTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
-	Extension<OverlayTypeClass>::LoadFromStream(Stm);
+	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
-void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+void OverlayTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Extension<OverlayTypeClass>::SaveToStream(Stm);
+	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
@@ -90,31 +85,6 @@ DEFINE_HOOK(0x5FEF61, OverlayTypeClass_SDDTOR, 0x5)
 	GET(OverlayTypeClass*, pItem, ESI);
 
 	OverlayTypeExt::ExtMap.Remove(pItem);
-
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x5FEAF0, OverlayTypeClass_SaveLoad_Prefix, 0xA)
-DEFINE_HOOK(0x5FEC10, OverlayTypeClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(OverlayTypeClass*, pItem, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	OverlayTypeExt::ExtMap.PrepareStream(pItem, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x5FEBFA, OverlayTypeClass_Load_Suffix, 0x6)
-{
-	OverlayTypeExt::ExtMap.LoadStatic();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x5FEC2A, OverlayTypeClass_Save_Suffix, 0x6)
-{
-	OverlayTypeExt::ExtMap.SaveStatic();
 
 	return 0;
 }

@@ -1,10 +1,6 @@
 #include "Body.h"
 #include "SWSidebar/SWSidebarClass.h"
 
-#include <HouseClass.h>
-#include <FactoryClass.h>
-#include <FileSystem.h>
-
 #include <Ext/Side/Body.h>
 #include <Misc/MessageColumn.h>
 
@@ -40,7 +36,7 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 	if (Phobos::UI::ProducingProgress_Show)
 	{
 		const auto pPlayer = HouseClass::CurrentPlayer;
-		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
+		const auto pSideExt = SideExt::Fetch(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
 		const int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		const int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
 		const int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;

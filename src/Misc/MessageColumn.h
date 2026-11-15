@@ -4,8 +4,6 @@
 
 #include <Ext/Scenario/Body.h>
 
-#include <string>
-
 // --------------------------------------------------
 
 class MessageToggleClass : public GadgetClass

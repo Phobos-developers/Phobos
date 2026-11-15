@@ -1,8 +1,6 @@
 #include "MessageColumn.h"
 
 #include <BitFont.h>
-#include <MessageListClass.h>
-#include <MouseClass.h>
 #include <WWMouseClass.h>
 
 #include <Ext/Side/Body.h>
@@ -61,7 +59,7 @@ bool MessageToggleClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modif
 
 void MessageToggleClass::DrawShape() const
 {
-	if (this->Disabled)
+	if (this->Disabled || ScenarioClass::Instance->UserInputLocked)
 		return;
 
 	RectangleStruct drawRect { this->X, this->Y, this->Width, this->Height };
@@ -168,7 +166,7 @@ bool MessageButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modif
 
 void MessageButtonClass::DrawShape() const
 {
-	if (this->Disabled)
+	if (this->Disabled || ScenarioClass::Instance->UserInputLocked)
 		return;
 
 	constexpr int intervalX = 5;
@@ -303,7 +301,7 @@ void MessageScrollClass::DrawShape() const
 	}
 	else // Scroll_Bar
 	{
-		if (!this->Disabled)
+		if (!this->Disabled && !ScenarioClass::Instance->UserInputLocked)
 		{
 			constexpr int offset = 1;
 			RectangleStruct drawRect { this->X + offset, this->Y, this->Width - (offset * 2), this->Height };
@@ -529,7 +527,7 @@ void MessageColumnClass::InitIO()
 		this->Scroll_Board = pButton;
 	}
 
-	const int color = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->MessageTextColor;
+	const int color = SideExt::Fetch(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->MessageTextColor;
 
 	// 0x72A4C5
 	if (const auto pScheme = ColorScheme::Array.Items[(color < 0 || color >= ColorScheme::Array.Count) ? 0 : color])
@@ -1074,6 +1072,9 @@ DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 {
 	enum { SkipGameCode = 0x55DDAA };
 
+	if(ScenarioClass::Instance->UserInputLocked && MessageColumnClass::Instance.IsExpanded())
+		MessageColumnClass::Instance.PackUp();
+
 	if (!MessageTemp::OnOldMessages)
 		MessageListClass::Instance.Manage();
 
@@ -1083,7 +1084,7 @@ DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 	return SkipGameCode;
 }
 
-void __fastcall AddTActionMessage(MessageListClass* pThis, void* _, const wchar_t* name, int id, const wchar_t* message, int color, TextPrintType style, int timeout, bool silent)
+static void __fastcall AddTActionMessage(MessageListClass* pThis, void* _, const wchar_t* name, int id, const wchar_t* message, int color, TextPrintType style, int timeout, bool silent)
 {
 	if (Phobos::Config::MessageDisplayInCenter)
 		MessageColumnClass::Instance.AddMessage(name, message, timeout, silent);

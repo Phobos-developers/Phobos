@@ -1,5 +1,4 @@
 #include "ToggleSWSidebar.h"
-#include <HouseClass.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>

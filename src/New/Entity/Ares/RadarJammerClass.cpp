@@ -1,15 +1,13 @@
 #include "RadarJammerClass.h"
 
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/EnumFunctions.h>
 
 void RadarJammerClass::Update()
 {
 	const auto pTechno = this->Techno;
-	const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+	const auto pTypeExt = TechnoExt::Fetch(pTechno)->TypeExtData;
 
-	if (Unsorted::CurrentFrame - this->LastScan < pTypeExt->RadarJamDelay)
+	if (Unsorted::CurrentFrame - this->LastScan < pTypeExt->RadarJamDelay.Get(RulesExt::Global()->RadarJamDelay))
 		return;
 
 	this->LastScan = Unsorted::CurrentFrame;
@@ -18,7 +16,7 @@ void RadarJammerClass::Update()
 
 	for (const auto pHouse : HouseClass::Array)
 	{
-		if (!EnumFunctions::CanTargetHouse(pTypeExt->RadarJamHouses, pOwner, pHouse))
+		if (!EnumFunctions::CanTargetHouse(pTypeExt->RadarJamHouses.Get(RulesExt::Global()->RadarJamHouses), pOwner, pHouse))
 			continue;
 
 		for (const auto pBuilding : pHouse->Buildings)

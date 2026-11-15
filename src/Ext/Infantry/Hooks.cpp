@@ -1,12 +1,54 @@
-#include <Utilities/Macro.h>
-
-#include <InfantryClass.h>
-#include <HouseClass.h>
-#include <InputManagerClass.h>
-#include <WarheadTypeClass.h>
+#include "Body.h"
 
 #include <Ext/BuildingType/Body.h>
-#include <Ext/TechnoType/Body.h>
+
+#include <WWKeyboardClass.h>
+#include <GameOptionsClass.h>
+#include <Utilities/SequenceRates.h>
+
+DEFINE_HOOK(0x522BDF, InfantryClass_CanCheer_SlaveOwner, 0x6)
+{
+	enum { CannotCheer = 0x522BF8, CheckSequence = 0x522BE5 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis->SlaveOwner)
+		return CannotCheer;
+
+	// Restore the overwritten sequence load for the original animation checks.
+	R->EAX(pThis->SequenceAnim);
+	return CheckSequence;
+}
+
+// Allow a Deployer=true infantry that has no Deploy sequence (Sequences[Deploy].CountFrames == 0)
+// but is configured with Convert.Deploy to convert directly on the deploy command,
+// instead of relying on the vanilla PlayAnim(Deploy) -> UpdateSequenceAnim case Sequence_Deploy path,
+// which is unreachable when the Deploy sequence is empty (PlayAnim returns early on CountFrames == 0).
+DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_ConvertDeploy_NoSequence, 0x5)
+{
+	enum { FinishMission = 0x51F7C9 };
+
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Deploy && pThis->Type->Sequence->Sequences[static_cast<int>(Sequence::Deploy)].CountFrames == 0)
+	{
+		// Unlike the two DoAction hooks below, this one keeps no HasDeployConverted /
+		// HasUndeployConverted bookkeeping. Measured 2026-10-12: the Undeploy hook is reached from
+		// the UpdateSequenceAnim jump-table case for Sequence::Undeploy, but that case calls
+		// PlayAnim(0, 1, 0) first, so SequenceAnim is already 0 by the time control gets there and
+		// ResetFlags clears both flags in the very same frame - nothing can be left stale for this
+		// path to clear. Re-entry within one tick is covered by the FinishMission jump below
+		// instead: it forces Mission_Guard, so Mission_Unload cannot run a second time for one
+		// deploy command. A build with the guard and both assignments removed behaved identically.
+
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+		return FinishMission;
+	}
+
+	return 0;
+}
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
@@ -14,6 +56,56 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 	GET(AbstractClass*, pTarget, EDI);
 
 	return (!pTarget || pThis->Owner->IsControlledByHuman()) ? 0x51B33F : 0;
+}
+
+// Deploy case: DoAction(Deployed)
+DEFINE_HOOK(0x520B3E, InfantryClass_DoingAI_DeployConvert_Deploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Deploy && !pExt->HasDeployConverted)
+	{
+		pExt->HasDeployConverted = true;
+		pExt->HasUndeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+	}
+
+	return 0;
+}
+
+// Undeploy case: DoAction(Ready)
+DEFINE_HOOK(0x520B99, InfantryClass_DoingAI_DeployConvert_Undeploy, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Undeploy && !pExt->HasUndeployConverted)
+	{
+		pExt->HasUndeployConverted = true;
+		pExt->HasDeployConverted = false;
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Undeploy);
+	}
+
+	return 0;
+}
+
+// Reset mark when Deploy/Undeploy
+DEFINE_HOOK(0x520E75, InfantryClass_DoingAI_DeployConvert_ResetFlags, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	const auto curSeq = pThis->SequenceAnim;
+
+	if (curSeq != Sequence::Deploy && curSeq != Sequence::Undeploy)
+	{
+		auto const pExt = InfantryExt::Fetch(pThis);
+		pExt->HasDeployConverted = false;
+		pExt->HasUndeployConverted = false;
+	}
+
+	return 0;
 }
 
 #pragma region WhatActionObjectFix
@@ -26,14 +118,14 @@ namespace WhatActionObjectTemp
 
 DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 {
-	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, CanBomb = 0x51E48F };
+	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, GoToAres = 0x51E488 };
 
 	GET(InfantryClass*, pThis, EDI);
 	GET(ObjectClass*, pTarget, ESI);
 	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
 
-	WhatActionObjectTemp::Fire = !ignoreForce && InputManagerClass::Instance->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = !ignoreForce && InputManagerClass::Instance->IsForceMoveKeyPressed();
+	WhatActionObjectTemp::Fire = !ignoreForce && WWKeyboardClass::Instance->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = !ignoreForce && WWKeyboardClass::Instance->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
@@ -47,7 +139,7 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 		const int index = pThis->SelectWeapon(pTarget);
 		const auto pWeaponType = pThis->GetWeapon(index)->WeaponType;
 
-		return pWeaponType && pWeaponType->Warhead->BombDisarm ? CanBomb : SkipBomb;
+		return pWeaponType && pWeaponType->Warhead->BombDisarm ? GoToAres : SkipBomb;
 	}
 
 	return SkipBomb;
@@ -73,7 +165,7 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 
 		if (pBuilding->Health >= pBuildingType->Strength)
 		{
-			const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+			const auto pTypeExt = BuildingTypeExt::Fetch(pBuildingType);
 
 			if (!pTypeExt->RubbleIntact && !pTypeExt->RubbleIntactRemove)
 				return Skip;
@@ -145,7 +237,7 @@ DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
 {
 	enum { Deploy = 0x522378 };
 	GET(InfantryClass*, pThis, ESI);
-	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
+	return InfantryTypeExt::Fetch(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
 
 DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
@@ -163,4 +255,147 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_InfiltrateBuilding, 0x6)
 		pTag->RaiseEvent(TriggerEvent::SpyAsInfantry, pThis, CellStruct::Empty);
 
 	return 0;
+}
+
+#pragma region CustomInfantrySequenceRates
+
+// The vanilla hardcoded per-sequence rates used as the final fallback live in SequenceRates::Entries (see Utilities/SequenceRates.h).
+
+namespace SequenceRateHooks
+{
+	int GetCustomRate(InfantryClass* pThis, int sequence)
+	{
+		if (sequence < 0 || sequence >= static_cast<int>(SequenceRates::Entries.size()))
+			return -1;
+
+		const int typeRate = InfantryTypeExt::Fetch(pThis->Type)->CustomSequenceRates[sequence];
+		const int customRate = typeRate >= 0 ? typeRate : RulesExt::Global()->CustomSequenceRates[sequence];
+
+		return customRate;
+	}
+
+	bool IsNormalized(InfantryClass* pThis, int sequence)
+	{
+		if (sequence < 0 || sequence >= static_cast<int>(SequenceRates::Entries.size()))
+			return false;
+
+		const int typeFlag = InfantryTypeExt::Fetch(pThis->Type)->CustomSequenceNormalized[sequence];
+		if (typeFlag >= 0)
+			return typeFlag != 0;
+
+		const int globalFlag = RulesExt::Global()->CustomSequenceNormalized[sequence];
+		if (globalFlag >= 0)
+			return globalFlag != 0;
+
+		return SequenceRates::Entries[sequence].Normalized;
+	}
+
+	int GetFinalRate(InfantryClass* pThis, int sequence)
+	{
+		const int customRate = GetCustomRate(pThis, sequence);
+		const int rate = customRate >= 0 ? customRate : SequenceRates::Entries[sequence].DefaultRate;
+
+		return IsNormalized(pThis, sequence)
+			? GameOptionsClass::Instance.GetAnimSpeed(rate)
+			: rate;
+	}
+}
+
+DEFINE_HOOK(0x51DA44, InfantryClass_DoAction_SequenceRate_Store, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(int, sequence, EDI);
+
+	if (sequence >= 0 && sequence < static_cast<int>(SequenceRates::Entries.size()))
+	{
+		const int finalRate = SequenceRateHooks::GetFinalRate(pThis, sequence);
+
+		pThis->Animation.Timer.TimeLeft = finalRate;
+		pThis->Animation.Rate = finalRate;
+	}
+
+	return 0x51DA4A;
+}
+
+#pragma endregion
+
+DEFINE_HOOK_AGAIN(0x51CDD9, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
+DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
+{
+	GET(InfantryClass* const, pThis, ESI);
+	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
+
+	if (pTypeExt->IdleActionFrequency.isset())
+	{
+		auto const pRange = pTypeExt->IdleActionFrequency.GetEx();
+		const bool isUpperBound = R->Origin() == 0x51CDD9;
+		double value;
+
+		if (pRange->ValueCount >= 2)
+		{
+			// Two values set the delay range directly in frames,
+			const double lower = std::min(pRange->X, pRange->Y);
+			const double upper = std::max(pRange->X, pRange->Y);
+			value = isUpperBound ? upper / 1800.0 : lower / 450.0;
+		}
+		else
+		{
+			value = pRange->X;
+		}
+
+		__asm { fld value }
+
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D4B43, InfantryClass_Mission_Capture, 0x6)
+{
+	enum { LosesDestination = 0x4D4BD1 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (!pThis || pThis->Target)
+		return 0;
+
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
+
+	if (!pBld || pBld->IsStrange())
+		return 0;
+
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
+		return 0;
+
+	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return 0;
+
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
+		return 0;
+
+	auto const pBldType = pBld->Type;
+
+	if (pBldType->CanBeOccupied && (pType->Occupier || pType->Assaulter))
+	{
+		// Re-evaluate destination if order to garrison came from TMission.
+		if (pType->Occupier && (pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) && !pBld->CanBeOccupiedBy(pThis))
+		{
+			if (!(pThis->ShouldEnterOccupiable ? pThis->EnterBattleBunker() : pThis->GarrisonStructure()))
+			{
+				pThis->SetDestination(nullptr, false);
+				return LosesDestination;
+			}
+		}
+
+		return 0;
+	}
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+
+	return LosesDestination;
 }

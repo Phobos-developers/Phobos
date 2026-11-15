@@ -1,8 +1,5 @@
 #include "QuickSave.h"
 
-#include <ScenarioClass.h>
-#include <HouseClass.h>
-#include <SessionClass.h>
 #include <EventClass.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/SpawnerHelper.h>
