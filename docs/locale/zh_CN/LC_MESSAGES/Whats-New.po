@@ -4107,6 +4107,7 @@ msgid ""
 "Fixed the bug where a larger `LaserZAdjust` incorrectly changes the "
 "coordinates of the drawing endpoints (by Noble_Fish)"
 msgstr ""
+"修复了 `LaserZAdjust` 较大时会错误更改绘制端点坐标的 Bug（by Noble_Fish）"
 
 msgid ""
 "Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` "
