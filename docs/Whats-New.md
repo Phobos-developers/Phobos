@@ -2094,6 +2094,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
