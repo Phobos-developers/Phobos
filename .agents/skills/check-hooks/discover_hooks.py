@@ -21,7 +21,7 @@ import re
 import json
 
 
-# 首先查找并切换到 git 仓库根目录
+# Find the Git repository root before doing any repository work.
 def find_git_root():
     """Find the git repository root by searching upwards from current directory."""
     current_dir = os.path.abspath(os.getcwd())
@@ -29,11 +29,11 @@ def find_git_root():
         if os.path.isdir(os.path.join(current_dir, '.git')):
             return current_dir
         parent = os.path.dirname(current_dir)
-        if parent == current_dir:  # 到达根目录仍未找到
+        if parent == current_dir:  # Reached the filesystem root without finding a repository.
             return None
         current_dir = parent
 
-# 切换到 git 根目录
+# Run subsequent commands from the Git repository root.
 git_root = find_git_root()
 if git_root:
     os.chdir(git_root)
@@ -191,7 +191,7 @@ def resolve_commit(candidate):
 
 
 HOOK_RE = re.compile(
-    r'DEFINE_HOOK(?:AGAIN)?\s*\(\s*'
+    r'DEFINE_HOOK(?:_AGAIN)?\s*\(\s*'
     r'(0x[0-9A-Fa-f]+)\s*,\s*'
     r'(\w+)\s*,\s*'
     r'(0x[0-9A-Fa-f]+|\d+)'
@@ -262,17 +262,25 @@ def analyze_return_behavior(hooks, diff_text):
         # Look forward in the diff for return statements (within ~150 lines)
         # Track brace depth to handle nested blocks (if/else/for etc.)
         brace_depth = 0
+        body_started = False
         for j in range(i + 1, min(i + 150, len(lines))):
             future = lines[j]
-            if not future.startswith('+') or future.startswith('+++'):
+            if future.startswith('+++'):
                 continue
-            content = future[1:]
+            if future.startswith(('+', ' ')):
+                content = future[1:]
+            elif future.startswith('-'):
+                continue
+            else:
+                break
 
             # Count braces to track depth into the hook body
             open_count = content.count('{')
             close_count = content.count('}')
+            if open_count:
+                body_started = True
             brace_depth += open_count - close_count
-            if brace_depth <= 0:
+            if body_started and brace_depth <= 0:
                 break  # Exited the hook body
 
             # Check for enum definitions

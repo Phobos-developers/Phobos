@@ -105,7 +105,7 @@ public:
 
 void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 {
-	if (pTechno && pTechno->IsAlive)
+	if (pTechno && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->IsSinking)
 	{
 		auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 		auto const pWeaponExt = WeaponTypeExt::Fetch(pWeapon);
@@ -205,7 +205,7 @@ DEFINE_HOOK(0x6FD4E4, TechnoClass_FireEBolt_Building_ClampPositive, 0x9)
 	return 0x6FD4ED;
 }
 
-DEFINE_HOOK(0x6FD4ED, TechnoClass_FireEBolt_ZAdjust, 0x7)
+DEFINE_HOOK(0x6FD4ED, TechnoClass_FireEBolt_ZAdjust, 0x6)
 {
 	GET_STACK(TechnoClass*, pTarget, STACK_OFFSET(0x30, 0x4));
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));

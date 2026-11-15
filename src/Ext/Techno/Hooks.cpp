@@ -423,7 +423,7 @@ static bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 			if (pType->RequiresRecalculation)
 				requiresRecalc = true;
 
-			if (pType->HasTint())
+			if (TintTypeClass::IsEnabled(pType->Tint.get()))
 				markForRedraw = true;
 
 			if (attachEffect->ResetIfRecreatable())
@@ -965,7 +965,7 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
@@ -1030,7 +1030,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 		const bool onParachuted = pExt->OnParachuted;
 		pExt->OnParachuted = false;
 
-		if (pThis->IsABomb && pThis->IsAlive)
+		if (pThis->IsABomb && pThis->IsAlive && pThis->Health > 0)
 		{
 			const bool hoverShutdown = pExt->HoverShutdown;
 			pExt->HoverShutdown = false;
@@ -1079,7 +1079,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
+					ratio = pTypeExt->FallingDownDamage_Water.Get(RulesExt::Global()->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage)));
 				else
 					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 
@@ -1368,7 +1368,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove, 0x5)
 {
 	enum { SkipResponse = 0x709015 };
 
@@ -1395,11 +1395,11 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 			}
 		}
 	}
-	else if (rtti == AbstractType::Unit)
+	else
 	{
-		auto const pUnit = static_cast<UnitClass*>(pThis);
+		auto const pFoot = static_cast<FootClass*>(pThis);
 
-		if (UnitExt::CannotMove(pUnit))
+		if (FootExt::CannotMove(pFoot, true))
 			return SkipResponse;
 	}
 
@@ -1426,7 +1426,7 @@ DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
+DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid, 0x7)
 {
 	enum { SkipGameCode = 0x4D99D3 };
 
@@ -1435,7 +1435,18 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 	GET(FootClass*, pParasiteOwner, EAX);
 	GET(bool, removed, EBX);
 
-	if (pParasiteOwner == pAbstract && (!pParasiteOwner->Health || !Make_Global<char>(0xA8ED5C)))
+	auto const pExt = FootExt::Fetch(pThis);
+
+	if (removed)
+	{
+		if (pExt->ImmobilizedSuspendedTarget == pAbstract)
+			pExt->ImmobilizedSuspendedTarget = nullptr;
+
+		if (pExt->ImmobilizedSuspendedDestination == pAbstract)
+			pExt->ImmobilizedSuspendedDestination = nullptr;
+	}
+
+	if (pParasiteOwner == pAbstract && (pParasiteOwner->Health <= 0 || !Make_Global<char>(0xA8ED5C)))
 	{
 		pThis->ParasiteEatingMe = nullptr;
 		return SkipGameCode;
@@ -1443,7 +1454,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 
 	if (!removed)
 	{
-		const auto pTypeExt = TechnoExt::Fetch(pThis)->TypeExtData;
+		const auto pTypeExt = pExt->TypeExtData;
 		removed = pTypeExt->Cloak_KickOutParasite.Get(RulesExt::Global()->Cloak_KickOutParasite);
 	}
 
@@ -2048,7 +2059,7 @@ static int __fastcall Building_GetThreatValue_Wrapper(BuildingClass* pThis)
 		return RulesClass::Instance->ThreatPerOccupant * occupantCount;
 
 	if (auto const pLinked = pThis->BunkerLinkedItem)
-		return pLinked->GetThreatValue();
+		return pLinked->GetTechnoType()->ThreatPosed;
 
 	auto const pType = pThis->Type;
 
@@ -2068,55 +2079,6 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E417C, Building_GetThreatValue_Wrapper);   // Bu
 
 #pragma endregion
 
-DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture, 0x6)
-{
-	enum { LosesDestination = 0x4D4BD1 };
-
-	GET(InfantryClass*, pThis, EDI);
-
-	if (!pThis || pThis->Target)
-		return 0;
-
-	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
-
-	if (!pBld || pBld->IsStrange())
-		return 0;
-
-	auto const pType = pThis->Type;
-
-	if (pType->Engineer)
-		return 0;
-
-	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
-		return 0;
-
-	if (pType->C4 || pThis->HasAbility(Ability::C4))
-		return 0;
-
-	auto const pBldType = pBld->Type;
-
-	if (pBldType->CanBeOccupied && (pType->Occupier || pType->Assaulter))
-	{
-		// Re-evaluate destination if order to garrison came from TMission.
-		if (pType->Occupier && (pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) && !pBld->CanBeOccupiedBy(pThis))
-		{
-			if (!(pThis->ShouldEnterOccupiable ? pThis->EnterBattleBunker() : pThis->GarrisonStructure()))
-			{
-				pThis->SetDestination(nullptr, false);
-				return LosesDestination;
-			}
-		}
-
-		return 0;
-	}
-
-	// If you can't do any of these then why are you here?
-	pThis->SetDestination(nullptr, false);
-
-	return LosesDestination;
-}
-
 DEFINE_HOOK(0x4DA230, FootClass_CanBeRecruited, 0x5)
 {
 	enum { SkipGameCode = 0x4DA294 };
@@ -2124,7 +2086,7 @@ DEFINE_HOOK(0x4DA230, FootClass_CanBeRecruited, 0x5)
 	GET(FootClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pHouse, 0x4);
 
-	R->AL(TechnoExt::CanBeRecruitedFix(pThis, pHouse));
+	R->AL(FootExt::CanBeRecruitedFix(pThis, pHouse));
 
 	return SkipGameCode;
 }
@@ -2601,5 +2563,96 @@ DEFINE_HOOK(0x70AF22, TechnoClass_RevealHouses, 0x6)		// TechnoClass::See
 		return 0x70AF28;
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5B03, ObjectClass_SpawnParachuted_ShouldUseCellDrawer, 0x7)
+{
+	enum { SkipGameCode = 0x5F5B36, Continue = 0x5F5B0A };
+
+	GET(ObjectClass* const, pThis, ESI);
+	GET(AnimClass* const, pAnim, EDI);
+
+	if (!pAnim->Owner)
+		pAnim->Owner = pThis->GetOwningHouse();
+
+	if (!pAnim->Type->ShouldUseCellDrawer)
+		return SkipGameCode;
+
+	R->EAX(pThis->WhatAmI());
+	return Continue;
+}
+
+// After the driver is killed, the vehicle will no longer perform any missions other than `Harmless`.
+#pragma region DriverKilledFix
+
+DEFINE_HOOK_AGAIN(0x708412, TechnoClass_BeAttacked_DriverKilled, 0x6)	// Unit
+DEFINE_HOOK(0x7081DC, TechnoClass_BeAttacked_DriverKilled, 0x6)			// Infantry
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (TechnoExt::DriverKilled(pThis))
+	{
+		R->AL(false);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
+static void __fastcall TechnoClass_Guard_ForceMission_DriverKilled(TechnoClass* pThis, void*, Mission mission)
+{
+	pThis->ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x70F87B, TechnoClass_Guard_ForceMission_DriverKilled)
+
+static bool __fastcall UnitClass_EnterIdleMode_QueueMission_DriverKilled(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+DEFINE_FUNCTION_JUMP(CALL6, 0x738D1B, UnitClass_EnterIdleMode_QueueMission_DriverKilled)
+
+// If you encounter a problem that you really can't solve, you can restore it here.
+/*
+static bool __fastcall UnitClass_QueueMission(UnitClass* pThis, void*, Mission mission, bool start_mission)
+{
+	return pThis->MissionClass::QueueMission(TechnoExt::DriverKilledMission(pThis, mission), start_mission);
+}
+
+static void __fastcall UnitClass_ForceMission(UnitClass* pThis, void*, Mission mission)
+{
+	pThis->MissionClass::ForceMission(TechnoExt::DriverKilledMission(pThis, mission));
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E58, UnitClass_QueueMission)
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5E60, UnitClass_ForceMission)
+*/
+
+#pragma endregion
+
+// Non-Arcing weapons add extra range in rangefinding checks based on building foundation size.
+// Lack of this in the Arcing code path presumably causes the odd movement they might
+// experience when targeting larger buildings.
+DEFINE_HOOK(0x6F7457, TechnoClass_InRange_ArcingBuildingTargetFix, 0x8)
+{
+	GET(BulletTypeClass*, pBulletType, EAX);
+	GET(int, range, EDI);
+	GET_BASE(AbstractClass*, pTarget, 0xC);
+
+	if (BulletTypeExt::Fetch(pBulletType)->Arcing_ConsiderBuildingFoundation.Get(RulesExt::Global()->Arcing_ConsiderBuildingFoundation))
+	{
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		{
+			constexpr int multiplier = Unsorted::LeptonsPerCell / 4;
+			const auto pType = pBuilding->Type;
+			const int width = pType->GetFoundationWidth();
+			const int height = pType->GetFoundationHeight(false);
+			range += (width + height) * multiplier;
+		}
+	}
+
+	R->EDI(range);
 	return 0;
 }

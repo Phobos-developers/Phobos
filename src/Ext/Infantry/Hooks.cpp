@@ -1,11 +1,54 @@
-#include <Ext/BuildingType/Body.h>
-#include <Ext/Infantry/Body.h>
-#include <Ext/InfantryType/Body.h>
-#include <Ext/Rules/Body.h>
+#include "Body.h"
 
-#include <InputManagerClass.h>
+#include <Ext/BuildingType/Body.h>
+
+#include <WWKeyboardClass.h>
 #include <GameOptionsClass.h>
 #include <Utilities/SequenceRates.h>
+
+DEFINE_HOOK(0x522BDF, InfantryClass_CanCheer_SlaveOwner, 0x6)
+{
+	enum { CannotCheer = 0x522BF8, CheckSequence = 0x522BE5 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis->SlaveOwner)
+		return CannotCheer;
+
+	// Restore the overwritten sequence load for the original animation checks.
+	R->EAX(pThis->SequenceAnim);
+	return CheckSequence;
+}
+
+// Allow a Deployer=true infantry that has no Deploy sequence (Sequences[Deploy].CountFrames == 0)
+// but is configured with Convert.Deploy to convert directly on the deploy command,
+// instead of relying on the vanilla PlayAnim(Deploy) -> UpdateSequenceAnim case Sequence_Deploy path,
+// which is unreachable when the Deploy sequence is empty (PlayAnim returns early on CountFrames == 0).
+DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_ConvertDeploy_NoSequence, 0x5)
+{
+	enum { FinishMission = 0x51F7C9 };
+
+	GET(InfantryClass*, pThis, ESI);
+	auto const pExt = InfantryExt::Fetch(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Deploy && pThis->Type->Sequence->Sequences[static_cast<int>(Sequence::Deploy)].CountFrames == 0)
+	{
+		// Unlike the two DoAction hooks below, this one keeps no HasDeployConverted /
+		// HasUndeployConverted bookkeeping. Measured 2026-10-12: the Undeploy hook is reached from
+		// the UpdateSequenceAnim jump-table case for Sequence::Undeploy, but that case calls
+		// PlayAnim(0, 1, 0) first, so SequenceAnim is already 0 by the time control gets there and
+		// ResetFlags clears both flags in the very same frame - nothing can be left stale for this
+		// path to clear. Re-entry within one tick is covered by the FinishMission jump below
+		// instead: it forces Mission_Guard, so Mission_Unload cannot run a second time for one
+		// deploy command. A build with the guard and both assignments removed behaved identically.
+
+		TechnoExt::ConvertToType(pThis, pTypeExt->Convert_Deploy);
+		return FinishMission;
+	}
+
+	return 0;
+}
 
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
@@ -81,8 +124,8 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 	GET(ObjectClass*, pTarget, ESI);
 	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
 
-	WhatActionObjectTemp::Fire = !ignoreForce && InputManagerClass::Instance->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = !ignoreForce && InputManagerClass::Instance->IsForceMoveKeyPressed();
+	WhatActionObjectTemp::Fire = !ignoreForce && WWKeyboardClass::Instance->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = !ignoreForce && WWKeyboardClass::Instance->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
@@ -282,8 +325,9 @@ DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
 	GET(InfantryClass* const, pThis, ESI);
 	auto const pTypeExt = InfantryTypeExt::Fetch(pThis->Type);
 
-	if (auto const pRange = pTypeExt->IdleActionFrequency.GetEx())
+	if (pTypeExt->IdleActionFrequency.isset())
 	{
+		auto const pRange = pTypeExt->IdleActionFrequency.GetEx();
 		const bool isUpperBound = R->Origin() == 0x51CDD9;
 		double value;
 
@@ -305,4 +349,53 @@ DEFINE_HOOK(0x51CDEF, InfantryClass_UpdateIdleAction_IdleActionFrequency, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4D4B43, InfantryClass_Mission_Capture, 0x6)
+{
+	enum { LosesDestination = 0x4D4BD1 };
+
+	GET(InfantryClass*, pThis, EDI);
+
+	if (!pThis || pThis->Target)
+		return 0;
+
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
+
+	if (!pBld || pBld->IsStrange())
+		return 0;
+
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
+		return 0;
+
+	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return 0;
+
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
+		return 0;
+
+	auto const pBldType = pBld->Type;
+
+	if (pBldType->CanBeOccupied && (pType->Occupier || pType->Assaulter))
+	{
+		// Re-evaluate destination if order to garrison came from TMission.
+		if (pType->Occupier && (pThis->ShouldEnterOccupiable || pThis->ShouldGarrisonStructure) && !pBld->CanBeOccupiedBy(pThis))
+		{
+			if (!(pThis->ShouldEnterOccupiable ? pThis->EnterBattleBunker() : pThis->GarrisonStructure()))
+			{
+				pThis->SetDestination(nullptr, false);
+				return LosesDestination;
+			}
+		}
+
+		return 0;
+	}
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+
+	return LosesDestination;
 }

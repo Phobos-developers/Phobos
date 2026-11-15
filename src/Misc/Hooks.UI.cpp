@@ -246,7 +246,7 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	return rtti1 == AbstractType::Special ? 0x6A8477 : 0x6A8468;
 }
 
-DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x5)
+DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x6)
 {
 	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
@@ -266,7 +266,7 @@ DEFINE_HOOK(0x6A84DB, StripClass_OperatorLessThan_SortCameoByNameSW, 0x5)
 	return wcscmp(pLeftSW->UIName, pRightSW->UIName) <= 0 ? rTrue : rFalse;
 }
 
-DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x5)
+DEFINE_HOOK(0x6A86ED, StripClass_OperatorLessThan_SortCameoByNameTechno, 0x6)
 {
 	enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
@@ -710,7 +710,7 @@ DEFINE_HOOK(0x6DBEA3, TacticalClass_DrawRadialIndicator_Building_Extras, 0x7)
 			const auto pEnhancerTypeExt = BuildingTypeExt::Fetch(pEnhancer->Type);
 			const int range = pEnhancerTypeExt->PowerPlantEnhancer_Range.Get() / Unsorted::LeptonsPerCell;
 
-			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_Buildings.Contains(pCurrentBuilding->Type))
+			if (range <= 0 || !pEnhancerTypeExt->PowerPlantEnhancer_AffectTypes.Contains(pCurrentBuilding->Type))
 				continue;
 
 			CoordStruct enhancerCoords = pEnhancer->GetCoords();

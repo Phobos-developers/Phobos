@@ -24,9 +24,11 @@ public:
 	}
 
 	Valueable<int> Gas_MaxDriftSpeed;
+	Valueable<bool> AlphaImage_IsLightFlash;
 
 	ParticleTypeExt(ParticleTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
 		, Gas_MaxDriftSpeed { 2 }
+		, AlphaImage_IsLightFlash { false }
 	{ }
 
 	virtual ~ParticleTypeExt() = default;

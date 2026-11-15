@@ -126,7 +126,7 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 		auto const pBuildingExt = BuildingExt::Fetch(pBuilding);
 		auto const pOwnerExt = HouseExt::Fetch(pOwner);
 
-		if (!pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Buildings.empty()
+		if (!pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_AffectTypes.empty()
 			&& (pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Amount != 0 || pBuildingExt->GetTypeExtData()->PowerPlantEnhancer_Factor != 1.0f))
 			pOwnerExt->PowerPlantEnhancers.push_back(pBuilding);
 
@@ -151,6 +151,10 @@ static inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+		auto const pBldType = pBuilding->Type;
+
+		if (!pBldType->Insignificant && !pBldType->DontScore)
+			pOwnerExt->AddToLimboTracking(pBldType);
 
 		auto const pTechnoExt = TechnoExt::Fetch(pBuilding);
 		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
@@ -245,6 +249,12 @@ void SWTypeExt::ApplyLimboKill(HouseClass* pHouse)
 
 	for (const auto pBuilding : limboKills)
 	{
+		const auto pBuildingType = pBuilding->Type;
+
+		// Remove limbo buildings' tracking here because their are not truely InLimbo
+		if (!pBuildingType->Insignificant && !pBuildingType->DontScore)
+			HouseExt::Fetch(pBuilding->Owner)->RemoveFromLimboTracking(pBuildingType);
+
 		pBuilding->Stun();
 		pBuilding->Limbo();
 		pBuilding->RegisterDestruction(nullptr);

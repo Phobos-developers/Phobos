@@ -39,6 +39,9 @@ public:
 
 	static void(__thiscall* SetSpotlight)(void*, BuildingLightClass* pSpotlight);
 
+	// WeaponTypeExt
+	static bool(__thiscall* ApplyAbductor)(WeaponTypeClass**, TechnoClass* pFirer, FootClass* pTarget);
+	
 	// WarheadTypeExt
 	static bool(__thiscall* ApplyPermaMC)(void*, HouseClass* pSourceHouse, AbstractClass* pTarget);
 

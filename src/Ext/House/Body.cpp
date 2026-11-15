@@ -3,6 +3,8 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <limits>
+
 //Static init
 
 HouseExt::ExtContainer HouseExt::ExtMap;
@@ -11,6 +13,7 @@ std::vector<int> HouseExt::AIProduction_CreationFrames;
 std::vector<int> HouseExt::AIProduction_Values;
 std::vector<int> HouseExt::AIProduction_BestChoices;
 std::vector<int> HouseExt::AIProduction_BestChoicesNaval;
+std::vector<int> HouseExt::AIProduction_CandidateIndices;
 
 // Based on Ares' rewrite of 0x4FEA60 for 100 unit bugfix.
 void HouseExt::UpdateVehicleProduction()
@@ -30,12 +33,17 @@ void HouseExt::UpdateVehicleProduction()
 	auto& values = HouseExt::AIProduction_Values;
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
+	auto& candidateIndices = HouseExt::AIProduction_CandidateIndices;
 
 	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
 	creationFrames.reserve(count);
 	creationFrames.assign(count, 0x7FFFFFFF);
 	values.reserve(count);
 	values.assign(count, 0);
+	candidateIndices.clear();
+	candidateIndices.reserve(count);
+
+	DynamicVectorClass<TechnoTypeClass*> taskForceMembers;
 
 	for (auto const currentTeam : TeamClass::Array)
 	{
@@ -50,7 +58,7 @@ void HouseExt::UpdateVehicleProduction()
 			continue;
 		}
 
-		DynamicVectorClass<TechnoTypeClass*> taskForceMembers;
+		taskForceMembers.Clear();
 		currentTeam->GetTaskForceMissingMemberTypes(taskForceMembers);
 
 		for (auto const currentMember : taskForceMembers)
@@ -63,6 +71,10 @@ void HouseExt::UpdateVehicleProduction()
 			}
 
 			auto const index = static_cast<unsigned int>(currentMember->GetArrayIndex());
+
+			if (values[index] == 0)
+				candidateIndices.push_back(static_cast<int>(index));
+
 			++values[index];
 
 			if (teamCreationFrame < creationFrames[index])
@@ -70,17 +82,21 @@ void HouseExt::UpdateVehicleProduction()
 		}
 	}
 
-	for (auto const type : UnitTypeClass::Array)
-	{
-		auto const index = static_cast<unsigned int>(type->GetArrayIndex());
+	// The previous scan only touches types that are actually missing from a team.
+	// Sort them once so the following passes keep the original ascending type order.
+	std::sort(candidateIndices.begin(), candidateIndices.end());
 
-		if (values[index] > 0)
+	for (const int typeIndex : candidateIndices)
+	{
+		if (values[typeIndex] <= 0)
+			continue;
+
+		auto const type = UnitTypeClass::Array[typeIndex];
+
+		for (auto const unit : TechnoTypeExt::Fetch(type)->Array)
 		{
-			for (auto const unit : TechnoTypeExt::Fetch(type)->Array)
-			{
-				if (static_cast<UnitClass*>(unit)->CanBeRecruited(pThis))
-					--values[index];
-			}
+			if (static_cast<UnitClass*>(unit)->CanBeRecruited(pThis))
+				--values[typeIndex];
 		}
 	}
 
@@ -95,10 +111,10 @@ void HouseExt::UpdateVehicleProduction()
 	int earliestFrameNaval = 0x7FFFFFFF;
 	const long money = pThis->Available_Money();
 
-	for (auto i = 0u; i < count; ++i)
+	for (const int typeIndex : candidateIndices)
 	{
-		auto const type = UnitTypeClass::Array[static_cast<int>(i)];
-		const int currentValue = values[i];
+		auto const type = UnitTypeClass::Array[typeIndex];
+		const int currentValue = values[typeIndex];
 
 		if (currentValue <= 0
 			|| pThis->CanBuild(type, false, false) == CanBuildResult::Unbuildable
@@ -117,15 +133,15 @@ void HouseExt::UpdateVehicleProduction()
 			cBestChoices->clear();
 		}
 
-		cBestChoices->push_back(static_cast<int>(i));
+		cBestChoices->push_back(typeIndex);
 
 		int* cEarliestTypeNameIndex = !isNaval ? &earliestTypenameIndex : &earliestTypenameIndexNaval;
 		int* cEarliestFrame = !isNaval ? &earliestFrame : &earliestFrameNaval;
 
-		if (*cEarliestFrame > creationFrames[i] || *cEarliestTypeNameIndex == -1)
+		if (*cEarliestFrame > creationFrames[typeIndex] || *cEarliestTypeNameIndex == -1)
 		{
-			*cEarliestTypeNameIndex = static_cast<int>(i);
-			*cEarliestFrame = creationFrames[i];
+			*cEarliestTypeNameIndex = typeIndex;
+			*cEarliestFrame = creationFrames[typeIndex];
 		}
 	}
 
@@ -400,17 +416,82 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
-bool HouseExt::HasOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
+void HouseExt::AddToLimboTracking(TechnoTypeClass* pTechnoType)
 {
-	const auto pOwner = this->OwnerObject();
-
-	for (const auto pTechno : TechnoTypeExt::Fetch(pTechnoType)->Array)
+	if (pTechnoType)
 	{
-		if (pTechno->Owner == pOwner)
-			return true;
+		const int arrayIndex = pTechnoType->GetArrayIndex();
+
+		switch (pTechnoType->WhatAmI())
+		{
+		case AbstractType::AircraftType:
+			this->LimboAircraft.Increment(arrayIndex);
+			break;
+		case AbstractType::BuildingType:
+			this->LimboBuildings.Increment(arrayIndex);
+			break;
+		case AbstractType::InfantryType:
+			this->LimboInfantry.Increment(arrayIndex);
+			break;
+		case AbstractType::UnitType:
+			this->LimboVehicles.Increment(arrayIndex);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void HouseExt::RemoveFromLimboTracking(TechnoTypeClass* pTechnoType)
+{
+	if (pTechnoType)
+	{
+		const int arrayIndex = pTechnoType->GetArrayIndex();
+
+		switch (pTechnoType->WhatAmI())
+		{
+		case AbstractType::AircraftType:
+			this->LimboAircraft.Decrement(arrayIndex);
+			break;
+		case AbstractType::BuildingType:
+			this->LimboBuildings.Decrement(arrayIndex);
+			break;
+		case AbstractType::InfantryType:
+			this->LimboInfantry.Decrement(arrayIndex);
+			break;
+		case AbstractType::UnitType:
+			this->LimboVehicles.Decrement(arrayIndex);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+int HouseExt::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const
+{
+	int count = this->OwnerObject()->CountOwnedAndPresent(pTechnoType);
+	const int arrayIndex = pTechnoType->GetArrayIndex();
+
+	switch (pTechnoType->WhatAmI())
+	{
+	case AbstractType::AircraftType:
+		count += this->LimboAircraft.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::BuildingType:
+		count += this->LimboBuildings.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::InfantryType:
+		count += this->LimboInfantry.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::UnitType:
+		count += this->LimboVehicles.GetItemCount(arrayIndex);
+		break;
+	default:
+		break;
 	}
 
-	return false;
+	return count;
 }
 
 void HouseExt::UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval)
@@ -595,6 +676,11 @@ void HouseExt::SetForceEnemyIndex(int EnemyIndex)
 
 void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
 {
+	CalculatePowerSurplus(pThis, pThis->PowerDrain);
+}
+
+void HouseExt::CalculatePowerSurplus(HouseClass* pThis, std::int64_t aiPowerDrain)
+{
 	auto const pRulesExt = RulesExt::Global();
 
 	if (!pRulesExt->EnablePowerSurplus)
@@ -608,13 +694,37 @@ void HouseExt::CalculatePowerSurplus(HouseClass* pThis)
 	}
 	else
 	{
-		double factor = pThis->PowerDrain / static_cast<double>(scaleToDrainAmount);
-		pThis->PowerSurplus = static_cast<int>(RulesClass::Instance->PowerSurplus * factor);
+		double factor = aiPowerDrain / static_cast<double>(scaleToDrainAmount);
+		const auto surplus = RulesClass::Instance->PowerSurplus * factor;
+		pThis->PowerSurplus = static_cast<int>(std::clamp(surplus,
+			static_cast<double>(std::numeric_limits<int>::min()), static_cast<double>(std::numeric_limits<int>::max())));
 	}
 }
 
 // =============================
 // load / save
+
+bool HouseExt::PlacingBuildingStruct::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool HouseExt::PlacingBuildingStruct::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<HouseExt::PlacingBuildingStruct*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool HouseExt::PlacingBuildingStruct::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Type)
+		.Process(this->DrawType)
+		.Process(this->Times)
+		.Process(this->Timer)
+		.Process(this->TopLeft)
+		.Success();
+}
 
 template <typename T>
 void HouseExt::Serialize(T& Stm)
@@ -623,6 +733,10 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->OwnedCountedHarvesters)
+		.Process(this->LimboAircraft)
+		.Process(this->LimboBuildings)
+		.Process(this->LimboInfantry)
+		.Process(this->LimboVehicles)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)
@@ -649,7 +763,12 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->FreeRadar)
 		.Process(this->ForceRadar)
 		.Process(this->PlayerAutoRepair)
+		.Process(this->Academies)
 		//.Process(this->BeaconsPlacedOrder) beacon is not saved, so this follows it.
+		.Process(this->OwnedDeployingUnits)
+		.Process(this->Common)
+		.Process(this->Combat)
+		.Process(this->AIPowerDelta)
 		;
 }
 

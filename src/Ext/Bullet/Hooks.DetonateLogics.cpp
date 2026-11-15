@@ -823,7 +823,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 			for (auto const pTechno : technos)
 			{
-				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
+				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->IsSinking
 					&& (retargetSelf || pTechno != pSource))
 				{
 					if (SplitsProjectileCheck(pType, pWeapon, pTechno, useWeaponTargeting) &&
@@ -1007,9 +1007,10 @@ DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
 	for (auto const& pTechno : ScenarioExt::Global()->UndergroundTracker)
 	{
 		if (pTechno->InWhichLayer() == Layer::Underground // Layer.
-			&& pTechno->IsAlive && !pTechno->IsIronCurtained()
+			&& pTechno->IsAlive && pTechno->Health > 0
+			&& !pTechno->IsIronCurtained()
 			&& !pTechno->IsOnMap // Underground is not on map.
-			&& !pTechno->InLimbo)
+			&& !pTechno->InLimbo && !pTechno->IsSinking)
 		{
 			double dist = 0.0;
 			auto const technoCoords = pTechno->GetCoords();

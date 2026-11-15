@@ -100,6 +100,7 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->DefaultToGuardArea.Read(exINI, GameStrings::General, "DefaultToGuardArea");
 	this->LeptonMindControlOffset.Read(exINI, GameStrings::AudioVisual, "LeptonMindControlOffset");
 	this->MindControlRingOffset.Read(exINI, GameStrings::AudioVisual, "MindControlRingOffset");
+	this->Anim_ShouldUseCellDrawer.Read(exINI, GameStrings::AudioVisual, "Anim.ShouldUseCellDrawer");
 }
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
@@ -172,6 +173,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 	this->DrawTurretShadow.Read(exINI, GameStrings::AudioVisual, "DrawTurretShadow");
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
+	this->AnimRemapUseInvokerFallback.Read(exINI, GameStrings::AudioVisual, "AnimRemapUseInvokerFallback");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->ShowPowerPlantEnhancerRange.Read(exINI, GameStrings::AudioVisual, "ShowPowerPlantEnhancerRange");
@@ -225,6 +227,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, GameStrings::AudioVisual, "DigitalDisplay.Health.FakeAtDisguise");
 	this->Overload_ParticleSysCount.Read(exINI, GameStrings::CombatDamage, "Overload.ParticleSysCount");
 	this->FallingDownDamage.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.Water");
 	this->FallingDownDamage_AllowEMP.Read(exINI, GameStrings::CombatDamage, "FallingDownDamage.AllowEMP");
 
 	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, GameStrings::General, "ForceWeapon.InRange.TechnoOnly");
@@ -280,6 +283,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->HealBaseNoScatter.Read(exINI, GameStrings::CrateRules, "HealBaseNoScatter");
 	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
@@ -407,6 +411,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
 	this->UseRetintFix.Read(exINI, GameStrings::AudioVisual, "UseRetintFix");
+	this->UseSidebarRadarOffsetFix.Read(exINI, GameStrings::AudioVisual, "UseSidebarRadarOffsetFix");
 
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
@@ -476,6 +481,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HoverDrownable.Read(exINI, GameStrings::General, "HoverDrownable");
 
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, GameStrings::CombatDamage, "Arcing.AllowElevationInaccuracy");
+	this->Arcing_ConsiderBuildingFoundation.Read(exINI, GameStrings::CombatDamage, "Arcing.ConsiderBuildingFoundation");
 
 	this->Terrain_IsPassable.Read(exINI, GameStrings::General, "Terrain.IsPassable");
 	this->Tibtree_IsPassable.Read(exINI, GameStrings::General, "Tibtree.IsPassable");
@@ -533,6 +539,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DriverKilled_KeptPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KeptPassengers");
 	this->DriverKilled_KillPassengers.Read(exINI, GameStrings::CombatDamage, "DriverKilled.KillPassengers");
+	this->Survivors_ReplaceTagTo.Read(exINI, GameStrings::General, "Survivors.ReplaceTagTo");
 	this->ExtraThreat_IsThreat.Read(exINI, GameStrings::General, "ExtraThreat.IsThreat");
 	this->ExtraThreat_InRange.Read(exINI, GameStrings::General, "ExtraThreat.InRange");
 	this->ExtraThreatCoefficient_InRangeDistance.Read(exINI, GameStrings::General, "ExtraThreatCoefficient.InRangeDistance");
@@ -543,8 +550,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->WalkLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "WalkLocomotorMakesWake");
 	this->DriveLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "DriveLocomotorMakesWake");
-	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotionClassMakesWake");
-	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotionClassMakesWake");
+	this->HoverLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "HoverLocomotorMakesWake");
+	this->ShipLocomotorMakesWake.Read(exINI, GameStrings::AudioVisual, "ShipLocomotorMakesWake");
 
 	this->FiringAnim_Update.Read(exINI, GameStrings::AudioVisual, "FiringAnim.Update");
 	this->ExtendedPlayerRepair.Read(exINI, GameStrings::General, "ExtendedPlayerRepair");
@@ -603,6 +610,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DefaultLandingAnim.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim");
 	this->DefaultLandingAnim_Dropship.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Dropship");
 	this->DefaultLandingAnim_Carryall.Read(exINI, GameStrings::AudioVisual, "DefaultLandingAnim.Carryall");
+
+	this->Wake_Grapple.Read(exINI, GameStrings::General, "Wake.Grapple");
+	this->Wake_Sinking.Read(exINI, GameStrings::General, "Wake.Sinking");
 
 	this->TeamDelays_DynamicType.Read(exINI, GameStrings::General, "TeamDelays.DynamicType");
 
@@ -711,6 +721,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->RevealHouses.Read(exINI, GameStrings::AudioVisual, "RevealHouses");
 	this->MissileKeepTargetCoord.Read(exINI, GameStrings::General, "MissileKeepTargetCoord");
+	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
+	this->AI_Power_AffectedByEnhancers.Read(exINI, GameStrings::AI, "AI.Power.AffectedByEnhancers");
+	this->AI_BasePlan_Rebuild.Read(exINI, GameStrings::AI, "AI.BasePlan.Rebuild");
 }
 
 // this should load everything that TypeData is not dependant on
@@ -848,6 +861,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
 		.Process(this->Overload_ParticleSysCount)
 		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
 		.Process(this->FallingDownDamage_AllowEMP)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
@@ -901,6 +915,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrainMoneyDisplay_OnTarget_UseDisplayIncome)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->UnitCrateVehicleCap)
+		.Process(this->HealBaseNoScatter)
 		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
@@ -917,6 +932,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
+		.Process(this->AnimRemapUseInvokerFallback)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
@@ -1042,6 +1058,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftFiringForceScatter)
 		.Process(this->HoverDrownable)
 		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->Arcing_ConsiderBuildingFoundation)
 		.Process(this->Terrain_IsPassable)
 		.Process(this->Tibtree_IsPassable)
 		.Process(this->Terrain_CanBeBuiltOn)
@@ -1079,11 +1096,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultToGuardArea)
 		.Process(this->LeptonMindControlOffset)
 		.Process(this->MindControlRingOffset)
+		.Process(this->Anim_ShouldUseCellDrawer)
 		.Process(this->CylinderRangefinding)
 		.Process(this->PenetratesTransport_Level)
 		.Process(this->UnitsUnsellable)
 		.Process(this->DriverKilled_KeptPassengers)
 		.Process(this->DriverKilled_KillPassengers)
+		.Process(this->Survivors_ReplaceTagTo)
 		.Process(this->DisableOveroptimizationInTargeting)
 		.Process(this->ExtraThreat_IsThreat)
 		.Process(this->ExtraThreat_InRange)
@@ -1135,6 +1154,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultLandingAnim)
 		.Process(this->DefaultLandingAnim_Dropship)
 		.Process(this->DefaultLandingAnim_Carryall)
+		.Process(this->Wake_Grapple)
+		.Process(this->Wake_Sinking)
 		.Process(this->TeamDelays_DynamicType)
 		.Process(this->TeamDelays_Count)
 		.Process(this->BerzerkMission)
@@ -1172,6 +1193,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomSequenceNormalized)
 		.Process(this->RevealHouses)
 		.Process(this->MissileKeepTargetCoord)
+		.Process(this->UseSidebarRadarOffsetFix)
+		.Process(this->ExtendedBuildingPlacing)
+		.Process(this->AI_Power_AffectedByEnhancers)
+		.Process(this->AI_BasePlan_Rebuild)
     ;
 }
 

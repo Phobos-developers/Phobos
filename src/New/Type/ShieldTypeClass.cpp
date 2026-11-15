@@ -84,9 +84,11 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 
-	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
-	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
-	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+	// Tint
+	if (this->Tint == nullptr)
+		this->Tint = std::make_unique<TintTypeClass>();
+
+	this->Tint->LoadFromINI(pINI, pSection);
 }
 
 template <typename T>
@@ -142,9 +144,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_HideIfNoStrength)
 		.Process(this->ImmuneToBerserk)
 		.Process(this->ImmuneToCrit)
-		.Process(this->Tint_Color)
-		.Process(this->Tint_Intensity)
-		.Process(this->Tint_VisibleToHouses)
+		.Process(this->Tint)
 		;
 }
 

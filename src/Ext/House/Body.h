@@ -32,6 +32,11 @@ public:
 	bool ForceOnlyTargetHouseEnemy;
 	int ForceOnlyTargetHouseEnemyMode;
 
+	CounterClass LimboAircraft;  // Currently owned aircraft in limbo
+	CounterClass LimboBuildings; // Currently owned buildings in limbo
+	CounterClass LimboInfantry;  // Currently owned infantry in limbo
+	CounterClass LimboVehicles;  // Currently owned vehicles in limbo
+
 	BuildingClass* Factory_BuildingType;
 	BuildingClass* Factory_InfantryType;
 	BuildingClass* Factory_VehicleType;
@@ -76,10 +81,39 @@ public:
 
 	std::array<int, 3> BeaconsPlacedOrder;
 
+	std::vector<BuildingClass*> Academies;
+
+	struct PlacingBuildingStruct
+	{
+		BuildingTypeClass* Type { nullptr };
+		BuildingTypeClass* DrawType { nullptr };
+		int Times { 0 };
+		CDTimerClass Timer {};
+		CellStruct TopLeft { CellStruct::Empty };
+
+		PlacingBuildingStruct() = default;
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
+	std::vector<UnitClass*> OwnedDeployingUnits;
+	HouseExt::PlacingBuildingStruct Common;
+	HouseExt::PlacingBuildingStruct Combat;
+	std::int64_t AIPowerDelta;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
 		, OwnedCountedHarvesters {}
+		, LimboAircraft {}
+		, LimboBuildings {}
+		, LimboInfantry {}
+		, LimboVehicles {}
 		, Factory_BuildingType { nullptr }
 		, Factory_InfantryType { nullptr }
 		, Factory_VehicleType { nullptr }
@@ -107,10 +141,17 @@ public:
 		, ForceRadar(false)
 		, PlayerAutoRepair(true)
 		, BeaconsPlacedOrder { 0, 0, 0 }
+		, Academies {}
+		, OwnedDeployingUnits {}
+		, Common {}
+		, Combat {}
+		, AIPowerDelta { 0 }
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;
-	bool HasOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
+	void AddToLimboTracking(TechnoTypeClass* pTechnoType);
+	void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
+	int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType) const;
 	void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 	int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval) const;
 	float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
@@ -199,10 +240,25 @@ public:
 	static std::vector<int> AIProduction_Values;
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
+	static std::vector<int> AIProduction_CandidateIndices;
 
 	static CanBuildResult BuildLimitGroupUpgradeCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 
 	static void CalculatePowerSurplus(HouseClass* pThis);
+	static void CalculatePowerSurplus(HouseClass* pThis, std::int64_t aiPowerDrain);
+	static void RecheckUnitPower(HouseClass* pThis);
+	struct PowerAdjustment
+	{
+		std::int64_t Net = 0;
+		std::int64_t Drain = 0;
+		std::int64_t OverflowNet = 0;
+		std::int64_t OverflowDrain = 0;
+		bool Adjusted = false;
+	};
+	static PowerAdjustment UpdateUnitPower(HouseClass* pThis);
+	static void RecordPowerOutputBeforeDrainClamp(HouseClass* pThis);
+	static std::int64_t UpdateAIPower(HouseClass* pThis, const PowerAdjustment& unitPower);
+	static std::int64_t UpdateAIPower(HouseClass* pThis) { return UpdateAIPower(pThis, PowerAdjustment {}); }
 };
 

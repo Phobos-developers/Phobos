@@ -138,11 +138,16 @@ DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x71DC04, TerrainTypeClass_SDDTOR, 0x6)
 DEFINE_HOOK(0x71E364, TerrainTypeClass_SDDTOR, 0x6)
 {
 	GET(TerrainTypeClass*, pItem, ECX);
 
 	TerrainTypeExt::ExtMap.Remove(pItem);
+
+	// FileSystem owns cached SHP references; raw theater images are freed below.
+	if (pItem->Image && !pItem->ImageAllocated && pItem->Image->IsReference())
+		pItem->Image = nullptr;
 
 	return 0;
 }

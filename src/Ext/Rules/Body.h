@@ -132,6 +132,7 @@ public:
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
 		Valueable<int> Overload_ParticleSysCount;
 		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
@@ -203,10 +204,12 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<int> UnitCrateVehicleCap;
+		Valueable<bool> HealBaseNoScatter;
 		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		Valueable<bool> AnimRemapUseInvokerFallback;
 		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
@@ -309,6 +312,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> UseRetintFix;
+		Valueable<bool> UseSidebarRadarOffsetFix;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -386,6 +390,7 @@ public:
 		Valueable<bool> HoverDrownable;
 
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Valueable<bool> Arcing_ConsiderBuildingFoundation;
 
 		Valueable<bool> Terrain_IsPassable;
 		Valueable<bool> Tibtree_IsPassable;
@@ -437,6 +442,7 @@ public:
 		Valueable<bool> DefaultToGuardArea;
 		Valueable<int> LeptonMindControlOffset;
 		Valueable<int> MindControlRingOffset;
+		Valueable<bool> Anim_ShouldUseCellDrawer;
 
 		Valueable<bool> DisableOveroptimizationInTargeting;
 
@@ -448,6 +454,7 @@ public:
 
 		Valueable<bool> DriverKilled_KeptPassengers;
 		Valueable<bool> DriverKilled_KillPassengers;
+		Valueable<AffectedSurvivor> Survivors_ReplaceTagTo;
 		Valueable<double> ExtraThreat_IsThreat;
 		Valueable<double> ExtraThreat_InRange;
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
@@ -508,6 +515,9 @@ public:
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
 
+		Nullable<AnimTypeClass*> Wake_Grapple;
+		Nullable<AnimTypeClass*> Wake_Sinking;
+
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
@@ -566,6 +576,10 @@ public:
 		Valueable<AffectedHouse> RevealHouses;
 
 		Valueable<bool> MissileKeepTargetCoord;
+
+		Valueable<bool> ExtendedBuildingPlacing;
+		Valueable<bool> AI_Power_AffectedByEnhancers;
+		Valueable<bool> AI_BasePlan_Rebuild;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -672,6 +686,7 @@ public:
 			, DigitalDisplay_Health_FakeAtDisguise { true }
 			, Overload_ParticleSysCount { 5 }
 			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 			, FallingDownDamage_AllowEMP { true }
 
 			, ForceWeapon_InRange_TechnoOnly { true }
@@ -735,6 +750,7 @@ public:
 			, DrainMoneyDisplay_OnTarget_UseDisplayIncome { true }
 			, CrateOnlyOnLand { false }
 			, UnitCrateVehicleCap { 50 }
+			, HealBaseNoScatter { true }
 			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
@@ -751,6 +767,7 @@ public:
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
+			, AnimRemapUseInvokerFallback { false }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
@@ -824,6 +841,7 @@ public:
 			, CombatLightDetailLevel_CheckColored { false }
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, UseRetintFix { true }
+			, UseSidebarRadarOffsetFix { true }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -894,6 +912,7 @@ public:
 			, HoverDrownable { true }
 
 			, Arcing_AllowElevationInaccuracy { true }
+			, Arcing_ConsiderBuildingFoundation { false }
 
 			, Terrain_IsPassable { false }
 			, Tibtree_IsPassable { false }
@@ -943,6 +962,7 @@ public:
 			, DefaultToGuardArea { false }
 			, LeptonMindControlOffset { 70 }
 			, MindControlRingOffset { 140 }
+			, Anim_ShouldUseCellDrawer { true }
 
 			, CylinderRangefinding { false }
 
@@ -952,6 +972,7 @@ public:
 
 			, DriverKilled_KeptPassengers { false }
 			, DriverKilled_KillPassengers { false }
+			, Survivors_ReplaceTagTo { AffectedSurvivor::VehicleThief | AffectedSurvivor::Crew }
 			, DisableOveroptimizationInTargeting { false }
 			, ExtraThreat_IsThreat { 0.0 }
 			, ExtraThreat_InRange { 0.0 }
@@ -1007,6 +1028,9 @@ public:
 			, DefaultLandingAnim { nullptr }
 			, DefaultLandingAnim_Dropship {}
 			, DefaultLandingAnim_Carryall {}
+
+			, Wake_Grapple {}
+			, Wake_Sinking {}
 
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
@@ -1067,6 +1091,10 @@ public:
 			, RevealHouses { AffectedHouse::Team }
 
 			, MissileKeepTargetCoord { false }
+
+			, ExtendedBuildingPlacing { false }
+			, AI_Power_AffectedByEnhancers { true }
+			, AI_BasePlan_Rebuild { true }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -14,6 +14,15 @@ This serves as a changelog for when you just need to drop the new version in wit
 You can use the migration utility (can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) to apply most of the changes automatically using a corresponding sed script file.
 ```
 
+### 0.6
+
+- `Cumulative=true` AttachEffect tint effects now stack. This behaviour can be disabled by setting `Tint.Cumulative=false` on the AttachEffect type.
+- In vanilla, when a unit is destroyed, it transfers the tag attached to itself to the vehicle thief or crew, but Ares broke this so that it can only be transferred to crew. Now Phobos allows using [`Survivors.ReplaceTagTo`](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) to customize, when a unit is destroyed, which of the vehicle thief, pilot, and passenger the tag can be transferred to, that is, the default behavior is aligned with vanilla rather than Ares.
+
+#### Changes to Phobos behavior
+
+- `[BuildingType] -> PowerPlantEnhancer.PowerPlants` -> `[BuildingType] -> PowerPlantEnhancer.AffectTypes`. The list now accepts all TechnoTypes. The old key is deprecated but remains supported for compatibility; if both are set, the new key takes precedence.
+
 ### 0.5
 
 #### Changes to vanilla behavior
@@ -182,7 +191,1595 @@ SaveGameOnScenarioStart=true     ; boolean
 HideLightFlashEffects=false      ; boolean
 HideLaserTrailEffects=false      ; boolean
 HideShakeEffects=false           ; boolean
+PreserveCSFWhitespace=false      ; boolean
 ```
+
+## For Map Editor (World-Altering Editor)
+
+````{dropdown} Click to show
+
+  Create `Actions.ini`, `Events.ini` and `ScriptActions.ini` in WAE's `Config` folder with the contents below. They are based on the default Yuri's Revenge configs in `Config/Default` through `BasedOn`, so those can stay untouched.
+
+  If you would rather edit the files in `Config/Default` directly, add the Phobos sections to the **end** of each file and put the keys of the other sections into the existing sections with the same names. WAE numbers entries without `IDOverride` by their position in the file, so inserting sections in the middle shifts the IDs of every entry after them.
+
+  ```{note}
+  WAE decides how many parameters each event has from its config. A map containing a Phobos event that is missing from the config can't be opened, and a Phobos event without its third parameter would make WAE misread the rest of the trigger's events.
+  ```
+
+  In `Config/Actions.ini`:
+  ```ini
+  [INISystem]
+  BasedOn=Default/Actions.ini
+
+  ; Phobos extends these existing sections
+  [PlayAnimAt]
+  Name=Play Anim at
+  Description=Plays the specified anim in the specified cell. Use index from [Animations] section in rules.ini. With Phobos, the anim is owned by the trigger's house, and a non-inert anim can play sounds, deal damage and apply TiberiumChainReaction.
+  P2Type=Animation
+  P3Type=Number
+  P3Name=Non-Inert [Phobos]
+  P3PresetOptions=0 No,1 Yes
+  P7Type=WaypointZZ
+
+  [CreateBuildingAt]
+  Name=Create Building At
+  Description=Owner of the trigger will gain this type of building at this waypoint. Overlays will be cleared and units bumped. With Phobos, the buildup anim is played, and in campaigns the building can optionally be repaired and rebuilt by the AI.
+  P1Type=-10
+  P2Type=BuildingName
+  P4Type=Number
+  P4Name=Campaign AI Repairable [Phobos]
+  P4PresetOptions=0 No,1 Yes
+  P7Type=WaypointZZ
+
+  ; ********** PHOBOS BEGINS ***********
+  ; Phobos actions use IDOverride. Keep them after every section that relies on its position in the file.
+
+  [PhobosSaveGame]
+  IDOverride=500
+  Name=Save Game [Phobos]
+  Description=Saves the game immediately. The save's description will be "MapDescName - CSFText". Multiplayer requires a spawner with multiplayer save support.
+  P1Type=-4
+  P2Type=StringTableEntry
+  P2Name=Save Description
+
+  [PhobosEditVariable]
+  IDOverride=501
+  Name=Edit Variable [Phobos]
+  Description=Operates on a local or global variable's value using the given number.
+  P2Type=Number
+  P2Name=Variable Index
+  P3Type=Number
+  P3Name=Operation
+  P3PresetOptions=0 Set,1 Add,2 Subtract,3 Multiply,4 Divide,5 Modulo,6 Left Shift,7 Right Shift,8 Bitwise NOT,9 Bitwise XOR,10 Bitwise OR,11 Bitwise AND
+  P4Type=Number
+  P4Name=Number
+  P5Type=Number
+  P5Name=Variable Scope
+  P5PresetOptions=0 Local,1 Global
+
+  [PhobosGenerateRandomNumber]
+  IDOverride=502
+  Name=Generate Random Number [Phobos]
+  Description=Stores a random number in the range [Min, Max] in a local or global variable.
+  P2Type=Number
+  P2Name=Variable Index
+  P3Type=Number
+  P3Name=Min
+  P4Type=Number
+  P4Name=Max
+  P5Type=Number
+  P5Name=Variable Scope
+  P5PresetOptions=0 Local,1 Global
+
+  [PhobosPrintVariableValue]
+  IDOverride=503
+  Name=Print Variable Value [Phobos]
+  Description=Prints a local or global variable's value to the message list.
+  P2Type=Number
+  P2Name=Variable Index
+  P3Type=Number
+  P3Name=Variable Scope
+  P3PresetOptions=0 Local,1 Global
+
+  [PhobosBinaryOperation]
+  IDOverride=504
+  Name=Binary Operation [Phobos]
+  Description=Operates on a local or global variable's value using another local or global variable's value.
+  P2Type=Number
+  P2Name=Variable Index
+  P3Type=Number
+  P3Name=Operation
+  P3PresetOptions=0 Set,1 Add,2 Subtract,3 Multiply,4 Divide,5 Modulo,6 Left Shift,7 Right Shift,8 Bitwise NOT,9 Bitwise XOR,10 Bitwise OR,11 Bitwise AND
+  P4Type=Number
+  P4Name=Operand Variable Index
+  P5Type=Number
+  P5Name=Variable Scope
+  P5PresetOptions=0 Local,1 Global
+  P6Type=Number
+  P6Name=Operand Variable Scope
+  P6PresetOptions=0 Local,1 Global
+
+  [PhobosRunSuperWeaponAtLocation]
+  IDOverride=505
+  Name=Fire Super Weapon at Location [Phobos]
+  Description=Launches a super weapon at the given cell. House can also be -1 (random non-neutral house), -2 (first neutral house) or -3 (random human player). A coordinate of -1 picks a random value within the visible map area.
+  P3Type=SuperWeapon
+  P4Type=HouseType
+  P5Type=Number
+  P5Name=X
+  P6Type=Number
+  P6Name=Y
+
+  [PhobosRunSuperWeaponAtWaypoint]
+  IDOverride=506
+  Name=Fire Super Weapon at Waypoint [Phobos]
+  Description=Launches a super weapon at the given waypoint. House can also be -1 (random non-neutral house), -2 (first neutral house) or -3 (random human player).
+  P3Type=SuperWeapon
+  P4Type=HouseType
+  P5Type=Waypoint
+
+  [PhobosToggleMCVRedeploy]
+  IDOverride=510
+  Name=Toggle MCV Redeployability [Phobos]
+  Description=Sets whether Construction Yards can be undeployed back into MCVs.
+  P3Type=Number
+  P3Name=MCV Redeploy
+  P3PresetOptions=0 No,1 Yes
+
+  [PhobosUndeployToWaypoint]
+  IDOverride=511
+  Name=Undeploy Building to Waypoint [Phobos]
+  Description=Undeploys all buildings of the given type owned by the given house and moves the resulting units to the waypoint. Enter <All> as the building type to undeploy every building that can be undeployed.
+  P1Type=-10
+  P2Type=BuildingName
+  P3Type=HouseType
+  P7Type=WaypointZZ
+
+  [PhobosSetFollowsIndexForVehicle]
+  IDOverride=512
+  Name=Set Follower for Associated Unit [Phobos]
+  Description=Sets the follower of the vehicles this trigger is attached to. The parameter is the index of the follower vehicle.
+  P3Type=Number
+  P3Name=Follower Unit Index
+
+  [PhobosSetMissionTimer]
+  IDOverride=513
+  Name=Set Mission Timer Properties [Phobos]
+  Description=Sets how the mission timer is displayed. For types 0-2, the second parameter is the base value for the percentage timer or the reversed timer. For types 3-4, it's the index of the variable to display. This doesn't change how the timer actually ticks.
+  P3Type=Number
+  P3Name=Timer Type
+  P3PresetOptions=0 Normal,1 Percentage,2 Digits,3 Local Variable,4 Global Variable
+  P4Type=Number
+  P4Name=Base Value or Variable Index
+  P5Type=Number
+  P5Name=Reverse Timer
+  P5PresetOptions=0 No,1 Yes
+
+  [PhobosSetDropCrate]
+  IDOverride=600
+  Name=Configure Drop Crate [Phobos]
+  Description=Sets or overrides the crate dropped when the attached objects are destroyed. Only works when used as an attached trigger.
+  P2Type=Number
+  P2Name=Behaviour
+  P2PresetOptions=-1 Use TechnoType Default,0 No Crate,1 Override Crate
+  P3Type=Number
+  P3Name=Crate Type
+  P3PresetOptions=0 Money,1 Unit,2 Heal Base,3 Cloak,4 Explosion,5 Napalm,6 Squad,7 Darkness,8 Reveal,9 Armor,10 Speed,11 Firepower,12 ICBM,13 Invulnerability,14 Veteran,15 Ion Storm,16 Gas,17 Tiberium,18 Pod
+
+  [PhobosEditAngerNode]
+  IDOverride=606
+  Name=Edit Hate Value [Phobos]
+  Description=Edits how much the trigger's house hates the given house. Use -1 to affect all houses.
+  P2Type=HouseType
+  P3Type=Number
+  P3Name=Operation
+  P3PresetOptions=0 Set,1 Add,2 Subtract,3 Multiply,4 Divide,5 Modulo,6 Left Shift,7 Right Shift,8 Bitwise NOT,9 Bitwise XOR,10 Bitwise OR,11 Bitwise AND
+  P4Type=Number
+  P4Name=Number
+
+  [PhobosClearAngerNode]
+  IDOverride=607
+  Name=Clear Hate Value [Phobos]
+  Description=Resets how much the trigger's house hates the given house. Use -1 to affect all houses.
+  P2Type=HouseType
+
+  [PhobosSetForceEnemy]
+  IDOverride=608
+  Name=Set Force Enemy [Phobos]
+  Description=Forces the trigger's house to treat the given house as its enemy regardless of hate values. Use -1 to remove the forced enemy, or -2 to never have any enemy.
+  P3Type=HouseType
+
+  [PhobosSetFreeRadar]
+  IDOverride=609
+  Name=Set Radar Mode [Phobos]
+  Description=Changes the radar mode of the trigger's house. Only affects human players.
+  P3Type=Number
+  P3Name=Radar Mode
+  P3PresetOptions=0 Normal,1 Free Radar,2 Force Enable,3 Force Disable
+
+  [PhobosSetTeamDelay]
+  IDOverride=610
+  Name=Set Team Delay [Phobos]
+  Description=Sets the TeamDelays value of the trigger's house. Values below 0 restore [General] -> TeamDelays (or dynamic team delays, if enabled in skirmish). Takes effect after the house's next AI team is created.
+  P3Type=Number
+  P3Name=Team Delay
+
+  [PhobosSetNextScenario]
+  IDOverride=611
+  Name=Set Next Scenario [Phobos]
+  Description=Sets the map to load after winning the current one. Only works in campaigns with [Basic] -> SkipMapSelect=yes.
+  P1Type=-4
+  P2Type=String
+  P2Name=Map Filename
+
+  [PhobosCreateBannerLocal]
+  IDOverride=800
+  Name=Display Banner with Local Variable [Phobos]
+  Description=Displays a BannerType on screen, replacing any existing banner with the same ID. Text banners can display the given local variable's value. Position is in percent of the screen size.
+  P1Type=-4
+  P2Type=String
+  P2Name=BannerType
+  P3Type=Number
+  P3Name=Banner ID
+  P4Type=Number
+  P4Name=Horizontal Position
+  P5Type=Number
+  P5Name=Vertical Position
+  P6Type=LocalVariable
+
+  [PhobosCreateBannerGlobal]
+  IDOverride=801
+  Name=Display Banner with Global Variable [Phobos]
+  Description=Displays a BannerType on screen, replacing any existing banner with the same ID. Text banners can display the given global variable's value. Position is in percent of the screen size.
+  P1Type=-4
+  P2Type=String
+  P2Name=BannerType
+  P3Type=Number
+  P3Name=Banner ID
+  P4Type=Number
+  P4Name=Horizontal Position
+  P5Type=Number
+  P5Name=Vertical Position
+  P6Type=GlobalVariable
+
+  [PhobosDeleteBanner]
+  IDOverride=802
+  Name=Delete Banner [Phobos]
+  Description=Removes the banner with the given ID.
+  P2Type=Number
+  P2Name=Banner ID
+
+  ; ********** PHOBOS ENDS ***********
+  ```
+
+  In `Config/Events.ini`:
+  ```ini
+  [INISystem]
+  BasedOn=Default/Events.ini
+
+  ; ********** PHOBOS BEGINS ***********
+  ; Phobos events use IDOverride. Keep them after every section that relies on its position in the file.
+  ; Phobos events are written with P1=2, which makes the game read a third parameter, so P3Type must always be set.
+
+  [PhobosLocalVariableGreaterThan]
+  IDOverride=500
+  Name=Local Variable Greater Than Number [Phobos]
+  Description=Triggers when the local variable's value is greater than the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableLessThan]
+  IDOverride=501
+  Name=Local Variable Less Than Number [Phobos]
+  Description=Triggers when the local variable's value is less than the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableEqualsTo]
+  IDOverride=502
+  Name=Local Variable Equals Number [Phobos]
+  Description=Triggers when the local variable's value equals the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableGreaterThanOrEqualsTo]
+  IDOverride=503
+  Name=Local Variable Greater Than or Equals Number [Phobos]
+  Description=Triggers when the local variable's value is greater than or equal to the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableLessThanOrEqualsTo]
+  IDOverride=504
+  Name=Local Variable Less Than or Equals Number [Phobos]
+  Description=Triggers when the local variable's value is less than or equal to the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableAndIsTrue]
+  IDOverride=505
+  Name=Local Variable AND Number Is True [Phobos]
+  Description=Triggers when the local variable's value is non-zero after a bitwise AND with the given number.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableGreaterThan]
+  IDOverride=506
+  Name=Global Variable Greater Than Number [Phobos]
+  Description=Triggers when the global variable's value is greater than the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableLessThan]
+  IDOverride=507
+  Name=Global Variable Less Than Number [Phobos]
+  Description=Triggers when the global variable's value is less than the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableEqualsTo]
+  IDOverride=508
+  Name=Global Variable Equals Number [Phobos]
+  Description=Triggers when the global variable's value equals the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableGreaterThanOrEqualsTo]
+  IDOverride=509
+  Name=Global Variable Greater Than or Equals Number [Phobos]
+  Description=Triggers when the global variable's value is greater than or equal to the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableLessThanOrEqualsTo]
+  IDOverride=510
+  Name=Global Variable Less Than or Equals Number [Phobos]
+  Description=Triggers when the global variable's value is less than or equal to the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosGlobalVariableAndIsTrue]
+  IDOverride=511
+  Name=Global Variable AND Number Is True [Phobos]
+  Description=Triggers when the global variable's value is non-zero after a bitwise AND with the given number.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=Number
+  P3Name=Number
+
+  [PhobosLocalVariableGreaterThanLocalVariable]
+  IDOverride=512
+  Name=Local Variable Greater Than Local Variable [Phobos]
+  Description=Triggers when the local variable's value is greater than another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableLessThanLocalVariable]
+  IDOverride=513
+  Name=Local Variable Less Than Local Variable [Phobos]
+  Description=Triggers when the local variable's value is less than another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableEqualsToLocalVariable]
+  IDOverride=514
+  Name=Local Variable Equals Local Variable [Phobos]
+  Description=Triggers when the local variable's value equals another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableGreaterThanOrEqualsToLocalVariable]
+  IDOverride=515
+  Name=Local Variable Greater Than or Equals Local Variable [Phobos]
+  Description=Triggers when the local variable's value is greater than or equal to another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableLessThanOrEqualsToLocalVariable]
+  IDOverride=516
+  Name=Local Variable Less Than or Equals Local Variable [Phobos]
+  Description=Triggers when the local variable's value is less than or equal to another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableAndIsTrueLocalVariable]
+  IDOverride=517
+  Name=Local Variable AND Local Variable Is True [Phobos]
+  Description=Triggers when the local variable's value is non-zero after a bitwise AND with another local variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableGreaterThanLocalVariable]
+  IDOverride=518
+  Name=Global Variable Greater Than Local Variable [Phobos]
+  Description=Triggers when the global variable's value is greater than the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableLessThanLocalVariable]
+  IDOverride=519
+  Name=Global Variable Less Than Local Variable [Phobos]
+  Description=Triggers when the global variable's value is less than the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableEqualsToLocalVariable]
+  IDOverride=520
+  Name=Global Variable Equals Local Variable [Phobos]
+  Description=Triggers when the global variable's value equals the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableGreaterThanOrEqualsToLocalVariable]
+  IDOverride=521
+  Name=Global Variable Greater Than or Equals Local Variable [Phobos]
+  Description=Triggers when the global variable's value is greater than or equal to the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableLessThanOrEqualsToLocalVariable]
+  IDOverride=522
+  Name=Global Variable Less Than or Equals Local Variable [Phobos]
+  Description=Triggers when the global variable's value is less than or equal to the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableAndIsTrueLocalVariable]
+  IDOverride=523
+  Name=Global Variable AND Local Variable Is True [Phobos]
+  Description=Triggers when the global variable's value is non-zero after a bitwise AND with the local variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=LocalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableGreaterThanGlobalVariable]
+  IDOverride=524
+  Name=Local Variable Greater Than Global Variable [Phobos]
+  Description=Triggers when the local variable's value is greater than the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableLessThanGlobalVariable]
+  IDOverride=525
+  Name=Local Variable Less Than Global Variable [Phobos]
+  Description=Triggers when the local variable's value is less than the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableEqualsToGlobalVariable]
+  IDOverride=526
+  Name=Local Variable Equals Global Variable [Phobos]
+  Description=Triggers when the local variable's value equals the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableGreaterThanOrEqualsToGlobalVariable]
+  IDOverride=527
+  Name=Local Variable Greater Than or Equals Global Variable [Phobos]
+  Description=Triggers when the local variable's value is greater than or equal to the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableLessThanOrEqualsToGlobalVariable]
+  IDOverride=528
+  Name=Local Variable Less Than or Equals Global Variable [Phobos]
+  Description=Triggers when the local variable's value is less than or equal to the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosLocalVariableAndIsTrueGlobalVariable]
+  IDOverride=529
+  Name=Local Variable AND Global Variable Is True [Phobos]
+  Description=Triggers when the local variable's value is non-zero after a bitwise AND with the global variable's value.
+  P1Type=-2
+  P2Type=LocalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableGreaterThanGlobalVariable]
+  IDOverride=530
+  Name=Global Variable Greater Than Global Variable [Phobos]
+  Description=Triggers when the global variable's value is greater than another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableLessThanGlobalVariable]
+  IDOverride=531
+  Name=Global Variable Less Than Global Variable [Phobos]
+  Description=Triggers when the global variable's value is less than another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableEqualsToGlobalVariable]
+  IDOverride=532
+  Name=Global Variable Equals Global Variable [Phobos]
+  Description=Triggers when the global variable's value equals another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableGreaterThanOrEqualsToGlobalVariable]
+  IDOverride=533
+  Name=Global Variable Greater Than or Equals Global Variable [Phobos]
+  Description=Triggers when the global variable's value is greater than or equal to another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableLessThanOrEqualsToGlobalVariable]
+  IDOverride=534
+  Name=Global Variable Less Than or Equals Global Variable [Phobos]
+  Description=Triggers when the global variable's value is less than or equal to another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosGlobalVariableAndIsTrueGlobalVariable]
+  IDOverride=535
+  Name=Global Variable AND Global Variable Is True [Phobos]
+  Description=Triggers when the global variable's value is non-zero after a bitwise AND with another global variable's value.
+  P1Type=-2
+  P2Type=GlobalVariable
+  P2Name=Variable
+  P3Type=GlobalVariable
+  P3Name=Operand Variable
+
+  [PhobosShieldBroken]
+  IDOverride=600
+  Name=Shield Broken [Phobos]
+  Description=Triggers when the shield of the attached object is broken.
+  P1Type=-2
+  P3Type=Number
+  P3Name=Unused (keep 0)
+
+  [PhobosHouseOwnsTechnoType]
+  IDOverride=601
+  Name=House Owns TechnoType [Phobos]
+  Description=Triggers while the given house owns at least one object of the given TechnoType. Unlike Ares event 81, this takes the house as a parameter instead of using the trigger's owner.
+  P1Type=-2
+  P2Type=HouseType
+  P3Type=Techno
+
+  [PhobosHouseDoesntOwnTechnoType]
+  IDOverride=602
+  Name=House Doesn't Own TechnoType [Phobos]
+  Description=Triggers while the given house doesn't own any objects of the given TechnoType. Unlike Ares event 82, this takes the house as a parameter instead of using the trigger's owner.
+  P1Type=-2
+  P2Type=HouseType
+  P3Type=Techno
+
+  [PhobosCellHasTechnoType]
+  IDOverride=604
+  Name=TechnoType Entered Cell [Phobos]
+  Description=Triggers when an object of the given TechnoType enters the attached cell. House can be -1 (any house) or -2 (the trigger's owner).
+  P1Type=-2
+  P2Type=HouseType
+  P3Type=Techno
+
+  [PhobosCellHasAnyTechnoTypeFromList]
+  IDOverride=605
+  Name=AITargetTypes Entered Cell [Phobos]
+  Description=Triggers when an object whose type is in the given [AITargetTypes] list enters the attached cell. House can be -1 (any house) or -2 (the trigger's owner).
+  P1Type=-2
+  P2Type=HouseType
+  P3Type=Number
+  P3Name=AITargetTypes Index
+
+  [PhobosAttachedIsUnderAttachedEffect]
+  IDOverride=606
+  Name=AttachEffect Attached [Phobos]
+  Description=Triggers when the given AttachEffectType is attached to the attached object. Doesn't work for effects attached before the trigger was enabled.
+  P1Type=-2
+  P3Type=String
+  P3Name=AttachEffectType
+
+  ; ********** PHOBOS ENDS ***********
+  ```
+
+  In `Config/ScriptActions.ini`:
+  ```ini
+  [INISystem]
+  BasedOn=Default/ScriptActions.ini
+
+  ; ********** PHOBOS BEGINS ***********
+  ; Phobos script actions use IDOverride. Keep them after every section that relies on its position in the file.
+  ; Sections starting with $ are option lists, not script actions.
+
+  [$PhobosTargetTypes]
+  Option0=1,Anything
+  Option1=2,Structures
+  Option2=3,Ore Miners
+  Option3=4,Infantry
+  Option4=5,Vehicles
+  Option5=6,Factories
+  Option6=7,Base Defenses
+  Option7=8,House Threats
+  Option8=9,Power Plants
+  Option9=10,Occupied
+  Option10=11,Tech Buildings
+  Option11=12,Refinery
+  Option12=13,Mind Controller
+  Option13=14,Air Units (incl. landed)
+  Option14=15,Naval
+  Option15=16,Disruptors
+  Option16=17,Ground Vehicles
+  Option17=18,Economy
+  Option18=19,Infantry Factory
+  Option19=20,Vehicle Factory
+  Option20=21,Aircraft Factory
+  Option21=22,Radar
+  Option22=23,Tech Lab
+  Option23=24,Naval Factory
+  Option24=25,Super Weapon
+  Option25=26,Construction Yard
+  Option26=27,Neutrals
+  Option27=28,Generators
+  Option28=29,Radar Jammer
+  Option29=30,Inhibitors
+  Option30=31,Naval Units
+  Option31=32,Mobile Units
+  Option32=33,Capturable
+  Option33=34,Area Threats
+  Option34=35,Vehicle & Naval Factory
+  Option35=36,Non-defensive Structures
+  Option36=37,Bridge Repair Huts
+
+  [PhobosRepeatAttackCloser]
+  IDOverride=10000
+  Name=Attack Target Type, Closer [Phobos]
+  Description=Attacks targets of the given target type, preferring closer targets. Repeats until no targets are left.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosSingleAttackCloser]
+  IDOverride=10001
+  Name=Attack Target Type, Closer (Single) [Phobos]
+  Description=Attacks targets of the given target type, preferring closer targets. Ends when a team member kills the target.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosRepeatAttackTypeCloser]
+  IDOverride=10002
+  Name=Attack AITargetTypes, Closer [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring closer targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosSingleAttackTypeCloser]
+  IDOverride=10003
+  Name=Attack AITargetTypes, Closer (Single) [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring closer targets. Ends when a team member kills the target.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomAttackTypeCloser]
+  IDOverride=10004
+  Name=Attack AITargetTypes, Closer (Random) [Phobos]
+  Description=Attacks targets of a random TechnoType picked from the given [AITargetTypes] list, preferring closer targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRepeatAttackFarther]
+  IDOverride=10005
+  Name=Attack Target Type, Farther [Phobos]
+  Description=Attacks targets of the given target type, preferring farther targets. Repeats until no targets are left.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosSingleAttackFarther]
+  IDOverride=10006
+  Name=Attack Target Type, Farther (Single) [Phobos]
+  Description=Attacks targets of the given target type, preferring farther targets. Ends when a team member kills the target.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosRepeatAttackTypeFarther]
+  IDOverride=10007
+  Name=Attack AITargetTypes, Farther [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring farther targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosSingleAttackTypeFarther]
+  IDOverride=10008
+  Name=Attack AITargetTypes, Farther (Single) [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring farther targets. Ends when a team member kills the target.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomAttackTypeFarther]
+  IDOverride=10009
+  Name=Attack AITargetTypes, Farther (Random) [Phobos]
+  Description=Attacks targets of a random TechnoType picked from the given [AITargetTypes] list, preferring farther targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRepeatAttackCloserThreat]
+  IDOverride=10010
+  Name=Attack Target Type, Closer Threat [Phobos]
+  Description=Attacks targets of the given target type, preferring closer, higher-threat targets. Repeats until no targets are left.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosSingleAttackCloserThreat]
+  IDOverride=10011
+  Name=Attack Target Type, Closer Threat (Single) [Phobos]
+  Description=Attacks targets of the given target type, preferring closer, higher-threat targets. Ends when a team member kills the target.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosRepeatAttackTypeCloserThreat]
+  IDOverride=10012
+  Name=Attack AITargetTypes, Closer Threat [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring closer, higher-threat targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosSingleAttackTypeCloserThreat]
+  IDOverride=10013
+  Name=Attack AITargetTypes, Closer Threat (Single) [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring closer, higher-threat targets. Ends when a team member kills the target.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRepeatAttackFartherThreat]
+  IDOverride=10014
+  Name=Attack Target Type, Farther Threat [Phobos]
+  Description=Attacks targets of the given target type, preferring farther, higher-threat targets. Repeats until no targets are left.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosSingleAttackFartherThreat]
+  IDOverride=10015
+  Name=Attack Target Type, Farther Threat (Single) [Phobos]
+  Description=Attacks targets of the given target type, preferring farther, higher-threat targets. Ends when a team member kills the target.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosRepeatAttackTypeFartherThreat]
+  IDOverride=10016
+  Name=Attack AITargetTypes, Farther Threat [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring farther, higher-threat targets. Repeats until no targets are left.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosSingleAttackTypeFartherThreat]
+  IDOverride=10017
+  Name=Attack AITargetTypes, Farther Threat (Single) [Phobos]
+  Description=Attacks targets from the given [AITargetTypes] list, preferring farther, higher-threat targets. Ends when a team member kills the target.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosMoveToEnemyCloserThreat]
+  IDOverride=10050
+  Name=Move to Enemy Target Type, Closer Threat [Phobos]
+  Description=Moves the team to an enemy target of the given target type, preferring closer, higher-threat targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosMoveToTypeEnemyCloserThreat]
+  IDOverride=10051
+  Name=Move to Enemy AITargetTypes, Closer Threat [Phobos]
+  Description=Moves the team to an enemy target from the given [AITargetTypes] list, preferring closer, higher-threat targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomMoveToTypeEnemyCloser]
+  IDOverride=10052
+  Name=Move to Enemy AITargetTypes, Closer (Random) [Phobos]
+  Description=Moves the team to an enemy target of a random TechnoType picked from the given [AITargetTypes] list, preferring closer targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosMoveToFriendlyCloser]
+  IDOverride=10053
+  Name=Move to Friendly Target Type, Closer [Phobos]
+  Description=Moves the team to a friendly target of the given target type, preferring closer targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosMoveToTypeFriendlyCloser]
+  IDOverride=10054
+  Name=Move to Friendly AITargetTypes, Closer [Phobos]
+  Description=Moves the team to a friendly target from the given [AITargetTypes] list, preferring closer targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomMoveToTypeFriendlyCloser]
+  IDOverride=10055
+  Name=Move to Friendly AITargetTypes, Closer (Random) [Phobos]
+  Description=Moves the team to a friendly target of a random TechnoType picked from the given [AITargetTypes] list, preferring closer targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosMoveToEnemyFartherThreat]
+  IDOverride=10056
+  Name=Move to Enemy Target Type, Farther Threat [Phobos]
+  Description=Moves the team to an enemy target of the given target type, preferring farther, higher-threat targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosMoveToTypeEnemyFartherThreat]
+  IDOverride=10057
+  Name=Move to Enemy AITargetTypes, Farther Threat [Phobos]
+  Description=Moves the team to an enemy target from the given [AITargetTypes] list, preferring farther, higher-threat targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomMoveToTypeEnemyFarther]
+  IDOverride=10058
+  Name=Move to Enemy AITargetTypes, Farther (Random) [Phobos]
+  Description=Moves the team to an enemy target of a random TechnoType picked from the given [AITargetTypes] list, preferring farther targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosMoveToFriendlyFarther]
+  IDOverride=10059
+  Name=Move to Friendly Target Type, Farther [Phobos]
+  Description=Moves the team to a friendly target of the given target type, preferring farther targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=Target Type
+  ParamType=Number
+  OptionsSectionName=$PhobosTargetTypes
+
+  [PhobosMoveToTypeFriendlyFarther]
+  IDOverride=10060
+  Name=Move to Friendly AITargetTypes, Farther [Phobos]
+  Description=Moves the team to a friendly target from the given [AITargetTypes] list, preferring farther targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosRandomMoveToTypeFriendlyFarther]
+  IDOverride=10061
+  Name=Move to Friendly AITargetTypes, Farther (Random) [Phobos]
+  Description=Moves the team to a friendly target of a random TechnoType picked from the given [AITargetTypes] list, preferring farther targets. Ends when close enough, see actions 12001 and 12002.
+  ParamDescription=AITargetTypes Index
+  ParamType=Number
+
+  [PhobosTimedAreaGuard]
+  IDOverride=10100
+  Name=Timed Area Guard [Phobos]
+  Description=Area guards for the given time, actively attacking nearby enemies and protecting nearby units.
+  ParamDescription=Seconds
+  ParamType=Number
+
+  [PhobosWaitUntilFullAmmo]
+  IDOverride=10101
+  Name=Wait Until Ammo is Full [Phobos]
+  Description=Waits until all team members that use ammo are fully reloaded.
+
+  [PhobosGatherAroundLeader]
+  IDOverride=10102
+  Name=Regroup Around Team Leader [Phobos]
+  Description=Area guards around the team leader, who stays almost still, within [General] -> CloseEnough for the given time. 0 waits until every member is near the leader.
+  ParamDescription=Seconds
+  ParamType=Number
+
+  [PhobosLoadIntoTransports]
+  IDOverride=10103
+  Name=Load onto Transports [Phobos]
+  Description=Makes team members enter transports of the same team that can carry them. In campaigns, follow with 'Wait Until Fully Loaded' or the script won't continue.
+
+  [PhobosChronoshiftToEnemyBase]
+  IDOverride=10104
+  Name=Chronoshift to Enemy Base [Phobos]
+  Description=Chronoshifts the team to within [General] -> AISafeDistance plus the given number of cells of the enemy base. The superweapon must be charged to at least [General] -> AIMinorSuperReadyPercent.
+  ParamDescription=Additional Distance (Cells)
+  ParamType=Number
+
+  [PhobosWaitIfNoTarget]
+  IDOverride=12000
+  Name=Wait if No Target Found [Phobos]
+  Description=Makes the next Phobos attack action wait 1 second and retry if it finds no target, up to the given number of times. 0 retries forever.
+  ParamDescription=Retries
+  ParamType=Number
+
+  [PhobosModifyTargetDistance]
+  IDOverride=12001
+  Name=Modify Target Distance [Phobos]
+  Description=Overrides [General] -> CloseEnough for the next Phobos move action only.
+  ParamDescription=Distance (Cells)
+  ParamType=Number
+
+  [PhobosSetMoveMissionEndMode]
+  IDOverride=12002
+  Name=Set Move Action End Mode [Phobos]
+  Description=Sets when the next Phobos move action ends.
+  ParamDescription=Mode
+  ParamType=Number
+  Option0=0,Team Leader Is Close Enough
+  Option1=1,One Member Is Close Enough
+  Option2=2,All Members Are Close Enough
+
+  [PhobosTeamWeightReward]
+  IDOverride=14000
+  Name=Team's Trigger Weight Reward [Phobos]
+  Description=Makes the next Phobos attack action increase the AI trigger's current weight by the given amount when a team member kills the target.
+  ParamDescription=Weight
+  ParamType=Number
+
+  [PhobosIncreaseCurrentAITriggerWeight]
+  IDOverride=14001
+  Name=Increase AI Trigger Current Weight [Phobos]
+  Description=Increases the AI trigger's current weight by the given amount, within its min and max weight.
+  ParamDescription=Weight
+  ParamType=Number
+
+  [PhobosDecreaseCurrentAITriggerWeight]
+  IDOverride=14002
+  Name=Decrease AI Trigger Current Weight [Phobos]
+  Description=Decreases the AI trigger's current weight by the given amount, within its min and max weight.
+  ParamDescription=Weight
+  ParamType=Number
+
+  [PhobosUnregisterGreatSuccess]
+  IDOverride=14003
+  Name=Unregister Team Success [Phobos]
+  Description=The opposite of 'Register Success': marks the team as failed.
+
+  [PhobosForceGlobalOnlyTargetHouseEnemy]
+  IDOverride=14004
+  Name=Force Global OnlyTargetHouseEnemy [Phobos]
+  Description=Forces the OnlyTargetHouseEnemy value of all the owner's teams in Phobos attack and move actions.
+  ParamDescription=Mode
+  ParamType=Number
+  Option0=-1,Use TeamType Value
+  Option1=0,Force No
+  Option2=1,Force Yes
+  Option3=2,Random
+
+  [PhobosSameLineForceJumpCountdown]
+  IDOverride=16000
+  Name=Timed Jump to Same Line [Phobos]
+  Description=When the timer expires, restarts the current action. Loops until stopped with action 16002.
+  ParamDescription=Seconds
+  ParamType=Number
+
+  [PhobosNextLineForceJumpCountdown]
+  IDOverride=16001
+  Name=Timed Jump to Next Line [Phobos]
+  Description=When the timer expires, ends the current action and continues with the next one.
+  ParamDescription=Seconds
+  ParamType=Number
+
+  [PhobosStopForceJumpCountdown]
+  IDOverride=16002
+  Name=Stop Timed Jumps [Phobos]
+  Description=Stops a timed jump started with action 16000 or 16001.
+
+  [PhobosRandomSkipNextAction]
+  IDOverride=16003
+  Name=Randomly Skip Next Action [Phobos]
+  Description=Skips the next action with the given chance. 0 never skips, 100 always skips.
+  ParamDescription=Chance (%)
+  ParamType=Number
+
+  [PhobosPickRandomScript]
+  IDOverride=16004
+  Name=Pick Random Script [Phobos]
+  Description=Replaces the current script with a random one from the given [AIScriptsList] list.
+  ParamDescription=AIScriptsList Index
+  ParamType=Number
+
+  [PhobosJumpBackToPreviousScript]
+  IDOverride=16005
+  Name=Jump Back to Previous Script [Phobos]
+  Description=In a script picked by action 16004, returns to the previous script and continues after the 16004 action.
+
+  [PhobosLocalVariableSet]
+  IDOverride=18000
+  Name=Local Variable Set [Phobos]
+  Description=Applies 'Set' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAdd]
+  IDOverride=18001
+  Name=Local Variable Add [Phobos]
+  Description=Applies 'Add' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMinus]
+  IDOverride=18002
+  Name=Local Variable Subtract [Phobos]
+  Description=Applies 'Subtract' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMultiply]
+  IDOverride=18003
+  Name=Local Variable Multiply [Phobos]
+  Description=Applies 'Multiply' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableDivide]
+  IDOverride=18004
+  Name=Local Variable Divide [Phobos]
+  Description=Applies 'Divide' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMod]
+  IDOverride=18005
+  Name=Local Variable Modulo [Phobos]
+  Description=Applies 'Modulo' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableLeftShift]
+  IDOverride=18006
+  Name=Local Variable Left Shift [Phobos]
+  Description=Applies 'Left Shift' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableRightShift]
+  IDOverride=18007
+  Name=Local Variable Right Shift [Phobos]
+  Description=Applies 'Right Shift' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableReverse]
+  IDOverride=18008
+  Name=Local Variable Bitwise NOT [Phobos]
+  Description=Applies 'Bitwise NOT' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableXor]
+  IDOverride=18009
+  Name=Local Variable Bitwise XOR [Phobos]
+  Description=Applies 'Bitwise XOR' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableOr]
+  IDOverride=18010
+  Name=Local Variable Bitwise OR [Phobos]
+  Description=Applies 'Bitwise OR' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAnd]
+  IDOverride=18011
+  Name=Local Variable Bitwise AND [Phobos]
+  Description=Applies 'Bitwise AND' to a local variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableSet]
+  IDOverride=18012
+  Name=Global Variable Set [Phobos]
+  Description=Applies 'Set' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAdd]
+  IDOverride=18013
+  Name=Global Variable Add [Phobos]
+  Description=Applies 'Add' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMinus]
+  IDOverride=18014
+  Name=Global Variable Subtract [Phobos]
+  Description=Applies 'Subtract' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMultiply]
+  IDOverride=18015
+  Name=Global Variable Multiply [Phobos]
+  Description=Applies 'Multiply' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableDivide]
+  IDOverride=18016
+  Name=Global Variable Divide [Phobos]
+  Description=Applies 'Divide' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMod]
+  IDOverride=18017
+  Name=Global Variable Modulo [Phobos]
+  Description=Applies 'Modulo' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableLeftShift]
+  IDOverride=18018
+  Name=Global Variable Left Shift [Phobos]
+  Description=Applies 'Left Shift' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableRightShift]
+  IDOverride=18019
+  Name=Global Variable Right Shift [Phobos]
+  Description=Applies 'Right Shift' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableReverse]
+  IDOverride=18020
+  Name=Global Variable Bitwise NOT [Phobos]
+  Description=Applies 'Bitwise NOT' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableXor]
+  IDOverride=18021
+  Name=Global Variable Bitwise XOR [Phobos]
+  Description=Applies 'Bitwise XOR' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableOr]
+  IDOverride=18022
+  Name=Global Variable Bitwise OR [Phobos]
+  Description=Applies 'Bitwise OR' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAnd]
+  IDOverride=18023
+  Name=Global Variable Bitwise AND [Phobos]
+  Description=Applies 'Bitwise AND' to a global variable using a number. Argument = variable index + number * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and number 10 give 655363.
+  ParamDescription=Variable Index + Number * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableSetByLocal]
+  IDOverride=18024
+  Name=Local Variable Set by Local Variable [Phobos]
+  Description=Applies 'Set' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAddByLocal]
+  IDOverride=18025
+  Name=Local Variable Add by Local Variable [Phobos]
+  Description=Applies 'Add' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMinusByLocal]
+  IDOverride=18026
+  Name=Local Variable Subtract by Local Variable [Phobos]
+  Description=Applies 'Subtract' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMultiplyByLocal]
+  IDOverride=18027
+  Name=Local Variable Multiply by Local Variable [Phobos]
+  Description=Applies 'Multiply' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableDivideByLocal]
+  IDOverride=18028
+  Name=Local Variable Divide by Local Variable [Phobos]
+  Description=Applies 'Divide' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableModByLocal]
+  IDOverride=18029
+  Name=Local Variable Modulo by Local Variable [Phobos]
+  Description=Applies 'Modulo' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableLeftShiftByLocal]
+  IDOverride=18030
+  Name=Local Variable Left Shift by Local Variable [Phobos]
+  Description=Applies 'Left Shift' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableRightShiftByLocal]
+  IDOverride=18031
+  Name=Local Variable Right Shift by Local Variable [Phobos]
+  Description=Applies 'Right Shift' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableReverseByLocal]
+  IDOverride=18032
+  Name=Local Variable Bitwise NOT by Local Variable [Phobos]
+  Description=Applies 'Bitwise NOT' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableXorByLocal]
+  IDOverride=18033
+  Name=Local Variable Bitwise XOR by Local Variable [Phobos]
+  Description=Applies 'Bitwise XOR' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableOrByLocal]
+  IDOverride=18034
+  Name=Local Variable Bitwise OR by Local Variable [Phobos]
+  Description=Applies 'Bitwise OR' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAndByLocal]
+  IDOverride=18035
+  Name=Local Variable Bitwise AND by Local Variable [Phobos]
+  Description=Applies 'Bitwise AND' to a local variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableSetByLocal]
+  IDOverride=18036
+  Name=Global Variable Set by Local Variable [Phobos]
+  Description=Applies 'Set' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAddByLocal]
+  IDOverride=18037
+  Name=Global Variable Add by Local Variable [Phobos]
+  Description=Applies 'Add' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMinusByLocal]
+  IDOverride=18038
+  Name=Global Variable Subtract by Local Variable [Phobos]
+  Description=Applies 'Subtract' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMultiplyByLocal]
+  IDOverride=18039
+  Name=Global Variable Multiply by Local Variable [Phobos]
+  Description=Applies 'Multiply' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableDivideByLocal]
+  IDOverride=18040
+  Name=Global Variable Divide by Local Variable [Phobos]
+  Description=Applies 'Divide' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableModByLocal]
+  IDOverride=18041
+  Name=Global Variable Modulo by Local Variable [Phobos]
+  Description=Applies 'Modulo' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableLeftShiftByLocal]
+  IDOverride=18042
+  Name=Global Variable Left Shift by Local Variable [Phobos]
+  Description=Applies 'Left Shift' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableRightShiftByLocal]
+  IDOverride=18043
+  Name=Global Variable Right Shift by Local Variable [Phobos]
+  Description=Applies 'Right Shift' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableReverseByLocal]
+  IDOverride=18044
+  Name=Global Variable Bitwise NOT by Local Variable [Phobos]
+  Description=Applies 'Bitwise NOT' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableXorByLocal]
+  IDOverride=18045
+  Name=Global Variable Bitwise XOR by Local Variable [Phobos]
+  Description=Applies 'Bitwise XOR' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableOrByLocal]
+  IDOverride=18046
+  Name=Global Variable Bitwise OR by Local Variable [Phobos]
+  Description=Applies 'Bitwise OR' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAndByLocal]
+  IDOverride=18047
+  Name=Global Variable Bitwise AND by Local Variable [Phobos]
+  Description=Applies 'Bitwise AND' to a global variable using a local variable's value. Argument = variable index + local variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and local variable 10 give 655363.
+  ParamDescription=Variable Index + Local Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableSetByGlobal]
+  IDOverride=18048
+  Name=Local Variable Set by Global Variable [Phobos]
+  Description=Applies 'Set' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAddByGlobal]
+  IDOverride=18049
+  Name=Local Variable Add by Global Variable [Phobos]
+  Description=Applies 'Add' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMinusByGlobal]
+  IDOverride=18050
+  Name=Local Variable Subtract by Global Variable [Phobos]
+  Description=Applies 'Subtract' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableMultiplyByGlobal]
+  IDOverride=18051
+  Name=Local Variable Multiply by Global Variable [Phobos]
+  Description=Applies 'Multiply' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableDivideByGlobal]
+  IDOverride=18052
+  Name=Local Variable Divide by Global Variable [Phobos]
+  Description=Applies 'Divide' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableModByGlobal]
+  IDOverride=18053
+  Name=Local Variable Modulo by Global Variable [Phobos]
+  Description=Applies 'Modulo' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableLeftShiftByGlobal]
+  IDOverride=18054
+  Name=Local Variable Left Shift by Global Variable [Phobos]
+  Description=Applies 'Left Shift' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableRightShiftByGlobal]
+  IDOverride=18055
+  Name=Local Variable Right Shift by Global Variable [Phobos]
+  Description=Applies 'Right Shift' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableReverseByGlobal]
+  IDOverride=18056
+  Name=Local Variable Bitwise NOT by Global Variable [Phobos]
+  Description=Applies 'Bitwise NOT' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableXorByGlobal]
+  IDOverride=18057
+  Name=Local Variable Bitwise XOR by Global Variable [Phobos]
+  Description=Applies 'Bitwise XOR' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableOrByGlobal]
+  IDOverride=18058
+  Name=Local Variable Bitwise OR by Global Variable [Phobos]
+  Description=Applies 'Bitwise OR' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosLocalVariableAndByGlobal]
+  IDOverride=18059
+  Name=Local Variable Bitwise AND by Global Variable [Phobos]
+  Description=Applies 'Bitwise AND' to a local variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableSetByGlobal]
+  IDOverride=18060
+  Name=Global Variable Set by Global Variable [Phobos]
+  Description=Applies 'Set' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAddByGlobal]
+  IDOverride=18061
+  Name=Global Variable Add by Global Variable [Phobos]
+  Description=Applies 'Add' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMinusByGlobal]
+  IDOverride=18062
+  Name=Global Variable Subtract by Global Variable [Phobos]
+  Description=Applies 'Subtract' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableMultiplyByGlobal]
+  IDOverride=18063
+  Name=Global Variable Multiply by Global Variable [Phobos]
+  Description=Applies 'Multiply' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableDivideByGlobal]
+  IDOverride=18064
+  Name=Global Variable Divide by Global Variable [Phobos]
+  Description=Applies 'Divide' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableModByGlobal]
+  IDOverride=18065
+  Name=Global Variable Modulo by Global Variable [Phobos]
+  Description=Applies 'Modulo' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableLeftShiftByGlobal]
+  IDOverride=18066
+  Name=Global Variable Left Shift by Global Variable [Phobos]
+  Description=Applies 'Left Shift' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableRightShiftByGlobal]
+  IDOverride=18067
+  Name=Global Variable Right Shift by Global Variable [Phobos]
+  Description=Applies 'Right Shift' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableReverseByGlobal]
+  IDOverride=18068
+  Name=Global Variable Bitwise NOT by Global Variable [Phobos]
+  Description=Applies 'Bitwise NOT' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableXorByGlobal]
+  IDOverride=18069
+  Name=Global Variable Bitwise XOR by Global Variable [Phobos]
+  Description=Applies 'Bitwise XOR' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableOrByGlobal]
+  IDOverride=18070
+  Name=Global Variable Bitwise OR by Global Variable [Phobos]
+  Description=Applies 'Bitwise OR' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  [PhobosGlobalVariableAndByGlobal]
+  IDOverride=18071
+  Name=Global Variable Bitwise AND by Global Variable [Phobos]
+  Description=Applies 'Bitwise AND' to a global variable using a global variable's value. Argument = variable index + global variable index * 65536. Both parts are unsigned 16-bit values (0-65535). Example: variable 3 and global variable 10 give 655363.
+  ParamDescription=Variable Index + Global Variable Index * 65536
+  ParamType=Number
+
+  ; ********** PHOBOS ENDS ***********
+  ```
+````
 
 ## For Map Editor (Final Alert 2)
 
@@ -443,11 +2040,10 @@ HideShakeEffects=false           ; boolean
 - [Allowed customize that whether `Temporal=yes` warhead will cause target building animation poweroff](Fixed-or-Improved-Logics.md#allow-customize-that-whether-temporal-yes-warhead-will-cause-target-building-animation-poweroff) (by NetsuNegi)
 - Country-based attached effects (by Ollerus)
 - [Customizable crew type per country](Fixed-or-Improved-Logics.md#customizable-crew-type-per-country) (by Sovietianqi, FlyStar, Noble_Fish)
-- [Country-specific veteran buildings](Fixed-or-Improved-Logics.md#country-specific-veteran-buildings) (by Noble_Fish)
 - [Allow Tiberium to grow and spread on slopes](Fixed-or-Improved-Logics.md#grow-and-spread-on-slopes) (by FS-21)
 - [Customize `IdleActionFrequency`](Fixed-or-Improved-Logics.md#customize-idleactionfrequency) (by Noble_Fish)
 - [Enter the grinder voice](Fixed-or-Improved-Logics.md#enter-the-grinder-voice) (by FlyStar)
-- [Customize the country displayed in `Sight`](Fixed-or-Improved-Logics.md#customize-the-country-displayed-in-sight) (by FlyStar)
+- [Customize who sees the map revealed by `Sight`](Fixed-or-Improved-Logics.md#customize-who-sees-the-map-revealed-by-sight) (by FlyStar)
 - [Detonate ivan bomb on impact](New-or-Enhanced-Logics.md#detonate-ivan-bomb-on-impact) (by dh381)
 - [Customize `MissileSafetyAltitude` and whether missiles fly to the target or climb when losing target](Fixed-or-Improved-Logics.md#customize-missilesafetyaltitude-and-whether-missiles-fly-to-the-target-or-climb-when-losing-target) (by NetsuNegi & Noble_Fish)
 - [Customize `DefaultToGuardArea` per gunner mode](Fixed-or-Improved-Logics.md#customize-defaulttoguardarea-per-gunner-mode) (by Noble_Fish)
@@ -455,17 +2051,51 @@ HideShakeEffects=false           ; boolean
 - [Hotkey for cycling through the current selection](User-Interface.md#cycle-selection) (by FrozenFog)
 - [Hotkey for cycling through the types in the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
 - [Customizable type order and selection summary for the type cycle of the current selection](User-Interface.md#cycle-type-selection) (by FrozenFog)
+- [AttachEffect `CumulativeAnimations` count increment customization](New-or-Enhanced-Logics.md#attached-effects) (by Starkku)
+- [More convenient vanilla action script target specification](AI-Scripting-and-Mapping.md#more-convenient-vanilla-action-script-target-specification) (by NetsuNegi)
+- Global default value for `ShouldUseCellDrawer` (by Noble_Fish)
+- [New `NoAmmoWeapons` tag supporting multiple weapon types](New-or-Enhanced-Logics.md#no-ammo-weapons) (by FlyStar)
+- [New weapon filter tag `CanTarget.DriverKilled`](New-or-Enhanced-Logics.md#customize-whether-weapon-can-target-driver-killed-vehicles) (by FlyStar)
+- Customize turn rate when jumpjet vehicle crashing (by NetsuNegi)
+- Customize insignias palette (by Flactine & NetsuNegi)
+- Allowed deployable infantry without a deploy sequence to directly execute `Convert.Deploy` like deployable vehicles (by Noble_Fish)
+- [Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed](Fixed-or-Improved-Logics.md#customize-which-of-vehicle-thief-pilot-and-passenger-the-tag-can-be-transferred-to-when-the-unit-is-destroyed) (by NetsuNegi)
+- [Building placing and deploying logic enhancement](New-or-Enhanced-Logics.md#building-placing-and-deploying-logic-enhancement) (by CrimRecya)
+- [Improvements to stationary unit logic](Fixed-or-Improved-Logics.md#stationary-units) (by Starkku)
+- [Light flash toggle for ParticleType alpha images](User-Interface.md#visual-effects-toggling) (by Starkku)
+- [Allow customizing if `IsSimpleDeployer` unit can deploy on top of (passable) buildings](Fixed-or-Improved-Logics.md#issimpledeployer-customizations) (by Starkku)
+- [Preserve whitespace in CSF](User-Interface.md#preserve-whitespace-in-csf) (by Noble_Fish)
+- [`AltPalette` animation remap invoker house fallback toggle](Fixed-or-Improved-Logics.md#animation-palette-customizations-improvements) (by Starkku)
+- [Toggle for `Arcing=true` projectile weapons to consider building foundation in rangefinding](Fixed-or-Improved-Logics.md#arcing-projectile-customization) (by Starkku)
+- Add negative damage handling for `PenetratesIronCurtain` and `PenetratesForceShield` (by dh381)
+- Power plant enhancers can affect infantry, vehicles and aircraft (by Noble_Fish)
+- Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
+- [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
+- [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
 - Customizable damage divider for `AnimList`, `SplashList`, `Crit_AnimList` picker (by Fryone)
 
 #### Vanilla fixes:
-- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
 - Fixed the issue where vehicles always finish turret resetting first before turn to a new attack target, now it should turn to new target immediately (by NetsuNegi)
 - Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
-- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
 - Observer can see IvanBomb that's attached by any house (by NetsuNegi)
 - Fixed crashes and freezes caused by Tiberium growth and spread (by FS-21)
 - Fixed Tiberium types not supporting overrides in map and game mode INIs (by FS-21)
+- [Sidebar radar horizontal offset](User-Interface.md#sidebar-radar-horizontal-offset) (by TwinkleStar)
+- Fixed `HealBase` crates causing full-health objects to scatter (by Noble_Fish)
+- Fixed the bug that units keep attacking ground after target wall has been destroyed by adjacent damage/crush/wave damage (by NetsuNegi)
+- Fixed a rare crash when an `IsSonic=true` wave was drawn near the top edge of the screen (by JerryDing07)
+- Fixed a crash or memory corruption when a wave (e.g. `IsSonic=true`) was drawn while its firer was at the same horizontal position as its target (by JerryDing07)
+- Fixed the bug that crashing or sinking unit can be recruit into taskforce team (by NetsuNegi)
+- Fixed briefing out of bound due to fixed window size (by FrozenFog, based on knowledge of MagicShiba)
+- Units in Tank Bunker with deploy functions no longer perform them when unloaded from of Tank Bunker (by Starkku)
+- Fixed the bug that infantry weapons with both `LimboLaunch=yes` and ammunition logic could not set ReloadTimer properly (by dh381)
+- Removed the 128 techno limit when executing a command (by FrozenFog, based on knowledge of MagicShiba)
+- Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256 (by FrozenFog, based on knowledge of MagicShiba)
+- Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
+- Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
+- Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -475,11 +2105,20 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug where `VoiceEnter` and `VoiceMove` were not played correctly when a unit entered a building with `NoQueueUpToEnter=yes` (by FlyStar)
 - Fixed Tiberium trees with max `SpawnsTiberium.GrowthStage` failing to spread Tiberium to neighboring cells (by FS-21)
 - Fixed the bug where Tiberium veins overlay used the wrong palette instead of matching the Veinhole Monster (by FS-21)
+- Fixed tint effects on `Cumulative=true` AttachEffects not stacking. This behaviour can be disabled by setting `Tint.Cumulative=false` (by Starkku)
+- Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
+- Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
+- Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
+- Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
 - [Added a global default value for `KeepAlive`](Fixed-or-Improved-Logics.md#add-a-global-default-value-for-keepalive) (by FlyStar)
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
+- Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed (by FlyStar)
+- [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
+- [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)
 ```
 
 ### 0.5
@@ -785,7 +2424,7 @@ HideShakeEffects=false           ; boolean
 - Allow Reveal Crate to take effect when picking up by another player controlled house in campaign (by Trsdy)
 - Fixed an issue where the vanilla script ignores jumpjets (by TaranDahl)
 - Fixed the issue where trigger events 2, 53 and 54 in persistent type triggers would be activated unconditionally after activation (by FlyStar)
-- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi)
+- Fixed the bug that naval ship will sink even they destroyed in air (by NetsuNegi & Noble_Fish)
 - Fixed MPDebug timer displaying when debug's visibility is off (by 11EJDE11)
 - Fixed the issue that units will goto farest location if target is closer than `MinimumRange` (by NetsuNegi)
 - Fixed a bug where units can be promoted when created via trigger actions even if they have `Trainable=false` (by NetsuNegi)
@@ -819,7 +2458,6 @@ HideShakeEffects=false           ; boolean
 - Fixed the [EIP#007120F7](https://modenc.renegadeprojects.com/Internal_Error#eip_007120F7) caused when the `Strength` value is lower than `RepairStep` (by NetsuNegi)
 - Fixed the bug where non-Teleporter miners would not return to work after minerals are depleted and then regenerated (by TaranDahl)
 - Fixed units with Fly, Jumpjet or Rocket locomotors destroyed while crashing off-map never being fully cleaned up, permanently blocking production slots and counting towards unit limits (by RAZER)
-- Miners back to work when ore regenerated (by TaranDahl)
 - Fixed the incorrect mission switching in infantry EnterIdleMode (by TaranDahl)
 - Fixed BalloonHover incorrectly considering ground factors when pathfinding (by TaranDahl)
 - Fixed the issue where the sidebar would not refresh when an unit dies in limbo (by TaranDahl)
@@ -914,6 +2552,63 @@ HideShakeEffects=false           ; boolean
 
 ```{dropdown} Pre-release changes
 
+#### TBD
+
+##### Vanilla fixes:
+- Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
+- Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
+- The parachute animation supports `ShouldUseCellDrawer=no` to remove the hard-coded requirement to use the owner's color palette, while inheriting the animation owner's current country (by FlyStar)
+- Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
+- Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
+- Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+
+##### Phobos fixes:
+- Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
+- Fixed `[CombatDamage] -> OccupyDamageMultiplier` being used instead of `BunkerDamageMultiplier` for vehicles in Tank Bunker (by Starkku)
+- Attempted to fix edge-case issues such as odd pathfinding with `CreateUnit`-created Jumpjet locomotor units that are spawned in air (by Starkku)
+- Fixed `InsigniaFrames` not being updated correctly for passengers and weapon-specific insignias (by Ollerus)
+- Fixed script action `18000 Local variable set` doing nothing (by ZivDero)
+- Fixed some of the variable comparison trigger events `512-535` not reacting to changes of the variables they compare (by ZivDero)
+- Fixed operation `8` of trigger action `504 Binary operation` assigning the second variable's value instead of doing `~CurrentValue` (by ZivDero)
+- Fixed the bug that `NoQueueUpToEnter` will cause survivors will return to location where they entered transport after the transport has been destroyed (by NetsuNegi)
+- Fixed default owner for `DestroyAnim` to be the owner of the unit destroyed unless otherwise specified by `MakeInfantryOwner` or `CreateUnit.Owner` (by Starkku)
+- Fixed `CreateUnit` potentially allowing units to spawn on wall overlays with `CreateUnit.ConsiderPathfinding=true` (by Starkku)
+- Fixed a bug where, when non-queue loading was enabled, tunnel structures had to have `InfantryAbsorb=yes` and `UnitAbsorb=yes` set in order to allow infantry and vehicles to enter (by FlyStar)
+- When non-queue loading was enabled, buildings that possess both `Grinding=yes` and `InfantryAbsorb=yes`/`UnitAbsorb=yes` will not be detected by units that are searching for a bio-reactor building and preparing to load into it (by FlyStar)
+- Fixed the bug where `HoverLocomotorMakesWake` and `ShipLocomotorMakesWake` are ineffective because they read the wrong tag names (by Noble_Fish)
+- Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
+- Fixed the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints (by Noble_Fish)
+- Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` (by Noble_Fish)
+
+#### 0.5-alpha2
+
+##### Vanilla fixes:
+- Fixed units approaching target not taking weapon `MinimumRange` correctly into accord (by NetsuNegi)
+
+##### Phobos fixes:
+- Fixed an issue with `ApproachTarget.StopWhenInRange` (by NetsuNegi)
+- Units on `Unload` mission now ignore `ReadyToNextMission.MovingCheck` (by Ollerus)
+- Fixed an issue with WeaponType parsing from special global weapon keys (by Noble_Fish)
+- Fixed an issue causing upgrade animations on pre-placed buildings on maps to not play correctly (by CrimRecya & Ollerus)
+- Fixed `JumpjetSpeed` not updating after type conversion (by Noble_Fish)
+- Fixed `AIBiasSpawnCell` to only apply if more than one Construction Yard is owned (by Ollerus)
+- Fixed a bug in recalculating AttachEffect effects during transfer between technos (by Ollerus)
+- Fixed display of percentage-based superweapon timers for short recharge times (by NetsuNegi)
+- Fixed an issue with `TypeSelectUseIFVMode` not working correctly (by NetsuNegi)
+- Fixed a bug in building start facing logic with a variable not using a correct default value (by Noble_Fish)
+- Fixed `EnemyUIName` to work on units disguised as the enemy (by Ollerus)
+- Fixed fallback of order of damage source house in damage calculations (by Ollerus)
+- Fixed a bug in sync checks causing freezes in multiplayer games if `Next` was used to create loop between animation types (by NetsuNegi)
+- Reverted a previous, incorrectly working bugfix for AI trying to produce aircraft without free docks (by NetsuNegi)
+- Fixed the battle screen message box overlay incorrectly accepting mouse cursor inputs when user input is locked (by Trsdy)
+- Fixed the Phobos bug where infantry and aircraft with `Locomotor=Tunnel` crash as soon as they move (by Noble_Fish)
+- Fixed an issue preventing hover units from sinking in water even if otherwise allowed (by Noble_Fish)
+
+##### Fixes / interactions with other extensions:
+- Fixed `IvanBomb.Detachable` not being taken into accord correctly (by Noble_Fish)
+- Fixed an issue causing east-west facing laser fences to function incorrectly (by CrimRecya)
+- Fixed a bug caused by spotlights and transports interacting (by Noble_Fish)
+
 #### 0.5-alpha1
 
 ```
@@ -925,6 +2620,7 @@ HideShakeEffects=false           ; boolean
 #### Vanilla fixes:
 - Vehicles overlapping `Wall=true` OverlayTypes no longer display sell cursor and cannot be sold (by CnCRAZER, Starkku, Noble_Fish)
 - Fixed a desync due to an inconsistent shroud state caused by `GapGenerator` and `SpySat` interaction (by Starkku)
+- Miners back to work when ore regenerated (by TaranDahl)
 
 #### Phobos fixes:
 - Fixed vehicles disguised as trees incorrectly displaying veterancy insignia when they shouldn't (by Starkku)
@@ -947,6 +2643,7 @@ HideShakeEffects=false           ; boolean
 - Fixed a bug introduced in v0.4.0.1 where some floating-point values using percentage form were incorrectly multiplied by an additional 0.01 (by Starkku)
 - Fixed the bug that `MissileSpawn=true` causes the spawnee launcher to crash immediately when attacking (by Noble_Fish)
 - Fixed the bug that slaves would be handed over to the neutral house instead of respecting `Slaved.OwnerWhenMasterKilled` when their master was sold or self-destructed (by frg2089)
+- Resolved a performance issue introduced by the shadow fix for hover locomotor vehicles lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
 ```
 
 ### 0.4.0.2
@@ -1279,7 +2976,7 @@ HideShakeEffects=false           ; boolean
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
-- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed an issue of incorrect position of `TrailerAnim` in VoxelAnim (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)

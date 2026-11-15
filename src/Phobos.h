@@ -1,5 +1,4 @@
 #pragma once
-#include <Phobos.version.h>
 #include <Windows.h>
 
 #include <string>
@@ -111,6 +110,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool HideLaserTrailEffects;
 		static bool HideShakeEffects;
+		static bool PreserveCSFWhitespace;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;

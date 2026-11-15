@@ -48,12 +48,11 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
 	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
 
-	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
-
 	this->DefaultMirageDisguises.Read(exINI, pSection, "DefaultMirageDisguises");
 
 	this->IsSimpleDeployer_ConsiderPathfinding.Read(exINI, pSection, "IsSimpleDeployer.ConsiderPathfinding");
 	this->IsSimpleDeployer_DisallowedLandTypes.Read<false, true>(exINI, pSection, "IsSimpleDeployer.DisallowedLandTypes");
+	this->IsSimpleDeployer_DisallowOnBuildings.Read(exINI, pSection, "IsSimpleDeployer.DisallowOnBuildings");
 	this->DeployDir.Read(exINI, pSection, "DeployDir");
 	this->DeployingAnims.Read(exINI, pSection, "DeployingAnims");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
@@ -157,10 +156,10 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->Ammo_AutoDeployMaximumAmount)
 		.Process(this->Ammo_DeployUnlockMinimumAmount)
 		.Process(this->Ammo_DeployUnlockMaximumAmount)
-		.Process(this->Parasite_AllowWaterExit)
 		.Process(this->DefaultMirageDisguises)
 		.Process(this->IsSimpleDeployer_ConsiderPathfinding)
 		.Process(this->IsSimpleDeployer_DisallowedLandTypes)
+		.Process(this->IsSimpleDeployer_DisallowOnBuildings)
 		.Process(this->DeployDir)
 		.Process(this->DeployingAnims)
 		.Process(this->DeployingAnim_KeepUnitVisible)

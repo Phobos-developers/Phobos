@@ -33,12 +33,11 @@ public:
 	Valueable<int> Ammo_DeployUnlockMinimumAmount;
 	Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
-	Nullable<bool> Parasite_AllowWaterExit;
-
 	NullableVector<TerrainTypeClass*> DefaultMirageDisguises;
 
 	Valueable<bool> IsSimpleDeployer_ConsiderPathfinding;
 	Nullable<LandTypeFlags> IsSimpleDeployer_DisallowedLandTypes;
+	Valueable<bool> IsSimpleDeployer_DisallowOnBuildings;
 	Nullable<FacingType> DeployDir;
 	ValueableVector<AnimTypeClass*> DeployingAnims;
 	Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -100,10 +99,10 @@ public:
 		, Ammo_AutoDeployMaximumAmount { -1 }
 		, Ammo_DeployUnlockMinimumAmount { -1 }
 		, Ammo_DeployUnlockMaximumAmount { -1 }
-		, Parasite_AllowWaterExit {}
 		, DefaultMirageDisguises {}
 		, IsSimpleDeployer_ConsiderPathfinding { false }
 		, IsSimpleDeployer_DisallowedLandTypes {}
+		, IsSimpleDeployer_DisallowOnBuildings { false }
 		, DeployDir {}
 		, DeployingAnims {}
 		, DeployingAnim_KeepUnitVisible { false }

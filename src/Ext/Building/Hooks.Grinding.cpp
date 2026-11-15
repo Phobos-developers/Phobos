@@ -1,6 +1,6 @@
 #include "Body.h"
 
-#include <InputManagerClass.h>
+#include <WWKeyboardClass.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
@@ -106,7 +106,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, EDI);
 	GET(Action, action, EBX);
 
-	if (InputManagerClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
+	if (WWKeyboardClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
 		return Continue;
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))

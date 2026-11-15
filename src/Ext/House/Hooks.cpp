@@ -30,31 +30,19 @@ DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_AfterBuildings, 0x6)
 {
 	GET(HouseClass*, pThis, ESI);
 
-	if (Phobos::Config::UnitPowerDrain)
-	{
-		auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
-			{
-				const int count = pThis->CountOwnedAndPresent(pType);
-				if (count == 0)
-					return;
-				const auto pExt = TechnoTypeExt::Fetch(pType);
-				if (pExt->Power > 0)
-					pThis->PowerOutput += pExt->Power * count;
-				else
-					pThis->PowerDrain -= pExt->Power * count;
-			};
+	const auto unitPower = HouseExt::UpdateUnitPower(pThis);
 
-		for (const auto pType : InfantryTypeClass::Array)
-			updateDrainForThisType(pType);
-		for (const auto pType : UnitTypeClass::Array)
-			updateDrainForThisType(pType);
-		for (const auto pType : AircraftTypeClass::Array)
-			updateDrainForThisType(pType);
-		// Don't do this for buildings, they've already been counted.
-	}
+	const auto aiPowerDrain = HouseExt::UpdateAIPower(pThis, unitPower);
+	HouseExt::CalculatePowerSurplus(pThis, aiPowerDrain);
 
-	HouseExt::CalculatePowerSurplus(pThis);
+	return 0;
+}
 
+DEFINE_HOOK(0x4F84D9, HouseClass_Update_RecheckUnitPower, 0x6)
+{
+	GET(HouseClass*, pThis, ESI);
+
+	HouseExt::RecheckUnitPower(pThis);
 	return 0;
 }
 
@@ -126,13 +114,77 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 // The objects are manually updated once after pre-placed objects have been parsed, buildings are ignored as the limboed pre-placed buildings
 // are not relevant (walls that will be converted into overlays etc), after which automatic update on limbo/unlimbo and uninit is enabled.
 
+namespace LimboTrackingTemp
+{
+	bool Enabled = false;
+	int IsBeingDeleted = 0;
+}
+
+DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
+{
+	for (auto const pTechno : TechnoClass::Array)
+	{
+		auto const pType = pTechno->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore && pTechno->WhatAmI() != AbstractType::Building && pTechno->InLimbo)
+		{
+			auto const pOwnerExt = HouseExt::Fetch(pTechno->Owner);
+			pOwnerExt->AddToLimboTracking(pType);
+		}
+	}
+
+	LimboTrackingTemp::Enabled = true;
+
+	return 0;
+}
+
+static void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+{
+
+	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
+	{
+		auto const pType = pThis->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore)
+			HouseExt::Fetch(pThis->Owner)->RemoveFromLimboTracking(pType);
+	}
+
+	++LimboTrackingTemp::IsBeingDeleted;
+	pThis->ObjectClass::UnInit();
+	--LimboTrackingTemp::IsBeingDeleted;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, TechnoClass_UnInit_Wrapper); // BuildingClass
+
+DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && !LimboTrackingTemp::IsBeingDeleted)
+	{
+		auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
+		pOwnerExt->AddToLimboTracking(pType);
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
+	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::Fetch(pThis);
 
-	if (!pExt->HasBeenPlacedOnMap)
+	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pExt->HasBeenPlacedOnMap)
+	{
+		auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
+		pOwnerExt->RemoveFromLimboTracking(pType);
+	}
+	else if (!pExt->HasBeenPlacedOnMap)
 	{
 		pExt->HasBeenPlacedOnMap = true;
 
@@ -198,12 +250,29 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	auto const pOwnerExt = HouseExt::Fetch(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::Fetch(pNewOwner);
 
+	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pThis->InLimbo)
+	{
+		pOwnerExt->RemoveFromLimboTracking(pType);
+		pNewOwnerExt->AddToLimboTracking(pType);
+	}
+
 	if (pTypeExt->Harvester_Counted)
 	{
 		auto& vec = pOwnerExt->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
-
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+	}
+
+	if (pType->DeploysInto)
+	{
+		auto& vec = pOwnerExt->OwnedDeployingUnits;
+		const auto it = std::find(vec.begin(), vec.end(), pThis);
+
+		if (it != vec.end())
+		{
+			vec.erase(it);
+			pNewOwnerExt->OwnedDeployingUnits.push_back(static_cast<UnitClass*>(pThis));
+		}
 	}
 
 	if (pFoot)
@@ -838,3 +907,39 @@ DEFINE_HOOK(0x4AC9B2, MouseClass_ToggleBeaconMode_AllUsed, 0x6)
 }
 
 #pragma endregion
+
+// Vanilla repair/sell mode can only enable when owning buildings without Insignificant=yes
+// This can be problematic sometime. F.ex. you cannot repair tech buildings without the presence of another ones
+// Simply skip the OwnedBuildings check here and check house properties instead
+// Ideally we should use additional vector to record them, but let's keep it simple for now
+static inline bool CanEnterRepairOrSellMode(HouseClass* pHouse)
+{
+	return !pHouse->Defeated && !pHouse->IsObserver();
+}
+
+DEFINE_HOOK(0x4AC92A, DisplayClass_RepairModeControl_OwnedBuildingsOverride, 0x6)
+{
+	enum { EnterRepairMode = 0x4AC934, ExitRepairMode = 0x4AC945 };
+
+	GET(HouseClass* const, pHouse, ECX);
+
+	return CanEnterRepairOrSellMode(pHouse) ? EnterRepairMode : ExitRepairMode;
+}
+
+DEFINE_HOOK(0x4AC6CA, DisplayClass_SellModeControl_OwnedBuildingsOverride, 0x6)
+{
+	enum { EnterSellMode = 0x4AC6D4, ExitSellMode = 0x4AC6E5 };
+
+	GET(HouseClass* const, pHouse, ECX);
+
+	return CanEnterRepairOrSellMode(pHouse) ? EnterSellMode : ExitSellMode;
+}
+
+DEFINE_HOOK(0x4F8B14, HouseClass_AI_OwnedBuildingsOverride, 0x8)
+{
+    enum { ContinueCheck = 0x4F8B1C, SkipCheck = 0x4F8B30 };
+
+    GET(HouseClass* const, pHouse, ESI);
+
+    return !CanEnterRepairOrSellMode(pHouse) ? ContinueCheck : SkipCheck;
+}

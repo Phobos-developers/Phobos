@@ -152,9 +152,20 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 
 DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
+	enum { NoRotation = 0x54CB3E };
+
 	GET(JumpjetLocomotionClass*, pThis, EDI);
-	auto const pTypeExt = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData;
-	return pTypeExt->JumpjetRotateOnCrash.Get(RulesExt::Global()->JumpjetRotateOnCrash) ? 0 : 0x54CB3E;
+	const auto pTypeExt = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData;
+
+	if (!pTypeExt->JumpjetRotateOnCrash.Get(RulesExt::Global()->JumpjetRotateOnCrash))
+		return NoRotation;
+
+	const int rot = pTypeExt->CrashROT;
+
+	if (rot >= 0)
+		pThis->LocomotionFacing.SetROT(rot);
+
+	return 0;
 }
 
 // We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing
@@ -439,10 +450,15 @@ namespace JumpjetClimbIgnoreBuilding
 DEFINE_HOOK(0x54D820, JumpjetLocomotionClass_GetFloorZ_SetContext, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
-	JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::Fetch(pThis->LinkedTo)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
+	const auto pFoot = pThis->LinkedTo;
+
+	if (pFoot->IsAttackedByLocomotor)
+		JumpjetClimbIgnoreBuilding::Ignore = false;
+	else
+		JumpjetClimbIgnoreBuilding::Ignore = TechnoExt::Fetch(pFoot)->TypeExtData->JumpjetClimbIgnoreBuilding.Get(RulesExt::Global()->JumpjetClimbIgnoreBuilding);
 
 	if (JumpjetClimbIgnoreBuilding::Ignore)
-		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pThis->LinkedTo->Location);
+		JumpjetClimbIgnoreBuilding::Z = MapClass::Instance.GetCellFloorHeight(pFoot->Location);
 
 	return 0;
 }
