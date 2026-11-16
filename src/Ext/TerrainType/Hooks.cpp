@@ -129,19 +129,20 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
 {
 	GET(TerrainClass*, pThis, ESI);
+	const auto pTypeExt = TerrainTypeExt::Fetch(pThis->Type);
 
-	auto const pCell = pThis->GetCell();
-	const int wallOwnerIndex = pCell->WallOwnerIndex;
-	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
-
-	if (wallOwnerIndex >= 0)
-		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
-
-	auto const pTypeExt = TerrainTypeExt::Fetch(pThis->Type);
-
-	if (pTypeExt->Palette)
+	if (const auto pPalettes = pTypeExt->Palette)
 	{
-		R->EDX(pTypeExt->Palette->Items[colorSchemeIndex]->LightConvert);
+		const auto pCell = pThis->GetCell();
+		const int wallOwnerIndex = pCell->WallOwnerIndex;
+		int colorSchemeIndex = -1;
+
+		if (wallOwnerIndex != -1)
+			colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
+		else
+			colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
+
+		R->EDX(pPalettes->Items[colorSchemeIndex]->LightConvert);
 		R->EBP(pCell->Intensity_Normal);
 	}
 
