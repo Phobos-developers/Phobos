@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Building/Body.h>
 
 #include <WWKeyboardClass.h>
 #include <GameOptionsClass.h>
