@@ -53,7 +53,7 @@ DEFINE_HOOK(0x47FAFD, CellClass_DrawOverlay_Rubble, 0x5)
 	GET_STACK(int, frameIdx, STACK_OFFSET(0x24, 0x8));
 	REF_STACK(const Point2D, location, STACK_OFFSET(0x24, -0x10));
 
-	const auto pRubbleTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Rubble);
+	const auto pRubbleTypeExt = BuildingTypeExt::Fetch(pThis->Rubble);
 	LightConvertClass* pRubbleConvert = nullptr;
 
 	if (const auto pPalettes = pRubbleTypeExt->RubblePalette)
