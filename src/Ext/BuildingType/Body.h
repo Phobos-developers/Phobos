@@ -151,8 +151,9 @@ public:
 
 	Valueable<bool> AutoUpgrade;
 	Nullable<bool> AI_BasePlan_Rebuild;
-  
-  CustomPalette RubblePalette;
+
+	PhobosFixedString<32u> RubblePaletteFile;
+	DynamicVectorClass<ColorScheme*>* RubblePalette; // Intentionally not serialized - rebuilt from the palette file on load.
 
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
@@ -276,8 +277,9 @@ public:
 
 		, AutoUpgrade { false }
 		, AI_BasePlan_Rebuild {}
-    
-    , RubblePalette {}
+
+		, RubblePaletteFile {}
+		, RubblePalette {}
 
 		// Ares 0.2
 		, CloningFacility { false }
