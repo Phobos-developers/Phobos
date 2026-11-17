@@ -1279,9 +1279,6 @@ int __fastcall TechnoExt::GetActionHijack(TechnoClass** pData, void*, TechnoClas
 	if(pTarget->BunkerLinkedItem)
 		return 0;
 
-	if(pType->VehicleThief && pTarget->IsMindControlled() && !pTypeExt_Ares->HijackerBreakMindControl)
-		return 0;
-
 	const auto specialOwned = pTarget->Owner->Type->MultiplayPassive;
 	if(specialOwned && pTypeExt_Ares->CanDrive)
 		return 2;
