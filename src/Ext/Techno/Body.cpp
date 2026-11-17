@@ -1244,16 +1244,17 @@ int TechnoExt::GetSight()
 int __fastcall TechnoExt::GetActionHijack(TechnoClass** pData, void*, TechnoClass* pTarget)
 {
 	const auto pThis = abstract_cast<InfantryClass*>(*pData);
-	const auto pExt = TechnoExt::Fetch(pThis);
+	
 
 	if(!pThis || !pTarget || !pThis->IsAlive || !pTarget->IsAlive)
 		return 0;
-
+		
+	const auto pExt = TechnoExt::Fetch(pThis);
 	const auto pType = pThis->Type;
 	const auto pTargetType = pTarget->GetTechnoType();
 	const auto pTargetExt = TechnoExt::Fetch(pTarget);
 	const auto pTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC);
-	const auto pTargetTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC);
+	const auto pTargetTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pTargetType->align_2FC);
 
 	if(!pType->VehicleThief && !pTypeExt_Ares->CanDrive)
 		return 0;
@@ -1287,11 +1288,12 @@ int __fastcall TechnoExt::GetActionHijack(TechnoClass** pData, void*, TechnoClas
 
 	if(pType->VehicleThief)
 	{
-		if(pThis->Owner->IsAlliedWith(pTarget->Owner) || specialOwned)
+		if((pThis->Owner->IsAlliedWith(pTarget->Owner) || specialOwned)
+			|| !pTargetTypeExt_Ares->HijackerAllowed
+			|| pTarget->IsMindControlled() && !pTypeExt_Ares->HijackerBreakMindControl)
+		{
 			return 0;
-
-		if(!pTargetTypeExt_Ares->HijackerAllowed)
-			return 0;
+		}
 
 		return 1;
 	}
