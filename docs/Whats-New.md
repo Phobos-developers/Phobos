@@ -2095,6 +2095,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2649,6 +2650,9 @@ PreserveCSFWhitespace=false      ; boolean
 
 ```{dropdown} Click to show
 
+#### Vanilla fixes:
+- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by Starkku)
+
 #### Phobos fixes:
 - Fixed `AircraftDockingDirs` being reset if the BuildingType section is redefined in map file (by Starkku)
 - Fixed harvester counter not accounting for type converting harvesters (by Ollerus)
@@ -2849,7 +2853,6 @@ PreserveCSFWhitespace=false      ; boolean
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 - Allow retint fix to be disabled with `[AudioVisual] -> UseRetintFix=no` in `rulesmd.ini` due to performance considerations (by Kerbiter)
-- Elite technos no longer scatter by default, behaviour is controlled by `SCATTER` veterancy ability now (by NetsuNegi & Starkku)
 
 #### Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -2972,6 +2975,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
