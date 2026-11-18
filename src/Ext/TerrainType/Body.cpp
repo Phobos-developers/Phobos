@@ -102,7 +102,8 @@ void TerrainTypeExt::LoadCustomFoundation()
 	});
 	if (cells.empty() || cells.front() != CellStruct::Empty)
 	{
-		Debug::INIParseFailed(pSection, "Foundation", "Custom", "A custom terrain foundation must include its anchor (0,0)");
+		Debug::INIParseFailed(pSection, "Foundation", "Custom",
+			"The footprint must include (0,0) because terrain placement and removal update the anchor cell. Falling back to 1x1.");
 		return;
 	}
 
