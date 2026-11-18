@@ -261,6 +261,39 @@ namespace Helpers
 			return getCellSpreadItemsExt(coords, spread, includeInAir, false);
 		}
 
+		inline DistinctCollector<TerrainClass*> getCellSpreadTerrainsExt(
+			CoordStruct const& coords, double const spread)
+		{
+			// set of possibly affected objects. every object can be here only once.
+			DistinctCollector<TerrainClass*> set;
+			double const spreadMult = spread * Unsorted::LeptonsPerCell;
+			double const spreadMultSq = spreadMult * spreadMult;
+
+			// the quick way. only look at stuff residing on the very cells we are affecting.
+			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
+			auto const range = static_cast<size_t>(spread + 0.99);
+			for (CellSpreadEnumerator it(range); it; ++it)
+			{
+				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
+
+				if (!pCell)
+					continue;
+
+				for (NextObject obj(pCell->GetContent()); obj; ++obj)
+				{
+					if (auto const pTerrain = abstract_cast<TerrainClass*>(*obj))
+					{
+						if (pTerrain->Location.DistanceFromSquared(coords) > spreadMultSq)
+							continue;
+
+						set.insert(pTerrain);
+					}
+				}
+			}
+
+			return set;
+		}
+
 #pragma endregion
 
 		//! Invokes an action for every cell or every object contained on the cells.
