@@ -4135,6 +4135,7 @@ msgid ""
 "warheads get an attack cursor on parasitized friendly units (by "
 "Noble_Fish)"
 msgstr ""
+"修复武器层面的攻击友军定义错误破坏使用 `Sonic` 弹头的武器可在被寄生的友军单位上获得攻击光标这一原版行为的 Bug（by Noble_Fish）"
 
 msgid "0.5-alpha2"
 msgstr "0.5-alpha2"

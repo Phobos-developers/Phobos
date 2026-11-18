@@ -2827,6 +2827,7 @@ msgid ""
 "level broke vanilla behavior that lets weapons with `Sonic` warheads get "
 "an attack cursor on parasitized friendly units"
 msgstr ""
+"修复武器层面的攻击友军定义错误破坏使用 `Sonic` 弹头的武器可在被寄生的友军单位上获得攻击光标这一原版行为的 Bug"
 
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
