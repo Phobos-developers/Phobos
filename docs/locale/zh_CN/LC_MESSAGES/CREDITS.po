@@ -2628,6 +2628,13 @@ msgid ""
 msgstr ""
 "修复了建筑激光武器参数读取修复的一次重构意外导致 `IsHouseColor` 激光的 `LaserThickness` 失效的 Bug"
 
+msgid ""
+"Fix a bug where an error in Attacking Allies customization at the weapon "
+"level broke vanilla behavior that lets weapons with `Sonic` warheads get "
+"an attack cursor on parasitized friendly units"
+msgstr ""
+"修复武器层面的攻击友军定义错误破坏使用 `Sonic` 弹头的武器可在被寄生的友军单位上获得攻击光标这一原版行为的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 

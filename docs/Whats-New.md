@@ -876,6 +876,7 @@ HideShakeEffects=false           ; boolean
 - Fixed the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints (by Noble_Fish)
 - Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` (by Noble_Fish)
 - Fixed a bug where a refactor of the fix for building laser weapon parameter reading accidentally caused `LaserThickness` of `IsHouseColor` lasers to become ineffective (by Noble_Fish)
+- Fixed a bug where an error in Attacking Allies customization at the weapon level broke vanilla behavior that lets weapons with `Sonic` warheads get an attack cursor on parasitized friendly units (by Noble_Fish)
 
 #### 0.5-alpha2
 
