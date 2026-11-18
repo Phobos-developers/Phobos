@@ -758,6 +758,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints
   - Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`
   - Fix the bug where slaves responded to cheer events while enslaved
+  - Fix a bug where a refactor of the fix for building laser weapon parameter reading accidentally caused `LaserThickness` of `IsHouseColor` lasers to become ineffective
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
