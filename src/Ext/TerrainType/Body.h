@@ -76,7 +76,7 @@ public:
 	int GetCellsPerAnim();
 	void PlayDestroyEffects(const CoordStruct& coords);
 	bool HasCustomFoundation() const { return !this->CustomFoundation.empty(); }
-	static TerrainClass* FindCustomFoundationTerrain(const CellClass& cell, bool onBridge);
+	static TerrainClass* FindCustomFoundationTerrain(CellClass* pCell, bool onBridge);
 
 private:
 	void LoadCustomFoundation();

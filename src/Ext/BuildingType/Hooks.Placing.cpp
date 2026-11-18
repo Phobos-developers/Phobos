@@ -465,7 +465,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		// Forced placement can bypass the buildability check. Remove the terrain
 		// so both multi-cell objects do not have to share a cell's list tail.
-		if (auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(*pCell, pObject->OnBridge))
+		if (auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, pObject->OnBridge))
 		{
 			TerrainTypeExt::Remove(pTerrain);
 		}
@@ -493,7 +493,7 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	GET(CellClass* const, pCell, EAX);
 
-	auto const pTerrain = Game::IsActive ? pCell->GetTerrain(false) : TerrainTypeExt::FindCustomFoundationTerrain(*pCell, false);
+	auto const pTerrain = Game::IsActive ? pCell->GetTerrain(false) : TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
 	if (pTerrain)
 	{
 		auto const pType = pTerrain->Type;
@@ -524,7 +524,7 @@ DEFINE_HOOK(0x5FC49C, OverlayClass_CTOR_CustomTerrainWall, 0x9)
 	if (!pOverlay->Type->Wall)
 		return 0;
 
-	auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(*pCell, false);
+	auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
 	if (!pTerrain)
 		return 0;
 

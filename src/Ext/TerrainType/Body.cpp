@@ -34,14 +34,14 @@ void TerrainTypeExt::Remove(TerrainClass* pTerrain)
 	pTerrain->UnInit();
 }
 
-TerrainClass* TerrainTypeExt::FindCustomFoundationTerrain(const CellClass& cell, bool onBridge)
+TerrainClass* TerrainTypeExt::FindCustomFoundationTerrain(CellClass* pCell, bool onBridge)
 {
 	// Unlike GetTerrain, this also sees objects while the scenario is loading.
-	for (auto pObject = onBridge ? cell.AltObject : cell.FirstObject; pObject; pObject = pObject->NextObject)
+	for (auto pObject = onBridge ? pCell->AltObject : pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
 		if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 		{
-			if (auto const pExt = TryFetch(pTerrain->Type); pExt && pExt->HasCustomFoundation())
+			if (auto const pExt = TerrainTypeExt::Fetch(pTerrain->Type); pExt && pExt->HasCustomFoundation())
 				return pTerrain;
 		}
 	}
@@ -53,8 +53,9 @@ void TerrainTypeExt::LoadCustomFoundation()
 {
 	auto const pThis = this->OwnerObject();
 	const char* pSection = pThis->ImageFile;
-	INI_EX art(CCINIClass::INI_Art);
-	if (!art.ReadString(pSection, "Foundation") || _stricmp(art.value(), "Custom") != 0)
+	INI_EX exArtINI(CCINIClass::INI_Art);
+
+	if (!exArtINI.ReadString(pSection, "Foundation") || _stricmp(exArtINI.value(), "Custom") != 0)
 	{
 		this->CustomFoundation.clear();
 		return;
@@ -65,31 +66,36 @@ void TerrainTypeExt::LoadCustomFoundation()
 	this->CustomFoundation.clear();
 	int width = 0;
 	int height = 0;
-	if (!art.ReadInteger(pSection, "Foundation.X", &width) || width < 1 || width > MapSide)
+
+	if (!exArtINI.ReadInteger(pSection, "Foundation.X", &width) || width < 1 || width > MapSide)
 	{
-		Debug::INIParseFailed(pSection, "Foundation.X", art.value(), "Expected a width between 1 and 512");
+		Debug::INIParseFailed(pSection, "Foundation.X", exArtINI.value(), "Expected a width between 1 and 512");
 		return;
 	}
-	if (!art.ReadInteger(pSection, "Foundation.Y", &height) || height < 1 || height > MapSide)
+
+	if (!exArtINI.ReadInteger(pSection, "Foundation.Y", &height) || height < 1 || height > MapSide)
 	{
-		Debug::INIParseFailed(pSection, "Foundation.Y", art.value(), "Expected a height between 1 and 512");
+		Debug::INIParseFailed(pSection, "Foundation.Y", exArtINI.value(), "Expected a height between 1 and 512");
 		return;
 	}
 
 	std::vector<CellStruct> cells;
+
 	for (int i = 0; i < width * height; ++i)
 	{
 		char key[32];
-		sprintf_s(key, "Foundation.%d", i);
-		if (!art.ReadString(pSection, key))
+		_snprintf_s(key, sizeof(key), "Foundation.%d", i);
+
+		if (!exArtINI.ReadString(pSection, key))
 			break;
 
 		int offset[2] {};
 		char trailing = 0;
-		if (sscanf_s(art.value(), " %d , %d %c", &offset[0], &offset[1], &trailing, 1u) != 2
+
+		if (sscanf_s(exArtINI.value(), " %d , %d %c", &offset[0], &offset[1], &trailing, 1u) != 2
 			|| offset[0] < 0 || offset[0] >= width || offset[1] < 0 || offset[1] >= height)
 		{
-			Debug::INIParseFailed(pSection, key, art.value(), "Expected an X,Y offset inside the foundation dimensions");
+			Debug::INIParseFailed(pSection, key, exArtINI.value(), "Expected an X,Y offset inside the foundation dimensions");
 			return;
 		}
 

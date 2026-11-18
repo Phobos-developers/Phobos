@@ -414,8 +414,8 @@ DEFINE_HOOK(0x71D00C, TerrainClass_Unlimbo_CustomFoundation, 0x6)
 			if (!pCell || HasTerrainOrBuilding(pCell->FirstObject) || HasTerrainOrBuilding(pCell->AltObject))
 				return Fail;
 		}
-		else if (pCell && (TerrainTypeExt::FindCustomFoundationTerrain(*pCell, false)
-			|| TerrainTypeExt::FindCustomFoundationTerrain(*pCell, true)))
+		else if (pCell && (TerrainTypeExt::FindCustomFoundationTerrain(pCell, false)
+			|| TerrainTypeExt::FindCustomFoundationTerrain(pCell, true)))
 		{
 			return Fail;
 		}
@@ -480,7 +480,7 @@ DEFINE_HOOK(0x568862, MapClass_RemoveContentAt_TerrainFoundation, 0x8)
 
 				if (auto const pCell = GetFoundationCell(pMap, *pAnchor, offset))
 				{
-					if (TerrainTypeExt::FindCustomFoundationTerrain(*pCell, pTerrain->OnBridge) != pTerrain)
+					if (TerrainTypeExt::FindCustomFoundationTerrain(pCell, pTerrain->OnBridge) != pTerrain)
 						continue;
 
 					pCell->RemoveContent(pTerrain, pTerrain->OnBridge);
