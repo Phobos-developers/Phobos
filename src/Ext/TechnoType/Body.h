@@ -458,7 +458,6 @@ public:
 	Vector2D<ThreatType> ThreatTypes;
 	Vector2D<int> CombatDamages;
 
-	ValueableIdx<VocClass> VoiceIFVRepair;
 	ValueableVector<int> VoiceWeaponAttacks;
 	ValueableVector<int> VoiceEliteWeaponAttacks;
 
@@ -524,8 +523,11 @@ public:
 	Nullable<int> AI_Power;
 	Nullable<bool> AI_Power_AffectedByEnhancers;
 
+	Nullable<bool> Parasite_AllowWaterExit;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
+	ValueableIdx<VocClass> VoiceIFVRepair;
 
 	// Ares 0.6
 	Valueable<bool> Drain_Local;
@@ -894,7 +896,6 @@ public:
 		, ThreatTypes { ThreatType::Normal,ThreatType::Normal }
 		, CombatDamages { 0,0 }
 
-		, VoiceIFVRepair { -1 }
 		, VoiceWeaponAttacks {}
 		, VoiceEliteWeaponAttacks {}
 
@@ -959,8 +960,11 @@ public:
 		, AI_Power {}
 		, AI_Power_AffectedByEnhancers {}
 
+		, Parasite_AllowWaterExit {}
+
 		// Ares 0.2
 		, RadarJamRadius { 0 }
+		, VoiceIFVRepair { -1 }
 
 		// Ares 0.6
 		, Drain_Local { false }

@@ -1133,12 +1133,13 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	int turIdx = -1;
 
-	if (auto const pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
+	if (const auto pUnitType = abstract_cast<UnitTypeClass*, true>(pType))
 	{
-		const int burstPerTurret = UnitTypeExt::Fetch(pUnitType)->BurstPerTurret;
+		const auto pUnitTypeExt = UnitTypeExt::Fetch(pUnitType);
+		const int burstPerTurret = pUnitTypeExt->BurstPerTurret;
 
 		if (burstPerTurret > 0)
-			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (burstPerTurret + 1)) - 1;
+			turIdx = ((pThis->CurrentBurstIndex / burstPerTurret) % (pUnitTypeExt->ExtraTurretCount + 1)) - 1;
 	}
 
 	flh += offset;
@@ -1158,8 +1159,6 @@ static WeaponStruct* __fastcall  BuildingClass_GetPrimaryWeapon_Wrapper(Building
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x6FF4EA, BuildingClass_GetPrimaryWeapon_Wrapper)
-
-DEFINE_PATCH(0x6FF4DE, 0xFF, 0x52, 0x2C, 0x83, 0xF8, 0x6);
 
 DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {

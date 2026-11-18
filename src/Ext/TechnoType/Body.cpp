@@ -1287,32 +1287,7 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AI_Power.Read(exINI, pSection, "AI.Power");
 	this->AI_Power_AffectedByEnhancers.Read(exINI, pSection, "AI.Power.AffectedByEnhancers");
 
-	// Ares 0.2
-	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
-
-	// Ares 0.6
-	this->Drain_Local.Read(exINI, pSection, "Drain.Local");
-	this->Drain_Amount.Read(exINI, pSection, "Drain.Amount");
-
-	// Ares 0.9
-	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
-	this->DesignatorRange.Read(exINI, pSection, "DesignatorRange");
-
-	// Ares 0.A
-	this->GroupAs.Read(pINI, pSection, "GroupAs");
-	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
-
-	// Ares 0.C
-	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
-	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
-
-	// Ares 2.0
-	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
-	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
-
-	// Ares 3.0
-	this->Unsellable.Read(exINI, pSection, "Unsellable");
-	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
+	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
 
 	// Airstrike tint color
 	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
@@ -1453,9 +1428,35 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	DropCrate.Read(exINI, pSection, "DropCrate");
 
-	// VoiceIFVRepair from Ares 0.2
-	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
+
+	// Ares 0.2
+	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
+
+	// Ares 0.6
+	this->Drain_Local.Read(exINI, pSection, "Drain.Local");
+	this->Drain_Amount.Read(exINI, pSection, "Drain.Amount");
+
+	// Ares 0.9
+	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+	this->DesignatorRange.Read(exINI, pSection, "DesignatorRange");
+
+	// Ares 0.A
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
+
+	// Ares 0.C
+	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	// Ares 2.0
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+
+	// Ares 3.0
+	this->Unsellable.Read(exINI, pSection, "Unsellable");
+	this->KeepAlive.Read(exINI, pSection, "KeepAlive");
 }
 
 template <typename T>
@@ -1807,7 +1808,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ThreatTypes)
 		.Process(this->CombatDamages)
 
-		.Process(this->VoiceIFVRepair)
 		.Process(this->VoiceWeaponAttacks)
 		.Process(this->VoiceEliteWeaponAttacks)
 
@@ -1867,9 +1867,11 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
 		.Process(this->AI_Power)
 		.Process(this->AI_Power_AffectedByEnhancers)
+		.Process(this->Parasite_AllowWaterExit)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)
+		.Process(this->VoiceIFVRepair)
 
 		// Ares 0.6
 		.Process(this->Drain_Local)
