@@ -2618,6 +2618,9 @@ msgstr "修复了 `LaserZAdjust` 较大时会错误更改绘制端点坐标的 B
 msgid "Fix incorrect multi-turret shot distribution when `BurstPerTurret=1`"
 msgstr "修复了 `BurstPerTurret=1` 时多炮塔分配不正确的 Bug"
 
+msgid "Fix the bug where slaves responded to cheer events while enslaved"
+msgstr "修复了奴隶在奴役状态响应欢呼事件的 Bug"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
