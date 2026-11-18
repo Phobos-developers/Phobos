@@ -4024,6 +4024,11 @@ msgid ""
 msgstr "修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题（by FlyStar）"
 
 msgid ""
+"Fixed the bug where slaves responded to cheer events while enslaved (by "
+"Noble_Fish)"
+msgstr "修复了奴隶在奴役状态响应欢呼事件的 Bug（by Noble_Fish）"
+
+msgid ""
 "Fixed a crash occuring when destroying a Tank Bunker with odd foundation "
 "size f.ex 3x3 (by Starkku)"
 msgstr "修复了摧毁占地尺寸为奇数（例如 3x3）的坦克碉堡会导致游戏崩溃的问题（by Starkku）"

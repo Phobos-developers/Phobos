@@ -2094,7 +2094,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
-- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2560,6 +2559,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 ##### Phobos fixes:
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
