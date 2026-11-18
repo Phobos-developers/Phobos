@@ -2,6 +2,8 @@
 
 #include <Ext/Anim/Body.h>
 
+#include <algorithm>
+
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::GetTiberiumGrowthStage()
@@ -30,6 +32,84 @@ void TerrainTypeExt::Remove(TerrainClass* pTerrain)
 	TacticalClass::Instance->RegisterDirtyArea(rect, false);
 	pTerrain->Disappear(true);
 	pTerrain->UnInit();
+}
+
+TerrainClass* TerrainTypeExt::FindCustomFoundationTerrain(const CellClass& cell, bool onBridge)
+{
+	// Unlike GetTerrain, this also sees objects while the scenario is loading.
+	for (auto pObject = onBridge ? cell.AltObject : cell.FirstObject; pObject; pObject = pObject->NextObject)
+	{
+		if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+		{
+			if (auto const pExt = TryFetch(pTerrain->Type); pExt && pExt->HasCustomFoundation())
+				return pTerrain;
+		}
+	}
+
+	return nullptr;
+}
+
+void TerrainTypeExt::LoadCustomFoundation()
+{
+	auto const pThis = this->OwnerObject();
+	const char* pSection = pThis->ImageFile;
+	INI_EX art(CCINIClass::INI_Art);
+	if (!art.ReadString(pSection, "Foundation") || _stricmp(art.value(), "Custom") != 0)
+	{
+		this->CustomFoundation.clear();
+		return;
+	}
+
+	// Never use the engine's numeric foundation index for a custom foundation.
+	// The engine uses that index to restore its stock data on load and on INI rereads.
+	this->CustomFoundation.clear();
+	int width = 0;
+	int height = 0;
+	if (!art.ReadInteger(pSection, "Foundation.X", &width) || width < 1 || width > MapSide)
+	{
+		Debug::INIParseFailed(pSection, "Foundation.X", art.value(), "Expected a width between 1 and 512");
+		return;
+	}
+	if (!art.ReadInteger(pSection, "Foundation.Y", &height) || height < 1 || height > MapSide)
+	{
+		Debug::INIParseFailed(pSection, "Foundation.Y", art.value(), "Expected a height between 1 and 512");
+		return;
+	}
+
+	std::vector<CellStruct> cells;
+	for (int i = 0; i < width * height; ++i)
+	{
+		char key[32];
+		sprintf_s(key, "Foundation.%d", i);
+		if (!art.ReadString(pSection, key))
+			break;
+
+		int offset[2] {};
+		char trailing = 0;
+		if (sscanf_s(art.value(), " %d , %d %c", &offset[0], &offset[1], &trailing, 1u) != 2
+			|| offset[0] < 0 || offset[0] >= width || offset[1] < 0 || offset[1] >= height)
+		{
+			Debug::INIParseFailed(pSection, key, art.value(), "Expected an X,Y offset inside the foundation dimensions");
+			return;
+		}
+
+		cells.emplace_back(static_cast<short>(offset[0]), static_cast<short>(offset[1]));
+	}
+
+	std::ranges::sort(cells, [](const CellStruct& lhs, const CellStruct& rhs)
+	{
+		return lhs.Y != rhs.Y ? lhs.Y < rhs.Y : lhs.X < rhs.X;
+	});
+	if (cells.empty() || cells.front() != CellStruct::Empty)
+	{
+		Debug::INIParseFailed(pSection, "Foundation", "Custom", "A custom terrain foundation must include its anchor (0,0)");
+		return;
+	}
+
+	cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
+	cells.push_back(FoundationEnd);
+	this->CustomFoundation = std::move(cells);
+	pThis->FoundationData = this->CustomFoundation.data();
 }
 
 // =============================
@@ -85,6 +165,8 @@ void TerrainTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
 
+	this->LoadCustomFoundation();
+
 	this->PaletteFile.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette");
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
@@ -96,6 +178,8 @@ void TerrainTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	ObjectTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	if (Stm.HasRemainingData())
+		Stm.Process(this->CustomFoundation);
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
@@ -103,6 +187,14 @@ void TerrainTypeExt::SaveToStream(PhobosStreamWriter& Stm)
 {
 	ObjectTypeExt::SaveToStream(Stm);
 	this->Serialize(Stm);
+	Stm.Process(this->CustomFoundation);
+}
+
+void TerrainTypeExt::PostLoad()
+{
+	// The footprint lives in the extension, so the owner must point at the loaded storage.
+	if (this->HasCustomFoundation())
+		this->OwnerObject()->FoundationData = this->CustomFoundation.data();
 }
 
 bool TerrainTypeExt::LoadGlobals(PhobosStreamReader& Stm)

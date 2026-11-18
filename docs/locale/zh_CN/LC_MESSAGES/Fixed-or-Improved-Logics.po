@@ -2085,6 +2085,9 @@ msgid ""
 "participate in the transport squad reachability check."
 msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug。"
 
+msgid "Allowed TerrainType to use `Foundation=Custom`."
+msgstr "允许了地形对象使用 `Foundation=Custom`。"
+
 msgid "Newly added global settings"
 msgstr "新增的全局设定"
 
