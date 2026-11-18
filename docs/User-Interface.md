@@ -862,12 +862,8 @@ Sidebar.GDIPositions=  ; boolean
   - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This should not be less than 48. When you need to make a background, this is the height of the background.
   - `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost column, which also depends on the current game resolution.
   - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
-  - `SuperWeaponSidebar.Significance` is needed for user to control which superweapons appear on the sidebar. Only superweapons with `SuperWeaponSidebar.Significance` not lower than user-defined `SuperWeaponSidebar.RequiredSignificance` are shown on the superweapon sidebar.
 
-```{warning}
-While a mod maker can "ban" certain superweapons from appearing on a sidebar completely using `SuperWeaponSidebar.Allow=false` and `SuperWeaponSidebar.AllowByDefault=false`, it is not recommended to use those keys outside of removing "technical" superweapons (like subfaction choosers). Instead, opt for `SuperWeaponSidebar.Significance` and `SuperWeaponSidebar.RequiredSignificance` to control which superweapons appear on the sidebar. This way users with different preferences and different display resolutions could control how many superweapons they would like to see on the sidebar (via client settings) without having to edit the mod files, and you would be able to specify your exact vision through the default significance value.
-```
-
+- The superweapon sidebar has a set of hotkeys for toggling the sidebar and firing superweapons from it.
   - There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
     - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
   - `SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for superweapons displayed on the sidebar.
@@ -875,9 +871,24 @@ While a mod maker can "ban" certain superweapons from appearing on a sidebar com
     - If assigned, a hotkey will be displayed on a superweapon instead of the `Ready` (or its alternative) text.
     - For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and `TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file.
 
-```{warning}
-Positional superweapon hotkeys are an experimental feature and currently the user experience may be not polished enough, due to superweapon positions not being fixed on the sidebar, thus the feature is disabled by default.
-```
+  ```{warning}
+  Positional superweapon hotkeys are an experimental feature and currently the user experience may be not polished enough, due to superweapon positions not being fixed on the sidebar, thus the feature is disabled by default.
+  ```
+
+- Each side can use its own PCX images for the sidebar. Include the `.pcx` extension in each filename.
+  - `SuperWeaponSidebar.OnPCX` and `SuperWeaponSidebar.OffPCX` specify the toggle button images shown when the sidebar is visible and hidden, respectively.
+  - `SuperWeaponSidebar.TopPCX` and `SuperWeaponSidebar.BottomPCX` specify the top and bottom caps of each column background, respectively.
+  - `SuperWeaponSidebar.CenterPCX` specifies the background segment drawn behind each cameo in a column.
+
+- Each superweapon can define who can see its cameo on the sidebar and which house types see it sorted ahead of other cameos.
+  - `SuperWeaponSidebar.Allow` controls whether the superweapon can appear on the sidebar. It defaults to `[AudioVisual] -> SuperWeaponSidebar.AllowByDefault`.
+  - `SuperWeaponSidebar.PriorityHouses` lists the house types for which this superweapon sorts ahead of eligible superweapons without priority for that house type.
+  - `SuperWeaponSidebar.RequiredHouses` restricts this superweapon's cameo to players of the listed house types. It allows all house types by default.
+  - `SuperWeaponSidebar.Significance` is needed for user to control which superweapons appear on the sidebar. Only superweapons with `SuperWeaponSidebar.Significance` not lower than user-defined `SuperWeaponSidebar.RequiredSignificance` are shown on the superweapon sidebar.
+
+  ```{warning}
+  While a mod maker can "ban" certain superweapons from appearing on a sidebar completely using `SuperWeaponSidebar.Allow=false` and `SuperWeaponSidebar.AllowByDefault=false`, it is not recommended to use those keys outside of removing "technical" superweapons (like subfaction choosers). Instead, opt for `SuperWeaponSidebar.Significance` and `SuperWeaponSidebar.RequiredSignificance` to control which superweapons appear on the sidebar. This way users with different preferences and different display resolutions could control how many superweapons they would like to see on the sidebar (via client settings) without having to edit the mod files, and you would be able to specify your exact vision through the default significance value.
+  ```
 
 In `uimd.ini`:
 ```ini
@@ -907,7 +918,7 @@ SuperWeaponSidebar.CenterPCX=               ; filename - including the .pcx exte
 SuperWeaponSidebar.BottomPCX=               ; filename - including the .pcx extension
 
 [SOMESW]                                    ; SuperWeaponType
-SuperWeaponSidebar.Allow=                   ; boolean
+SuperWeaponSidebar.Allow=                   ; boolean, defaults to [AudioVisual] -> SuperWeaponSidebar.AllowByDefault
 SuperWeaponSidebar.PriorityHouses=          ; List of house types
 SuperWeaponSidebar.RequiredHouses=          ; List of house types
 SuperWeaponSidebar.Significance=0           ; integer
