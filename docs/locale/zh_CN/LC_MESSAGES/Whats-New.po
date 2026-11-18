@@ -1349,11 +1349,6 @@ msgid ""
 "Noble_Fish)"
 msgstr "修复了 AI 触发器对仅执行守卫、等待或辅助脚本动作的小队同样进行可达性检查的问题（by Noble_Fish）"
 
-msgid ""
-"Fixed the bug where slaves responded to cheer events while enslaved (by "
-"Noble_Fish)"
-msgstr "修复了奴隶在奴役状态响应欢呼事件的 Bug（by Noble_Fish）"
-
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
@@ -4022,6 +4017,11 @@ msgid ""
 "target buildings properly when executing vanilla's attack script (by "
 "FlyStar)"
 msgstr "修复了工程师和间谍在执行原版的攻击脚本时可能无法正确进入目标建筑的问题（by FlyStar）"
+
+msgid ""
+"Fixed the bug where slaves responded to cheer events while enslaved (by "
+"Noble_Fish)"
+msgstr "修复了奴隶在奴役状态响应欢呼事件的 Bug（by Noble_Fish）"
 
 msgid ""
 "Fixed a crash occuring when destroying a Tank Bunker with odd foundation "
