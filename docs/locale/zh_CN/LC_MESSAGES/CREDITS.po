@@ -2820,6 +2820,7 @@ msgid ""
 " reading accidentally caused `LaserThickness` of `IsHouseColor` lasers to"
 " become ineffective"
 msgstr ""
+"修复了建筑激光武器参数读取修复的一次重构意外导致 `IsHouseColor` 激光的 `LaserThickness` 失效的 Bug"
 
 msgid ""
 "Fix a bug where an error in Attacking Allies customization at the weapon "
