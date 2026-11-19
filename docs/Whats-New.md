@@ -2552,6 +2552,8 @@ PreserveCSFWhitespace=false      ; boolean
 
 #### TBD
 
+#### 0.5-alpha3
+
 ##### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
