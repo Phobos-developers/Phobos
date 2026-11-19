@@ -39,9 +39,9 @@ TerrainClass* TerrainTypeExt::FindCustomFoundationTerrain(CellClass* pCell, bool
 	// Unlike GetTerrain, this also sees objects while the scenario is loading.
 	for (auto pObject = onBridge ? pCell->AltObject : pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+		if (auto const pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 		{
-			if (auto const pExt = TerrainTypeExt::Fetch(pTerrain->Type); pExt && pExt->HasCustomFoundation())
+			if (TerrainTypeExt::Fetch(pTerrain->Type)->HasCustomFoundation())
 				return pTerrain;
 		}
 	}

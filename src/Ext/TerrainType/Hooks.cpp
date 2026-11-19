@@ -362,14 +362,14 @@ namespace
 		return pExt && pExt->HasCustomFoundation() ? pExt : nullptr;
 	}
 
-	CellClass* GetFoundationCell(MapClass* pMap, const CellStruct& anchor, const CellStruct& offset)
+	CellClass* GetFoundationCell(MapClass* pMap, CellStruct anchor, CellStruct offset)
 	{
-		const int x = anchor.X + offset.X;
-		const int y = anchor.Y + offset.Y;
-		if (x < 0 || x >= TerrainTypeExt::MapSide || y < 0 || y >= TerrainTypeExt::MapSide)
+		const CellStruct coords = anchor + offset;
+
+		if (coords.X < 0 || coords.X >= TerrainTypeExt::MapSide || coords.Y < 0 || coords.Y >= TerrainTypeExt::MapSide)
 			return nullptr;
 
-		return pMap->TryGetCellAt(CellStruct { static_cast<short>(x), static_cast<short>(y) });
+		return pMap->TryGetCellAt(coords);
 	}
 
 	bool HasTerrainOrBuilding(const ObjectClass* pFirst)
@@ -384,7 +384,7 @@ namespace
 		return false;
 	}
 
-	void UpdateTerrainNeighbours(MapClass* pMap, const CellStruct& coords, int delta)
+	void UpdateTerrainNeighbours(MapClass* pMap, CellStruct coords, int delta)
 	{
 		for (auto const& direction : Unsorted::AdjacentCell)
 		{
