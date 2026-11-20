@@ -33,6 +33,9 @@ enum class PhobosTriggerAction : unsigned int
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
 	DeleteBanner = 802,
+
+	OpenDropshipLoadoutWindow = 900,
+	CreateDropshipLoadoutTransport = 901,
 };
 
 class TActionExt final : public AbstractExt
@@ -53,9 +56,12 @@ public:
 	}
 
 	TActionExt(TActionClass* const OwnerObject) : AbstractExt(OwnerObject)
+		, DropshipLoadout_CostMultiplier {}
 	{ }
 
 	virtual ~TActionExt() = default;
+
+	Nullable<double> DropshipLoadout_CostMultiplier;
 
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -99,6 +105,9 @@ public:
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);
 	ACTION_FUNC(DeleteBanner);
+
+	ACTION_FUNC(CreateDropshipLoadoutTransport);
+	ACTION_FUNC(OpenDropshipLoadoutWindow);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
