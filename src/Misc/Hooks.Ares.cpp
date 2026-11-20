@@ -342,6 +342,9 @@ void Apply_Ares3_0_Patches()
 	// KillDriver re-implementation and enhancement
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x456D0, GET_OFFSET(TechnoExt::ApplyKillDriver));
 
+	// Ares' TechnoExt::GetActionHijack override
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x44FF0, GET_OFFSET(TechnoExt::GetActionHijack));
+
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x528C8, &Helpers::Alex::getCellSpreadItems);
@@ -471,6 +474,9 @@ void Apply_Ares3_0p1_Patches()
 
 	// KillDriver re-implementation and enhancement
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x46240, GET_OFFSET(TechnoExt::ApplyKillDriver));
+
+	// Ares' TechnoExt::GetActionHijack override
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x45B60, GET_OFFSET(TechnoExt::GetActionHijack));
 
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);

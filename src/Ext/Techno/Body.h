@@ -189,6 +189,7 @@ public:
 	void UpdateTintValues();
 	void UpdateLastTargetCrd();
 	int GetSight();
+	bool IsOperated();
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
@@ -274,6 +275,7 @@ public:
 	static bool EjectRandomly(FootClass* pEjectee, const CoordStruct& coords, int distance, bool select);
 	static bool EjectSurvivor(FootClass* pSurvivor, CoordStruct coords, bool select);
 	static bool __fastcall ApplyKillDriver(TechnoClass** pData, void*, HouseClass* pToHouse, TechnoClass* pKiller, bool resetVeterancy);
+	static int __fastcall GetActionHijack(TechnoClass** pData, void*, TechnoClass* pTarget);
 
 	static bool DriverKilled(TechnoClass* pThis);
 	static Mission DriverKilledMission(TechnoClass* pThis, Mission mission);

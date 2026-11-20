@@ -216,6 +216,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
+	this->Immune_Capture.Read(exINI, pSection, "Immune.Capture");
+	this->Immune_Infiltrate.Read(exINI, pSection, "Immune.Infiltrate");
+	this->Immune_EngineerRepair.Read(exINI, pSection, "Immune.EngineerRepair");
+
 	// Tint
 	if (this->Tint == nullptr)
 		this->Tint = std::make_unique<TintTypeClass>();
@@ -241,6 +245,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	if (this->FirepowerMultiplier != 1.0 || this->ArmorMultiplier != 1.0 || this->SpeedMultiplier != 1.0 || this->ROFMultiplier != 1.0
 		|| this->WeaponRange_Multiplier != 1.0 || this->WeaponRange_ExtraRange != 0.0 || this->Crit_Multiplier != 1.0 || this->Crit_ExtraChance != 0.0
 		|| this->DisableWeapons || this->Unkillable || this->ReflectDamage || this->Cloakable || this->ForceDecloak || this->Tint->Enabled
+		|| this->Immune_Capture || this->Immune_Infiltrate || this->Immune_EngineerRepair
 		|| (this->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::ReceivedDamage) != DiscardCondition::None
 		|| (this->DiscardOn & DiscardCondition::OwnerChange) != DiscardCondition::None)
@@ -363,6 +368,9 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->LaserTrail_Type)
+		.Process(this->Immune_Capture)
+		.Process(this->Immune_Infiltrate)
+		.Process(this->Immune_EngineerRepair)
 		.Process(this->Groups)
 		.Process(this->Animation_DrawOffsets)
 		.Process(this->RequiresRecalculation)

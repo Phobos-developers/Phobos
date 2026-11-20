@@ -138,6 +138,10 @@ public:
 	Valueable<bool> Unkillable;
 	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
+	Valueable<bool> Immune_Capture;
+	Valueable<bool> Immune_Infiltrate;
+	Valueable<bool> Immune_EngineerRepair;
+
 	std::vector<std::string> Groups;
 	std::vector<AnimationDrawOffsetClass> Animation_DrawOffsets;
 	bool RequiresRecalculation;
@@ -232,6 +236,9 @@ public:
 		, RequiresRecalculation { false }
 		, RequiresAnimUpdate { false }
 		, RestrictedArmorMultiplier { false }
+		, Immune_Capture { false }
+		, Immune_Infiltrate { false }
+		, Immune_EngineerRepair { false }
 	{};
 
 	bool HasGroup(const std::string& groupID) const;
