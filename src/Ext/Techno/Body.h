@@ -234,6 +234,7 @@ public:
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret = false, int turIdx = -1);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetCompleteFLH(TechnoClass* pThis, int weaponIndex);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis, TechnoTypeClass* pType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo = false);

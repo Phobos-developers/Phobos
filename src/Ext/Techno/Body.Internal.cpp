@@ -1,5 +1,6 @@
 #include <Ext/Foot/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/Infantry/Body.h>
 #include <Ext/InfantryType/Body.h>
 
 // Unsorted methods
@@ -129,6 +130,26 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	{
 		FLHFound = true;
 		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
+	}
+
+	return FLH;
+}
+
+CoordStruct TechnoExt::GetCompleteFLH(TechnoClass* pThis, int weaponIndex)
+{
+	bool found = false;
+	auto FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
+	if (!found)
+	{
+		if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
+			FLH = InfantryExt::GetSimpleFLH(pInf, weaponIndex, found);
+
+		if (!found)
+			FLH = pThis->GetWeapon(weaponIndex)->FLH;
+
+		if (pThis->CurrentBurstIndex % 2 != 0)
+			FLH.Y = -FLH.Y;
 	}
 
 	return FLH;

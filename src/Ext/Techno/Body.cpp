@@ -729,6 +729,21 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, WeaponTyp
 
 				if (pWeaponExt->DelayedFire_AnimOffset.isset())
 					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
+				else
+					firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
+
+				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1 && pThis->CurrentBurstIndex == 0)
+				{
+					for (int i = 1; i < pWeaponExt->DelayedFire_InitialBurstAnimCount; i++)
+					{
+						TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
+							pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
+						pThis->CurrentBurstIndex = i;
+						firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
+					}
+
+					pThis->CurrentBurstIndex = 0;
+				}
 
 				TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
 					pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);

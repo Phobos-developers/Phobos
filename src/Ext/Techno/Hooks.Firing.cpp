@@ -729,10 +729,24 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 
 				if (pWeaponExt->DelayedFire_AnimOffset.isset())
 					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
+				else
+					firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
+
+				if(pWeaponExt->DelayedFire_InitialBurstAnimCount > 1 && pThis->CurrentBurstIndex == 0)
+				{
+					for (int i = 1; i < pWeaponExt->DelayedFire_InitialBurstAnimCount; i++)
+					{
+						TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
+							pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
+						pThis->CurrentBurstIndex = i;
+						firingCoords = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
+					}
+
+					pThis->CurrentBurstIndex = 0;
+				}
 
 				TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
 					pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
-
 				return SkipFiring;
 			}
 			else
@@ -1105,20 +1119,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	if (weaponIndex >= 0)
 	{
-		bool found = false;
-		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
-
-		if (!found)
-		{
-			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
-				flh = InfantryExt::GetSimpleFLH(pInf, weaponIndex, found);
-
-			if (!found)
-				flh = pThis->GetWeapon(weaponIndex)->FLH;
-
-			if (pThis->CurrentBurstIndex % 2 != 0)
-				flh.Y = -flh.Y;
-		}
+		flh = TechnoExt::GetCompleteFLH(pThis, weaponIndex);
 	}
 	else
 	{
