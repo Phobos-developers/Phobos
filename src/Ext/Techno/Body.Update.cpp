@@ -26,6 +26,9 @@ void TechnoExt::OnEarlyUpdate()
 	if (this->CheckDeathConditions())
 		return;
 
+	if (this->WebbyDurationTimer.IsTicking())
+		this->WebbyUpdate();
+
 	this->ApplyInterceptor();
 }
 
@@ -131,6 +134,45 @@ void TechnoExt::ApplyInterceptor()
 			pThis->QueueMission(Mission::Attack, false);
 			pThis->NextMission();
 		}
+	}
+}
+
+void TechnoExt::WebbyUpdate()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (!TechnoExt::IsActive(pThis) || pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	if (this->WebbyDurationTimer.Completed())
+	{
+		this->WebbyDurationTimer.Stop();
+
+		if (this->WebbyAnim && this->WebbyAnim->Type) // If this anim doesn't have a type pointer, just detach it
+		{
+			this->WebbyAnim->TimeToDie = true;
+			this->WebbyAnim->UnInit();
+		}
+
+		this->WebbyAnim = nullptr;
+		pThis->Target = nullptr;
+		// The last target may be a cell or another object that is no techno.
+		auto const pLastTarget = abstract_cast<TechnoClass*>(this->WebbyLastTarget);
+
+		// Restore previous action
+		if (pLastTarget && pLastTarget->Health > 0 && pLastTarget->IsAlive && pLastTarget->IsOnMap)
+		{
+			pThis->SetDestination(pLastTarget, false);
+			pThis->SetTarget(pLastTarget);
+			pThis->QueueMission(this->WebbyLastMission, true);
+		}
+		else
+		{
+			pThis->QueueMission(Mission::Guard, true);
+		}
+
+		this->WebbyLastTarget = nullptr;
+		this->WebbyLastMission = Mission::Sleep;
 	}
 }
 

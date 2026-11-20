@@ -12,7 +12,7 @@
 class AirstrikeClass;
 class BulletClass;
 
-class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>
+class TechnoExt : public RadioExt, public Detach::Listener<AirstrikeClass>, public Detach::Listener<AbstractClass>
 {
 public:
 	using base_type = TechnoClass;
@@ -84,6 +84,11 @@ public:
 
 	int AutoDeathFlag;
 
+	CDTimerClass WebbyDurationTimer;
+	AnimClass* WebbyAnim;
+	AbstractClass* WebbyLastTarget;
+	Mission WebbyLastMission;
+
 	int DropCrate; // Drop crate on death, modified by map action
 	Powerup DropCrateType;
 
@@ -137,6 +142,10 @@ public:
 		, HoverShutdown { false }
 		, LastTargetCrd { CoordStruct::Empty }
 		, LastTargetCrdClearTimer {}
+		, WebbyDurationTimer {}
+		, WebbyAnim { nullptr }
+		, WebbyLastTarget { nullptr }
+		, WebbyLastMission { Mission::Sleep }
 		, AutoDeathFlag { 0 }
 		, DropCrate { -1 }
 		, DropCrateType { Powerup::Money }
@@ -188,12 +197,15 @@ public:
 	void ResetDelayedFireTimer();
 	void UpdateTintValues();
 	void UpdateLastTargetCrd();
+	void WebbyUpdate();
 	int GetSight();
+	bool IsWebbed() const;
 
 	static bool CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse);
 
 	virtual ~TechnoExt() override;
 	virtual void OnDetach(AirstrikeClass* pTarget, bool removed) override;
+	virtual void OnDetach(AbstractClass* pTarget, bool removed) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
