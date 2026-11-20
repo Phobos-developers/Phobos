@@ -12,6 +12,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Ext/Script/Body.h>
+#include <Ext/TerrainType/Body.h>
 
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
@@ -3873,4 +3874,56 @@ DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
 	GET(TeamTypeClass*, pTeamType, EDI);
 
 	return ScriptExt::RequiresTargetReachability(pTeamType->ScriptType) ? 0 : ReturnTrue;
+}
+
+DEFINE_HOOK(0x706085, TechnoClass_DrawShape_Disguise_Palette, 0x7)
+{
+	enum { ApplyLightConvert = 0x706106, Others = 0x7060A9 };
+
+	GET(ObjectTypeClass*, pDisguise, EAX);
+	const auto whatAmDisguise = pDisguise->WhatAmI();
+
+	if (whatAmDisguise == AbstractType::OverlayType || whatAmDisguise == AbstractType::TerrainType)
+	{
+		GET(TechnoClass*, pThis, ESI);
+		const auto pCell = pThis->GetCell();
+		ConvertClass* pConvert = nullptr;
+		WORD intensity = 0;
+
+		const auto pPalettes = whatAmDisguise == TerrainTypeClass::AbsID
+			? TerrainTypeExt::Fetch(static_cast<TerrainTypeClass*>(pDisguise))->Palette
+			: OverlayTypeExt::Fetch(static_cast<OverlayTypeClass*>(pDisguise))->Palette;
+
+		if (pPalettes)
+		{
+			const auto pCell = pThis->GetCell();
+			const int wallOwnerIndex = pCell->WallOwnerIndex;
+			int colorSchemeIndex = -1;
+
+			if (wallOwnerIndex != -1)
+				colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
+			else
+				colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
+
+			pConvert = pPalettes->Items[colorSchemeIndex]->LightConvert;
+			intensity = pCell->Intensity_Normal;
+		}
+		else if (pCell->LightConvert)
+		{
+			pConvert = pCell->LightConvert;
+			intensity = pCell->Intensity_Terrain;
+		}
+		else
+		{
+			pCell->InitLightConvert();
+			pConvert = pCell->LightConvert;
+			intensity = pCell->Intensity_Terrain;
+		}
+
+		R->EBX(pConvert);
+		R->ECX(intensity);
+		return ApplyLightConvert;
+	}
+
+	return Others;
 }

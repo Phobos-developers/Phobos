@@ -2108,6 +2108,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
 - Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
 - Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
+- Fixed the bug that techno cannot use correct palette when disguise as terrain or overlay (by NetsuNegi)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)
