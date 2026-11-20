@@ -10,6 +10,8 @@
 
 AnimExt::ExtContainer AnimExt::ExtMap;
 std::vector<AnimClass*> AnimExt::AnimsWithAttachedParticles;
+std::vector<AnimClass*> AnimExt::FiringAnims;
+int AnimExt::FiringAnimUpdateFrame = -1;
 
 AnimExt::~AnimExt()
 {
@@ -22,7 +24,18 @@ AnimExt::~AnimExt()
 		TechnoExt::Fetch(this->ParentBuilding)->AnimRefCount--;
 
 	if (this->FiringAnim_Weapon)
+	{
+		auto const pAnim = this->OwnerObject();
+		auto const it = std::find(AnimExt::FiringAnims.begin(), AnimExt::FiringAnims.end(), pAnim);
+
+		if (it != AnimExt::FiringAnims.end())
+		{
+			*it = AnimExt::FiringAnims.back();
+			AnimExt::FiringAnims.pop_back();
+		}
+
 		ScenarioExt::Global()->FiringAnimUpdateCount--;
+	}
 }
 
 void AnimExt::SetInvoker(TechnoClass* pInvoker)
@@ -470,6 +483,14 @@ void AnimExt::PostLoad()
 {
 	if (this->AttachedSystem)
 		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
+
+	if (this->FiringAnim_Weapon)
+	{
+		auto const pAnim = this->OwnerObject();
+
+		if (std::find(AnimExt::FiringAnims.begin(), AnimExt::FiringAnims.end(), pAnim) == AnimExt::FiringAnims.end())
+			AnimExt::FiringAnims.push_back(pAnim);
+	}
 }
 
 void AnimExt::SaveToStream(PhobosStreamWriter& Stm)

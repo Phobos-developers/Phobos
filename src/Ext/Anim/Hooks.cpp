@@ -15,8 +15,16 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_Early, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	if (ScenarioExt::Global()->FiringAnimUpdateCount > 0)
-		AnimExt::Fetch(pThis)->UpdateAsFiringAnim();
+	if (!AnimExt::FiringAnims.empty() && AnimExt::FiringAnimUpdateFrame != Unsorted::CurrentFrame)
+	{
+		AnimExt::FiringAnimUpdateFrame = Unsorted::CurrentFrame;
+
+		for (auto const pFiringAnim : AnimExt::FiringAnims)
+		{
+			if (pFiringAnim)
+				AnimExt::Fetch(pFiringAnim)->UpdateAsFiringAnim();
+		}
+	}
 
 	auto const pType = pThis->Type;
 
@@ -733,10 +741,16 @@ DEFINE_HOOK(0x6FF42B, TechnoClass_Fire_Anim, 0x7)
 	if (pWeapon->Anim.Count > 0 && WeaponTypeExt::Fetch(pWeapon)->Anim_Update.Get(RulesExt::Global()->FiringAnim_Update))
 	{
 		const auto pAnimExt = AnimExt::Fetch(pAnim);
+
+		if (!pAnimExt->FiringAnim_Weapon)
+		{
+			AnimExt::FiringAnims.emplace_back(pAnim);
+			ScenarioExt::Global()->FiringAnimUpdateCount++;
+		}
+
 		pAnimExt->FiringAnim_Weapon = pWeapon;
 		pAnimExt->FiringAnim_WeaponIndex = wpIdx;
 		pAnimExt->FiringAnim_BurstIndex = pThis->CurrentBurstIndex;
-		ScenarioExt::Global()->FiringAnimUpdateCount++;
 		return SkipBuildingCheck;
 	}
 

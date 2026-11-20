@@ -6,12 +6,20 @@
 
 std::vector<ShieldClass*> ShieldClass::Array;
 
+namespace
+{
+	std::unordered_map<AnimClass*, ShieldClass*> IdleAnimIndex;
+	bool IndexesBuilt = false;
+}
+
 ShieldClass::ShieldClass()
 	: Techno { nullptr }
+	, IdleAnim { nullptr }
 	, HP { 0 }
 	, Timers { }
 	, AreAnimsHidden { false }
 {
+	this->ArrayIndex = ShieldClass::Array.size();
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -36,15 +44,82 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 	if (pTechno->AbstractFlags & AbstractFlags::Foot)
 		this->BracketDelta = this->TechnoID->PixelSelectionBracketDelta + pType->BracketDelta - 3;
 
+	this->ArrayIndex = ShieldClass::Array.size();
 	ShieldClass::Array.emplace_back(this);
+
+	if (!Phobos::IsLoadingSaveGame)
+		IndexesBuilt = true;
 }
 
 ShieldClass::~ShieldClass()
 {
-	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+	const size_t index = this->ArrayIndex;
 
-	if (it != ShieldClass::Array.end())
-		ShieldClass::Array.erase(it);
+	if (index < ShieldClass::Array.size() && ShieldClass::Array[index] == this)
+	{
+		auto* const pLast = ShieldClass::Array.back();
+		ShieldClass::Array[index] = pLast;
+		pLast->ArrayIndex = index;
+		ShieldClass::Array.pop_back();
+	}
+
+	this->ClearIdleAnim();
+}
+
+void ShieldClass::SetIdleAnim(AnimClass* pAnim)
+{
+	if (this->IdleAnim == pAnim)
+		return;
+
+	if (this->IdleAnim)
+	{
+		auto const it = IdleAnimIndex.find(this->IdleAnim);
+
+		if (it != IdleAnimIndex.end() && it->second == this)
+			IdleAnimIndex.erase(it);
+	}
+
+	this->IdleAnim = pAnim;
+
+	if (pAnim)
+		IdleAnimIndex[pAnim] = this;
+}
+
+void ShieldClass::ClearIdleAnim()
+{
+	if (!this->IdleAnim)
+		return;
+
+	auto const it = IdleAnimIndex.find(this->IdleAnim);
+
+	// The animation can be shared after ConvertCheck/SyncShieldToAnother; only
+	// erase the index entry if this shield is its registered owner.
+	if (it != IdleAnimIndex.end() && it->second == this)
+		IdleAnimIndex.erase(it);
+
+	this->IdleAnim = nullptr;
+}
+
+void ShieldClass::RebuildIndexes()
+{
+	IdleAnimIndex.clear();
+
+	for (size_t i = 0; i < ShieldClass::Array.size(); ++i)
+	{
+		auto* const pShield = ShieldClass::Array[i];
+		pShield->ArrayIndex = i;
+
+		if (pShield->IdleAnim)
+			IdleAnimIndex.emplace(pShield->IdleAnim, pShield);
+	}
+
+	IndexesBuilt = true;
+}
+
+void ShieldClass::PrepareForLoad()
+{
+	IdleAnimIndex.clear();
+	IndexesBuilt = false;
 }
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
@@ -56,11 +131,9 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		auto const pAnimExt = AnimExt::TryFetch(pAnim);
-
-		// the flag is only a fast-path gate: during scenario teardown the anim's
-		// extension is already gone, and the references must still be dropped
-		if (!pAnimExt || pAnimExt->IsShieldIdleAnim)
+		// During savegame loading the reverse index is rebuilt only after the
+		// swizzle has remapped the pointers; keep the old scan for that window.
+		if (!IndexesBuilt)
 		{
 			for (auto const pShield : ShieldClass::Array)
 			{
@@ -70,6 +143,17 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 					break; // one anim must be used by less than one shield
 				}
 			}
+
+			IdleAnimIndex.erase(pAnim);
+			return;
+		}
+
+		auto const it = IdleAnimIndex.find(pAnim);
+
+		if (it != IdleAnimIndex.end())
+		{
+			it->second->IdleAnim = nullptr;
+			IdleAnimIndex.erase(it);
 		}
 	}
 }
@@ -115,6 +199,10 @@ bool ShieldClass::Serialize(T& Stm)
 
 bool ShieldClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
+	// Pointers are swizzled after the stream is read; the reverse index is rebuilt
+	// in RebuildIndexes() once the swizzle has completed.
+	this->ClearIdleAnim();
+	IndexesBuilt = false;
 	return Serialize(Stm);
 }
 
@@ -642,7 +730,7 @@ void ShieldClass::ConvertCheck(TechnoTypeClass* pTechnoType, ShieldClass* pOldSh
 	if (pOldShield)
 	{
 		this->HP = pOldShield->HP;
-		this->IdleAnim = pOldShield->IdleAnim;
+		this->SetIdleAnim(pOldShield->IdleAnim);
 		this->Online = pOldShield->Online;
 		this->Cloak = pOldShield->Cloak;
 		this->Temporal = pOldShield->Temporal;
@@ -1069,7 +1157,7 @@ void ShieldClass::CreateAnim(ShieldTypeClass* pType, AnimTypeClass* idleAnimType
 		pAnimExt->IsShieldIdleAnim = true;
 
 		pAnim->RemainingIterations = 0xFFu;
-		this->IdleAnim = pAnim;
+		this->SetIdleAnim(pAnim);
 	}
 }
 

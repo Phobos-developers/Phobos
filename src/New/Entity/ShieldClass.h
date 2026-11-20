@@ -12,6 +12,11 @@ class ShieldClass
 public:
 	static std::vector<ShieldClass*> Array;
 
+	// Rebuilds the IdleAnim reverse index after the savegame swizzle has remapped
+	// the pointers. Call once after all extensions are relinked.
+	static void RebuildIndexes();
+	static void PrepareForLoad();
+
 	ShieldClass();
 	ShieldClass(TechnoClass* pTechno, bool isAttached);
 	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) { };
@@ -31,8 +36,9 @@ public:
 	{
 		if (auto& pAnim = this->IdleAnim)
 		{
-			pAnim->UnInit();
-			pAnim = nullptr;
+			auto* const pIdleAnim = pAnim;
+			this->ClearIdleAnim();
+			pIdleAnim->UnInit();
 		}
 	}
 
@@ -137,6 +143,9 @@ private:
 	void UpdateIdleAnim(ShieldTypeClass* pType, double ratio = 0.0);
 	AnimTypeClass* GetIdleAnimType(ShieldTypeClass* pType, bool idleAnimSet, bool idleAnimDamagedSet, double ratio = 0.0);
 
+	void SetIdleAnim(AnimClass* pAnim);
+	void ClearIdleAnim();
+
 	void WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim);
 	void ResponseAttack();
 
@@ -151,6 +160,7 @@ private:
 	/// Properties ///
 	TechnoClass* Techno;
 	TechnoTypeClass* TechnoID;
+	std::size_t ArrayIndex;
 	int HP;
 	AnimClass* IdleAnim;
 	bool Cloak;
