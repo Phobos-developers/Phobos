@@ -1471,6 +1471,9 @@ msgid ""
 "Noble_Fish)"
 msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达性检查的 Bug（by NetsuNegi 与 Noble_Fish）"
 
+msgid "Allowed TerrainType to use `Foundation=Custom` (by Noble_Fish)"
+msgstr "允许了地形对象使用 `Foundation=Custom`（by Noble_Fish）"
+
 msgid ""
 "[Allow using waypoints, area guard and attack move with aircraft](Fixed-"
 "or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)"

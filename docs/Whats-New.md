@@ -2117,6 +2117,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
 - Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)
+- Allowed TerrainType to use `Foundation=Custom` (by Noble_Fish)
 ```
 
 ### 0.5

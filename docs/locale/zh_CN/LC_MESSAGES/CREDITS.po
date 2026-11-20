@@ -2819,6 +2819,9 @@ msgid "Fix the bug where slaves responded to cheer events while enslaved"
 msgstr ""
 "修复了奴隶在奴役状态响应欢呼事件的 Bug"
 
+msgid "Allow TerrainType to use `Foundation=Custom`"
+msgstr "允许了地形对象使用 `Foundation=Custom`"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
