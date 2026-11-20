@@ -762,6 +762,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 
+	this->RubblePaletteFile.Read(pArtINI, pArtSection, "RubblePalette");
+	this->RubblePalette = GeneralUtils::BuildPalette(this->RubblePaletteFile);
+
 	// Ares 0.2
 	this->CloningFacility.Read(exINI, pSection, "CloningFacility");
 
@@ -893,6 +896,8 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Academy_Country_Ignore)
 		.Process(this->AutoUpgrade)
 		.Process(this->AI_BasePlan_Rebuild)
+		.Process(this->RubblePaletteFile)
+		.Process(this->RubblePalette)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
@@ -913,6 +918,7 @@ void BuildingTypeExt::LoadFromStream(PhobosStreamReader& Stm)
 {
 	TechnoTypeExt::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->RubblePalette = GeneralUtils::BuildPalette(this->RubblePaletteFile);
 }
 
 void BuildingTypeExt::SaveToStream(PhobosStreamWriter& Stm)
