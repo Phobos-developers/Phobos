@@ -17,7 +17,12 @@ static inline bool CheckRestrictions(UnitClass* pUnit, bool isDeploying)
 	const ILocomotionPtr pLoco = pUnit->Locomotor;
 
 	if (isDeploying && pLoco->Is_Moving_Now())
+	{
+		if (pUnit->CurrentMission == Mission::Unload)
+			pUnit->Deploying = true;
+
 		return true;
+	}
 
 	FacingClass* currentDir = &pUnit->PrimaryFacing;
 	bool isJumpjet = false;
@@ -27,7 +32,12 @@ static inline bool CheckRestrictions(UnitClass* pUnit, bool isDeploying)
 		// Jumpjet rotating is basically half a guarantee it is also moving and
 		// may not be caught by the Is_Moving_Now() check.
 		if (isDeploying && pJJLoco->LocomotionFacing.IsRotating())
+		{
+			if (pUnit->CurrentMission == Mission::Unload)
+				pUnit->Deploying = true;
+
 			return true;
+		}
 
 		currentDir = &pJJLoco->LocomotionFacing;
 		isJumpjet = true;
@@ -123,8 +133,38 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 	if (!pThis->Deployed)
 	{
-		if (!pThis->InAir && pType->DeployToLand && pThis->GetHeight() > 0)
-			pThis->InAir = true;
+		bool inAir = pThis->InAir;
+
+		if (pType->DeployToLand)
+		{
+			if (pThis->GetHeight() > 0)
+				inAir = true;
+
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+			{
+				if (pJJLoco->State != JumpjetLocomotionClass::State::Grounded)
+				{
+					inAir = true;
+
+					if (pJJLoco->State != JumpjetLocomotionClass::State::Descending)
+					{
+						if (!pJJLoco->IsMoving || pJJLoco->DestinationCoords == CoordStruct::Empty)
+						{
+							if (auto const pCell = pThis->GetCell())
+							{
+								pJJLoco->DestinationCoords = pCell->GetCoords();
+								pJJLoco->IsMoving = true;
+							}
+						}
+					}
+				}
+			}
+
+			if (inAir && pThis->Target)
+				pThis->SetTarget(nullptr);
+
+			pThis->InAir = inAir;
+		}
 
 		if (pThis->Deploying && pThis->DeployAnim)
 		{
@@ -138,8 +178,25 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 				pThis->Deploying = false;
 			}
 		}
-		else if (!pThis->InAir)
+		else if (!inAir)
 		{
+			if (!TechnoExt::CanDeployOnCell(pThis))
+			{
+				if (pType->DeployToLand)
+				{
+					if (auto const pTargetCell = TechnoExt::FindNearbyDeployCell(pThis, pThis->GetCell()))
+					{
+						if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+						{
+							pJJLoco->Move_To(pTargetCell->GetCoords());
+						}
+						pThis->SetDestination(pTargetCell, true);
+						pThis->InAir = true;
+					}
+				}
+				return ReturnFromFunction;
+			}
+
 			if (CheckRestrictions(pThis, true))
 				return ReturnFromFunction;
 
@@ -247,16 +304,67 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x54C58E, JumpjetLocomotionClass_Descending_PathfindingChecks, 0x7)
+DEFINE_HOOK(0x54C57A, JumpjetLocomotionClass_Descending_CheckDeployTerrain, 0x6)
 {
-	enum { SkipGameCode = 0x54C65F };
+	enum { ProceedToLanding = 0x54C65F, AbortDescentToCruising = 0x54C5F9, AbortDescentToHovering = 0x54C61E };
 
 	GET(JumpjetLocomotionClass*, pThis, ESI);
+	GET(CellClass*, pCell, EDI);
 
-	auto const pUnit = abstract_cast<UnitClass*, true>(pThis->LinkedTo);
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis->LinkedTo);
 
-	if (pUnit && pUnit->CurrentMission == Mission::Unload && UnitExt::SimpleDeployerAllowedToDeploy(pUnit, false, true))
-		return SkipGameCode;
+	if (pFoot && (pFoot->CurrentMission == Mission::Unload || pFoot->QueuedMission == Mission::Unload || pFoot->GetTechnoType()->DeployToLand))
+	{
+		if (auto const pUnit = abstract_cast<UnitClass*, true>(pFoot))
+		{
+			if (pUnit->Type->IsSimpleDeployer && pUnit->Type->DeployToLand
+				&& pUnit->CurrentMission != Mission::Unload && pUnit->QueuedMission != Mission::Unload && !pUnit->Deploying)
+			{
+				if (pThis->DestinationReached)
+				{
+					pFoot->UnmarkAllOccupationBits(pThis->DestinationCoords);
+					pThis->DestinationReached = false;
+				}
+
+				pUnit->InAir = false;
+				pThis->CurrentHeight = pThis->Height;
+
+				if (pFoot->Destination)
+				{
+					pThis->Move_To(pFoot->Destination->GetCoords());
+					return AbortDescentToCruising;
+				}
+
+				return AbortDescentToHovering;
+			}
+		}
+
+		if (TechnoExt::CanDeployOnCell(pFoot, pCell))
+			return ProceedToLanding;
+
+		if (auto const pTargetCell = TechnoExt::FindNearbyDeployCell(pFoot, pCell))
+		{
+			pThis->Move_To(pTargetCell->GetCoords());
+			pFoot->SetDestination(pTargetCell, true);
+			pThis->CurrentHeight = pThis->Height;
+
+			if (pFoot->CurrentMission == Mission::Unload || pFoot->QueuedMission == Mission::Unload)
+				pFoot->InAir = true;
+
+			return AbortDescentToCruising;
+		}
+
+		if (pThis->DestinationReached)
+		{
+			pFoot->UnmarkAllOccupationBits(pThis->DestinationCoords);
+			pThis->DestinationReached = false;
+		}
+
+		pFoot->SetDestination(nullptr, true);
+		pFoot->QueueMission(Mission::Guard, true);
+		pFoot->InAir = false;
+		return AbortDescentToHovering;
+	}
 
 	return 0;
 }

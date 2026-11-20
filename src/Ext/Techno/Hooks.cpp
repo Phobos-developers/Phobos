@@ -1468,7 +1468,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid, 0x7)
 }
 
 // Handle disabling deploy action & cursor for vehicles and aircraft.
-// Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
+// Possible hook locations for other types in same function: Building: 0x700E3F
 DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 {
 	enum { DoNotAllowDeploy = 0x700DCE };
@@ -1485,12 +1485,35 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 		if (!UnitExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
 
+		// Ground terrain compatibility.
+		if (!TechnoExt::CanDeployOnCell(pUnit))
+			return DoNotAllowDeploy;
+
 		// IsSimpleDeployer and type conversion
 		if (!UnitExt::SimpleDeployerAllowedToDeploy(pUnit, true, false))
 			return DoNotAllowDeploy;
 	}
 
 	return 0;
+}
+
+// Handle disabling deploy action & cursor for infantry.
+DEFINE_HOOK(0x700E25, TechnoClass_CanShowDeployCursor_Infantry, 0x7)
+{
+	enum { AllowDeploy = 0x700E2C, DoNotAllowDeploy = 0x700DCE };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis->Type->Deployer)
+	{
+		if (TechnoExt::CanDeployOnCell(pThis))
+		{
+			R->AL(1);
+			return AllowDeploy;
+		}
+	}
+
+	return DoNotAllowDeploy;
 }
 
 // Handle customized WarpAway
