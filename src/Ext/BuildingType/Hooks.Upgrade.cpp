@@ -28,32 +28,6 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	return false;
 }
 
-static CanBuildResult UpdateTechTree(HouseClass const* const pHouse, TechnoTypeClass const* const pItem, bool const buildLimitOnly, bool const includeInProduction, CanBuildResult defaultValue)
-{
-	const bool hasSpyBoon = HouseExt::Fetch(pHouse)->SpyBoons.Contains(const_cast<TechnoTypeClass*>(pItem));
-
-	if (hasSpyBoon && !buildLimitOnly)
-	{
-		const int buildLimit = pItem->BuildLimit;
-		const int ownedCount = buildLimit < 0 ? pHouse->CountOwnedEver(pItem) : pHouse->CountOwnedNow(pItem);
-
-		const bool alreadyInProduction = buildLimit >= 0 && includeInProduction
-			&& FactoryClass::FindByOwnerAndProduct(pHouse, pItem);
-
-		if (!alreadyInProduction)
-		{
-			if (buildLimit >= 0 && ownedCount >= buildLimit)
-				return CanBuildResult::TemporarilyUnbuildable;
-			else if (buildLimit < 0 && ownedCount >= -buildLimit)
-				return CanBuildResult::Unbuildable;
-			else
-				return CanBuildResult::Buildable;
-		}
-	}
-
-	return defaultValue;
-}
-
 DEFINE_HOOK(0x452678, BuildingClass_CanUpgrade_UpgradeBuildings, 0x8)
 {
 	enum { Continue = 0x4526A7, ForbidUpgrade = 0x4526B5 };
@@ -124,10 +98,36 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
-	R->EAX(UpdateTechTree(pThis, pItem, buildLimitOnly, includeInProduction, resultOfAres));
+	const bool hasSpyBoon = HouseExt::Fetch(pThis)->SpyBoons.Contains(const_cast<TechnoTypeClass*>(pItem));
+
+	if (hasSpyBoon && !buildLimitOnly)
+	{
+		const int buildLimit = pItem->BuildLimit;
+		const int ownedCount = buildLimit < 0 ? pThis->CountOwnedEver(pItem) : pThis->CountOwnedNow(pItem);
+
+		if (buildLimit < 0 && ownedCount >= -buildLimit)
+		{
+			R->EAX(CanBuildResult::Unbuildable);
+			return 0;
+		}
+
+		const bool alreadyInProduction = includeInProduction
+			&& FactoryClass::FindByOwnerAndProduct(pThis, pItem);
+
+		if (!alreadyInProduction && buildLimit >= 0 && ownedCount >= buildLimit)
+		{
+			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+			return 0;
+		}
+	}
 
 	if (resultOfAres != CanBuildResult::Buildable)
-		return 0;
+	{
+		if(!hasSpyBoon || buildLimitOnly)
+			return 0;
+			
+		R->EAX(CanBuildResult::Buildable);
+	}
 
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{

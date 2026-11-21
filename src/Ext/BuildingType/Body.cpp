@@ -724,7 +724,7 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AI_BasePlan_Rebuild.Read(exINI, pSection, "AI.BasePlan.Rebuild");
 
 	this->SpyEffect_PossibleBoons.Read(exINI, pSection, "SpyEffect.PossibleBoons");
-	this->SpyEffect_PossibleBoons.Read(exINI, pSection, "SpyEffect.UndoBoons");
+	this->SpyEffect_UndoBoons.Read(exINI, pSection, "SpyEffect.UndoBoons");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
