@@ -911,6 +911,9 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 		return 0;
 	}
 
+	if (ScenarioClass::Instance->UserInputLocked)
+		return 0;
+
 	const double spreadRange = Phobos::Config::DistributionSpreadRange * Unsorted::CellWidthInPixels / Unsorted::LeptonsPerCell / Math::Sqrt2;
 	const int filterMode = Phobos::Config::DistributionFilterMode;
 
