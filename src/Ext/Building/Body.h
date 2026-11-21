@@ -68,6 +68,7 @@ public:
 	bool HasSuperWeapon(int index) const;
 	bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 	void UpdatePrimaryFactoryAI();
+	bool SpyGetTech(HouseClass* pInfiltratorHouse);
 
 	virtual ~BuildingExt() = default;
 

@@ -886,6 +886,8 @@ RoofProductionAnimPoweredSpecial=  ; boolean, defaults to ProductionAnimPoweredS
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
   - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
   - `SpyEffect.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+  - `SpyEffect.PossibleBoons` can randomly grant one of the technologies in the list to the spy's owner. You can increase the chance of a given entry being selected by repeating its registry name. This is independent of Ares' infiltration technologies.
+  - `SpyEffect.UndoBoons` can remove all technologies that the owner of infiltrated building obtained through `SpyEffect.PossibleBoons`.
 
 In `rulesmd.ini`:
 ```ini
@@ -893,6 +895,8 @@ In `rulesmd.ini`:
 SpyEffect.Custom=false             ; boolean
 SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
+SpyEffect.PossibleBoons=           ; List of TechnoType
+SpyEffect.UndoBoons=false          ; boolean
 ```
 
 ## Infantry

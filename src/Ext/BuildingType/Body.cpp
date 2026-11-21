@@ -723,6 +723,9 @@ void BuildingTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoUpgrade.Read(exINI, pSection, "AutoUpgrade");
 	this->AI_BasePlan_Rebuild.Read(exINI, pSection, "AI.BasePlan.Rebuild");
 
+	this->SpyEffect_PossibleBoons.Read(exINI, pSection, "SpyEffect.PossibleBoons");
+	this->SpyEffect_UndoBoons.Read(exINI, pSection, "SpyEffect.UndoBoons");
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -893,6 +896,8 @@ void BuildingTypeExt::Serialize(T& Stm)
 		.Process(this->Academy_Country_Ignore)
 		.Process(this->AutoUpgrade)
 		.Process(this->AI_BasePlan_Rebuild)
+		.Process(this->SpyEffect_PossibleBoons)
+		.Process(this->SpyEffect_UndoBoons)
 
 		// Ares 0.2
 		.Process(this->CloningFacility)
