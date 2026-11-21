@@ -106,6 +106,8 @@ public:
 	HouseExt::PlacingBuildingStruct Combat;
 	std::int64_t AIPowerDelta;
 
+	ValueableVector<TechnoTypeClass*> SpyBoons;
+
 	HouseExt(HouseClass* OwnerObject) : AbstractExt(OwnerObject)
 		, PowerPlantEnhancers {}
 		, OwnedLimboDeliveredBuildings {}
@@ -146,6 +148,7 @@ public:
 		, Common {}
 		, Combat {}
 		, AIPowerDelta { 0 }
+		, SpyBoons {}
 	{ }
 
 	bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding) const;

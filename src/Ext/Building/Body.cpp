@@ -3,6 +3,7 @@
 #include <BitFont.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/AresHelper.h>
+#include <Ext/House/Body.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -320,6 +321,9 @@ bool BuildingExt::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefor
 	const auto pTypeExt = this->GetTypeExtData();
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
+	const bool evaToVictim = pVictimHouse->IsControlledByCurrentPlayer();
+	const bool evaToEnterer = pInfiltratorHouse->IsControlledByCurrentPlayer();
+
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
 	{
 		if (AresHelper::CanUseAres)
@@ -351,6 +355,34 @@ bool BuildingExt::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefor
 		const int idx2 = pTypeExt->SpyEffect_InfiltratorSuperWeapon;
 		if (idx2 >= 0)
 			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx2], pInfiltratorHouse);
+
+		if (this->SpyGetTech(pInfiltratorHouse))
+		{
+			if (evaToEnterer)
+			{
+				VoxClass::Play("EVA_BuildingInfiltrated");
+				VoxClass::Play("EVA_NewTechnologyAcquired");
+			}
+			if (evaToVictim)
+			{
+				VoxClass::Play("EVA_TechnologyStolen");
+			}
+		}
+
+		if (pTypeExt->SpyEffect_UndoBoons)
+		{
+			HouseExt::Fetch(pVictimHouse)->SpyBoons.clear();
+			pVictimHouse->RecheckTechTree = true;
+
+			if (evaToEnterer)
+			{
+				VoxClass::Play("EVA_BuildingInfiltrated");
+			}
+			if (evaToVictim)
+			{
+				VoxClass::Play("EVA_BuildingInfiltrated");
+			}
+		}
 	}
 
 	return true;
@@ -578,6 +610,26 @@ bool BuildingExt::BuildingOnline(BuildingClass* pThis)
 		return false;
 	}
 
+	return true;
+}
+
+bool BuildingExt::SpyGetTech(HouseClass* pInfiltratorHouse)
+{
+	const auto pBldTypeExt = this->GetTypeExtData();
+	const auto& possibleBoons = pBldTypeExt->SpyEffect_PossibleBoons;
+
+	if (possibleBoons.empty())
+		return false;
+
+	const int idx = ScenarioClass::Instance->Random.RandomRanged(0, possibleBoons.size() - 1);
+	const auto pBoon = possibleBoons[idx];
+	const auto pInfiltratorHouseExt = HouseExt::Fetch(pInfiltratorHouse);
+
+	if (pInfiltratorHouseExt->SpyBoons.Contains(pBoon))
+		return false;
+
+	pInfiltratorHouseExt->SpyBoons.push_back(pBoon);
+	pInfiltratorHouse->RecheckTechTree = true;
 	return true;
 }
 

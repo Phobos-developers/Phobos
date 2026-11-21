@@ -769,6 +769,7 @@ void HouseExt::Serialize(T& Stm)
 		.Process(this->Common)
 		.Process(this->Combat)
 		.Process(this->AIPowerDelta)
+		.Process(this->SpyBoons)
 		;
 }
 
