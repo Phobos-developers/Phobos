@@ -366,6 +366,14 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 				return CanNotExistHere;
+
+			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
+			{
+				const auto pType = pTerrain->Type;
+				const auto pExt = TerrainTypeExt::Fetch(pType);
+				if (pExt->HasCustomFoundation() && !pExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? RulesExt::Global()->Tibtree_CanBeBuiltOn : RulesExt::Global()->Terrain_CanBeBuiltOn))
+					return CanNotExistHere;
+			}
 		}
 	}
 	else
@@ -455,13 +463,19 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		if (auto const pTerrain = pCell->GetTerrain(false))
+		// Forced placement can bypass the buildability check. Remove the terrain
+		// so both multi-cell objects do not have to share a cell's list tail.
+		if (auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, pObject->OnBridge))
+		{
+			TerrainTypeExt::Remove(pTerrain);
+		}
+		else if (auto const pTerrain = pCell->GetTerrain(false))
 		{
 			auto const pType = pTerrain->Type;
 			auto const pTypeExt = TerrainTypeExt::Fetch(pType);
 			bool const canBuild = pTypeExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? RulesExt::Global()->Tibtree_CanBeBuiltOn : RulesExt::Global()->Terrain_CanBeBuiltOn);
 
-			if (canBuild)
+			if (!pTypeExt->HasCustomFoundation() && canBuild)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -479,10 +493,8 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	GET(CellClass* const, pCell, EAX);
 
-	if (!Game::IsActive)
-		return Unlimbo;
-
-	if (auto const pTerrain = pCell->GetTerrain(false))
+	auto const pTerrain = Game::IsActive ? pCell->GetTerrain(false) : TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
+	if (pTerrain)
 	{
 		auto const pType = pTerrain->Type;
 		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
@@ -491,11 +503,41 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 		if (!canBuild)
 			return NoUnlimbo;
 
-		pCell->RemoveContent(pTerrain, false);
+		if (!pTypeExt->HasCustomFoundation())
+			pCell->RemoveContent(pTerrain, false);
+
 		TerrainTypeExt::Remove(pTerrain);
 	}
 
 	return Unlimbo;
+}
+
+// BuildingClass::Mark creates its wall with the overlay constructor, which
+// has an inlined terrain check and does not call OverlayClass::Unlimbo.
+DEFINE_HOOK(0x5FC49C, OverlayClass_CTOR_CustomTerrainWall, 0x9)
+{
+	enum { PlaceOverlay = 0x5FC4A9, SkipOverlay = 0x5FC4B6 };
+
+	GET(OverlayClass*, pOverlay, ESI);
+	GET(CellClass*, pCell, EAX);
+
+	if (!pOverlay->Type->Wall)
+		return 0;
+
+	auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
+	if (!pTerrain)
+		return 0;
+
+	auto const pType = pTerrain->Type;
+	auto const pExt = TerrainTypeExt::Fetch(pType);
+	auto const pRules = RulesExt::Global();
+	if (!pExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? pRules->Tibtree_CanBeBuiltOn : pRules->Terrain_CanBeBuiltOn))
+		return SkipOverlay;
+
+	TerrainTypeExt::Remove(pTerrain);
+	// Keep the wall's default facing when bypassing the stock placement path.
+	R->EAX(0);
+	return PlaceOverlay;
 }
 
 // Buildable-upon TerrainTypes Hook #5 -> Ignore when flushing building foundations for placement.

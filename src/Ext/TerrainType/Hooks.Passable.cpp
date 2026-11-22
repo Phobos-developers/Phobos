@@ -132,6 +132,7 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 			CellClass* pCell = pThis->GetCellAt(CellStruct { static_cast<short>(x), static_cast<short>(y) });
 			auto const pTerrain = pCell->GetTerrain(false);
 			bool altPassability = false;
+			bool customFoundation = false;
 
 			if (pTerrain)
 			{
@@ -148,11 +149,13 @@ DEFINE_HOOK(0x586780, MapClass_IsAreaFree, 0x7)
 				}
 
 				altPassability = true;
+				customFoundation = pTypeExt->HasCustomFoundation();
 			}
 
 			// If we're evaluating a cell with buildable TerrainType on it, passability check needs some alterations.
 			const bool invalidPassability = altPassability
-				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots)
+				? (pCell->Passability != PassabilityType::Passable && pCell->Passability != PassabilityType::HasFreeSpots
+					&& !(customFoundation && pCell->Passability == PassabilityType::Destroyable))
 				: (pCell->Passability != PassabilityType::Passable);
 
 			if ((pCell->BaseSpacerOfHouses & mask) != 0

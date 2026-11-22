@@ -2829,6 +2829,9 @@ msgid ""
 msgstr ""
 "修复武器层面的攻击友军定义错误破坏使用 `Sonic` 弹头的武器可在被寄生的友军单位上获得攻击光标这一原版行为的 Bug"
 
+msgid "Allow TerrainType to use `Foundation=Custom`"
+msgstr "允许了地形对象使用 `Foundation=Custom`"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
