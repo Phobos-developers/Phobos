@@ -3983,7 +3983,7 @@ msgid "TBD"
 msgstr "待定版本"
 
 msgid "0.5-alpha3"
-msgstr ""
+msgstr "0.5-alpha3"
 
 msgid ""
 "Fixed the bug where a building with `Factory=BuildingType` owned by the "
