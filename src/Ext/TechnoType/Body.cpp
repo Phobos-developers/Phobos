@@ -1254,6 +1254,8 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 		|| ExtraThreatCoefficient_Facing.Get(RulesExt::Global()->ExtraThreatCoefficient_Facing) != 0.0
 		|| ExtraThreatCoefficient_DistanceToLastTarget.Get(RulesExt::Global()->ExtraThreatCoefficient_DistanceToLastTarget) != 0.0;
 
+	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
+
 	this->Convert_Health_AbovePercent.Read(exINI, pSection, "Convert.Health.AbovePercent");
 	this->Convert_Health_BelowPercent.Read(exINI, pSection, "Convert.Health.BelowPercent");
 	this->Convert_Health.Read(exINI, pSection, "Convert.Health");
@@ -1286,8 +1288,6 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AI_Power.Read(exINI, pSection, "AI.Power");
 	this->AI_Power_AffectedByEnhancers.Read(exINI, pSection, "AI.Power.AffectedByEnhancers");
-
-	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
 
 	// Airstrike tint color
 	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
@@ -1841,6 +1841,8 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraThreatCoefficient_InRangeDistance)
 		.Process(this->ExtraThreatCoefficient_Facing)
 		.Process(this->ExtraThreatCoefficient_DistanceToLastTarget)
+			
+		.Process(this->Parasite_AllowWaterExit)
 
 		.Process(this->Convert_Health_AbovePercent)
 		.Process(this->Convert_Health_BelowPercent)
@@ -1867,7 +1869,6 @@ void TechnoTypeExt::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapons_IgnoreNeverUse)
 		.Process(this->AI_Power)
 		.Process(this->AI_Power_AffectedByEnhancers)
-		.Process(this->Parasite_AllowWaterExit)
 
 		// Ares 0.2
 		.Process(this->RadarJamRadius)

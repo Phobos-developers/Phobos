@@ -494,6 +494,8 @@ public:
 	Nullable<double> ExtraThreatCoefficient_Facing;
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
+	Nullable<bool> Parasite_AllowWaterExit;
+
 	Nullable<Powerup> DropCrate;
 
 	Valueable<double> Convert_Health_AbovePercent;
@@ -522,8 +524,6 @@ public:
 
 	Nullable<int> AI_Power;
 	Nullable<bool> AI_Power_AffectedByEnhancers;
-
-	Nullable<bool> Parasite_AllowWaterExit;
 
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
@@ -929,6 +929,8 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
+			
+		, Parasite_AllowWaterExit {}
 
 		, DropCrate {}
 
@@ -959,8 +961,6 @@ public:
 
 		, AI_Power {}
 		, AI_Power_AffectedByEnhancers {}
-
-		, Parasite_AllowWaterExit {}
 
 		// Ares 0.2
 		, RadarJamRadius { 0 }
