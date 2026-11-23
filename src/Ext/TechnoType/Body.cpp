@@ -1186,6 +1186,9 @@ void TechnoTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Convert_Health_AbovePercent > this->Convert_Health_BelowPercent)
 		Debug::Log("[Developer warning][%s] Convert.Health.AbovePercent is greater than Convert.Health.BelowPercent, resulting in no conversion.\n", pSection);
 
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1446,6 +1449,10 @@ void TechnoTypeExt::Serialize(T& Stm)
 
 		.Process(this->GroupAs)
 		.Process(this->WeaponGroupAs)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
+
 		.Process(this->RadarJamRadius)
 		.Process(this->RadarJamHouses)
 		.Process(this->RadarJamDelay)

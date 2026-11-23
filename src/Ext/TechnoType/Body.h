@@ -438,6 +438,9 @@ public:
 	Valueable<double> Convert_Health_BelowPercent;
 	Nullable<TechnoTypeClass*> Convert_Health;
 
+	int SubterraneanSpeed;
+	Nullable<int> SubterraneanHeight;
+
 	Nullable<bool> Unsellable; // Ares 3.0
 
 	TechnoTypeExt(TechnoTypeClass* OwnerObject) : ObjectTypeExt(OwnerObject)
@@ -828,6 +831,9 @@ public:
 		, Convert_Health_AbovePercent { -1.0 }
 		, Convert_Health_BelowPercent { -1.0 }
 		, Convert_Health {}
+
+		, SubterraneanSpeed { -1 }
+		, SubterraneanHeight {}
 	{ }
 
 	virtual ~TechnoTypeExt() = default;
