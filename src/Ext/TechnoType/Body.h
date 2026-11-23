@@ -422,6 +422,8 @@ public:
 	Nullable<double> ExtraThreatCoefficient_Facing;
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
+	Nullable<bool> Parasite_AllowWaterExit;
+
 	Nullable<Powerup> DropCrate;
 
 	Valueable<double> Convert_Health_AbovePercent;
@@ -824,6 +826,8 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
+
+		, Parasite_AllowWaterExit {}
 
 		, DropCrate {}
 

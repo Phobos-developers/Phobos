@@ -48,8 +48,6 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
 	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
 
-	this->Parasite_AllowWaterExit.Read(exINI, pSection, "Parasite.AllowWaterExit");
-
 	this->DefaultMirageDisguises.Read(exINI, pSection, "DefaultMirageDisguises");
 
 	this->IsSimpleDeployer_ConsiderPathfinding.Read(exINI, pSection, "IsSimpleDeployer.ConsiderPathfinding");
@@ -157,7 +155,6 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->Ammo_AutoDeployMaximumAmount)
 		.Process(this->Ammo_DeployUnlockMinimumAmount)
 		.Process(this->Ammo_DeployUnlockMaximumAmount)
-		.Process(this->Parasite_AllowWaterExit)
 		.Process(this->DefaultMirageDisguises)
 		.Process(this->IsSimpleDeployer_ConsiderPathfinding)
 		.Process(this->IsSimpleDeployer_DisallowedLandTypes)

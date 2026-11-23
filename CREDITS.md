@@ -160,6 +160,7 @@ This page lists all the individual contributions to the project by their author.
   - Linked superweapons
   - Unit & infantry auto-conversion on ammo change
   - Restore the ScriptType action#24 `Play speech` from Tiberian Sun
+  - Fix desyncs caused by non-vehicle parasites reading `Parasite.AllowWaterExit` from invalid memory
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
