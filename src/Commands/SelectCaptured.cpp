@@ -55,7 +55,7 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 					MapClass::UnselectAll();
 				}
 
-				pCurrentObject->Select();
+				Unsorted::MoveFeedback = !pCurrentObject->Select();
 			}
 		}
 
@@ -67,6 +67,7 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 	{
 		MapClass::Instance.MarkNeedsRedraw(1);
 		MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SelectCaptured", L"Captured units selected."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		Unsorted::MoveFeedback = true;
 	}
 	else
 	{
