@@ -458,7 +458,6 @@ public:
 	Vector2D<ThreatType> ThreatTypes;
 	Vector2D<int> CombatDamages;
 
-	ValueableIdx<VocClass> VoiceIFVRepair;
 	ValueableVector<int> VoiceWeaponAttacks;
 	ValueableVector<int> VoiceEliteWeaponAttacks;
 
@@ -495,6 +494,8 @@ public:
 	Nullable<double> ExtraThreatCoefficient_Facing;
 	Nullable<double> ExtraThreatCoefficient_DistanceToLastTarget;
 
+	Nullable<bool> Parasite_AllowWaterExit;
+
 	Nullable<Powerup> DropCrate;
 
 	Valueable<double> Convert_Health_AbovePercent;
@@ -521,8 +522,16 @@ public:
 	ValueableVector<int> NoAmmoWeapons;
 	Valueable<bool> NoAmmoWeapons_IgnoreNeverUse;
 
+	Nullable<int> AI_Power;
+	Nullable<bool> AI_Power_AffectedByEnhancers;
+
 	// Ares 0.2
 	Valueable<int> RadarJamRadius;
+	ValueableIdx<VocClass> VoiceIFVRepair;
+
+	// Ares 0.6
+	Valueable<bool> Drain_Local;
+	Valueable<int> Drain_Amount;
 
 	// Ares 0.9
 	Nullable<int> InhibitorRange;
@@ -530,6 +539,7 @@ public:
 
 	// Ares 0.A
 	PhobosFixedString<0x20> GroupAs;
+	ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 
 	// Ares 0.C
 	Valueable<int> NoAmmoWeapon;
@@ -886,7 +896,6 @@ public:
 		, ThreatTypes { ThreatType::Normal,ThreatType::Normal }
 		, CombatDamages { 0,0 }
 
-		, VoiceIFVRepair { -1 }
 		, VoiceWeaponAttacks {}
 		, VoiceEliteWeaponAttacks {}
 
@@ -920,6 +929,8 @@ public:
 		, ExtraThreatCoefficient_InRangeDistance {}
 		, ExtraThreatCoefficient_Facing {}
 		, ExtraThreatCoefficient_DistanceToLastTarget {}
+			
+		, Parasite_AllowWaterExit {}
 
 		, DropCrate {}
 
@@ -948,8 +959,16 @@ public:
 		, NoAmmoWeapons {}
 		, NoAmmoWeapons_IgnoreNeverUse { true }
 
+		, AI_Power {}
+		, AI_Power_AffectedByEnhancers {}
+
 		// Ares 0.2
 		, RadarJamRadius { 0 }
+		, VoiceIFVRepair { -1 }
+
+		// Ares 0.6
+		, Drain_Local { false }
+		, Drain_Amount { 0 }
 
 		// Ares 0.9
 		, InhibitorRange {}
@@ -957,6 +976,7 @@ public:
 
 		// Ares 0.A
 		, GroupAs { NONE_STR }
+		, InitialPayload_Types {}
 
 		// Ares 0.C
 		, NoAmmoWeapon { -1 }

@@ -132,6 +132,7 @@ public:
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
 		Valueable<int> Overload_ParticleSysCount;
 		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 		Valueable<bool> FallingDownDamage_AllowEMP;
 
 		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
@@ -514,6 +515,9 @@ public:
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Dropship;
 		Nullable<AnimTypeClass*> DefaultLandingAnim_Carryall;
 
+		Nullable<AnimTypeClass*> Wake_Grapple;
+		Nullable<AnimTypeClass*> Wake_Sinking;
+
 		Valueable<DynamicTeamDelayType> TeamDelays_DynamicType;
 		Valueable<Vector3D<int>> TeamDelays_Count[8];
 
@@ -574,6 +578,8 @@ public:
 		Valueable<bool> MissileKeepTargetCoord;
 
 		Valueable<bool> ExtendedBuildingPlacing;
+		Valueable<bool> AI_Power_AffectedByEnhancers;
+		Valueable<bool> AI_BasePlan_Rebuild;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -680,6 +686,7 @@ public:
 			, DigitalDisplay_Health_FakeAtDisguise { true }
 			, Overload_ParticleSysCount { 5 }
 			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 			, FallingDownDamage_AllowEMP { true }
 
 			, ForceWeapon_InRange_TechnoOnly { true }
@@ -1022,6 +1029,9 @@ public:
 			, DefaultLandingAnim_Dropship {}
 			, DefaultLandingAnim_Carryall {}
 
+			, Wake_Grapple {}
+			, Wake_Sinking {}
+
 			, TeamDelays_DynamicType { DynamicTeamDelayType::StartingPoint }
 			, TeamDelays_Count {}
 
@@ -1083,6 +1093,8 @@ public:
 			, MissileKeepTargetCoord { false }
 
 			, ExtendedBuildingPlacing { false }
+			, AI_Power_AffectedByEnhancers { true }
+			, AI_BasePlan_Rebuild { true }
 		{ }
 
 		virtual ~ExtData() = default;

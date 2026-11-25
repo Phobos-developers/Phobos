@@ -74,6 +74,61 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x42EB65, BaseClass_GetBaseNodeIndex_Rebuild, 0x5)
+{
+	enum { QueryNext = 0x42EB6A, QueryType = 0x42EB9A, SkipNode = 0x42EBAE };
+
+	GET(BaseClass* const, pBase, ESI);
+	GET(const int, nodeIndex, EDI);
+	GET(const int, queryType, EBP);
+
+	auto const& node = pBase->BaseNodes[nodeIndex];
+	const auto typeIndex = node.BuildingTypeIndex;
+
+	// Preserve native base-plan instructions with negative type indices.
+	if (node.Placed && typeIndex >= 0 && typeIndex < BuildingTypeClass::Array.Count
+		&& !BuildingTypeExt::Fetch(BuildingTypeClass::Array.Items[typeIndex])->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+	{
+		return SkipNode;
+	}
+
+	return queryType == -1 ? QueryNext : QueryType;
+}
+
+DEFINE_HOOK(0x4452F0, BuildingClass_KickOutUnit_CompleteUpgradeNode, 0x6)
+{
+	GET(BuildingClass* const, pFactory, ESI);
+	GET(BaseNodeClass* const, pNode, EBX);
+
+	if (pNode && !pFactory->Owner->IsControlledByHuman())
+	{
+		const auto index = pNode->BuildingTypeIndex;
+
+		if (index >= 0 && index < BuildingTypeClass::Array.Count)
+		{
+			const auto pType = BuildingTypeClass::Array.Items[index];
+
+			if (pType->PowersUpBuilding[0]
+				&& !BuildingTypeExt::Fetch(pType)->AI_BasePlan_Rebuild.Get(RulesExt::Global()->AI_BasePlan_Rebuild))
+			{
+				// Upgrades bypass the normal Unlimbo node completion path.
+				pNode->Placed = true;
+				pNode->Attempts = 0;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x445639, BuildingClass_KickOutUnit_NoBaseNodeToDelete, 0x6)
+{
+	GET(BaseNodeClass* const, pNode, EAX);
+
+	// Skip failed-upgrade cleanup when both node queries returned null.
+	return pNode ? 0 : 0x445696;
+}
+
 // AIConstructionYard Hook #4-2 -> sub_42EB50 - Prohibit AI from building construction yard.
 DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 {
@@ -311,6 +366,14 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 		{
 			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 				return CanNotExistHere;
+
+			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
+			{
+				const auto pType = pTerrain->Type;
+				const auto pExt = TerrainTypeExt::Fetch(pType);
+				if (pExt->HasCustomFoundation() && !pExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? RulesExt::Global()->Tibtree_CanBeBuiltOn : RulesExt::Global()->Terrain_CanBeBuiltOn))
+					return CanNotExistHere;
+			}
 		}
 	}
 	else
@@ -400,13 +463,19 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		if (auto const pTerrain = pCell->GetTerrain(false))
+		// Forced placement can bypass the buildability check. Remove the terrain
+		// so both multi-cell objects do not have to share a cell's list tail.
+		if (auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, pObject->OnBridge))
+		{
+			TerrainTypeExt::Remove(pTerrain);
+		}
+		else if (auto const pTerrain = pCell->GetTerrain(false))
 		{
 			auto const pType = pTerrain->Type;
 			auto const pTypeExt = TerrainTypeExt::Fetch(pType);
 			bool const canBuild = pTypeExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? RulesExt::Global()->Tibtree_CanBeBuiltOn : RulesExt::Global()->Terrain_CanBeBuiltOn);
 
-			if (canBuild)
+			if (!pTypeExt->HasCustomFoundation() && canBuild)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -424,10 +493,8 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	GET(CellClass* const, pCell, EAX);
 
-	if (!Game::IsActive)
-		return Unlimbo;
-
-	if (auto const pTerrain = pCell->GetTerrain(false))
+	auto const pTerrain = Game::IsActive ? pCell->GetTerrain(false) : TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
+	if (pTerrain)
 	{
 		auto const pType = pTerrain->Type;
 		auto const pTypeExt = TerrainTypeExt::Fetch(pType);
@@ -436,11 +503,41 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 		if (!canBuild)
 			return NoUnlimbo;
 
-		pCell->RemoveContent(pTerrain, false);
+		if (!pTypeExt->HasCustomFoundation())
+			pCell->RemoveContent(pTerrain, false);
+
 		TerrainTypeExt::Remove(pTerrain);
 	}
 
 	return Unlimbo;
+}
+
+// BuildingClass::Mark creates its wall with the overlay constructor, which
+// has an inlined terrain check and does not call OverlayClass::Unlimbo.
+DEFINE_HOOK(0x5FC49C, OverlayClass_CTOR_CustomTerrainWall, 0x9)
+{
+	enum { PlaceOverlay = 0x5FC4A9, SkipOverlay = 0x5FC4B6 };
+
+	GET(OverlayClass*, pOverlay, ESI);
+	GET(CellClass*, pCell, EAX);
+
+	if (!pOverlay->Type->Wall)
+		return 0;
+
+	auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, false);
+	if (!pTerrain)
+		return 0;
+
+	auto const pType = pTerrain->Type;
+	auto const pExt = TerrainTypeExt::Fetch(pType);
+	auto const pRules = RulesExt::Global();
+	if (!pExt->CanBeBuiltOn.Get(pType->SpawnsTiberium ? pRules->Tibtree_CanBeBuiltOn : pRules->Terrain_CanBeBuiltOn))
+		return SkipOverlay;
+
+	TerrainTypeExt::Remove(pTerrain);
+	// Keep the wall's default facing when bypassing the stock placement path.
+	R->EAX(0);
+	return PlaceOverlay;
 }
 
 // Buildable-upon TerrainTypes Hook #5 -> Ignore when flushing building foundations for placement.
@@ -463,7 +560,7 @@ DEFINE_HOOK(0x45EF3A, BuildingTypeClass_FlushForPlacement_BuildableTerrain, 0x7)
 	return Continue;
 }
 
-static inline void ClearPlacingBuildingData(PlacingBuildingStruct* const pPlace)
+static inline void ClearPlacingBuildingData(HouseExt::PlacingBuildingStruct* const pPlace)
 {
 	pPlace->Type = nullptr;
 	pPlace->DrawType = nullptr;

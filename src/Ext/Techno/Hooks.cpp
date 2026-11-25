@@ -965,7 +965,7 @@ DEFINE_HOOK(0x62AB69, ParasiteClass_CanExistOnVictimCell_AllowWaterExit, 0x6)
 
 	GET(TechnoTypeClass*, pType, EAX);
 
-	auto const pTypeExt = static_cast<UnitTypeExt*>(TechnoTypeExt::Fetch(pType));
+	const auto pTypeExt = TechnoTypeExt::Fetch(pType);
 	const auto& globalVal = RulesExt::Global()->Parasite_AllowWaterExit;
 
 	if (pTypeExt->Parasite_AllowWaterExit.isset())
@@ -1079,7 +1079,7 @@ DEFINE_HOOK(0x5F4021, ObjectClass_Update_FallingDown_ToDead, 0x6)
 				double ratio = 0.0;
 
 				if (inWater)
-					ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage));
+					ratio = pTypeExt->FallingDownDamage_Water.Get(RulesExt::Global()->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage)));
 				else
 					ratio = pTypeExt->FallingDownDamage.Get(RulesExt::Global()->FallingDownDamage);
 
@@ -1797,26 +1797,33 @@ DEFINE_HOOK(0x6FBFA3, TechnoClass_Select_SkipLimboDelivery, 0x6)
 
 #pragma region AutoTargetExtension
 
-DEFINE_JUMP(LJMP, 0x700387, 0x7003BD)
-
-DEFINE_HOOK(0x700358, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
+// Override only the type flags; retain the vanilla Sonic and IvanBomb checks.
+DEFINE_HOOK(0x700391, TechnoClass_MouseOverObject_AttackFriendlies, 0x6)
 {
-	enum { CanAttack = 0x700381, Continue = 0x700385 };
+	GET(TechnoTypeClass* const, pType, EAX);
+	GET(WeaponTypeClass* const, pWeapon, EBP);
 
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET_STACK(const bool, IvanBomb, STACK_OFFSET(0x1C, -0xC));
+	const auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
+	const bool attackFriendlies = pWeaponExt
+		? pWeaponExt->AttackFriendlies.Get(pType->AttackFriendlies)
+		: pType->AttackFriendlies;
 
-	const auto pType = pThis->GetTechnoType();
-	const auto pWeaponTypeExt = WeaponTypeExt::Fetch(pWeapon);
+	R->CL(attackFriendlies);
+	return 0x700397;
+}
 
-	if (pWeaponTypeExt->AttackFriendlies.Get(pType->AttackFriendlies)
-		|| (pWeaponTypeExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies) && !IvanBomb))
-	{
-		return CanAttack;
-	}
+DEFINE_HOOK(0x7003A5, TechnoClass_MouseOverObject_AttackCursorOnFriendlies, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, EAX);
+	GET(WeaponTypeClass* const, pWeapon, EBP);
 
-	return Continue;
+	const auto pWeaponExt = WeaponTypeExt::TryFetch(pWeapon);
+	const bool attackCursorOnFriendlies = pWeaponExt
+		? pWeaponExt->AttackCursorOnFriendlies.Get(pType->AttackCursorOnFriendlies)
+		: pType->AttackCursorOnFriendlies;
+
+	R->CL(attackCursorOnFriendlies);
+	return 0x7003AB;
 }
 
 DEFINE_HOOK_AGAIN(0x6F9CE9, TechnoClass_CheckAutoTarget_AttackFriendlies, 0xA)	// TechnoClass::SelectAutoTarget

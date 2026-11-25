@@ -344,7 +344,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed the 128 techno limit when executing a command.
 - Raised the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256.
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings.
-- Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values.
+- Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly`.
+- Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions.
+- Fixed the bug where slaves responded to cheer events while enslaved.
 
 ## Fixes / interactions with other extensions
 
@@ -404,6 +406,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire`.
 - Fixed the bug that Ares tunnel-type buildings cannot unload via the Deploy hotkey or command bar button.
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
+- Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check.
+- Allowed TerrainType to use `Foundation=Custom`.
 
 ## Newly added global settings
 
@@ -692,7 +696,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 PoseDir.Production=  ; integer, defaults to [AudioVisual] -> PoseDir
-PoseDir.Field=       ; integer, defaults to 8 * [AudioVisual] -> PoseDir
+PoseDir.Field=       ; integer, defaults to 32 * [AudioVisual] -> PoseDir
 ```
 
 ### Skirmish AI behavior dehardcode
@@ -2108,8 +2112,8 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 ### Customizable wake anim
 
 - You can now specify the `Wake` anim per TechnoType to override default rules value.
-  - `Wake.Grapple` can be used to further customize wake anim when the techno being parasited on the water.
-  - `Wake.Sinking` can be used to further customize wake anim when the techno sinking.
+  - `Wake.Grapple` can be used to further customize wake anim when the techno being parasited on the water. Defaults to `[General] -> Wake.Grapple`, then the techno's own `Wake`.
+  - `Wake.Sinking` can be used to further customize wake anim when the techno sinking. Defaults to `[General] -> Wake.Sinking`, then the techno's own `Wake`.
 
 - Also, you can now custom whether the techno makes wake when moving.
   - Walk locomotor is able to make wake like ship now.
@@ -2117,6 +2121,10 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 
 In `rulesmd.ini`:
 ```ini
+[General]
+Wake.Grapple=                  ; AnimationType
+Wake.Sinking=                  ; AnimationType
+
 [AudioVisual]
 WalkLocomotorMakesWake=false   ; boolean
 HoverLocomotorMakesWake=true   ; boolean
@@ -2125,9 +2133,9 @@ ShipLocomotorMakesWake=true    ; boolean
 
 [SOMETECHNO]                   ; TechnoType
 MakesWake=                     ; boolean, default to the global value that matches the techno's current locomotor
-Wake=                          ; AnimationType, default to [General] -> Wake
-Wake.Grapple=                  ; AnimationType, defaults to [TechnoType] -> Wake
-Wake.Sinking=                  ; AnimationType, defaults to [TechnoType] -> Wake
+Wake=                          ; AnimationType, defaults to [General] -> Wake
+Wake.Grapple=                  ; AnimationType, defaults to [General] -> Wake.Grapple, then [TechnoType] -> Wake
+Wake.Sinking=                  ; AnimationType, defaults to [General] -> Wake.Sinking, then [TechnoType] -> Wake
 ```
 
 ### Customize bridge falling down damage
@@ -2137,7 +2145,7 @@ Wake.Sinking=                  ; AnimationType, defaults to [TechnoType] -> Wake
 
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
- - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `[CombatDamage] -> FallingDownDamage.Water`, then the techno's own `FallingDownDamage`.
  - `FallingDownDamage.AllowEMP` determines whether units incapacitated by EMP can use `FallingDownDamage/FallingDownDamage.Water`. The default value is `true`.
  - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
@@ -2145,12 +2153,13 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 FallingDownDamage=1.0               ; integer / percentage
+FallingDownDamage.Water=            ; integer / percentage
 FallingDownDamage.AllowEMP=true     ; boolean
 
 [SOMETECHNO]                        ; TechnoType
-FallingDownDamage=                  ; integer / percentage, deafult to [CombatDamage] -> FallingDownDamage
-FallingDownDamage.Water=            ; integer / percentage
-FallingDownDamage.AllowEMP=true     ; boolean, deafult to [CombatDamage] -> FallingDownDamage.AllowEMP
+FallingDownDamage=                  ; integer / percentage, defaults [CombatDamage] -> FallingDownDamage
+FallingDownDamage.Water=            ; integer / percentage, defaults to [CombatDamage] -> FallingDownDamage.Water, then [TechnoType] -> FallingDownDamage
+FallingDownDamage.AllowEMP=true     ; boolean, defaults [CombatDamage] -> FallingDownDamage.AllowEMP
 ```
 
 ### Customize crash spin multiplier

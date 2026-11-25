@@ -345,7 +345,7 @@ void CycleTypeSelectionCommandClass::Execute(WWKey eInput) const
 
 	// Follows the same pattern.
 	// Exactly one selection voice per type switch instead of one per object.
-	const char prev = Unsorted::MoveFeedback;
+	const bool prev = Unsorted::MoveFeedback;
 	Unsorted::MoveFeedback = true;
 
 	for (const auto pObject : CycleTypeSelection::Objects)
