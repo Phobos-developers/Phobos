@@ -355,14 +355,212 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
+namespace
 {
-	GET(ObjectClass*, pObject, EDI);
+	const TerrainTypeExt* GetCustomFoundation(const TerrainClass* pTerrain)
+	{
+		auto const pExt = TerrainTypeExt::TryFetch(pTerrain->Type);
+		return pExt && pExt->HasCustomFoundation() ? pExt : nullptr;
+	}
 
+	CellClass* GetFoundationCell(MapClass* pMap, CellStruct anchor, CellStruct offset)
+	{
+		const CellStruct coords = anchor + offset;
+
+		if (coords.X < 0 || coords.X >= TerrainTypeExt::MapSide || coords.Y < 0 || coords.Y >= TerrainTypeExt::MapSide)
+			return nullptr;
+
+		return pMap->TryGetCellAt(coords);
+	}
+
+	bool HasTerrainOrBuilding(const ObjectClass* pFirst)
+	{
+		for (auto pObject = pFirst; pObject; pObject = pObject->NextObject)
+		{
+			const auto type = pObject->WhatAmI();
+			if (type == AbstractType::Terrain || type == AbstractType::Building)
+				return true;
+		}
+
+		return false;
+	}
+
+	void UpdateTerrainNeighbours(MapClass* pMap, CellStruct coords, int delta)
+	{
+		for (auto const& direction : Unsorted::AdjacentCell)
+		{
+			if (auto const pNeighbour = GetFoundationCell(pMap, coords, direction))
+				pNeighbour->BlockedNeighbours += delta;
+		}
+	}
+}
+
+// The base Unlimbo skips its placement test during ScenarioInit. Check the chain
+// invariant even then: a custom terrain cannot share a cell with another terrain
+// or building, since one NextObject link is shared by all its foundation cells.
+DEFINE_HOOK(0x71D00C, TerrainClass_Unlimbo_CustomFoundation, 0x6)
+{
+	enum { Fail = 0x71D13E };
+
+	GET(TerrainClass*, pThis, ECX);
+	GET(const CoordStruct*, pLocation, EBP);
+
+	const CellStruct anchor = CellClass::Coord2Cell(*pLocation);
+	const bool custom = GetCustomFoundation(pThis) != nullptr;
+	for (auto pOffset = pThis->GetFoundationData(false); *pOffset != TerrainTypeExt::FoundationEnd; ++pOffset)
+	{
+		auto const pCell = GetFoundationCell(&MapClass::Instance, anchor, *pOffset);
+		if (custom)
+		{
+			if (!pCell || HasTerrainOrBuilding(pCell->FirstObject) || HasTerrainOrBuilding(pCell->AltObject))
+				return Fail;
+		}
+		else if (pCell && (TerrainTypeExt::FindCustomFoundationTerrain(pCell, false)
+			|| TerrainTypeExt::FindCustomFoundationTerrain(pCell, true)))
+		{
+			return Fail;
+		}
+	}
+
+	return 0;
+}
+
+// Walk the full footprint directly so custom foundations are not limited
+// by the engine's fixed-size temporary buffer.
+DEFINE_HOOK(0x568432, MapClass_PlaceDown_TerrainFoundation, 0x8)
+{
+	enum { Done = 0x5687DF };
+
+	GET(ObjectClass*, pObject, EDI);
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 	{
-		if (pTerrain->Type->Foundation == 21)
-			return 0x5687DF;
+		if (auto const pExt = GetCustomFoundation(pTerrain))
+		{
+			GET(MapClass*, pMap, EBX);
+			GET_STACK(const CellStruct*, pAnchor, 0x8B4);
+			for (auto const& offset : pExt->CustomFoundation)
+			{
+				if (offset == TerrainTypeExt::FoundationEnd)
+					break;
+
+				if (auto const pCell = GetFoundationCell(pMap, *pAnchor, offset))
+				{
+					pCell->AddContent(pTerrain, pTerrain->OnBridge);
+					pCell->RecalcAttributes(-1);
+					// TerrainClass::Unlimbo counts neighbours of the anchor itself.
+					if (offset != CellStruct::Empty)
+						UpdateTerrainNeighbours(pMap, pCell->MapCoords, 1);
+				}
+			}
+
+			return Done;
+		}
+
+		if (pTerrain->Type->Foundation == static_cast<int>(Foundation::_0x0))
+			return Done;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x568862, MapClass_RemoveContentAt_TerrainFoundation, 0x8)
+{
+	enum { ContinueAfterCells = 0x568940 };
+
+	GET(ObjectClass*, pObject, EDI);
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (auto const pExt = GetCustomFoundation(pTerrain))
+		{
+			GET(MapClass*, pMap, EBX);
+			GET_STACK(const CellStruct*, pAnchor, 0x8B4);
+			for (auto const& offset : pExt->CustomFoundation)
+			{
+				if (offset == TerrainTypeExt::FoundationEnd)
+					break;
+
+				if (auto const pCell = GetFoundationCell(pMap, *pAnchor, offset))
+				{
+					if (TerrainTypeExt::FindCustomFoundationTerrain(pCell, pTerrain->OnBridge) != pTerrain)
+						continue;
+
+					pCell->RemoveContent(pTerrain, pTerrain->OnBridge);
+					pCell->RecalcAttributes(-1);
+					if (offset != CellStruct::Empty)
+						UpdateTerrainNeighbours(pMap, pCell->MapCoords, -1);
+				}
+			}
+
+			if (!Unsorted::ScenarioInit)
+			{
+				// TerrainClass::Limbo resets the zones of the anchor. Reset the
+				// other cells after the entire footprint has been cleared.
+				for (auto const& offset : pExt->CustomFoundation)
+				{
+					if (offset == TerrainTypeExt::FoundationEnd)
+						break;
+
+					if (offset == CellStruct::Empty)
+						continue;
+
+					if (auto const pCell = GetFoundationCell(pMap, *pAnchor, offset))
+					{
+						pMap->ResetZones(pCell->MapCoords);
+						pMap->RecalculateSubZones(pCell->MapCoords);
+					}
+				}
+			}
+
+			return ContinueAfterCells;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x47E8CA, CellClass_AddContent_CustomTerrainTail, 0x5)
+{
+	enum { Append = 0x47E8D7, AlreadyLinked = 0x47EA80 };
+
+	GET(ObjectClass*, pObject, EBP);
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject); pTerrain && GetCustomFoundation(pTerrain))
+	{
+		GET(ObjectClass*, pFirst, ESI);
+		for (auto pItem = pFirst; pItem; pItem = pItem->NextObject)
+		{
+			if (pItem == pTerrain)
+				return AlreadyLinked;
+		}
+
+		// Buildings already use this tail insertion path. Keeping NextObject null
+		// lets this terrain belong to multiple cell chains without joining them.
+		return Append;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x47EA52, CellClass_AddContent_CustomTerrainOccupation, 0x6)
+{
+	GET(ObjectClass*, pObject, EBP);
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject); pTerrain && GetCustomFoundation(pTerrain))
+		return 0x47EA10; // Occupation belongs to this footprint cell rather than the terrain anchor.
+
+	return 0;
+}
+
+DEFINE_HOOK(0x47EB62, CellClass_RemoveContent_CustomTerrainOccupation, 0x6)
+{
+	GET(ObjectClass*, pObject, ESI);
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	{
+		if (auto const pExt = GetCustomFoundation(pTerrain))
+		{
+			const auto pRules = RulesExt::Global();
+			const bool passable = pExt->IsPassable.Get(pTerrain->Type->SpawnsTiberium ? pRules->Tibtree_IsPassable : pRules->Terrain_IsPassable);
+			// Passable terrain never set occupation flags, so there are none to clear.
+			return passable ? 0x47EB8F : 0x47EB21;
+		}
 	}
 
 	return 0;

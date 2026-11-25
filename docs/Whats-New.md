@@ -2094,7 +2094,6 @@ PreserveCSFWhitespace=false      ; boolean
 - Allowed repair and sell mode to be always toggleable instead of relying on the presence of `Insignificant=no` buildings (by Ollerus)
 - Fixed the issue where the AI-triggered reachability check incorrectly rejects reachable transport teams that are summarized as having `MovementZone` of `Amphibious`, `AmphibiousCrusher`, `AmphibiousDestroyer`, or `Fly` (by Noble_Fish)
 - Fixed the issue where AI triggers also perform reachability checks on teams that only execute guard, wait, or auxiliary script actions (by Noble_Fish)
-- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 #### Phobos fixes:
 - Fixed a game crash when parsing string list with null entry (by Ollerus)
@@ -2119,6 +2118,7 @@ PreserveCSFWhitespace=false      ; boolean
 - [Ares' Chrono Prisons / Abductors Expansion](Fixed-or-Improved-Logics.md#ares-chrono-prisons-abductors-expansion) (by FlyStar)
 - [Allow Ares Academy add country-level filters](New-or-Enhanced-Logics.md#allow-ares-academy-add-country-level-filters) (by dh381)
 - Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check (by NetsuNegi & Noble_Fish)
+- Allowed TerrainType to use `Foundation=Custom` (by Noble_Fish)
 ```
 
 ### 0.5
@@ -2554,6 +2554,8 @@ PreserveCSFWhitespace=false      ; boolean
 
 #### TBD
 
+#### 0.5-alpha3
+
 ##### Vanilla fixes:
 - Fixed the bug where a building with `Factory=BuildingType` owned by the AI did not play `ProductionAnim` when placing a produced building (by Noble_Fish)
 - Fixed the bug that setting `WalkRate=0` on a TechnoType crashed the game (integer divide-by-zero) the moment an object of that type started moving (by Noble_Fish)
@@ -2561,6 +2563,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed an issue where vehicles affected by warheads with `IsLocomotor=yes` would have their effects interrupted when deactivated or reactivated (by FlyStar)
 - Fixed crashes when restarting missions that use TerrainTypes with cached SHP images (by Krisztiaan)
 - Fixed an issue where Engineers and Spies might not be able to enter target buildings properly when executing vanilla's attack script (by FlyStar)
+- Fixed the bug where slaves responded to cheer events while enslaved (by Noble_Fish)
 
 ##### Phobos fixes:
 - Fixed a crash occuring when destroying a Tank Bunker with odd foundation size f.ex 3x3 (by Starkku)
@@ -2579,6 +2582,9 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed the bug where `TiberiumEater.Display.Houses` is ineffective because it reads the wrong tag name (by Noble_Fish)
 - Fixed the bug where a larger `LaserZAdjust` incorrectly changes the coordinates of the drawing endpoints (by Noble_Fish)
 - Fixed incorrect multi-turret shot distribution when `BurstPerTurret=1` (by Noble_Fish)
+- Fixed a bug where a refactor of the fix for building laser weapon parameter reading accidentally caused `LaserThickness` of `IsHouseColor` lasers to become ineffective (by Noble_Fish)
+- Fixed a bug where an error in Attacking Allies customization at the weapon level broke vanilla behavior that lets weapons with `Sonic` warheads get an attack cursor on parasitized friendly units (by Noble_Fish)
+- Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
 
 #### 0.5-alpha2
 
