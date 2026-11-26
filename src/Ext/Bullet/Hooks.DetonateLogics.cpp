@@ -5,6 +5,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
+#include <Utilities/AresHelper.h>
 
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
@@ -53,6 +54,42 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType, threatDelay));
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
+{
+	enum { SkipTemporalFire = 0x4694C6 };
+
+	GET(BulletClass*, pThis, ESI);
+	auto const pFirer = pThis->Owner;
+
+	if (!pFirer)
+		return SkipTemporalFire;
+
+	if (pFirer->TemporalImUsing)
+		return 0;
+
+	if (!AresHelper::CanUseAres)
+		return SkipTemporalFire;
+
+	auto const pUnit = abstract_cast<UnitClass*>(pFirer);
+
+	if (!pUnit || !pUnit->Type->Gunner || pUnit->CurrentTurretNumber != 0
+		|| pUnit->Passengers.NumPassengers != 0 || !pUnit->align_154)
+		return SkipTemporalFire;
+
+	// Ares can leave the vehicle's own controller in its extension after the gunner is gone.
+	constexpr auto AresSavedTemporalOffset = 0x34;
+	auto& pSavedTemporal = *reinterpret_cast<TemporalClass**>(pUnit->align_154 + AresSavedTemporalOffset);
+	const auto& temporals = TemporalClass::Array;
+
+	if (!pSavedTemporal || !temporals.IsInitialized || temporals.FindItemIndex(pSavedTemporal) < 0
+		|| pSavedTemporal->Owner != pUnit)
+		return SkipTemporalFire;
+
+	pUnit->TemporalImUsing = pSavedTemporal;
+	pSavedTemporal = nullptr;
+	return 0;
 }
 
 DEFINE_HOOK(0x46954C, BulletClass_Logics_IsLocomotor_Bunker, 0x6)
