@@ -88,8 +88,7 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 	auto& pSavedTemporal = reinterpret_cast<DummyExtHere*>(pUnit->align_154)->SavedTemporal;
 	const auto& temporals = TemporalClass::Array;
 
-	if (!pSavedTemporal || !temporals.IsInitialized || temporals.FindItemIndex(pSavedTemporal) < 0
-		|| pSavedTemporal->Owner != pUnit)
+	if (!pSavedTemporal || pSavedTemporal->Owner != pUnit)
 		return SkipTemporalFire;
 
 	pUnit->TemporalImUsing = pSavedTemporal;
