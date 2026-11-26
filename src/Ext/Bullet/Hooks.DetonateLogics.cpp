@@ -79,8 +79,13 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 		return SkipTemporalFire;
 
 	// Ares can leave the vehicle's own controller in its extension after the gunner is gone.
-	constexpr auto AresSavedTemporalOffset = 0x34;
-	auto& pSavedTemporal = *reinterpret_cast<TemporalClass**>(pUnit->align_154 + AresSavedTemporalOffset);
+	struct DummyExtHere
+	{
+		char _[0x34];
+		TemporalClass* SavedTemporal;
+	};
+
+	auto& pSavedTemporal = reinterpret_cast<DummyExtHere*>(pUnit->align_154)->SavedTemporal;
 	const auto& temporals = TemporalClass::Array;
 
 	if (!pSavedTemporal || !temporals.IsInitialized || temporals.FindItemIndex(pSavedTemporal) < 0
