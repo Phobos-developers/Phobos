@@ -63,9 +63,6 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 	GET(BulletClass*, pThis, ESI);
 	auto const pFirer = pThis->Owner;
 
-	if (!pFirer)
-		return SkipTemporalFire;
-
 	if (pFirer->TemporalImUsing)
 		return 0;
 
