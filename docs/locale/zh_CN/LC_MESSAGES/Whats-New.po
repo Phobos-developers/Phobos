@@ -1421,6 +1421,9 @@ msgstr ""
 "修复了非载具的寄生单位（例如使用 `Parasite=yes` 弹头的步兵）从无效内存中读取 `Parasite.AllowWaterExit` "
 "而导致它们在离开被摧毁的宿主时随机存活或死亡并造成不同步的问题（by FS-21）"
 
+msgid "Fixed a crash caused by incorrect processing order when the `Abductor` weapon with `Temporal` warhead is used on `Gunner` units (by Noble_Fish)"
+msgstr "修复了使用 `Temporal` 弹头的 `Abductor` 武器在 `Gunner` 单位上处理时序错误引发的崩溃（by Noble_Fish）"
+
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 

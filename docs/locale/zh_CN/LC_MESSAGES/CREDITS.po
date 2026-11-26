@@ -2832,6 +2832,9 @@ msgstr ""
 msgid "Allow TerrainType to use `Foundation=Custom`"
 msgstr "允许了地形对象使用 `Foundation=Custom`"
 
+msgid "Fix a crash caused by incorrect processing order when the `Abductor` weapon with `Temporal` warhead is used on `Gunner` units"
+msgstr "修复了使用 `Temporal` 弹头的 `Abductor` 武器在 `Gunner` 单位上处理时序错误引发的崩溃"
+
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
 
