@@ -2088,8 +2088,8 @@ msgstr "修复了 `InitialPayload` 创建的乘客未能参与运输小队可达
 msgid "Allowed TerrainType to use `Foundation=Custom`."
 msgstr "允许了地形对象使用 `Foundation=Custom`。"
 
-msgid "Fixed a crash caused by incorrect processing order when the `Abductor` weapon with `Temporal` warhead is used on `Gunner` units."
-msgstr "修复了使用 `Temporal` 弹头的 `Abductor` 武器在 `Gunner` 单位上处理时序错误引发的崩溃。"
+msgid "Fixed a crash caused by incorrect processing order when a `Gunner` unit fires an `Abductor` weapon with a `Temporal` warhead."
+msgstr "修复了 `Gunner` 单位使用带 `Temporal` 弹头的 `Abductor` 武器开火时因处理顺序不当导致的崩溃。"
 
 msgid "Newly added global settings"
 msgstr "新增的全局设定"

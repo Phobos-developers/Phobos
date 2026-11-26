@@ -408,7 +408,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
 - Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check.
 - Allowed TerrainType to use `Foundation=Custom`.
-- Fixed a crash caused by incorrect processing order when the `Abductor` weapon with `Temporal` warhead is used on `Gunner` units.
+- Fixed a crash caused by incorrect processing order when a `Gunner` unit fires an `Abductor` weapon with a `Temporal` warhead.
 
 ## Newly added global settings
 

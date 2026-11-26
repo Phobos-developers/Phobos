@@ -2585,7 +2585,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
 
 ##### Fixes / interactions with other extensions:
-- Fixed a crash caused by incorrect processing order when the `Abductor` weapon with `Temporal` warhead is used on `Gunner` units (by Noble_Fish)
+- Fixed a crash caused by incorrect processing order when a `Gunner` unit fires an `Abductor` weapon with a `Temporal` warhead (by Noble_Fish)
 
 #### 0.5-alpha2
 
