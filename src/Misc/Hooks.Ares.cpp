@@ -322,7 +322,6 @@ namespace
 	}
 }
 
-// Keep the original pointer across consecutive boardings with an empty field.
 static DWORD _cdecl AresUnitClass_ReceiveGunner_Temporal(REGISTERS* R)
 {
 	GET(UnitClass*, pUnit, ESI);
@@ -332,8 +331,7 @@ static DWORD _cdecl AresUnitClass_ReceiveGunner_Temporal(REGISTERS* R)
 		auto const pParked = std::exchange(pUnit->TemporalImUsing, nullptr);
 		auto const pDisplaced = std::exchange(pExt->Original, pParked);
 
-		// The old slot may alias the controller we just parked. Only retire a
-		// distinct, live controller owned by this vehicle.
+		// Retire a displaced controller only if it is live and distinct.
 		if (pDisplaced && pDisplaced != pParked)
 		{
 			const auto& array = TemporalClass::Array;
@@ -355,7 +353,6 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 	if (pFirer && pFirer->TemporalImUsing)
 		return 0;
 
-	// EDI is the engine-resolved target (possibly null or redirected from a bunker).
 	GET(TechnoClass*, pTarget, EDI);
 	if (AresHelper::CanUseAres && pFirer && pTarget && pTarget != pFirer)
 	{
@@ -364,8 +361,6 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 		{
 			if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original && pExt->Original->Owner == pUnit)
 			{
-				// Use the vehicle's own controller. Keep its identity in the Ares slot
-				// so RemoveGunner cannot hand it to an infantry that never supplied it.
 				pUnit->TemporalImUsing = pExt->Original;
 				return 0; // Replay the native Fire call sequence, including its EDI target.
 			}
@@ -382,12 +377,10 @@ DEFINE_HOOK(0x7464F4, UnitClass_RemoveGunner_KeepVehicleTemporal, 0x6)
 		if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original
 			&& (!pUnit->TemporalImUsing || pUnit->TemporalImUsing == pExt->Original))
 		{
-			// Keep the vehicle's own controller instead of handing it to the gunner.
 			auto const pTemporal = std::exchange(pExt->Original, nullptr);
 			pUnit->TemporalImUsing = pTemporal;
 
-			// The no-transfer exit skips vanilla's LetGo for the outgoing controller.
-			// Detach just this controller; LetGo preserves any other warpers on the target.
+			// Vanilla's skipped LetGo would leave this controller attached.
 			if (pTemporal->Target)
 				pTemporal->LetGo();
 
@@ -402,8 +395,7 @@ DEFINE_HOOK(0x735780, UnitClass_DTOR_ReleaseGunnerTemporalAlias, 0x6)
 	GET(UnitClass*, pUnit, ECX);
 	if (AresHelper::CanUseAres && pUnit->TemporalImUsing)
 	{
-		// Ares deletes a parked controller in the base destructor hook. If the slot
-		// only marks the active controller's identity, leave deletion to the game's field.
+		// Avoid double deletion when Ares' slot aliases the active controller.
 		if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original == pUnit->TemporalImUsing)
 			pExt->Original = nullptr;
 	}
