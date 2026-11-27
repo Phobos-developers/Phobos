@@ -329,7 +329,21 @@ static DWORD _cdecl AresUnitClass_ReceiveGunner_Temporal(REGISTERS* R)
 	if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pUnit->TemporalImUsing)
 	{
 		pUnit->TemporalImUsing->LetGo();
-		pExt->Original = std::exchange(pUnit->TemporalImUsing, nullptr);
+		auto const pParked = std::exchange(pUnit->TemporalImUsing, nullptr);
+		auto const pDisplaced = std::exchange(pExt->Original, pParked);
+
+		// The old slot may alias the controller we just parked. Only retire a
+		// distinct, live controller owned by this vehicle.
+		if (pDisplaced && pDisplaced != pParked)
+		{
+			const auto& array = TemporalClass::Array;
+			if (std::find(array.begin(), array.end(), pDisplaced) != array.end() && pDisplaced->Owner == pUnit)
+			{
+				if (pDisplaced->Target)
+					pDisplaced->LetGo();
+				GameDelete(pDisplaced);
+			}
+		}
 	}
 	return 0;
 }
