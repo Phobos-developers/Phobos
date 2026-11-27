@@ -87,9 +87,10 @@ DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
 	if (!pSavedTemporal || pSavedTemporal->Owner != pUnit)
 		return SkipTemporalFire;
 
-	pUnit->TemporalImUsing = pSavedTemporal;
-	pSavedTemporal = nullptr;
-	return 0;
+	if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+		pSavedTemporal->Fire(pTarget);
+
+	return SkipTemporalFire;
 }
 
 DEFINE_HOOK(0x46954C, BulletClass_Logics_IsLocomotor_Bunker, 0x6)
