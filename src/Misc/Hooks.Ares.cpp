@@ -306,6 +306,98 @@ static bool __fastcall ApplyAbductor_DriverKilled(TechnoClass* pTechno, void*, H
 
 #pragma endregion
 
+#pragma region AresGunnerTemporalSlot
+
+namespace
+{
+	struct AresGunnerTemporalExt
+	{
+		char Padding[0x34];
+		TemporalClass* Original;
+	};
+
+	auto GetGunnerTemporalExt(UnitClass* pUnit)
+	{
+		return reinterpret_cast<AresGunnerTemporalExt*>(pUnit->align_154);
+	}
+}
+
+// Keep the original pointer across consecutive boardings with an empty field.
+static DWORD _cdecl AresUnitClass_ReceiveGunner_Temporal(REGISTERS* R)
+{
+	GET(UnitClass*, pUnit, ESI);
+	if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pUnit->TemporalImUsing)
+	{
+		pUnit->TemporalImUsing->LetGo();
+		pExt->Original = std::exchange(pUnit->TemporalImUsing, nullptr);
+	}
+	return 0;
+}
+
+DEFINE_HOOK(0x4694B4, BulletClass_Detonate_CheckTemporalController, 0x6)
+{
+	GET(BulletClass*, pBullet, ESI);
+	auto const pFirer = pBullet->Owner;
+	if (pFirer && pFirer->TemporalImUsing)
+		return 0;
+
+	// EDI is the engine-resolved target (possibly null or redirected from a bunker).
+	GET(TechnoClass*, pTarget, EDI);
+	if (AresHelper::CanUseAres && pFirer && pTarget && pTarget != pFirer)
+	{
+		auto const pUnit = abstract_cast<UnitClass*>(pFirer);
+		if (pUnit && pUnit->Type->Gunner && !pUnit->CurrentTurretNumber)
+		{
+			if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original && pExt->Original->Owner == pUnit)
+			{
+				// Use the vehicle's own controller. Keep its identity in the Ares slot
+				// so RemoveGunner cannot hand it to an infantry that never supplied it.
+				pUnit->TemporalImUsing = pExt->Original;
+				return 0; // Replay the native Fire call sequence, including its EDI target.
+			}
+		}
+	}
+	return 0x4694C6;
+}
+
+DEFINE_HOOK(0x7464F4, UnitClass_RemoveGunner_KeepVehicleTemporal, 0x6)
+{
+	GET(UnitClass*, pUnit, EDI);
+	if (AresHelper::CanUseAres && pUnit->Type->Gunner)
+	{
+		if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original
+			&& (!pUnit->TemporalImUsing || pUnit->TemporalImUsing == pExt->Original))
+		{
+			// Keep the vehicle's own controller instead of handing it to the gunner.
+			auto const pTemporal = std::exchange(pExt->Original, nullptr);
+			pUnit->TemporalImUsing = pTemporal;
+
+			// The no-transfer exit skips vanilla's LetGo for the outgoing controller.
+			// Detach just this controller; LetGo preserves any other warpers on the target.
+			if (pTemporal->Target)
+				pTemporal->LetGo();
+
+			return 0x746592;
+		}
+	}
+	return 0; // Genuine loan: vanilla hands it back, Ares restores even an empty slot.
+}
+
+DEFINE_HOOK(0x735780, UnitClass_DTOR_ReleaseGunnerTemporalAlias, 0x6)
+{
+	GET(UnitClass*, pUnit, ECX);
+	if (AresHelper::CanUseAres && pUnit->TemporalImUsing)
+	{
+		// Ares deletes a parked controller in the base destructor hook. If the slot
+		// only marks the active controller's identity, leave deletion to the game's field.
+		if (auto const pExt = GetGunnerTemporalExt(pUnit); pExt && pExt->Original == pUnit->TemporalImUsing)
+			pExt->Original = nullptr;
+	}
+	return 0;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x440580, BuildingClass_Unlimbo_UnitDeliveryFix, 0x5)
 {
 	if (UnitDeliveryTemp::Placing)
@@ -453,6 +545,8 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x537CC, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5652E, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x54DC0, GET_OFFSET(ApplyAbductor_DriverKilled));
+
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4C110, GET_OFFSET(AresUnitClass_ReceiveGunner_Temporal));
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -583,4 +677,6 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5447C, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x571DE, GET_OFFSET(ApplyAbductor_Init));
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x55A70, GET_OFFSET(ApplyAbductor_DriverKilled));
+
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x4CD70, GET_OFFSET(AresUnitClass_ReceiveGunner_Temporal));
 }
