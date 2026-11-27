@@ -3874,34 +3874,3 @@ DEFINE_HOOK(0x41FF00, AITriggerTypeClass_ConditionMet_ScriptReachability, 0x8)
 
 	return ScriptExt::RequiresTargetReachability(pTeamType->ScriptType) ? 0 : ReturnTrue;
 }
-
-DEFINE_HOOK(0x45033C, BuildingClass_AI_Factory_BuiltAt, 0x7)
-{
-	enum { ReturnFromFunction = 0x4503CA };
-
-	if (!AresHelper::CanUseAres)
-		return 0;
-
-	GET(BuildingClass*, pFactoryBuilding, ESI);
-	GET(TechnoTypeClass*, pTechnoType, EDI);
-
-	struct DummyBuildingTypeExtHere
-	{
-		char _[0x126];
-		Valueable<bool> Factory_ExplicitOnly;
-	};
-
-	struct DummyTechnoTypeExtHere
-	{
-		char __[0x2D8];
-		ValueableVector<BuildingTypeClass*> BuiltAt;
-
-		bool CanBeBuiltAt(BuildingTypeClass* pFactoryType) const
-		{
-			return (this->BuiltAt.empty() && !reinterpret_cast<DummyBuildingTypeExtHere*>(pFactoryType->align_E24)->Factory_ExplicitOnly)
-				|| this->BuiltAt.Contains(pFactoryType);
-		}
-	};
-
-	return reinterpret_cast<DummyTechnoTypeExtHere*>(pTechnoType->align_2FC)->CanBeBuiltAt(pFactoryBuilding->Type) ? 0 : ReturnFromFunction;
-}
