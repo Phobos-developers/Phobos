@@ -3903,6 +3903,13 @@ msgid ""
 "at all. Defaults to false for infantry, true for everything else."
 msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。步兵默认为 false，其他默认为 true。"
 
+msgid "Customize palette of rubble"
+msgstr "自定义废墟调色盘"
+
+msgid ""
+"In vanilla, rubble overlay is hardcoded to use cell's palette. Now you can choose it."
+msgstr "在原版中，废墟硬编码为使用所在格子的调色盘。现在选择权归你。"
+
 msgid "Countries"
 msgstr "国家"
 

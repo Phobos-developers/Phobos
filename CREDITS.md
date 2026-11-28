@@ -598,6 +598,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize which of vehicle thief, pilot, and passenger the tag can be transferred to when the unit is destroyed
   - Fix the bug that crashing or sinking unit can be recruit into taskforce team
   - Fix the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check
+  - Customize palette of rubble
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
