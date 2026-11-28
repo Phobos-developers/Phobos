@@ -212,14 +212,12 @@
     <!-- src\Ext\Unit -->
     <ClCompile Include="src\Ext\Unit\Body.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.DeployFire.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DeploysInto.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.DrawIt.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.SimpleDeployer.cpp" />
-    <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Unload.cpp" />
     <!-- src\Ext\UnitType -->
     <ClCompile Include="src\Ext\UnitType\Body.cpp" />
