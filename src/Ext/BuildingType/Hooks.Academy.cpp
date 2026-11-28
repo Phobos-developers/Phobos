@@ -55,23 +55,7 @@ DEFINE_HOOK(0x517D57, InfantryClass_Init_Academy, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x735678, UnitClass_Init_Academy, 0x6) // CTOR
-DEFINE_HOOK(0x74689B, UnitClass_Init_Academy, 0x6)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	auto const pType = pThis->Type;
-	BuildingTypeExt::SetOriginVeterancy(pThis);
-
-	if (pType->ConsideredAircraft)
-		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Aircraft);
-	else if (pType->Organic)
-		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Infantry);
-	else
-		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Unit);
-
-	return 0;
-}
+// UnitClass_Init hook is in Ext/Unit/Hooks.cpp
 
 DEFINE_HOOK(0x413FD2, AircraftClass_Init_Academy, 0x6)
 {

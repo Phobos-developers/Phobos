@@ -1,5 +1,32 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+
+DEFINE_HOOK_AGAIN(0x735678, UnitClass_Init, 0x6) // CTOR
+DEFINE_HOOK(0x74689B, UnitClass_Init, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+
+	// Academy logic.
+	BuildingTypeExt::SetOriginVeterancy(pThis);
+
+	if (pType->ConsideredAircraft)
+		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Aircraft);
+	else if (pType->Organic)
+		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Infantry);
+	else
+		BuildingTypeExt::ApplyAcademy(pThis, AbstractType::Unit);
+
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
+
+	if (pTypeExt->MultiWeapon_ChangeTurret)
+		pThis->CurrentTurretNumber = pTypeExt->GetMultiWeaponTurretIndex(0);
+
+	return 0;
+}
+
 #pragma region Drawing
 
 DEFINE_HOOK(0x73C7AC, UnitClass_DrawAsSHP_DrawTurret_TintFix, 0x6)

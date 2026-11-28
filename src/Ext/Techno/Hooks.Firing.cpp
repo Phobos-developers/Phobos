@@ -1350,6 +1350,20 @@ DEFINE_HOOK(0x44B214, BuildingClass_Mission_Attack_Gattling, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x736E2E, UnitClass_FiringAI_UseWeaponTurretIndex, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(int, weaponIndex, EAX);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = UnitTypeExt::Fetch(pType);
+
+	if (pTypeExt->MultiWeapon_ChangeTurret)
+		pThis->CurrentTurretNumber = pTypeExt->GetMultiWeaponTurretIndex(weaponIndex);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x737086, UnitClass_FiringAI_Gattling, 0x9)
 {
 	enum { SkipGameCode = 0x7370AE };

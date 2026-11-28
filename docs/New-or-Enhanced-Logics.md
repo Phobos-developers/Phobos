@@ -2478,6 +2478,8 @@ VoiceEliteWeaponNAttack=    ; Sound entry
   - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
     - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
     - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
+  - If `MultiWeapon.ChangeTurret` is set to true, on vehicles it changes the displayed turret based on weapon selected against current target. Requires `TurretCount` to be set to same number as `WeaponCount` to function as expected.
+    - `WeaponTurretIndexX` can be used to change turret index for weapon index corresponding to X (1-based), defaults to weapon's own index number (0-based).
 
 In `rulesmd.ini`:
 ```ini
@@ -2485,6 +2487,8 @@ In `rulesmd.ini`:
 MultiWeapon=false               ; boolean
 MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
+MultiWeapon.ChangeTurret=false  ; boolean
+WeaponTurretIndexX=             ; integer, turret index
 ```
 
 ### No Ammo Weapons
