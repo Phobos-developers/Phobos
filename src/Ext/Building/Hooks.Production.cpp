@@ -34,6 +34,55 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 	return 0;
 }
 
+// https://bugs.launchpad.net/ares/+bug/1529632#1
+DEFINE_HOOK(0x450292, BuildingClass_AI_Factory_BuiltAt, 0x6)
+{
+	enum { ReturnFromFunction = 0x4503CA, AbandonProduction = 0x4502D1, ContinueAfter = 0x4502F4 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (const auto pFactory = pThis->Factory)
+	{
+		if (pThis->FactoryRetryTimer.HasTimeLeft())
+			return ReturnFromFunction;
+
+		if (pFactory->Production.Rate && !pFactory->IsSuspended)
+			return ReturnFromFunction;
+
+		R->ECX(pFactory);
+		return AbandonProduction;
+	}
+
+	if (!pThis->Owner->Production || !AresHelper::CanUseAres)
+		return ContinueAfter;
+
+	auto GetProductionType = reinterpret_cast<TechnoTypeClass*(__thiscall*)(HouseClass*, AbstractType, DWORD)>(0x4FBD80);
+	const auto pTechnoType = GetProductionType(pThis->Owner, pThis->Type->Factory, 0);
+
+	if (!pTechnoType)
+		return ContinueAfter;
+
+	struct DummyBuildingTypeExtHere
+	{
+		char _[0x126];
+		Valueable<bool> Factory_ExplicitOnly;
+	};
+
+	struct DummyTechnoTypeExtHere
+	{
+		char __[0x2D8];
+		ValueableVector<BuildingTypeClass*> BuiltAt;
+
+		bool CanBeBuiltAt(BuildingTypeClass* pFactoryType) const
+		{
+			return (this->BuiltAt.empty() && !reinterpret_cast<DummyBuildingTypeExtHere*>(pFactoryType->align_E24)->Factory_ExplicitOnly)
+				|| this->BuiltAt.Contains(pFactoryType);
+		}
+	};
+
+	return reinterpret_cast<DummyTechnoTypeExtHere*>(pTechnoType->align_2FC)->CanBeBuiltAt(pThis->Type) ? ContinueAfter : ReturnFromFunction;
+}
+
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
@@ -72,7 +121,6 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 		else if (*currFactory != pThis)
 		{
 			enum { Skip = 0x4503CA };
-
 
 			TechnoTypeClass* pType = nullptr;
 			int index = -1;

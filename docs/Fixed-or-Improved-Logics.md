@@ -408,6 +408,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue in Ares where vehicles would occasionally continue to fire and move even after the driver had been killed.
 - Fixed the bug where passengers created by `InitialPayload` fail to participate in the transport squad reachability check.
 - Allowed TerrainType to use `Foundation=Custom`.
+- Fixed the bug where the AI factories do not comply with `BuildAt` when dispatching orders.
 
 ## Newly added global settings
 
