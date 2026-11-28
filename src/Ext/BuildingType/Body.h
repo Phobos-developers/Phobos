@@ -1,4 +1,5 @@
 #pragma once
+#include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -377,5 +378,8 @@ public:
 	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
 	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
 	static bool AutoUpgradeBuilding(BuildingClass* pBuilding);
+	static void UpdateAcademy(HouseExt* pHouseExt, BuildingClass* pAcademy, bool added);
+	static void ApplyAcademy(TechnoClass* const pTechno, AbstractType const considerAs);
+	static void SetOriginVeterancy(TechnoClass* pTechno);
 };
 
