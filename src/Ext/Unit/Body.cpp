@@ -252,55 +252,10 @@ bool UnitExt::SimpleDeployerAllowedToDeploy(UnitClass* pThis, bool defaultValue,
 			return false;
 	}
 
-	if (alwaysCheckLandTypes || pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-	{
-		LandTypeFlags disallowedLandTypes;
-
-		if (pTypeExt->IsSimpleDeployer_DisallowedLandTypes.isset())
-		{
-			disallowedLandTypes = pTypeExt->IsSimpleDeployer_DisallowedLandTypes.Get();
-		}
-		else
-		{
-			const bool isHover = pType->Locomotor == LocomotionClass::CLSIDs::Hover;
-			const bool isJumpjet = pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet;
-			const bool isLander = pType->DeployToLand && (isJumpjet || isHover);
-			disallowedLandTypes = isLander ? (LandTypeFlags)(LandTypeFlags::Water | LandTypeFlags::Beach) : LandTypeFlags::None;
-		}
-
-		if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
-			return false;
-
-		if (alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
-			return true;
-	}
-	else
-	{
+	if (!alwaysCheckLandTypes && !pTypeExt->IsSimpleDeployer_ConsiderPathfinding)
 		return defaultValue;
-	}
 
-	auto const pTypeConvert = pTypeExt->Convert_Deploy;
-	SpeedType speed = SpeedType::None;
-	MovementZone mZone = MovementZone::None;
-
-	if (AresFunctions::ConvertTypeTo && pTypeConvert)
-	{
-		speed = pTypeConvert->SpeedType;
-		mZone = pTypeConvert->MovementZone;
-	}
-	else
-	{
-		speed = pType->SpeedType;
-		mZone = pType->MovementZone;
-	}
-
-	if (speed != SpeedType::None && mZone != MovementZone::None)
-	{
-		auto const pCell = pThis->GetCell();
-		return pCell->IsClearToMove(speed, true, true, -1, mZone, -1, pCell->ContainsBridge());
-	}
-
-	return true;
+	return TechnoExt::CanDeployOnCell(pThis);
 }
 
 // Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
