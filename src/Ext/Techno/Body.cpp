@@ -784,6 +784,7 @@ struct AresTechnoExt
 	char ___[0x27];
 	bool SurvivorsDone;
 	bool DriverKilled;
+	bool AlwaysOperated;
 };
 
 static_assert(offsetof(AresTechnoExt, HijackerHealth) == 0x68, "AresTechnoExt layout slipped");
@@ -797,10 +798,13 @@ struct AresTechnoTypeExt
 	char __[0xC8];
 	ValueableVector<TechnoTypeClass*> Operators;
 	bool Operator_Any;
-	char ___[0xCF];
+	char ___[0x77];
+	Valueable<bool> CanDrive;
+	char ____[0x57];
 	ValueableIdx<VocClass> VehicleThief_LeaveSound;
 	Valueable<int> VehicleThief_KillPilots;
-	char ____[0x2];
+	Valueable<bool> HijackerBreakMindControl;
+	Valueable<bool> HijackerAllowed;
 	Valueable<bool> VehicleThief_OneTime;
 };
 
@@ -1234,6 +1238,92 @@ int TechnoExt::GetSight()
 	}
 
 	return static_cast<int>(sight);
+}
+
+// Return: 0: No Capture, 1: Hijack, 2: Drive
+int __fastcall TechnoExt::GetActionHijack(TechnoClass** pData, void*, TechnoClass* pTarget)
+{
+	const auto pThis = abstract_cast<InfantryClass*>(*pData);
+	
+
+	if(!pThis || !pTarget || !pThis->IsAlive || !pTarget->IsAlive)
+		return 0;
+		
+	const auto pExt = TechnoExt::Fetch(pThis);
+	const auto pType = pThis->Type;
+	const auto pTargetType = pTarget->GetTechnoType();
+	const auto pTargetExt = TechnoExt::Fetch(pTarget);
+	const auto pTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC);
+	const auto pTargetTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pTargetType->align_2FC);
+
+	if(!pType->VehicleThief && !pTypeExt_Ares->CanDrive)
+		return 0;
+
+	if(pThis->IsDeployed() || !pExt->IsOperated() || pTargetExt->AE.HasImmuneToCapture)
+		return 0;
+
+	const auto absTarget = pTarget->WhatAmI();
+	if(absTarget != AbstractType::Aircraft && absTarget != AbstractType::Unit
+		&& (!pType->VehicleThief || absTarget != AbstractType::Building))
+	{
+		return 0;
+	}
+
+	if(pTarget->CurrentMission == Mission::Selling || pTarget->IsBeingWarpedOut()
+		|| pTargetType->IsTrain || pTargetType->BalloonHover
+		|| (absTarget != AbstractType::Unit && !pTarget->IsStrange())
+		|| !pTarget->IsOnFloor()) {
+			return 0;
+	}
+
+	if(pTarget->BunkerLinkedItem)
+		return 0;
+
+	const auto specialOwned = pTarget->Owner->Type->MultiplayPassive;
+	if(specialOwned && pTypeExt_Ares->CanDrive)
+		return 2;
+
+	if(pType->VehicleThief)
+	{
+		if((pThis->Owner->IsAlliedWith(pTarget->Owner) || specialOwned)
+			|| !pTargetTypeExt_Ares->HijackerAllowed
+			|| pTarget->IsMindControlled() && !pTypeExt_Ares->HijackerBreakMindControl)
+		{
+			return 0;
+		}
+
+		return 1;
+	}
+
+	return 0;
+}
+
+bool TechnoExt::IsOperated()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt_Ares = reinterpret_cast<AresTechnoTypeExt*>(pThis->GetTechnoType()->align_2FC);
+
+	if(!pTypeExt_Ares->Operators.empty())
+	{
+		for(NextObject object(pThis->Passengers.GetFirstPassenger()); object; ++object)
+		{
+			auto const pType = abstract_cast<InfantryTypeClass*>(object->GetType());
+			
+			if(pType && pTypeExt_Ares->Operators.Contains(pType))
+				return true;
+		}
+		return false;
+	}
+	else if(pTypeExt_Ares->Operator_Any)
+	{
+		return pThis->Passengers.GetFirstPassenger() != nullptr;
+	}
+	else
+	{
+		auto const pExt_Ares = reinterpret_cast<AresTechnoExt*>(pThis->align_154);
+		pExt_Ares->AlwaysOperated = true;
+		return true;
+	}
 }
 
 bool TechnoExt::CanReceiveEvent(TechnoClass* pThis, HouseClass* pHouse)

@@ -173,6 +173,9 @@ struct AttachEffectTechnoProperties
 	bool HasOwnerChangeDiscardables;
 	bool HasRestrictedArmorMultipliers;
 	bool HasCritModifiers;
+	bool HasImmuneToCapture;
+	bool HasImmuneToInfiltrate;
+	bool HasImmuneToEngineerRepair;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -190,5 +193,8 @@ struct AttachEffectTechnoProperties
 		, HasOwnerChangeDiscardables { false }
 		, HasRestrictedArmorMultipliers { false }
 		, HasCritModifiers { false }
+		, HasImmuneToCapture { false }
+		, HasImmuneToInfiltrate { false }
+		, HasImmuneToEngineerRepair { false }
 	{ }
 };
