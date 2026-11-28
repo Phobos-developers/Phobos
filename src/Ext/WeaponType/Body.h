@@ -109,6 +109,7 @@ public:
 	Valueable<bool> DelayedFire_RemoveAnimOnNoDelay;
 	Valueable<bool> DelayedFire_PauseFiringSequence;
 	Valueable<bool> DelayedFire_OnlyOnInitialBurst;
+	Valueable<int> DelayedFire_InitialBurstAnimCount;
 	Nullable<CoordStruct> DelayedFire_AnimOffset;
 	Valueable<bool> DelayedFire_AnimOnTurret;
 	Nullable<Leptons> ExtraRange_TargetMoving;
@@ -216,6 +217,7 @@ public:
 		, DelayedFire_RemoveAnimOnNoDelay { false }
 		, DelayedFire_PauseFiringSequence { false }
 		, DelayedFire_OnlyOnInitialBurst { false }
+		, DelayedFire_InitialBurstAnimCount { 1 }
 		, DelayedFire_AnimOffset {}
 		, DelayedFire_AnimOnTurret { true }
 		, ExtraRange_TargetMoving {}
