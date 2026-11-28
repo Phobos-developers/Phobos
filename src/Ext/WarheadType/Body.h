@@ -160,6 +160,7 @@ public:
 	ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
 	TypeConvertGroupList Convert_Pairs;
+	Nullable<AnimTypeClass*> Convert_Anim;
 	AEAttachInfoTypeClass AttachEffects;
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	Valueable<bool> InflictLocomotor;
@@ -447,6 +448,7 @@ public:
 		, DetonateOnAllMapObjects_IgnoreTypes {}
 
 		, Convert_Pairs {}
+		, Convert_Anim {}
 		, AttachEffects {}
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 		, InflictLocomotor { false }
