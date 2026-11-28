@@ -80,6 +80,9 @@ public:
 	std::vector<CoordStruct> ExtraTurretOffsets;
 	Valueable<int> BurstPerTurret;
 
+	Valueable<bool> MultiWeapon_ChangeTurret;
+	std::vector<int> MultiWeapon_TurretIndices;
+
 	explicit UnitTypeExt(UnitTypeClass* const OwnerObject) : TechnoTypeExt(OwnerObject)
 		, SinkSpeed {}
 		, Sinkable {}
@@ -138,6 +141,8 @@ public:
 		, ExtraTurretCount { 0 }
 		, ExtraTurretOffsets { }
 		, BurstPerTurret { 0 }
+		, MultiWeapon_ChangeTurret { false }
+		, MultiWeapon_TurretIndices {}
 	{ }
 
 	UnitTypeClass* OwnerObject() const
@@ -169,6 +174,7 @@ public:
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	void ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx);
+	int GetMultiWeaponTurretIndex(int weaponIndex);
 
 private:
 	template <typename T>

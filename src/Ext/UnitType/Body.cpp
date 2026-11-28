@@ -13,6 +13,16 @@ void UnitTypeExt::ApplyTurretOffsetUnit(Matrix3D* mtx, double factor, int turIdx
 	mtx->Translate(x, y, z);
 }
 
+int UnitTypeExt::GetMultiWeaponTurretIndex(int weaponIndex)
+{
+	if (weaponIndex >= static_cast<int>(this->MultiWeapon_TurretIndices.size()) || weaponIndex < 0)
+		return -1;
+
+	int const index = this->MultiWeapon_TurretIndices[weaponIndex];
+
+	return index < 0 ? weaponIndex : index;
+}
+
 // =============================
 // load / save
 
@@ -84,6 +94,25 @@ void UnitTypeExt::LoadFromINIFile(CCINIClass* const pINI)
 	this->Deploy_NoPassenger.Read(exINI, pSection, "Deploy.NoPassenger");
 	this->Deploy_NoTiberium.Read(exINI, pSection, "Deploy.NoTiberium");
 	this->HoverDrownable.Read(exINI, pSection, "HoverDrownable");
+
+	// MultiWeapon stuff
+	if (this->MultiWeapon.Get())
+	{
+		this->MultiWeapon_ChangeTurret.Read(exINI, pSection, "MultiWeapon.ChangeTurret");
+		int const weaponCount = pThis->WeaponCount;
+		this->MultiWeapon_TurretIndices.resize(weaponCount, -1);
+
+		for (auto i = 0; i < weaponCount; ++i)
+		{
+			_snprintf_s(tempBuffer, _TRUNCATE, "WeaponTurretIndex%u", i + 1);
+
+			Nullable<int> turretIndex;
+			turretIndex.Read(exINI, pSection, tempBuffer);
+
+			if (turretIndex.isset() && turretIndex.Get() >= 0)
+				this->MultiWeapon_TurretIndices[i] = turretIndex.Get();
+		}
+	}
 
 	const auto pArtINI = &CCINIClass::INI_Art;
 	INI_EX exArtINI(pArtINI);
@@ -195,6 +224,8 @@ void UnitTypeExt::Serialize(T& Stm)
 		.Process(this->ExtraTurretCount)
 		.Process(this->ExtraTurretOffsets)
 		.Process(this->BurstPerTurret)
+		.Process(this->MultiWeapon_ChangeTurret)
+		.Process(this->MultiWeapon_TurretIndices)
 		;
 }
 
