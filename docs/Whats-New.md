@@ -178,6 +178,8 @@ ShowBriefing=true                ; boolean
 DigitalDisplay.Enable=false      ; boolean
 ShowDesignatorRange=false        ; boolean
 PrioritySelectionFiltering=true  ; boolean
+RightClickCommand=false          ; boolean
+TypeSelectByMultiClick=false     ; boolean
 PriorityDeployFiltering=true     ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
@@ -2072,6 +2074,8 @@ PreserveCSFWhitespace=false      ; boolean
 - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
 - [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
 - [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
+- [Right-click to command](User-Interface.md#right-click-to-command) (by leosnake2208)
+- [Type selection by double/triple-click](User-Interface.md#type-selection-by-multi-click) (by leosnake2208)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
