@@ -98,8 +98,36 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
+	const bool hasSpyBoon = HouseExt::Fetch(pThis)->SpyBoons.Contains(const_cast<TechnoTypeClass*>(pItem));
+
+	if (hasSpyBoon && !buildLimitOnly)
+	{
+		const int buildLimit = pItem->BuildLimit;
+		const int ownedCount = buildLimit < 0 ? pThis->CountOwnedEver(pItem) : pThis->CountOwnedNow(pItem);
+
+		if (buildLimit < 0 && ownedCount >= -buildLimit)
+		{
+			R->EAX(CanBuildResult::Unbuildable);
+			return 0;
+		}
+
+		const bool alreadyInProduction = includeInProduction
+			&& FactoryClass::FindByOwnerAndProduct(pThis, pItem);
+
+		if (!alreadyInProduction && buildLimit >= 0 && ownedCount >= buildLimit)
+		{
+			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+			return 0;
+		}
+	}
+
 	if (resultOfAres != CanBuildResult::Buildable)
-		return 0;
+	{
+		if(!hasSpyBoon || buildLimitOnly)
+			return 0;
+			
+		R->EAX(CanBuildResult::Buildable);
+	}
 
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{

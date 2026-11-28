@@ -153,6 +153,9 @@ public:
 	Valueable<bool> AutoUpgrade;
 	Nullable<bool> AI_BasePlan_Rebuild;
 
+	ValueableVector<TechnoTypeClass*> SpyEffect_PossibleBoons;
+	Valueable<bool> SpyEffect_UndoBoons;
+
 	// Ares 0.2
 	Valueable<bool> CloningFacility;
 
@@ -275,6 +278,9 @@ public:
 
 		, AutoUpgrade { false }
 		, AI_BasePlan_Rebuild {}
+
+		, SpyEffect_PossibleBoons {}
+		, SpyEffect_UndoBoons { false }
 
 		// Ares 0.2
 		, CloningFacility { false }
