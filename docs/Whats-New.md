@@ -2584,6 +2584,9 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed a bug where an error in Attacking Allies customization at the weapon level broke vanilla behavior that lets weapons with `Sonic` warheads get an attack cursor on parasitized friendly units (by Noble_Fish)
 - Fixed parasites that are not vehicles (e.g. infantry with a `Parasite=yes` warhead) reading `Parasite.AllowWaterExit` from invalid memory, which made them randomly survive or die when leaving a destroyed victim and caused desyncs (by FS-21)
 
+##### Fixes / interactions with other extensions:
+- Fixed a crash caused by incorrect processing order when a `Gunner` unit fires an `Abductor` weapon with a `Temporal` warhead (by Noble_Fish)
+
 #### 0.5-alpha2
 
 ##### Vanilla fixes:
