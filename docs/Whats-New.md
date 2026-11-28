@@ -1929,6 +1929,7 @@ PreserveCSFWhitespace=false      ; boolean
   10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+  10105=Reapir Building at Waypoint,30,0,1,[LONG DESC]
   14004=Force Global OnlyTargetHouseEnemy value in Teams,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
@@ -2072,6 +2073,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Global default value for `Wake.Grapple`, `Wake.Sinking` and `FallingDownDamage.Water` (by Noble_Fish)
 - [Techno power overrides for AI budgeting](New-or-Enhanced-Logics.md#ai-power-budgeting) (by Noble_Fish)
 - [Control of AI base plan rebuilding](New-or-Enhanced-Logics.md#ai-base-plan-rebuilding) (by Noble_Fish)
+- [AI script action to `10105 Reapir Building at Waypoint`](AI-Scripting-and-Mapping.md#reapir-building-at-waypoint) (by FlyStar)
 
 #### Vanilla fixes:
 - Fixed the bug that buildings with passengers cannot unload via the Deploy hotkey or command bar button (by Noble_Fish)
