@@ -465,9 +465,9 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		// Forced placement can bypass the buildability check. Remove the terrain
 		// so both multi-cell objects do not have to share a cell's list tail.
-		if (auto const pTerrain = TerrainTypeExt::FindCustomFoundationTerrain(pCell, pObject->OnBridge))
+		if (auto const pTerrainCustom = TerrainTypeExt::FindCustomFoundationTerrain(pCell, pObject->OnBridge))
 		{
-			TerrainTypeExt::Remove(pTerrain);
+			TerrainTypeExt::Remove(pTerrainCustom);
 		}
 		else if (auto const pTerrain = pCell->GetTerrain(false))
 		{

@@ -389,7 +389,7 @@ namespace
 		for (auto const& direction : Unsorted::AdjacentCell)
 		{
 			if (auto const pNeighbour = GetFoundationCell(pMap, coords, direction))
-				pNeighbour->BlockedNeighbours += delta;
+				pNeighbour->BlockedNeighbours = static_cast<BYTE>(pNeighbour->BlockedNeighbours + delta);
 		}
 	}
 }
