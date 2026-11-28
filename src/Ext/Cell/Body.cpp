@@ -13,6 +13,8 @@ void CellExt::Serialize(T& Stm)
 	Stm
 		.Process(this->RadSites)
 		.Process(this->RadLevels)
+		.Process(this->CoveringLights)
+		.Process(this->CoveringTerrains)
 		.Process(this->InfantryCount)
 		;
 }
