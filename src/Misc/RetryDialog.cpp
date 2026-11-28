@@ -5,6 +5,7 @@
 #include <CCToolTip.h>
 #include <GameOptionsClass.h>
 #include <EvadeClass.h>
+#include <Unsorted.h>
 
 namespace RetryDialogFlag
 {
@@ -70,17 +71,24 @@ DEFINE_HOOK(0x558F4E, LoadOptionClass_Dialog_CenterListBox, 0x5)
 		GET(HWND, hListBox, EAX);
 		GET(HWND, hDialog, EDI);
 
-		HWND hLoadButton = GetDlgItem(hDialog, 1039);
+		HWND hLoadButton = Imports::GetDlgItem(hDialog, 1039);
 
 		RECT buttonRect;
-		GetWindowRect(hLoadButton, &buttonRect);
+		Imports::GetWindowRect(hLoadButton, &buttonRect);
+
+		// GetWindowRect returns screen coordinates, but a child window's position is
+		// relative to its parent's client area. Convert the button's top-left corner
+		// with the game's own ScreenToClient, so windowed mode and DirectDraw virtual
+		// screen coordinates are handled correctly.
+		POINT buttonPos = { buttonRect.left, buttonRect.top };
+		Imports::ScreenToClient(hDialog, &buttonPos);
 
 		float scaleX = static_cast<float>(buttonRect.right - buttonRect.left) / 108;
 		float scaleY = static_cast<float>(buttonRect.bottom - buttonRect.top) / 22;
-		int X = buttonRect.left - static_cast<int>(346 * scaleX);
-		int Y = buttonRect.top - static_cast<int>(44 * scaleY);
+		int X = buttonPos.x - static_cast<int>(346 * scaleX);
+		int Y = buttonPos.y - static_cast<int>(44 * scaleY);
 
-		SetWindowPos(hListBox, NULL, X, Y, NULL, NULL, SWP_NOSIZE | SWP_NOZORDER);
+		Imports::SetWindowPos(hListBox, NULL, X, Y, NULL, NULL, SWP_NOSIZE | SWP_NOZORDER);
 	}
 
 	return 0;
