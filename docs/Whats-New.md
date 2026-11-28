@@ -2107,6 +2107,7 @@ PreserveCSFWhitespace=false      ; boolean
 - Fixed a bug where units that have `MinDebris` and `MaxDebris` defined but `DebrisTypes` undefined would unconditionally spawn `MetallicDebris` once when they die (by dh381)
 - Fixed inconsistent damage scaling for negative `PowerPlantEnhancer.Factor` values (by Noble_Fish)
 - Fixed the options menu reopening after leaving frame-by-frame mode if it had been opened while stepping (by Noble_Fish)
+- Fixed the save list of the "Load Game" dialog opened from the mission-failure retry dialog being misplaced because its position was calculated in screen coordinates instead of the dialog's client coordinates, which was noticeable at every resolution except the maximum (by GreyVacuum)
 
 #### Fixes / interactions with other extensions:
 - Allowed `SW.ShowCameo` and `SW.ManualFire` to work independently of `SW.AutoFire` (by Noble_Fish)

@@ -1041,3 +1041,4 @@ This page lists all the individual contributions to the project by their author.
   - Fix briefing out of bound due to fixed window size
   - Remove the 128 techno limit when executing a command
   - Raise the 16 nodes limit for planning node mode and the 128 total unit limit for a planning order to 256
+- **GreyVacuum** - Fix the save list of the "Load Game" dialog opened from the mission-failure retry dialog being misplaced because its position was calculated in screen coordinates instead of the dialog's client coordinates
